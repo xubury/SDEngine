@@ -1,5 +1,6 @@
 #include "Core/Engine.hpp"
 #include "Core/Log.hpp"
+#include "Core/InputManager.hpp"
 
 namespace sd {
 
@@ -30,6 +31,18 @@ void Engine::processEvent(const SDL_Event &event) {
         case SDL_QUIT:
             m_window.setShouldClose(true);
             break;
+        case SDL_KEYDOWN:
+            InputManager::instance().pressKey(event.key.keysym.sym);
+            break;
+        case SDL_KEYUP:
+            InputManager::instance().releaseKey(event.key.keysym.sym);
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            InputManager::instance().pressMouseButton(event.button.button);
+            break;
+        case SDL_MOUSEBUTTONUP:
+            InputManager::instance().releaseMouseButton(event.button.button);
+            break;
         default:
             break;
     }
@@ -44,6 +57,7 @@ void Engine::run() {
         while (m_window.pollEvent(event)) {
             processEvent(event);
         }
+        InputManager::instance().tick();
     }
 }
 

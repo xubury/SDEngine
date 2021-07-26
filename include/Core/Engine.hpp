@@ -7,8 +7,10 @@ namespace sd {
 
 class SD_API Engine {
    public:
-    Engine();
-    ~Engine();
+    static Engine &instance() {
+        static Engine s_instance;
+        return s_instance;
+    }
 
     Engine(const Engine &application) = delete;
     Engine &operator=(const Engine &application) = delete;
@@ -19,6 +21,9 @@ class SD_API Engine {
     void run();
 
    private:
+    Engine();
+    ~Engine();
+
     void processEvent(const SDL_Event &event);
 
     bool m_isInit;
