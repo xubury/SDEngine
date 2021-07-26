@@ -1,25 +1,29 @@
 #include "Application.hpp"
+#include "Core/Log.hpp"
 
 namespace sd {
 
 Application::Application() : m_isInit(false) {}
 
-Application::~Application() { SDL_Quit(); }
+Application::~Application() {}
 
 bool Application::init() {
-    m_isInit = true;
-    do {
-        if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-            m_isInit = false;
-            break;
-        }
-        if (!m_window.init()) {
-            m_isInit = false;
-            break;
-        }
-    } while (false);
 
-    return m_isInit;
+    std::string debugPath = "Debug.txt";
+    Log::init(debugPath);
+    SD_CORE_INFO("Debug info is output to: {}", debugPath);
+
+    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+        SD_CORE_ERROR("SDL2 init failed: {}", SDL_GetError());
+        return false;
+    }
+    if (!m_window.init()) {
+        SD_CORE_ERROR("Window init failed: {}", SDL_GetError());
+        return false;
+    }
+
+    m_isInit = true;
+    return true;
 }
 
 void Application::run() {
@@ -40,6 +44,9 @@ void Application::run() {
     }
 }
 
-void Application::free() { m_window.free(); }
+void Application::free() {
+    m_window.free();
+    SDL_Quit();
+}
 
-}  // namespace S2D
+}  // namespace sd
