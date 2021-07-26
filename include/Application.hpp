@@ -3,7 +3,7 @@
 
 #include "Window/Window.hpp"
 
-namespace S2D {
+namespace sd {
 
 class Application {
    public:

@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 
-project(S2D VERSION 0.1.0)
+# Simple and direct engine
+project(SDEngine VERSION 0.1.0)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(DEBUG_BUILD)
@@ -11,12 +12,12 @@ find_package(SDL2)
 set(Window_Src
     src/Window/Window.cpp)
 
-add_executable(S2DEngine src/main.cpp src/Application.cpp ${Window_Src} )
+add_executable(SDEngine src/main.cpp src/Application.cpp ${Window_Src} )
 
-set_property(TARGET S2DEngine PROPERTY CXX_STANDARD 17)
+set_property(TARGET SDEngine PROPERTY CXX_STANDARD 17)
 
-target_compile_options(S2DEngine PUBLIC -Wall -Wextra -Wundef -pedantic)
+target_compile_options(SDEngine PUBLIC -Wall -Wextra -Wundef -pedantic)
 
-target_link_libraries(S2DEngine ${SDL2_LIBRARIES})
+target_link_libraries(SDEngine ${SDL2_LIBRARIES})
 
 include_directories(include ${SDL2_INCLUDE_DIRS})

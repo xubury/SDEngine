@@ -1,6 +1,6 @@
 #include "Application.hpp"
 
-namespace S2D {
+namespace sd {
 
 Application::Application() : m_isInit(false) {}
 

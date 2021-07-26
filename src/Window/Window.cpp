@@ -1,6 +1,6 @@
 #include "Window/Window.hpp"
 
-namespace S2D {
+namespace sd {
 
 Window::Window() : m_shouldClose(false) {}
 

@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-namespace S2D {
+namespace sd {
 
 class Window {
    public:
