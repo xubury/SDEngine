@@ -1,9 +1,9 @@
-#include "Application.hpp"
+#include "Core/Engine.hpp"
 
 int main(int, char **) {
-    sd::Application app;
-    app.init();
-    app.run();
-    app.free();
+    sd::Engine engine;
+    engine.init();
+    engine.run();
+    engine.free();
     return 0;
 }

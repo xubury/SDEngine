@@ -1,14 +1,13 @@
-#include "Application.hpp"
+#include "Core/Engine.hpp"
 #include "Core/Log.hpp"
 
 namespace sd {
 
-Application::Application() : m_isInit(false) {}
+Engine::Engine() : m_isInit(false) {}
 
-Application::~Application() {}
+Engine::~Engine() {}
 
-bool Application::init() {
-
+bool Engine::init() {
     std::string debugPath = "Debug.txt";
     Log::init(debugPath);
     SD_CORE_INFO("Debug info is output to: {}", debugPath);
@@ -26,25 +25,29 @@ bool Application::init() {
     return true;
 }
 
-void Application::run() {
+void Engine::processEvent(const SDL_Event &event) {
+    switch (event.type) {
+        case SDL_QUIT:
+            m_window.setShouldClose(true);
+            break;
+        default:
+            break;
+    }
+}
+
+void Engine::run() {
     if (!m_isInit) {
         return;
     }
-
     while (!m_window.shouldClose()) {
         SDL_Event event;
         while (m_window.pollEvent(event)) {
-            if (event.type == SDL_QUIT) {
-                m_window.setShouldClose(true);
-            }
-            if (event.key.keysym.sym == SDLK_ESCAPE) {
-                m_window.setShouldClose(true);
-            }
+            processEvent(event);
         }
     }
 }
 
-void Application::free() {
+void Engine::free() {
     m_window.free();
     SDL_Quit();
 }

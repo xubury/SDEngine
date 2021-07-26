@@ -1,11 +1,12 @@
-#ifndef WINDOW_HPP
-#define WINDOW_HPP
+#ifndef SD_WINDOW_HPP
+#define SD_WINDOW_HPP
 
 #include <SDL2/SDL.h>
+#include "Core/Export.hpp"
 
 namespace sd {
 
-class Window {
+class SD_API Window {
    public:
     Window();
     ~Window();
@@ -23,6 +24,6 @@ class Window {
     bool m_shouldClose;
 };
 
-}  // namespace S2D
+}  // namespace sd
 
 #endif /* WINDOW_HPP */
