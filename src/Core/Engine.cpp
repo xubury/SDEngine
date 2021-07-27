@@ -8,7 +8,7 @@ Engine::Engine() : m_isInit(false) {}
 
 Engine::~Engine() {}
 
-bool Engine::init() {
+bool Engine::create() {
     std::string debugPath = "Debug.txt";
     Log::init(debugPath);
     SD_CORE_INFO("Debug info is output to: {}", debugPath);
@@ -17,7 +17,7 @@ bool Engine::init() {
         SD_CORE_ERROR("SDL2 init failed: {}", SDL_GetError());
         return false;
     }
-    if (!m_window.init()) {
+    if (!m_window.create("SD Engine", 800, 600, Window::WINDOWED)) {
         SD_CORE_ERROR("Window init failed: {}", SDL_GetError());
         return false;
     }
@@ -61,8 +61,8 @@ void Engine::run() {
     }
 }
 
-void Engine::free() {
-    m_window.free();
+void Engine::destroy() {
+    m_window.destroy();
     SDL_Quit();
 }
 

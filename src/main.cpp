@@ -1,8 +1,8 @@
 #include "Core/Engine.hpp"
 
 int main(int, char **) {
-    sd::Engine::instance().init();
+    sd::Engine::instance().create();
     sd::Engine::instance().run();
-    sd::Engine::instance().free();
+    sd::Engine::instance().destroy();
     return 0;
 }

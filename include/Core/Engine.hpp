@@ -15,8 +15,8 @@ class SD_API Engine {
     Engine(const Engine &application) = delete;
     Engine &operator=(const Engine &application) = delete;
 
-    bool init();
-    void free();
+    bool create();
+    void destroy();
 
     void run();
 
