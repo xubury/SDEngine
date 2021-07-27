@@ -2,6 +2,7 @@ find_package(spdlog REQUIRED)
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
+find_package(GLEW REQUIRED)
 
 set(Include_Root ${PROJECT_SOURCE_DIR}/include/Core)
 set(Src_Root ${PROJECT_SOURCE_DIR}/src/Core)
@@ -14,12 +15,14 @@ set(Core_Include
     ${Include_Root}/Assert.hpp
     ${Include_Root}/Base.hpp
     ${Include_Root}/Window.hpp
+    ${Include_Root}/GLContext.hpp
     ${Include_Root}/Engine.hpp
     ${Include_Root}/InputManager.hpp)
 
 set(Core_Src
     ${Src_Root}/Log.cpp
     ${Src_Root}/Window.cpp
+    ${Src_Root}/GLContext.cpp
     ${Src_Root}/Engine.cpp
     ${Src_Root}/InputManager.cpp)
 
@@ -35,7 +38,7 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-core PRIVATE SD_SHARED)
 endif()
 
-target_link_libraries(sd-core PUBLIC spdlog::spdlog SDL2::Main)
+target_link_libraries(sd-core PUBLIC spdlog::spdlog SDL2::Main GLEW::GLEW)
 
 target_include_directories(sd-core PUBLIC
     ${PROJECT_SOURCE_DIR}/include)

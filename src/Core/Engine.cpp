@@ -1,6 +1,7 @@
 #include "Core/Engine.hpp"
 #include "Core/Log.hpp"
 #include "Core/InputManager.hpp"
+#include <GL/gl.h>
 
 namespace sd {
 
@@ -14,14 +15,16 @@ bool Engine::create() {
     SD_CORE_INFO("Debug info is output to: {}", debugPath);
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-        SD_CORE_ERROR("SDL2 init failed: {}", SDL_GetError());
+        SD_CORE_ERROR("SDL_Init failed: {}", SDL_GetError());
+        return false;
+    }
+    if (SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1) != 0) {
+        SD_CORE_ERROR("SDL_GL_SetAttribute Failed: {}", SDL_GetError());
         return false;
     }
     if (!m_window.create("SD Engine", 800, 600, Window::WINDOWED)) {
-        SD_CORE_ERROR("Window init failed: {}", SDL_GetError());
         return false;
     }
-
     m_isInit = true;
     return true;
 }
@@ -58,8 +61,17 @@ void Engine::run() {
         while (m_window.pollEvent(event)) {
             processEvent(event);
         }
-        InputManager::instance().tick();
+        tick();
+        render();
     }
+}
+
+void Engine::tick() { InputManager::instance().tick(); }
+
+void Engine::render() {
+    glClearColor(0.1, 0.2, 0.3, 1);
+    glClear(GL_COLOR_BUFFER_BIT);
+    m_window.swapBuffer();
 }
 
 void Engine::destroy() {

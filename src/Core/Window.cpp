@@ -1,4 +1,6 @@
 #include "Core/Window.hpp"
+#include "Core/Log.hpp"
+#include "GL/glew.h"
 
 namespace sd {
 
@@ -19,7 +21,15 @@ bool Window::create(const std::string &title, int width, int height,
     m_window =
         SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED,
                          SDL_WINDOWPOS_CENTERED, width, height, sdlFlags);
-    return m_window != nullptr;
+    if (m_window == nullptr) {
+        SD_CORE_ERROR("SDL_CreateWindow failed: {}", SDL_GetError());
+        return false;
+    }
+
+    if (!m_context.create(m_window)) {
+        return false;
+    }
+    return true;
 }
 
 void Window::destroy() { SDL_DestroyWindow(m_window); }
@@ -31,5 +41,7 @@ bool Window::pollEvent(SDL_Event &event) { return SDL_PollEvent(&event) == 1; }
 bool Window::shouldClose() const { return m_shouldClose; }
 
 void Window::setShouldClose(bool shouldClose) { m_shouldClose = shouldClose; }
+
+void Window::swapBuffer() { SDL_GL_SwapWindow(m_window); }
 
 }  // namespace sd

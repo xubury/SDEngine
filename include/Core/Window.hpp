@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <string>
 #include "Core/Export.hpp"
+#include "Core/GLContext.hpp"
 
 namespace sd {
 
@@ -29,7 +30,10 @@ class SD_API Window {
     bool shouldClose() const;
     void setShouldClose(bool shouldClose);
 
+    void swapBuffer();
+
    private:
+    GLContext m_context;
     SDL_Window *m_window;
     bool m_shouldClose;
 };

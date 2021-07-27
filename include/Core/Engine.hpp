@@ -25,6 +25,8 @@ class SD_API Engine {
     ~Engine();
 
     void processEvent(const SDL_Event &event);
+    void tick();
+    void render();
 
     bool m_isInit;
     Window m_window;
