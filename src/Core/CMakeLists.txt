@@ -1,5 +1,7 @@
 find_package(spdlog REQUIRED)
+
 find_package(SDL2 REQUIRED)
+find_package(SDL2_image REQUIRED)
 
 set(Include_Root ${PROJECT_SOURCE_DIR}/include/Core)
 set(Src_Root ${PROJECT_SOURCE_DIR}/src/Core)
@@ -29,13 +31,11 @@ target_compile_options(sd-core PRIVATE -Wall -Wextra -Wundef -pedantic)
 
 target_compile_definitions(sd-core PRIVATE SD_EXPORT)
 
-target_include_directories(sd-core PUBLIC ${SDL2_INCLUDE_DIRS})
-
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-core PRIVATE SD_SHARED)
 endif()
 
-target_link_libraries(sd-core PUBLIC spdlog::spdlog ${SDL2_LIBRARIES})
+target_link_libraries(sd-core PUBLIC spdlog::spdlog SDL2::Main)
 
 target_include_directories(sd-core PUBLIC
     ${PROJECT_SOURCE_DIR}/include)

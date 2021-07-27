@@ -10,6 +10,8 @@ else()
     add_link_options(-mwindows)
 endif()
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)
+
 add_subdirectory(src/Core)
 
 add_executable(SDEngine src/main.cpp)
