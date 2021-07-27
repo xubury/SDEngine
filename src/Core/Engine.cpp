@@ -52,8 +52,9 @@ void Engine::run() {
     if (!m_isInit) {
         return;
     }
+
+    SDL_Event event;
     while (!m_window.shouldClose()) {
-        SDL_Event event;
         while (m_window.pollEvent(event)) {
             processEvent(event);
         }
