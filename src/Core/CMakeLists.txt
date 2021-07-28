@@ -15,6 +15,8 @@ set(Core_Include
     ${Include_Root}/Assert.hpp
     ${Include_Root}/Base.hpp
     ${Include_Root}/Timing.hpp
+    ${Include_Root}/Layer.hpp
+    ${Include_Root}/LayerStack.hpp
     ${Include_Root}/Window.hpp
     ${Include_Root}/GLContext.hpp
     ${Include_Root}/Engine.hpp
@@ -23,6 +25,7 @@ set(Core_Include
 set(Core_Src
     ${Src_Root}/Log.cpp
     ${Src_Root}/Timing.cpp
+    ${Src_Root}/LayerStack.cpp
     ${Src_Root}/Window.cpp
     ${Src_Root}/GLContext.cpp
     ${Src_Root}/Engine.cpp

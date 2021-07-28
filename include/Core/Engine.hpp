@@ -2,6 +2,7 @@
 #define SD_ENGINE_HPP
 
 #include "Core/Window.hpp"
+#include "Core/LayerStack.hpp"
 
 namespace sd {
 
@@ -24,12 +25,14 @@ class SD_API Engine {
     Engine();
     ~Engine();
 
-    void processEvent(const SDL_Event &event);
-    void tick();
+    void onEventPoll(const SDL_Event &event);
+
+    void tick(float dt);
     void render();
 
     bool m_isInit;
     Window m_window;
+    LayerStack m_layers;
 };
 
 }  // namespace sd

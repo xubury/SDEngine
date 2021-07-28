@@ -24,7 +24,7 @@ class FpsLimiter {
 
     float m_fps;
     float m_maxFps;
-    float m_frameTime;
+    uint32_t m_frameTicks;
     uint32_t m_startTicks;
 };
 

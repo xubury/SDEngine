@@ -30,7 +30,7 @@ bool Engine::create() {
     return true;
 }
 
-void Engine::processEvent(const SDL_Event &event) {
+void Engine::onEventPoll(const SDL_Event &event) {
     switch (event.type) {
         case SDL_QUIT:
             m_window.setShouldClose(true);
@@ -60,24 +60,46 @@ void Engine::run() {
     FpsLimiter fpsLimiter;
     fpsLimiter.init(60);
     SDL_Event event;
+    uint32_t lastTicks = SDL_GetTicks();
     while (!m_window.shouldClose()) {
         fpsLimiter.begin();
 
         while (m_window.pollEvent(event)) {
-            processEvent(event);
+            onEventPoll(event);
+            for (auto &layer : m_layers) {
+                layer->onEventPoll(event);
+            }
         }
-        tick();
+        for (auto &layer : m_layers) {
+            layer->onEventProcess();
+        }
+
+        uint32_t newTicks = SDL_GetTicks();
+        tick(newTicks - lastTicks);
+        lastTicks = newTicks;
+
         render();
 
         fpsLimiter.end();
     }
 }
 
-void Engine::tick() { InputManager::instance().tick(); }
+void Engine::tick(float dt) {
+    InputManager::instance().tick();
+
+    for (auto &layer : m_layers) {
+        layer->tick(dt);
+    }
+}
 
 void Engine::render() {
     glClearColor(0.1, 0.2, 0.3, 1);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    for (auto &layer : m_layers) {
+        layer->render();
+    }
+
     m_window.swapBuffer();
 }
 

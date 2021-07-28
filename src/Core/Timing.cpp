@@ -22,8 +22,8 @@ float FpsLimiter::end() {
 }
 
 void FpsLimiter::calculateFps() {
-    m_frameTime = SDL_GetTicks() - m_startTicks;
-    m_fps = 1000.f / m_frameTime;
+    m_frameTicks = SDL_GetTicks() - m_startTicks;
+    m_fps = 1000.f / m_frameTicks;
 }
 
 }  // namespace sd
