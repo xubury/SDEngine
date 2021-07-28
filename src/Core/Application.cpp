@@ -1,4 +1,4 @@
-#include "Core/Engine.hpp"
+#include "Core/Application.hpp"
 #include "Core/Log.hpp"
 #include "Core/InputManager.hpp"
 #include "Core/Timing.hpp"
@@ -6,11 +6,15 @@
 
 namespace sd {
 
-Engine::Engine() : m_isInit(false) {}
+Application *Application::s_instance = nullptr;
 
-Engine::~Engine() {}
+Application &Application::instance() { return *s_instance; }
 
-bool Engine::create() {
+Application::Application() : m_isInit(false) { s_instance = this; }
+
+Application::~Application() {}
+
+bool Application::init() {
     std::string debugPath = "Debug.txt";
     Log::init(debugPath);
     SD_CORE_INFO("Debug info is output to: {}", debugPath);
@@ -30,7 +34,7 @@ bool Engine::create() {
     return true;
 }
 
-void Engine::onEventPoll(const SDL_Event &event) {
+void Application::onEventPoll(const SDL_Event &event) {
     switch (event.type) {
         case SDL_QUIT:
             m_window.setShouldClose(true);
@@ -52,7 +56,7 @@ void Engine::onEventPoll(const SDL_Event &event) {
     }
 }
 
-void Engine::run() {
+void Application::run() {
     if (!m_isInit) {
         return;
     }
@@ -84,7 +88,7 @@ void Engine::run() {
     }
 }
 
-void Engine::tick(float dt) {
+void Application::tick(float dt) {
     InputManager::instance().tick();
 
     for (auto &layer : m_layers) {
@@ -92,7 +96,7 @@ void Engine::tick(float dt) {
     }
 }
 
-void Engine::render() {
+void Application::render() {
     glClearColor(0.1, 0.2, 0.3, 1);
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -107,7 +111,7 @@ void Engine::render() {
     m_window.swapBuffer();
 }
 
-void Engine::destroy() {
+void Application::destroy() {
     m_window.destroy();
     SDL_Quit();
 }

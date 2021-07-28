@@ -20,7 +20,7 @@ class SD_API InputManager {
     bool isMousePressed(uint8_t button);
 
    private:
-    friend class Engine;
+    friend class Application;
     void tick();
 
     void pressKey(SDL_Keycode keycode);

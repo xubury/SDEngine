@@ -6,24 +6,24 @@
 
 namespace sd {
 
-class SD_API Engine {
+class SD_API Application {
    public:
-    static Engine &instance() {
-        static Engine s_instance;
-        return s_instance;
-    }
+    static Application &instance();
 
-    Engine(const Engine &application) = delete;
-    Engine &operator=(const Engine &application) = delete;
+    Application(const Application &application) = delete;
+    Application &operator=(const Application &application) = delete;
 
-    bool create();
+    bool init();
     void destroy();
 
     void run();
 
+   protected:
+    Application();
+    ~Application();
+
    private:
-    Engine();
-    ~Engine();
+    static Application *s_instance;
 
     void onEventPoll(const SDL_Event &event);
 

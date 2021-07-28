@@ -13,14 +13,15 @@ endif()
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)
 
 add_subdirectory(src/Core)
+
 add_subdirectory(src/Graphics)
 
-add_executable(SDEngine src/main.cpp)
+add_executable(Simple2DApp Apps/Simple2D/src/Simple2DApp.cpp)
+target_include_directories(Simple2DApp PUBLIC Apps/Simple2D/include)
 
-set_property(TARGET SDEngine PROPERTY CXX_STANDARD 17)
+set_property(TARGET Simple2DApp PROPERTY CXX_STANDARD 17)
 
-target_compile_options(SDEngine PUBLIC  -Wall -Wextra -Wundef -pedantic)
+target_compile_options(Simple2DApp PUBLIC  -Wall -Wextra -Wundef -pedantic)
 
-target_link_libraries(SDEngine sd-graphics)
+target_link_libraries(Simple2DApp PUBLIC sd-graphics)
 
-include_directories(include)
