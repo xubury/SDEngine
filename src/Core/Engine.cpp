@@ -1,6 +1,7 @@
 #include "Core/Engine.hpp"
 #include "Core/Log.hpp"
 #include "Core/InputManager.hpp"
+#include "Core/Timing.hpp"
 #include <GL/gl.h>
 
 namespace sd {
@@ -56,13 +57,19 @@ void Engine::run() {
         return;
     }
 
+    FpsLimiter fpsLimiter;
+    fpsLimiter.init(60);
     SDL_Event event;
     while (!m_window.shouldClose()) {
+        fpsLimiter.begin();
+
         while (m_window.pollEvent(event)) {
             processEvent(event);
         }
         tick();
         render();
+
+        fpsLimiter.end();
     }
 }
 
