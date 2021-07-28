@@ -13,6 +13,7 @@ endif()
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)
 
 add_subdirectory(src/Core)
+add_subdirectory(src/Graphics)
 
 add_executable(SDEngine src/main.cpp)
 
@@ -20,6 +21,6 @@ set_property(TARGET SDEngine PROPERTY CXX_STANDARD 17)
 
 target_compile_options(SDEngine PUBLIC  -Wall -Wextra -Wundef -pedantic)
 
-target_link_libraries(SDEngine sd-core)
+target_link_libraries(SDEngine sd-graphics)
 
 include_directories(include)

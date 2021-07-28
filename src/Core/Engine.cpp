@@ -100,6 +100,10 @@ void Engine::render() {
         layer->render();
     }
 
+    for (auto &layer : m_layers) {
+        layer->renderImGui();
+    }
+
     m_window.swapBuffer();
 }
 
