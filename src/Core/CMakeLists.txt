@@ -22,7 +22,8 @@ set(Core_Include
     ${Include_Root}/Window.hpp
     ${Include_Root}/GLContext.hpp
     ${Include_Root}/Application.hpp
-    ${Include_Root}/InputManager.hpp)
+    ${Include_Root}/InputManager.hpp
+    ${Include_Root}/Transform.hpp)
 
 set(Core_Src
     ${Src_Root}/EntryPoint.cpp
@@ -32,7 +33,8 @@ set(Core_Src
     ${Src_Root}/Window.cpp
     ${Src_Root}/GLContext.cpp
     ${Src_Root}/Application.cpp
-    ${Src_Root}/InputManager.cpp)
+    ${Src_Root}/InputManager.cpp
+    ${Src_Root}/Transform.cpp)
 
 add_library(sd-core ${Core_Src})
 
