@@ -1,111 +1,55 @@
+#include <GL/glew.h>
 #include "Graphics/BufferLayout.hpp"
-#include "Core/Assert.hpp"
 
 namespace sd {
 
-static inline uint32_t shaderDataTypeSize(ShaderDataType type) {
+uint32_t getSizeOfType(GLenum type) {
     switch (type) {
-        case ShaderDataType::Float:
-            return 4;
-        case ShaderDataType::Float2:
-            return 4 * 2;
-        case ShaderDataType::Float3:
-            return 4 * 3;
-        case ShaderDataType::Float4:
-            return 4 * 4;
-        case ShaderDataType::Mat3:
-            return 4 * 3 * 3;
-        case ShaderDataType::Mat4:
-            return 4 * 4 * 4;
-        case ShaderDataType::Int:
-            return 4;
-        case ShaderDataType::Int2:
-            return 4 * 2;
-        case ShaderDataType::Int3:
-            return 4 * 3;
-        case ShaderDataType::Int4:
-            return 4 * 4;
-        case ShaderDataType::Bool:
-            return 1;
-        default:
-            SD_CORE_ASSERT(false, "Unknown ShaderDataType!");
+        case GL_FLOAT:
+            return sizeof(GLfloat);
+        case GL_UNSIGNED_INT:
+            return sizeof(GLuint);
+        case GL_UNSIGNED_BYTE:
+            return sizeof(GLbyte);
     }
     return 0;
 }
 
-BufferElement::BufferElement(ShaderDataType type, const std::string &name,
-                             bool normalized)
-    : m_type(type),
-      m_name(name),
-      m_size(shaderDataTypeSize(type)),
-      m_offset(0),
-      m_normalized(normalized) {}
+VertexBufferLayout::VertexBufferLayout(uint32_t instanceStride)
+    : m_stride(0), m_instanceStride(instanceStride) {}
 
-uint32_t BufferElement::getComponentCount() const {
-    switch (m_type) {
-        case ShaderDataType::Float:
-            return 1;
-        case ShaderDataType::Float2:
-            return 2;
-        case ShaderDataType::Float3:
-            return 3;
-        case ShaderDataType::Float4:
-            return 4;
-        case ShaderDataType::Mat3:
-            return 3;  // 3* float3
-        case ShaderDataType::Mat4:
-            return 4;  // 4* float4
-        case ShaderDataType::Int:
-            return 1;
-        case ShaderDataType::Int2:
-            return 2;
-        case ShaderDataType::Int3:
-            return 3;
-        case ShaderDataType::Int4:
-            return 4;
-        case ShaderDataType::Bool:
-            return 1;
-        default:
-            SD_CORE_ASSERT(false, "Unknown ShaderDataType!");
-    }
-    return 0;
+template <>
+void VertexBufferLayout::push<float>(uint32_t count) {
+    m_elements.push_back({GL_FLOAT, count, GL_FALSE});
+    m_stride += count * getSizeOfType(GL_FLOAT);
 }
 
-ShaderDataType BufferElement::getType() const { return m_type; }
-
-uint32_t BufferElement::getSize() const { return m_size; }
-
-size_t BufferElement::getOffset() const { return m_offset; }
-
-bool BufferElement::isNormalized() const { return m_normalized; }
-
-BufferLayout::BufferLayout(std::initializer_list<BufferElement> elements)
-    : m_elements(elements), m_stride(0) {
-    calculateOffsetAndStride();
+template <>
+void VertexBufferLayout::push<uint32_t>(uint32_t count) {
+    m_elements.push_back({GL_UNSIGNED_INT, count, GL_FALSE});
+    m_stride += count * getSizeOfType(GL_UNSIGNED_INT);
 }
 
-void BufferLayout::calculateOffsetAndStride() {
-    size_t offset = 0;
-    for (auto &element : m_elements) {
-        element.m_offset += offset;
-        offset += element.m_size;
-        m_stride += element.m_size;
-    }
-}
-std::vector<BufferElement>::iterator BufferLayout::begin() {
-    return m_elements.begin();
-}
-std::vector<BufferElement>::iterator BufferLayout::end() {
-    return m_elements.end();
+template <>
+void VertexBufferLayout::push<uint8_t>(uint32_t count) {
+    m_elements.push_back({GL_UNSIGNED_BYTE, count, GL_TRUE});
+    m_stride += count * getSizeOfType(GL_UNSIGNED_BYTE);
 }
 
-std::vector<BufferElement>::const_iterator BufferLayout::begin() const {
-    return m_elements.begin();
+void VertexBufferLayout::clear() {
+    m_elements.clear();
+    m_elements.shrink_to_fit();
 }
 
-std::vector<BufferElement>::const_iterator BufferLayout::end() const {
-    return m_elements.end();
+const std::vector<VertexBufferLayoutElement> &VertexBufferLayout::getElements()
+    const {
+    return m_elements;
 }
 
-size_t BufferLayout::getStride() const { return m_stride; }
+uint32_t VertexBufferLayout::getStride() const { return m_stride; }
+
+uint32_t VertexBufferLayout::getInstanceStride() const {
+    return m_instanceStride;
+}
+
 }  // namespace sd

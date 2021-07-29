@@ -2,76 +2,53 @@
 #define SD_BUFFER_LAYEROUT_HPP
 
 #include "Core/Export.hpp"
+#include "Core/Assert.hpp"
 #include <string>
 #include <vector>
+#include <GL/gl.h>
 
 namespace sd {
 
-enum class ShaderDataType {
-    None = 0,
-    Float,
-    Float2,
-    Float3,
-    Float4,
-    Mat3,
-    Mat4,
-    Int,
-    Int2,
-    Int3,
-    Int4,
-    Bool
+struct SD_API VertexBufferLayoutElement {
+    GLenum type;
+    uint32_t count;
+    uint8_t normalized;
 };
 
-class SD_API BufferElement {
+class SD_API VertexBufferLayout {
    public:
-    BufferElement() = default;
+    VertexBufferLayout(unsigned instanceStride = 0);
 
-    BufferElement(ShaderDataType type, const std::string &name,
-                  bool normalized = false);
+    template <typename _t>
+    void push(uint32_t) {
+        SD_CORE_ERROR("Cannot push invalid buffer type!");
+        SD_CORE_ASSERT(false, "Cannot push invalid buffer type!");
+    }
 
-    uint32_t getComponentCount() const;
+    void clear();
 
-    ShaderDataType getType() const;
+    const std::vector<VertexBufferLayoutElement>& getElements() const;
 
-    uint32_t getSize() const;
+    uint32_t getStride() const;
 
-    size_t getOffset() const;
-
-    bool isNormalized() const;
+    uint32_t getInstanceStride() const;
 
    private:
-    friend class BufferLayout;
-
-    ShaderDataType m_type;
-    std::string m_name;
-    uint32_t m_size;
-    size_t m_offset;
-    bool m_normalized;
+    std::vector<VertexBufferLayoutElement> m_elements;
+    uint32_t m_stride;
+    uint32_t m_instanceStride;
 };
 
-class SD_API BufferLayout {
-   public:
-    BufferLayout() = default;
+template <typename T>
+VertexBufferLayout makeLayout(uint32_t count, uint32_t instanceStride = 0) {
+    VertexBufferLayout layout(instanceStride);
+    layout.push<T>(count);
 
-    BufferLayout(std::initializer_list<BufferElement> elements);
+    return layout;
+}
 
-    std::vector<BufferElement>::iterator begin();
-
-    std::vector<BufferElement>::iterator end();
-
-    std::vector<BufferElement>::const_iterator begin() const;
-
-    std::vector<BufferElement>::const_iterator end() const;
-
-    size_t getStride() const;
-
-   private:
-    void calculateOffsetAndStride();
-
-    std::vector<BufferElement> m_elements;
-
-    size_t m_stride;
-};
+uint32_t getSizeOfType(GLenum type);
 
 }  // namespace sd
+
 #endif /* SD_BUFFER_LAYEROUT_HPP */

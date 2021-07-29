@@ -3,6 +3,7 @@
 
 #include "Core/Base.hpp"
 #include "Graphics/Buffer.hpp"
+#include "Graphics/BufferLayout.hpp"
 
 namespace sd {
 
@@ -20,19 +21,17 @@ class SD_API VertexArray {
 
     void unbind() const;
 
-    void addVertexBuffer(const Ref<VertexBuffer> &buffer);
+    void addVertexBuffer(const Ref<VertexBuffer> &buffer,
+                         const VertexBufferLayout &layout, int index = -1);
 
-    void setIndexBuffer(const Ref<IndexBuffer> &buffer);
-
-    const std::vector<Ref<VertexBuffer>> &getVertexBuffers() const;
-
-    const Ref<IndexBuffer> &getIndexBuffer() const;
+    void updateBuffer(size_t index, const void *data, size_t size,
+                      size_t offset = 0);
 
    private:
-    uint32_t m_arrayId;
+    uint32_t m_id;
     uint32_t m_vertexBufferId;
-    std::vector<Ref<VertexBuffer>> m_vertexBuffers;
-    Ref<IndexBuffer> m_indexBuffer;
+    std::vector<Ref<VertexBuffer>> m_buffers;
+    std::vector<VertexBufferLayout> m_layouts;
 };
 
 }  // namespace sd

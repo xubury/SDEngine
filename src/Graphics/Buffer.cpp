@@ -1,81 +1,61 @@
-#include "Graphics/Buffer.hpp"
 #include "GL/glew.h"
+#include "Graphics/Buffer.hpp"
 
 namespace sd {
 
-VertexBuffer::VertexBuffer(const void *vertices, size_t size) : m_size(size) {
-    glCreateBuffers(1, &m_bufferId);
-    glBindBuffer(GL_ARRAY_BUFFER, m_bufferId);
-    glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_DYNAMIC_DRAW);
+GLBuffer::GLBuffer(GLenum type, GLenum io, const void *data, size_t size)
+    : m_type(type), m_io(io), m_data(data), m_size(size) {
+    glGenBuffers(1, &m_id);
+    bind();
+    glBufferData(m_type, m_size, m_data, m_io);
 }
 
-VertexBuffer::~VertexBuffer() { glDeleteBuffers(1, &m_bufferId); }
+GLBuffer::~GLBuffer() { glDeleteBuffers(1, &m_id); }
 
-void VertexBuffer::bind() const { glBindBuffer(GL_ARRAY_BUFFER, m_bufferId); }
-
-void VertexBuffer::unbind() const { glBindBuffer(GL_ARRAY_BUFFER, 0); }
-
-const BufferLayout &VertexBuffer::getLayout() const { return m_layout; }
-
-void VertexBuffer::setLayout(const BufferLayout &layout) { m_layout = layout; }
-
-size_t VertexBuffer::getSize() const { return m_size; }
-
-void VertexBuffer::update(const void *vertices, size_t size) {
-    glBindBuffer(GL_ARRAY_BUFFER, m_bufferId);
-    glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_DYNAMIC_DRAW);
-    m_size = size;
+void GLBuffer::updateData(const void *data, size_t size, size_t offset) {
+    if (size > m_size) {
+        m_size = size;
+        glNamedBufferData(m_id, size, data, m_io);
+    } else {
+        if (size == 0) {
+            size = m_size;
+        }
+        glNamedBufferSubData(m_id, offset, size, data);
+    }
 }
 
-IndexBuffer::IndexBuffer(const uint32_t *indices, size_t count)
-    : m_count(count) {
-    glCreateBuffers(1, &m_bufferId);
-    glBindBuffer(GL_ARRAY_BUFFER, m_bufferId);
-    glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint32_t), indices,
-                 GL_STATIC_DRAW);
+void GLBuffer::bind() const { glBindBuffer(m_type, m_id); }
+
+void GLBuffer::bindBase(GLuint index) const {
+    glBindBufferBase(m_type, index, m_id);
 }
 
-IndexBuffer::~IndexBuffer() { glDeleteBuffers(1, &m_bufferId); }
+void GLBuffer::unbind() const { glBindBuffer(m_type, 0); }
 
-void IndexBuffer::bind() const {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufferId);
-}
+GLuint GLBuffer::id() const { return m_id; }
 
-void IndexBuffer::unbind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
+VertexBuffer::VertexBuffer(const void *data, size_t size, GLenum io)
+    : GLBuffer(GL_ARRAY_BUFFER, io, data, size) {}
 
-size_t IndexBuffer::getCount() const { return m_count; }
+IndexBuffer::IndexBuffer(const uint32_t *data, uint32_t count, GLenum io)
+    : GLBuffer(GL_ELEMENT_ARRAY_BUFFER, io, data, count * sizeof(uint32_t)),
+      m_count(count) {}
 
-void IndexBuffer::update(const uint32_t *indices, size_t count) {
-    glBindBuffer(GL_ARRAY_BUFFER, m_bufferId);
-    glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint32_t), indices,
-                 GL_STATIC_DRAW);
-    m_count = count;
-}
+uint32_t IndexBuffer::getCount() const { return m_count; }
 
 uint32_t UniformBuffer::s_count = 0;
 
-UniformBuffer::UniformBuffer(size_t size) : m_size(size) {
-    glCreateBuffers(1, &m_bufferId);
-    glBindBuffer(GL_UNIFORM_BUFFER, m_bufferId);
-    glBufferData(GL_UNIFORM_BUFFER, size, nullptr, GL_STATIC_DRAW);
-    m_slot = s_count;
-    glBindBufferRange(GL_UNIFORM_BUFFER, m_slot, m_bufferId, 0, size);
+UniformBuffer::UniformBuffer(const void *data, size_t size, GLenum io)
+    : GLBuffer(GL_UNIFORM_BUFFER, io, data, size) {
+    m_base = s_count;
     ++s_count;
 }
 
-UniformBuffer::~UniformBuffer() { glDeleteBuffers(1, &m_bufferId); }
-
-void UniformBuffer::setData(const void *data, size_t offset, size_t size) {
-    bind();
-    glBufferSubData(GL_UNIFORM_BUFFER, offset, size, data);
-}
+uint32_t UniformBuffer::getBindingPoint() const { return m_base; }
 
 void UniformBuffer::bind() const {
-    glBindBuffer(GL_UNIFORM_BUFFER, m_bufferId);
+    GLBuffer::bind();
+    bindBase(m_base);
 }
-
-void UniformBuffer::unbind() const { glBindBuffer(GL_UNIFORM_BUFFER, 0); }
-
-uint32_t UniformBuffer::getBindingPoint() const { return m_slot; }
 
 }  // namespace sd

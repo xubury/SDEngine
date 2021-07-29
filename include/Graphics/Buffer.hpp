@@ -2,84 +2,73 @@
 #define SD_BUFFER_HPP
 
 #include "Core/Export.hpp"
-#include "Graphics/BufferLayout.hpp"
 #include <stdint.h>
+#include <GL/gl.h>
 
 namespace sd {
 
-class SD_API VertexBuffer {
+class SD_API GLBuffer {
    public:
-    VertexBuffer(const void *vertices, size_t size);
+    GLBuffer(const GLBuffer &) = delete;
 
-    ~VertexBuffer();
+    GLBuffer &operator=(const GLBuffer &) = delete;
 
-    VertexBuffer(const VertexBuffer &) = delete;
-
-    VertexBuffer &operator=(const VertexBuffer &) = delete;
+    void updateData(const void *data, size_t size, size_t offset = 0);
 
     void bind() const;
 
+    void bindBase(GLuint index) const;
+
     void unbind() const;
 
-    const BufferLayout &getLayout() const;
+    GLuint id() const;
 
-    void setLayout(const BufferLayout &layout);
+   protected:
+    GLBuffer(GLenum type, GLenum io, const void *data, size_t size);
 
-    size_t getSize() const;
-
-    void update(const void *vertices, size_t size);
+    virtual ~GLBuffer();
 
    private:
-    uint32_t m_bufferId;
-    BufferLayout m_layout;
+    GLuint m_id;
+
+    GLenum m_type;
+    GLenum m_io;
+
+    const void *m_data;
     size_t m_size;
 };
 
-class SD_API IndexBuffer {
+class SD_API VertexBuffer : public GLBuffer {
    public:
-    IndexBuffer(const uint32_t *indices, size_t count);
+    VertexBuffer(const void *data, size_t size, GLenum io);
 
-    ~IndexBuffer();
-
-    IndexBuffer(const IndexBuffer &) = delete;
-
-    IndexBuffer &operator=(const IndexBuffer &) = delete;
-
-    void bind() const;
-
-    void unbind() const;
-
-    size_t getCount() const;
-
-    void update(const uint32_t *indices, size_t count);
-
-   private:
-    uint32_t m_bufferId;
-    size_t m_count;
+    ~VertexBuffer() = default;
 };
 
-class SD_API UniformBuffer {
+class SD_API IndexBuffer : public GLBuffer {
    public:
-    UniformBuffer(size_t size);
+    IndexBuffer(const uint32_t *data, uint32_t count, GLenum io);
 
-    ~UniformBuffer();
+    ~IndexBuffer() = default;
 
-    UniformBuffer(const UniformBuffer &) = delete;
+    uint32_t getCount() const;
 
-    UniformBuffer &operator=(const UniformBuffer &) = delete;
+   private:
+    uint32_t m_count;
+};
 
-    void setData(const void *data, size_t offset, size_t size);
+class SD_API UniformBuffer : public GLBuffer {
+   public:
+    UniformBuffer(const void *data, size_t size, GLenum io);
+
+    ~UniformBuffer() = default;
 
     void bind() const;
-
-    void unbind() const;
 
     uint32_t getBindingPoint() const;
 
    private:
-    uint32_t m_bufferId;
-    size_t m_size;
-    uint32_t m_slot;
+    uint32_t m_base;
     static uint32_t s_count;
 };
 
