@@ -6,13 +6,15 @@ set(Graphics_Include
     ${Include_Root}/Shader.hpp
     ${Include_Root}/BufferLayout.hpp
     ${Include_Root}/Buffer.hpp
-    ${Include_Root}/VertexArray.hpp)
+    ${Include_Root}/VertexArray.hpp
+    ${Include_Root}/Camera.hpp)
 
 set(Graphics_Src
     ${Src_Root}/Shader.cpp
     ${Src_Root}/BufferLayout.cpp
     ${Src_Root}/Buffer.cpp
-    ${Src_Root}/VertexArray.cpp)
+    ${Src_Root}/VertexArray.cpp
+    ${Src_Root}/Camera.cpp)
 
 add_library(sd-graphics ${Graphics_Src})
 
