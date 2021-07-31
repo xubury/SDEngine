@@ -15,6 +15,8 @@ class SD_API Buffer {
 
     Buffer &operator=(const Buffer &) = delete;
 
+    virtual void init() = 0;
+
     virtual void updateData(const void *data, size_t size,
                             size_t offset = 0) = 0;
 
@@ -58,8 +60,6 @@ class SD_API UniformBuffer : virtual public Buffer {
                                      BufferIOType io);
 
     virtual ~UniformBuffer() = default;
-
-    virtual void bind() const = 0;
 
     virtual uint32_t getBindingPoint() const = 0;
 

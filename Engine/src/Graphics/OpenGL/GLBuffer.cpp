@@ -4,13 +4,15 @@
 namespace sd {
 
 GLBuffer::GLBuffer(GLenum type, GLenum io, const void *data, size_t size)
-    : m_type(type), m_io(io), m_data(data), m_size(size) {
+    : m_type(type), m_io(io), m_data(data), m_size(size) {}
+
+GLBuffer::~GLBuffer() { glDeleteBuffers(1, &m_id); }
+
+void GLBuffer::init() {
     glGenBuffers(1, &m_id);
     bind();
     glBufferData(m_type, m_size, m_data, m_io);
 }
-
-GLBuffer::~GLBuffer() { glDeleteBuffers(1, &m_id); }
 
 void GLBuffer::updateData(const void *data, size_t size, size_t offset) {
     if (size > m_size) {

@@ -10,6 +10,8 @@ namespace sd {
 
 class SD_API GLBuffer : virtual public Buffer {
    public:
+    void init() override;
+
     void updateData(const void *data, size_t size, size_t offset) override;
 
     void bind() const override;
@@ -58,9 +60,9 @@ class SD_API GLUniformBuffer : public UniformBuffer, public GLBuffer {
 
     ~GLUniformBuffer() = default;
 
-    void bind() const override;
-
     uint32_t getBindingPoint() const override;
+
+    void bind() const override;
 
    private:
     uint32_t m_base;
