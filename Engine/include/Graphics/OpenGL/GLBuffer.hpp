@@ -4,7 +4,6 @@
 #include "Core/Export.hpp"
 #include "Core/Base.hpp"
 #include "Graphics/Buffer.hpp"
-#include <stdint.h>
 #include <GL/glew.h>
 
 namespace sd {
@@ -36,14 +35,14 @@ class SD_API GLBuffer : virtual public Buffer {
 
 class SD_API GLVertexBuffer : public VertexBuffer, public GLBuffer {
    public:
-    GLVertexBuffer(const void *data, size_t size, GLenum io);
+    GLVertexBuffer(const void *data, size_t size, BufferIOType io);
 
     ~GLVertexBuffer() = default;
 };
 
 class SD_API GLIndexBuffer : public IndexBuffer, public GLBuffer {
    public:
-    GLIndexBuffer(const uint32_t *data, uint32_t count, GLenum io);
+    GLIndexBuffer(const uint32_t *data, uint32_t count, BufferIOType io);
 
     ~GLIndexBuffer() = default;
 
@@ -55,7 +54,7 @@ class SD_API GLIndexBuffer : public IndexBuffer, public GLBuffer {
 
 class SD_API GLUniformBuffer : public UniformBuffer, public GLBuffer {
    public:
-    GLUniformBuffer(const void *data, size_t size, GLenum io);
+    GLUniformBuffer(const void *data, size_t size, BufferIOType io);
 
     ~GLUniformBuffer() = default;
 

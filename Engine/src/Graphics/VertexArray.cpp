@@ -1,5 +1,5 @@
 #include "Graphics/VertexArray.hpp"
-#include "Graphics/Device.hpp"
+#include "Graphics/RendererAPI.hpp"
 #include "Graphics/OpenGL/GLVertexArray.hpp"
 #include "Core/Log.hpp"
 
@@ -7,7 +7,7 @@ namespace sd {
 
 Ref<VertexArray> VertexArray::create() {
     Ref<VertexArray> va;
-    switch (Device::getAPI()) {
+    switch (RendererAPI::getAPI()) {
         case API::OpenGL:
             va = createRef<GLVertexArray>();
             break;

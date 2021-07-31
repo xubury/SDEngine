@@ -10,12 +10,12 @@
 namespace sd {
 
 struct SD_API VertexBufferLayoutElement {
-    DataType type;
+    BufferDataType type;
     uint32_t count;
-    Boolean normalized;
+    bool normalized;
 };
 
-uint32_t getSizeOfType(DataType type);
+uint32_t getSizeOfType(BufferDataType type);
 
 class SD_API VertexBufferLayout {
    public:
@@ -51,20 +51,20 @@ VertexBufferLayout makeLayout(uint32_t count, uint32_t instanceStride = 0) {
 
 template <>
 inline void VertexBufferLayout::push<float>(uint32_t count) {
-    m_elements.push_back({DataType::FLOAT, count, Boolean::FALSE});
-    m_stride += count * getSizeOfType(DataType::FLOAT);
+    m_elements.push_back({BufferDataType::FLOAT, count, false});
+    m_stride += count * getSizeOfType(BufferDataType::FLOAT);
 }
 
 template <>
 inline void VertexBufferLayout::push<uint32_t>(uint32_t count) {
-    m_elements.push_back({DataType::UINT, count, Boolean::FALSE});
-    m_stride += count * getSizeOfType(DataType::UINT);
+    m_elements.push_back({BufferDataType::UINT, count, false});
+    m_stride += count * getSizeOfType(BufferDataType::UINT);
 }
 
 template <>
 inline void VertexBufferLayout::push<uint8_t>(uint32_t count) {
-    m_elements.push_back({DataType::UCHAR, count, Boolean::TRUE});
-    m_stride += count * getSizeOfType(DataType::UCHAR);
+    m_elements.push_back({BufferDataType::UCHAR, count, true});
+    m_stride += count * getSizeOfType(BufferDataType::UCHAR);
 }
 }  // namespace sd
 

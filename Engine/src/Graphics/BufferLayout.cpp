@@ -2,12 +2,12 @@
 
 namespace sd {
 
-uint32_t getSizeOfType(DataType type) {
+uint32_t getSizeOfType(BufferDataType type) {
     switch (type) {
-        case DataType::FLOAT:
-        case DataType::UINT:
+        case BufferDataType::FLOAT:
+        case BufferDataType::UINT:
             return 4;
-        case DataType::UCHAR:
+        case BufferDataType::UCHAR:
             return 1;
         default:
             return 0;

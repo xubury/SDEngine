@@ -1,7 +1,7 @@
 #ifndef SD_TIMING_HPP
 #define SD_TIMING_HPP
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace sd {
 

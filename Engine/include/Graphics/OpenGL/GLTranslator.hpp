@@ -10,15 +10,26 @@ class GLTranslator : public Translator<GLint, GLboolean, GLenum> {
    public:
     static GLTranslator &instance();
 
-    GLboolean translate(Boolean boolean) override;
-
-    GLenum translate(DataType dataType) override;
+    GLenum translate(BufferDataType dataType) override;
 
     GLenum translate(MeshTopology meshType) override;
 
-    GLint translate(BufferType bufferType) override;
-
     GLint translate(BufferIOType ioType) override;
+
+    GLenum translate(TextureType textureType) override;
+
+    GLenum translate(TextureFormat textureFormat) override;
+
+    GLenum translate(TextureFormatType textureFormatType) override;
+
+    GLint translate(TextureFormat textureFormat,
+                    TextureFormatType textureFormatType) override;
+
+    GLint translate(TextureWrap textureWrap) override;
+
+    GLint translate(TextureFilter textureFilter) override;
+
+    GLint translate(TextureMipmapFilter textureMipmapFilter) override;
 };
 
 #ifdef TRANSLATE

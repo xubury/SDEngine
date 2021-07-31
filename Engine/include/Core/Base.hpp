@@ -2,6 +2,7 @@
 #define SD_BASE_HPP
 
 #include <memory>
+#include <cstdint>
 #include "Core/PlatformDetection.hpp"
 
 namespace sd {

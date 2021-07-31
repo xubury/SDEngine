@@ -7,28 +7,16 @@ GLTranslator &GLTranslator::instance() {
     return s_instance;
 }
 
-GLboolean GLTranslator::translate(Boolean boolean) {
-    switch (boolean) {
-        case Boolean::TRUE:
-            return GL_TRUE;
-        case Boolean::FALSE:
-            return GL_FALSE;
-        default:
-            return GL_FALSE;
-    }
-}
-
-GLenum GLTranslator::translate(DataType dataType) {
+GLenum GLTranslator::translate(BufferDataType dataType) {
     switch (dataType) {
-        case DataType::FLOAT:
+        case BufferDataType::FLOAT:
             return GL_FLOAT;
-        case DataType::UINT:
+        case BufferDataType::UINT:
             return GL_UNSIGNED_INT;
-        case DataType::UCHAR:
-            return GL_UNSIGNED_BYTE;
-        default:
+        case BufferDataType::UCHAR:
             return GL_UNSIGNED_BYTE;
     }
+    return GL_INVALID_VALUE;
 }
 
 GLenum GLTranslator::translate(MeshTopology meshType) {
@@ -45,22 +33,8 @@ GLenum GLTranslator::translate(MeshTopology meshType) {
             return GL_QUADS;
         case MeshTopology::SEGMENTS:
             return GL_LINE_STRIP;
-        default:
-            return GL_TRIANGLES;
     }
-}
-
-GLint GLTranslator::translate(BufferType bufferType) {
-    switch (bufferType) {
-        case BufferType::VERTEX:
-            return GL_ARRAY_BUFFER;
-        case BufferType::INDEX:
-            return GL_ELEMENT_ARRAY_BUFFER;
-        case BufferType::UNIFORM:
-            return GL_UNIFORM_BUFFER;
-        default:
-            return 0;
-    }
+    return GL_INVALID_VALUE;
 }
 
 GLint GLTranslator::translate(BufferIOType ioType) {
@@ -69,9 +43,153 @@ GLint GLTranslator::translate(BufferIOType ioType) {
             return GL_STATIC_DRAW;
         case BufferIOType::DYNAMIC:
             return GL_DYNAMIC_DRAW;
-        default:
-            return 0;
     }
+    return GL_INVALID_VALUE;
+}
+
+GLenum GLTranslator::translate(TextureType textureType) {
+    switch (textureType) {
+        case TextureType::TEX_2D:
+            return GL_TEXTURE_2D;
+        case TextureType::TEX_3D:
+            return GL_TEXTURE_3D;
+        case TextureType::TEX_CUBE:
+            return GL_TEXTURE_CUBE_MAP;
+    }
+
+    return GL_INVALID_VALUE;
+}
+
+GLenum GLTranslator::translate(TextureFormat textureFormat) {
+    switch (textureFormat) {
+        case TextureFormat::ALPHA:
+            return GL_RED;
+        case TextureFormat::RG:
+            return GL_RG;
+        case TextureFormat::RGB:
+            return GL_RGB;
+        case TextureFormat::RGBA:
+            return GL_RGBA;
+        case TextureFormat::DEPTH:
+            return GL_DEPTH_COMPONENT;
+        case TextureFormat::STENCIL:
+            return GL_STENCIL_COMPONENTS;
+    }
+    return GL_INVALID_VALUE;
+}
+
+GLenum GLTranslator::translate(TextureFormatType textureFormatType) {
+    switch (textureFormatType) {
+        case TextureFormatType::UBYTE:
+            return GL_UNSIGNED_BYTE;
+        case TextureFormatType::FLOAT:
+            return GL_FLOAT;
+    }
+
+    return GL_INVALID_VALUE;
+}
+
+GLint GLTranslator::translate(TextureFormat textureFormat,
+                              TextureFormatType textureFormatType) {
+    switch (textureFormat) {
+        case TextureFormat::ALPHA: {
+            switch (textureFormatType) {
+                case TextureFormatType::UBYTE:
+                    return GL_R8;
+                case TextureFormatType::FLOAT:
+                    return GL_R32F;
+            }
+            break;
+        }
+
+        case TextureFormat::RG: {
+            switch (textureFormatType) {
+                case TextureFormatType::UBYTE:
+                    return GL_RG8;
+                case TextureFormatType::FLOAT:
+                    return GL_RG32F;
+            }
+            break;
+        }
+
+        case TextureFormat::RGB: {
+            switch (textureFormatType) {
+                case TextureFormatType::UBYTE:
+                    return GL_RGB8;
+                case TextureFormatType::FLOAT:
+                    return GL_RGB32F;
+            }
+            break;
+        }
+
+        case TextureFormat::RGBA: {
+            switch (textureFormatType) {
+                case TextureFormatType::UBYTE:
+                    return GL_RGBA8;
+                case TextureFormatType::FLOAT:
+                    return GL_RGBA32F;
+            }
+            break;
+        }
+
+        case TextureFormat::DEPTH: {
+            switch (textureFormatType) {
+                case TextureFormatType::UBYTE:
+                    return GL_DEPTH_COMPONENT;
+                case TextureFormatType::FLOAT:
+                    return GL_DEPTH_COMPONENT24;
+            }
+            break;
+        }
+
+        case TextureFormat::STENCIL: {
+            return GL_STENCIL_COMPONENTS;
+        }
+    }
+
+    return GL_INVALID_VALUE;
+}
+
+GLint GLTranslator::translate(TextureWrap textureWrap) {
+    switch (textureWrap) {
+        case TextureWrap::EDGE:
+            return GL_CLAMP_TO_EDGE;
+        case TextureWrap::BORDER:
+            return GL_CLAMP_TO_BORDER;
+        case TextureWrap::MIRROR:
+            return GL_MIRRORED_REPEAT;
+        case TextureWrap::REPEAT:
+            return GL_REPEAT;
+        case TextureWrap::MIRROR_EDGE:
+            return GL_MIRROR_CLAMP_TO_EDGE;
+    }
+
+    return GL_INVALID_VALUE;
+}
+
+GLint GLTranslator::translate(TextureFilter textureFilter) {
+    switch (textureFilter) {
+        case TextureFilter::NEAREST:
+            return GL_NEAREST;
+        case TextureFilter::LINEAR:
+            return GL_LINEAR;
+    }
+
+    return GL_INVALID_VALUE;
+}
+
+GLint GLTranslator::translate(TextureMipmapFilter textureMipmapFilter) {
+    switch (textureMipmapFilter) {
+        case TextureMipmapFilter::NEAREST_NEAREST:
+            return GL_NEAREST_MIPMAP_NEAREST;
+        case TextureMipmapFilter::NEAREST_LINEAR:
+            return GL_NEAREST_MIPMAP_LINEAR;
+        case TextureMipmapFilter::LINEAR_NEAREST:
+            return GL_LINEAR_MIPMAP_NEAREST;
+        case TextureMipmapFilter::LINEAR_LINEAR:
+            return GL_LINEAR_MIPMAP_LINEAR;
+    }
+    return GL_INVALID_VALUE;
 }
 
 }  // namespace sd

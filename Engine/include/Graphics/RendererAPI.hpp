@@ -1,9 +1,9 @@
 #ifndef SD_RENDERER_API_HPP
 #define SD_RENDERER_API_HPP
 
-namespace sd {
+#include <cstdint>
 
-#include <stdint.h>
+namespace sd {
 
 enum class MeshTopology {
     POINTS,
@@ -17,7 +17,7 @@ enum class MeshTopology {
 
 enum class TextureType { TEX_2D, TEX_3D, TEX_CUBE };
 
-enum TextureFormatType { UBYTE, FLOAT };
+enum class TextureFormatType { UBYTE, FLOAT };
 
 enum class CullFace { FRONT, BACK, BOTH };
 
@@ -36,18 +36,19 @@ enum class TextureMipmapFilter {
     LINEAR_LINEAR,
 };
 
-enum class DataType { FLOAT, UINT, UCHAR };
-
-enum class Boolean { FALSE, TRUE };
-
-enum class BufferType { VERTEX, INDEX, UNIFORM };
+enum class BufferDataType { FLOAT, UINT, UCHAR };
 
 enum class BufferIOType { STATIC, DYNAMIC };
 
 enum class API { None, OpenGL };
 
+// just a shortcut to Device
 class RendererAPI {
    public:
+    static void init(API api);
+
+    static API getAPI();
+
     static void drawElements(MeshTopology topology, size_t count,
                              size_t offset);
 
@@ -56,6 +57,8 @@ class RendererAPI {
     static void clear();
 
     static void setViewport(int x, int y, int width, int height);
+
+    RendererAPI() = delete;
 
 };  // namespace RendererAPI
 

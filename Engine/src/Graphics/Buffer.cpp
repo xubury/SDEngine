@@ -1,7 +1,6 @@
 #include "Graphics/Buffer.hpp"
-#include "Graphics/Device.hpp"
+#include "Graphics/RendererAPI.hpp"
 #include "Graphics/OpenGL/GLBuffer.hpp"
-#include "Graphics/OpenGL/GLTranslator.hpp"
 #include "Core/Log.hpp"
 
 namespace sd {
@@ -9,9 +8,9 @@ namespace sd {
 Ref<VertexBuffer> VertexBuffer::create(const void *data, size_t size,
                                        BufferIOType io) {
     Ref<VertexBuffer> vb;
-    switch (Device::getAPI()) {
+    switch (RendererAPI::getAPI()) {
         case API::OpenGL:
-            vb = createRef<GLVertexBuffer>(data, size, TRANSLATE(io));
+            vb = createRef<GLVertexBuffer>(data, size, io);
             break;
         case API::None:
         default:
@@ -24,9 +23,9 @@ Ref<VertexBuffer> VertexBuffer::create(const void *data, size_t size,
 Ref<IndexBuffer> IndexBuffer::create(const uint32_t *data, uint32_t count,
                                      BufferIOType io) {
     Ref<IndexBuffer> eb;
-    switch (Device::getAPI()) {
+    switch (RendererAPI::getAPI()) {
         case API::OpenGL:
-            eb = createRef<GLIndexBuffer>(data, count, TRANSLATE(io));
+            eb = createRef<GLIndexBuffer>(data, count, io);
             break;
         case API::None:
         default:
@@ -39,9 +38,9 @@ Ref<IndexBuffer> IndexBuffer::create(const uint32_t *data, uint32_t count,
 Ref<UniformBuffer> UniformBuffer::create(const void *data, size_t size,
                                          BufferIOType io) {
     Ref<UniformBuffer> ub;
-    switch (Device::getAPI()) {
+    switch (RendererAPI::getAPI()) {
         case API::OpenGL:
-            ub = createRef<GLUniformBuffer>(data, size, TRANSLATE(io));
+            ub = createRef<GLUniformBuffer>(data, size, io);
             break;
         case API::None:
         default:

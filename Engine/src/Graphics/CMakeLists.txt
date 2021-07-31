@@ -5,6 +5,7 @@ set(OpenGL_Include
     ${Include_Root}/OpenGL/GLBuffer.hpp
     ${Include_Root}/OpenGL/GLDevice.hpp
     ${Include_Root}/OpenGL/GLShader.hpp
+    ${Include_Root}/OpenGL/GLTexture.hpp
     ${Include_Root}/OpenGL/GLTranslator.hpp
     ${Include_Root}/OpenGL/GLVertexArray.hpp)
 
@@ -12,6 +13,7 @@ set(OpenGL_Src
     ${Src_Root}/OpenGL/GLBuffer.cpp
     ${Src_Root}/OpenGL/GLDevice.cpp
     ${Src_Root}/OpenGL/GLShader.cpp
+    ${Src_Root}/OpenGL/GLTexture.cpp
     ${Src_Root}/OpenGL/GLTranslator.cpp
     ${Src_Root}/OpenGL/GLVertexArray.cpp)
 
@@ -24,6 +26,7 @@ set(Graphics_Include
     ${Include_Root}/Renderer2D.hpp
     ${Include_Root}/RendererAPI.hpp
     ${Include_Root}/Shader.hpp
+    ${Include_Root}/Texture.hpp
     ${Include_Root}/Translator.hpp
     ${Include_Root}/VertexArray.hpp)
 
@@ -36,6 +39,7 @@ set(Graphics_Src
     ${Src_Root}/Renderer2D.cpp
     ${Src_Root}/RendererAPI.cpp
     ${Src_Root}/Shader.cpp
+    ${Src_Root}/Texture.cpp
     ${Src_Root}/VertexArray.cpp)
 
 add_library(sd-graphics ${Graphics_Src})

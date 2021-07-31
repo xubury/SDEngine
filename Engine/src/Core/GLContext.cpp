@@ -44,7 +44,7 @@ bool GLContext::create(SDL_Window* window) {
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
                           GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 #endif
-    Device::init(API::OpenGL);
+    RendererAPI::init(API::OpenGL);
     return true;
 }
 

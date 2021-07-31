@@ -1,4 +1,5 @@
 #include "Graphics/OpenGL/GLBuffer.hpp"
+#include "Graphics/OpenGL/GLTranslator.hpp"
 
 namespace sd {
 
@@ -31,19 +32,21 @@ void GLBuffer::bindBase(uint32_t index) const {
 
 void GLBuffer::unbind() const { glBindBuffer(m_type, 0); }
 
-GLVertexBuffer::GLVertexBuffer(const void *data, size_t size, GLenum io)
-    : GLBuffer(GL_ARRAY_BUFFER, io, data, size) {}
+GLVertexBuffer::GLVertexBuffer(const void *data, size_t size, BufferIOType io)
+    : GLBuffer(GL_ARRAY_BUFFER, TRANSLATE(io), data, size) {}
 
-GLIndexBuffer::GLIndexBuffer(const uint32_t *data, uint32_t count, GLenum io)
-    : GLBuffer(GL_ELEMENT_ARRAY_BUFFER, io, data, count * sizeof(uint32_t)),
+GLIndexBuffer::GLIndexBuffer(const uint32_t *data, uint32_t count,
+                             BufferIOType io)
+    : GLBuffer(GL_ELEMENT_ARRAY_BUFFER, TRANSLATE(io), data,
+               count * sizeof(uint32_t)),
       m_count(count) {}
 
 uint32_t GLIndexBuffer::getCount() const { return m_count; }
 
 uint32_t GLUniformBuffer::s_count = 0;
 
-GLUniformBuffer::GLUniformBuffer(const void *data, size_t size, GLenum io)
-    : GLBuffer(GL_UNIFORM_BUFFER, io, data, size) {
+GLUniformBuffer::GLUniformBuffer(const void *data, size_t size, BufferIOType io)
+    : GLBuffer(GL_UNIFORM_BUFFER, TRANSLATE(io), data, size) {
     m_base = s_count++;
 }
 

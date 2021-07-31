@@ -5,7 +5,7 @@
 #include "Graphics/Camera.hpp"
 #include "Graphics/Device.hpp"
 #include <glm/gtc/type_ptr.hpp>
-#include <stdint.h>
+#include <cstdint>
 
 namespace sd {
 

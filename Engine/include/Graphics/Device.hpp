@@ -8,11 +8,7 @@ namespace sd {
 
 class Device {
    public:
-    static API getAPI();
-
     virtual ~Device() = default;
-
-    static void init(API api);
 
    protected:
     Device(const Device &) = delete;
@@ -35,7 +31,6 @@ class Device {
 
     static Device &instance();
 
-    static API s_api;
     static Scope<Device> s_instance;
 };
 

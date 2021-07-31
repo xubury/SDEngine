@@ -1,5 +1,5 @@
 #include "Graphics/Shader.hpp"
-#include "Graphics/Device.hpp"
+#include "Graphics/RendererAPI.hpp"
 #include "Graphics/OpenGL/GLShader.hpp"
 #include "Core/Log.hpp"
 
@@ -7,7 +7,7 @@ namespace sd {
 
 Ref<Shader> Shader::create() {
     Ref<Shader> shader;
-    switch (Device::getAPI()) {
+    switch (RendererAPI::getAPI()) {
         case API::OpenGL:
             shader = createRef<GLShader>();
             break;

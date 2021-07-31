@@ -1,7 +1,27 @@
-#include "Graphics/Device.hpp"
 #include "Graphics/RendererAPI.hpp"
+#include "Graphics/OpenGL/GLDevice.hpp"
+#include "Core/Log.hpp"
 
 namespace sd {
+
+static API s_api;
+
+void RendererAPI::init(API api) {
+    switch (api) {
+        case API::OpenGL:
+            Device::s_instance = createScope<GLDevice>();
+            break;
+        case API::None:
+        default:
+            SD_CORE_ERROR("Unsupported API!");
+            break;
+    }
+    s_api = api;
+}
+
+API RendererAPI::getAPI() {
+    return s_api;
+}
 
 void RendererAPI::drawElements(MeshTopology topology, size_t count,
                                size_t offset) {
