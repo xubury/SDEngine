@@ -29,4 +29,4 @@ class GLTranslator : public Translator<GLint, GLboolean, GLenum> {
 
 }  // namespace sd
 
-#endif
+#endif /* SD_GL_TRANSLATOR_HPP */

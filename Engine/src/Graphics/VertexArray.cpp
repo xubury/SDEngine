@@ -18,4 +18,5 @@ Ref<VertexArray> VertexArray::create() {
     }
     return va;
 }
+
 }  // namespace sd

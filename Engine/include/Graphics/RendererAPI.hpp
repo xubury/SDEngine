@@ -6,7 +6,7 @@ namespace sd {
 #include <stdint.h>
 
 enum class MeshTopology {
-    POINTS = 1,
+    POINTS,
     LINES,
     TRIANGLES,
     QUADS,
@@ -23,7 +23,7 @@ enum class CullFace { FRONT, BACK, BOTH };
 
 // GL has types for every type of value in diffrent bit depths :c but they
 // also dont work so...
-enum class TextureFormat { ALPHA = 1, RG, RGB, RGBA, DEPTH, STENCIL };
+enum class TextureFormat { ALPHA, RG, RGB, RGBA, DEPTH, STENCIL };
 
 enum class TextureWrap { EDGE, BORDER, MIRROR, REPEAT, MIRROR_EDGE };
 
@@ -44,17 +44,18 @@ enum class BufferType { VERTEX, INDEX, UNIFORM };
 
 enum class BufferIOType { STATIC, DYNAMIC };
 
-enum class API { None = 0, OpenGL = 1 };
+enum class API { None, OpenGL };
 
-namespace RendererAPI {
+class RendererAPI {
+   public:
+    static void drawElements(MeshTopology topology, size_t count,
+                             size_t offset);
 
-void drawElements(MeshTopology topology, size_t count, size_t offset);
+    static void setClearColor(float r, float g, float b, float a);
 
-void setClearColor(float r, float g, float b, float a);
+    static void clear();
 
-void clear();
-
-void setViewport(int x, int y, int width, int height);
+    static void setViewport(int x, int y, int width, int height);
 
 };  // namespace RendererAPI
 

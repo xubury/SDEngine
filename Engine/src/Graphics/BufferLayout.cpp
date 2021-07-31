@@ -1,4 +1,3 @@
-#include <GL/glew.h>
 #include "Graphics/BufferLayout.hpp"
 
 namespace sd {

@@ -4,6 +4,7 @@
 #include "Core/Base.hpp"
 #include "Core/Export.hpp"
 #include "Graphics/Shader.hpp"
+#include <GL/glew.h>
 #include <string>
 #include <glm/glm.hpp>
 #include <unordered_map>
@@ -47,14 +48,12 @@ class SD_API GLShader : public Shader {
     void setUniformBuffer(const std::string& name,
                           const UniformBuffer& buffer) const override;
 
-    uint32_t id() const override { return m_id; }
-
    private:
     static void checkCompileErrors(uint32_t shader, const std::string& type);
 
-    uint32_t m_id;
+    GLuint m_id;
 };
 
 }  // namespace sd
 
-#endif /* SD_SHADER_HPP */
+#endif /* SD_GL_SHADER_HPP */

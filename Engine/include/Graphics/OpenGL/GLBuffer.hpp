@@ -11,11 +11,11 @@ namespace sd {
 
 class SD_API GLBuffer : virtual public Buffer {
    public:
-    void updateData(const void *data, size_t size, size_t offset = 0) override;
+    void updateData(const void *data, size_t size, size_t offset) override;
 
     void bind() const override;
 
-    void bindBase(GLuint index) const override;
+    void bindBase(uint32_t index) const override;
 
     void unbind() const override;
 
@@ -70,4 +70,4 @@ class SD_API GLUniformBuffer : public UniformBuffer, public GLBuffer {
 
 }  // namespace sd
 
-#endif
+#endif /* SD_GL_BUFFER_HPP */

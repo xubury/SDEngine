@@ -8,15 +8,13 @@ namespace sd {
 
 class Device {
    public:
-    static void init(API api);
-
     static API getAPI();
 
-    static Device &instance();
-
-   public:
     virtual ~Device() = default;
 
+    static void init(API api);
+
+   protected:
     Device(const Device &) = delete;
 
     Device &operator=(const Device &) = delete;
@@ -30,10 +28,13 @@ class Device {
 
     virtual void setViewport(int x, int y, int width, int height) = 0;
 
-   protected:
     Device() = default;
 
    private:
+    friend class RendererAPI;
+
+    static Device &instance();
+
     static API s_api;
     static Scope<Device> s_instance;
 };

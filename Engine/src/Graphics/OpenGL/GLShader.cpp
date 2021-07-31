@@ -2,7 +2,6 @@
 #include "Graphics/OpenGL/GLBuffer.hpp"
 #include "Core/Log.hpp"
 #include "Core/Assert.hpp"
-#include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
 #include <sstream>

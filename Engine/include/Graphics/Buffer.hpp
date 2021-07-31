@@ -4,7 +4,6 @@
 #include "Core/Export.hpp"
 #include "Core/Base.hpp"
 #include "Graphics/RendererAPI.hpp"
-#include <stdint.h>
 
 namespace sd {
 
@@ -70,4 +69,4 @@ class SD_API UniformBuffer : virtual public Buffer {
 
 }  // namespace sd
 
-#endif
+#endif /* SD_BUFFER_HPP */

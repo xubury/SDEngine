@@ -115,8 +115,7 @@ void Renderer2D::flush() {
 
     s_data.quadVAO->bind();
 
-    Device::instance().drawElements(MeshTopology::TRIANGLES,
-                                    s_data.quadIndexCnt, 0);
+    RendererAPI::drawElements(MeshTopology::TRIANGLES, s_data.quadIndexCnt, 0);
 }
 
 void Renderer2D::startBatch() {

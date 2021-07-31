@@ -25,7 +25,7 @@ void GLBuffer::updateData(const void *data, size_t size, size_t offset) {
 
 void GLBuffer::bind() const { glBindBuffer(m_type, m_id); }
 
-void GLBuffer::bindBase(GLuint index) const {
+void GLBuffer::bindBase(uint32_t index) const {
     glBindBufferBase(m_type, index, m_id);
 }
 
