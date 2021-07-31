@@ -2,7 +2,8 @@
 #include "Core/Window.hpp"
 #include "Core/Log.hpp"
 #include "Core/Assert.hpp"
-#include "GL/glew.h"
+#include "Graphics/Device.hpp"
+#include <GL/glew.h>
 
 namespace sd {
 #ifdef DEBUG_BUILD
@@ -43,6 +44,7 @@ bool GLContext::create(SDL_Window* window) {
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
                           GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 #endif
+    Device::init(API::OpenGL);
     return true;
 }
 

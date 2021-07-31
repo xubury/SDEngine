@@ -1,21 +1,21 @@
 #ifndef SD_BUFFER_LAYEROUT_HPP
 #define SD_BUFFER_LAYEROUT_HPP
 
-#include "Core/Export.hpp"
-#include "Core/Assert.hpp"
 #include <string>
 #include <vector>
-#include <GL/glew.h>
+#include "Core/Export.hpp"
+#include "Core/Assert.hpp"
+#include "Graphics/RendererAPI.hpp"
 
 namespace sd {
 
 struct SD_API VertexBufferLayoutElement {
-    GLenum type;
+    DataType type;
     uint32_t count;
-    uint8_t normalized;
+    Boolean normalized;
 };
 
-uint32_t getSizeOfType(GLenum type);
+uint32_t getSizeOfType(DataType type);
 
 class SD_API VertexBufferLayout {
    public:
@@ -51,20 +51,20 @@ VertexBufferLayout makeLayout(uint32_t count, uint32_t instanceStride = 0) {
 
 template <>
 inline void VertexBufferLayout::push<float>(uint32_t count) {
-    m_elements.push_back({GL_FLOAT, count, GL_FALSE});
-    m_stride += count * getSizeOfType(GL_FLOAT);
+    m_elements.push_back({DataType::FLOAT, count, Boolean::FALSE});
+    m_stride += count * getSizeOfType(DataType::FLOAT);
 }
 
 template <>
 inline void VertexBufferLayout::push<uint32_t>(uint32_t count) {
-    m_elements.push_back({GL_UNSIGNED_INT, count, GL_FALSE});
-    m_stride += count * getSizeOfType(GL_UNSIGNED_INT);
+    m_elements.push_back({DataType::UINT, count, Boolean::FALSE});
+    m_stride += count * getSizeOfType(DataType::UINT);
 }
 
 template <>
 inline void VertexBufferLayout::push<uint8_t>(uint32_t count) {
-    m_elements.push_back({GL_UNSIGNED_BYTE, count, GL_TRUE});
-    m_stride += count * getSizeOfType(GL_UNSIGNED_BYTE);
+    m_elements.push_back({DataType::UCHAR, count, Boolean::TRUE});
+    m_stride += count * getSizeOfType(DataType::UCHAR);
 }
 }  // namespace sd
 

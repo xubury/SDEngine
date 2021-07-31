@@ -8,7 +8,6 @@
 #include "Graphics/BufferLayout.hpp"
 #include "Graphics/Buffer.hpp"
 #include "Graphics/VertexArray.hpp"
-#include <GL/glew.h>
 
 namespace sd {
 
@@ -45,6 +44,7 @@ bool Application::init() {
 
 void Application::destroy() {
     m_window.destroy();
+    Renderer2D::destory();
     SDL_Quit();
 }
 

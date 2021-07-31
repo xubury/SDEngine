@@ -2,8 +2,8 @@
 #define SD_VERTEX_ARRAY_HPP
 
 #include "Core/Base.hpp"
-#include "Graphics/Buffer.hpp"
 #include "Graphics/BufferLayout.hpp"
+#include "Graphics/Buffer.hpp"
 
 namespace sd {
 
@@ -11,31 +11,27 @@ class SD_API VertexArray {
    public:
     static Ref<VertexArray> create();
 
-    VertexArray();
-
-    ~VertexArray();
+    virtual ~VertexArray() = default;
 
     VertexArray(const VertexArray &) = delete;
 
     VertexArray &operator=(const VertexArray &) = delete;
 
-    void bind() const;
+    virtual void bind() const = 0;
 
-    void unbind() const;
+    virtual void unbind() const = 0;
 
-    void addVertexBuffer(const Ref<VertexBuffer> &buffer,
-                         const VertexBufferLayout &layout, int index = -1);
+    virtual void addVertexBuffer(const Ref<VertexBuffer> &buffer,
+                                 const VertexBufferLayout &layout,
+                                 int index = -1) = 0;
 
-    void setIndexBuffer(const Ref<IndexBuffer> &buffer);
-    void updateBuffer(size_t index, const void *data, size_t size,
-                      size_t offset = 0);
+    virtual void setIndexBuffer(const Ref<IndexBuffer> &buffer) = 0;
 
-   private:
-    uint32_t m_id;
-    std::vector<Ref<VertexBuffer>> m_vertexBuffers;
-    std::vector<VertexBufferLayout> m_layouts;
+    virtual void updateBuffer(size_t index, const void *data, size_t size,
+                              size_t offset = 0) = 0;
 
-    Ref<IndexBuffer> m_indexBuffer;
+   protected:
+    VertexArray() = default;
 };
 
 }  // namespace sd

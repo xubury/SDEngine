@@ -1,6 +1,5 @@
 #include "Core/Window.hpp"
 #include "Core/Log.hpp"
-#include "GL/glew.h"
 
 namespace sd {
 

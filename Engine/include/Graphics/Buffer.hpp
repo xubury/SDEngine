@@ -3,81 +3,69 @@
 
 #include "Core/Export.hpp"
 #include "Core/Base.hpp"
+#include "Graphics/RendererAPI.hpp"
 #include <stdint.h>
-#include <GL/glew.h>
 
 namespace sd {
 
-class SD_API GLBuffer {
+class SD_API Buffer {
    public:
-    GLBuffer(const GLBuffer &) = delete;
+    virtual ~Buffer() = default;
 
-    GLBuffer &operator=(const GLBuffer &) = delete;
+    Buffer(const Buffer &) = delete;
 
-    void updateData(const void *data, size_t size, size_t offset = 0);
+    Buffer &operator=(const Buffer &) = delete;
 
-    void bind() const;
+    virtual void updateData(const void *data, size_t size,
+                            size_t offset = 0) = 0;
 
-    void bindBase(GLuint index) const;
+    virtual void bind() const = 0;
 
-    void unbind() const;
+    virtual void bindBase(uint32_t index) const = 0;
 
-    GLuint id() const;
+    virtual void unbind() const = 0;
 
    protected:
-    GLBuffer(GLenum type, GLenum io, const void *data, size_t size);
-
-    virtual ~GLBuffer();
-
-   private:
-    GLuint m_id;
-
-    GLenum m_type;
-    GLenum m_io;
-
-    const void *m_data;
-    size_t m_size;
+    Buffer() = default;
 };
 
-class SD_API VertexBuffer : public GLBuffer {
+class SD_API VertexBuffer : virtual public Buffer {
    public:
-    static Ref<VertexBuffer> create(const void *data, size_t size, GLenum io);
+    static Ref<VertexBuffer> create(const void *data, size_t size,
+                                    BufferIOType io);
 
-    VertexBuffer(const void *data, size_t size, GLenum io);
+    virtual ~VertexBuffer() = default;
 
-    ~VertexBuffer() = default;
+   protected:
+    VertexBuffer() = default;
 };
 
-class SD_API IndexBuffer : public GLBuffer {
+class SD_API IndexBuffer : virtual public Buffer {
    public:
     static Ref<IndexBuffer> create(const uint32_t *data, uint32_t count,
-                                   GLenum io);
+                                   BufferIOType io);
 
-    IndexBuffer(const uint32_t *data, uint32_t count, GLenum io);
+    virtual ~IndexBuffer() = default;
 
-    ~IndexBuffer() = default;
+    virtual uint32_t getCount() const = 0;
 
-    uint32_t getCount() const;
-
-   private:
-    uint32_t m_count;
+   protected:
+    IndexBuffer() = default;
 };
 
-class SD_API UniformBuffer : public GLBuffer {
+class SD_API UniformBuffer : virtual public Buffer {
    public:
-    static Ref<UniformBuffer> create(const void *data, size_t size, GLenum io);
+    static Ref<UniformBuffer> create(const void *data, size_t size,
+                                     BufferIOType io);
 
-    UniformBuffer(const void *data, size_t size, GLenum io);
+    virtual ~UniformBuffer() = default;
 
-    ~UniformBuffer() = default;
+    virtual void bind() const = 0;
 
-    void bind() const;
+    virtual uint32_t getBindingPoint() const = 0;
 
-    uint32_t getBindingPoint() const;
-
-   private:
-    uint32_t m_base;
-    static uint32_t s_count;
+   protected:
+    UniformBuffer() = default;
 };
 
 }  // namespace sd

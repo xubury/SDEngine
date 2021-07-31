@@ -3,16 +3,16 @@
 
 namespace sd {
 
-uint32_t getSizeOfType(GLenum type) {
+uint32_t getSizeOfType(DataType type) {
     switch (type) {
-        case GL_FLOAT:
-            return sizeof(GLfloat);
-        case GL_UNSIGNED_INT:
-            return sizeof(GLuint);
-        case GL_UNSIGNED_BYTE:
-            return sizeof(GLbyte);
+        case DataType::FLOAT:
+        case DataType::UINT:
+            return 4;
+        case DataType::UCHAR:
+            return 1;
+        default:
+            return 0;
     }
-    return 0;
 }
 
 VertexBufferLayout::VertexBufferLayout(uint32_t instanceStride)

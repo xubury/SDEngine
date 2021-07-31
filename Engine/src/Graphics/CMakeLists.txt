@@ -1,24 +1,42 @@
 set(Include_Root ${PROJECT_SOURCE_DIR}/include/Graphics)
 set(Src_Root ${PROJECT_SOURCE_DIR}/src/Graphics)
 
+set(OpenGL_Include
+    ${Include_Root}/OpenGL/GLBuffer.hpp
+    ${Include_Root}/OpenGL/GLDevice.hpp
+    ${Include_Root}/OpenGL/GLShader.hpp
+    ${Include_Root}/OpenGL/GLTranslator.hpp
+    ${Include_Root}/OpenGL/GLVertexArray.hpp)
+
+set(OpenGL_Src
+    ${Src_Root}/OpenGL/GLBuffer.cpp
+    ${Src_Root}/OpenGL/GLDevice.cpp
+    ${Src_Root}/OpenGL/GLShader.cpp
+    ${Src_Root}/OpenGL/GLTranslator.cpp
+    ${Src_Root}/OpenGL/GLVertexArray.cpp)
 
 set(Graphics_Include
-    ${Include_Root}/Shader.hpp
-    ${Include_Root}/BufferLayout.hpp
+    ${OpenGL_Include}
     ${Include_Root}/Buffer.hpp
-    ${Include_Root}/VertexArray.hpp
+    ${Include_Root}/BufferLayout.hpp
     ${Include_Root}/Camera.hpp
-    ${Include_Root}/Renderer.hpp
-    ${Include_Root}/Renderer2D.hpp)
+    ${Include_Root}/Device.hpp
+    ${Include_Root}/Renderer2D.hpp
+    ${Include_Root}/RendererAPI.hpp
+    ${Include_Root}/Shader.hpp
+    ${Include_Root}/Translator.hpp
+    ${Include_Root}/VertexArray.hpp)
 
 set(Graphics_Src
-    ${Src_Root}/Shader.cpp
-    ${Src_Root}/BufferLayout.cpp
+    ${OpenGL_Src}
     ${Src_Root}/Buffer.cpp
-    ${Src_Root}/VertexArray.cpp
+    ${Src_Root}/BufferLayout.cpp
     ${Src_Root}/Camera.cpp
-    ${Src_Root}/Renderer.cpp
-    ${Src_Root}/Renderer2D.cpp)
+    ${Src_Root}/Device.cpp
+    ${Src_Root}/Renderer2D.cpp
+    ${Src_Root}/RendererAPI.cpp
+    ${Src_Root}/Shader.cpp
+    ${Src_Root}/VertexArray.cpp)
 
 add_library(sd-graphics ${Graphics_Src})
 
@@ -33,9 +51,6 @@ if(BUILD_SHARED_LIBS)
 endif()
 
 target_link_libraries(sd-graphics PUBLIC sd-core)
-
-target_include_directories(sd-graphics PRIVATE
-    ${PROJECT_SOURCE_DIR}/libs)
 
 target_include_directories(sd-graphics PUBLIC
     ${PROJECT_SOURCE_DIR}/include)

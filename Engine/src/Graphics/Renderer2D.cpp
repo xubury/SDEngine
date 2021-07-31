@@ -3,6 +3,7 @@
 #include "Graphics/Buffer.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/Camera.hpp"
+#include "Graphics/Device.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include <stdint.h>
 
@@ -62,11 +63,11 @@ void Renderer2D::init() {
         offset += 4;
     }
     s_data.quadEBO = IndexBuffer::create(quadIndices.data(), s_data.MAX_INDICES,
-                                         GL_STATIC_DRAW);
+                                         BufferIOType::STATIC);
 
     s_data.quadVBO = VertexBuffer::create(
         s_data.quadVertexBufferBase, s_data.MAX_VERTICES * sizeof(QuadVertex),
-        GL_STATIC_DRAW);
+        BufferIOType::STATIC);
 
     VertexBufferLayout layout;
     layout.push<float>(3);  // position
@@ -83,7 +84,7 @@ void Renderer2D::init() {
     s_data.quadVertexPosition[3] = {-0.5f, 0.5f, 0.0f, 1.0f};
 
     s_data.cameraUBO = UniformBuffer::create(
-        &s_data.cameraBuffer, sizeof(CameraData), GL_STATIC_DRAW);
+        &s_data.cameraBuffer, sizeof(CameraData), BufferIOType::STATIC);
 
     s_data.shader = Shader::create();
     s_data.shader->loadFromFile("assets/shaders/simple.vert",
@@ -113,7 +114,9 @@ void Renderer2D::flush() {
     s_data.shader->setUniformBuffer("Camera", *s_data.cameraUBO);
 
     s_data.quadVAO->bind();
-    glDrawElements(GL_TRIANGLES, s_data.quadIndexCnt, GL_UNSIGNED_INT, 0);
+
+    Device::instance().drawElements(MeshTopology::TRIANGLES,
+                                    s_data.quadIndexCnt, 0);
 }
 
 void Renderer2D::startBatch() {

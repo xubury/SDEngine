@@ -15,60 +15,48 @@ class SD_API Shader {
    public:
     static Ref<Shader> create();
 
-    Shader();
-
-    ~Shader() = default;
+    virtual ~Shader() = default;
 
     Shader(const Shader&) = delete;
 
     Shader& operator=(const Shader&) = delete;
 
-    void compile(const char* vertexCode, const char* fragmentCode,
-                 const char* geometryCode = nullptr);
+    virtual void compile(const char* vertexCode, const char* fragmentCode,
+                         const char* geometryCode = nullptr) = 0;
 
-    void loadFromFile(const std::string& vertexPath,
-                      const std::string& fragmentPath,
-                      const std::string& geometryPath = "");
+    virtual void loadFromFile(const std::string& vertexPath,
+                              const std::string& fragmentPath,
+                              const std::string& geometryPath = "") = 0;
 
-    void bind() const;
+    virtual void bind() const = 0;
 
-    void unbind() const;
+    virtual void unbind() const = 0;
 
-    void setBool(const std::string& name, bool value) const;
+    virtual void setBool(const std::string& name, bool value) const = 0;
 
-    void setInt(const std::string& name, int value) const;
+    virtual void setInt(const std::string& name, int value) const = 0;
 
-    void setFloat(const std::string& name, float value) const;
+    virtual void setFloat(const std::string& name, float value) const = 0;
 
-    void setVec2(const std::string& name, const glm::vec2& value) const;
+    virtual void setVec2(const std::string& name,
+                         const glm::vec2& value) const = 0;
 
-    void setVec3(const std::string& name, const glm::vec3& value) const;
+    virtual void setVec3(const std::string& name,
+                         const glm::vec3& value) const = 0;
 
-    void setVec4(const std::string& name, const glm::vec4& value) const;
+    virtual void setVec4(const std::string& name,
+                         const glm::vec4& value) const = 0;
 
-    void setMat4(const std::string& name, const glm::mat4& value) const;
+    virtual void setMat4(const std::string& name,
+                         const glm::mat4& value) const = 0;
 
-    void setUniformBuffer(const std::string& name,
-                          const UniformBuffer& buffer) const;
+    virtual void setUniformBuffer(const std::string& name,
+                                  const UniformBuffer& buffer) const = 0;
 
-    uint32_t id() const { return m_id; }
+    virtual uint32_t id() const = 0;
 
-   private:
-    static void checkCompileErrors(uint32_t shader, const std::string& type);
-
-    uint32_t m_id;
-};
-
-class SD_API ShaderLibrary {
-   public:
-    void add(const std::string& name);
-
-    Ref<Shader> get(const std::string& name);
-
-    bool exists(const std::string& name) const;
-
-   private:
-    std::unordered_map<std::string, Ref<Shader>> m_library;
+   protected:
+    Shader() = default;
 };
 
 }  // namespace sd
