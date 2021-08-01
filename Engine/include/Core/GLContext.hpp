@@ -2,7 +2,7 @@
 #define SD_GL_CONTEXT_HPP
 
 #include <Core/Export.hpp>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 namespace sd {
 

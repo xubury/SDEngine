@@ -1,7 +1,7 @@
 #ifndef SD_INPUT_MANAGER_HPP
 #define SD_INPUT_MANAGER_HPP
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <unordered_map>
 #include "Core/Export.hpp"
 

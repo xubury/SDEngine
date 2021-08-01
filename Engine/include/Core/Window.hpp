@@ -1,7 +1,7 @@
 #ifndef SD_WINDOW_HPP
 #define SD_WINDOW_HPP
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <string>
 #include "Core/Export.hpp"
 #include "Core/GLContext.hpp"

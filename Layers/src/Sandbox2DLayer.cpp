@@ -3,7 +3,8 @@
 #include "Graphics/Renderer2D.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Texture.hpp"
-#include <SDL2/SDL_image.h>
+#include "Core/Log.hpp"
+#include <SDL_image.h>
 
 SDL_Surface *loadSuface(const std::string &path) {
     // Load image at specified path

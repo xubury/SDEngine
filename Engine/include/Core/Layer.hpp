@@ -2,7 +2,7 @@
 #define SD_LAYER_HPP
 
 #include <string>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "Core/Export.hpp"
 
