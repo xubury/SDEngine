@@ -108,7 +108,7 @@ void Renderer2D::init() {
     s_data.cameraUBO = UniformBuffer::create(
         &s_data.cameraBuffer, sizeof(CameraData), BufferIOType::STATIC);
 
-    s_data.shader = GraphicsManager::shaders().load<Shader>("simple.shader");
+    s_data.shader = GraphicsManager::shaders().load<Shader>("simple.glsl");
 }
 
 void Renderer2D::beginScene(const OrthographicCamera& camera) {
