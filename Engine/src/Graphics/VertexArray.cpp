@@ -1,7 +1,7 @@
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/RendererAPI.hpp"
 #include "Graphics/OpenGL/GLVertexArray.hpp"
-#include "Core/Log.hpp"
+#include "Utils/Log.hpp"
 
 namespace sd {
 

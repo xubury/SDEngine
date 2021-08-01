@@ -4,7 +4,7 @@
 #include <string>
 #include <SDL.h>
 
-#include "Core/Export.hpp"
+#include "Utils/Export.hpp"
 
 namespace sd {
 

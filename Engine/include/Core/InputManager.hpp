@@ -3,7 +3,7 @@
 
 #include <SDL.h>
 #include <unordered_map>
-#include "Core/Export.hpp"
+#include "Utils/Export.hpp"
 
 namespace sd {
 

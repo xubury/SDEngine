@@ -1,5 +1,5 @@
 #include "Core/Application.hpp"
-#include "Core/Log.hpp"
+#include "Utils/Log.hpp"
 #include "Core/InputManager.hpp"
 #include "Core/Timing.hpp"
 #include "Graphics/Camera.hpp"

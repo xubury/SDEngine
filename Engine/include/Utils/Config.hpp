@@ -1,7 +1,7 @@
 #ifndef SD_CONFIG_HPP
 #define SD_CONFIG_HPP
 
-#include "Core/PlatformDetection.hpp"
+#include "Utils/PlatformDetection.hpp"
 
 #if defined(SD_SHARED)
 

@@ -1,8 +1,7 @@
 #include "Core/GLContext.hpp"
 #include "Core/Window.hpp"
-#include "Core/Log.hpp"
-#include "Core/Assert.hpp"
-#include "Graphics/Device.hpp"
+#include "Utils/Assert.hpp"
+#include "Graphics/RendererAPI.hpp"
 #include <GL/glew.h>
 
 namespace sd {

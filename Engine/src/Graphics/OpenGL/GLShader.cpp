@@ -1,8 +1,8 @@
 #include "Graphics/OpenGL/GLShader.hpp"
 #include "Graphics/OpenGL/GLBuffer.hpp"
 #include "Graphics/OpenGL/GLTexture.hpp"
-#include "Core/Log.hpp"
-#include "Core/Assert.hpp"
+#include "Utils/Log.hpp"
+#include "Utils/Assert.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
 #include <sstream>
@@ -23,6 +23,18 @@ static void fileToString(const std::string& path, std::string& string) {
         file.close();
         // convert stream into string
         string = fileStream.str();
+
+        size_t i = string.find("#include");
+        while (i < string.size()) {
+            size_t start = string.find('\n', i) + 1;
+            size_t offset = i + 9;
+            std::string includePath = string.substr(offset, start - offset - 1);
+            std::string include;
+            fileToString(includePath, include);
+            string.erase(i - 1, start - i);
+            string.insert(i, include);
+            i = string.find("#incldue");
+        }
     } catch (std::ifstream::failure& e) {
         SD_CORE_ERROR("File not successfully read!");
     }

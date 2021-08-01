@@ -1,4 +1,5 @@
 #include "Graphics/Renderer2D.hpp"
+#include "Graphics/GraphicsManager.hpp"
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/Buffer.hpp"
 #include "Graphics/Texture.hpp"
@@ -107,9 +108,8 @@ void Renderer2D::init() {
     s_data.cameraUBO = UniformBuffer::create(
         &s_data.cameraBuffer, sizeof(CameraData), BufferIOType::STATIC);
 
-    s_data.shader = Shader::create();
-    s_data.shader->loadFromFile("assets/shaders/simple.vert",
-                                "assets/shaders/simple.frag");
+    s_data.shader =
+        GraphicsManager::instance().shaders().load<Shader>("simple.shader");
 }
 
 void Renderer2D::destory() { delete s_data.quadVertexBufferBase; }

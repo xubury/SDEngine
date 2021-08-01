@@ -1,7 +1,7 @@
 #ifndef SD_GL_CONTEXT_HPP
 #define SD_GL_CONTEXT_HPP
 
-#include <Core/Export.hpp>
+#include "Utils/Export.hpp"
 #include <SDL.h>
 
 namespace sd {

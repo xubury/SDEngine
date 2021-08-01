@@ -3,6 +3,7 @@
 
 #include "Core/Window.hpp"
 #include "Core/LayerStack.hpp"
+#include "Utils/AssetManager.hpp"
 
 namespace sd {
 

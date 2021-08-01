@@ -1,4 +1,3 @@
-find_package(spdlog REQUIRED)
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
@@ -10,12 +9,6 @@ set(Src_Root ${PROJECT_SOURCE_DIR}/src/Core)
 
 set(Core_Include
     ${Include_Root}/EntryPoint.hpp
-    ${Include_Root}/PlatformDetection.hpp
-    ${Include_Root}/Config.hpp
-    ${Include_Root}/Export.hpp
-    ${Include_Root}/Log.hpp
-    ${Include_Root}/Assert.hpp
-    ${Include_Root}/Base.hpp
     ${Include_Root}/Timing.hpp
     ${Include_Root}/Layer.hpp
     ${Include_Root}/LayerStack.hpp
@@ -27,7 +20,6 @@ set(Core_Include
 
 set(Core_Src
     ${Src_Root}/EntryPoint.cpp
-    ${Src_Root}/Log.cpp
     ${Src_Root}/Timing.cpp
     ${Src_Root}/LayerStack.cpp
     ${Src_Root}/Window.cpp
@@ -48,13 +40,7 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-core PUBLIC SD_SHARED)
 endif()
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_link_options(sd-core PUBLIC -mconsole)
-else()
-    target_link_options(sd-core PUBLIC -mwindows)
-endif()
-
-target_link_libraries(sd-core PUBLIC spdlog::spdlog SDL2::Main SDL2::Image GLEW::GLEW glm)
+target_link_libraries(sd-core PUBLIC sd-utils SDL2::Main SDL2::Image GLEW::GLEW glm)
 
 target_include_directories(sd-core PUBLIC
     ${PROJECT_SOURCE_DIR}/include)

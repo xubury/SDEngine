@@ -10,5 +10,6 @@ endif()
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)
 
 add_subdirectory(src/Core)
+add_subdirectory(src/Utils)
 add_subdirectory(src/Graphics)
 

@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <cstdint>
-#include "Core/PlatformDetection.hpp"
+#include "Utils/PlatformDetection.hpp"
 
 namespace sd {
 
@@ -23,21 +23,5 @@ constexpr Ref<T> createRef(Args&&... args) {
 
 }  // namespace sd
 
-#ifdef DEBUG_BUILD
-#if defined(SD_PLATFORM_WINDOWS)
-#define SD_DEBUGBREAK() __debugbreak()
-#elif defined(SD_PLATFORM_LINUX)
-#include <signal.h>
-#define SD_DEBUGBREAK() raise(SIGTRAP)
-#else
-#error "Platform doesn't support debugbreak yet!"
-#endif
-#define SD_ENABLE_ASSERTS
-#else
-#define SD_DEBUGBREAK()
-#endif
-
-#define SD_EXPAND_MACRO(x) x
-#define SD_STRINGIFY_MACRO(x) #x
 
 #endif

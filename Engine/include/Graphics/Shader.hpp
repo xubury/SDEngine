@@ -1,8 +1,8 @@
 #ifndef SD_SHADER_HPP
 #define SD_SHADER_HPP
 
-#include "Core/Base.hpp"
-#include "Core/Export.hpp"
+#include "Utils/Base.hpp"
+#include "Utils/Export.hpp"
 #include <string>
 #include <glm/glm.hpp>
 #include <unordered_map>

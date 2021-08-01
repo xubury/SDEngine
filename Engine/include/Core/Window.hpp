@@ -3,7 +3,7 @@
 
 #include <SDL.h>
 #include <string>
-#include "Core/Export.hpp"
+#include "Utils/Export.hpp"
 #include "Core/GLContext.hpp"
 
 namespace sd {

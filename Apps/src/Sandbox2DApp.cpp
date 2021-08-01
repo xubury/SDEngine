@@ -1,5 +1,5 @@
 #include "Sandbox2DApp.hpp"
-#include "Core/Log.hpp"
+#include "Utils/Log.hpp"
 #include "Core/EntryPoint.hpp"
 #include "Sandbox2DLayer.hpp"
 #include "Graphics/Renderer2D.hpp"
