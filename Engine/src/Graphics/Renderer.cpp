@@ -9,6 +9,13 @@ namespace sd {
 static API s_api;
 
 void Renderer::init(API api) {
+    GraphicsManager::shaders().setRootPath("assets/shaders/");
+    GraphicsManager::shaders().setLoader<ShaderLoader>();
+
+    GraphicsManager::textures().setRootPath("assets/textures/");
+    GraphicsManager::textures().setLoader<TextureLoader>();
+
+    SD_CORE_TRACE("Initializing Renderer...");
     switch (api) {
         case API::OpenGL:
             Device::s_instance = createScope<GLDevice>();
@@ -18,12 +25,6 @@ void Renderer::init(API api) {
             break;
     }
     s_api = api;
-
-    GraphicsManager::shaders().setRootPath("assets/shaders/");
-    GraphicsManager::shaders().setLoader<ShaderLoader>();
-
-    GraphicsManager::textures().setRootPath("assets/textures/");
-    GraphicsManager::textures().setLoader<TextureLoader>();
 
     Renderer2D::init();
 }

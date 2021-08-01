@@ -28,6 +28,7 @@ static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
 #endif
 
 bool GLContext::create(SDL_Window* window) {
+    SD_CORE_TRACE("Initializing GLContext...");
     m_context = SDL_GL_CreateContext(window);
     if (m_context == nullptr) {
         SD_CORE_ERROR("SDL_GL_CreateContext failed: {}", SDL_GetError());

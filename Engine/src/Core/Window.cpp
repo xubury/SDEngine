@@ -7,6 +7,7 @@ Window::Window() : m_shouldClose(false) {}
 
 bool Window::create(const std::string &title, int width, int height,
                     WindowFlag flags) {
+    SD_CORE_TRACE("Initializing window...");
     uint32_t sdlFlags = SDL_WINDOW_OPENGL;
     if (flags & INVISIBLE) {
         sdlFlags |= SDL_WINDOW_HIDDEN;

@@ -52,7 +52,9 @@ class AssetLoader : public AssetLoaderBase {
 
 template <typename ASSET>
 AssetLoader<ASSET>::AssetLoader(AssetManager &manager)
-    : AssetLoaderBase(manager) {}
+    : AssetLoaderBase(manager) {
+    SD_CORE_TRACE("Initializing AssetLoader<{}>...", typeid(ASSET).name());
+}
 
 template <typename ASSET>
 Ref<void> AssetLoader<ASSET>::load(const std::string &filePath) {

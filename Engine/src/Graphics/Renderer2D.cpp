@@ -53,6 +53,7 @@ struct Renderer2DData {
 static Renderer2DData s_data;
 
 void Renderer2D::init() {
+    SD_CORE_TRACE("Initializing Renderer2D...");
     for (int i = 0; i < 4; ++i) {
         s_data.quadVertexBufferBase[i].position = s_data.quadVertexPositions[i];
     }
