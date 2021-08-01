@@ -23,9 +23,19 @@ void GLVertexArray::addVertexBuffer(const Ref<VertexBuffer> &buffer,
     for (const VertexBufferLayoutElement &element : layout.getElements()) {
         glEnableVertexAttribArray(i);
         glVertexAttribDivisor(i, layout.getInstanceStride());
-        glVertexAttribPointer(i, element.count, TRANSLATE(element.type),
-                              element.normalized, layout.getStride(),
-                              (const void *)offset);
+        switch (element.type) {
+            case BufferDataType::FLOAT:
+                glVertexAttribPointer(i, element.count, TRANSLATE(element.type),
+                                      element.normalized, layout.getStride(),
+                                      (const void *)offset);
+                break;
+            case BufferDataType::UCHAR:
+            case BufferDataType::UINT:
+                glVertexAttribIPointer(
+                    i, element.count, TRANSLATE(element.type),
+                    layout.getStride(), (const void *)offset);
+                break;
+        }
         offset += element.count * getSizeOfType(element.type);
         ++i;
     }

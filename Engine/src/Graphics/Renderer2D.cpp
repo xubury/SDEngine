@@ -14,7 +14,7 @@ struct QuadVertex {
     glm::vec3 position;
     glm::vec4 color;
     glm::vec2 texCoord;
-    float texIndex;
+    uint32_t texIndex;
 };
 
 struct CameraData {
@@ -78,10 +78,10 @@ void Renderer2D::init() {
         BufferIOType::STATIC);
 
     VertexBufferLayout layout;
-    layout.push<float>(3);  // position
-    layout.push<float>(4);  // color
-    layout.push<float>(2);  // texCoord
-    layout.push<float>(1);  // texIndex
+    layout.push<float>(3);     // position
+    layout.push<float>(4);     // color
+    layout.push<float>(2);     // texCoord
+    layout.push<uint32_t>(1);  // texIndex
 
     s_data.quadVAO = VertexArray::create();
     s_data.quadVAO->addVertexBuffer(s_data.quadVBO, layout);
