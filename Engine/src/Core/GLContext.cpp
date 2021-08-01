@@ -36,6 +36,7 @@ bool GLContext::create(SDL_Window* window) {
     }
     if (glewInit() != GLEW_OK) {
         SD_CORE_ERROR("glewInit failed!");
+        return false;
     }
 #ifdef DEBUG_BUILD
     glEnable(GL_DEBUG_OUTPUT);
@@ -45,6 +46,9 @@ bool GLContext::create(SDL_Window* window) {
                           GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 #endif
     RendererAPI::init(API::OpenGL);
+    // Blend
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     return true;
 }
 

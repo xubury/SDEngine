@@ -2,11 +2,14 @@
 #define SD_RENDERER_2D_HPP
 
 #include "Core/Export.hpp"
+#include "Core/Base.hpp"
 #include <glm/glm.hpp>
 
 namespace sd {
 
 class OrthographicCamera;
+
+class Texture;
 
 class SD_API Renderer2D {
    public:
@@ -21,6 +24,9 @@ class SD_API Renderer2D {
     static void endScene();
 
     static void drawQuad(const glm::mat4 &transform, const glm::vec4 &color);
+
+    static void drawTexture(const glm::mat4 &transform,
+                            const Ref<Texture> &texture);
 };
 
 }  // namespace sd

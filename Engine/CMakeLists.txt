@@ -5,9 +5,6 @@ project(SDEngine VERSION 0.1.0)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(DEBUG_BUILD)
-    add_link_options(-mconsole)
-else()
-    add_link_options(-mwindows)
 endif()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)

@@ -49,7 +49,7 @@ Ref<UniformBuffer> UniformBuffer::create(const void *data, size_t size,
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
-    if (ub)ub->init();
+    if (ub) ub->init();
     return ub;
 }
 

@@ -44,7 +44,8 @@ class SD_API GLShader : public Shader {
                  const glm::vec4& value) const override;
     void setMat4(const std::string& name,
                  const glm::mat4& value) const override;
-
+    void setTexture(const std::string& name, const Texture& texture,
+                    int index) const override;
     void setUniformBuffer(const std::string& name,
                           const UniformBuffer& buffer) const override;
 

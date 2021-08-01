@@ -2,12 +2,12 @@
 #include "Core/Log.hpp"
 #include "Core/InputManager.hpp"
 #include "Core/Timing.hpp"
-#include "Graphics/Renderer2D.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/BufferLayout.hpp"
 #include "Graphics/Buffer.hpp"
 #include "Graphics/VertexArray.hpp"
+#include <SDL_image.h>
 
 namespace sd {
 
@@ -16,35 +16,33 @@ Application *Application::s_instance = nullptr;
 
 Application &Application::instance() { return *s_instance; }
 
-Application::Application() : m_isInit(false) { s_instance = this; }
-
-Application::~Application() {}
-
-bool Application::init() {
+Application::Application() {
     std::string debugPath = "Debug.txt";
     Log::init(debugPath);
     SD_CORE_INFO("Debug info is output to: {}", debugPath);
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         SD_CORE_ERROR("SDL_Init failed: {}", SDL_GetError());
-        return false;
+        exit(-1);
     }
     if (SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1) != 0) {
         SD_CORE_ERROR("SDL_GL_SetAttribute Failed: {}", SDL_GetError());
-        return false;
+        exit(-1);
     }
-    if (!m_window.create("SD Engine", 800, 600, Window::WINDOWED)) {
-        return false;
+    if (IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF) == 0) {
+        SD_CORE_ERROR("IMG_Init Failed: {}", IMG_GetError());
+        exit(-1);
     }
-    Renderer2D::init();
 
-    m_isInit = true;
-    return true;
+    if (!m_window.create("SD Engine", 800, 600, Window::WINDOWED)) {
+        exit(-1);
+    }
+
+    s_instance = this;
 }
 
-void Application::destroy() {
+Application::~Application() {
     m_window.destroy();
-    Renderer2D::destory();
     SDL_Quit();
 }
 
@@ -73,10 +71,6 @@ void Application::onEventPoll(const SDL_Event &event) {
 }
 
 void Application::run() {
-    if (!m_isInit) {
-        return;
-    }
-
     FpsLimiter fpsLimiter;
     fpsLimiter.init(60);
     SDL_Event event;

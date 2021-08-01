@@ -15,6 +15,7 @@ class GLTexture : public Texture {
 
     ~GLTexture();
 
+    uint32_t id() const override;
     void bind() const override;
     void unbind() const override;
 
@@ -23,6 +24,8 @@ class GLTexture : public Texture {
     void setWrap(TextureWrap wrap) override;
     void setFilter(TextureFilter filter) override;
     void setMipmapFilter(TextureMipmapFilter mipmapFilter) override;
+
+    void genareteMipmap() const override;
 
    protected:
     void init() override;

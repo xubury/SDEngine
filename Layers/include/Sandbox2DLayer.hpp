@@ -2,10 +2,14 @@
 #define SANDBOX_2D_LAYER_HPP
 
 #include "Core/Layer.hpp"
+
 class Sandbox2DLayer : public sd::Layer {
    public:
     Sandbox2DLayer();
+
     ~Sandbox2DLayer() = default;
+
+    void onAttach() override;
 
     void onTick(float dt) override;
 

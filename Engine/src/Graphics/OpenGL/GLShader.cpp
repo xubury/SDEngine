@@ -1,5 +1,6 @@
 #include "Graphics/OpenGL/GLShader.hpp"
 #include "Graphics/OpenGL/GLBuffer.hpp"
+#include "Graphics/OpenGL/GLTexture.hpp"
 #include "Core/Log.hpp"
 #include "Core/Assert.hpp"
 #include <glm/gtc/type_ptr.hpp>
@@ -30,8 +31,8 @@ static void fileToString(const std::string& path, std::string& string) {
 GLShader::GLShader() : m_id(0) {}
 
 void GLShader::loadFromFile(const std::string& vertexPath,
-                          const std::string& fragmentPath,
-                          const std::string& geometryPath) {
+                            const std::string& fragmentPath,
+                            const std::string& geometryPath) {
     std::string vertexCode;
     std::string fragmentCode;
     fileToString(vertexPath, vertexCode);
@@ -45,7 +46,7 @@ void GLShader::loadFromFile(const std::string& vertexPath,
 }
 
 void GLShader::compile(const char* vertexCode, const char* fragmentCode,
-                     const char* geometryCode) {
+                       const char* geometryCode) {
     // compile shaders
     // vertex shader
     uint32_t vertex = glCreateShader(GL_VERTEX_SHADER);
@@ -132,8 +133,15 @@ void GLShader::setMat4(const std::string& name, const glm::mat4& value) const {
                        glm::value_ptr(value));
 }
 
+void GLShader::setTexture(const std::string& name, const Texture& texture,
+                          int index) const {
+    setInt(name, index);
+    glActiveTexture(GL_TEXTURE0 + index);
+    texture.bind();
+}
+
 void GLShader::setUniformBuffer(const std::string& name,
-                              const UniformBuffer& buffer) const {
+                                const UniformBuffer& buffer) const {
     buffer.bind();
     uint32_t index = glGetUniformBlockIndex(m_id, name.c_str());
     if (index != GL_INVALID_INDEX)

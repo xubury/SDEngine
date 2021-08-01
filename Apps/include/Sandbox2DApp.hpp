@@ -5,7 +5,8 @@
 
 class Sandbox2DApp : public sd::Application {
    public:
-    Sandbox2DApp();
+    void init() override;
+    void destroy() override;
 };
 
 #endif /* SIMPLE2DAPP_H */

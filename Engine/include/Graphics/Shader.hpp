@@ -9,6 +9,7 @@
 
 namespace sd {
 
+class Texture;
 class UniformBuffer;
 
 class SD_API Shader {
@@ -49,6 +50,9 @@ class SD_API Shader {
 
     virtual void setMat4(const std::string& name,
                          const glm::mat4& value) const = 0;
+
+    virtual void setTexture(const std::string& name,
+                            const Texture& texture, int index) const = 0;
 
     virtual void setUniformBuffer(const std::string& name,
                                   const UniformBuffer& buffer) const = 0;

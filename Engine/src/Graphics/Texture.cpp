@@ -2,8 +2,10 @@
 #include "Graphics/RendererAPI.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
 #include "Graphics/OpenGL/GLTexture.hpp"
+#include "Core/Log.hpp"
 
 namespace sd {
+
 Ref<Texture> Texture::create(int width, int height, TextureType type,
                              TextureFormat format, TextureFormatType formatType,
                              TextureWrap wrap, TextureFilter filter,
@@ -15,8 +17,9 @@ Ref<Texture> Texture::create(int width, int height, TextureType type,
             texture =
                 createRef<GLTexture>(width, height, type, format, formatType,
                                      wrap, filter, mipmapFilter, data);
+            break;
         case API::None:
-        default:
+            SD_CORE_ERROR("Unsupported API!");
             break;
     }
 
@@ -40,5 +43,9 @@ Texture::Texture(int width, int height, TextureType type, TextureFormat format,
       m_filter(filter),
       m_mipmapFilter(mipmapFilter),
       m_data(data) {}
+
+bool Texture::operator==(const Texture &other) const {
+    return id() == other.id();
+}
 
 }  // namespace sd

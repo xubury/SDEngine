@@ -13,8 +13,9 @@ class SD_API Application {
     Application(const Application &application) = delete;
     Application &operator=(const Application &application) = delete;
 
-    bool init();
-    void destroy();
+    virtual void init() = 0;
+
+    virtual void destroy() = 0;
 
     void pushLayer(Ref<Layer> layer);
 
@@ -32,7 +33,6 @@ class SD_API Application {
     void tick(float dt);
     void render();
 
-    bool m_isInit;
     Window m_window;
     LayerStack m_layers;
 };

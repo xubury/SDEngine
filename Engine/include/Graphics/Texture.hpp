@@ -27,6 +27,12 @@ class SD_API Texture {
     virtual void setFilter(TextureFilter filter) = 0;
     virtual void setMipmapFilter(TextureMipmapFilter filter) = 0;
 
+    virtual void genareteMipmap() const = 0;
+
+    virtual uint32_t id() const = 0;
+
+    bool operator==(const Texture &other) const;
+
    protected:
     Texture(int width, int height, TextureType type, TextureFormat format,
             TextureFormatType formatType, TextureWrap wrap,

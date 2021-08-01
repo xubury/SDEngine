@@ -12,16 +12,13 @@ void RendererAPI::init(API api) {
             Device::s_instance = createScope<GLDevice>();
             break;
         case API::None:
-        default:
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
     s_api = api;
 }
 
-API RendererAPI::getAPI() {
-    return s_api;
-}
+API RendererAPI::getAPI() { return s_api; }
 
 void RendererAPI::drawElements(MeshTopology topology, size_t count,
                                size_t offset) {

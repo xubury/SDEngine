@@ -26,6 +26,8 @@ void GLTexture::init() {
     setMipmapFilter(m_mipmapFilter);
 }
 
+uint32_t GLTexture::id() const { return gl_id; }
+
 void GLTexture::bind() const { glBindTexture(gl_type, gl_id); }
 
 void GLTexture::unbind() const { glBindTexture(gl_type, 0); }
@@ -55,6 +57,7 @@ void GLTexture::setPixels(int width, int height, const void *data) {
 
             break;
     }
+    genareteMipmap();
 }
 
 void GLTexture::setBorderColor(const void *color) {
@@ -93,6 +96,11 @@ void GLTexture::setMipmapFilter(TextureMipmapFilter mipmapFilter) {
     bind();
     GLint glMipmapFilter = TRANSLATE(m_mipmapFilter);
     glTexParameteri(gl_type, GL_TEXTURE_MIN_FILTER, glMipmapFilter);
+}
+
+void GLTexture::genareteMipmap() const {
+    bind();
+    glGenerateMipmap(gl_type);
 }
 
 }  // namespace sd
