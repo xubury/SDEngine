@@ -6,9 +6,6 @@
 
 sd::Application *sd::createApp() { return new Sandbox2DApp; }
 
-void Sandbox2DApp::init() {
-    sd::Renderer2D::init();
-    pushLayer(sd::createRef<Sandbox2DLayer>());
-}
+void Sandbox2DApp::init() { pushLayer(sd::createRef<Sandbox2DLayer>()); }
 
-void Sandbox2DApp::destroy() { sd::Renderer2D::destory(); }
+void Sandbox2DApp::destroy() {}

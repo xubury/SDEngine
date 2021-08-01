@@ -43,7 +43,7 @@ enum class BufferIOType { STATIC, DYNAMIC };
 enum class API { None, OpenGL };
 
 // just a shortcut to Device
-class RendererAPI {
+class Renderer {
    public:
     static void init(API api);
 
@@ -58,9 +58,9 @@ class RendererAPI {
 
     static void setViewport(int x, int y, int width, int height);
 
-    RendererAPI() = delete;
+    Renderer() = delete;
 
-};  // namespace RendererAPI
+};  // namespace Renderer
 
 }  // namespace sd
 

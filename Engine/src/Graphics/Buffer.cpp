@@ -1,5 +1,5 @@
 #include "Graphics/Buffer.hpp"
-#include "Graphics/RendererAPI.hpp"
+#include "Graphics/Renderer.hpp"
 #include "Graphics/OpenGL/GLBuffer.hpp"
 #include "Utils/Log.hpp"
 
@@ -8,7 +8,7 @@ namespace sd {
 Ref<VertexBuffer> VertexBuffer::create(const void *data, size_t size,
                                        BufferIOType io) {
     Ref<VertexBuffer> vb;
-    switch (RendererAPI::getAPI()) {
+    switch (Renderer::getAPI()) {
         case API::OpenGL:
             vb = createRef<GLVertexBuffer>(data, size, io);
             break;
@@ -24,7 +24,7 @@ Ref<VertexBuffer> VertexBuffer::create(const void *data, size_t size,
 Ref<IndexBuffer> IndexBuffer::create(const uint32_t *data, uint32_t count,
                                      BufferIOType io) {
     Ref<IndexBuffer> eb;
-    switch (RendererAPI::getAPI()) {
+    switch (Renderer::getAPI()) {
         case API::OpenGL:
             eb = createRef<GLIndexBuffer>(data, count, io);
             break;
@@ -40,7 +40,7 @@ Ref<IndexBuffer> IndexBuffer::create(const uint32_t *data, uint32_t count,
 Ref<UniformBuffer> UniformBuffer::create(const void *data, size_t size,
                                          BufferIOType io) {
     Ref<UniformBuffer> ub;
-    switch (RendererAPI::getAPI()) {
+    switch (Renderer::getAPI()) {
         case API::OpenGL:
             ub = createRef<GLUniformBuffer>(data, size, io);
             break;

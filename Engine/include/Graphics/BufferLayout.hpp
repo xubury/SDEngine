@@ -5,7 +5,7 @@
 #include <vector>
 #include "Utils/Export.hpp"
 #include "Utils/Assert.hpp"
-#include "Graphics/RendererAPI.hpp"
+#include "Graphics/Renderer.hpp"
 
 namespace sd {
 

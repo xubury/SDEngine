@@ -20,6 +20,7 @@ struct QuadVertex {
 
 struct CameraData {
     glm::mat4 viewProjection;
+    glm::vec3 viewPos;
 };
 
 struct Renderer2DData {
@@ -34,7 +35,7 @@ struct Renderer2DData {
     Ref<Shader> shader;
 
     uint32_t quadIndexCnt = 0;
-    QuadVertex* quadVertexBufferBase = nullptr;
+    std::array<QuadVertex, MAX_VERTICES> quadVertexBufferBase;
     QuadVertex* quadVertexBufferPtr = nullptr;
 
     std::array<glm::vec4, 4> quadVertexPositions;
@@ -52,8 +53,6 @@ struct Renderer2DData {
 static Renderer2DData s_data;
 
 void Renderer2D::init() {
-    s_data.quadVertexBufferBase = new QuadVertex[s_data.MAX_VERTICES];
-
     for (int i = 0; i < 4; ++i) {
         s_data.quadVertexBufferBase[i].position = s_data.quadVertexPositions[i];
     }
@@ -75,8 +74,8 @@ void Renderer2D::init() {
                                          BufferIOType::STATIC);
 
     s_data.quadVBO = VertexBuffer::create(
-        s_data.quadVertexBufferBase, s_data.MAX_VERTICES * sizeof(QuadVertex),
-        BufferIOType::STATIC);
+        s_data.quadVertexBufferBase.data(),
+        s_data.MAX_VERTICES * sizeof(QuadVertex), BufferIOType::STATIC);
 
     VertexBufferLayout layout;
     layout.push<float>(3);     // position
@@ -108,14 +107,12 @@ void Renderer2D::init() {
     s_data.cameraUBO = UniformBuffer::create(
         &s_data.cameraBuffer, sizeof(CameraData), BufferIOType::STATIC);
 
-    s_data.shader =
-        GraphicsManager::instance().shaders().load<Shader>("simple.shader");
+    s_data.shader = GraphicsManager::shaders().load<Shader>("simple.shader");
 }
-
-void Renderer2D::destory() { delete s_data.quadVertexBufferBase; }
 
 void Renderer2D::beginScene(const OrthographicCamera& camera) {
     s_data.cameraBuffer.viewProjection = camera.getViewPorjection();
+    s_data.cameraBuffer.viewPos = camera.getWorldPosition();
     s_data.cameraUBO->updateData(&s_data.cameraBuffer, sizeof(CameraData));
     startBatch();
 }
@@ -128,8 +125,8 @@ void Renderer2D::flush() {
     }
 
     size_t dataSize = (uint8_t*)s_data.quadVertexBufferPtr -
-                      (uint8_t*)s_data.quadVertexBufferBase;
-    s_data.quadVBO->updateData(s_data.quadVertexBufferBase, dataSize);
+                      (uint8_t*)s_data.quadVertexBufferBase.data();
+    s_data.quadVBO->updateData(s_data.quadVertexBufferBase.data(), dataSize);
 
     s_data.shader->bind();
     s_data.shader->setUniformBuffer("Camera", *s_data.cameraUBO);
@@ -142,13 +139,13 @@ void Renderer2D::flush() {
 
     s_data.quadVAO->bind();
 
-    RendererAPI::drawElements(MeshTopology::TRIANGLES, s_data.quadIndexCnt, 0);
+    Renderer::drawElements(MeshTopology::TRIANGLES, s_data.quadIndexCnt, 0);
 }
 
 void Renderer2D::startBatch() {
     s_data.quadIndexCnt = 0;
     s_data.textureSlotIndex = 1;
-    s_data.quadVertexBufferPtr = s_data.quadVertexBufferBase;
+    s_data.quadVertexBufferPtr = s_data.quadVertexBufferBase.data();
 }
 
 void Renderer2D::nextBatch() {

@@ -24,7 +24,7 @@ set(Graphics_Include
     ${Include_Root}/Camera.hpp
     ${Include_Root}/Device.hpp
     ${Include_Root}/Renderer2D.hpp
-    ${Include_Root}/RendererAPI.hpp
+    ${Include_Root}/Renderer.hpp
     ${Include_Root}/Shader.hpp
     ${Include_Root}/ShaderLoader.hpp
     ${Include_Root}/Texture.hpp
@@ -39,7 +39,7 @@ set(Graphics_Src
     ${Src_Root}/Camera.cpp
     ${Src_Root}/Device.cpp
     ${Src_Root}/Renderer2D.cpp
-    ${Src_Root}/RendererAPI.cpp
+    ${Src_Root}/Renderer.cpp
     ${Src_Root}/Shader.cpp
     ${Src_Root}/ShaderLoader.cpp
     ${Src_Root}/Texture.cpp

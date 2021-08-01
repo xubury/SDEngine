@@ -9,31 +9,17 @@ namespace sd {
 
 class GraphicsManager {
    public:
-    static GraphicsManager &instance() {
-        static GraphicsManager s_instance;
+    static inline AssetManager &shaders() {
+        static AssetManager s_instance;
         return s_instance;
     }
-    ~GraphicsManager() = default;
 
-    GraphicsManager(const GraphicsManager &) = delete;
-    GraphicsManager &operator=(const GraphicsManager &) = delete;
-
-    AssetManager &shaders() { return m_shaderManager; }
-
-    AssetManager &textures() { return m_textureManager; }
-
-   private:
-    GraphicsManager() {
-        m_shaderManager.setRootPath("assets/shaders/");
-        m_shaderManager.setLoader<ShaderLoader>();
-
-        m_textureManager.setRootPath("assets/textures/");
-        m_textureManager.setLoader<TextureLoader>();
-    };
-
-    AssetManager m_shaderManager;
-    AssetManager m_textureManager;
+    static inline AssetManager &textures() {
+        static AssetManager s_instance;
+        return s_instance;
+    }
 };
+
 }  // namespace sd
 
 #endif /* SD_GRAPHICS_MANAGER_HPP */

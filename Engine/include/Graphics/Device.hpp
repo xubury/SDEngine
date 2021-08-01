@@ -2,7 +2,7 @@
 #define SD_DEVICE_HPP
 
 #include "Utils/Base.hpp"
-#include "Graphics/RendererAPI.hpp"
+#include "Graphics/Renderer.hpp"
 
 namespace sd {
 
@@ -27,7 +27,7 @@ class Device {
     Device() = default;
 
    private:
-    friend class RendererAPI;
+    friend class Renderer;
 
     static Device &instance();
 

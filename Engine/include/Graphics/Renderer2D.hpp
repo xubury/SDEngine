@@ -14,7 +14,6 @@ class Texture;
 class SD_API Renderer2D {
    public:
     static void init();
-    static void destory();
 
     static void startBatch();
     static void flush();

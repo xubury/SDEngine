@@ -23,8 +23,9 @@ ShaderLoader::ShaderLoader(AssetManager &manager)
 Ref<Shader> ShaderLoader::loadAsset(const std::string &filePath) {
     Ref<Shader> shader = Shader::create();
     std::string source;
+    SD_CORE_TRACE("Building shader code from {}",
+                  m_manager.getRootPath() + filePath);
     readFile(m_manager.getRootPath() + filePath, source);
-    SD_CORE_TRACE("Building shader code from: {}", filePath);
 
     std::string vertexCode;
     std::string fragmentCode;
@@ -49,7 +50,7 @@ Ref<Shader> ShaderLoader::loadAsset(const std::string &filePath) {
             SD_CORE_ERROR("Invalid shader type: {}", name);
             break;
         } else {
-            SD_CORE_TRACE("Parsing shader: {}", name);
+            SD_CORE_TRACE("Parsing {} shader code", name);
             code = source.substr(start, end - start);
         }
         // insert include code
@@ -70,7 +71,8 @@ Ref<Shader> ShaderLoader::loadAsset(const std::string &filePath) {
 
             j = code.find("#include", start);
 
-            SD_CORE_TRACE("Getting shader source from {}", include);
+            SD_CORE_TRACE("Include shader source from {}",
+                          m_manager.getRootPath() + include);
         }
 
         switch (type) {
@@ -89,6 +91,8 @@ Ref<Shader> ShaderLoader::loadAsset(const std::string &filePath) {
     }
     // TODO:fix compile process
     shader->compile(vertexCode.c_str(), fragmentCode.c_str());
+    SD_CORE_TRACE("Finish builidng shader code from {}",
+                  m_manager.getRootPath() + filePath);
     return shader;
 }
 

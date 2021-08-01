@@ -1,5 +1,5 @@
 #include "Graphics/Texture.hpp"
-#include "Graphics/RendererAPI.hpp"
+#include "Graphics/Renderer.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
 #include "Graphics/OpenGL/GLTexture.hpp"
 #include "Utils/Log.hpp"
@@ -12,7 +12,7 @@ Ref<Texture> Texture::create(int width, int height, TextureType type,
                              TextureMipmapFilter mipmapFilter,
                              const void *data) {
     Ref<Texture> texture;
-    switch (RendererAPI::getAPI()) {
+    switch (Renderer::getAPI()) {
         case API::OpenGL:
             texture =
                 createRef<GLTexture>(width, height, type, format, formatType,
