@@ -29,7 +29,9 @@ Application::Application() {
         SD_CORE_ERROR("SDL_GL_SetAttribute Failed: {}", SDL_GetError());
         exit(-1);
     }
-    if (IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF) == 0) {
+
+    int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
+    if ((IMG_Init(imgFlags) & imgFlags) != imgFlags) {
         SD_CORE_ERROR("IMG_Init Failed: {}", IMG_GetError());
         exit(-1);
     }
@@ -43,6 +45,7 @@ Application::Application() {
 
 Application::~Application() {
     m_window.destroy();
+    IMG_Quit();
     SDL_Quit();
 }
 
