@@ -9,88 +9,74 @@
 
 namespace sd {
 
-static void fileToString(const std::string& path, std::string& string) {
-    std::ifstream file;
-    // ensure ifstream objects can throw exceptions:
-    file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    try {
-        // open files
-        file.open(path);
-        std::stringstream fileStream;
-        // read file's buffer contents into streams
-        fileStream << file.rdbuf();
-        // close file handlers
-        file.close();
-        // convert stream into string
-        string = fileStream.str();
+GLShader::GLShader()
+    : m_id(0),
+      m_vertexId(0),
+      m_fragmentId(0),
+      m_geometryId(0),
+      m_computeId(0) {}
 
-        size_t i = string.find("#include");
-        while (i < string.size()) {
-            size_t start = string.find('\n', i) + 1;
-            size_t offset = i + 9;
-            std::string includePath = string.substr(offset, start - offset - 1);
-            std::string include;
-            fileToString(includePath, include);
-            string.erase(i - 1, start - i);
-            string.insert(i, include);
-            i = string.find("#incldue");
-        }
-    } catch (std::ifstream::failure& e) {
-        SD_CORE_ERROR("File not successfully read!");
-    }
+GLShader::~GLShader() {
+    if (m_id != 0) glDeleteProgram(m_id);
+    destroyShaders();
 }
 
-GLShader::GLShader() : m_id(0) {}
-
-void GLShader::loadFromFile(const std::string& vertexPath,
-                            const std::string& fragmentPath,
-                            const std::string& geometryPath) {
-    std::string vertexCode;
-    std::string fragmentCode;
-    fileToString(vertexPath, vertexCode);
-    fileToString(fragmentPath, fragmentCode);
-    if (!geometryPath.empty()) {
-        std::string geometryCode;
-        fileToString(geometryPath, geometryCode);
-        compile(vertexCode.c_str(), fragmentCode.c_str(), geometryCode.c_str());
-    }
-    compile(vertexCode.c_str(), fragmentCode.c_str());
-}
-
-void GLShader::compile(const char* vertexCode, const char* fragmentCode,
-                       const char* geometryCode) {
-    // compile shaders
-    // vertex shader
-    uint32_t vertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex, 1, &vertexCode, nullptr);
-    glCompileShader(vertex);
-    checkCompileErrors(vertex, "Vertex");
-    // fragment Shader
-    uint32_t fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment, 1, &fragmentCode, nullptr);
-    glCompileShader(fragment);
-    checkCompileErrors(fragment, "Fragment");
-
-    uint32_t geometry = 0;
-    if (geometryCode != nullptr) {
-        geometry = glCreateShader(GL_GEOMETRY_SHADER);
-        glShaderSource(geometry, 1, &geometryCode, nullptr);
-        glCompileShader(geometry);
-        checkCompileErrors(geometry, "Geometry");
-    }
-    // shader Program
+void GLShader::init() {
+    if (m_id != 0) glDeleteProgram(m_id);
     m_id = glCreateProgram();
-    glAttachShader(m_id, fragment);
-    glAttachShader(m_id, vertex);
-    if (geometry != 0) glAttachShader(m_id, geometry);
+}
 
+void GLShader::compileShader(ShaderType type, const char* code) {
+    switch (type) {
+        case ShaderType::VERTEX:
+            if (m_vertexId != 0) glDeleteShader(m_vertexId);
+            m_vertexId = glCreateShader(GL_VERTEX_SHADER);
+            glShaderSource(m_vertexId, 1, &code, nullptr);
+            glCompileShader(m_vertexId);
+            checkCompileErrors(m_vertexId, "Vertex");
+            glAttachShader(m_id, m_vertexId);
+            break;
+        case ShaderType::FRAGMENT:
+            if (m_fragmentId != 0) glDeleteShader(m_fragmentId);
+            m_fragmentId = glCreateShader(GL_FRAGMENT_SHADER);
+            glShaderSource(m_fragmentId, 1, &code, nullptr);
+            glCompileShader(m_fragmentId);
+            checkCompileErrors(m_fragmentId, "Fragment");
+            glAttachShader(m_id, m_fragmentId);
+            break;
+        case ShaderType::GEOMETRY:
+            if (m_geometryId != 0) glDeleteShader(m_geometryId);
+            m_geometryId = glCreateShader(GL_GEOMETRY_SHADER);
+            glShaderSource(m_geometryId, 1, &code, nullptr);
+            glCompileShader(m_geometryId);
+            checkCompileErrors(m_geometryId, "Geometry");
+            glAttachShader(m_id, m_geometryId);
+            break;
+        case ShaderType::COMPUTE:
+            if (m_computeId != 0) glDeleteShader(m_computeId);
+            m_computeId = glCreateShader(GL_COMPUTE_SHADER);
+            glShaderSource(m_computeId, 1, &code, nullptr);
+            glCompileShader(m_computeId);
+            checkCompileErrors(m_computeId, "Compute");
+            glAttachShader(m_id, m_computeId);
+            break;
+        case ShaderType::INVALID:
+            SD_CORE_ERROR("Trying to add a invalid shader");
+            break;
+    }
+}
+
+void GLShader::destroyShaders() {
+    if (m_vertexId != 0) glDeleteShader(m_vertexId);
+    if (m_fragmentId != 0) glDeleteShader(m_fragmentId);
+    if (m_geometryId != 0) glDeleteShader(m_geometryId);
+    if (m_computeId != 0) glDeleteShader(m_computeId);
+}
+
+void GLShader::linkShaders() {
     glLinkProgram(m_id);
     checkCompileErrors(m_id, "Program");
-    // delete the shaders as they're linked into our program now and no longer
-    // necessary
-    glDeleteShader(vertex);
-    glDeleteShader(fragment);
-    if (geometry != 0) glDeleteShader(geometry);
+    destroyShaders();
 }
 
 void GLShader::bind() const { glUseProgram(m_id); }

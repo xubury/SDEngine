@@ -16,6 +16,7 @@ Ref<Shader> Shader::create() {
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
+    shader->init();
     return shader;
 }
 }  // namespace sd

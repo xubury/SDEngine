@@ -4,13 +4,15 @@
 #include "Utils/Base.hpp"
 #include "Utils/Export.hpp"
 #include <string>
+#include <vector>
 #include <glm/glm.hpp>
-#include <unordered_map>
 
 namespace sd {
 
 class Texture;
 class UniformBuffer;
+
+enum class ShaderType { INVALID, VERTEX, FRAGMENT, GEOMETRY, COMPUTE };
 
 class SD_API Shader {
    public:
@@ -22,12 +24,11 @@ class SD_API Shader {
 
     Shader& operator=(const Shader&) = delete;
 
-    virtual void compile(const char* vertexCode, const char* fragmentCode,
-                         const char* geometryCode = nullptr) = 0;
+    virtual void init() = 0;
 
-    virtual void loadFromFile(const std::string& vertexPath,
-                              const std::string& fragmentPath,
-                              const std::string& geometryPath = "") = 0;
+    virtual void compileShader(ShaderType type, const char* code) = 0;
+
+    virtual void linkShaders() = 0;
 
     virtual void bind() const = 0;
 
@@ -51,8 +52,8 @@ class SD_API Shader {
     virtual void setMat4(const std::string& name,
                          const glm::mat4& value) const = 0;
 
-    virtual void setTexture(const std::string& name,
-                            const Texture& texture, int index) const = 0;
+    virtual void setTexture(const std::string& name, const Texture& texture,
+                            int index) const = 0;
 
     virtual void setUniformBuffer(const std::string& name,
                                   const UniformBuffer& buffer) const = 0;

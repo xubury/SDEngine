@@ -17,14 +17,13 @@ class SD_API GLShader : public Shader {
    public:
     GLShader();
 
-    virtual ~GLShader() = default;
+    ~GLShader();
 
-    void compile(const char* vertexCode, const char* fragmentCode,
-                 const char* geometryCode = nullptr) override;
+    void init() override;
 
-    void loadFromFile(const std::string& vertexPath,
-                      const std::string& fragmentPath,
-                      const std::string& geometryPath = "") override;
+    void compileShader(ShaderType type, const char* code) override;
+
+    void linkShaders() override;
 
     void bind() const override;
 
@@ -52,7 +51,13 @@ class SD_API GLShader : public Shader {
    private:
     static void checkCompileErrors(uint32_t shader, const std::string& type);
 
+    void destroyShaders();
+
     GLuint m_id;
+    GLuint m_vertexId;
+    GLuint m_fragmentId;
+    GLuint m_geometryId;
+    GLuint m_computeId;
 };
 
 }  // namespace sd

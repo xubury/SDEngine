@@ -3,7 +3,6 @@
 #include "Utils/File.hpp"
 
 namespace sd {
-enum class ShaderType { INVALID, VERTEX, FRAGMENT, GEOMETRY };
 
 static ShaderType shaderTypeFromName(const std::string &name) {
     if (name == "vertex") {
@@ -12,6 +11,8 @@ static ShaderType shaderTypeFromName(const std::string &name) {
         return ShaderType::FRAGMENT;
     } else if (name == "geometry") {
         return ShaderType::GEOMETRY;
+    } else if (name == "compute") {
+        return ShaderType::COMPUTE;
     }
 
     return ShaderType::INVALID;
@@ -27,9 +28,6 @@ Ref<Shader> ShaderLoader::loadAsset(const std::string &filePath) {
                   m_manager.getRootPath() + filePath);
     readFile(m_manager.getRootPath() + filePath, source);
 
-    std::string vertexCode;
-    std::string fragmentCode;
-    std::string geometryCode;
     size_t i = source.find("#shader");
     while (i < source.size()) {
         size_t start = source.find('\n', i) + 1;
@@ -75,22 +73,9 @@ Ref<Shader> ShaderLoader::loadAsset(const std::string &filePath) {
                           m_manager.getRootPath() + include);
         }
 
-        switch (type) {
-            case ShaderType::INVALID:
-                break;
-            case ShaderType::VERTEX:
-                vertexCode = code;
-                break;
-            case ShaderType::FRAGMENT:
-                fragmentCode = code;
-                break;
-            case ShaderType::GEOMETRY:
-                geometryCode = code;
-                break;
-        }
+        shader->compileShader(type, code.c_str());
     }
-    // TODO:fix compile process
-    shader->compile(vertexCode.c_str(), fragmentCode.c_str());
+    shader->linkShaders();
     SD_CORE_TRACE("Finish builidng shader code from {}",
                   m_manager.getRootPath() + filePath);
     return shader;
