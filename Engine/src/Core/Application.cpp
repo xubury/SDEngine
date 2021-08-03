@@ -44,7 +44,6 @@ Application::Application() {
 }
 
 Application::~Application() {
-    m_window.destroy();
     IMG_Quit();
     SDL_Quit();
 }

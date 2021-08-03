@@ -32,9 +32,7 @@ bool Window::create(const std::string &title, int width, int height,
     return true;
 }
 
-void Window::destroy() { SDL_DestroyWindow(m_window); }
-
-Window::~Window() { destroy(); }
+Window::~Window() { SDL_DestroyWindow(m_window); }
 
 bool Window::pollEvent(SDL_Event &event) { return SDL_PollEvent(&event) == 1; }
 

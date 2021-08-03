@@ -52,8 +52,6 @@ bool GLContext::create(SDL_Window* window) {
     return true;
 }
 
-void GLContext::destroy() { SDL_GL_DeleteContext(m_context); }
-
-GLContext::~GLContext() { destroy(); }
+GLContext::~GLContext() { SDL_GL_DeleteContext(m_context); }
 
 }  // namespace sd

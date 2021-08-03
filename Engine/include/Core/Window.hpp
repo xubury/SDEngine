@@ -23,7 +23,6 @@ class SD_API Window {
 
     bool create(const std::string &title, int width, int height,
                 WindowFlag flags);
-    void destroy();
 
     bool pollEvent(SDL_Event &event);
 

@@ -12,8 +12,6 @@ class SD_API GLContext {
    public:
     bool create(SDL_Window *window);
 
-    void destroy();
-
     ~GLContext();
 
    private:
