@@ -14,6 +14,8 @@ class SD_API GLVertexArray : public VertexArray {
 
     ~GLVertexArray();
 
+    void init() override;
+
     void bind() const override;
 
     void unbind() const override;

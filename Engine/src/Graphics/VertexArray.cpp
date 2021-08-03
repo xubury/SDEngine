@@ -12,10 +12,10 @@ Ref<VertexArray> VertexArray::create() {
             va = createRef<GLVertexArray>();
             break;
         case API::None:
-        default:
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
+    if (va) va->init();
     return va;
 }
 

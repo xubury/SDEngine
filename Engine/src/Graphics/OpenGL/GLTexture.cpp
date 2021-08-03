@@ -9,9 +9,15 @@ GLTexture::GLTexture(int width, int height, TextureType type,
                      TextureMipmapFilter mipmapFilter, void *data)
     : Texture(width, height, type, format, formatType, wrap, filter,
               mipmapFilter, data),
-      gl_type(TRANSLATE(m_type)) {}
+      gl_id(0),
+      gl_type(0),
+      gl_iFormat(0),
+      gl_format(0),
+      gl_formatType(0) {}
 
-GLTexture::~GLTexture() { glDeleteTextures(1, &gl_id); }
+GLTexture::~GLTexture() {
+    if (gl_id != 0) glDeleteTextures(1, &gl_id);
+}
 
 bool GLTexture::equals(const Texture &other) const {
     const GLTexture *ptr = dynamic_cast<const GLTexture *>(&other);
@@ -22,8 +28,10 @@ bool GLTexture::equals(const Texture &other) const {
 }
 
 void GLTexture::init() {
+    if (gl_id != 0) glDeleteTextures(1, &gl_id);
     glGenTextures(1, &gl_id);
 
+    gl_type = TRANSLATE(m_type);
     gl_iFormat = TRANSLATE(m_format, m_formatType);
     gl_format = TRANSLATE(m_format);
     gl_formatType = TRANSLATE(m_formatType);

@@ -17,6 +17,8 @@ class SD_API VertexArray {
 
     VertexArray &operator=(const VertexArray &) = delete;
 
+    virtual void init() = 0;
+
     virtual void bind() const = 0;
 
     virtual void unbind() const = 0;
