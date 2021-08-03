@@ -6,12 +6,20 @@ namespace sd {
 GLTexture::GLTexture(int width, int height, TextureType type,
                      TextureFormat format, TextureFormatType formatType,
                      TextureWrap wrap, TextureFilter filter,
-                     TextureMipmapFilter mipmapFilter, const void *data)
+                     TextureMipmapFilter mipmapFilter, void *data)
     : Texture(width, height, type, format, formatType, wrap, filter,
               mipmapFilter, data),
       gl_type(TRANSLATE(m_type)) {}
 
 GLTexture::~GLTexture() { glDeleteTextures(1, &gl_id); }
+
+bool GLTexture::equals(const Texture &other) const {
+    const GLTexture *ptr = dynamic_cast<const GLTexture *>(&other);
+    if (ptr) {
+        return gl_id == ptr->gl_id;
+    }
+    return false;
+}
 
 void GLTexture::init() {
     glGenTextures(1, &gl_id);
@@ -26,13 +34,13 @@ void GLTexture::init() {
     setMipmapFilter(m_mipmapFilter);
 }
 
-uint32_t GLTexture::id() const { return gl_id; }
+GLuint GLTexture::id() const { return gl_id; }
 
 void GLTexture::bind() const { glBindTexture(gl_type, gl_id); }
 
 void GLTexture::unbind() const { glBindTexture(gl_type, 0); }
 
-void GLTexture::setPixels(int width, int height, const void *data) {
+void GLTexture::setPixels(int width, int height, void *data) {
     m_width = width;
     m_height = height;
     m_data = data;
@@ -101,6 +109,15 @@ void GLTexture::setMipmapFilter(TextureMipmapFilter mipmapFilter) {
 void GLTexture::genareteMipmap() const {
     bind();
     glGenerateMipmap(gl_type);
+}
+
+void GLTexture::setTextureData(Texture *source, int xOffset, int yOffset,
+                               int width, int height, int mipmap) {
+    if (m_data) {
+        glTextureSubImage2D(gl_id, mipmap, xOffset, yOffset, width, height,
+                            gl_format, gl_formatType, source->getData());
+        genareteMipmap();
+    }
 }
 
 }  // namespace sd

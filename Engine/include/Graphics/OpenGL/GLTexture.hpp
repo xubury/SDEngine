@@ -11,21 +11,26 @@ class GLTexture : public Texture {
     GLTexture(int width, int height, TextureType type, TextureFormat format,
               TextureFormatType formatType, TextureWrap wrap,
               TextureFilter filter, TextureMipmapFilter mipmapFilter,
-              const void *data);
+              void *data);
 
     ~GLTexture();
 
-    uint32_t id() const override;
+    GLuint id() const;
+    bool equals(const Texture &other) const override;
+
     void bind() const override;
     void unbind() const override;
 
-    void setPixels(int width, int height, const void *data) override;
+    void setPixels(int width, int height, void *data) override;
     void setBorderColor(const void *color) override;
     void setWrap(TextureWrap wrap) override;
     void setFilter(TextureFilter filter) override;
     void setMipmapFilter(TextureMipmapFilter mipmapFilter) override;
 
     void genareteMipmap() const override;
+
+    void setTextureData(Texture *source, int xOffset, int yOffset, int width,
+                        int height, int mipmap) override;
 
    protected:
     void init() override;

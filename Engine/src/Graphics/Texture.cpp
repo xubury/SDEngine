@@ -9,8 +9,7 @@ namespace sd {
 Ref<Texture> Texture::create(int width, int height, TextureType type,
                              TextureFormat format, TextureFormatType formatType,
                              TextureWrap wrap, TextureFilter filter,
-                             TextureMipmapFilter mipmapFilter,
-                             const void *data) {
+                             TextureMipmapFilter mipmapFilter, void *data) {
     Ref<Texture> texture;
     switch (Renderer::getAPI()) {
         case API::OpenGL:
@@ -33,7 +32,7 @@ Ref<Texture> Texture::create(int width, int height, TextureType type,
 Texture::Texture(int width, int height, TextureType type, TextureFormat format,
                  TextureFormatType formatType, TextureWrap wrap,
                  TextureFilter filter, TextureMipmapFilter mipmapFilter,
-                 const void *data)
+                 void *data)
     : m_width(width),
       m_height(height),
       m_type(type),
@@ -44,8 +43,20 @@ Texture::Texture(int width, int height, TextureType type, TextureFormat format,
       m_mipmapFilter(mipmapFilter),
       m_data(data) {}
 
-bool Texture::operator==(const Texture &other) const {
-    return id() == other.id();
-}
+bool Texture::operator==(const Texture &other) const { return equals(other); }
+
+int Texture::getWidth() const { return m_width; }
+
+int Texture::getHeight() const { return m_height; }
+
+void *Texture::getData() { return m_data; }
+
+const void *Texture::getData() const { return m_data; }
+
+TextureType Texture::getType() const { return m_type; }
+
+TextureFormat Texture::getFormat() const { return m_format; }
+
+TextureFormatType Texture::getFormatType() const { return m_formatType; }
 
 }  // namespace sd

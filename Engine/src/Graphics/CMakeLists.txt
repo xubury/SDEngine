@@ -4,6 +4,7 @@ set(Src_Root ${PROJECT_SOURCE_DIR}/src/Graphics)
 set(OpenGL_Include
     ${Include_Root}/OpenGL/GLBuffer.hpp
     ${Include_Root}/OpenGL/GLDevice.hpp
+    ${Include_Root}/OpenGL/GLFramebuffer.hpp
     ${Include_Root}/OpenGL/GLShader.hpp
     ${Include_Root}/OpenGL/GLTexture.hpp
     ${Include_Root}/OpenGL/GLTranslator.hpp
@@ -12,6 +13,7 @@ set(OpenGL_Include
 set(OpenGL_Src
     ${Src_Root}/OpenGL/GLBuffer.cpp
     ${Src_Root}/OpenGL/GLDevice.cpp
+    ${Src_Root}/OpenGL/GLFramebuffer.cpp
     ${Src_Root}/OpenGL/GLShader.cpp
     ${Src_Root}/OpenGL/GLTexture.cpp
     ${Src_Root}/OpenGL/GLTranslator.cpp
@@ -23,8 +25,11 @@ set(Graphics_Include
     ${Include_Root}/BufferLayout.hpp
     ${Include_Root}/Camera.hpp
     ${Include_Root}/Device.hpp
-    ${Include_Root}/Renderer2D.hpp
+    ${Include_Root}/Framebuffer.hpp
+    ${Include_Root}/GraphicsManager.hpp
+    ${Include_Root}/GraphicsDefine.hpp
     ${Include_Root}/Renderer.hpp
+    ${Include_Root}/Renderer2D.hpp
     ${Include_Root}/Shader.hpp
     ${Include_Root}/ShaderLoader.hpp
     ${Include_Root}/Texture.hpp
@@ -38,8 +43,9 @@ set(Graphics_Src
     ${Src_Root}/BufferLayout.cpp
     ${Src_Root}/Camera.cpp
     ${Src_Root}/Device.cpp
-    ${Src_Root}/Renderer2D.cpp
+    ${Src_Root}/Framebuffer.cpp
     ${Src_Root}/Renderer.cpp
+    ${Src_Root}/Renderer2D.cpp
     ${Src_Root}/Shader.cpp
     ${Src_Root}/ShaderLoader.cpp
     ${Src_Root}/Texture.cpp

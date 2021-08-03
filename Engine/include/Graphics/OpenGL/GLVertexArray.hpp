@@ -28,7 +28,7 @@ class SD_API GLVertexArray : public VertexArray {
                       size_t offset = 0) override;
 
    private:
-    uint32_t m_id;
+    GLuint m_id;
     std::vector<Ref<VertexBuffer>> m_vertexBuffers;
     std::vector<VertexBufferLayout> m_layouts;
 

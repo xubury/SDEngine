@@ -1,6 +1,7 @@
 #include "Sandbox2DLayer.hpp"
 #include "Graphics/Device.hpp"
 #include "Graphics/Renderer2D.hpp"
+#include "Graphics/Renderer.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Texture.hpp"
 #include "Utils/Log.hpp"
