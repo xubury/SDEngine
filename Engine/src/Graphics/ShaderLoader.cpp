@@ -62,7 +62,7 @@ Ref<Shader> ShaderLoader::loadAsset(const std::string &filePath) {
             size_t offset = j + 9;
             std::string include = code.substr(offset, start - offset - 1);
 
-            code.erase(j - 1, start - j);
+            code.erase(j, start - j);
             std::string includeCode;
             readFile(m_manager.getRootPath() + include, includeCode);
             code.insert(j, includeCode);
