@@ -21,12 +21,8 @@ Application::Application() {
     Log::init(debugPath);
     SD_CORE_INFO("Debug info is output to: {}", debugPath);
 
-    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         SD_CORE_ERROR("SDL_Init failed: {}", SDL_GetError());
-        exit(-1);
-    }
-    if (SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1) != 0) {
-        SD_CORE_ERROR("SDL_GL_SetAttribute Failed: {}", SDL_GetError());
         exit(-1);
     }
 

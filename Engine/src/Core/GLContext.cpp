@@ -34,6 +34,10 @@ bool GLContext::create(SDL_Window* window) {
         SD_CORE_ERROR("SDL_GL_CreateContext failed: {}", SDL_GetError());
         return false;
     }
+    if (SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1) != 0) {
+        SD_CORE_ERROR("SDL_GL_SetAttribute Failed: {}", SDL_GetError());
+        exit(-1);
+    }
     if (glewInit() != GLEW_OK) {
         SD_CORE_ERROR("glewInit failed!");
         return false;
