@@ -11,7 +11,7 @@ Ref<VertexArray> VertexArray::create() {
         case API::OpenGL:
             va = createRef<GLVertexArray>();
             break;
-        case API::None:
+        default:
             SD_CORE_ERROR("Unsupported API!");
             break;
     }

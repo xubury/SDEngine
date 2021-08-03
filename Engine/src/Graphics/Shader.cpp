@@ -11,7 +11,7 @@ Ref<Shader> Shader::create() {
         case API::OpenGL:
             shader = createRef<GLShader>();
             break;
-        case API::None:
+        default:
             SD_CORE_ERROR("Unsupported API!");
             break;
     }

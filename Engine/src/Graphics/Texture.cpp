@@ -17,7 +17,7 @@ Ref<Texture> Texture::create(int width, int height, TextureType type,
                 createRef<GLTexture>(width, height, type, format, formatType,
                                      wrap, filter, mipmapFilter, data);
             break;
-        case API::None:
+        default:
             SD_CORE_ERROR("Unsupported API!");
             break;
     }

@@ -20,7 +20,7 @@ void Renderer::init(API api) {
         case API::OpenGL:
             Device::s_instance = createScope<GLDevice>();
             break;
-        case API::None:
+        default:
             SD_CORE_ERROR("Unsupported API!");
             break;
     }

@@ -11,7 +11,7 @@ Ref<Framebuffer> Framebuffer::create() {
         case API::OpenGL:
             frameBuffer = createRef<GLFramebuffer>();
             break;
-        case API::None:
+        default:
             SD_CORE_ERROR("Unsupported API!");
             break;
     }

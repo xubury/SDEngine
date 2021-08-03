@@ -12,7 +12,7 @@ Ref<VertexBuffer> VertexBuffer::create(const void *data, size_t size,
         case API::OpenGL:
             vb = createRef<GLVertexBuffer>(data, size, io);
             break;
-        case API::None:
+        default:
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
@@ -27,7 +27,7 @@ Ref<IndexBuffer> IndexBuffer::create(const uint32_t *data, uint32_t count,
         case API::OpenGL:
             eb = createRef<GLIndexBuffer>(data, count, io);
             break;
-        case API::None:
+        default:
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
@@ -42,7 +42,7 @@ Ref<UniformBuffer> UniformBuffer::create(const void *data, size_t size,
         case API::OpenGL:
             ub = createRef<GLUniformBuffer>(data, size, io);
             break;
-        case API::None:
+        default:
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
