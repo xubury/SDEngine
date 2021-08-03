@@ -30,6 +30,7 @@ bool GLFramebuffer::attachTexture(Texture *texture) {
             default:
                 isColor = true;
                 attachment = GL_COLOR_ATTACHMENT0 + m_textureCnt;
+                break;
         }
         m_attachments.emplace_back(attachment, glTexture);
         bind();
