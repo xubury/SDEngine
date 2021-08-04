@@ -6,6 +6,8 @@
 
 namespace sd {
 
+class Framebuffer;
+
 // just a shortcut to Device
 class Renderer {
    public:
@@ -21,6 +23,8 @@ class Renderer {
     static void clear();
 
     static void setViewport(int x, int y, int width, int height);
+
+    static void setFramebuffer(const Framebuffer *framebuffer);
 
     Renderer() = delete;
 

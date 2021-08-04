@@ -24,8 +24,7 @@ class Framebuffer {
 
     virtual void setDrawable(const std::vector<uint32_t> &colorAttachments) = 0;
 
-    virtual void readPixels() const = 0;
-    virtual void writePixels() = 0;
+    virtual int readPixels(uint32_t attachmentId, int x, int y) const = 0;
 
     virtual void bind() const = 0;
     virtual void unbind() const = 0;

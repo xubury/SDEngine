@@ -73,7 +73,8 @@ void GLTexture::setPixels(int width, int height, void *data) {
 
             break;
     }
-    genareteMipmap();
+    glGenerateMipmap(gl_type);
+    unbind();
 }
 
 void GLTexture::setBorderColor(const void *color) {

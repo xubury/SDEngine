@@ -180,6 +180,10 @@ GLint GLTranslator::translate(TextureFilter textureFilter) {
 
 GLint GLTranslator::translate(TextureMipmapFilter textureMipmapFilter) {
     switch (textureMipmapFilter) {
+        case TextureMipmapFilter::LINEAR:
+            return GL_LINEAR;
+        case TextureMipmapFilter::NEAREST:
+            return GL_NEAREST;
         case TextureMipmapFilter::NEAREST_NEAREST:
             return GL_NEAREST_MIPMAP_NEAREST;
         case TextureMipmapFilter::NEAREST_LINEAR:

@@ -1,5 +1,6 @@
 #include "Graphics/OpenGL/GLDevice.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
+#include "Graphics/OpenGL/GLFramebuffer.hpp"
 #include <GL/glew.h>
 
 namespace sd {
@@ -14,10 +15,18 @@ void GLDevice::setClearColor(float r, float g, float b, float a) {
     glClearColor(r, g, b, a);
 }
 
-void GLDevice::clear() { glClear(GL_COLOR_BUFFER_BIT); }
+void GLDevice::clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
 void GLDevice::setViewport(int x, int y, int width, int height) {
     glViewport(x, y, width, height);
+}
+
+void GLDevice::setFramebuffer(const Framebuffer *framebuffer) {
+    if (framebuffer) {
+        framebuffer->bind();
+    } else {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
 }
 
 }  // namespace sd

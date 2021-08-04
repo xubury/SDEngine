@@ -29,7 +29,7 @@ bool GLFramebuffer::attachTexture(Texture *texture) {
                 break;
             default:
                 isColor = true;
-                attachment = GL_COLOR_ATTACHMENT0 + m_textureCnt;
+                attachment = GL_COLOR_ATTACHMENT0 + m_textureCnt++;
                 break;
         }
         m_attachments.emplace_back(attachment, glTexture);
@@ -41,6 +41,7 @@ bool GLFramebuffer::attachTexture(Texture *texture) {
                                        GL_TEXTURE_2D, glTexture->id(), 0);
                 break;
             case TextureType::TEX_3D:
+            case TextureType::TEX_CUBE:
                 glFramebufferTexture(GL_FRAMEBUFFER, attachment,
                                      glTexture->id(), 0);
                 break;
@@ -76,25 +77,17 @@ void GLFramebuffer::bind() const { glBindFramebuffer(GL_FRAMEBUFFER, m_id); }
 
 void GLFramebuffer::unbind() const { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
-void GLFramebuffer::readPixels() const {
+int GLFramebuffer::readPixels(uint32_t attachmentId, int x, int y) const {
     bind();
-    for (const auto &[attachment, texture] : m_attachments) {
-        if (texture->getData() == nullptr) continue;
+    GLenum glAttachmentId = m_attachments.at(attachmentId).first;
+    glReadBuffer(glAttachmentId);
 
-        glReadBuffer(attachment);
-        glReadPixels(0, 0, texture->getWidth(), texture->getHeight(),
-                     TRANSLATE(texture->getFormat()),
-                     TRANSLATE(texture->getFormatType()), texture->getData());
-    }
-    glReadBuffer(GL_NONE);
+    int data = 0;
+    const GLTexture *texture = m_attachments.at(attachmentId).second;
+    glReadPixels(x, y, 1, 1, TRANSLATE(texture->getFormat()),
+                 TRANSLATE(texture->getFormatType()), &data);
     unbind();
-}
-
-void GLFramebuffer::writePixels() {
-    for (auto &[attachment, texture] : m_attachments) {
-        texture->setTextureData(texture, 0, 0, texture->getWidth(),
-                                texture->getHeight(), 0);
-    }
+    return data;
 }
 
 void GLFramebuffer::copy(const Framebuffer *other, BufferBit mask,

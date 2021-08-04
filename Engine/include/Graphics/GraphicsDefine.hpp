@@ -28,6 +28,8 @@ enum class TextureWrap { EDGE, BORDER, MIRROR, REPEAT, MIRROR_EDGE };
 enum class TextureFilter { NEAREST, LINEAR };
 
 enum class TextureMipmapFilter {
+    LINEAR,
+    NEAREST,
     NEAREST_NEAREST,
     NEAREST_LINEAR,
     LINEAR_NEAREST,

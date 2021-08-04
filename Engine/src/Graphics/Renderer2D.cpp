@@ -8,10 +8,13 @@
 #include "Graphics/Camera.hpp"
 #include "Graphics/Device.hpp"
 #include "Graphics/Framebuffer.hpp"
+#include "Graphics/RenderTarget.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include <cstdint>
 
 namespace sd {
+
+static RenderTarget s_target;
 
 struct QuadVertex {
     glm::vec3 position;
@@ -111,9 +114,18 @@ void Renderer2D::init() {
         &s_data.cameraBuffer, sizeof(CameraData), BufferIOType::STATIC);
 
     s_data.shader = GraphicsManager::shaders().load<Shader>("simple.glsl");
+
+    //TODO:fix this
+    s_target.resize(800, 600);
 }
 
-void Renderer2D::beginScene(const OrthographicCamera& camera) {
+void Renderer2D::beginScene(const OrthographicCamera& camera,
+                            const RenderTarget* target) {
+    if (target)
+        target->use();
+    else {
+        s_target.use();
+    }
     s_data.cameraBuffer.viewProjection = camera.getViewPorjection();
     s_data.cameraBuffer.viewPos = camera.getWorldPosition();
     s_data.cameraUBO->updateData(&s_data.cameraBuffer, sizeof(CameraData));

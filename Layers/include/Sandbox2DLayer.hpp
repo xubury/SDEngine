@@ -2,6 +2,7 @@
 #define SANDBOX_2D_LAYER_HPP
 
 #include "Core/Layer.hpp"
+#include "Graphics/RenderTarget.hpp"
 
 class Sandbox2DLayer : public sd::Layer {
    public:
@@ -18,6 +19,10 @@ class Sandbox2DLayer : public sd::Layer {
     void onEventPoll(const SDL_Event &) override;
 
     void onEventProcess() override;
+
+   private:
+    sd::RenderTarget m_target;
+    sd::Ref<sd::Texture> m_texture;
 };
 
 #endif /* SANDBOX_2D_LAYER_HPP */

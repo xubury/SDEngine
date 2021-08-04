@@ -6,6 +6,8 @@
 
 namespace sd {
 
+class Framebuffer;
+
 class Device {
    public:
     virtual ~Device() = default;
@@ -23,6 +25,8 @@ class Device {
     virtual void clear() = 0;
 
     virtual void setViewport(int x, int y, int width, int height) = 0;
+
+    virtual void setFramebuffer(const Framebuffer *framebuffer) = 0;
 
     Device() = default;
 

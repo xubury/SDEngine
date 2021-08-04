@@ -30,6 +30,7 @@ set(Graphics_Include
     ${Include_Root}/GraphicsDefine.hpp
     ${Include_Root}/Renderer.hpp
     ${Include_Root}/Renderer2D.hpp
+    ${Include_Root}/RenderTarget.hpp
     ${Include_Root}/Shader.hpp
     ${Include_Root}/ShaderLoader.hpp
     ${Include_Root}/Texture.hpp
@@ -46,6 +47,7 @@ set(Graphics_Src
     ${Src_Root}/Framebuffer.cpp
     ${Src_Root}/Renderer.cpp
     ${Src_Root}/Renderer2D.cpp
+    ${Src_Root}/RenderTarget.cpp
     ${Src_Root}/Shader.cpp
     ${Src_Root}/ShaderLoader.cpp
     ${Src_Root}/Texture.cpp

@@ -46,4 +46,8 @@ void Renderer::setViewport(int x, int y, int width, int height) {
     Device::instance().setViewport(x, y, width, height);
 }
 
+void Renderer::setFramebuffer(const Framebuffer *framebuffer) {
+    Device::instance().setFramebuffer(framebuffer);
+}
+
 }  // namespace sd
