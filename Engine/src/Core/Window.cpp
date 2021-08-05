@@ -42,4 +42,16 @@ void Window::setShouldClose(bool shouldClose) { m_shouldClose = shouldClose; }
 
 void Window::swapBuffer() { SDL_GL_SwapWindow(m_window); }
 
+int Window::getWidth() const {
+    int w = 0, _;
+    SDL_GetWindowSize(m_window, &w, &_);
+    return w;
+}
+
+int Window::getHeight() const {
+    int h = 0, _;
+    SDL_GetWindowSize(m_window, &_, &h);
+    return h;
+}
+
 }  // namespace sd

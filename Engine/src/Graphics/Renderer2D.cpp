@@ -1,6 +1,6 @@
 #include "Graphics/Renderer2D.hpp"
 #include "Graphics/Renderer.hpp"
-#include "Graphics/GraphicsManager.hpp"
+#include "Graphics/Graphics.hpp"
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/Buffer.hpp"
 #include "Graphics/Texture.hpp"
@@ -13,8 +13,6 @@
 #include <cstdint>
 
 namespace sd {
-
-static RenderTarget s_target;
 
 struct QuadVertex {
     glm::vec3 position;
@@ -113,19 +111,13 @@ void Renderer2D::init() {
     s_data.cameraUBO = UniformBuffer::create(
         &s_data.cameraBuffer, sizeof(CameraData), BufferIOType::STATIC);
 
-    s_data.shader = GraphicsManager::shaders().load<Shader>("simple.glsl");
-
-    //TODO:fix this
-    s_target.resize(800, 600);
+    s_data.shader =
+        Graphics::assetManager().load<Shader>("shaders/simple.glsl");
 }
 
 void Renderer2D::beginScene(const OrthographicCamera& camera,
-                            const RenderTarget* target) {
-    if (target)
-        target->use();
-    else {
-        s_target.use();
-    }
+                            const RenderTarget& target) {
+    target.use();
     s_data.cameraBuffer.viewProjection = camera.getViewPorjection();
     s_data.cameraBuffer.viewPos = camera.getWorldPosition();
     s_data.cameraUBO->updateData(&s_data.cameraBuffer, sizeof(CameraData));

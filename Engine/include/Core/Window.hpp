@@ -31,6 +31,9 @@ class SD_API Window {
 
     void swapBuffer();
 
+    int getWidth() const;
+
+    int getHeight() const;
    private:
     GLContext m_context;
     SDL_Window *m_window;

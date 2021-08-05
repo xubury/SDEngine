@@ -2,7 +2,7 @@
 #define SD_RENDERER_API_HPP
 
 #include <cstdint>
-#include "Graphics/GraphicsDefine.hpp"
+#include "Graphics/Graphics.hpp"
 
 namespace sd {
 

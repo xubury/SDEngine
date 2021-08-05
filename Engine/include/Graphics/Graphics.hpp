@@ -1,5 +1,7 @@
-#ifndef SD_GRAPHICS_DEFINE_HPP
-#define SD_GRAPHICS_DEFINE_HPP
+#ifndef SD_GRAPHICS_HPP
+#define SD_GRAPHICS_HPP
+
+#include "Utils/AssetManager.hpp"
 
 namespace sd {
 
@@ -48,5 +50,11 @@ enum BufferBit {
     STENCIL_BUFFER_BIT = 1 << 2
 };
 
+class Graphics {
+   public:
+    static AssetManager &assetManager();
+};
+
 }  // namespace sd
-#endif
+
+#endif /* SD_GRAPHICS_MANAGER_HPP */

@@ -22,6 +22,8 @@ class SD_API Application {
 
     void run();
 
+    static const Window &getWindow() { return instance().m_window; }
+
    protected:
     Application();
     ~Application();

@@ -2,7 +2,7 @@
 #define SD_FRAME_BUFFER_HPP
 
 #include "Utils/Base.hpp"
-#include "Graphics/GraphicsDefine.hpp"
+#include "Graphics/Graphics.hpp"
 #include <vector>
 
 namespace sd {

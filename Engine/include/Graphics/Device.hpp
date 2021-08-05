@@ -2,7 +2,7 @@
 #define SD_DEVICE_HPP
 
 #include "Utils/Base.hpp"
-#include "Graphics/GraphicsDefine.hpp"
+#include "Graphics/Graphics.hpp"
 
 namespace sd {
 

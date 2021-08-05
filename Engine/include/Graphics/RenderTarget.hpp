@@ -11,6 +11,7 @@ namespace sd {
 class RenderTarget {
    public:
     RenderTarget();
+
     ~RenderTarget() = default;
 
     RenderTarget(const RenderTarget &) = delete;
@@ -29,6 +30,7 @@ class RenderTarget {
     void use() const;
 
     Ref<Framebuffer> m_framebuffer;
+
    private:
     int m_x;
     int m_y;

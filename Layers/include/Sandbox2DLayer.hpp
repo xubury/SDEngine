@@ -22,6 +22,7 @@ class Sandbox2DLayer : public sd::Layer {
 
    private:
     sd::RenderTarget m_target;
+    sd::RenderTarget m_defaultTarget;
     sd::Ref<sd::Texture> m_texture;
 };
 

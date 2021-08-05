@@ -3,7 +3,7 @@
 
 #include "Utils/Export.hpp"
 #include "Utils/Base.hpp"
-#include "Graphics/GraphicsDefine.hpp"
+#include "Graphics/Graphics.hpp"
 
 namespace sd {
 
