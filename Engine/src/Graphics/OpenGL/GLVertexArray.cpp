@@ -52,12 +52,6 @@ void GLVertexArray::addVertexBuffer(const Ref<VertexBuffer> &buffer,
     m_vertexBuffers.push_back(buffer);
 }
 
-void GLVertexArray::setIndexBuffer(const Ref<IndexBuffer> &buffer) {
-    bind();
-    buffer->bind();
-    m_indexBuffer = buffer;
-}
-
 void GLVertexArray::updateBuffer(size_t index, const void *data, size_t size,
                                  size_t offset) {
     m_vertexBuffers[index]->updateData(data, size, offset);

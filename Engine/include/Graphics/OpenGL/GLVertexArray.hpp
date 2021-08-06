@@ -24,8 +24,6 @@ class SD_API GLVertexArray : public VertexArray {
                          const VertexBufferLayout &layout,
                          int index = -1) override;
 
-    void setIndexBuffer(const Ref<IndexBuffer> &buffer) override;
-
     void updateBuffer(size_t index, const void *data, size_t size,
                       size_t offset = 0) override;
 
@@ -34,7 +32,6 @@ class SD_API GLVertexArray : public VertexArray {
     std::vector<Ref<VertexBuffer>> m_vertexBuffers;
     std::vector<VertexBufferLayout> m_layouts;
 
-    Ref<IndexBuffer> m_indexBuffer;
 };
 
 }  // namespace sd

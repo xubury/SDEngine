@@ -1,9 +1,8 @@
 #include "Graphics/Renderer.hpp"
 #include "Graphics/Renderer2D.hpp"
+#include "Graphics/Renderer3D.hpp"
 #include "Graphics/OpenGL/GLDevice.hpp"
 #include "Graphics/Graphics.hpp"
-#include "Graphics/ShaderLoader.hpp"
-#include "Graphics/TextureLoader.hpp"
 #include "Utils/Log.hpp"
 
 namespace sd {
@@ -11,10 +10,6 @@ namespace sd {
 static API s_api;
 
 void Renderer::init(API api) {
-    Graphics::assetManager().setRootPath("assets/");
-    Graphics::assetManager().setLoader<ShaderLoader>();
-    Graphics::assetManager().setLoader<TextureLoader>();
-
     SD_CORE_TRACE("Initializing Renderer...");
     switch (api) {
         case API::OpenGL:
@@ -25,8 +20,6 @@ void Renderer::init(API api) {
             break;
     }
     s_api = api;
-
-    Renderer2D::init();
 }
 
 API Renderer::getAPI() { return s_api; }

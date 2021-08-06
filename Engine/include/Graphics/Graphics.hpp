@@ -52,6 +52,8 @@ enum BufferBit {
 
 class Graphics {
    public:
+    static void init();
+
     static AssetManager &assetManager();
 };
 

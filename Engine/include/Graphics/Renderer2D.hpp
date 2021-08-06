@@ -29,6 +29,9 @@ class SD_API Renderer2D {
 
     static void drawTexture(const glm::mat4 &transform,
                             const Ref<Texture> &texture);
+
+   private:
+    Renderer2D() = default;
 };
 
 }  // namespace sd

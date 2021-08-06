@@ -2,16 +2,10 @@
 #include "Utils/Log.hpp"
 #include "Core/InputManager.hpp"
 #include "Core/Timing.hpp"
-#include "Graphics/Camera.hpp"
-#include "Graphics/Shader.hpp"
-#include "Graphics/BufferLayout.hpp"
-#include "Graphics/Buffer.hpp"
-#include "Graphics/VertexArray.hpp"
 #include <SDL_image.h>
 
 namespace sd {
 
-Ref<Shader> shader;
 Application *Application::s_instance = nullptr;
 
 Application &Application::instance() { return *s_instance; }

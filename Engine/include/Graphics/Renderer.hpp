@@ -9,7 +9,7 @@ namespace sd {
 class Framebuffer;
 
 // just a shortcut to Device
-class Renderer {
+class SD_API Renderer {
    public:
     static void init(API api);
 
@@ -26,7 +26,8 @@ class Renderer {
 
     static void setFramebuffer(const Framebuffer *framebuffer);
 
-    Renderer() = delete;
+   private:
+    Renderer() = default;
 
 };  // namespace Renderer
 

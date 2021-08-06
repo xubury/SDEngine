@@ -1,7 +1,6 @@
 #include "Core/GLContext.hpp"
 #include "Core/Window.hpp"
 #include "Utils/Assert.hpp"
-#include "Graphics/Renderer.hpp"
 #include <GL/glew.h>
 
 namespace sd {
@@ -49,7 +48,6 @@ bool GLContext::create(SDL_Window* window) {
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
                           GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 #endif
-    Renderer::init(API::OpenGL);
     // Blend
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

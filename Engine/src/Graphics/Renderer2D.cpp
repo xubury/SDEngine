@@ -138,9 +138,9 @@ void Renderer2D::flush() {
     s_data.shader->bind();
     s_data.shader->setUniformBuffer("Camera", *s_data.cameraUBO);
 
-    char uniformName[256];
+    std::string uniformName;
     for (uint32_t i = 0; i < s_data.textureSlotIndex; ++i) {
-        sprintf(uniformName, "u_textures[%d]", i);
+        uniformName = "u_textures[" + std::to_string(i) + "]";
         s_data.shader->setTexture(uniformName, *s_data.textureSlots[i], i);
     }
 

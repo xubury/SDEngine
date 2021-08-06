@@ -19,4 +19,12 @@ Ref<VertexArray> VertexArray::create() {
     return va;
 }
 
+void VertexArray::setIndexBuffer(const Ref<IndexBuffer> &buffer) {
+    bind();
+    buffer->bind();
+    m_indexBuffer = buffer;
+}
+
+const Ref<IndexBuffer> VertexArray::getIndexBuffer() const { return m_indexBuffer; }
+
 }  // namespace sd
