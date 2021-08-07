@@ -43,18 +43,8 @@ Ref<Texture> TextureLoader::loadAsset(const std::string &path) {
     // TODO: parse SDL_Surface here
     TextureFormat format = TextureFormat::RGB;
     TextureFormatType formatType = TextureFormatType::UBYTE;
-    switch (SDL_PIXELORDER(image->format->format)) {
-        case SDL_ARRAYORDER_RGB:
-            format = TextureFormat::RGB;
-            formatType = TextureFormatType::UBYTE;
-            break;
-        case SDL_ARRAYORDER_RGBA:
-            format = TextureFormat::RGBA;
-            formatType = TextureFormatType::UBYTE;
-            break;
-        default:
-            SD_CORE_WARN("Unsupported image type from: {} type: {}", path,
-                         image->format->format);
+    if (SDL_ISPIXELFORMAT_ALPHA(image->format->format)) {
+        format = TextureFormat::RGBA;
     }
     texture = sd::Texture::create(
         image->w, image->h, sd::TextureType::TEX_2D, format, formatType,

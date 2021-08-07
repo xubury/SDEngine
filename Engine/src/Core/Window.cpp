@@ -8,7 +8,7 @@ Window::Window() : m_shouldClose(false) {}
 bool Window::create(const std::string &title, int width, int height,
                     WindowFlag flags) {
     SD_CORE_TRACE("Initializing window...");
-    uint32_t sdlFlags = SDL_WINDOW_OPENGL;
+    uint32_t sdlFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
     if (flags & INVISIBLE) {
         sdlFlags |= SDL_WINDOW_HIDDEN;
     }
@@ -18,6 +18,7 @@ bool Window::create(const std::string &title, int width, int height,
     if (flags & BORDERLESS) {
         sdlFlags |= SDL_WINDOW_BORDERLESS;
     }
+
     m_window =
         SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED,
                          SDL_WINDOWPOS_CENTERED, width, height, sdlFlags);

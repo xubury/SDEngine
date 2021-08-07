@@ -30,16 +30,14 @@ void Sandbox2DLayer::onAttach() {
 void Sandbox2DLayer::onTick(float) {}
 
 void Sandbox2DLayer::onRender() {
-    sd::Renderer2D::beginScene(sd::OrthographicCamera(3, 3, -1.0f, 1.0f),
-                               m_target);
+    sd::Renderer2D::beginScene(
+        sd::OrthographicCamera(800.f, 600.f, -1.0f, 1.0f), m_target);
     sd::Renderer::setClearColor(0.f, 0.f, 0.f, 0.0f);
     sd::Renderer::clear();
     sd::Renderer2D::drawTexture(
-        glm::mat4(1.0f),
-        sd::Graphics::assetManager().load<sd::Texture>("textures/image.png"));
-    sd::Renderer2D::drawQuad(
-        glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 1.0f)),
-        glm::vec4(0.f, 1.f, 0, 1.0f));
+        glm::scale(glm::mat4(1.0f), glm::vec3(80, 24, 0)),
+        sd::Graphics::assetManager().load<sd::Texture>(
+            "textures/1_diagdown.png"));
     sd::Renderer2D::endScene();
 
     sd::Renderer2D::beginScene(sd::OrthographicCamera(1, 1, -1.0f, 1.0f),
