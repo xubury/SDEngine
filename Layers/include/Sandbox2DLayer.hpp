@@ -3,6 +3,7 @@
 
 #include "Core/Layer.hpp"
 #include "Graphics/RenderTarget.hpp"
+#include "Core/ActionTarget.hpp"
 
 class Sandbox2DLayer : public sd::Layer {
    public:
@@ -24,6 +25,8 @@ class Sandbox2DLayer : public sd::Layer {
     sd::RenderTarget m_target;
     sd::RenderTarget m_defaultTarget;
     sd::Ref<sd::Texture> m_texture;
+    sd::ActionTarget<int> m_actionTarget;
+    sd::ActionMap<int> m_actionMap;
 };
 
 #endif /* SANDBOX_2D_LAYER_HPP */

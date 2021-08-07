@@ -8,7 +8,14 @@
 #include "Utils/Log.hpp"
 #include "Graphics/Graphics.hpp"
 
-Sandbox2DLayer::Sandbox2DLayer() : sd::Layer("Sandbox2D") {}
+Sandbox2DLayer::Sandbox2DLayer()
+    : sd::Layer("Sandbox2D"), m_actionTarget(m_actionMap) {
+    m_actionMap.map(0, SDLK_a);
+    m_actionMap.map(
+        1, sd::Action(SDLK_b, sd::Action::REAL_TIME | sd::Action::DOWN));
+    m_actionTarget.bind(0, [](const SDL_Event &) { SD_TRACE("A"); });
+    m_actionTarget.bind(1, [](const SDL_Event &) { SD_TRACE("B"); });
+}
 
 void Sandbox2DLayer::onAttach() {
     m_texture = sd::Texture::create(
@@ -56,6 +63,7 @@ void Sandbox2DLayer::onEventPoll(const SDL_Event &event) {
             }
         }
     }
+    m_actionTarget.processEvent(event);
 }
 
-void Sandbox2DLayer::onEventProcess() {}
+void Sandbox2DLayer::onEventProcess() { m_actionTarget.processEvents(); }

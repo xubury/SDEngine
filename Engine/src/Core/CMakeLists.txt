@@ -8,6 +8,9 @@ set(Include_Root ${PROJECT_SOURCE_DIR}/include/Core)
 set(Src_Root ${PROJECT_SOURCE_DIR}/src/Core)
 
 set(Core_Include
+    ${Include_Root}/Action.hpp
+    ${Include_Root}/ActionMap.hpp
+    ${Include_Root}/ActionTarget.hpp
     ${Include_Root}/EntryPoint.hpp
     ${Include_Root}/Timing.hpp
     ${Include_Root}/Layer.hpp
@@ -19,6 +22,7 @@ set(Core_Include
     ${Include_Root}/Transform.hpp)
 
 set(Core_Src
+    ${Src_Root}/Action.cpp
     ${Src_Root}/EntryPoint.cpp
     ${Src_Root}/Timing.cpp
     ${Src_Root}/LayerStack.cpp
