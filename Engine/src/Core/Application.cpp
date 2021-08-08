@@ -1,5 +1,6 @@
 #include "Core/Application.hpp"
 #include "Utils/Log.hpp"
+#include "Utils/Random.hpp"
 #include "Core/InputManager.hpp"
 #include "Core/Timing.hpp"
 #include <SDL_image.h>
@@ -13,6 +14,7 @@ Application &Application::instance() { return *s_instance; }
 Application::Application() {
     std::string debugPath = "Debug.txt";
     Log::init(debugPath);
+    Random::init();
     SD_CORE_INFO("Debug info is output to: {}", debugPath);
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -43,7 +45,7 @@ void Application::pushLayer(Ref<Layer> layer) { m_layers.pushLayer(layer); }
 void Application::onEventPoll(const SDL_Event &event) {
     switch (event.type) {
         case SDL_QUIT:
-            m_window.setShouldClose(true);
+            quit();
             break;
         case SDL_KEYDOWN:
             InputManager::instance().pressKey(event.key.keysym.sym);
@@ -89,6 +91,8 @@ void Application::run() {
         fpsLimiter.end();
     }
 }
+
+void Application::quit() { m_window.setShouldClose(true); }
 
 void Application::tick(float dt) {
     InputManager::instance().tick();

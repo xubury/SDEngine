@@ -13,8 +13,10 @@ Sandbox2DLayer::Sandbox2DLayer()
     m_actionMap.map(0, SDLK_a);
     m_actionMap.map(
         1, sd::Action(SDLK_b, sd::Action::REAL_TIME | sd::Action::DOWN));
-    m_actionTarget.bind(0, [](const SDL_Event &) { SD_TRACE("A"); });
-    m_actionTarget.bind(1, [](const SDL_Event &) { SD_TRACE("B"); });
+    m_actionTarget.bind(0,
+                        [](const SDL_Event &) { SD_TRACE("Key Pressed:A"); });
+    m_actionTarget.bind(1,
+                        [](const SDL_Event &) { SD_TRACE("Key Pressed:B"); });
 }
 
 void Sandbox2DLayer::onAttach() {
@@ -57,6 +59,10 @@ void Sandbox2DLayer::onRender() {
 
 void Sandbox2DLayer::onEventPoll(const SDL_Event &event) {
     switch (event.type) {
+        case SDL_KEYDOWN:
+            if (event.key.keysym.sym == SDLK_ESCAPE)
+                sd::Application::instance().quit();
+            break;
         case SDL_WINDOWEVENT: {
             if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
                 m_defaultTarget.resize(event.window.data1, event.window.data2);

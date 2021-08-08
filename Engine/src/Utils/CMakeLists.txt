@@ -12,11 +12,13 @@ set(Utils_Include
     ${Include_Root}/Export.hpp
     ${Include_Root}/File.hpp
     ${Include_Root}/Log.hpp
-    ${Include_Root}/PlatformDetection.hpp)
+    ${Include_Root}/PlatformDetection.hpp
+    ${Include_Root}/Random.hpp)
 
 set(Utils_Src
     ${Src_Root}/File.cpp
-    ${Src_Root}/Log.cpp)
+    ${Src_Root}/Log.cpp
+    ${Src_Root}/Random.cpp)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_link_options(sd-core PUBLIC -mconsole)
