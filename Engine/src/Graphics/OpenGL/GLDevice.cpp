@@ -18,7 +18,8 @@ void GLDevice::setClearColor(float r, float g, float b, float a) {
 void GLDevice::clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
 void GLDevice::setViewport(int x, int y, int width, int height) {
-    glViewport(x, y, width, height);
+    // opengl define viewport origin at bottom-left
+    glViewport(x, -y, width, height);
 }
 
 void GLDevice::setFramebuffer(const Framebuffer *framebuffer) {

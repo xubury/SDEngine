@@ -97,6 +97,21 @@ void Camera::updateView() {
     m_outdated = false;
 }
 
+glm::vec3 Camera::mapClipToWorld(const glm::vec2 &pos) const {
+    glm::mat4 projectionView = getViewPorjection();
+    glm::vec4 worldPos =
+        glm::inverse(projectionView) * glm::vec4(pos, 0.f, 1.0f);
+    worldPos /= worldPos.w;
+    return worldPos;
+}
+
+glm::vec3 Camera::mapWorldToClip(const glm::vec3 &pos) const {
+    glm::mat4 projectionView = getViewPorjection();
+    glm::vec4 clipPos = projectionView * glm::vec4(pos, 1.0f);
+    clipPos /= clipPos.w;
+    return clipPos;
+}
+
 OrthographicCamera::OrthographicCamera(float width, float height, float zNear,
                                        float zFar) {
     setProjection(width, height, zNear, zFar);

@@ -13,7 +13,8 @@
 Sandbox2DLayer::Sandbox2DLayer()
     : sd::Layer("Sandbox2D"),
       m_actionTarget(m_actionMap),
-      m_particleSystem(100000) {
+      m_particleSystem(100000),
+      m_masterCam(800.f, 600.f, -1.0f, 1.0f) {
     m_actionMap.map(0, SDLK_a);
     m_actionMap.map(
         1, sd::Action(SDLK_b, sd::Action::REAL_TIME | sd::Action::DOWN));
@@ -43,9 +44,7 @@ void Sandbox2DLayer::onAttach() {
 void Sandbox2DLayer::onTick(float dt) { m_particleSystem.onTick(dt); }
 
 void Sandbox2DLayer::onRender() {
-    sd::OrthographicCamera cam(800.f, 600.f, -1.0f, 1.0f);
-
-    sd::Renderer2D::beginScene(cam, m_target);
+    sd::Renderer2D::beginScene(m_masterCam, m_target);
     sd::Renderer::setClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     sd::Renderer::clear();
     m_particleSystem.onRender();
@@ -67,9 +66,15 @@ void Sandbox2DLayer::onEventPoll(const SDL_Event &event) {
     switch (event.type) {
         case SDL_MOUSEMOTION: {
             sd::ParticleProp prop;
+            int x, y;
+            SDL_GetMouseState(&x, &y);
+            glm::vec2 view = m_defaultTarget.mapScreenToClip(glm::vec2(x, y));
+            glm::vec3 world = m_masterCam.mapClipToWorld(view);
+            world.z = -1.0f;
             for (int i = 0; i < 10; ++i) {
-                prop.position = glm::vec3(sd::Random::rnd(-10.f, 10.f),
-                                          sd::Random::rnd(-10.f, 10.f), 0.5f);
+                prop.position =
+                    world + glm::vec3(sd::Random::rnd(-10.f, 10.f),
+                                      sd::Random::rnd(-10.f, 10.f), 0.5f);
                 prop.velocity = glm::vec3(0.f, 50.f, 0.f);
                 prop.velocityVariation = glm::vec3(50.f, 10.f, 0.f);
                 prop.colorBegin = glm::vec4(0.5, 0.5, 0.f, 1.0f);

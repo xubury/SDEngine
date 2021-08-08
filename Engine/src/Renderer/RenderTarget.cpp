@@ -38,9 +38,28 @@ void RenderTarget::resize(int width, int height) {
     m_height = height;
 }
 
+void RenderTarget::setOrigin(int x, int y) {
+    m_x = x;
+    m_y = y;
+}
+
 void RenderTarget::use() const {
     Renderer::setFramebuffer(m_framebuffer.get());
     Renderer::setViewport(m_x, m_y, m_width, m_height);
+}
+
+glm::vec2 RenderTarget::mapScreenToClip(const glm::vec2 &pos) {
+    glm::vec2 view;
+    view.x = -1.f + 2.f * (pos.x - m_x) / m_width;
+    view.y = 1.f - 2.f * (pos.y - m_y) / m_height;
+    return view;
+}
+
+glm::vec2 RenderTarget::mapClipToScreen(const glm::vec2 &pos) {
+    glm::vec2 screen;
+    screen.x = (pos.x + 1.f) * m_width / 2.f + m_x;
+    screen.y = (1.f - pos.y) * m_height / 2.f + m_y;
+    return screen;
 }
 
 }  // namespace sd

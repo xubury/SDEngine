@@ -5,6 +5,7 @@
 #include "Graphics/Texture.hpp"
 #include "Graphics/Framebuffer.hpp"
 #include <vector>
+#include <glm/glm.hpp>
 
 namespace sd {
 
@@ -27,9 +28,14 @@ class RenderTarget {
 
     void resize(int width, int height);
 
+    void setOrigin(int x, int y);
+
     void use() const;
 
     Ref<Framebuffer> m_framebuffer;
+
+    glm::vec2 mapScreenToClip(const glm::vec2 &pos);
+    glm::vec2 mapClipToScreen(const glm::vec2 &pos);
 
    private:
     int m_x;

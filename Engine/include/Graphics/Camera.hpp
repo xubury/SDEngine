@@ -36,6 +36,9 @@ class SD_API Camera {
 
     bool outdated() const;
 
+    glm::vec3 mapClipToWorld(const glm::vec2 &pos) const;
+    glm::vec3 mapWorldToClip(const glm::vec3 &pos) const;
+
    private:
     void updateView();
 
