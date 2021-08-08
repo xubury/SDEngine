@@ -83,7 +83,7 @@ void Application::run() {
         }
 
         uint32_t newTicks = SDL_GetTicks();
-        tick(newTicks - lastTicks);
+        tick((newTicks - lastTicks) / 1000.f);
         lastTicks = newTicks;
 
         render();

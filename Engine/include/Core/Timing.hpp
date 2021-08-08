@@ -19,6 +19,7 @@ class FpsLimiter {
     void begin();
     float end();
 
+    float getFps() const;
    private:
     void calculateFps();
 

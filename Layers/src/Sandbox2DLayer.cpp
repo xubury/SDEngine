@@ -68,16 +68,16 @@ void Sandbox2DLayer::onEventPoll(const SDL_Event &event) {
         case SDL_MOUSEMOTION: {
             sd::ParticleProp prop;
             for (int i = 0; i < 10; ++i) {
-                prop.position = glm::vec3(sd::Random::rnd(-100.f, 100.f),
-                                          sd::Random::rnd(-100.f, 100.f), 0.5f);
-                prop.velocity = glm::vec3(0, 0.5f, 0.f);
-                prop.velocityVariation = glm::vec3(0.5f, 0.5f, 0.f);
+                prop.position = glm::vec3(sd::Random::rnd(-10.f, 10.f),
+                                          sd::Random::rnd(-10.f, 10.f), 0.5f);
+                prop.velocity = glm::vec3(0.f, 50.f, 0.f);
+                prop.velocityVariation = glm::vec3(50.f, 10.f, 0.f);
                 prop.colorBegin = glm::vec4(0.5, 0.5, 0.f, 1.0f);
                 prop.colorEnd = glm::vec4(0.f, 0.5, 5.f, 1.0f);
                 prop.sizeBegin = 10.0f;
                 prop.sizeEnd = 2.f;
                 prop.sizeVariation = 1.f;
-                prop.lifeTime = 2000;
+                prop.lifeTime = 2.0f;
                 m_particleSystem.emit(prop);
             }
         } break;

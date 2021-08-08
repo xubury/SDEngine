@@ -26,4 +26,6 @@ void FpsLimiter::calculateFps() {
     m_fps = 1000.f / m_frameTicks;
 }
 
+float FpsLimiter::getFps() const { return m_fps; }
+
 }  // namespace sd

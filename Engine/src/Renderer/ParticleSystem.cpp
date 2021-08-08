@@ -42,7 +42,7 @@ void ParticleSystem::onTick(float dt) {
 
         particle.lifeRemaining -= dt;
         particle.position += particle.velocity * dt;
-        particle.rotation += dt / 100.f;
+        // particle.rotation += dt * 180.0f / M_PI;
     }
 }
 
@@ -54,8 +54,10 @@ void ParticleSystem::emit(const ParticleProp &particleProps) {
     particle.position = particleProps.position;
     particle.rotation = Random::rnd(0.f, 1.0f) * M_PI * 2.0f;
     particle.velocity = particleProps.velocity;
-    particle.velocity +=
-        particleProps.velocityVariation * Random::rnd(-0.5f, 0.5f);
+    particle.velocity.x +=
+        particleProps.velocityVariation.x * Random::rnd(-1.0f, 1.0f);
+    particle.velocity.y +=
+        particleProps.velocityVariation.y * Random::rnd(-1.0f, 1.0f);
 
     particle.colorBegin = particleProps.colorBegin;
     particle.colorEnd = particleProps.colorEnd;
@@ -65,8 +67,9 @@ void ParticleSystem::emit(const ParticleProp &particleProps) {
 
     particle.sizeBegin = particleProps.sizeBegin;
     particle.sizeEnd = particleProps.sizeEnd;
-    particle.sizeBegin += particleProps.sizeBegin * Random::rnd(-0.5f, 0.5f);
-    particle.sizeEnd += particleProps.sizeVariation * Random::rnd(-0.5f, 0.5f);
+    particle.sizeBegin +=
+        particleProps.sizeVariation * Random::rnd(-1.0f, 1.0f);
+    particle.sizeEnd += particleProps.sizeVariation * Random::rnd(-1.0f, 1.0f);
 
     m_poolIndex = (m_poolIndex - 1) % m_particles.size();
 }
