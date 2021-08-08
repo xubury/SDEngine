@@ -131,9 +131,7 @@ void GLShader::setMat4(const std::string& name, const glm::mat4& value) const {
                        glm::value_ptr(value));
 }
 
-void GLShader::setTexture(const std::string& name, const Texture& texture,
-                          int index) const {
-    setInt(name, index);
+void GLShader::setTexture(const Texture& texture, int index) const {
     texture.setSlot(index);
 }
 

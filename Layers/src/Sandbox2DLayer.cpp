@@ -46,7 +46,7 @@ void Sandbox2DLayer::onRender() {
     sd::OrthographicCamera cam(800.f, 600.f, -1.0f, 1.0f);
 
     sd::Renderer2D::beginScene(cam, m_target);
-    sd::Renderer::setClearColor(0.f, 0.f, 0.f, 0.0f);
+    sd::Renderer::setClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     sd::Renderer::clear();
     m_particleSystem.onRender();
     sd::Renderer2D::drawTexture(
@@ -57,7 +57,7 @@ void Sandbox2DLayer::onRender() {
 
     sd::Renderer2D::beginScene(sd::OrthographicCamera(1, 1, -1.0f, 1.0f),
                                m_defaultTarget);
-    sd::Renderer::setClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+    sd::Renderer::setClearColor(0.f, 0.f, 0.f, 1.0f);
     sd::Renderer::clear();
     sd::Renderer2D::drawTexture(glm::mat4(1.0f), m_texture);
     sd::Renderer2D::endScene();
@@ -69,9 +69,9 @@ void Sandbox2DLayer::onEventPoll(const SDL_Event &event) {
             sd::ParticleProp prop;
             for (int i = 0; i < 10; ++i) {
                 prop.position = glm::vec3(sd::Random::rnd(-100.f, 100.f),
-                                          sd::Random::rnd(-100.f, 100.f), 0.5);
-                prop.velocity = glm::vec3(0, 1.0f, 0.f);
-                prop.velocityVariation = glm::vec3(1.f, 1.f, 0.f);
+                                          sd::Random::rnd(-100.f, 100.f), 0.5f);
+                prop.velocity = glm::vec3(0, 0.5f, 0.f);
+                prop.velocityVariation = glm::vec3(0.5f, 0.5f, 0.f);
                 prop.colorBegin = glm::vec4(0.5, 0.5, 0.f, 1.0f);
                 prop.colorEnd = glm::vec4(0.f, 0.5, 5.f, 1.0f);
                 prop.sizeBegin = 10.0f;
