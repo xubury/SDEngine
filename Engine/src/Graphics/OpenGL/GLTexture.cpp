@@ -48,6 +48,8 @@ void GLTexture::bind() const { glBindTexture(gl_type, gl_id); }
 
 void GLTexture::unbind() const { glBindTexture(gl_type, 0); }
 
+void GLTexture::setSlot(uint32_t slot) const { glBindTextureUnit(slot, gl_id); }
+
 void GLTexture::setPixels(int width, int height, void *data) {
     m_width = width;
     m_height = height;

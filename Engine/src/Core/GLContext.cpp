@@ -37,11 +37,16 @@ bool GLContext::create(SDL_Window* window) {
         SD_CORE_ERROR("SDL_GL_SetAttribute Failed: {}", SDL_GetError());
         exit(-1);
     }
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+                        SDL_GL_CONTEXT_PROFILE_CORE);
     if (glewInit() != GLEW_OK) {
         SD_CORE_ERROR("glewInit failed!");
         return false;
     }
 #ifdef DEBUG_BUILD
+    glEnable(GL_DEPTH_TEST);
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback(OpenGLMessageCallback, nullptr);

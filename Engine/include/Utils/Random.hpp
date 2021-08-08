@@ -8,15 +8,17 @@ namespace sd {
 
 class Random {
    public:
-    double rnd(double min, double max);
-    int rnd(int min, int max);
+    static float rnd(float min, float max);
+    static double rnd(double min, double max);
+    static int rnd(int min, int max);
 
     static void init();
     static void init(uint32_t seed);
 
    private:
-    static uint32_t s_nProcGen;
-    static uint32_t lehmer64();
+    static std::mt19937 s_randomEngine;
+    static std::uniform_int_distribution<std::mt19937::result_type>
+        s_distribution;
 };
 
 }  // namespace sd

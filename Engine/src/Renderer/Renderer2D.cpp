@@ -37,7 +37,7 @@ struct Renderer2DData {
     Ref<IndexBuffer> quadEBO;
     Ref<Shader> shader;
 
-    uint32_t quadIndexCnt = 0;
+    size_t quadIndexCnt = 0;
     std::array<QuadVertex, MAX_VERTICES> quadVertexBufferBase;
     QuadVertex* quadVertexBufferPtr = nullptr;
 
@@ -79,7 +79,7 @@ void Renderer2D::init() {
 
     s_data.quadVBO = VertexBuffer::create(
         s_data.quadVertexBufferBase.data(),
-        s_data.MAX_VERTICES * sizeof(QuadVertex), BufferIOType::STATIC);
+        s_data.MAX_VERTICES * sizeof(QuadVertex), BufferIOType::DYNAMIC);
 
     VertexBufferLayout layout;
     layout.push<float>(3);     // position
@@ -145,7 +145,6 @@ void Renderer2D::flush() {
     }
 
     s_data.quadVAO->bind();
-
     Renderer::drawElements(MeshTopology::TRIANGLES, s_data.quadIndexCnt, 0);
 }
 
@@ -200,8 +199,8 @@ void Renderer2D::drawTexture(const glm::mat4& transform,
     for (uint32_t i = 0; i < 4; ++i) {
         s_data.quadVertexBufferPtr->position =
             transform * s_data.quadVertexPositions[i];
-        s_data.quadVertexBufferPtr->texCoord = s_data.quadTexCoords[i];
         s_data.quadVertexBufferPtr->color = glm::vec4(1.0f);
+        s_data.quadVertexBufferPtr->texCoord = s_data.quadTexCoords[i];
         s_data.quadVertexBufferPtr->texIndex = textureIndex;
         ++s_data.quadVertexBufferPtr;
     }

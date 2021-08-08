@@ -21,6 +21,8 @@ class GLTexture : public Texture {
     void bind() const override;
     void unbind() const override;
 
+    void setSlot(uint32_t slot) const override;
+
     void setPixels(int width, int height, void *data) override;
     void setBorderColor(const void *color) override;
     void setWrap(TextureWrap wrap) override;

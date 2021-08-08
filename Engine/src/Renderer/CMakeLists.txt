@@ -2,11 +2,13 @@ set(Include_Root ${PROJECT_SOURCE_DIR}/include/Renderer)
 set(Src_Root ${PROJECT_SOURCE_DIR}/src/Renderer)
 
 set(Renderer_Include
+    ${Include_Root}/ParticleSystem.hpp
     ${Include_Root}/Renderer.hpp
     ${Include_Root}/Renderer2D.hpp
     ${Include_Root}/Renderer3D.hpp)
 
 set(Renderer_Src
+    ${Src_Root}/ParticleSystem.cpp
     ${Src_Root}/Renderer.cpp
     ${Src_Root}/Renderer2D.cpp
     ${Src_Root}/Renderer3D.cpp

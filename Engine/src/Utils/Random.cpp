@@ -2,29 +2,32 @@
 
 namespace sd {
 
-uint32_t Random::s_nProcGen;
+std::mt19937 Random::s_randomEngine;
+std::uniform_int_distribution<std::mt19937::result_type> Random::s_distribution;
 
 void Random::init() {
     std::random_device rd;
-    s_nProcGen = rd();
+    s_randomEngine.seed(rd());
 }
 
-uint32_t Random::lehmer64() {
-    s_nProcGen += 0xe120fc15;
-    uint64_t tmp;
-    tmp = (uint64_t)s_nProcGen * 0x4a39b70d;
-    uint32_t m1 = (tmp >> 32) ^ tmp;
-    tmp = (uint64_t)m1 * 0x12fad5c9;
-    uint32_t m2 = (tmp >> 32) ^ tmp;
-    return m2;
-}
+void Random::init(uint32_t seed) { s_randomEngine.seed(seed); }
 
-void Random::init(uint32_t seed) { s_nProcGen = seed; }
+float Random::rnd(float min, float max) {
+    return (float)s_distribution(s_randomEngine) /
+               (float)std::numeric_limits<uint32_t>::max() * (max - min) +
+           min;
+}
 
 double Random::rnd(double min, double max) {
-    return ((double)lehmer64() / (double)(0x7FFFFFFF)) * (max - min) + min;
+    return (double)s_distribution(s_randomEngine) /
+               (double)std::numeric_limits<uint32_t>::max() * (max - min) +
+           min;
 }
 
-int Random::rnd(int min, int max) { return (lehmer64() % (max - min)) + min; }
+int Random::rnd(int min, int max) {
+    return (float)s_distribution(s_randomEngine) /
+               (float)std::numeric_limits<uint32_t>::max() * (max - min) +
+           min;
+}
 
 }  // namespace sd

@@ -7,9 +7,13 @@
 #include "Graphics/Texture.hpp"
 #include "Utils/Log.hpp"
 #include "Graphics/Graphics.hpp"
+#include "Core/InputManager.hpp"
+#include "Utils/Random.hpp"
 
 Sandbox2DLayer::Sandbox2DLayer()
-    : sd::Layer("Sandbox2D"), m_actionTarget(m_actionMap) {
+    : sd::Layer("Sandbox2D"),
+      m_actionTarget(m_actionMap),
+      m_particleSystem(100000) {
     m_actionMap.map(0, SDLK_a);
     m_actionMap.map(
         1, sd::Action(SDLK_b, sd::Action::REAL_TIME | sd::Action::DOWN));
@@ -36,15 +40,17 @@ void Sandbox2DLayer::onAttach() {
                            sd::Application::getWindow().getHeight());
 }
 
-void Sandbox2DLayer::onTick(float) {}
+void Sandbox2DLayer::onTick(float dt) { m_particleSystem.onTick(dt); }
 
 void Sandbox2DLayer::onRender() {
-    sd::Renderer2D::beginScene(
-        sd::OrthographicCamera(800.f, 600.f, -1.0f, 1.0f), m_target);
+    sd::OrthographicCamera cam(800.f, 600.f, -1.0f, 1.0f);
+
+    sd::Renderer2D::beginScene(cam, m_target);
     sd::Renderer::setClearColor(0.f, 0.f, 0.f, 0.0f);
     sd::Renderer::clear();
+    m_particleSystem.onRender();
     sd::Renderer2D::drawTexture(
-        glm::scale(glm::mat4(1.0f), glm::vec3(80, 24, 0)),
+        glm::scale(glm::mat4(1.0f), glm::vec3(80.f, 24.f, 1.0f)),
         sd::Graphics::assetManager().load<sd::Texture>(
             "textures/1_diagdown.png"));
     sd::Renderer2D::endScene();
@@ -59,10 +65,27 @@ void Sandbox2DLayer::onRender() {
 
 void Sandbox2DLayer::onEventPoll(const SDL_Event &event) {
     switch (event.type) {
-        case SDL_KEYDOWN:
+        case SDL_MOUSEMOTION: {
+            sd::ParticleProp prop;
+            for (int i = 0; i < 10; ++i) {
+                prop.position = glm::vec3(sd::Random::rnd(-100.f, 100.f),
+                                          sd::Random::rnd(-100.f, 100.f), 0.5);
+                prop.velocity = glm::vec3(0, 1.0f, 0.f);
+                prop.velocityVariation = glm::vec3(1.f, 1.f, 0.f);
+                prop.colorBegin = glm::vec4(0.5, 0.5, 0.f, 1.0f);
+                prop.colorEnd = glm::vec4(0.f, 0.5, 5.f, 1.0f);
+                prop.sizeBegin = 10.0f;
+                prop.sizeEnd = 2.f;
+                prop.sizeVariation = 1.f;
+                prop.lifeTime = 2000;
+                m_particleSystem.emit(prop);
+            }
+        } break;
+        case SDL_KEYDOWN: {
             if (event.key.keysym.sym == SDLK_ESCAPE)
                 sd::Application::instance().quit();
             break;
+        }
         case SDL_WINDOWEVENT: {
             if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
                 m_defaultTarget.resize(event.window.data1, event.window.data2);

@@ -21,6 +21,8 @@ class SD_API Texture {
     virtual void bind() const = 0;
     virtual void unbind() const = 0;
 
+    virtual void setSlot(uint32_t slot) const = 0;
+
     virtual void setPixels(int width, int height, void *data) = 0;
     virtual void setBorderColor(const void *color) = 0;
     virtual void setWrap(TextureWrap wrap) = 0;
