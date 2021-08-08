@@ -2,9 +2,9 @@
 #include "Utils/Log.hpp"
 #include "Core/EntryPoint.hpp"
 #include "Sandbox2DLayer.hpp"
-#include "Graphics/Renderer.hpp"
-#include "Graphics/Renderer2D.hpp"
-#include "Graphics/Renderer3D.hpp"
+#include "Renderer/Renderer.hpp"
+#include "Renderer/Renderer2D.hpp"
+#include "Renderer/Renderer3D.hpp"
 
 sd::Application *sd::createApp() { return new Sandbox2DApp; }
 

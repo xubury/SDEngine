@@ -2,7 +2,7 @@
 #define SANDBOX_2D_LAYER_HPP
 
 #include "Core/Layer.hpp"
-#include "Graphics/RenderTarget.hpp"
+#include "Renderer/RenderTarget.hpp"
 #include "Core/ActionTarget.hpp"
 
 class Sandbox2DLayer : public sd::Layer {

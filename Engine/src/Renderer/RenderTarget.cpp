@@ -1,5 +1,5 @@
-#include "Graphics/RenderTarget.hpp"
-#include "Graphics/Renderer.hpp"
+#include "Renderer/RenderTarget.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Utils/Log.hpp"
 
 namespace sd {

@@ -1,7 +1,7 @@
-#include "Graphics/Renderer3D.hpp"
-#include "Graphics/Renderer.hpp"
+#include "Renderer/Renderer3D.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Graphics/Buffer.hpp"
-#include "Graphics/RenderTarget.hpp"
+#include "Renderer/RenderTarget.hpp"
 #include "Graphics/Camera.hpp"
 
 namespace sd {

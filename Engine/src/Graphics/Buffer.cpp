@@ -1,5 +1,5 @@
 #include "Graphics/Buffer.hpp"
-#include "Graphics/Renderer.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Graphics/OpenGL/GLBuffer.hpp"
 #include "Utils/Log.hpp"
 

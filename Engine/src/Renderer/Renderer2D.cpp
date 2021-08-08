@@ -1,5 +1,5 @@
-#include "Graphics/Renderer2D.hpp"
-#include "Graphics/Renderer.hpp"
+#include "Renderer/Renderer2D.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/Buffer.hpp"
@@ -8,7 +8,7 @@
 #include "Graphics/Camera.hpp"
 #include "Graphics/Device.hpp"
 #include "Graphics/Framebuffer.hpp"
-#include "Graphics/RenderTarget.hpp"
+#include "Renderer/RenderTarget.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include <cstdint>
 

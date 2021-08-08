@@ -1,5 +1,5 @@
 #include "Graphics/VertexArray.hpp"
-#include "Graphics/Renderer.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Graphics/OpenGL/GLVertexArray.hpp"
 #include "Utils/Log.hpp"
 

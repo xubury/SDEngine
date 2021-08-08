@@ -1,5 +1,5 @@
 #include "Graphics/Shader.hpp"
-#include "Graphics/Renderer.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Graphics/OpenGL/GLShader.hpp"
 #include "Utils/Log.hpp"
 
