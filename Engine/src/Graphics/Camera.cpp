@@ -87,10 +87,10 @@ bool Camera::outdated() const { return m_outdated; }
 
 void Camera::updateView() {
     glm::vec3 pos = getWorldPosition();
-    glm::vec3 front = pos - getWorldRotation() * glm::vec3(0, 0, 1);
+    glm::vec3 front = getWorldRotation() * glm::vec3(0, 0, 1);
     glm::vec3 up = getWorldRotation() * glm::vec3(0, 1, 0);
 
-    m_view = glm::lookAt(pos, front, up);
+    m_view = glm::lookAt(pos, pos - front, up);
     m_position = getWorldPosition();
     m_rotation = getWorldRotation();
 
@@ -99,7 +99,7 @@ void Camera::updateView() {
 
 OrthographicCamera::OrthographicCamera(float width, float height, float zNear,
                                        float zFar) {
-    setProjection(width, height, zFar, zNear);
+    setProjection(width, height, zNear, zFar);
 }
 
 OrthographicCamera::OrthographicCamera(Transform *transform, float width,
