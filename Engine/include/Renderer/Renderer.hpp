@@ -3,6 +3,8 @@
 
 #include <cstdint>
 #include "Graphics/Graphics.hpp"
+#include "Graphics/Shader.hpp"
+#include "Graphics/VertexArray.hpp"
 
 namespace sd {
 
@@ -15,8 +17,8 @@ class SD_API Renderer {
 
     static API getAPI();
 
-    static void drawElements(MeshTopology topology, size_t count,
-                             size_t offset);
+    static void submit(const VertexArray &vao, MeshTopology topology,
+                       size_t count, size_t offset);
 
     static void setClearColor(float r, float g, float b, float a);
 

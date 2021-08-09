@@ -24,8 +24,9 @@ void Renderer::init(API api) {
 
 API Renderer::getAPI() { return s_api; }
 
-void Renderer::drawElements(MeshTopology topology, size_t count,
-                            size_t offset) {
+void Renderer::submit(const VertexArray &vao, MeshTopology topology,
+                      size_t count, size_t offset) {
+    vao.bind();
     Device::instance().drawElements(topology, count, offset);
 }
 

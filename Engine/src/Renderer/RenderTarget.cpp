@@ -14,7 +14,7 @@ void RenderTarget::init() {
             colors.push_back(colors.size());
         }
     }
-    m_framebuffer->setDrawable(colors);
+    if (colors.size()) m_framebuffer->setDrawable(colors);
 }
 
 void RenderTarget::addTexture(const Ref<Texture> &texture) {

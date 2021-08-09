@@ -33,11 +33,4 @@ void Renderer3D::beginScene(const Camera &camera, const RenderTarget &target) {
 
 void Renderer3D::endScene() {}
 
-void Renderer3D::submit(const Shader &shader, const VertexArray &vao,
-                        MeshTopology topology, size_t count) {
-    shader.bind();
-    vao.bind();
-    Renderer::drawElements(topology, count, 0);
-}
-
 }  // namespace sd

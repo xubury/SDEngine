@@ -32,9 +32,9 @@ class RenderTarget {
 
     void use() const;
 
-    Ref<Framebuffer> m_framebuffer;
-
+    // map coordinate from screen space to clip space
     glm::vec2 mapScreenToClip(const glm::vec2 &pos);
+    // map coordinate from clip space to screen space
     glm::vec2 mapClipToScreen(const glm::vec2 &pos);
 
    private:
@@ -43,6 +43,7 @@ class RenderTarget {
     int m_width;
     int m_height;
     std::vector<Ref<Texture>> m_textures;
+    Ref<Framebuffer> m_framebuffer;
 };
 
 }  // namespace sd

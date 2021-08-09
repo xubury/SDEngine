@@ -142,8 +142,8 @@ void Renderer2D::flush() {
         s_data.shader->setTexture(*s_data.textureSlots[i], i);
     }
 
-    s_data.quadVAO->bind();
-    Renderer::drawElements(MeshTopology::TRIANGLES, s_data.quadIndexCnt, 0);
+    Renderer::submit(*s_data.quadVAO, MeshTopology::TRIANGLES,
+                     s_data.quadIndexCnt, 0);
 }
 
 void Renderer2D::startBatch() {
