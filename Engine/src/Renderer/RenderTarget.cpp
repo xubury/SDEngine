@@ -36,6 +36,9 @@ int RenderTarget::getHeight() const { return m_height; }
 void RenderTarget::resize(int width, int height) {
     m_width = width;
     m_height = height;
+    for (Ref<Texture> texture : m_textures) {
+        texture->setPixels(width, height, nullptr);
+    }
 }
 
 void RenderTarget::setOrigin(int x, int y) {

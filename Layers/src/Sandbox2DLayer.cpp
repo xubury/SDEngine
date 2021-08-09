@@ -93,6 +93,7 @@ void Sandbox2DLayer::onEventPoll(const SDL_Event &event) {
         }
         case SDL_WINDOWEVENT: {
             if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+                m_target.resize(event.window.data1, event.window.data2);
                 m_defaultTarget.resize(event.window.data1, event.window.data2);
             }
         }
