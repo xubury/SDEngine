@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <unordered_map>
+#include <glm/glm.hpp>
 #include "Utils/Export.hpp"
 
 namespace sd {
@@ -19,6 +20,7 @@ class SD_API InputManager {
     bool wasMouseDown(uint8_t button);
     bool isMousePressed(uint8_t button);
 
+    glm::vec2 getMouseCoord() const;
    private:
     friend class Application;
     void tick();
@@ -28,6 +30,8 @@ class SD_API InputManager {
 
     void pressMouseButton(uint8_t button);
     void releaseMouseButton(uint8_t button);
+
+    void setMouseCoord(float x, float y);
 
     InputManager() = default;
     ~InputManager() = default;
@@ -40,6 +44,8 @@ class SD_API InputManager {
 
     std::unordered_map<uint8_t, bool> m_mouseBtnMap;
     std::unordered_map<uint8_t, bool> m_lastMouseBtnMap;
+
+    glm::vec2 m_mouseCoord;
 };
 
 }  // namespace sd

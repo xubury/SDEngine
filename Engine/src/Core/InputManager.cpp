@@ -74,4 +74,11 @@ bool InputManager::isMousePressed(uint8_t button) {
     return isMouseDown(button) && !wasMouseDown(button);
 }
 
+void InputManager::setMouseCoord(float x, float y) {
+    m_mouseCoord.x = x;
+    m_mouseCoord.y = y;
+}
+
+glm::vec2 InputManager::getMouseCoord() const { return m_mouseCoord; }
+
 }  // namespace sd

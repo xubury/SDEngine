@@ -59,6 +59,9 @@ void Application::onEventPoll(const SDL_Event &event) {
         case SDL_MOUSEBUTTONUP:
             InputManager::instance().releaseMouseButton(event.button.button);
             break;
+        case SDL_MOUSEMOTION:
+            InputManager::instance().setMouseCoord(event.motion.x,
+                                                   event.motion.y);
         default:
             break;
     }
