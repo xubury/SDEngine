@@ -47,7 +47,7 @@ Application::Application() {
 
     sd::Renderer::getDefaultTarget().resize(width, height);
     m_imguiLayer = createRef<ImGuiLayer>();
-    pushOverlay(m_imguiLayer);
+    // pushOverlay(m_imguiLayer);
 }
 
 Application::~Application() {
