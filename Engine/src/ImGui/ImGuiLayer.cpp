@@ -1,7 +1,7 @@
 #include "ImGui/ImGuiLayer.hpp"
 #include "Core/Application.hpp"
 #include "Graphics/Graphics.hpp"
-#include "Renderer/Renderer.hpp"
+#include "Graphics/Graphics.hpp"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl.h"
 
@@ -10,7 +10,7 @@ namespace sd {
 ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}
 
 void ImGuiLayer::begin() {
-    switch (Renderer::getAPI()) {
+    switch (Graphics::getAPI()) {
         case API::OpenGL:
             ImGui_ImplOpenGL3_NewFrame();
             break;
@@ -26,7 +26,7 @@ void ImGuiLayer::end() {
     io.DisplaySize = ImVec2((float)Application::getWindow().getWidth(),
                             (float)Application::getWindow().getHeight());
     ImGui::Render();
-    switch (Renderer::getAPI()) {
+    switch (Graphics::getAPI()) {
         case API::OpenGL:
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
             break;
@@ -54,11 +54,11 @@ void ImGuiLayer::onAttach() {
     setDarkThemeColor();
 
     // Setup Platform/Renderer backends
-    switch (Renderer::getAPI()) {
+    switch (Graphics::getAPI()) {
         case API::OpenGL:
             ImGui_ImplSDL2_InitForOpenGL(
-                Application::getWindow().getSDLHandle(),
-                Application::getWindow().getSDLGLContext());
+                Application::getWindow().getHandle(),
+                Application::getWindow().getGraphicContext());
             ImGui_ImplOpenGL3_Init("#version 450");
             break;
         default:

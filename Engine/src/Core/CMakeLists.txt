@@ -7,27 +7,35 @@ find_package(glm REQUIRED)
 set(Include_Root ${PROJECT_SOURCE_DIR}/include/Core)
 set(Src_Root ${PROJECT_SOURCE_DIR}/src/Core)
 
+set(OpenGL_Include
+    ${Include_Root}/OpenGL/GLContext.hpp)
+
+set(OpenGL_Src
+    ${Src_Root}/OpenGL/GLContext.cpp)
+
 set(Core_Include
+    ${OpenGL_Include}
     ${Include_Root}/Action.hpp
     ${Include_Root}/ActionMap.hpp
     ${Include_Root}/ActionTarget.hpp
+    ${Include_Root}/Context.hpp
     ${Include_Root}/EntryPoint.hpp
     ${Include_Root}/Timing.hpp
     ${Include_Root}/Layer.hpp
     ${Include_Root}/LayerStack.hpp
     ${Include_Root}/Window.hpp
-    ${Include_Root}/GLContext.hpp
     ${Include_Root}/Application.hpp
     ${Include_Root}/InputManager.hpp
     ${Include_Root}/Transform.hpp)
 
 set(Core_Src
+    ${OpenGL_Src}
     ${Src_Root}/Action.cpp
+    ${Src_Root}/Context.cpp
     ${Src_Root}/EntryPoint.cpp
     ${Src_Root}/Timing.cpp
     ${Src_Root}/LayerStack.cpp
     ${Src_Root}/Window.cpp
-    ${Src_Root}/GLContext.cpp
     ${Src_Root}/Application.cpp
     ${Src_Root}/InputManager.cpp
     ${Src_Root}/Transform.cpp)

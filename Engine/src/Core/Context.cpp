@@ -1,21 +1,21 @@
-#include "Graphics/Shader.hpp"
+#include "Core/Context.hpp"
+#include "Core/OpenGL/GLContext.hpp"
 #include "Graphics/Graphics.hpp"
-#include "Graphics/OpenGL/GLShader.hpp"
 #include "Utils/Log.hpp"
 
 namespace sd {
 
-Ref<Shader> Shader::create() {
-    Ref<Shader> shader;
+Ref<Context> Context::create(SDL_Window *window) {
+    Ref<Context> context;
     switch (Graphics::getAPI()) {
         case API::OpenGL:
-            shader = createRef<GLShader>();
+            context = createRef<GLContext>(window);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
-    if (shader) shader->init();
-    return shader;
+    return context;
 }
+
 }  // namespace sd

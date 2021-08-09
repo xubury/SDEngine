@@ -1,5 +1,6 @@
 #include "Core/Window.hpp"
 #include "Utils/Log.hpp"
+#include "Graphics/Graphics.hpp"
 
 namespace sd {
 
@@ -8,7 +9,14 @@ Window::Window() : m_shouldClose(false) {}
 bool Window::create(const std::string &title, int width, int height,
                     WindowFlag flags) {
     SD_CORE_TRACE("Initializing window...");
-    uint32_t sdlFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
+    uint32_t sdlFlags = SDL_WINDOW_RESIZABLE;
+    switch (Graphics::getAPI()) {
+        case API::OpenGL:
+            sdlFlags |= SDL_WINDOW_OPENGL;
+            break;
+        default:
+            break;
+    }
     if (flags & INVISIBLE) {
         sdlFlags |= SDL_WINDOW_HIDDEN;
     }
@@ -27,9 +35,8 @@ bool Window::create(const std::string &title, int width, int height,
         return false;
     }
 
-    if (!m_context.create(m_window)) {
-        return false;
-    }
+    m_context = Context::create(m_window);
+
     return true;
 }
 
@@ -55,10 +62,8 @@ int Window::getHeight() const {
     return h;
 }
 
-SDL_Window *Window::getSDLHandle() const { return m_window; }
+SDL_Window *Window::getHandle() const { return m_window; }
 
-SDL_GLContext Window::getSDLGLContext() const {
-    return m_context.getSDLHandle();
-}
+void *Window::getGraphicContext() const { return m_context->getHandle(); }
 
 }  // namespace sd

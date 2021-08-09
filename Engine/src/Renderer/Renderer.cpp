@@ -13,9 +13,9 @@ Renderer &Renderer::instance() {
     return s_instance;
 }
 
-void Renderer::init(API api) {
+void Renderer::init() {
     SD_CORE_TRACE("Initializing Renderer...");
-    switch (api) {
+    switch (Graphics::getAPI()) {
         case API::OpenGL:
             Device::s_instance = createScope<GLDevice>();
             break;
@@ -24,10 +24,7 @@ void Renderer::init(API api) {
             break;
     }
     instance().m_defaultTarget = createRef<RenderTarget>();
-    instance().m_api = api;
 }
-
-API Renderer::getAPI() { return instance().m_api; }
 
 void Renderer::submit(const VertexArray &vao, MeshTopology topology,
                       size_t count, size_t offset) {

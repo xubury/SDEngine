@@ -13,9 +13,7 @@ class Framebuffer;
 
 class SD_API Renderer {
    public:
-    static void init(API api);
-
-    static API getAPI();
+    static void init();
 
     static void submit(const VertexArray &vao, MeshTopology topology,
                        size_t count, size_t offset);

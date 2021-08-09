@@ -2,19 +2,20 @@
 #define SD_GL_CONTEXT_HPP
 
 #include "Utils/Export.hpp"
+#include "Core/Context.hpp"
 #include <SDL.h>
 
 namespace sd {
 
 class Window;
 
-class SD_API GLContext {
+class SD_API GLContext : public Context {
    public:
-    bool create(SDL_Window *window);
+    GLContext(SDL_Window *window);
 
     ~GLContext();
 
-    SDL_GLContext getSDLHandle() const;
+    void *getHandle() const override;
 
    private:
     friend class Window;

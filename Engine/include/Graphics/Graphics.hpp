@@ -52,7 +52,9 @@ enum BufferBit {
 
 class Graphics {
    public:
-    static void init();
+    static void init(API api);
+
+    static API getAPI();
 
     static AssetManager &assetManager();
 };

@@ -1,5 +1,4 @@
-#include "Core/GLContext.hpp"
-#include "Core/Window.hpp"
+#include "Core/OpenGL/GLContext.hpp"
 #include "Utils/Assert.hpp"
 #include <GL/glew.h>
 
@@ -33,12 +32,12 @@ static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
 #define SDL(stmt) stmt
 #endif
 
-bool GLContext::create(SDL_Window* window) {
+GLContext::GLContext(SDL_Window* window) {
     SD_CORE_TRACE("Initializing GLContext...");
     m_context = SDL_GL_CreateContext(window);
     if (m_context == nullptr) {
         SD_CORE_ERROR("SDL_GL_CreateContext failed: {}", SDL_GetError());
-        return false;
+        return;
     }
 
     // Double buffer
@@ -56,7 +55,7 @@ bool GLContext::create(SDL_Window* window) {
 
     if (glewInit() != GLEW_OK) {
         SD_CORE_ERROR("glewInit failed!");
-        return false;
+        return;
     }
 #ifdef DEBUG_BUILD
     glEnable(GL_DEBUG_OUTPUT);
@@ -74,12 +73,10 @@ bool GLContext::create(SDL_Window* window) {
 
     // MultiSampling
     glEnable(GL_MULTISAMPLE);
-
-    return true;
 }
 
 GLContext::~GLContext() { SDL_GL_DeleteContext(m_context); }
 
-SDL_GLContext GLContext::getSDLHandle() const { return m_context; }
+void* GLContext::getHandle() const { return m_context; }
 
 }  // namespace sd

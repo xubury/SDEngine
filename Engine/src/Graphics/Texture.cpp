@@ -12,7 +12,7 @@ Ref<Texture> Texture::create(int width, int height, int samples,
                              TextureFilter filter,
                              TextureMipmapFilter mipmapFilter, void *data) {
     Ref<Texture> texture;
-    switch (Renderer::getAPI()) {
+    switch (Graphics::getAPI()) {
         case API::OpenGL:
             texture = createRef<GLTexture>(width, height, samples, type, format,
                                            formatType, wrap, filter,

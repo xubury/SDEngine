@@ -33,14 +33,15 @@ Application::Application() {
         exit(-1);
     }
 
+    sd::Graphics::init(sd::API::OpenGL);
+
     if (!m_window.create("SD Engine", width, height, Window::WINDOWED)) {
         exit(-1);
     }
 
     s_instance = this;
 
-    sd::Graphics::init();
-    sd::Renderer::init(sd::API::OpenGL);
+    sd::Renderer::init();
 
     sd::Renderer2D::init();
     sd::Renderer3D::init();
