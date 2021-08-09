@@ -18,7 +18,7 @@ class SD_API Renderer3D {
     static void endScene();
 
     static void submit(const Shader &shader, const VertexArray &vao,
-                       MeshTopology topology);
+                       MeshTopology topology, size_t count);
 
    private:
     Renderer3D() = default;
