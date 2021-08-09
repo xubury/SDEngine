@@ -103,7 +103,7 @@ void Renderer2D::init() {
 
     uint32_t color = 0xffffffff;
     s_data.whiteTexture = Texture::create(
-        1, 1, TextureType::TEX_2D, TextureFormat::RGBA,
+        1, 1, 1, TextureType::TEX_2D, TextureFormat::RGBA,
         TextureFormatType::UBYTE, TextureWrap::REPEAT, TextureFilter::LINEAR,
         TextureMipmapFilter::LINEAR_LINEAR, &color);
     s_data.textureSlots[0] = s_data.whiteTexture;

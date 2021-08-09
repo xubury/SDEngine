@@ -47,7 +47,7 @@ Ref<Texture> TextureLoader::loadAsset(const std::string &path) {
         format = TextureFormat::RGBA;
     }
     texture = sd::Texture::create(
-        image->w, image->h, sd::TextureType::TEX_2D, format, formatType,
+        image->w, image->h, 1, sd::TextureType::TEX_2D, format, formatType,
         sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
         sd::TextureMipmapFilter::NEAREST_LINEAR, image->pixels);
 

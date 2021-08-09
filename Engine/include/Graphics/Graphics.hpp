@@ -15,7 +15,7 @@ enum class MeshTopology {
     LOOP
 };
 
-enum class TextureType { TEX_2D, TEX_3D, TEX_CUBE };
+enum class TextureType { TEX_2D, TEX_2D_MULTISAMPLE, TEX_3D, TEX_CUBE };
 
 enum class TextureFormatType { UBYTE, FLOAT };
 

@@ -65,4 +65,6 @@ glm::vec2 RenderTarget::mapClipToScreen(const glm::vec2 &pos) {
     return screen;
 }
 
+Ref<Framebuffer> RenderTarget::getFramebuffer() { return m_framebuffer; }
+
 }  // namespace sd

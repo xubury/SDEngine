@@ -37,8 +37,10 @@ bool GLFramebuffer::attachTexture(Texture *texture) {
         glTexture->bind();
         switch (glTexture->getType()) {
             case TextureType::TEX_2D:
+            case TextureType::TEX_2D_MULTISAMPLE:
                 glFramebufferTexture2D(GL_FRAMEBUFFER, attachment,
-                                       GL_TEXTURE_2D, glTexture->getId(), 0);
+                                       glTexture->getGLType(),
+                                       glTexture->getId(), 0);
                 break;
             case TextureType::TEX_3D:
             case TextureType::TEX_CUBE:
@@ -90,8 +92,8 @@ int GLFramebuffer::readPixels(uint32_t attachmentId, int x, int y) const {
     return data;
 }
 
-void GLFramebuffer::copy(const Framebuffer *other, BufferBit mask,
-                         TextureFilter filter) {
+void GLFramebuffer::copyFrom(const Framebuffer *other, BufferBit mask,
+                             TextureFilter filter) {
     const GLFramebuffer *glFb = dynamic_cast<const GLFramebuffer *>(other);
     if (glFb) {
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_id);
@@ -116,14 +118,15 @@ void GLFramebuffer::copy(const Framebuffer *other, BufferBit mask,
                 break;
         }
         for (const auto &[attachment, texture] : m_attachments) {
-            if (texture->getData() == nullptr) continue;
-
             glReadBuffer(attachment);
             glDrawBuffer(attachment);
             glBlitFramebuffer(0, 0, texture->getWidth(), texture->getHeight(),
                               0, 0, texture->getWidth(), texture->getHeight(),
                               glMask, glFilter);
         }
+
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
     } else {
         SD_CORE_ERROR("Mismatched API!");
     }

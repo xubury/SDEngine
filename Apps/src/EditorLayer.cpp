@@ -5,18 +5,28 @@
 EditorLayer::EditorLayer() : sd::Layer("Editor Layer") {}
 
 void EditorLayer::onAttach() {
+    sd::Ref<sd::Texture> multisampleTexture = sd::Texture::create(
+        1024, 1024, 8, sd::TextureType::TEX_2D_MULTISAMPLE,
+        sd::TextureFormat::RGBA, sd::TextureFormatType::UBYTE,
+        sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
+        sd::TextureMipmapFilter::NEAREST);
+    m_target = sd::createRef<sd::RenderTarget>();
+    m_target->addTexture(multisampleTexture);
+    m_target->addTexture(sd::Texture::create(
+        multisampleTexture->getWidth(), multisampleTexture->getHeight(), 8,
+        sd::TextureType::TEX_2D_MULTISAMPLE, sd::TextureFormat::DEPTH,
+        sd::TextureFormatType::FLOAT, sd::TextureWrap::BORDER,
+        sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
+    m_target->init();
+
     m_texture = sd::Texture::create(
-        1024, 1024, sd::TextureType::TEX_2D, sd::TextureFormat::RGBA,
+        1024, 1024, 1, sd::TextureType::TEX_2D, sd::TextureFormat::RGBA,
         sd::TextureFormatType::UBYTE, sd::TextureWrap::BORDER,
         sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST);
-    m_target = sd::createRef<sd::RenderTarget>();
-    m_target->addTexture(m_texture);
-    m_target->addTexture(sd::Texture::create(
-        m_texture->getWidth(), m_texture->getHeight(), sd::TextureType::TEX_2D,
-        sd::TextureFormat::DEPTH, sd::TextureFormatType::FLOAT,
-        sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
-        sd::TextureMipmapFilter::NEAREST));
-    m_target->init();
+
+    m_frameBuffer = sd::Framebuffer::create();
+    m_frameBuffer->attachTexture(m_texture.get());
+    m_frameBuffer->setDrawable({0});
 
     sd::Renderer::setDefaultTarget(m_target);
     setBlockEvent(true);
@@ -29,6 +39,8 @@ void EditorLayer::onDetech() {
 
 void EditorLayer::onImGui() {
     sd::Renderer::setFramebuffer(nullptr);
+    sd::Renderer::setClearColor(0.3, 0.3, 0.3, 1.0f);
+    sd::Renderer::clear();
     ImGui::Begin("Scene");
     {
         ImGui::BeginChild("SceneRenderer");
@@ -37,9 +49,15 @@ void EditorLayer::onImGui() {
         // bool isFocus = ImGui::IsWindowFocused() && ImGui::IsWindowHovered();
         if (m_width != wsize.x || m_height != wsize.y) {
             m_target->resize(wsize.x, wsize.y);
+            m_texture->setPixels(wsize.x, wsize.y, nullptr);
+
             m_width = wsize.x;
             m_height = wsize.y;
         }
+        // Copy the multisample texture to normal texture
+        m_frameBuffer->copyFrom(m_target->getFramebuffer().get(),
+                                sd::BufferBit::COLOR_BUFFER_BIT,
+                                sd::TextureFilter::NEAREST);
         // Because I use the texture from OpenGL, I need to invert the V
         // from the UV.
         ImGui::Image((void*)(intptr_t)m_texture->getId(), wsize, ImVec2(0, 1),
@@ -47,6 +65,4 @@ void EditorLayer::onImGui() {
         ImGui::EndChild();
     }
     ImGui::End();
-    sd::Renderer::setClearColor(0.3, 0.3, 0.3, 1.0f);
-    sd::Renderer::clear();
 }

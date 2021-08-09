@@ -1,13 +1,14 @@
 #include "Graphics/OpenGL/GLTexture.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
+#include "Utils/Assert.hpp"
 
 namespace sd {
 
-GLTexture::GLTexture(int width, int height, TextureType type,
+GLTexture::GLTexture(int width, int height, int samples, TextureType type,
                      TextureFormat format, TextureFormatType formatType,
                      TextureWrap wrap, TextureFilter filter,
                      TextureMipmapFilter mipmapFilter, void *data)
-    : Texture(width, height, type, format, formatType, wrap, filter,
+    : Texture(width, height, samples, type, format, formatType, wrap, filter,
               mipmapFilter, data),
       gl_id(0),
       gl_type(0),
@@ -29,17 +30,20 @@ bool GLTexture::equals(const Texture &other) const {
 
 void GLTexture::init() {
     if (gl_id != 0) glDeleteTextures(1, &gl_id);
-    glGenTextures(1, &gl_id);
 
     gl_type = TRANSLATE(m_type);
     gl_iFormat = TRANSLATE(m_format, m_formatType);
     gl_format = TRANSLATE(m_format);
     gl_formatType = TRANSLATE(m_formatType);
 
+    glCreateTextures(gl_type, 1, &gl_id);
+
     setPixels(m_width, m_height, m_data);
-    setWrap(m_wrap);
-    setFilter(m_filter);
-    setMipmapFilter(m_mipmapFilter);
+    if (m_type != TextureType::TEX_2D_MULTISAMPLE) {
+        setWrap(m_wrap);
+        setFilter(m_filter);
+        setMipmapFilter(m_mipmapFilter);
+    }
 }
 
 uint32_t GLTexture::getId() const { return gl_id; }
@@ -61,10 +65,16 @@ void GLTexture::setPixels(int width, int height, void *data) {
         case TextureType::TEX_2D:
             glTexImage2D(gl_type, 0, gl_iFormat, m_width, m_height, 0,
                          gl_format, gl_formatType, data);
+            glGenerateMipmap(gl_type);
+            break;
+        case TextureType::TEX_2D_MULTISAMPLE:
+            glTexImage2DMultisample(gl_type, m_samples, gl_iFormat, m_width,
+                                    m_height, GL_TRUE);
             break;
         case TextureType::TEX_3D:
             glTexImage3D(gl_type, 0, gl_iFormat, m_width, m_height, m_height, 0,
                          gl_format, gl_formatType, data);
+            glGenerateMipmap(gl_type);
             break;
         case TextureType::TEX_CUBE:
             for (uint8_t i = 0; i < 6; i++) {
@@ -73,9 +83,9 @@ void GLTexture::setPixels(int width, int height, void *data) {
                              gl_format, gl_formatType, data);
             }
 
+            glGenerateMipmap(gl_type);
             break;
     }
-    glGenerateMipmap(gl_type);
     unbind();
 }
 
@@ -130,5 +140,7 @@ void GLTexture::setTextureData(Texture *source, int xOffset, int yOffset,
         genareteMipmap();
     }
 }
+
+GLuint GLTexture::getGLType() const { return gl_type; }
 
 }  // namespace sd

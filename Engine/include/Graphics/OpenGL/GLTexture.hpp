@@ -8,10 +8,10 @@ namespace sd {
 
 class GLTexture : public Texture {
    public:
-    GLTexture(int width, int height, TextureType type, TextureFormat format,
-              TextureFormatType formatType, TextureWrap wrap,
-              TextureFilter filter, TextureMipmapFilter mipmapFilter,
-              void *data);
+    GLTexture(int width, int height, int samples, TextureType type,
+              TextureFormat format, TextureFormatType formatType,
+              TextureWrap wrap, TextureFilter filter,
+              TextureMipmapFilter mipmapFilter, void *data);
 
     ~GLTexture();
 
@@ -35,6 +35,7 @@ class GLTexture : public Texture {
     void setTextureData(Texture *source, int xOffset, int yOffset, int width,
                         int height, int mipmap) override;
 
+    GLuint getGLType() const;
    protected:
     void init() override;
 

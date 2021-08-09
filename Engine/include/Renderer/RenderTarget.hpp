@@ -37,6 +37,8 @@ class RenderTarget {
     // map coordinate from clip space to screen space
     glm::vec2 mapClipToScreen(const glm::vec2 &pos);
 
+    Ref<Framebuffer> getFramebuffer();
+
    private:
     int m_x;
     int m_y;

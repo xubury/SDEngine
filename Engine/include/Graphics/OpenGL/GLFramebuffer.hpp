@@ -23,7 +23,7 @@ class GLFramebuffer : public Framebuffer {
     void bind() const override;
     void unbind() const override;
 
-    void copy(const Framebuffer *other, BufferBit bufferbit,
+    void copyFrom(const Framebuffer *other, BufferBit bufferbit,
               TextureFilter filter) override;
 
    private:

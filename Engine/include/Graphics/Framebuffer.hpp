@@ -29,7 +29,7 @@ class Framebuffer {
     virtual void bind() const = 0;
     virtual void unbind() const = 0;
 
-    virtual void copy(const Framebuffer *other, BufferBit bufferbit,
+    virtual void copyFrom(const Framebuffer *other, BufferBit bufferbit,
                       TextureFilter filter) = 0;
 
    protected:

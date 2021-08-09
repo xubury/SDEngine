@@ -17,6 +17,7 @@ class EditorLayer : public sd::Layer {
 
    private:
     sd::Ref<sd::Texture> m_texture;
+    sd::Ref<sd::Framebuffer> m_frameBuffer;
     sd::Ref<sd::RenderTarget> m_target;
     int m_width;
     int m_height;

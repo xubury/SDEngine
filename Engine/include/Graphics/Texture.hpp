@@ -9,8 +9,8 @@ namespace sd {
 
 class SD_API Texture {
    public:
-    static Ref<Texture> create(int width, int height, TextureType type,
-                               TextureFormat format,
+    static Ref<Texture> create(int width, int height, int samples,
+                               TextureType type, TextureFormat format,
                                TextureFormatType formatType, TextureWrap wrap,
                                TextureFilter filter,
                                TextureMipmapFilter mipmapFilter,
@@ -42,6 +42,8 @@ class SD_API Texture {
 
     int getHeight() const;
 
+    int getSamples() const;
+
     const void *getData() const;
 
     void *getData();
@@ -53,14 +55,16 @@ class SD_API Texture {
     TextureFormatType getFormatType() const;
 
    protected:
-    Texture(int width, int height, TextureType type, TextureFormat format,
-            TextureFormatType formatType, TextureWrap wrap,
-            TextureFilter filter, TextureMipmapFilter mipmapFilter, void *data);
+    Texture(int width, int height, int samples, TextureType type,
+            TextureFormat format, TextureFormatType formatType,
+            TextureWrap wrap, TextureFilter filter,
+            TextureMipmapFilter mipmapFilter, void *data);
 
     virtual void init() = 0;
 
     int m_width;
     int m_height;
+    int m_samples;
 
     TextureType m_type;
     TextureFormat m_format;

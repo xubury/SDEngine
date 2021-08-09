@@ -6,16 +6,17 @@
 
 namespace sd {
 
-Ref<Texture> Texture::create(int width, int height, TextureType type,
-                             TextureFormat format, TextureFormatType formatType,
-                             TextureWrap wrap, TextureFilter filter,
+Ref<Texture> Texture::create(int width, int height, int samples,
+                             TextureType type, TextureFormat format,
+                             TextureFormatType formatType, TextureWrap wrap,
+                             TextureFilter filter,
                              TextureMipmapFilter mipmapFilter, void *data) {
     Ref<Texture> texture;
     switch (Renderer::getAPI()) {
         case API::OpenGL:
-            texture =
-                createRef<GLTexture>(width, height, type, format, formatType,
-                                     wrap, filter, mipmapFilter, data);
+            texture = createRef<GLTexture>(width, height, samples, type, format,
+                                           formatType, wrap, filter,
+                                           mipmapFilter, data);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
@@ -29,12 +30,13 @@ Ref<Texture> Texture::create(int width, int height, TextureType type,
     return texture;
 }
 
-Texture::Texture(int width, int height, TextureType type, TextureFormat format,
-                 TextureFormatType formatType, TextureWrap wrap,
-                 TextureFilter filter, TextureMipmapFilter mipmapFilter,
-                 void *data)
+Texture::Texture(int width, int height, int samples, TextureType type,
+                 TextureFormat format, TextureFormatType formatType,
+                 TextureWrap wrap, TextureFilter filter,
+                 TextureMipmapFilter mipmapFilter, void *data)
     : m_width(width),
       m_height(height),
+      m_samples(samples),
       m_type(type),
       m_format(format),
       m_formatType(formatType),
@@ -48,6 +50,8 @@ bool Texture::operator==(const Texture &other) const { return equals(other); }
 int Texture::getWidth() const { return m_width; }
 
 int Texture::getHeight() const { return m_height; }
+
+int Texture::getSamples() const { return m_samples; }
 
 void *Texture::getData() { return m_data; }
 
