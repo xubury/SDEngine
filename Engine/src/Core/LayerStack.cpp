@@ -42,4 +42,9 @@ void LayerStack::popOverlay(Ref<Layer> overlay) {
     }
 }
 
+bool LayerStack::hasLayer(const Ref<Layer> &layer) const {
+    auto iter = std::find(m_layers.begin(), m_layers.end(), layer);
+    return iter != m_layers.end();
 }
+
+}  // namespace sd

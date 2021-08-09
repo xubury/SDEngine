@@ -15,7 +15,8 @@ class GLTexture : public Texture {
 
     ~GLTexture();
 
-    GLuint id() const;
+    uint32_t getId() const override;
+
     bool equals(const Texture &other) const override;
 
     void bind() const override;

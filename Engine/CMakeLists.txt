@@ -14,3 +14,4 @@ add_subdirectory(src/Utils)
 add_subdirectory(src/Graphics)
 add_subdirectory(src/Renderer)
 
+add_subdirectory(src/Layers)

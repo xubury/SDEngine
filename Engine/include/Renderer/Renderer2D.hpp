@@ -22,7 +22,7 @@ class SD_API Renderer2D {
     static void nextBatch();
 
     static void beginScene(const OrthographicCamera &camera,
-                           const RenderTarget &target);
+                           const RenderTarget *target);
     static void endScene();
 
     static void drawQuad(const glm::mat4 &transform, const glm::vec4 &color);

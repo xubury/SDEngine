@@ -42,7 +42,7 @@ void GLTexture::init() {
     setMipmapFilter(m_mipmapFilter);
 }
 
-GLuint GLTexture::id() const { return gl_id; }
+uint32_t GLTexture::getId() const { return gl_id; }
 
 void GLTexture::bind() const { glBindTexture(gl_type, gl_id); }
 

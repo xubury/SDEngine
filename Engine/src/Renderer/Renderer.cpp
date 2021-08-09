@@ -1,13 +1,17 @@
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Renderer/Renderer3D.hpp"
+#include "Renderer/RenderTarget.hpp"
 #include "Graphics/OpenGL/GLDevice.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Utils/Log.hpp"
 
 namespace sd {
 
-static API s_api;
+Renderer &Renderer::instance() {
+    static Renderer s_instance;
+    return s_instance;
+}
 
 void Renderer::init(API api) {
     SD_CORE_TRACE("Initializing Renderer...");
@@ -19,10 +23,11 @@ void Renderer::init(API api) {
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
-    s_api = api;
+    instance().m_defaultTarget = createRef<RenderTarget>();
+    instance().m_api = api;
 }
 
-API Renderer::getAPI() { return s_api; }
+API Renderer::getAPI() { return instance().m_api; }
 
 void Renderer::submit(const VertexArray &vao, MeshTopology topology,
                       size_t count, size_t offset) {
@@ -42,6 +47,14 @@ void Renderer::setViewport(int x, int y, int width, int height) {
 
 void Renderer::setFramebuffer(const Framebuffer *framebuffer) {
     Device::instance().setFramebuffer(framebuffer);
+}
+
+RenderTarget &Renderer::getDefaultTarget() {
+    return *instance().m_defaultTarget;
+}
+
+void Renderer::setDefaultTarget(Ref<RenderTarget> target) {
+    instance().m_defaultTarget = target;
 }
 
 }  // namespace sd

@@ -4,6 +4,7 @@
 #include "Core/Window.hpp"
 #include "Core/LayerStack.hpp"
 #include "Utils/AssetManager.hpp"
+#include "Layers/ImGuiLayer.hpp"
 
 namespace sd {
 
@@ -20,6 +21,8 @@ class SD_API Application {
 
     void pushLayer(Ref<Layer> layer);
 
+    void pushOverlay(Ref<Layer> layer);
+
     void run();
 
     void quit();
@@ -35,11 +38,14 @@ class SD_API Application {
 
     void onEventPoll(const SDL_Event &event);
 
+    void onEventProcess();
+
     void tick(float dt);
     void render();
 
     Window m_window;
     LayerStack m_layers;
+    Ref<ImGuiLayer> m_imguiLayer;
 };
 
 }  // namespace sd

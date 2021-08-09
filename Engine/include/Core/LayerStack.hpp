@@ -21,6 +21,8 @@ class SD_API LayerStack {
 
     void popOverlay(Ref<Layer> overlay);
 
+    bool hasLayer(const Ref<Layer> &layer) const;
+
     std::vector<Ref<Layer>>::iterator begin() { return m_layers.begin(); }
 
     std::vector<Ref<Layer>>::iterator end() { return m_layers.end(); }

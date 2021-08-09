@@ -44,7 +44,7 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-core PUBLIC SD_SHARED)
 endif()
 
-target_link_libraries(sd-core PUBLIC sd-utils SDL2::Main SDL2::Image GLEW::GLEW glm)
+target_link_libraries(sd-core PUBLIC sd-utils sd-layers sd-renderer SDL2::Main SDL2::Image GLEW::GLEW glm)
 
 target_include_directories(sd-core PUBLIC
     ${PROJECT_SOURCE_DIR}/include)

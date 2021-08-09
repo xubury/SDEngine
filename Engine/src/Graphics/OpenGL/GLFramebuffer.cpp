@@ -38,12 +38,12 @@ bool GLFramebuffer::attachTexture(Texture *texture) {
         switch (glTexture->getType()) {
             case TextureType::TEX_2D:
                 glFramebufferTexture2D(GL_FRAMEBUFFER, attachment,
-                                       GL_TEXTURE_2D, glTexture->id(), 0);
+                                       GL_TEXTURE_2D, glTexture->getId(), 0);
                 break;
             case TextureType::TEX_3D:
             case TextureType::TEX_CUBE:
                 glFramebufferTexture(GL_FRAMEBUFFER, attachment,
-                                     glTexture->id(), 0);
+                                     glTexture->getId(), 0);
                 break;
             default:
                 SD_CORE_ERROR(

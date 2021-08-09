@@ -14,7 +14,10 @@ class SD_API GLContext {
 
     ~GLContext();
 
+    SDL_GLContext getSDLHandle() const;
+
    private:
+    friend class Window;
     SDL_GLContext m_context;
 };
 

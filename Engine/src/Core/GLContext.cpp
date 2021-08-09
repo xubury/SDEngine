@@ -61,4 +61,6 @@ bool GLContext::create(SDL_Window* window) {
 
 GLContext::~GLContext() { SDL_GL_DeleteContext(m_context); }
 
+SDL_GLContext GLContext::getSDLHandle() const { return m_context; }
+
 }  // namespace sd

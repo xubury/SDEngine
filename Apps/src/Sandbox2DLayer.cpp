@@ -24,27 +24,12 @@ Sandbox2DLayer::Sandbox2DLayer()
                         [](const SDL_Event &) { SD_TRACE("Key Pressed:B"); });
 }
 
-void Sandbox2DLayer::onAttach() {
-    m_texture = sd::Texture::create(
-        1024, 1024, sd::TextureType::TEX_2D, sd::TextureFormat::RGBA,
-        sd::TextureFormatType::UBYTE, sd::TextureWrap::BORDER,
-        sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST);
-    m_target.addTexture(m_texture);
-    m_target.addTexture(sd::Texture::create(
-        m_texture->getWidth(), m_texture->getHeight(), sd::TextureType::TEX_2D,
-        sd::TextureFormat::DEPTH, sd::TextureFormatType::FLOAT,
-        sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
-        sd::TextureMipmapFilter::NEAREST));
-    m_target.init();
-
-    m_defaultTarget.resize(sd::Application::getWindow().getWidth(),
-                           sd::Application::getWindow().getHeight());
-}
+void Sandbox2DLayer::onAttach() {}
 
 void Sandbox2DLayer::onTick(float dt) { m_particleSystem.onTick(dt); }
 
 void Sandbox2DLayer::onRender() {
-    sd::Renderer2D::beginScene(m_masterCam, m_target);
+    sd::Renderer2D::beginScene(m_masterCam, nullptr);
     sd::Renderer::setClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     sd::Renderer::clear();
     m_particleSystem.onRender();
@@ -53,20 +38,13 @@ void Sandbox2DLayer::onRender() {
         sd::Graphics::assetManager().load<sd::Texture>(
             "textures/1_diagdown.png"));
     sd::Renderer2D::endScene();
-
-    sd::Renderer2D::beginScene(sd::OrthographicCamera(1, 1, -1.0f, 1.0f),
-                               m_defaultTarget);
-    sd::Renderer::setClearColor(0.f, 0.f, 0.f, 1.0f);
-    sd::Renderer::clear();
-    sd::Renderer2D::drawTexture(glm::mat4(1.0f), m_texture);
-    sd::Renderer2D::endScene();
 }
 
 void Sandbox2DLayer::onEventPoll(const SDL_Event &event) {
     switch (event.type) {
         case SDL_MOUSEMOTION: {
             sd::ParticleProp prop;
-            glm::vec2 view = m_defaultTarget.mapScreenToClip(
+            glm::vec2 view = sd::Renderer::getDefaultTarget().mapScreenToClip(
                 sd::InputManager::instance().getMouseCoord());
             glm::vec3 world = m_masterCam.mapClipToWorld(view);
             world.z = -1.0f;
@@ -92,8 +70,8 @@ void Sandbox2DLayer::onEventPoll(const SDL_Event &event) {
         }
         case SDL_WINDOWEVENT: {
             if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                m_target.resize(event.window.data1, event.window.data2);
-                m_defaultTarget.resize(event.window.data1, event.window.data2);
+                sd::Renderer::getDefaultTarget().resize(event.window.data1,
+                                                        event.window.data2);
             }
         }
     }

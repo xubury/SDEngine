@@ -116,8 +116,12 @@ void Renderer2D::init() {
 }
 
 void Renderer2D::beginScene(const OrthographicCamera& camera,
-                            const RenderTarget& target) {
-    target.use();
+                            const RenderTarget* target) {
+    if (target) {
+        target->use();
+    } else {
+        Renderer::getDefaultTarget().use();
+    }
     s_data.cameraBuffer.viewProjection = camera.getViewPorjection();
     s_data.cameraBuffer.viewPos = camera.getWorldPosition();
     s_data.cameraUBO->updateData(&s_data.cameraBuffer, sizeof(CameraData));

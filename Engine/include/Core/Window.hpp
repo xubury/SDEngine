@@ -34,6 +34,11 @@ class SD_API Window {
     int getWidth() const;
 
     int getHeight() const;
+
+    SDL_Window *getSDLHandle() const;
+
+    SDL_GLContext getSDLGLContext() const;
+
    private:
     GLContext m_context;
     SDL_Window *m_window;

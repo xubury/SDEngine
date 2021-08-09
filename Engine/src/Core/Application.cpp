@@ -1,9 +1,12 @@
 #include "Core/Application.hpp"
 #include "Utils/Log.hpp"
+#include <SDL_image.h>
 #include "Utils/Random.hpp"
 #include "Core/InputManager.hpp"
 #include "Core/Timing.hpp"
-#include <SDL_image.h>
+#include "Renderer/Renderer.hpp"
+#include "Renderer/Renderer2D.hpp"
+#include "Renderer/Renderer3D.hpp"
 
 namespace sd {
 
@@ -14,6 +17,8 @@ Application &Application::instance() { return *s_instance; }
 Application::Application() {
     std::string debugPath = "Debug.txt";
     Log::init(debugPath);
+    int width = 800;
+    int height = 600;
     Random::init();
     SD_CORE_INFO("Debug info is output to: {}", debugPath);
 
@@ -28,11 +33,21 @@ Application::Application() {
         exit(-1);
     }
 
-    if (!m_window.create("SD Engine", 800, 600, Window::WINDOWED)) {
+    if (!m_window.create("SD Engine", width, height, Window::WINDOWED)) {
         exit(-1);
     }
 
     s_instance = this;
+
+    sd::Graphics::init();
+    sd::Renderer::init(sd::API::OpenGL);
+
+    sd::Renderer2D::init();
+    sd::Renderer3D::init();
+
+    sd::Renderer::getDefaultTarget().resize(width, height);
+    m_imguiLayer = createRef<ImGuiLayer>();
+    pushOverlay(m_imguiLayer);
 }
 
 Application::~Application() {
@@ -41,6 +56,8 @@ Application::~Application() {
 }
 
 void Application::pushLayer(Ref<Layer> layer) { m_layers.pushLayer(layer); }
+
+void Application::pushOverlay(Ref<Layer> layer) { m_layers.pushOverlay(layer); }
 
 void Application::onEventPoll(const SDL_Event &event) {
     switch (event.type) {
@@ -62,8 +79,20 @@ void Application::onEventPoll(const SDL_Event &event) {
         case SDL_MOUSEMOTION:
             InputManager::instance().setMouseCoord(event.motion.x,
                                                    event.motion.y);
+            break;
         default:
             break;
+    }
+    for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {
+        (*layer)->onEventPoll(event);
+        if ((*layer)->isBlockEvent()) break;
+    }
+}
+
+void Application::onEventProcess() {
+    for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {
+        (*layer)->onEventProcess();
+        if ((*layer)->isBlockEvent()) break;
     }
 }
 
@@ -77,13 +106,8 @@ void Application::run() {
 
         while (m_window.pollEvent(event)) {
             onEventPoll(event);
-            for (auto &layer : m_layers) {
-                layer->onEventPoll(event);
-            }
         }
-        for (auto &layer : m_layers) {
-            layer->onEventProcess();
-        }
+        onEventProcess();
 
         uint32_t newTicks = SDL_GetTicks();
         tick((newTicks - lastTicks) / 1000.f);
@@ -109,9 +133,13 @@ void Application::render() {
     for (auto &layer : m_layers) {
         layer->onRender();
     }
-
-    for (auto &layer : m_layers) {
-        layer->onImGui();
+    bool imgui = m_layers.hasLayer(m_imguiLayer);
+    if (imgui) {
+        m_imguiLayer->begin();
+        for (auto &layer : m_layers) {
+            layer->onImGui();
+        }
+        m_imguiLayer->end();
     }
 
     m_window.swapBuffer();

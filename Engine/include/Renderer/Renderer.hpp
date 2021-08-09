@@ -5,12 +5,12 @@
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"
+#include "Renderer/RenderTarget.hpp"
 
 namespace sd {
 
 class Framebuffer;
 
-// just a shortcut to Device
 class SD_API Renderer {
    public:
     static void init(API api);
@@ -28,8 +28,17 @@ class SD_API Renderer {
 
     static void setFramebuffer(const Framebuffer *framebuffer);
 
+    static RenderTarget &getDefaultTarget();
+
+    static void setDefaultTarget(Ref<RenderTarget> target);
+
    private:
     Renderer() = default;
+
+    static Renderer &instance();
+
+    Ref<RenderTarget> m_defaultTarget;
+    API m_api;
 
 };  // namespace Renderer
 

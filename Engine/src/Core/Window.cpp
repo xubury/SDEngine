@@ -55,4 +55,10 @@ int Window::getHeight() const {
     return h;
 }
 
+SDL_Window *Window::getSDLHandle() const { return m_window; }
+
+SDL_GLContext Window::getSDLGLContext() const {
+    return m_context.getSDLHandle();
+}
+
 }  // namespace sd
