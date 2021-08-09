@@ -4,7 +4,7 @@
 #include "Core/Window.hpp"
 #include "Core/LayerStack.hpp"
 #include "Utils/AssetManager.hpp"
-#include "Layers/ImGuiLayer.hpp"
+#include "ImGui/ImGuiLayer.hpp"
 
 namespace sd {
 

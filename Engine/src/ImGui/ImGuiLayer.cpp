@@ -1,4 +1,4 @@
-#include "Layers/ImGuiLayer.hpp"
+#include "ImGui/ImGuiLayer.hpp"
 #include "Core/Application.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Renderer/Renderer.hpp"
@@ -7,7 +7,7 @@
 
 namespace sd {
 
-ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer"), m_width(0), m_height(0) {}
+ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}
 
 void ImGuiLayer::begin() {
     switch (Renderer::getAPI()) {
@@ -22,9 +22,10 @@ void ImGuiLayer::begin() {
 }
 
 void ImGuiLayer::end() {
+    ImGuiIO& io = ImGui::GetIO();
+    io.DisplaySize = ImVec2((float)Application::getWindow().getWidth(),
+                            (float)Application::getWindow().getHeight());
     ImGui::Render();
-    Renderer::setClearColor(0.3, 0.3, 0.3, 1.0f);
-    Renderer::clear();
     switch (Renderer::getAPI()) {
         case API::OpenGL:
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -35,19 +36,6 @@ void ImGuiLayer::end() {
 }
 
 void ImGuiLayer::onAttach() {
-    m_texture = sd::Texture::create(
-        1024, 1024, sd::TextureType::TEX_2D, sd::TextureFormat::RGBA,
-        sd::TextureFormatType::UBYTE, sd::TextureWrap::BORDER,
-        sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST);
-    m_target = createRef<RenderTarget>();
-    m_target->addTexture(m_texture);
-    m_target->addTexture(sd::Texture::create(
-        m_texture->getWidth(), m_texture->getHeight(), sd::TextureType::TEX_2D,
-        sd::TextureFormat::DEPTH, sd::TextureFormatType::FLOAT,
-        sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
-        sd::TextureMipmapFilter::NEAREST));
-    m_target->init();
-
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -55,6 +43,7 @@ void ImGuiLayer::onAttach() {
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     io.ConfigWindowsMoveFromTitleBarOnly = true;
 
+    // Fonts
     io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Bold.ttf",
                                  18.0f);
     io.FontDefault = io.Fonts->AddFontFromFileTTF(
@@ -75,34 +64,9 @@ void ImGuiLayer::onAttach() {
         default:
             SD_CORE_ERROR("Unsupported API!");
     }
-
-    setBlockEvent(true);
-    Renderer::setDefaultTarget(m_target);
 }
 
 void ImGuiLayer::onDetech() {}
-
-void ImGuiLayer::onImGui() {
-    Renderer::setFramebuffer(nullptr);
-    ImGui::Begin("Scene");
-    {
-        ImGui::BeginChild("SceneRenderer");
-        ImVec2 wsize = ImGui::GetWindowSize();
-        // if game window not active, disable camera response
-        // bool isFocus = ImGui::IsWindowFocused() && ImGui::IsWindowHovered();
-        if (m_width != wsize.x || m_height != wsize.y) {
-            m_target->resize(wsize.x, wsize.y);
-            m_width = wsize.x;
-            m_height = wsize.y;
-        }
-        // Because I use the texture from OpenGL, I need to invert the V
-        // from the UV.
-        ImGui::Image((void*)(intptr_t)m_texture->getId(), wsize, ImVec2(0, 1),
-                     ImVec2(1, 0));
-        ImGui::EndChild();
-    }
-    ImGui::End();
-}
 
 void ImGuiLayer::setDarkThemeColor() {
     auto& colors = ImGui::GetStyle().Colors;
