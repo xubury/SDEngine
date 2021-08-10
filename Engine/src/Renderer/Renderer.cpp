@@ -4,7 +4,7 @@
 #include "Renderer/RenderTarget.hpp"
 #include "Graphics/OpenGL/GLDevice.hpp"
 #include "Graphics/Graphics.hpp"
-#include "Utils/Log.hpp"
+#include "Common/Log.hpp"
 
 namespace sd {
 

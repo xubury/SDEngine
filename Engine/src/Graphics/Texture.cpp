@@ -2,7 +2,7 @@
 #include "Renderer/Renderer.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
 #include "Graphics/OpenGL/GLTexture.hpp"
-#include "Utils/Log.hpp"
+#include "Common/Log.hpp"
 
 namespace sd {
 

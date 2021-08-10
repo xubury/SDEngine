@@ -9,16 +9,9 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)
 
-set(Common_Include
-    ${Include_Root}/Assert.hpp
-    ${Include_Root}/Base.hpp
-    ${Include_Root}/Config.hpp
-    ${Include_Root}/Export.hpp
-    ${Include_Root}/PlatformDetection.hpp)
-
-install(FILES ${Common_Include} DESTINATION include/Common)
-
 add_subdirectory(src/Core)
+add_subdirectory(src/Common)
+add_subdirectory(src/ECS)
 add_subdirectory(src/ImGui)
 add_subdirectory(src/Utils)
 add_subdirectory(src/Graphics)

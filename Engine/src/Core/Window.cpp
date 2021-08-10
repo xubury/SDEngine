@@ -1,5 +1,5 @@
 #include "Core/Window.hpp"
-#include "Utils/Log.hpp"
+#include "Common/Log.hpp"
 #include "Graphics/Graphics.hpp"
 
 namespace sd {

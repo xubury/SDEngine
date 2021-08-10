@@ -1,24 +1,14 @@
-find_package(spdlog REQUIRED)
-
 set(Include_Root ${PROJECT_SOURCE_DIR}/include/Utils)
 set(Src_Root ${PROJECT_SOURCE_DIR}/src/Utils)
 
 set(Utils_Include
     ${Include_Root}/AssetLoader.hpp
     ${Include_Root}/AssetManager.hpp
-    ${Include_Root}/File.hpp
-    ${Include_Root}/Log.hpp)
+    ${Include_Root}/File.hpp)
 
 set(Utils_Src
     ${Src_Root}/File.cpp
-    ${Src_Root}/Log.cpp
     ${Src_Root}/Random.cpp)
-
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_link_options(sd-core PUBLIC -mconsole)
-else()
-    target_link_options(sd-core PUBLIC -mwindows)
-endif()
 
 add_library(sd-utils ${Utils_Src})
 
@@ -32,11 +22,11 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-utils PUBLIC SD_SHARED)
 endif()
 
-target_link_libraries(sd-utils PUBLIC spdlog::spdlog)
-
-target_include_directories(sd-utils 
+target_include_directories(sd-utils
     PUBLIC
     ${PROJECT_SOURCE_DIR}/include)
+
+target_link_libraries(sd-utils PUBLIC sd-common)
 
 
 install(TARGETS sd-utils LIBRARY DESTINATION lib)

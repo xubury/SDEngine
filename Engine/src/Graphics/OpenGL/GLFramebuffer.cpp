@@ -1,7 +1,7 @@
 #include "Graphics/OpenGL/GLFramebuffer.hpp"
 #include "Graphics/OpenGL/GLTexture.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
-#include "Utils/Log.hpp"
+#include "Common/Log.hpp"
 
 namespace sd {
 GLFramebuffer::GLFramebuffer() : m_id(0), m_textureCnt(0) {}
