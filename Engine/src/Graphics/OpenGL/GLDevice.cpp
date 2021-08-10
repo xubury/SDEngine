@@ -7,7 +7,7 @@ namespace sd {
 
 void GLDevice::drawElements(MeshTopology topology, size_t count,
                             size_t offset) {
-    glDrawElements(TRANSLATE(topology), count, GL_UNSIGNED_INT,
+    glDrawElements(translate(topology), count, GL_UNSIGNED_INT,
                    (const void *)offset);
 }
 

@@ -2,12 +2,7 @@
 
 namespace sd {
 
-GLTranslator &GLTranslator::instance() {
-    static GLTranslator s_instance;
-    return s_instance;
-}
-
-GLenum GLTranslator::translate(BufferDataType dataType) {
+GLenum translate(BufferDataType dataType) {
     switch (dataType) {
         case BufferDataType::FLOAT:
             return GL_FLOAT;
@@ -19,7 +14,7 @@ GLenum GLTranslator::translate(BufferDataType dataType) {
     return GL_INVALID_VALUE;
 }
 
-GLenum GLTranslator::translate(MeshTopology meshType) {
+GLenum translate(MeshTopology meshType) {
     switch (meshType) {
         case MeshTopology::TRIANGLES:
             return GL_TRIANGLES;
@@ -37,7 +32,7 @@ GLenum GLTranslator::translate(MeshTopology meshType) {
     return GL_INVALID_VALUE;
 }
 
-GLint GLTranslator::translate(BufferIOType ioType) {
+GLint translate(BufferIOType ioType) {
     switch (ioType) {
         case BufferIOType::STATIC:
             return GL_STATIC_DRAW;
@@ -47,7 +42,7 @@ GLint GLTranslator::translate(BufferIOType ioType) {
     return GL_INVALID_VALUE;
 }
 
-GLenum GLTranslator::translate(TextureType textureType) {
+GLenum translate(TextureType textureType) {
     switch (textureType) {
         case TextureType::TEX_2D:
             return GL_TEXTURE_2D;
@@ -62,7 +57,7 @@ GLenum GLTranslator::translate(TextureType textureType) {
     return GL_INVALID_VALUE;
 }
 
-GLenum GLTranslator::translate(TextureFormat textureFormat) {
+GLenum translate(TextureFormat textureFormat) {
     switch (textureFormat) {
         case TextureFormat::ALPHA:
             return GL_RED;
@@ -80,7 +75,7 @@ GLenum GLTranslator::translate(TextureFormat textureFormat) {
     return GL_INVALID_VALUE;
 }
 
-GLenum GLTranslator::translate(TextureFormatType textureFormatType) {
+GLenum translate(TextureFormatType textureFormatType) {
     switch (textureFormatType) {
         case TextureFormatType::UBYTE:
             return GL_UNSIGNED_BYTE;
@@ -91,8 +86,8 @@ GLenum GLTranslator::translate(TextureFormatType textureFormatType) {
     return GL_INVALID_VALUE;
 }
 
-GLint GLTranslator::translate(TextureFormat textureFormat,
-                              TextureFormatType textureFormatType) {
+GLint translate(TextureFormat textureFormat,
+                TextureFormatType textureFormatType) {
     switch (textureFormat) {
         case TextureFormat::ALPHA: {
             switch (textureFormatType) {
@@ -152,7 +147,7 @@ GLint GLTranslator::translate(TextureFormat textureFormat,
     return GL_INVALID_VALUE;
 }
 
-GLint GLTranslator::translate(TextureWrap textureWrap) {
+GLint translate(TextureWrap textureWrap) {
     switch (textureWrap) {
         case TextureWrap::EDGE:
             return GL_CLAMP_TO_EDGE;
@@ -169,7 +164,7 @@ GLint GLTranslator::translate(TextureWrap textureWrap) {
     return GL_INVALID_VALUE;
 }
 
-GLint GLTranslator::translate(TextureFilter textureFilter) {
+GLint translate(TextureFilter textureFilter) {
     switch (textureFilter) {
         case TextureFilter::NEAREST:
             return GL_NEAREST;
@@ -180,7 +175,7 @@ GLint GLTranslator::translate(TextureFilter textureFilter) {
     return GL_INVALID_VALUE;
 }
 
-GLint GLTranslator::translate(TextureMipmapFilter textureMipmapFilter) {
+GLint translate(TextureMipmapFilter textureMipmapFilter) {
     switch (textureMipmapFilter) {
         case TextureMipmapFilter::LINEAR:
             return GL_LINEAR;

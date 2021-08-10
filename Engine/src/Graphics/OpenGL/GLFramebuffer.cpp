@@ -86,8 +86,8 @@ int GLFramebuffer::readPixels(uint32_t attachmentId, int x, int y) const {
 
     int data = 0;
     const GLTexture *texture = m_attachments.at(attachmentId).second;
-    glReadPixels(x, y, 1, 1, TRANSLATE(texture->getFormat()),
-                 TRANSLATE(texture->getFormatType()), &data);
+    glReadPixels(x, y, 1, 1, translate(texture->getFormat()),
+                 translate(texture->getFormatType()), &data);
     unbind();
     return data;
 }

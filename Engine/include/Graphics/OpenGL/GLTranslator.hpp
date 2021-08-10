@@ -1,42 +1,31 @@
 #ifndef SD_GL_TRANSLATOR_HPP
 #define SD_GL_TRANSLATOR_HPP
 
-#include "Graphics/Translator.hpp"
 #include <GL/glew.h>
+#include "Graphics/Graphics.hpp"
 
 namespace sd {
 
-class GLTranslator : public Translator<GLint, GLboolean, GLenum> {
-   public:
-    static GLTranslator &instance();
+GLenum SD_API translate(BufferDataType dataType);
 
-    GLenum translate(BufferDataType dataType) override;
+GLenum SD_API translate(MeshTopology meshType);
 
-    GLenum translate(MeshTopology meshType) override;
+GLint SD_API translate(BufferIOType ioType);
 
-    GLint translate(BufferIOType ioType) override;
+GLenum SD_API translate(TextureType textureType);
 
-    GLenum translate(TextureType textureType) override;
+GLenum SD_API translate(TextureFormat textureFormat);
 
-    GLenum translate(TextureFormat textureFormat) override;
+GLenum SD_API translate(TextureFormatType textureFormatType);
 
-    GLenum translate(TextureFormatType textureFormatType) override;
+GLint SD_API translate(TextureFormat textureFormat,
+                       TextureFormatType textureFormatType);
 
-    GLint translate(TextureFormat textureFormat,
-                    TextureFormatType textureFormatType) override;
+GLint SD_API translate(TextureWrap textureWrap);
 
-    GLint translate(TextureWrap textureWrap) override;
+GLint SD_API translate(TextureFilter textureFilter);
 
-    GLint translate(TextureFilter textureFilter) override;
-
-    GLint translate(TextureMipmapFilter textureMipmapFilter) override;
-};
-
-#ifdef TRANSLATE
-#error "Translaor Conflict!"
-#else
-#define TRANSLATE GLTranslator::instance().translate
-#endif
+GLint SD_API translate(TextureMipmapFilter textureMipmapFilter);
 
 }  // namespace sd
 

@@ -31,10 +31,10 @@ bool GLTexture::equals(const Texture &other) const {
 void GLTexture::init() {
     if (gl_id != 0) glDeleteTextures(1, &gl_id);
 
-    gl_type = TRANSLATE(m_type);
-    gl_iFormat = TRANSLATE(m_format, m_formatType);
-    gl_format = TRANSLATE(m_format);
-    gl_formatType = TRANSLATE(m_formatType);
+    gl_type = translate(m_type);
+    gl_iFormat = translate(m_format, m_formatType);
+    gl_format = translate(m_format);
+    gl_formatType = translate(m_formatType);
 
     glCreateTextures(gl_type, 1, &gl_id);
 
@@ -105,7 +105,7 @@ void GLTexture::setWrap(TextureWrap wrap) {
     m_wrap = wrap;
 
     bind();
-    GLint glWrap = TRANSLATE(m_wrap);
+    GLint glWrap = translate(m_wrap);
     glTexParameteri(gl_type, GL_TEXTURE_WRAP_R, glWrap);
     glTexParameteri(gl_type, GL_TEXTURE_WRAP_S, glWrap);
     glTexParameteri(gl_type, GL_TEXTURE_WRAP_T, glWrap);
@@ -115,7 +115,7 @@ void GLTexture::setFilter(TextureFilter filter) {
     m_filter = filter;
 
     bind();
-    GLint glFilter = TRANSLATE(m_filter);
+    GLint glFilter = translate(m_filter);
     glTexParameteri(gl_type, GL_TEXTURE_MAG_FILTER, glFilter);
 }
 
@@ -123,7 +123,7 @@ void GLTexture::setMipmapFilter(TextureMipmapFilter mipmapFilter) {
     m_mipmapFilter = mipmapFilter;
 
     bind();
-    GLint glMipmapFilter = TRANSLATE(m_mipmapFilter);
+    GLint glMipmapFilter = translate(m_mipmapFilter);
     glTexParameteri(gl_type, GL_TEXTURE_MIN_FILTER, glMipmapFilter);
 }
 
