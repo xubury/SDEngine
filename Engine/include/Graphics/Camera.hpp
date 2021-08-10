@@ -1,7 +1,7 @@
 #ifndef SD_CAMERA_HPP
 #define SD_CAMERA_HPP
 
-#include "Utils/Export.hpp"
+#include "Common/Export.hpp"
 #include "Core/Transform.hpp"
 
 namespace sd {

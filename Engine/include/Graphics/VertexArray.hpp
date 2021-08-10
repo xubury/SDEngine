@@ -1,7 +1,7 @@
 #ifndef SD_VERTEX_ARRAY_HPP
 #define SD_VERTEX_ARRAY_HPP
 
-#include "Utils/Base.hpp"
+#include "Common/Base.hpp"
 #include "Graphics/BufferLayout.hpp"
 #include "Graphics/Buffer.hpp"
 

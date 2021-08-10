@@ -1,12 +1,12 @@
 #ifndef SD_ACTION_HPP
 #define SD_ACTION_HPP
 
-#include "Utils/Export.hpp"
+#include "Common/Export.hpp"
 #include <SDL.h>
 
 namespace sd {
 
-class Action {
+class SD_API Action {
    public:
     enum Type {
         REAL_TIME = 1,

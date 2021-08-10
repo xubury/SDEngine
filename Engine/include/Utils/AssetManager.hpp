@@ -5,7 +5,7 @@
 
 namespace sd {
 
-class AssetManager {
+class SD_API AssetManager {
    public:
     AssetManager() = default;
 

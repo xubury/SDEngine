@@ -54,11 +54,9 @@ endif()
 
 target_link_libraries(sd-core PUBLIC sd-utils sd-imgui sd-renderer SDL2::Main SDL2::Image GLEW::GLEW glm)
 
-target_include_directories(sd-core PUBLIC
+target_include_directories(sd-core 
+    PUBLIC
     ${PROJECT_SOURCE_DIR}/include)
-
-target_include_directories(sd-core PRIVATE
-    ${PROJECT_SOURCE_DIR}/libs)
 
 install(TARGETS sd-core LIBRARY DESTINATION lib)
 

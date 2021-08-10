@@ -5,7 +5,7 @@
 
 namespace sd {
 
-class ImGuiLayer : public Layer {
+class SD_API ImGuiLayer : public Layer {
    public:
     ImGuiLayer();
 

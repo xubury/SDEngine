@@ -61,9 +61,9 @@ endif()
 
 target_link_libraries(sd-graphics PUBLIC sd-core)
 
-target_include_directories(sd-graphics PUBLIC
+target_include_directories(sd-graphics
+    PUBLIC
     ${PROJECT_SOURCE_DIR}/include)
-
 
 install(TARGETS sd-graphics LIBRARY DESTINATION lib)
 

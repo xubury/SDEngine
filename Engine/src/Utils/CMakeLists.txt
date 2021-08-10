@@ -4,16 +4,10 @@ set(Include_Root ${PROJECT_SOURCE_DIR}/include/Utils)
 set(Src_Root ${PROJECT_SOURCE_DIR}/src/Utils)
 
 set(Utils_Include
-    ${Include_Root}/Assert.hpp
     ${Include_Root}/AssetLoader.hpp
     ${Include_Root}/AssetManager.hpp
-    ${Include_Root}/Base.hpp
-    ${Include_Root}/Config.hpp
-    ${Include_Root}/Export.hpp
     ${Include_Root}/File.hpp
-    ${Include_Root}/Log.hpp
-    ${Include_Root}/PlatformDetection.hpp
-    ${Include_Root}/Random.hpp)
+    ${Include_Root}/Log.hpp)
 
 set(Utils_Src
     ${Src_Root}/File.cpp
@@ -40,7 +34,8 @@ endif()
 
 target_link_libraries(sd-utils PUBLIC spdlog::spdlog)
 
-target_include_directories(sd-utils PUBLIC
+target_include_directories(sd-utils 
+    PUBLIC
     ${PROJECT_SOURCE_DIR}/include)
 
 

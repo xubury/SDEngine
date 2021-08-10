@@ -1,8 +1,8 @@
 #ifndef SD_CONTEXT_HPP
 #define SD_CONTEXT_HPP
 
-#include "Utils/Export.hpp"
-#include "Utils/Base.hpp"
+#include "Common/Export.hpp"
+#include "Common/Base.hpp"
 #include <SDL.h>
 
 namespace sd {

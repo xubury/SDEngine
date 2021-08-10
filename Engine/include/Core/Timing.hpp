@@ -2,10 +2,11 @@
 #define SD_TIMING_HPP
 
 #include <cstdint>
+#include "Common/Export.hpp"
 
 namespace sd {
 
-class Clock {
+class SD_API Clock {
    public:
     Clock();
 
@@ -18,7 +19,7 @@ class Clock {
     uint32_t m_lastTicks;
 };
 
-class FpsCounter {
+class SD_API FpsCounter {
    public:
     FpsCounter() = default;
     ~FpsCounter() = default;

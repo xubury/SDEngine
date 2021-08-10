@@ -28,7 +28,8 @@ endif()
 
 target_link_libraries(sd-renderer PUBLIC sd-graphics)
 
-target_include_directories(sd-renderer PUBLIC
+target_include_directories(sd-renderer 
+    PUBLIC
     ${PROJECT_SOURCE_DIR}/include)
 
 

@@ -3,8 +3,8 @@
 
 #include <SDL.h>
 #include <string>
-#include "Utils/Export.hpp"
-#include "Utils/Base.hpp"
+#include "Common/Export.hpp"
+#include "Common/Base.hpp"
 #include "Core/Context.hpp"
 
 namespace sd {

@@ -1,7 +1,7 @@
 #ifndef SD_GL_VERTEX_ARRAY_HPP
 #define SD_GL_VERTEX_ARRAY_HPP
 
-#include "Utils/Base.hpp"
+#include "Common/Base.hpp"
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/BufferLayout.hpp"
 #include "Graphics/OpenGL/GLBuffer.hpp"

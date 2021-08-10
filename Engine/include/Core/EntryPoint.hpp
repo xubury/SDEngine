@@ -5,7 +5,7 @@
 
 namespace sd {
 
-extern Application *createApp();
+extern SD_API Application *createApp();
 
 };
 

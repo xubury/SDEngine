@@ -3,14 +3,14 @@
 
 #include <string>
 #include <unordered_map>
-#include "Utils/Base.hpp"
+#include "Common/Base.hpp"
 #include "Utils/Log.hpp"
 
 namespace sd {
 
 class AssetManager;
 
-class AssetLoaderBase {
+class SD_API AssetLoaderBase {
    public:
     AssetLoaderBase(AssetManager &manager) : m_manager(manager) {}
     virtual ~AssetLoaderBase() = default;

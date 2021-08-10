@@ -1,12 +1,13 @@
 #ifndef SD_RANDOM_HPP
 #define SD_RANDOM_HPP
 
-#include <stdint.h>
+#include <cstdint>
 #include <random>
+#include "Common/Export.hpp"
 
 namespace sd {
 
-class Random {
+class SD_API Random {
    public:
     static float rnd(float min, float max);
     static double rnd(double min, double max);

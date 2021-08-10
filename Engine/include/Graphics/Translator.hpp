@@ -1,7 +1,7 @@
 #ifndef SD_TRANSLATOR_HPP
 #define SD_TRANSLATOR_HPP
 
-#include "Utils/Base.hpp"
+#include "Common/Base.hpp"
 #include "Graphics/Graphics.hpp"
 
 namespace sd {

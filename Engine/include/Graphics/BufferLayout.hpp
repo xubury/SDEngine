@@ -3,8 +3,8 @@
 
 #include <string>
 #include <vector>
-#include "Utils/Export.hpp"
-#include "Utils/Assert.hpp"
+#include "Common/Export.hpp"
+#include "Common/Assert.hpp"
 #include "Graphics/Graphics.hpp"
 
 namespace sd {

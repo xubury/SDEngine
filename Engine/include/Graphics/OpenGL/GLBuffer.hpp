@@ -1,8 +1,8 @@
 #ifndef SD_GL_BUFFER_HPP
 #define SD_GL_BUFFER_HPP
 
-#include "Utils/Export.hpp"
-#include "Utils/Base.hpp"
+#include "Common/Export.hpp"
+#include "Common/Base.hpp"
 #include "Graphics/Buffer.hpp"
 #include <GL/glew.h>
 
