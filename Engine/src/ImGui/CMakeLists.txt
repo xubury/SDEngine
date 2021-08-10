@@ -1,14 +1,12 @@
-find_package(imgui REQUIRED)
-
 set(Include_Root ${PROJECT_SOURCE_DIR}/include/ImGui)
 set(Src_Root ${PROJECT_SOURCE_DIR}/src/ImGui)
 
-set(ImGui_Include ${Include_Root}/ImGuiLayer.hpp)
+set(ImGui_Include
+    ${Include_Root}/ImGuiLayer.hpp)
 
 set(ImGui_Src
     ${Src_Root}/ImGuiLayer.cpp
-    ${Src_Root}/imgui_impl_sdl.cpp
-    ${Src_Root}/imgui_impl_opengl3.cpp)
+    ${Src_Root}/ImGuiBuild.cpp)
 
 add_library(sd-imgui ${ImGui_Src})
 
@@ -22,13 +20,14 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-imgui PUBLIC SD_SHARED)
 endif()
 
-target_link_libraries(sd-imgui PUBLIC sd-core imgui::imgui)
+target_link_libraries(sd-imgui PUBLIC sd-core)
 
 target_include_directories(sd-imgui
     PUBLIC
     ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/libs/imgui
     PRIVATE
-    ${PROJECT_SOURCE_DIR}/include/ImGui)
+    ${PROJECT_SOURCE_DIR}/libs/imgui/backends)
 
 
 install(TARGETS sd-imgui LIBRARY DESTINATION lib)

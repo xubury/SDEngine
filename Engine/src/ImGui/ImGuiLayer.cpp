@@ -2,8 +2,8 @@
 #include "Core/Application.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Graphics.hpp"
-#include "ImGui/imgui_impl_opengl3.h"
-#include "ImGui/imgui_impl_sdl.h"
+#include "imgui_impl_opengl3.h"
+#include "imgui_impl_sdl.h"
 
 namespace sd {
 

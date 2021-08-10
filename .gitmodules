@@ -1,3 +1,6 @@
 [submodule "Engine/libs/entt"]
 	path = Engine/libs/entt
 	url = git@github.com:skypjack/entt.git
+[submodule "Engine/libs/imgui"]
+	path = Engine/libs/imgui
+	url = git@github.com:ocornut/imgui.git
