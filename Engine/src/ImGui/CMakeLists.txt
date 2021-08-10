@@ -26,7 +26,9 @@ target_link_libraries(sd-imgui PUBLIC sd-core imgui::imgui)
 
 target_include_directories(sd-imgui
     PUBLIC
-    ${PROJECT_SOURCE_DIR}/include)
+    ${PROJECT_SOURCE_DIR}/include
+    PRIVATE
+    ${PROJECT_SOURCE_DIR}/include/ImGui)
 
 
 install(TARGETS sd-imgui LIBRARY DESTINATION lib)
