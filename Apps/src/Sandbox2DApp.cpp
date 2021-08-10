@@ -7,8 +7,8 @@
 sd::Application *sd::createApp() { return new Sandbox2DApp; }
 
 void Sandbox2DApp::init() {
-    // pushOverlay(sd::createRef<EditorLayer>());
-    pushLayer(sd::createRef<Sandbox2DLayer>());
+    // pushOverlay(new EditorLayer());
+    pushLayer(new Sandbox2DLayer());
 }
 
 void Sandbox2DApp::destroy() {}

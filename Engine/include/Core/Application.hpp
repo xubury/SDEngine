@@ -19,13 +19,13 @@ class SD_API Application {
 
     virtual void destroy() = 0;
 
-    void pushLayer(Ref<Layer> layer);
+    void pushLayer(Layer *layer);
 
-    void pushOverlay(Ref<Layer> layer);
+    void pushOverlay(Layer *layer);
 
-    void popLayer(Ref<Layer> layer);
+    void popLayer(Layer *layer);
 
-    void popOverlay(Ref<Layer> layer);
+    void popOverlay(Layer *layer);
 
     void run();
 
@@ -49,7 +49,7 @@ class SD_API Application {
 
     Window m_window;
     LayerStack m_layers;
-    Ref<ImGuiLayer> m_imguiLayer;
+    ImGuiLayer *m_imguiLayer;
 };
 
 }  // namespace sd

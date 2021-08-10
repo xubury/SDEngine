@@ -1,5 +1,6 @@
 #include "EditorLayer.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Core/Application.hpp"
 #include <imgui.h>
 
 EditorLayer::EditorLayer() : sd::Layer("Editor Layer") { setBlockEvent(true); }
@@ -68,8 +69,4 @@ void EditorLayer::onImGui() {
     ImGui::End();
 }
 
-void EditorLayer::onEventPoll(const SDL_Event &event) {
-    if (event.type == SDL_KEYDOWN &&event.key.keysym.sym == SDLK_z) {
-        SD_TRACE("z");
-    }
-}
+void EditorLayer::onEventPoll(const SDL_Event &) {}
