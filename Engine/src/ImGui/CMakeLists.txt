@@ -33,4 +33,4 @@ target_include_directories(sd-imgui
 
 install(TARGETS sd-imgui LIBRARY DESTINATION lib)
 
-install(FILES ${Graphics_Include} DESTINATION include/ImGui)
+install(FILES ${ImGui_Include} DESTINATION include/ImGui)
