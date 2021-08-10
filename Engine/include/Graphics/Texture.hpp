@@ -34,7 +34,8 @@ class SD_API Texture {
                                 int width, int height, int mipmap) = 0;
 
     bool operator==(const Texture &other) const;
-    virtual bool equals(const Texture &other) const = 0;
+
+    bool operator!=(const Texture &other) const;
 
     virtual uint32_t getId() const = 0;
 

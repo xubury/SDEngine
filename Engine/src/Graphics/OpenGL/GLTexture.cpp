@@ -20,14 +20,6 @@ GLTexture::~GLTexture() {
     if (gl_id != 0) glDeleteTextures(1, &gl_id);
 }
 
-bool GLTexture::equals(const Texture &other) const {
-    const GLTexture *ptr = dynamic_cast<const GLTexture *>(&other);
-    if (ptr) {
-        return gl_id == ptr->gl_id;
-    }
-    return false;
-}
-
 void GLTexture::init() {
     if (gl_id != 0) glDeleteTextures(1, &gl_id);
 

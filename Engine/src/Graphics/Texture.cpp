@@ -45,7 +45,13 @@ Texture::Texture(int width, int height, int samples, TextureType type,
       m_mipmapFilter(mipmapFilter),
       m_data(data) {}
 
-bool Texture::operator==(const Texture &other) const { return equals(other); }
+bool Texture::operator==(const Texture &other) const {
+    return getId() == other.getId();
+}
+
+bool Texture::operator!=(const Texture &other) const {
+    return !(*this == other);
+}
 
 int Texture::getWidth() const { return m_width; }
 
