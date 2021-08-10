@@ -9,8 +9,9 @@ class Clock {
    public:
     Clock();
 
-    uint32_t getElapsedTime() const;
+    uint32_t getElapsedMS() const;
 
+    // Restart the clock, and return elapsed millisecond.
     uint32_t restart();
 
    private:
