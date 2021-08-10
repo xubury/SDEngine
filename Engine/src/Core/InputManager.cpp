@@ -31,8 +31,8 @@ void InputManager::releaseMouseButton(uint8_t button) {
 }
 
 bool InputManager::isKeyDown(SDL_Keycode keycode) {
-    auto it = m_keyMap.find(keycode);
-    if (it != m_keyMap.end()) {
+    auto it = instance().m_keyMap.find(keycode);
+    if (it != instance().m_keyMap.end()) {
         return it->second;
     } else {
         return false;
@@ -40,8 +40,8 @@ bool InputManager::isKeyDown(SDL_Keycode keycode) {
 }
 
 bool InputManager::wasKeyDown(SDL_Keycode keycode) {
-    auto it = m_lastKeyMap.find(keycode);
-    if (it != m_lastKeyMap.end()) {
+    auto it = instance().m_lastKeyMap.find(keycode);
+    if (it != instance().m_lastKeyMap.end()) {
         return it->second;
     } else {
         return false;
@@ -53,8 +53,8 @@ bool InputManager::isKeyPressed(SDL_Keycode keycode) {
 }
 
 bool InputManager::isMouseDown(uint8_t button) {
-    auto it = m_mouseBtnMap.find(button);
-    if (it != m_mouseBtnMap.end()) {
+    auto it = instance().m_mouseBtnMap.find(button);
+    if (it != instance().m_mouseBtnMap.end()) {
         return it->second;
     } else {
         return false;
@@ -62,8 +62,8 @@ bool InputManager::isMouseDown(uint8_t button) {
 }
 
 bool InputManager::wasMouseDown(uint8_t button) {
-    auto it = m_lastMouseBtnMap.find(button);
-    if (it != m_lastMouseBtnMap.end()) {
+    auto it = instance().m_lastMouseBtnMap.find(button);
+    if (it != instance().m_lastMouseBtnMap.end()) {
         return it->second;
     } else {
         return false;
@@ -79,6 +79,6 @@ void InputManager::setMouseCoord(float x, float y) {
     m_mouseCoord.y = y;
 }
 
-glm::vec2 InputManager::getMouseCoord() const { return m_mouseCoord; }
+glm::vec2 InputManager::getMouseCoord() { return instance().m_mouseCoord; }
 
 }  // namespace sd

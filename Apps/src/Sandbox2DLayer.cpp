@@ -45,7 +45,7 @@ void Sandbox2DLayer::onEventPoll(const SDL_Event &event) {
         case SDL_MOUSEMOTION: {
             sd::ParticleProp prop;
             glm::vec2 view = sd::Renderer::getDefaultTarget()->mapScreenToClip(
-                sd::InputManager::instance().getMouseCoord());
+                sd::InputManager::getMouseCoord());
             glm::vec3 world = m_masterCam.mapClipToWorld(view);
             world.z = -1.0f;
             for (int i = 0; i < 10; ++i) {

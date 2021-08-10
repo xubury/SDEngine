@@ -49,18 +49,17 @@ bool Action::test() const {
     // TODO:other detect (joystick) need to be implemented
     if (m_event.type == SDL_KEYDOWN) {
         if (m_type & Type::PRESSED) {
-            res = InputManager::instance().isKeyPressed(m_event.key.keysym.sym);
+            res = InputManager::isKeyPressed(m_event.key.keysym.sym);
         }
         if (m_type & Type::DOWN) {
-            res = InputManager::instance().isKeyDown(m_event.key.keysym.sym);
+            res = InputManager::isKeyDown(m_event.key.keysym.sym);
         }
     } else if (m_event.type == SDL_MOUSEBUTTONDOWN) {
         if (m_type & Type::PRESSED) {
-            res =
-                InputManager::instance().isMousePressed(m_event.button.button);
+            res = InputManager::isMousePressed(m_event.button.button);
         }
         if (m_type & Type::DOWN) {
-            res = InputManager::instance().isMouseDown(m_event.key.keysym.sym);
+            res = InputManager::isMouseDown(m_event.key.keysym.sym);
         }
     }
     return res;

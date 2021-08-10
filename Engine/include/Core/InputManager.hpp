@@ -10,19 +10,21 @@ namespace sd {
 
 class SD_API InputManager {
    public:
+    static bool isKeyDown(SDL_Keycode keycode);
+    static bool wasKeyDown(SDL_Keycode keycode);
+    static bool isKeyPressed(SDL_Keycode keycode);
+
+    static bool isMouseDown(uint8_t button);
+    static bool wasMouseDown(uint8_t button);
+    static bool isMousePressed(uint8_t button);
+
+    static glm::vec2 getMouseCoord();
+
+   private:
     static InputManager &instance();
 
-    bool isKeyDown(SDL_Keycode keycode);
-    bool wasKeyDown(SDL_Keycode keycode);
-    bool isKeyPressed(SDL_Keycode keycode);
-
-    bool isMouseDown(uint8_t button);
-    bool wasMouseDown(uint8_t button);
-    bool isMousePressed(uint8_t button);
-
-    glm::vec2 getMouseCoord() const;
-   private:
     friend class Application;
+
     void tick();
 
     void pressKey(SDL_Keycode keycode);
