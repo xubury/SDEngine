@@ -32,7 +32,7 @@ static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
 #define SDL(stmt) stmt
 #endif
 
-GLContext::GLContext(SDL_Window* window) {
+GLContext::GLContext(SDL_Window* window) : m_window(window) {
     SD_CORE_TRACE("Initializing GLContext...");
     m_context = SDL_GL_CreateContext(window);
     if (m_context == nullptr) {
@@ -78,5 +78,7 @@ GLContext::GLContext(SDL_Window* window) {
 GLContext::~GLContext() { SDL_GL_DeleteContext(m_context); }
 
 void* GLContext::getHandle() const { return m_context; }
+
+void GLContext::swapBuffer() const { SDL_GL_SwapWindow(m_window); }
 
 }  // namespace sd

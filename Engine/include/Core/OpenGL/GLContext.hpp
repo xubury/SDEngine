@@ -17,9 +17,10 @@ class SD_API GLContext : public Context {
 
     void *getHandle() const override;
 
+    void swapBuffer() const override;
    private:
-    friend class Window;
     SDL_GLContext m_context;
+    SDL_Window *m_window;
 };
 
 }  // namespace sd

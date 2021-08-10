@@ -48,7 +48,7 @@ bool Window::shouldClose() const { return m_shouldClose; }
 
 void Window::setShouldClose(bool shouldClose) { m_shouldClose = shouldClose; }
 
-void Window::swapBuffer() { SDL_GL_SwapWindow(m_window); }
+void Window::swapBuffer() { m_context->swapBuffer(); }
 
 int Window::getWidth() const {
     int w = 0, _;

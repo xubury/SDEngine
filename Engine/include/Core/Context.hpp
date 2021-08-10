@@ -15,6 +15,8 @@ class SD_API Context {
 
     virtual void *getHandle() const = 0;
 
+    virtual void swapBuffer() const = 0;
+
    protected:
     Context() = default;
 };
