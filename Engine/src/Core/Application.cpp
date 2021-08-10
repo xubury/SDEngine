@@ -46,7 +46,7 @@ Application::Application() {
     sd::Renderer2D::init();
     sd::Renderer3D::init();
 
-    sd::Renderer::getDefaultTarget().resize(width, height);
+    sd::Renderer::getDefaultTarget()->resize(width, height);
     m_imguiLayer = createRef<ImGuiLayer>();
     pushOverlay(m_imguiLayer);
 }
@@ -59,6 +59,10 @@ Application::~Application() {
 void Application::pushLayer(Ref<Layer> layer) { m_layers.pushLayer(layer); }
 
 void Application::pushOverlay(Ref<Layer> layer) { m_layers.pushOverlay(layer); }
+
+void Application::popLayer(Ref<Layer> layer) { m_layers.popLayer(layer); }
+
+void Application::popOverlay(Ref<Layer> layer) { m_layers.popOverlay(layer); }
 
 void Application::onEventPoll(const SDL_Event &event) {
     switch (event.type) {

@@ -44,7 +44,7 @@ void Sandbox2DLayer::onEventPoll(const SDL_Event &event) {
     switch (event.type) {
         case SDL_MOUSEMOTION: {
             sd::ParticleProp prop;
-            glm::vec2 view = sd::Renderer::getDefaultTarget().mapScreenToClip(
+            glm::vec2 view = sd::Renderer::getDefaultTarget()->mapScreenToClip(
                 sd::InputManager::instance().getMouseCoord());
             glm::vec3 world = m_masterCam.mapClipToWorld(view);
             world.z = -1.0f;
@@ -70,8 +70,8 @@ void Sandbox2DLayer::onEventPoll(const SDL_Event &event) {
         }
         case SDL_WINDOWEVENT: {
             if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                sd::Renderer::getDefaultTarget().resize(event.window.data1,
-                                                        event.window.data2);
+                sd::Renderer::getDefaultTarget()->resize(event.window.data1,
+                                                         event.window.data2);
             }
         }
     }

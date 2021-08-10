@@ -28,7 +28,7 @@ class SD_API Renderer {
 
     static void setFramebuffer(const Framebuffer *framebuffer);
 
-    static RenderTarget &getDefaultTarget();
+    static Ref<RenderTarget> getDefaultTarget();
 
     static void setDefaultTarget(Ref<RenderTarget> target);
 

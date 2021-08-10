@@ -46,8 +46,8 @@ void Renderer::setFramebuffer(const Framebuffer *framebuffer) {
     instance().m_device->setFramebuffer(framebuffer);
 }
 
-RenderTarget &Renderer::getDefaultTarget() {
-    return *instance().m_defaultTarget;
+Ref<RenderTarget> Renderer::getDefaultTarget() {
+    return instance().m_defaultTarget;
 }
 
 void Renderer::setDefaultTarget(Ref<RenderTarget> target) {

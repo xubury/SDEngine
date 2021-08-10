@@ -23,6 +23,10 @@ class SD_API Application {
 
     void pushOverlay(Ref<Layer> layer);
 
+    void popLayer(Ref<Layer> layer);
+
+    void popOverlay(Ref<Layer> layer);
+
     void run();
 
     void quit();

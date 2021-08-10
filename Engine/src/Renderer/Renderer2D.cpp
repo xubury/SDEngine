@@ -120,7 +120,7 @@ void Renderer2D::beginScene(const OrthographicCamera& camera,
     if (target) {
         target->use();
     } else {
-        Renderer::getDefaultTarget().use();
+        Renderer::getDefaultTarget()->use();
     }
     s_data.cameraBuffer.viewProjection = camera.getViewPorjection();
     s_data.cameraBuffer.viewPos = camera.getWorldPosition();

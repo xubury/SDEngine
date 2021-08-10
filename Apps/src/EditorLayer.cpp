@@ -2,7 +2,7 @@
 #include "Renderer/Renderer.hpp"
 #include <imgui.h>
 
-EditorLayer::EditorLayer() : sd::Layer("Editor Layer") {}
+EditorLayer::EditorLayer() : sd::Layer("Editor Layer") { setBlockEvent(true); }
 
 void EditorLayer::onAttach() {
     sd::Ref<sd::Texture> multisampleTexture = sd::Texture::create(
@@ -28,13 +28,14 @@ void EditorLayer::onAttach() {
     m_frameBuffer->attachTexture(m_texture.get());
     m_frameBuffer->setDrawable({0});
 
+    m_defaultTarget = sd::Renderer::getDefaultTarget();
     sd::Renderer::setDefaultTarget(m_target);
-    setBlockEvent(true);
 }
 
 void EditorLayer::onDetech() {
     m_texture.reset();
     m_target.reset();
+    sd::Renderer::setDefaultTarget(m_defaultTarget);
 }
 
 void EditorLayer::onImGui() {
@@ -60,9 +61,15 @@ void EditorLayer::onImGui() {
                                 sd::TextureFilter::NEAREST);
         // Because I use the texture from OpenGL, I need to invert the V
         // from the UV.
-        ImGui::Image((void*)(intptr_t)m_texture->getId(), wsize, ImVec2(0, 1),
+        ImGui::Image((void *)(intptr_t)m_texture->getId(), wsize, ImVec2(0, 1),
                      ImVec2(1, 0));
         ImGui::EndChild();
     }
     ImGui::End();
+}
+
+void EditorLayer::onEventPoll(const SDL_Event &event) {
+    if (event.type == SDL_KEYDOWN &&event.key.keysym.sym == SDLK_z) {
+        SD_TRACE("z");
+    }
 }
