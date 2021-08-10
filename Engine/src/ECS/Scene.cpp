@@ -10,4 +10,6 @@ Entity Scene::createEntity(const std::string &name) {
     return entity;
 }
 
+void Scene::destroyEntity(const Entity &entity) { m_registry.destroy(entity); }
+
 }  // namespace sd
