@@ -1,0 +1,3 @@
+[submodule "Engine/libs/entt"]
+	path = Engine/libs/entt
+	url = git@github.com:skypjack/entt.git

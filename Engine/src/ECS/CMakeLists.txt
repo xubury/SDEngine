@@ -4,7 +4,6 @@ set(Include_Root ${PROJECT_SOURCE_DIR}/include/ECS)
 set(Src_Root ${PROJECT_SOURCE_DIR}/src/ECS)
 
 set(ECS_Include 
-    ${Include_Root}/entt.hpp
     ${Include_Root}/Entity.hpp
     ${Include_Root}/Scene.hpp)
 
@@ -26,10 +25,11 @@ endif()
 
 target_include_directories(sd-ecs
     PUBLIC
-    ${PROJECT_SOURCE_DIR}/include)
+    ${PROJECT_SOURCE_DIR}/include
+    PRIVATE
+    ${PROJECT_SOURCE_DIR}/libs/entt)
 
-target_link_libraries(sd-ecs PUBLIC sd-common)
-
+target_link_libraries(sd-ecs PUBLIC sd-common EnTT::EnTT)
 
 install(TARGETS sd-ecs LIBRARY DESTINATION lib)
 

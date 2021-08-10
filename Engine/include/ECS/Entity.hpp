@@ -3,7 +3,7 @@
 
 #include "Common/Export.hpp"
 #include "Common/Assert.hpp"
-#include "ECS/entt.hpp"
+#include "entt/entt.hpp"
 #include "ECS/Scene.hpp"
 
 namespace sd {

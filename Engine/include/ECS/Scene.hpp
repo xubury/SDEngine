@@ -2,7 +2,7 @@
 #define SD_SCENE_HPP
 
 #include "Common/Export.hpp"
-#include "entt.hpp"
+#include "entt/entt.hpp"
 
 namespace sd {
 
