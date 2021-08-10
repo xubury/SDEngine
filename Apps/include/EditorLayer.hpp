@@ -18,6 +18,10 @@ class EditorLayer : public sd::Layer {
     void onEventPoll(const SDL_Event &event) override;
 
    private:
+    void hide();
+
+    void show();
+
     // The multisampling texture render target.
     sd::Ref<sd::RenderTarget> m_target;
 
@@ -30,6 +34,8 @@ class EditorLayer : public sd::Layer {
     sd::Ref<sd::RenderTarget> m_defaultTarget;
     int m_width;
     int m_height;
+
+    bool m_hide;
 };
 
 #endif /* EDTOR_LAYER_HPP */

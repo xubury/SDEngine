@@ -3,7 +3,8 @@
 #include "Core/Application.hpp"
 #include <imgui.h>
 
-EditorLayer::EditorLayer() : sd::Layer("Editor Layer") { setBlockEvent(true); }
+EditorLayer::EditorLayer()
+    : sd::Layer("Editor Layer"), m_width(0), m_height(0), m_hide(false) {}
 
 void EditorLayer::onAttach() {
     sd::Ref<sd::Texture> multisampleTexture = sd::Texture::create(
@@ -28,18 +29,19 @@ void EditorLayer::onAttach() {
     m_frameBuffer = sd::Framebuffer::create();
     m_frameBuffer->attachTexture(m_texture.get());
     m_frameBuffer->setDrawable({0});
-
-    m_defaultTarget = sd::Renderer::getDefaultTarget();
-    sd::Renderer::setDefaultTarget(m_target);
+    show();
 }
 
 void EditorLayer::onDetech() {
+    hide();
     m_texture.reset();
     m_target.reset();
-    sd::Renderer::setDefaultTarget(m_defaultTarget);
 }
 
 void EditorLayer::onImGui() {
+    if (m_hide) {
+        return;
+    }
     sd::Renderer::setFramebuffer(nullptr);
     sd::Renderer::setClearColor(0.3, 0.3, 0.3, 1.0f);
     sd::Renderer::clear();
@@ -69,4 +71,25 @@ void EditorLayer::onImGui() {
     ImGui::End();
 }
 
-void EditorLayer::onEventPoll(const SDL_Event &) {}
+void EditorLayer::hide() {
+    m_hide = true;
+    setBlockEvent(false);
+    sd::Renderer::setDefaultTarget(m_defaultTarget);
+}
+
+void EditorLayer::show() {
+    m_hide = false;
+    setBlockEvent(true);
+    m_defaultTarget = sd::Renderer::getDefaultTarget();
+    sd::Renderer::setDefaultTarget(m_target);
+}
+
+void EditorLayer::onEventPoll(const SDL_Event &event) {
+    if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_z) {
+        if (m_hide) {
+            show();
+        } else {
+            hide();
+        }
+    }
+}
