@@ -28,14 +28,9 @@ class Device {
 
     virtual void setFramebuffer(const Framebuffer *framebuffer) = 0;
 
-    Device() = default;
-
-   private:
     friend class Renderer;
 
-    static Device &instance();
-
-    static Scope<Device> s_instance;
+    Device() = default;
 };
 
 }  // namespace sd

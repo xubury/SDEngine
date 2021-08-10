@@ -3,29 +3,25 @@
 
 namespace sd {
 
-void FpsLimiter::init(float maxFps) { setMaxFps(maxFps); }
+Clock::Clock() : m_lastTicks(SDL_GetTicks()) {}
 
-void FpsLimiter::setMaxFps(float maxFps) { m_maxFps = maxFps; }
+uint32_t Clock::getElapsedTime() const { return SDL_GetTicks() - m_lastTicks; }
 
-void FpsLimiter::begin() { m_startTicks = SDL_GetTicks(); }
+uint32_t Clock::restart() {
+    uint32_t elapsed = getElapsedTime();
+    m_lastTicks = SDL_GetTicks();
+    return elapsed;
+}
 
-float FpsLimiter::end() {
-    float frameTicks = SDL_GetTicks() - m_startTicks;
+void FpsCounter::begin() { m_clock.restart(); }
 
-    float delay = 1000.f / m_maxFps - frameTicks;
-    if (delay > 0.f) {
-        SDL_Delay(delay);
-    }
-
+float FpsCounter::end() {
     calculateFps();
     return m_fps;
 }
 
-void FpsLimiter::calculateFps() {
-    m_frameTicks = SDL_GetTicks() - m_startTicks;
-    m_fps = 1000.f / m_frameTicks;
-}
+void FpsCounter::calculateFps() { m_fps = 1000.f / m_clock.getElapsedTime(); }
 
-float FpsLimiter::getFps() const { return m_fps; }
+float FpsCounter::getFps() const { return m_fps; }
 
 }  // namespace sd

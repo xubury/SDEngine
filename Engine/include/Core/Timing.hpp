@@ -5,28 +5,36 @@
 
 namespace sd {
 
-class FpsLimiter {
+class Clock {
    public:
-    FpsLimiter() = default;
-    ~FpsLimiter() = default;
+    Clock();
 
-    FpsLimiter(const FpsLimiter &) = delete;
-    FpsLimiter &operator=(const FpsLimiter &) = delete;
+    uint32_t getElapsedTime() const;
 
-    void init(float maxFps);
-    void setMaxFps(float maxFps);
+    uint32_t restart();
+
+   private:
+    uint32_t m_lastTicks;
+};
+
+class FpsCounter {
+   public:
+    FpsCounter() = default;
+    ~FpsCounter() = default;
+
+    FpsCounter(const FpsCounter &) = delete;
+    FpsCounter &operator=(const FpsCounter &) = delete;
 
     void begin();
     float end();
 
     float getFps() const;
+
    private:
     void calculateFps();
 
     float m_fps;
-    float m_maxFps;
-    uint32_t m_frameTicks;
-    uint32_t m_startTicks;
+    Clock m_clock;
 };
 
 }  // namespace sd

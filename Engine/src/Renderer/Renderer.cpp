@@ -17,7 +17,7 @@ void Renderer::init() {
     SD_CORE_TRACE("Initializing Renderer...");
     switch (Graphics::getAPI()) {
         case API::OpenGL:
-            Device::s_instance = createScope<GLDevice>();
+            instance().m_device = createScope<GLDevice>();
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
@@ -29,21 +29,21 @@ void Renderer::init() {
 void Renderer::submit(const VertexArray &vao, MeshTopology topology,
                       size_t count, size_t offset) {
     vao.bind();
-    Device::instance().drawElements(topology, count, offset);
+    instance().m_device->drawElements(topology, count, offset);
 }
 
 void Renderer::setClearColor(float r, float g, float b, float a) {
-    Device::instance().setClearColor(r, g, b, a);
+    instance().m_device->setClearColor(r, g, b, a);
 }
 
-void Renderer::clear() { Device::instance().clear(); }
+void Renderer::clear() { instance().m_device->clear(); }
 
 void Renderer::setViewport(int x, int y, int width, int height) {
-    Device::instance().setViewport(x, y, width, height);
+    instance().m_device->setViewport(x, y, width, height);
 }
 
 void Renderer::setFramebuffer(const Framebuffer *framebuffer) {
-    Device::instance().setFramebuffer(framebuffer);
+    instance().m_device->setFramebuffer(framebuffer);
 }
 
 RenderTarget &Renderer::getDefaultTarget() {

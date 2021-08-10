@@ -11,6 +11,8 @@ namespace sd {
 
 class Framebuffer;
 
+class Device;
+
 class SD_API Renderer {
    public:
     static void init();
@@ -36,6 +38,7 @@ class SD_API Renderer {
     static Renderer &instance();
 
     Ref<RenderTarget> m_defaultTarget;
+    Scope<Device> m_device;
     API m_api;
 
 };  // namespace Renderer

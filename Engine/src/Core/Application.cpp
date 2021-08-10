@@ -98,25 +98,25 @@ void Application::onEventProcess() {
 }
 
 void Application::run() {
-    FpsLimiter fpsLimiter;
-    fpsLimiter.init(60);
+    Clock clock;
+    float minFps = 30;
     SDL_Event event;
-    uint32_t lastTicks = SDL_GetTicks();
+    float msPerFrame = 1000.f / minFps;
+    uint32_t msElapsed = 0;
     while (!m_window.shouldClose()) {
-        fpsLimiter.begin();
-
         while (m_window.pollEvent(event)) {
             onEventPoll(event);
         }
         onEventProcess();
 
-        uint32_t newTicks = SDL_GetTicks();
-        tick((newTicks - lastTicks) / 1000.f);
-        lastTicks = newTicks;
+        msElapsed = clock.restart();
+        while (msElapsed > msPerFrame) {
+            msElapsed -= msPerFrame;
+            tick(msPerFrame / 1000.f);
+        }
+        tick(msElapsed / 1000.f);
 
         render();
-
-        fpsLimiter.end();
     }
 }
 
@@ -134,14 +134,11 @@ void Application::render() {
     for (auto &layer : m_layers) {
         layer->onRender();
     }
-    bool imgui = m_layers.hasLayer(m_imguiLayer);
-    if (imgui) {
-        m_imguiLayer->begin();
-        for (auto &layer : m_layers) {
-            layer->onImGui();
-        }
-        m_imguiLayer->end();
+    m_imguiLayer->begin();
+    for (auto &layer : m_layers) {
+        layer->onImGui();
     }
+    m_imguiLayer->end();
 
     m_window.swapBuffer();
 }
