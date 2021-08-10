@@ -4,3 +4,6 @@
 [submodule "Engine/libs/imgui"]
 	path = Engine/libs/imgui
 	url = git@github.com:ocornut/imgui.git
+[submodule "Engine/cmake/sdl2"]
+	path = Engine/cmake/sdl2
+	url = git@github.com:aminosbh/sdl2-cmake-modules.git
