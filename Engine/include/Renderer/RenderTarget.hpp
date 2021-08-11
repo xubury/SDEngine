@@ -9,7 +9,7 @@
 
 namespace sd {
 
-class RenderTarget {
+class SD_API RenderTarget {
    public:
     RenderTarget();
 

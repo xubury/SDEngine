@@ -3,12 +3,13 @@
 
 #include <glm/glm.hpp>
 #include <vector>
+#include "Common/Export.hpp"
 #include "Renderer/RenderTarget.hpp"
 #include "Graphics/Camera.hpp"
 
 namespace sd {
 
-struct ParticleProp {
+struct SD_API ParticleProp {
     glm::vec3 position;
     glm::vec3 velocity;
     glm::vec3 velocityVariation;
@@ -30,7 +31,7 @@ struct ParticleProp {
           lifeTime(1.0f) {}
 };
 
-class ParticleSystem {
+class SD_API ParticleSystem {
    public:
     ParticleSystem(int poolSize = 1000);
 
