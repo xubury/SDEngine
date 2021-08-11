@@ -53,7 +53,7 @@ class SD_API LayerStack {
 
    private:
     std::vector<Layer *> m_layers;
-    std::size_t m_layerInsertId;
+    size_t m_layerInsertId;
 };
 
 }  // namespace sd

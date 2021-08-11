@@ -45,15 +45,80 @@ void EditorLayer::onImGui() {
     sd::Renderer::setFramebuffer(nullptr);
     sd::Renderer::setClearColor(0.3, 0.3, 0.3, 1.0f);
     sd::Renderer::clear();
+
+    static bool dockspaceOpen = true;
+    static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
+    static bool fullScreen = true;
+
+    ImGuiWindowFlags windowFlags =
+        ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+    if (fullScreen) {
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->Pos);
+        ImGui::SetNextWindowSize(viewport->Size);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        windowFlags |= ImGuiWindowFlags_NoTitleBar |
+                       ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+                       ImGuiWindowFlags_NoMove;
+        windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus |
+                       ImGuiWindowFlags_NoNavFocus;
+    }
+
+    if (dockspaceFlags & ImGuiDockNodeFlags_PassthruCentralNode)
+        windowFlags |= ImGuiWindowFlags_NoBackground;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("DockSpace Demo", &dockspaceOpen, windowFlags);
+    ImGui::PopStyleVar();
+
+    if (fullScreen) {
+        ImGui::PopStyleVar(2);
+    }
+
+    ImGuiIO& io = ImGui::GetIO();
+    ImGuiStyle& style = ImGui::GetStyle();
+    float minWinSizeX = style.WindowMinSize.x;
+    style.WindowMinSize.x = 370.0f;
+    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+        ImGuiID dockspaceId = ImGui::GetID("MyDockSpace");
+        ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), dockspaceFlags);
+    }
+
+    style.WindowMinSize.x = minWinSizeX;
+
+    if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("New", "Ctrl+N")) {
+            }
+
+            if (ImGui::MenuItem("Open...", "Ctrl+O")) {
+            }
+
+            if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) {
+            }
+
+            if (ImGui::MenuItem("Exit")) {
+                sd::Application::instance().quit();
+            }
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMenuBar();
+    }
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
     ImGui::Begin("Scene");
     {
-        ImGui::BeginChild("SceneRenderer");
-        ImVec2 wsize = ImGui::GetWindowSize();
+        ImVec2 wsize = ImGui::GetContentRegionAvail();
         // if game window not active, disable camera response
         // bool isFocus = ImGui::IsWindowFocused() && ImGui::IsWindowHovered();
         if (m_width != wsize.x || m_height != wsize.y) {
-            m_target->resize(wsize.x, wsize.y);
-            m_texture->setPixels(wsize.x, wsize.y, nullptr);
+            if (wsize.x > 0 && wsize.y > 0) {
+                m_target->resize(wsize.x, wsize.y);
+                m_texture->setPixels(wsize.x, wsize.y, nullptr);
+            }
 
             m_width = wsize.x;
             m_height = wsize.y;
@@ -64,10 +129,12 @@ void EditorLayer::onImGui() {
                                 sd::TextureFilter::NEAREST);
         // Because I use the texture from OpenGL, I need to invert the V
         // from the UV.
-        ImGui::Image((void *)(intptr_t)m_texture->getId(), wsize, ImVec2(0, 1),
+        ImGui::Image((void*)(intptr_t)m_texture->getId(), wsize, ImVec2(0, 1),
                      ImVec2(1, 0));
-        ImGui::EndChild();
     }
+    ImGui::End();
+    ImGui::PopStyleVar();
+
     ImGui::End();
 }
 
@@ -84,7 +151,7 @@ void EditorLayer::show() {
     sd::Renderer::setDefaultTarget(m_target);
 }
 
-void EditorLayer::onEventPoll(const SDL_Event &event) {
+void EditorLayer::onEventPoll(const SDL_Event& event) {
     if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_z) {
         if (m_hide) {
             show();
