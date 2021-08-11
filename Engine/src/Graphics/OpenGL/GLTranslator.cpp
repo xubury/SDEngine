@@ -1,4 +1,5 @@
 #include "Graphics/OpenGL/GLTranslator.hpp"
+#include "Common/Assert.hpp"
 
 namespace sd {
 
@@ -57,10 +58,19 @@ GLenum translate(TextureType textureType) {
     return GL_INVALID_VALUE;
 }
 
-GLenum translate(TextureFormat textureFormat) {
+GLenum translateFormat(TextureFormat textureFormat,
+                       TextureFormatType textureFormatType) {
     switch (textureFormat) {
-        case TextureFormat::ALPHA:
-            return GL_RED;
+        case TextureFormat::ALPHA: {
+            switch (textureFormatType) {
+                case TextureFormatType::UINT:
+                    return GL_RED_INTEGER;
+                case TextureFormatType::FLOAT:
+                    return GL_RED;
+                case TextureFormatType::UBYTE:
+                    return GL_RED;
+            }
+        } break;
         case TextureFormat::RG:
             return GL_RG;
         case TextureFormat::RGB:
@@ -79,6 +89,8 @@ GLenum translate(TextureFormatType textureFormatType) {
     switch (textureFormatType) {
         case TextureFormatType::UBYTE:
             return GL_UNSIGNED_BYTE;
+        case TextureFormatType::UINT:
+            return GL_UNSIGNED_INT;
         case TextureFormatType::FLOAT:
             return GL_FLOAT;
     }
@@ -86,13 +98,15 @@ GLenum translate(TextureFormatType textureFormatType) {
     return GL_INVALID_VALUE;
 }
 
-GLint translate(TextureFormat textureFormat,
-                TextureFormatType textureFormatType) {
+GLint translateInternalFormat(TextureFormat textureFormat,
+                              TextureFormatType textureFormatType) {
     switch (textureFormat) {
         case TextureFormat::ALPHA: {
             switch (textureFormatType) {
                 case TextureFormatType::UBYTE:
                     return GL_R8;
+                case TextureFormatType::UINT:
+                    return GL_R32UI;
                 case TextureFormatType::FLOAT:
                     return GL_R32F;
             }
@@ -103,6 +117,8 @@ GLint translate(TextureFormat textureFormat,
             switch (textureFormatType) {
                 case TextureFormatType::UBYTE:
                     return GL_RG8;
+                case TextureFormatType::UINT:
+                    return GL_RG32UI;
                 case TextureFormatType::FLOAT:
                     return GL_RG32F;
             }
@@ -113,6 +129,8 @@ GLint translate(TextureFormat textureFormat,
             switch (textureFormatType) {
                 case TextureFormatType::UBYTE:
                     return GL_RGB8;
+                case TextureFormatType::UINT:
+                    return GL_RGB32UI;
                 case TextureFormatType::FLOAT:
                     return GL_RGB32F;
             }
@@ -123,6 +141,8 @@ GLint translate(TextureFormat textureFormat,
             switch (textureFormatType) {
                 case TextureFormatType::UBYTE:
                     return GL_RGBA8;
+                case TextureFormatType::UINT:
+                    return GL_RGBA32UI;
                 case TextureFormatType::FLOAT:
                     return GL_RGBA32F;
             }
@@ -133,6 +153,8 @@ GLint translate(TextureFormat textureFormat,
             switch (textureFormatType) {
                 case TextureFormatType::UBYTE:
                     return GL_DEPTH_COMPONENT;
+                case TextureFormatType::UINT:
+                    return GL_DEPTH_COMPONENT32;
                 case TextureFormatType::FLOAT:
                     return GL_DEPTH_COMPONENT24;
             }

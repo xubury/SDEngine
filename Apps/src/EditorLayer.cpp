@@ -7,13 +7,19 @@ EditorLayer::EditorLayer()
     : sd::Layer("Editor Layer"), m_width(0), m_height(0), m_hide(false) {}
 
 void EditorLayer::onAttach() {
+    m_target = sd::createRef<sd::RenderTarget>();
+
     sd::Ref<sd::Texture> multisampleTexture = sd::Texture::create(
         1024, 1024, 8, sd::TextureType::TEX_2D_MULTISAMPLE,
         sd::TextureFormat::RGBA, sd::TextureFormatType::UBYTE,
         sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
         sd::TextureMipmapFilter::NEAREST);
-    m_target = sd::createRef<sd::RenderTarget>();
     m_target->addTexture(multisampleTexture);
+    m_target->addTexture(sd::Texture::create(
+        multisampleTexture->getWidth(), multisampleTexture->getHeight(), 8,
+        sd::TextureType::TEX_2D_MULTISAMPLE, sd::TextureFormat::ALPHA,
+        sd::TextureFormatType::UINT, sd::TextureWrap::BORDER,
+        sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
     m_target->addTexture(sd::Texture::create(
         multisampleTexture->getWidth(), multisampleTexture->getHeight(), 8,
         sd::TextureType::TEX_2D_MULTISAMPLE, sd::TextureFormat::DEPTH,
@@ -21,14 +27,18 @@ void EditorLayer::onAttach() {
         sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
     m_target->init();
 
+    m_frameBuffer = sd::Framebuffer::create();
     m_texture = sd::Texture::create(
         1024, 1024, 1, sd::TextureType::TEX_2D, sd::TextureFormat::RGBA,
         sd::TextureFormatType::UBYTE, sd::TextureWrap::BORDER,
         sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST);
-
-    m_frameBuffer = sd::Framebuffer::create();
-    m_frameBuffer->attachTexture(m_texture.get());
-    m_frameBuffer->setDrawable({0});
+    m_frameBuffer->attachTexture(m_texture);
+    m_frameBuffer->attachTexture(sd::Texture::create(
+        m_texture->getWidth(), m_texture->getHeight(), 1,
+        sd::TextureType::TEX_2D, sd::TextureFormat::ALPHA,
+        sd::TextureFormatType::UINT, sd::TextureWrap::BORDER,
+        sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
+    m_frameBuffer->setDrawable({0, 1});
     show();
 }
 
@@ -91,12 +101,15 @@ void EditorLayer::onImGui() {
     if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             if (ImGui::MenuItem("New", "Ctrl+N")) {
+                newScene();
             }
 
             if (ImGui::MenuItem("Open...", "Ctrl+O")) {
+                openScene();
             }
 
             if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) {
+                saveSceneAs();
             }
 
             if (ImGui::MenuItem("Exit")) {
@@ -112,8 +125,11 @@ void EditorLayer::onImGui() {
     ImGui::Begin("Scene");
     {
         ImVec2 wsize = ImGui::GetContentRegionAvail();
-        // if game window not active, disable camera response
-        // bool isFocus = ImGui::IsWindowFocused() && ImGui::IsWindowHovered();
+        ImVec2 mousePos = ImGui::GetMousePos();
+        ImVec2 windowPos = ImGui::GetWindowPos();
+        ImVec2 viewportMin = ImGui::GetWindowContentRegionMin();
+        mousePos.x -= windowPos.x + viewportMin.x;
+        mousePos.y -= windowPos.y + viewportMin.y;
         if (m_width != wsize.x || m_height != wsize.y) {
             if (wsize.x > 0 && wsize.y > 0) {
                 m_target->resize(wsize.x, wsize.y);
@@ -127,6 +143,7 @@ void EditorLayer::onImGui() {
         m_frameBuffer->copyFrom(m_target->getFramebuffer().get(),
                                 sd::BufferBit::COLOR_BUFFER_BIT,
                                 sd::TextureFilter::NEAREST);
+
         // Because I use the texture from OpenGL, I need to invert the V
         // from the UV.
         ImGui::Image((void*)(intptr_t)m_texture->getId(), wsize, ImVec2(0, 1),
@@ -160,3 +177,9 @@ void EditorLayer::onEventPoll(const SDL_Event& event) {
         }
     }
 }
+
+void EditorLayer::newScene() {}
+
+void EditorLayer::openScene() {}
+
+void EditorLayer::saveSceneAs() {}

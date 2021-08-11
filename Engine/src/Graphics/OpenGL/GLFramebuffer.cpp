@@ -2,6 +2,7 @@
 #include "Graphics/OpenGL/GLTexture.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
 #include "Common/Log.hpp"
+#include "Common/Assert.hpp"
 
 namespace sd {
 GLFramebuffer::GLFramebuffer() : m_id(0), m_textureCnt(0) {}
@@ -15,8 +16,8 @@ void GLFramebuffer::init() {
     glGenFramebuffers(1, &m_id);
 }
 
-bool GLFramebuffer::attachTexture(Texture *texture) {
-    GLTexture *glTexture = dynamic_cast<GLTexture *>(texture);
+bool GLFramebuffer::attachTexture(const Ref<Texture> &texture) {
+    Ref<GLTexture> glTexture = std::static_pointer_cast<GLTexture>(texture);
     bool isColor = false;
     if (glTexture) {
         GLenum attachment = 0;
@@ -85,11 +86,17 @@ int GLFramebuffer::readPixels(uint32_t attachmentId, int x, int y) const {
     glReadBuffer(glAttachmentId);
 
     int data = 0;
-    const GLTexture *texture = m_attachments.at(attachmentId).second;
-    glReadPixels(x, y, 1, 1, translate(texture->getFormat()),
-                 translate(texture->getFormatType()), &data);
+    GLTexture *texture = m_attachments.at(attachmentId).second.get();
+    glReadPixels(x, y, 1, 1, texture->getGLFormat(), texture->getGLFormatType(),
+                 &data);
     unbind();
     return data;
+}
+
+void GLFramebuffer::clearAttachment(uint32_t attachmentId, const void *value) {
+    GLTexture *texture = m_attachments[attachmentId].second.get();
+    glClearTexImage(texture->getId(), 0, texture->getGLFormat(),
+                    texture->getGLFormatType(), value);
 }
 
 void GLFramebuffer::copyFrom(const Framebuffer *other, BufferBit mask,

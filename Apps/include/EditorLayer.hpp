@@ -17,6 +17,10 @@ class EditorLayer : public sd::Layer {
 
     void onEventPoll(const SDL_Event &event) override;
 
+    void newScene();
+    void openScene();
+    void saveSceneAs();
+
    private:
     void hide();
 

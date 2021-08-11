@@ -20,17 +20,19 @@ class Framebuffer {
 
     virtual void init() = 0;
 
-    virtual bool attachTexture(Texture *) = 0;
+    virtual bool attachTexture(const Ref<Texture> &texture) = 0;
 
     virtual void setDrawable(const std::vector<uint32_t> &colorAttachments) = 0;
 
     virtual int readPixels(uint32_t attachmentId, int x, int y) const = 0;
 
+    virtual void clearAttachment(uint32_t attachmentId, const void *value) = 0;
+
     virtual void bind() const = 0;
     virtual void unbind() const = 0;
 
     virtual void copyFrom(const Framebuffer *other, BufferBit bufferbit,
-                      TextureFilter filter) = 0;
+                          TextureFilter filter) = 0;
 
    protected:
     Framebuffer() = default;

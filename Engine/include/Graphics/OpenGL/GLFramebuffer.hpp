@@ -15,7 +15,7 @@ class GLFramebuffer : public Framebuffer {
     virtual ~GLFramebuffer();
 
     void init() override;
-    bool attachTexture(Texture *texture) override;
+    bool attachTexture(const Ref<Texture> &texture) override;
     void setDrawable(const std::vector<uint32_t> &colorAttachments) override;
 
     int readPixels(uint32_t attachmentId, int x, int y) const override;
@@ -24,12 +24,14 @@ class GLFramebuffer : public Framebuffer {
     void unbind() const override;
 
     void copyFrom(const Framebuffer *other, BufferBit bufferbit,
-              TextureFilter filter) override;
+                  TextureFilter filter) override;
+
+    void clearAttachment(uint32_t attachmentId, const void *value) override;
 
    private:
     GLuint m_id;
     uint32_t m_textureCnt;
-    std::vector<std::pair<GLenum, GLTexture *>> m_attachments;
+    std::vector<std::pair<GLenum, Ref<GLTexture>>> m_attachments;
 };
 
 }  // namespace sd

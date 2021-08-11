@@ -9,7 +9,7 @@ void RenderTarget::init() {
     m_framebuffer = Framebuffer::create();
     std::vector<uint32_t> colors;
     for (const auto &texture : m_textures) {
-        bool isColor = m_framebuffer->attachTexture(texture.get());
+        bool isColor = m_framebuffer->attachTexture(texture);
         if (isColor) {
             colors.push_back(colors.size());
         }

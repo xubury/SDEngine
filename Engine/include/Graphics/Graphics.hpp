@@ -17,12 +17,10 @@ enum class MeshTopology {
 
 enum class TextureType { TEX_2D, TEX_2D_MULTISAMPLE, TEX_3D, TEX_CUBE };
 
-enum class TextureFormatType { UBYTE, FLOAT };
+enum class TextureFormatType { UBYTE, UINT, FLOAT };
 
 enum class CullFace { FRONT, BACK, BOTH };
 
-// GL has types for every type of value in diffrent bit depths :c but they
-// also dont work so...
 enum class TextureFormat { ALPHA, RG, RGB, RGBA, DEPTH, STENCIL };
 
 enum class TextureWrap { EDGE, BORDER, MIRROR, REPEAT, MIRROR_EDGE };

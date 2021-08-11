@@ -14,12 +14,13 @@ GLint SD_API translate(BufferIOType ioType);
 
 GLenum SD_API translate(TextureType textureType);
 
-GLenum SD_API translate(TextureFormat textureFormat);
+GLenum SD_API translateFormat(TextureFormat textureFormat,
+                              TextureFormatType textureFormatType);
 
 GLenum SD_API translate(TextureFormatType textureFormatType);
 
-GLint SD_API translate(TextureFormat textureFormat,
-                       TextureFormatType textureFormatType);
+GLint SD_API translateInternalFormat(TextureFormat textureFormat,
+                                     TextureFormatType textureFormatType);
 
 GLint SD_API translate(TextureWrap textureWrap);
 

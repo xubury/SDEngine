@@ -30,8 +30,6 @@ class SD_API Texture {
     virtual void setMipmapFilter(TextureMipmapFilter filter) = 0;
 
     virtual void genareteMipmap() const = 0;
-    virtual void setTextureData(Texture *source, int xOffset, int yOffset,
-                                int width, int height, int mipmap) = 0;
 
     bool operator==(const Texture &other) const;
 

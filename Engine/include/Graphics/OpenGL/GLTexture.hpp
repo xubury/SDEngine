@@ -30,10 +30,10 @@ class GLTexture : public Texture {
 
     void genareteMipmap() const override;
 
-    void setTextureData(Texture *source, int xOffset, int yOffset, int width,
-                        int height, int mipmap) override;
+    GLenum getGLType() const;
+    GLenum getGLFormat() const;
+    GLenum getGLFormatType() const;
 
-    GLuint getGLType() const;
    protected:
     void init() override;
 

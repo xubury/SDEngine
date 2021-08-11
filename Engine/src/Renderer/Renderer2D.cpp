@@ -19,6 +19,13 @@ struct QuadVertex {
     glm::vec4 color;
     glm::vec2 texCoord;
     uint32_t texIndex;
+    uint32_t entityIndex;
+    QuadVertex()
+        : position(0.f),
+          color(0.f),
+          texCoord(0.f),
+          texIndex(0),
+          entityIndex(0) {}
 };
 
 struct CameraData {
@@ -86,6 +93,7 @@ void Renderer2D::init() {
     layout.push<float>(4);     // color
     layout.push<float>(2);     // texCoord
     layout.push<uint32_t>(1);  // texIndex
+    layout.push<uint32_t>(1);  // entityIndex
 
     s_data.quadVAO = VertexArray::create();
     s_data.quadVAO->addVertexBuffer(s_data.quadVBO, layout);
@@ -204,6 +212,7 @@ void Renderer2D::drawTexture(const glm::mat4& transform,
         s_data.quadVertexBufferPtr->color = glm::vec4(1.0f);
         s_data.quadVertexBufferPtr->texCoord = s_data.quadTexCoords[i];
         s_data.quadVertexBufferPtr->texIndex = textureIndex;
+        s_data.quadVertexBufferPtr->entityIndex = 1;
         ++s_data.quadVertexBufferPtr;
     }
     s_data.quadIndexCnt += 6;

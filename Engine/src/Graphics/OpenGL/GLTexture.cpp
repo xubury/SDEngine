@@ -24,8 +24,8 @@ void GLTexture::init() {
     if (gl_id != 0) glDeleteTextures(1, &gl_id);
 
     gl_type = translate(m_type);
-    gl_iFormat = translate(m_format, m_formatType);
-    gl_format = translate(m_format);
+    gl_iFormat = translateInternalFormat(m_format, m_formatType);
+    gl_format = translateFormat(m_format, m_formatType);
     gl_formatType = translate(m_formatType);
 
     glCreateTextures(gl_type, 1, &gl_id);
@@ -87,6 +87,7 @@ void GLTexture::setBorderColor(const void *color) {
         case TextureFormatType::FLOAT:
             glTexParameterfv(gl_type, GL_TEXTURE_BORDER_COLOR, (float *)color);
             break;
+        case TextureFormatType::UINT:
         case TextureFormatType::UBYTE:
             glTexParameteriv(gl_type, GL_TEXTURE_BORDER_COLOR, (int *)color);
             break;
@@ -124,15 +125,10 @@ void GLTexture::genareteMipmap() const {
     glGenerateMipmap(gl_type);
 }
 
-void GLTexture::setTextureData(Texture *source, int xOffset, int yOffset,
-                               int width, int height, int mipmap) {
-    if (m_data) {
-        glTextureSubImage2D(gl_id, mipmap, xOffset, yOffset, width, height,
-                            gl_format, gl_formatType, source->getData());
-        genareteMipmap();
-    }
-}
+GLenum GLTexture::getGLType() const { return gl_type; }
 
-GLuint GLTexture::getGLType() const { return gl_type; }
+GLenum GLTexture::getGLFormat() const { return gl_format; }
+
+GLenum GLTexture::getGLFormatType() const { return gl_formatType; }
 
 }  // namespace sd
