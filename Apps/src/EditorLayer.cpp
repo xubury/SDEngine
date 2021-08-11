@@ -29,15 +29,16 @@ void EditorLayer::onAttach() {
 
     m_frameBuffer = sd::Framebuffer::create();
     m_texture = sd::Texture::create(
-        1024, 1024, 1, sd::TextureType::TEX_2D, sd::TextureFormat::RGBA,
-        sd::TextureFormatType::UBYTE, sd::TextureWrap::BORDER,
-        sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST);
+        m_target->getWidth(), m_target->getHeight(), 1, sd::TextureType::TEX_2D,
+        sd::TextureFormat::RGBA, sd::TextureFormatType::UBYTE,
+        sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
+        sd::TextureMipmapFilter::NEAREST);
     m_frameBuffer->attachTexture(m_texture);
     m_frameBuffer->attachTexture(sd::Texture::create(
-        m_texture->getWidth(), m_texture->getHeight(), 1,
-        sd::TextureType::TEX_2D, sd::TextureFormat::ALPHA,
-        sd::TextureFormatType::UINT, sd::TextureWrap::BORDER,
-        sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
+        m_target->getWidth(), m_target->getHeight(), 1, sd::TextureType::TEX_2D,
+        sd::TextureFormat::ALPHA, sd::TextureFormatType::UINT,
+        sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
+        sd::TextureMipmapFilter::NEAREST));
     m_frameBuffer->setDrawable({0, 1});
     show();
 }
