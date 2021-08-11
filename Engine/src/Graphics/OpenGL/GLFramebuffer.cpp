@@ -139,4 +139,10 @@ void GLFramebuffer::copyFrom(const Framebuffer *other, BufferBit mask,
     }
 }
 
+void GLFramebuffer::resize(int width, int height) {
+    for (auto &[attachment, texture] : m_attachments) {
+        texture->setPixels(width, height, nullptr);
+    }
+}
+
 }  // namespace sd

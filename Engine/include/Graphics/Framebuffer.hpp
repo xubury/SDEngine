@@ -34,6 +34,7 @@ class Framebuffer {
     virtual void copyFrom(const Framebuffer *other, BufferBit bufferbit,
                           TextureFilter filter) = 0;
 
+    virtual void resize(int width, int height) = 0;
    protected:
     Framebuffer() = default;
 };

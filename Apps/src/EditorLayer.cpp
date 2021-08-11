@@ -133,7 +133,7 @@ void EditorLayer::onImGui() {
         if (m_width != wsize.x || m_height != wsize.y) {
             if (wsize.x > 0 && wsize.y > 0) {
                 m_target->resize(wsize.x, wsize.y);
-                m_texture->setPixels(wsize.x, wsize.y, nullptr);
+                m_frameBuffer->resize(wsize.x, wsize.y);
             }
 
             m_width = wsize.x;
@@ -144,8 +144,6 @@ void EditorLayer::onImGui() {
                                 sd::BufferBit::COLOR_BUFFER_BIT,
                                 sd::TextureFilter::NEAREST);
 
-        // Because I use the texture from OpenGL, I need to invert the V
-        // from the UV.
         ImGui::Image((void*)(intptr_t)m_texture->getId(), wsize, ImVec2(0, 1),
                      ImVec2(1, 0));
     }
@@ -159,6 +157,9 @@ void EditorLayer::hide() {
     m_hide = true;
     setBlockEvent(false);
     sd::Renderer::setDefaultTarget(m_defaultTarget);
+
+    m_defaultTarget->resize(sd::Application::getWindow().getWidth(),
+                            sd::Application::getWindow().getHeight());
 }
 
 void EditorLayer::show() {

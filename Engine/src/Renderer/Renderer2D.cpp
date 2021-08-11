@@ -18,13 +18,13 @@ struct QuadVertex {
     glm::vec3 position;
     glm::vec4 color;
     glm::vec2 texCoord;
-    uint32_t texIndex;
+    float texIndex;
     uint32_t entityIndex;
     QuadVertex()
         : position(0.f),
           color(0.f),
           texCoord(0.f),
-          texIndex(0),
+          texIndex(0.f),
           entityIndex(0) {}
 };
 
@@ -92,7 +92,7 @@ void Renderer2D::init() {
     layout.push<float>(3);     // position
     layout.push<float>(4);     // color
     layout.push<float>(2);     // texCoord
-    layout.push<uint32_t>(1);  // texIndex
+    layout.push<float>(1);     // texIndex
     layout.push<uint32_t>(1);  // entityIndex
 
     s_data.quadVAO = VertexArray::create();
