@@ -19,6 +19,10 @@ class SD_API Scene {
     template <typename T>
     void onComponentAdded(const Entity &entity, T &component);
 
+    const entt::registry &getRegistry() const;
+
+    entt::registry &getRegistry();
+
    private:
     friend class Entity;
     entt::registry m_registry;

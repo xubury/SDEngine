@@ -1,9 +1,10 @@
-#ifndef EDTOR_LAYER_HPP
-#define EDTOR_LAYER_HPP
+#ifndef EDITOR_LAYER_HPP
+#define EDITOR_LAYER_HPP
 
 #include "Core/Layer.hpp"
 #include "Graphics/Texture.hpp"
 #include "Renderer/RenderTarget.hpp"
+#include "ScenePanel.hpp"
 
 class EditorLayer : public sd::Layer {
    public:
@@ -40,6 +41,9 @@ class EditorLayer : public sd::Layer {
     int m_height;
 
     bool m_hide;
+
+
+    ScenePanel m_scenePanel;
 };
 
-#endif /* EDTOR_LAYER_HPP */
+#endif /* EDITOR_LAYER_HPP */

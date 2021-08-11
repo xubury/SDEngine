@@ -1,5 +1,5 @@
-#ifndef SIMPLE2DAPP_H
-#define SIMPLE2DAPP_H
+#ifndef SANDBOX_2D_APP_HPP
+#define SANDBOX_2D_APP_HPP
 
 #include "Core/Application.hpp"
 
@@ -9,4 +9,4 @@ class Sandbox2DApp : public sd::Application {
     void destroy() override;
 };
 
-#endif /* SIMPLE2DAPP_H */
+#endif /* SANDBOX_2D_APP_HPP */

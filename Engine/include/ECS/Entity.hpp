@@ -39,7 +39,7 @@ class SD_API Entity {
 
 template <typename T, typename... Args>
 T &Entity::addComponent(Args &&...args) {
-    SD_CORE_ASSERT(!hasComponent<T>(), "Entity already have this component!");
+    SD_CORE_ASSERT(!hasComponent<T>(), "Entity already has this component!");
     T &component = m_scene->m_registry.emplace<T>(m_entityHandle,
                                                   std::forward<Args>(args)...);
     m_scene->onComponentAdded<T>(*this, component);

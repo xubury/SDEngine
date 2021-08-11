@@ -7,7 +7,8 @@ add_subdirectory(Engine)
 add_executable(Sandbox2D 
     Apps/src/Sandbox2DApp.cpp 
     Apps/src/Sandbox2DLayer.cpp
-    Apps/src/EditorLayer.cpp)
+    Apps/src/EditorLayer.cpp
+    Apps/src/ScenePanel.cpp)
 
 target_include_directories(Sandbox2D PUBLIC Apps/include)
 
@@ -15,5 +16,5 @@ set_property(TARGET Sandbox2D PROPERTY CXX_STANDARD 17)
 
 target_compile_options(Sandbox2D PUBLIC  -Wall -Wextra -Wundef -pedantic)
 
-target_link_libraries(Sandbox2D PUBLIC sd-renderer)
+target_link_libraries(Sandbox2D PUBLIC sd-renderer sd-ecs)
 

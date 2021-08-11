@@ -122,6 +122,8 @@ void EditorLayer::onImGui() {
         ImGui::EndMenuBar();
     }
 
+    m_scenePanel.onImGui();
+
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
     ImGui::Begin("Scene");
     {
@@ -152,6 +154,9 @@ void EditorLayer::onImGui() {
     ImGui::PopStyleVar();
 
     ImGui::End();
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape))) {
+        SD_TRACE("escape");
+    }
 }
 
 void EditorLayer::hide() {
@@ -180,7 +185,9 @@ void EditorLayer::onEventPoll(const SDL_Event& event) {
     }
 }
 
-void EditorLayer::newScene() {}
+void EditorLayer::newScene() {
+    m_scenePanel.setScene(sd::createRef<sd::Scene>());
+}
 
 void EditorLayer::openScene() {}
 
