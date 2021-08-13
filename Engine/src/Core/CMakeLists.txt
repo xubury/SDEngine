@@ -25,8 +25,7 @@ set(Core_Include
     ${Include_Root}/LayerStack.hpp
     ${Include_Root}/Window.hpp
     ${Include_Root}/Application.hpp
-    ${Include_Root}/InputManager.hpp
-    ${Include_Root}/Transform.hpp)
+    ${Include_Root}/InputManager.hpp)
 
 set(Core_Src
     ${OpenGL_Src}
@@ -37,8 +36,7 @@ set(Core_Src
     ${Src_Root}/LayerStack.cpp
     ${Src_Root}/Window.cpp
     ${Src_Root}/Application.cpp
-    ${Src_Root}/InputManager.cpp
-    ${Src_Root}/Transform.cpp)
+    ${Src_Root}/InputManager.cpp)
 
 add_library(sd-core ${Core_Src})
 

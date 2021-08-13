@@ -4,11 +4,13 @@ set(Src_Root ${PROJECT_SOURCE_DIR}/src/Utils)
 set(Utils_Include
     ${Include_Root}/AssetLoader.hpp
     ${Include_Root}/AssetManager.hpp
-    ${Include_Root}/File.hpp)
+    ${Include_Root}/File.hpp
+    ${Include_Root}/Transform.hpp)
 
 set(Utils_Src
     ${Src_Root}/File.cpp
-    ${Src_Root}/Random.cpp)
+    ${Src_Root}/Random.cpp
+    ${Src_Root}/Transform.cpp)
 
 add_library(sd-utils ${Utils_Src})
 

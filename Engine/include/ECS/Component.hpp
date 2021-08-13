@@ -2,7 +2,7 @@
 #define SD_COMPONENT_HPP
 
 #include "Common/Export.hpp"
-#include "Core/Transform.hpp"
+#include "Utils/Transform.hpp"
 #include "ECS/Entity.hpp"
 #include <string>
 
