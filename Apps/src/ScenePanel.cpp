@@ -221,39 +221,42 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
     drawComponent<sd::TransformComponent>(
         "Transform", entity,
         [](sd::TransformComponent &component) {
-            ImGui::PushID("Local");
-            ImGui::Text("Local");
+            if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None)) {
+                if (ImGui::BeginTabItem("World")) {
+                    glm::vec3 position = component.transform.getWorldPosition();
+                    drawVec3Control("Translation", position);
+                    component.transform.setWorldPosition(position);
 
-            glm::vec3 position = component.transform.getLocalPosition();
-            drawVec3Control("Translation", position);
-            component.transform.setLocalPosition(position);
+                    glm::vec3 rotation =
+                        glm::degrees(component.transform.getWorldEulerAngle());
+                    drawVec3Control("Rotation", rotation);
+                    component.transform.setWorldRotation(
+                        glm::radians(rotation));
 
-            glm::vec3 rotation =
-                glm::degrees(component.transform.getLocalEulerAngle());
-            drawVec3Control("Rotation", rotation);
-            component.transform.setLocalRotation(glm::radians(rotation));
+                    glm::vec3 scale = component.transform.getWorldScale();
+                    drawVec3Control("Scale", scale, 1.0f);
+                    component.transform.setWorldScale(scale);
+                    ImGui::EndTabItem();
+                }
+                if (ImGui::BeginTabItem("Local")) {
+                    glm::vec3 position = component.transform.getLocalPosition();
+                    drawVec3Control("Translation", position);
+                    component.transform.setLocalPosition(position);
 
-            glm::vec3 scale = component.transform.getLocalScale();
-            drawVec3Control("Scale", scale, 1.0f);
-            component.transform.setLocalScale(scale);
-            ImGui::PopID();
+                    glm::vec3 rotation =
+                        glm::degrees(component.transform.getLocalEulerAngle());
+                    drawVec3Control("Rotation", rotation);
+                    component.transform.setLocalRotation(
+                        glm::radians(rotation));
 
-            // world transform
-            ImGui::PushID("World");
-            ImGui::Text("World");
+                    glm::vec3 scale = component.transform.getLocalScale();
+                    drawVec3Control("Scale", scale, 1.0f);
+                    component.transform.setLocalScale(scale);
+                    ImGui::EndTabItem();
+                }
 
-            position = component.transform.getWorldPosition();
-            drawVec3Control("Translation", position);
-            component.transform.setWorldPosition(position);
-
-            rotation = glm::degrees(component.transform.getWorldEulerAngle());
-            drawVec3Control("Rotation", rotation);
-            component.transform.setWorldRotation(glm::radians(rotation));
-
-            scale = component.transform.getWorldScale();
-            drawVec3Control("Scale", scale, 1.0f);
-            component.transform.setWorldScale(scale);
-            ImGui::PopID();
+                ImGui::EndTabBar();
+            }
         },
         false);
 }
