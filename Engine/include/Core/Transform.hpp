@@ -35,7 +35,8 @@ class SD_API Transform {
 
     void setLocalPosition(const glm::vec3 &position);
     void setLocalRotation(const glm::quat &rotation);
-    void setLocalRotation(glm::vec3 eulerAngle);
+    void setLocalRotation(const glm::vec3 &eulerAngle);
+    void setLocalScale(const glm::vec3 &scale);
     void setLocalTransform(const glm::mat4 &transform);
 
     glm::vec3 getLocalPosition() const;
@@ -46,7 +47,8 @@ class SD_API Transform {
 
     void setWorldPosition(const glm::vec3 &position);
     void setWorldRotation(const glm::quat &rotation);
-    void setWorldRotation(glm::vec3 eulerAngle);
+    void setWorldRotation(const glm::vec3 &eulerAngle);
+    void setWorldScale(const glm::vec3 &scale);
     void setWorldTransform(const glm::mat4 &transform);
 
     glm::vec3 getWorldPosition() const;
