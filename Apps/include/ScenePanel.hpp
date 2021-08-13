@@ -21,6 +21,7 @@ class ScenePanel {
 
     sd::Ref<sd::Scene> m_scene;
     sd::Entity m_selectedEntity;
+    sd::Entity m_destroyEntity;
 };
 
 #endif /* SCENE_PANEL_HPP */

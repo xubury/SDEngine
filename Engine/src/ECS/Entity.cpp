@@ -21,4 +21,8 @@ bool Entity::operator==(const Entity &other) const {
     return m_entityHandle == other.m_entityHandle && m_scene == other.m_scene;
 }
 
+bool Entity::operator<(const Entity &other) const {
+    return m_entityHandle < other.m_entityHandle;
+}
+
 }  // namespace sd

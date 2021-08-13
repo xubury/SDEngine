@@ -1,6 +1,8 @@
 #include "ScenePanel.hpp"
 #include "ECS/Component.hpp"
 #include "imgui.h"
+#include "Core/Transform.hpp"
+#include <stack>
 
 ScenePanel::ScenePanel() : m_scene(sd::createRef<sd::Scene>()) {}
 
@@ -17,8 +19,19 @@ void ScenePanel::onImGui() {
 
     m_scene->getRegistry().each([&](auto entityID) {
         sd::Entity entity{entityID, m_scene.get()};
-        drawEntityNode(entity);
+
+        sd::EntityDataComponent &data =
+            entity.getComponent<sd::EntityDataComponent>();
+        if (!data.m_parent) {
+            drawEntityNode(entity);
+        }
     });
+
+    if (m_destroyEntity) {
+        m_scene->destroyEntity(m_destroyEntity);
+        if (m_selectedEntity == m_destroyEntity) m_selectedEntity = {};
+        m_destroyEntity = {};
+    }
 
     if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
         m_selectedEntity = {};
@@ -50,29 +63,31 @@ void ScenePanel::drawEntityNode(sd::Entity &entity) {
     flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
     bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, flags,
                                     tag.c_str());
-    if (ImGui::IsItemClicked()) {
+    if (ImGui::IsItemClicked(0)) {
         m_selectedEntity = entity;
     }
 
-    bool entityDeleted = false;
     if (ImGui::BeginPopupContextItem()) {
-        if (ImGui::MenuItem("Delete Entity")) entityDeleted = true;
+        m_selectedEntity = entity;
+        if (ImGui::MenuItem("Delete Entity")) {
+            m_destroyEntity = entity;
+        };
+        if (ImGui::MenuItem("Create Empty Entity")) {
+            sd::Entity newEntity = m_scene->createEntity("Empty Entity");
+            m_scene->addChildToEntity(entity, newEntity);
+        }
 
         ImGui::EndPopup();
     }
 
     if (opened) {
-        // ImGuiTreeNodeFlags flags =
-        //     ImGuiTreeNodeFlags_OpenOnArrow |
-        //     ImGuiTreeNodeFlags_SpanAvailWidth;
-        // bool opened = ImGui::TreeNodeEx((void *)9817239, flags, tag.c_str());
-        // if (opened) ImGui::TreePop();
-        ImGui::TreePop();
-    }
+        sd::EntityDataComponent &data =
+            entity.getComponent<sd::EntityDataComponent>();
 
-    if (entityDeleted) {
-        m_scene->destroyEntity(entity);
-        if (m_selectedEntity == entity) m_selectedEntity = {};
+        for (sd::Entity child : data.m_children) {
+            drawEntityNode(child);
+        }
+        ImGui::TreePop();
     }
 }
 

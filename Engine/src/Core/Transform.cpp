@@ -8,7 +8,10 @@
 namespace sd {
 
 Transform::Transform()
-    : m_position(0.f), m_rotation(1.f, 0.f, 0.f, 0.f), m_scale(1.0f) {}
+    : m_position(0.f),
+      m_rotation(1.f, 0.f, 0.f, 0.f),
+      m_scale(1.0f),
+      m_parent(nullptr) {}
 
 Transform *Transform::parent() { return m_parent; }
 
@@ -46,7 +49,7 @@ void Transform::addChild(Transform *transform) {
         SD_CORE_ERROR("[Transform::addChild] Tried to add a null child");
         return;
     }
-    transform->setParent(this);
+    transform->m_parent = this;
     m_children.push_back(transform);
 }
 
@@ -62,7 +65,7 @@ void Transform::removeChild(Transform *transform) {
         return;
     }
 
-    transform->setParent(nullptr);
+    transform->m_parent = nullptr;
     m_children.erase(iter);
 }
 

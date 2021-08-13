@@ -32,10 +32,13 @@ class SD_API Entity {
     bool operator==(const Entity &other) const;
     bool operator!=(const Entity &other) const;
 
+    bool operator<(const Entity &other) const;
+
    private:
     entt::entity m_entityHandle;
     Scene *m_scene;
 };
+
 
 template <typename T, typename... Args>
 T &Entity::addComponent(Args &&...args) {
