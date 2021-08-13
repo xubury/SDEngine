@@ -54,12 +54,21 @@ void ScenePanel::onImGui() {
 }
 
 void ScenePanel::drawEntityNode(sd::Entity &entity) {
+    sd::EntityDataComponent &data =
+        entity.getComponent<sd::EntityDataComponent>();
+
     auto &tag = entity.getComponent<sd::TagComponent>().tag;
 
+    static ImGuiTreeNodeFlags base_flags =
+        ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |
+        ImGuiTreeNodeFlags_SpanAvailWidth;
+    static ImGuiTreeNodeFlags leaf_flags =
+        ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_SpanAvailWidth;
+
     ImGuiTreeNodeFlags flags =
-        ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) |
-        ImGuiTreeNodeFlags_OpenOnArrow;
-    flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
+        data.m_children.empty() ? leaf_flags : base_flags;
+    flags |= ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) |
+             ImGuiTreeNodeFlags_OpenOnArrow;
     bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, flags,
                                     tag.c_str());
     if (ImGui::IsItemClicked(0)) {
@@ -80,9 +89,6 @@ void ScenePanel::drawEntityNode(sd::Entity &entity) {
     }
 
     if (opened) {
-        sd::EntityDataComponent &data =
-            entity.getComponent<sd::EntityDataComponent>();
-
         for (sd::Entity child : data.m_children) {
             drawEntityNode(child);
         }
@@ -186,9 +192,9 @@ static void drawComponent(const std::string &name, sd::Entity entity,
 
         bool removeComponent = false;
         if (ImGui::BeginPopup("ComponentSettings")) {
-            if (removeable && ImGui::MenuItem("Remove component"))
+            if (removeable && ImGui::MenuItem("Remove component")) {
                 removeComponent = true;
-
+            }
             ImGui::EndPopup();
         }
 
@@ -215,6 +221,7 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
     drawComponent<sd::TransformComponent>(
         "Transform", entity,
         [](sd::TransformComponent &component) {
+            ImGui::PushID("Local");
             ImGui::Text("Local");
 
             glm::vec3 position = component.transform.getLocalPosition();
@@ -229,8 +236,10 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
             glm::vec3 scale = component.transform.getLocalScale();
             drawVec3Control("Scale", scale, 1.0f);
             component.transform.setLocalScale(scale);
+            ImGui::PopID();
 
             // world transform
+            ImGui::PushID("World");
             ImGui::Text("World");
 
             position = component.transform.getWorldPosition();
@@ -239,11 +248,12 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
 
             rotation = glm::degrees(component.transform.getWorldEulerAngle());
             drawVec3Control("Rotation", rotation);
-            // component.transform.setWorldRotation(glm::radians(rotation));
+            component.transform.setWorldRotation(glm::radians(rotation));
 
             scale = component.transform.getWorldScale();
             drawVec3Control("Scale", scale, 1.0f);
             component.transform.setWorldScale(scale);
+            ImGui::PopID();
         },
         false);
 }
