@@ -4,7 +4,7 @@
 #include "Common/Export.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
-#include <vector>
+#include <set>
 
 namespace sd {
 
@@ -13,15 +13,14 @@ class SD_API Transform {
     Transform();
     virtual ~Transform() = default;
 
-    Transform *parent();
-    const Transform *parent() const;
+    Transform *getParent();
+    const Transform *getParent() const;
 
-    std::vector<Transform *> &children();
-    const std::vector<Transform *> &children() const;
+    std::set<Transform *> &getChildren();
+    const std::set<Transform *> &getChildren() const;
 
-    void setParent(Transform *transform, bool cleanTree = true);
-    void addChild(Transform *transform);
-    void removeChild(Transform *transform);
+    void addChild(Transform *child);
+    void removeChild(Transform *child);
 
     void apply(const Transform &transform);
 
@@ -34,16 +33,21 @@ class SD_API Transform {
     void rotateLocal(const glm::quat &rotation);
     void rotateWorld(const glm::quat &rotation);
 
-    void setPosition(const glm::vec3 &position);
-    void setRotation(const glm::quat &rotation);
-    void setEulerAngle(glm::vec3 eulerAngle);
-    void setTransform(const glm::mat4 &transform);
+    void setLocalPosition(const glm::vec3 &position);
+    void setLocalRotation(const glm::quat &rotation);
+    void setLocalRotation(glm::vec3 eulerAngle);
+    void setLocalTransform(const glm::mat4 &transform);
 
-    glm::vec3 getPosition() const;
-    glm::quat getRotation() const;
-    glm::vec3 getScale() const;
-    glm::vec3 getEulerAngle() const;
-    glm::mat4 getTransform() const;
+    glm::vec3 getLocalPosition() const;
+    glm::quat getLocalRotation() const;
+    glm::vec3 getLocalScale() const;
+    glm::vec3 getLocalEulerAngle() const;
+    glm::mat4 getLocalTransform() const;
+
+    void setWorldPosition(const glm::vec3 &position);
+    void setWorldRotation(const glm::quat &rotation);
+    void setWorldRotation(glm::vec3 eulerAngle);
+    void setWorldTransform(const glm::mat4 &transform);
 
     glm::vec3 getWorldPosition() const;
     glm::quat getWorldRotation() const;
@@ -65,15 +69,23 @@ class SD_API Transform {
     glm::vec3 toWorldVector(const glm::vec3 &localVec) const;
 
    private:
-    glm::vec3 getParentPosition() const;
-    glm::quat getParentRotation() const;
-    glm::vec3 getParentScale() const;
+    void updateGlobalPosition();
+    void updateGlobalRotation();
+    void updateGlobalScale();
+
+    void updateLocalPosition();
+    void updateLocalRotation();
+    void updateLocalScale();
 
     glm::vec3 m_position;
     glm::quat m_rotation;
     glm::vec3 m_scale;
 
-    std::vector<Transform *> m_children;
+    glm::vec3 m_localPosition;
+    glm::quat m_localRotation;
+    glm::vec3 m_localScale;
+
+    std::set<Transform *> m_children;
     Transform *m_parent;
 };
 
