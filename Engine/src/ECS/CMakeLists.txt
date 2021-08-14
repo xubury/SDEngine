@@ -1,15 +1,18 @@
-# find_package(EnTT REQUIRED) // EnTT mess up include dir..
-
 set(Include_Root ${PROJECT_SOURCE_DIR}/include/ECS)
 set(Src_Root ${PROJECT_SOURCE_DIR}/src/ECS)
 
 set(ECS_Include 
+    ${Include_Root}/Component.hpp
     ${Include_Root}/Entity.hpp
-    ${Include_Root}/Scene.hpp)
+    ${Include_Root}/ParticleSystem.hpp
+    ${Include_Root}/Scene.hpp
+    ${Include_Root}/System.hpp)
 
 set(ECS_Src
     ${Src_Root}/Entity.cpp
-    ${Src_Root}/Scene.cpp)
+    ${Src_Root}/ParticleSystem.cpp
+    ${Src_Root}/Scene.cpp
+    ${Src_Root}/System.cpp)
 
 add_library(sd-ecs ${ECS_Src})
 

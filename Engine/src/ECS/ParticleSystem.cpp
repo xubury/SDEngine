@@ -1,4 +1,4 @@
-#include "Renderer/ParticleSystem.hpp"
+#include "ECS/ParticleSystem.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Utils/Random.hpp"
 

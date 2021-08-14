@@ -5,6 +5,7 @@
 #include <SDL.h>
 
 #include "Common/Export.hpp"
+#include "ECS/System.hpp"
 
 namespace sd {
 
@@ -33,12 +34,12 @@ class SD_API Layer {
     virtual void onEventProcess() {}
 
     void setBlockEvent(bool block) { m_blockEvent = block; }
-
     bool isBlockEvent() const { return m_blockEvent; }
 
    protected:
     std::string m_name;
     bool m_blockEvent;
+    SystemManager m_systems;
 };
 
 }  // namespace sd

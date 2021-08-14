@@ -4,7 +4,7 @@
 #include "Core/Layer.hpp"
 #include "Renderer/RenderTarget.hpp"
 #include "Core/ActionTarget.hpp"
-#include "Renderer/ParticleSystem.hpp"
+#include "ECS/ParticleSystem.hpp"
 
 class Sandbox2DLayer : public sd::Layer {
    public:
@@ -26,7 +26,7 @@ class Sandbox2DLayer : public sd::Layer {
     sd::ActionTarget<int> m_actionTarget;
     sd::ActionMap<int> m_actionMap;
 
-    sd::ParticleSystem m_particleSystem;
+    sd::Ref<sd::ParticleSystem> m_particleSystem;
 
     sd::OrthographicCamera m_masterCam;
 };

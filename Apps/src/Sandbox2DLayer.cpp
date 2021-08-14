@@ -13,7 +13,6 @@
 Sandbox2DLayer::Sandbox2DLayer()
     : sd::Layer("Sandbox2D"),
       m_actionTarget(m_actionMap),
-      m_particleSystem(100000),
       m_masterCam(800.f, 600.f, -1.0f, 1.0f) {
     m_actionMap.map(0, SDLK_a);
     m_actionMap.map(
@@ -22,17 +21,22 @@ Sandbox2DLayer::Sandbox2DLayer()
                         [](const SDL_Event &) { SD_TRACE("Key Pressed:A"); });
     m_actionTarget.bind(1,
                         [](const SDL_Event &) { SD_TRACE("Key Pressed:B"); });
+
+    m_particleSystem = sd::createRef<sd::ParticleSystem>(10000);
+    m_systems.addSystem(m_particleSystem);
 }
 
 void Sandbox2DLayer::onAttach() {}
 
-void Sandbox2DLayer::onTick(float dt) { m_particleSystem.onTick(dt); }
+void Sandbox2DLayer::onTick(float dt) { m_systems.tick(dt); }
 
 void Sandbox2DLayer::onRender() {
     sd::Renderer2D::beginScene(m_masterCam, nullptr);
     sd::Renderer::setClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     sd::Renderer::clear();
-    m_particleSystem.onRender();
+
+    m_systems.render();
+
     sd::Renderer2D::drawTexture(
         glm::scale(glm::mat4(1.0f), glm::vec3(80.f, 24.f, 1.0f)),
         sd::Graphics::assetManager().load<sd::Texture>(
@@ -60,7 +64,7 @@ void Sandbox2DLayer::onEventPoll(const SDL_Event &event) {
                 prop.sizeEnd = 2.f;
                 prop.sizeVariation = 1.f;
                 prop.lifeTime = 2.0f;
-                m_particleSystem.emit(prop);
+                m_particleSystem->emit(prop);
             }
         } break;
         case SDL_KEYDOWN:

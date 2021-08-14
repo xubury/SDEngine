@@ -6,6 +6,7 @@
 #include "Common/Export.hpp"
 #include "Renderer/RenderTarget.hpp"
 #include "Graphics/Camera.hpp"
+#include "ECS/System.hpp"
 
 namespace sd {
 
@@ -31,15 +32,16 @@ struct SD_API ParticleProp {
           lifeTime(1.0f) {}
 };
 
-class SD_API ParticleSystem {
+class SD_API ParticleSystem : public System {
    public:
     ParticleSystem(int poolSize = 1000);
 
-    void onRender();
-
-    void onTick(float dt);
-
     void emit(const ParticleProp &particle);
+
+   protected:
+    void onRender() override;
+
+    void onTick(float dt) override;
 
    private:
     struct Particle {
