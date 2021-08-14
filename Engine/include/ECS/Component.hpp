@@ -4,7 +4,8 @@
 #include "Common/Export.hpp"
 #include "Utils/Transform.hpp"
 #include "ECS/Entity.hpp"
-#include <string>
+#include "Graphics/Model.hpp"
+#include "Graphics/Mesh.hpp"
 
 namespace sd {
 
@@ -21,6 +22,15 @@ struct SD_API EntityDataComponent {
 
 struct SD_API TransformComponent {
     Transform transform;
+};
+
+struct SD_API MeshComponent {
+    Mesh mesh;
+};
+
+struct SD_API ModelComponent {
+    std::string path = "Empty";
+    Model model;
 };
 
 }  // namespace sd

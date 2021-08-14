@@ -4,13 +4,14 @@
 #include "ECS/Scene.hpp"
 #include "ECS/Entity.hpp"
 #include "Common/Base.hpp"
+#include "FileDialog.hpp"
 
 class ScenePanel {
    public:
     ScenePanel();
-    ScenePanel(const sd::Ref<sd::Scene> &scene);
+    ScenePanel(sd::Scene *scene);
 
-    void setScene(const sd::Ref<sd::Scene> &scene);
+    void setScene(sd::Scene *scene);
 
     void onImGui();
 
@@ -19,9 +20,11 @@ class ScenePanel {
 
     void drawComponents(sd::Entity &entity);
 
-    sd::Ref<sd::Scene> m_scene;
+    sd::Scene *m_scene;
     sd::Entity m_selectedEntity;
     sd::Entity m_destroyEntity;
+    bool m_fileDialogOpen = false;
+    ImFileDialogInfo m_fileDialogInfo;
 };
 
 #endif /* SCENE_PANEL_HPP */

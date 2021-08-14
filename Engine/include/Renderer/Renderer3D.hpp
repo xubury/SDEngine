@@ -1,6 +1,7 @@
 #ifndef SD_RENDERER_3D_HPP
 #define SD_RENDERER_3D_HPP
 
+#include "Renderer/Renderer.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/Mesh.hpp"

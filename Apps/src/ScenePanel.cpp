@@ -2,12 +2,13 @@
 #include "ECS/Component.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
+#include "FileDialog.hpp"
 
-ScenePanel::ScenePanel() : m_scene(sd::createRef<sd::Scene>()) {}
+ScenePanel::ScenePanel() : m_scene(nullptr), m_fileDialogOpen(false) {}
 
-ScenePanel::ScenePanel(const sd::Ref<sd::Scene> &scene) : m_scene(scene) {}
+ScenePanel::ScenePanel(sd::Scene *scene) : m_scene(scene) {}
 
-void ScenePanel::setScene(const sd::Ref<sd::Scene> &scene) { m_scene = scene; }
+void ScenePanel::setScene(sd::Scene *scene) { m_scene = scene; }
 
 void ScenePanel::onImGui() {
     if (m_scene == nullptr) {
@@ -17,7 +18,7 @@ void ScenePanel::onImGui() {
     ImGui::Begin("Scene Hierarchy");
 
     m_scene->getRegistry().each([&](auto entityID) {
-        sd::Entity entity{entityID, m_scene.get()};
+        sd::Entity entity{entityID, m_scene};
 
         sd::EntityDataComponent &data =
             entity.getComponent<sd::EntityDataComponent>();
@@ -185,17 +186,19 @@ static void drawComponent(const std::string &name, sd::Entity entity,
         bool open = ImGui::TreeNodeEx((void *)typeid(T).hash_code(),
                                       treeNodeFlags, name.c_str());
         ImGui::PopStyleVar();
-        ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
-        if (ImGui::Button("+", ImVec2{lineHeight, lineHeight})) {
-            ImGui::OpenPopup("ComponentSettings");
-        }
-
         bool removeComponent = false;
-        if (ImGui::BeginPopup("ComponentSettings")) {
-            if (removeable && ImGui::MenuItem("Remove component")) {
-                removeComponent = true;
+        if (removeable) {
+            ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
+            if (ImGui::Button("+", ImVec2{lineHeight, lineHeight})) {
+                ImGui::OpenPopup("ComponentSettings");
             }
-            ImGui::EndPopup();
+
+            if (ImGui::BeginPopup("ComponentSettings")) {
+                if (ImGui::MenuItem("Remove component")) {
+                    removeComponent = true;
+                }
+                ImGui::EndPopup();
+            }
         }
 
         if (open) {
@@ -218,6 +221,23 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
             tag = std::string(buffer);
         }
     }
+    ImGui::SameLine();
+    ImGui::PushItemWidth(-1);
+    if (ImGui::Button("Add Component")) ImGui::OpenPopup("AddComponent");
+
+    if (ImGui::BeginPopup("AddComponent")) {
+        if (ImGui::MenuItem("Model")) {
+            if (!m_selectedEntity.hasComponent<sd::ModelComponent>())
+                m_selectedEntity.addComponent<sd::ModelComponent>();
+            else
+                SD_CORE_WARN("This entity already has the Model Component!");
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+    ImGui::PopItemWidth();
+
     drawComponent<sd::TransformComponent>(
         "Transform", entity,
         [](sd::TransformComponent &component) {
@@ -259,4 +279,20 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
             }
         },
         false);
+    drawComponent<sd::ModelComponent>(
+        "Model", entity, [&](sd::ModelComponent &model) {
+            ImGui::SameLine();
+            ImGui::Text(model.path.c_str());
+            if (ImGui::Button("...")) {
+                m_fileDialogOpen = true;
+                m_fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
+                m_fileDialogInfo.title = "Open File";
+                m_fileDialogInfo.fileName = "test.json";
+                m_fileDialogInfo.directoryPath =
+                    std::filesystem::current_path();
+            }
+            if (ImGui::FileDialog(&m_fileDialogOpen, &m_fileDialogInfo)) {
+                // Result path in: m_fileDialogInfo.resultPath
+            }
+        });
 }

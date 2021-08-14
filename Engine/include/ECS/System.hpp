@@ -1,8 +1,8 @@
 #ifndef SD_SYSTEM_HPP
 #define SD_SYSTEM_HPP
 
+#include <set>
 #include "Common/Base.hpp"
-#include "ECS/Scene.hpp"
 
 namespace sd {
 

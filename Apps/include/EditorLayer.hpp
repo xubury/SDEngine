@@ -2,8 +2,9 @@
 #define EDITOR_LAYER_HPP
 
 #include "Core/Layer.hpp"
-#include "Graphics/Texture.hpp"
+#include "Graphics/Camera.hpp"
 #include "Renderer/RenderTarget.hpp"
+#include "ECS/RenderSystem.hpp"
 #include "ScenePanel.hpp"
 
 class EditorLayer : public sd::Layer {
@@ -13,6 +14,10 @@ class EditorLayer : public sd::Layer {
     void onAttach() override;
 
     void onDetech() override;
+
+    void onTick(float dt) override;
+
+    void onRender() override;
 
     void onImGui() override;
 
@@ -42,7 +47,11 @@ class EditorLayer : public sd::Layer {
 
     bool m_hide;
 
+    sd::PerspectiveCamera m_editorCamera;
 
+    sd::Ref<sd::RenderSystem> m_renderSystem;
+
+    sd::Ref<sd::Scene> m_scene;
     ScenePanel m_scenePanel;
 };
 

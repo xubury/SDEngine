@@ -5,12 +5,14 @@ set(ECS_Include
     ${Include_Root}/Component.hpp
     ${Include_Root}/Entity.hpp
     ${Include_Root}/ParticleSystem.hpp
+    ${Include_Root}/RenderSystem.hpp
     ${Include_Root}/Scene.hpp
     ${Include_Root}/System.hpp)
 
 set(ECS_Src
     ${Src_Root}/Entity.cpp
     ${Src_Root}/ParticleSystem.cpp
+    ${Src_Root}/RenderSystem.cpp
     ${Src_Root}/Scene.cpp
     ${Src_Root}/System.cpp)
 

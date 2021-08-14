@@ -1,10 +1,19 @@
 #include "EditorLayer.hpp"
+#include "Renderer/Renderer3D.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Core/Application.hpp"
 #include "imgui.h"
 
 EditorLayer::EditorLayer()
-    : sd::Layer("Editor Layer"), m_width(0), m_height(0), m_hide(false) {}
+    : sd::Layer("Editor Layer"),
+      m_width(0),
+      m_height(0),
+      m_hide(false),
+      m_editorCamera(45, 800.f / 600.f, 0.1f, 100.f) {
+    m_scene = sd::createRef<sd::Scene>();
+    m_scenePanel.setScene(m_scene.get());
+    m_renderSystem = m_systems.addSystem<sd::RenderSystem>(m_scene.get());
+}
 
 void EditorLayer::onAttach() {
     m_target = sd::createRef<sd::RenderTarget>();
@@ -48,6 +57,14 @@ void EditorLayer::onDetech() {
     m_texture.reset();
     m_target.reset();
 }
+
+void EditorLayer::onRender() {
+    sd::Renderer3D::beginScene(m_editorCamera, m_target.get());
+    m_systems.render();
+    sd::Renderer3D::endScene();
+}
+
+void EditorLayer::onTick(float dt) { m_systems.tick(dt); }
 
 void EditorLayer::onImGui() {
     if (m_hide) {
@@ -137,6 +154,8 @@ void EditorLayer::onImGui() {
             if (wsize.x > 0 && wsize.y > 0) {
                 m_target->resize(wsize.x, wsize.y);
                 m_frameBuffer->resize(wsize.x, wsize.y);
+                m_editorCamera.setProjection(45.f, wsize.x / wsize.y, 0.1f,
+                                             100.f);
             }
 
             m_width = wsize.x;
@@ -186,7 +205,9 @@ void EditorLayer::onEventPoll(const SDL_Event& event) {
 }
 
 void EditorLayer::newScene() {
-    m_scenePanel.setScene(sd::createRef<sd::Scene>());
+    m_scene = sd::createRef<sd::Scene>();
+    m_scenePanel.setScene(m_scene.get());
+    m_renderSystem->setScene(m_scene.get());
 }
 
 void EditorLayer::openScene() {}

@@ -8,6 +8,7 @@ add_executable(Sandbox2D
     Apps/src/Sandbox2DApp.cpp 
     Apps/src/Sandbox2DLayer.cpp
     Apps/src/EditorLayer.cpp
+    Apps/src/FileDialog.cpp
     Apps/src/ScenePanel.cpp)
 
 target_include_directories(Sandbox2D PUBLIC Apps/include)
