@@ -16,5 +16,5 @@ set_property(TARGET Sandbox2D PROPERTY CXX_STANDARD 17)
 
 target_compile_options(Sandbox2D PUBLIC  -Wall -Wextra -Wundef -pedantic)
 
-target_link_libraries(Sandbox2D PUBLIC sd-renderer sd-ecs)
+target_link_libraries(Sandbox2D PUBLIC sd-core)
 

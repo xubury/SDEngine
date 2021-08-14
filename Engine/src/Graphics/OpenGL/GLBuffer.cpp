@@ -46,6 +46,16 @@ GLIndexBuffer::GLIndexBuffer(const uint32_t *data, uint32_t count,
                count * sizeof(uint32_t)),
       m_count(count) {}
 
+void GLIndexBuffer::init() {
+    if (m_id != 0) glDeleteBuffers(1, &m_id);
+    glGenBuffers(1, &m_id);
+    // GL_ELEMENT_ARRAY_BUFFER is not valid without an actively bound VAO
+    // Binding with GL_ARRAY_BUFFER allows the data to be loaded regardless of
+    // VAO state.
+    glBindBuffer(GL_ARRAY_BUFFER, m_id);
+    glBufferData(GL_ARRAY_BUFFER, m_size, m_data, m_io);
+}
+
 uint32_t GLIndexBuffer::getCount() const { return m_count; }
 
 uint32_t GLUniformBuffer::s_count = 0;

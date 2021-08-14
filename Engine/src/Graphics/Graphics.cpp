@@ -1,6 +1,7 @@
 #include "Graphics/Graphics.hpp"
 #include "Graphics/ShaderLoader.hpp"
 #include "Graphics/TextureLoader.hpp"
+#include "Graphics/ModelLoader.hpp"
 
 namespace sd {
 
@@ -19,6 +20,7 @@ void Graphics::init(API api) {
     Graphics::assetManager().setRootPath("assets/");
     Graphics::assetManager().setLoader<ShaderLoader>();
     Graphics::assetManager().setLoader<TextureLoader>();
+    Graphics::assetManager().setLoader<ModelLoader>();
 }
 
 API Graphics::getAPI() { return s_api; }

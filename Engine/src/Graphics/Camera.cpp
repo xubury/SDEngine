@@ -138,20 +138,20 @@ void OrthographicCamera::setProjection(float width, float height, float zNear,
 
 PerspectiveCamera::PerspectiveCamera(float fov, float aspect, float zNear,
                                      float zFar) {
-    setProjection(fov, aspect, zFar, zNear);
+    setProjection(fov, aspect, zNear, zFar);
 }
 
 PerspectiveCamera::PerspectiveCamera(Transform *transform, float fov,
                                      float aspect, float zNear, float zFar)
     : Camera(transform) {
-    setProjection(fov, aspect, zFar, zNear);
+    setProjection(fov, aspect, zNear, zFar);
 }
 
 PerspectiveCamera::PerspectiveCamera(const glm::vec3 &position,
                                      const glm::quat &rotation, float fov,
                                      float aspect, float zNear, float zFar)
     : Camera(position, rotation) {
-    setProjection(fov, aspect, zFar, zNear);
+    setProjection(fov, aspect, zNear, zFar);
 }
 
 void PerspectiveCamera::setProjection(float fov, float aspect, float zNear,

@@ -2,6 +2,7 @@
 #include "Core/Application.hpp"
 #include "Graphics/Device.hpp"
 #include "Renderer/Renderer2D.hpp"
+#include "Renderer/Renderer3D.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Texture.hpp"
@@ -22,8 +23,9 @@ Sandbox2DLayer::Sandbox2DLayer()
     m_actionTarget.bind(1,
                         [](const SDL_Event &) { SD_TRACE("Key Pressed:B"); });
 
-    m_particleSystem = sd::createRef<sd::ParticleSystem>(10000);
-    m_systems.addSystem(m_particleSystem);
+    m_particleSystem = m_systems.addSystem<sd::ParticleSystem>(10000);
+
+    m_model = sd::Graphics::assetManager().load<sd::Model>("models/cube.obj");
 }
 
 void Sandbox2DLayer::onAttach() {}
@@ -31,12 +33,20 @@ void Sandbox2DLayer::onAttach() {}
 void Sandbox2DLayer::onTick(float dt) { m_systems.tick(dt); }
 
 void Sandbox2DLayer::onRender() {
-    sd::Renderer2D::beginScene(m_masterCam, nullptr);
+    sd::Renderer3D::beginScene(
+        sd::PerspectiveCamera(45, 800.f / 600.f, 0.1, 1000), nullptr);
     sd::Renderer::setClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     sd::Renderer::clear();
+    sd::Transform transform;
+    transform.setWorldPosition(glm::vec3(0, 0, -5));
+    transform.setLocalRotation(glm::vec3(M_PI / 4, 0, 0));
+    for (const auto &mesh : m_model->getMeshes()) {
+        sd::Renderer3D::drawMesh(mesh, transform);
+    }
+    sd::Renderer3D::endScene();
 
+    sd::Renderer2D::beginScene(m_masterCam, nullptr);
     m_systems.render();
-
     sd::Renderer2D::drawTexture(
         glm::scale(glm::mat4(1.0f), glm::vec3(80.f, 24.f, 1.0f)),
         sd::Graphics::assetManager().load<sd::Texture>(

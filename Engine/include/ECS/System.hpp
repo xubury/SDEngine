@@ -23,7 +23,8 @@ class SystemManager {
    public:
     SystemManager() = default;
 
-    void addSystem(Ref<System> system);
+    template <typename SYSTEM, typename... ARGS>
+    Ref<SYSTEM> addSystem(ARGS... args);
 
     void removeSystem(Ref<System> system);
 
@@ -34,6 +35,13 @@ class SystemManager {
    private:
     std::set<Ref<System>> m_systems;
 };
+
+template <typename SYSTEM, typename... ARGS>
+Ref<SYSTEM> SystemManager::addSystem(ARGS... args) {
+    Ref<SYSTEM> system = createRef<SYSTEM>(std::forward<ARGS>(args)...);
+    m_systems.emplace(system);
+    return system;
+}
 
 }  // namespace sd
 

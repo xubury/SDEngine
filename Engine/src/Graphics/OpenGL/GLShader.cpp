@@ -71,6 +71,10 @@ void GLShader::destroyShaders() {
     if (m_fragmentId != 0) glDeleteShader(m_fragmentId);
     if (m_geometryId != 0) glDeleteShader(m_geometryId);
     if (m_computeId != 0) glDeleteShader(m_computeId);
+    m_vertexId = 0;
+    m_fragmentId = 0;
+    m_geometryId = 0;
+    m_computeId = 0;
 }
 
 void GLShader::linkShaders() {

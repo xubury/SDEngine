@@ -3,14 +3,6 @@
 
 namespace sd {
 
-void SystemManager::addSystem(Ref<System> system) {
-    if (m_systems.find(system) == m_systems.end()) {
-        m_systems.emplace(system);
-    } else {
-        SD_CORE_WARN("System already exists!");
-    }
-}
-
 void SystemManager::removeSystem(Ref<System> system) {
     if (m_systems.find(system) != m_systems.end()) {
         m_systems.erase(system);
