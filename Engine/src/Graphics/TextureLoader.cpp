@@ -36,9 +36,9 @@ static SDL_Surface *loadSuface(const std::string &path) {
 TextureLoader::TextureLoader(AssetManager &manager)
     : AssetLoader<Texture>(manager) {}
 
-Ref<Texture> TextureLoader::loadAsset(const std::string &path) {
+Ref<Texture> TextureLoader::loadAsset(const std::string &filePath) {
     Ref<Texture> texture;
-    SDL_Surface *image = loadSuface(m_manager.getRootPath() + path);
+    SDL_Surface *image = loadSuface(filePath);
     // flipSurface(image);
     // TODO: parse SDL_Surface here
     TextureFormat format = TextureFormat::RGB;

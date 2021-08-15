@@ -59,12 +59,11 @@ static Mesh processAiMesh(const aiMesh *mesh) {
 
 Ref<Model> ModelLoader::loadAsset(const std::string &filePath) {
     Ref<Model> model = createRef<Model>();
-    std::string fullPath = m_manager.getRootPath() + filePath;
-    SD_CORE_TRACE("Loading mesh form: {}...", fullPath);
+    SD_CORE_TRACE("Loading mesh form: {}...", filePath);
 
     Assimp::Importer importer;
     uint32_t importFlags = aiProcess_Triangulate | aiProcess_FlipUVs;
-    const aiScene *scene = importer.ReadFile(fullPath, importFlags);
+    const aiScene *scene = importer.ReadFile(filePath, importFlags);
     if (scene == nullptr) {
         std::string error = importer.GetErrorString();
         SD_CORE_ERROR("Mesh loading failed: {}", error.c_str());

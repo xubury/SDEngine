@@ -1,6 +1,6 @@
 #include "ImGui/ImGuiLayer.hpp"
+#include "Common/Log.hpp"
 #include "Core/Application.hpp"
-#include "Graphics/Graphics.hpp"
 #include "Graphics/Graphics.hpp"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl.h"

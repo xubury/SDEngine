@@ -11,7 +11,7 @@ class TextureLoader : public AssetLoader<Texture> {
     TextureLoader(AssetManager &manager);
 
     // TODO: perhaps I should make it parse json (compatibility for cubemap)
-    Ref<Texture> loadAsset(const std::string &path);
+    Ref<Texture> loadAsset(const std::string &filePath) override;
 };
 
 }  // namespace sd

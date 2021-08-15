@@ -281,9 +281,8 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
         false);
     drawComponent<sd::ModelComponent>(
         "Model", entity, [&](sd::ModelComponent &model) {
-            ImGui::SameLine();
-            ImGui::Text(model.path.c_str());
-            if (ImGui::Button("...")) {
+            ImGui::TextEx(model.path.c_str());
+            if (ImGui::Button("Open")) {
                 m_fileDialogOpen = true;
                 m_fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
                 m_fileDialogInfo.title = "Open File";
@@ -292,6 +291,10 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
                     std::filesystem::current_path();
             }
             if (ImGui::FileDialog(&m_fileDialogOpen, &m_fileDialogInfo)) {
+                model.path = m_fileDialogInfo.resultPath.string();
+                model.model = sd::Graphics::assetManager().load<sd::Model>(
+                    m_fileDialogInfo.resultPath);
+
                 // Result path in: m_fileDialogInfo.resultPath
             }
         });

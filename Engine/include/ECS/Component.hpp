@@ -24,13 +24,10 @@ struct SD_API TransformComponent {
     Transform transform;
 };
 
-struct SD_API MeshComponent {
-    Mesh mesh;
-};
-
 struct SD_API ModelComponent {
-    std::string path = "Empty";
-    Model model;
+    std::string path;
+    Ref<Model> model;
+    ModelComponent() : path("Empty"), model(sd::createRef<Model>()) {}
 };
 
 }  // namespace sd

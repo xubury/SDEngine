@@ -2,34 +2,13 @@
 #define SD_ASSET_LOADER_HPP
 
 #include <string>
+#include <filesystem>
 #include <unordered_map>
 #include "Common/Base.hpp"
 #include "Common/Log.hpp"
+#include "AssetManager.hpp"
 
 namespace sd {
-
-class AssetManager;
-
-class SD_API AssetLoaderBase {
-   public:
-    AssetLoaderBase(AssetManager &manager) : m_manager(manager) {}
-    virtual ~AssetLoaderBase() = default;
-
-    AssetLoaderBase(const AssetManager &) = delete;
-    AssetLoaderBase &operator=(const AssetManager &) = delete;
-
-    virtual Ref<void> load(const std::string &filePath) = 0;
-
-    virtual bool hasLoaded(const std::string &name) = 0;
-
-   protected:
-    AssetManager &m_manager;
-};
-
-template <typename ASSET>
-inline size_t getLoaderType() {
-    return typeid(ASSET).hash_code();
-}
 
 template <typename ASSET>
 class AssetLoader : public AssetLoaderBase {
@@ -38,13 +17,15 @@ class AssetLoader : public AssetLoaderBase {
 
     virtual ~AssetLoader() = default;
 
+   protected:
+    friend class AssetManager;
+
     Ref<void> load(const std::string &filePath) override;
 
-    bool hasLoaded(const std::string &name) override;
+    bool hasLoaded(const std::string &filePath) override;
 
     static size_t getType() { return getLoaderType<ASSET>(); }
 
-   protected:
     virtual Ref<ASSET> loadAsset(const std::string &filePath) = 0;
 
     std::unordered_map<std::string, Ref<ASSET>> m_loaded;
@@ -76,8 +57,8 @@ Ref<void> AssetLoader<ASSET>::load(const std::string &filePath) {
 }
 
 template <typename ASSET>
-bool AssetLoader<ASSET>::hasLoaded(const std::string &name) {
-    return m_loaded.find(name) != m_loaded.end();
+bool AssetLoader<ASSET>::hasLoaded(const std::string &filePath) {
+    return m_loaded.find(filePath) != m_loaded.end();
 }
 
 }  // namespace sd

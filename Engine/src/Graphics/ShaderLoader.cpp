@@ -24,9 +24,8 @@ ShaderLoader::ShaderLoader(AssetManager &manager)
 Ref<Shader> ShaderLoader::loadAsset(const std::string &filePath) {
     Ref<Shader> shader = Shader::create();
     std::string source;
-    SD_CORE_TRACE("Building shader code from {}",
-                  m_manager.getRootPath() + filePath);
-    readFile(m_manager.getRootPath() + filePath, source);
+    SD_CORE_TRACE("Building shader code from {}", filePath);
+    readFile(filePath, source);
 
     size_t i = source.find("#shader");
     while (i < source.size()) {
@@ -64,20 +63,19 @@ Ref<Shader> ShaderLoader::loadAsset(const std::string &filePath) {
 
             code.erase(j, start - j);
             std::string includeCode;
-            readFile(m_manager.getRootPath() + include, includeCode);
+            readFile(m_manager.getAbsolutePath(include).string(), includeCode);
             code.insert(j, includeCode);
 
             j = code.find("#include", start);
 
             SD_CORE_TRACE("Include shader source from {}",
-                          m_manager.getRootPath() + include);
+                          m_manager.getAbsolutePath(include).string());
         }
 
         shader->compileShader(type, code.c_str());
     }
     shader->linkShaders();
-    SD_CORE_TRACE("Finish builidng shader code from {}",
-                  m_manager.getRootPath() + filePath);
+    SD_CORE_TRACE("Finish builidng shader code from {}", filePath);
     return shader;
 }
 

@@ -16,7 +16,7 @@ void RenderSystem::onRender() {
                     .view<sd::TransformComponent, sd::ModelComponent>();
     view.each([](const TransformComponent &transformComp,
                  const ModelComponent &modelComp) {
-        for (const auto &mesh : modelComp.model.getMeshes()) {
+        for (const auto &mesh : modelComp.model->getMeshes()) {
             Renderer3D::drawMesh(mesh, transformComp.transform);
         }
     });
