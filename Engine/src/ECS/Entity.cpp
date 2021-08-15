@@ -2,7 +2,12 @@
 
 namespace sd {
 
+const uint32_t Entity::INVALID_ID = -1;
+
 Entity::Entity() : m_entityHandle(entt::null), m_scene(nullptr) {}
+
+Entity::Entity(uint32_t handle, Scene *scene)
+    : m_entityHandle(static_cast<entt::entity>(handle)), m_scene(scene) {}
 
 Entity::Entity(entt::entity handle, Scene *scene)
     : m_entityHandle(handle), m_scene(scene) {}

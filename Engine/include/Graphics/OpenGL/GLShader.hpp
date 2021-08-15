@@ -33,6 +33,8 @@ class SD_API GLShader : public Shader {
 
     void setInt(const std::string& name, int value) const override;
 
+    void setUint(const std::string& name, uint32_t value) const override;
+
     void setFloat(const std::string& name, float value) const override;
 
     void setVec2(const std::string& name,

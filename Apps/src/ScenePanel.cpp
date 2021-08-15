@@ -10,6 +10,10 @@ ScenePanel::ScenePanel(sd::Scene *scene) : m_scene(scene) {}
 
 void ScenePanel::setScene(sd::Scene *scene) { m_scene = scene; }
 
+void ScenePanel::setSelectedEntity(uint32_t entityId) {
+    m_selectedEntity = sd::Entity(entityId, m_scene);
+}
+
 void ScenePanel::onImGui() {
     if (m_scene == nullptr) {
         return;

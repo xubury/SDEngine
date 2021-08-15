@@ -60,7 +60,12 @@ void EditorLayer::onDetech() {
 
 void EditorLayer::onRender() {
     sd::Renderer3D::beginScene(m_editorCamera, m_target.get());
+    sd::Renderer::setClearColor(0.1, 0.2, 0.3, 1.0);
+    sd::Renderer::clear();
+
+    m_target->getFramebuffer()->clearAttachment(1, &sd::Entity::INVALID_ID);
     m_systems.render();
+
     sd::Renderer3D::endScene();
 }
 
@@ -165,6 +170,13 @@ void EditorLayer::onImGui() {
         m_frameBuffer->copyFrom(m_target->getFramebuffer().get(),
                                 sd::BufferBit::COLOR_BUFFER_BIT,
                                 sd::TextureFilter::NEAREST);
+
+        if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
+            uint32_t id = m_frameBuffer->readPixels(1, mousePos.x, mousePos.y);
+            if (id != sd::Entity::INVALID_ID) {
+                m_scenePanel.setSelectedEntity(id);
+            }
+        }
 
         ImGui::Image((void*)(intptr_t)m_texture->getId(), wsize, ImVec2(0, 1),
                      ImVec2(1, 0));

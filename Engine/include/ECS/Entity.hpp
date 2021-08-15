@@ -10,7 +10,11 @@ namespace sd {
 
 class SD_API Entity {
    public:
+    static const uint32_t INVALID_ID;
+
+   public:
     Entity();
+    Entity(uint32_t handle, Scene *scene);
     Entity(entt::entity handle, Scene *scene);
 
     template <typename T, typename... Args>
@@ -38,7 +42,6 @@ class SD_API Entity {
     entt::entity m_entityHandle;
     Scene *m_scene;
 };
-
 
 template <typename T, typename... Args>
 T &Entity::addComponent(Args &&...args) {

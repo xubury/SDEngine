@@ -13,6 +13,8 @@ class ScenePanel {
 
     void setScene(sd::Scene *scene);
 
+    void setSelectedEntity(uint32_t entityId);
+
     void onImGui();
 
    private:

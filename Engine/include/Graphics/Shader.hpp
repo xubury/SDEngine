@@ -38,6 +38,8 @@ class SD_API Shader {
 
     virtual void setInt(const std::string& name, int value) const = 0;
 
+    virtual void setUint(const std::string& name, uint32_t value) const = 0;
+
     virtual void setFloat(const std::string& name, float value) const = 0;
 
     virtual void setVec2(const std::string& name,

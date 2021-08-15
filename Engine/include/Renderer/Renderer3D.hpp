@@ -20,7 +20,8 @@ class SD_API Renderer3D {
 
     static void endScene();
 
-    static void drawMesh(const Mesh &mesh, const Transform &transform);
+    static void drawMesh(const Mesh &mesh, const Transform &transform,
+                         const uint32_t entityId = -1);
 
    private:
     Renderer3D() = default;

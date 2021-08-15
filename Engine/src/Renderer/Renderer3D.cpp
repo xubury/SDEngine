@@ -42,8 +42,10 @@ void Renderer3D::beginScene(const Camera &camera, const RenderTarget *target) {
 
 void Renderer3D::endScene() { s_data.shader->unbind(); }
 
-void Renderer3D::drawMesh(const Mesh &mesh, const Transform &transform) {
+void Renderer3D::drawMesh(const Mesh &mesh, const Transform &transform,
+                          const uint32_t entityId) {
     s_data.shader->setMat4("u_world", transform.getWorldTransform());
+    s_data.shader->setUint("u_entityId", entityId);
     Ref<VertexArray> vao = mesh.getVertexArray();
     Renderer::submit(*vao, MeshTopology::TRIANGLES,
                      vao->getIndexBuffer()->getCount(), 0);

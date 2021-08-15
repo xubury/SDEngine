@@ -23,7 +23,8 @@ void main() {
 #shader fragment
 #version 450 core
 
-out vec4 fragColor;
+layout (location = 0) out vec4 fragColor;
+layout (location = 1) out uint entityId;
 
 struct VertexOutput {
     vec2 texCoord;
@@ -31,6 +32,9 @@ struct VertexOutput {
 
 in VertexOutput in_vertex;
 
+uniform uint u_entityId;
+
 void main() {
     fragColor = vec4(1, 0, 0, 1);
+    entityId = u_entityId;
 }
