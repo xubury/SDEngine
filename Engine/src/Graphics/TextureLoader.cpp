@@ -14,32 +14,36 @@ static SDL_Surface *loadSuface(const std::string &path) {
     return loadedSurface;
 }
 
-// static void flipSurface(SDL_Surface *surface) {
-//     SDL_LockSurface(surface);
+static void flipSurface(SDL_Surface *surface) {
+    SDL_LockSurface(surface);
 
-//     const uint32_t pitch = surface->pitch;
-//     char *tmp = new char[pitch];
-//     char *pixels = static_cast<char *>(surface->pixels);
+    const uint32_t pitch = surface->pitch;
+    char *tmp = new char[pitch];
+    char *pixels = static_cast<char *>(surface->pixels);
 
-//     for (int i = 0; i < surface->h / 2; ++i) {
-//         char *row1 = pixels + i * pitch;
-//         char *row2 = pixels + (surface->h - 1 - i) * pitch;
-//         memcpy(tmp, row1, pitch);
-//         memcpy(row1, row2, pitch);
-//         memcpy(row2, tmp, pitch);
-//     }
+    for (int i = 0; i < surface->h / 2; ++i) {
+        char *row1 = pixels + i * pitch;
+        char *row2 = pixels + (surface->h - 1 - i) * pitch;
+        memcpy(tmp, row1, pitch);
+        memcpy(row1, row2, pitch);
+        memcpy(row2, tmp, pitch);
+    }
 
-//     delete[] tmp;
-//     SDL_UnlockSurface(surface);
-// }
+    delete[] tmp;
+    SDL_UnlockSurface(surface);
+}
 
 TextureLoader::TextureLoader(AssetManager &manager)
-    : AssetLoader<Texture>(manager) {}
+    : AssetLoader<Texture>(manager), m_flip(false) {}
+
+void TextureLoader::setFlipVertically(bool flip) { m_flip = flip; }
 
 Ref<Texture> TextureLoader::loadAsset(const std::string &filePath) {
     Ref<Texture> texture;
     SDL_Surface *image = loadSuface(filePath);
-    // flipSurface(image);
+    if (m_flip) {
+        flipSurface(image);
+    }
     // TODO: parse SDL_Surface here
     TextureFormat format = TextureFormat::RGB;
     TextureFormatType formatType = TextureFormatType::UBYTE;

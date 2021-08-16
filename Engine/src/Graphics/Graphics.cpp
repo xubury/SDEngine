@@ -8,8 +8,16 @@ namespace sd {
 static API s_api;
 void Graphics::init(API api) {
     SD_CORE_TRACE("Initializing Graphics...");
+    Graphics::assetManager().setRootPath("assets/");
+    Graphics::assetManager().setLoader<ShaderLoader>();
+    Graphics::assetManager().setLoader<TextureLoader>();
+    Graphics::assetManager().setLoader<ModelLoader>();
+
     switch (api) {
         case API::OpenGL:
+            Graphics::assetManager()
+                .getLoader<TextureLoader>()
+                .setFlipVertically(true);
             SD_CORE_INFO("Using OpenGL as backend..");
             break;
         default:
@@ -17,10 +25,6 @@ void Graphics::init(API api) {
             exit(-1);
     }
     s_api = api;
-    Graphics::assetManager().setRootPath("assets/");
-    Graphics::assetManager().setLoader<ShaderLoader>();
-    Graphics::assetManager().setLoader<TextureLoader>();
-    Graphics::assetManager().setLoader<ModelLoader>();
 }
 
 API Graphics::getAPI() { return s_api; }

@@ -42,6 +42,9 @@ class SD_API AssetManager {
     template <typename LOADER, typename... ARGS>
     void setLoader(ARGS &&...args);
 
+    template <typename LOADER>
+    LOADER &getLoader();
+
     template <typename ASSET>
     Ref<ASSET> load(const std::filesystem::path &filePath);
 
@@ -69,6 +72,12 @@ template <typename LOADER, typename... ARGS>
 void AssetManager::setLoader(ARGS &&...args) {
     size_t type = LOADER::getType();
     m_loaders[type] = createScope<LOADER>(*this, std::forward<ARGS>(args)...);
+}
+
+template <typename LOADER>
+LOADER &AssetManager::getLoader() {
+    size_t type = LOADER::getType();
+    return *dynamic_cast<LOADER *>(m_loaders[type].get());
 }
 
 template <typename ASSET>
