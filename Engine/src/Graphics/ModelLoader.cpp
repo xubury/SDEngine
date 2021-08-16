@@ -33,6 +33,26 @@ static Vertex constructVertex(const aiVector3D &pos, const aiVector3D &texCoord,
 static Mesh processAiMesh(const aiMesh *assimpMesh) {
     Mesh mesh;
     const aiVector3D aiZeroVector(0.0f, 0.0f, 0.0f);
+    MeshTopology topology;
+    switch (assimpMesh->mPrimitiveTypes) {
+        case aiPrimitiveType_LINE:
+            topology = MeshTopology::LINES;
+            break;
+        case aiPrimitiveType_POINT:
+            topology = MeshTopology::POINTS;
+            break;
+        case aiPrimitiveType_TRIANGLE:
+            topology = MeshTopology::TRIANGLES;
+            break;
+        case aiPrimitiveType_POLYGON:
+            topology = MeshTopology::QUADS;
+            break;
+        default:
+            topology = MeshTopology::TRIANGLES;
+            SD_CORE_WARN("[processAiMesh] Unhandled mesh topology!");
+    };
+    mesh.setTopology(topology);
+
     for (uint32_t i = 0; i < assimpMesh->mNumVertices; ++i) {
         const aiVector3D pos = assimpMesh->mVertices[i];
         const aiVector3D normal =

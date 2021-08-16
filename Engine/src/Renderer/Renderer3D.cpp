@@ -38,7 +38,7 @@ void Renderer3D::endScene() {}
 
 void Renderer3D::drawMesh(const Mesh &mesh) {
     Ref<VertexArray> vao = mesh.getVertexArray();
-    Renderer::submit(*vao, MeshTopology::TRIANGLES,
+    Renderer::submit(*vao, mesh.getTopology(),
                      vao->getIndexBuffer()->getCount(), 0);
 }
 

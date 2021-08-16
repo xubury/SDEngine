@@ -17,7 +17,7 @@ struct Vertex {
 
 class Mesh {
    public:
-    Mesh() = default;
+    Mesh();
 
     void addVertex(const Vertex &vertex);
 
@@ -29,10 +29,15 @@ class Mesh {
 
     Ref<VertexArray> getVertexArray() const { return m_vertexArray; }
 
+    void setTopology(MeshTopology topology);
+
+    MeshTopology getTopology() const { return m_topology; }
+
    private:
     std::vector<Vertex> m_vertices;
     std::vector<uint32_t> m_indices;
     Ref<VertexArray> m_vertexArray;
+    MeshTopology m_topology;
 };
 
 }  // namespace sd

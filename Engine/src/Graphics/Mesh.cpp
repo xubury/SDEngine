@@ -2,6 +2,8 @@
 
 namespace sd {
 
+Mesh::Mesh() : m_topology(MeshTopology::TRIANGLES) {}
+
 void Mesh::addVertex(const Vertex &vertex) { m_vertices.emplace_back(vertex); }
 
 void Mesh::addVertex(Vertex &&vertex) {
@@ -29,5 +31,7 @@ void Mesh::init() {
     m_vertexArray->addVertexBuffer(vbo, layout);
     m_vertexArray->setIndexBuffer(ebo);
 }
+
+void Mesh::setTopology(MeshTopology topology) { m_topology = topology; }
 
 }  // namespace sd
