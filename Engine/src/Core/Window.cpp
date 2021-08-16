@@ -6,8 +6,7 @@ namespace sd {
 
 Window::Window() : m_shouldClose(false) {}
 
-bool Window::create(const std::string &title, int width, int height,
-                    WindowFlag flags) {
+bool Window::create(const WindowProp &property) {
     SD_CORE_TRACE("Initializing window...");
     uint32_t sdlFlags = SDL_WINDOW_RESIZABLE;
     switch (Graphics::getAPI()) {
@@ -17,19 +16,18 @@ bool Window::create(const std::string &title, int width, int height,
         default:
             break;
     }
-    if (flags & INVISIBLE) {
+    if (property.flag & INVISIBLE) {
         sdlFlags |= SDL_WINDOW_HIDDEN;
     }
-    if (flags & FULLSCREEN) {
+    if (property.flag & FULLSCREEN) {
         sdlFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     }
-    if (flags & BORDERLESS) {
+    if (property.flag & BORDERLESS) {
         sdlFlags |= SDL_WINDOW_BORDERLESS;
     }
 
-    m_window =
-        SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED,
-                         SDL_WINDOWPOS_CENTERED, width, height, sdlFlags);
+    m_window = SDL_CreateWindow(property.title.c_str(), property.x, property.y,
+                                property.width, property.height, sdlFlags);
     if (m_window == nullptr) {
         SD_CORE_ERROR("SDL_CreateWindow failed: {}", SDL_GetError());
         return false;

@@ -18,12 +18,27 @@ class SD_API Window {
         BORDERLESS = 0x01 << 2
     };
 
+    struct WindowProp {
+        std::string title;
+        int x;
+        int y;
+        int width;
+        int height;
+        WindowFlag flag;
+        WindowProp()
+            : title("SD Engine"),
+              x(SDL_WINDOWPOS_CENTERED),
+              y(SDL_WINDOWPOS_CENTERED),
+              width(1440),
+              height(900),
+              flag(WINDOWED) {}
+    };
+
    public:
     Window();
     ~Window();
 
-    bool create(const std::string &title, int width, int height,
-                WindowFlag flags);
+    bool create(const WindowProp &property);
 
     bool pollEvent(SDL_Event &event);
 

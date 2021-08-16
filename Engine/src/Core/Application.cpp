@@ -35,7 +35,7 @@ Application::Application() {
 
     sd::Graphics::init(sd::API::OpenGL);
 
-    if (!m_window.create("SD Engine", width, height, Window::WINDOWED)) {
+    if (!m_window.create(Window::WindowProp())) {
         exit(-1);
     }
 
