@@ -39,7 +39,6 @@ class SD_API Renderer {
 
     Ref<RenderTarget> m_defaultTarget;
     Scope<Device> m_device;
-    API m_api;
 
 };  // namespace Renderer
 
