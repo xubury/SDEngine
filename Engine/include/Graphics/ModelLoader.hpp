@@ -11,6 +11,7 @@ class ModelLoader : public AssetLoader<Model> {
     ModelLoader(AssetManager &manager);
 
     Ref<Model> loadAsset(const std::string &filePath) override;
+
 };
 
 }  // namespace sd

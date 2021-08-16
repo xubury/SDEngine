@@ -38,7 +38,8 @@ class SD_API ParticleSystem : public System {
 
     void emit(const ParticleProp &particle);
 
-   protected:
+    void init() override {}
+
     void onRender() override;
 
     void onTick(float dt) override;

@@ -8,7 +8,18 @@
 
 namespace sd {
 
+enum class MaterialType {
+    DIFFUSE,
+    SPECULAR,
+    AMBIENT,
+    EMISSIVE,
+    HEIGHT,
+    NORMALS,
+    SHININESS
+};
+
 class SD_API Material {
+   public:
    public:
     struct SD_API TextureProp {
         Ref<Texture> texture;
@@ -19,15 +30,17 @@ class SD_API Material {
 
     void setShader(const Ref<Shader> &shader);
 
-    void setTexture(const std::string &name, const Ref<Texture> &texture);
+    void addTexture(MaterialType type, const Ref<Texture> &texture);
 
-    void removeTexture(const std::string &name);
+    bool hasTexture(MaterialType type) const;
 
-    void bind() const;
+    void removeTexture(MaterialType type);
+
+    Ref<Texture> getTexture(MaterialType type) const;
 
    private:
     Ref<Shader> m_shader;
-    std::unordered_map<std::string, TextureProp> m_textures;
+    std::unordered_map<MaterialType, TextureProp> m_textures;
 };
 
 }  // namespace sd

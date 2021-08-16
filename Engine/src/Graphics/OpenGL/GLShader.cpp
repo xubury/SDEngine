@@ -14,7 +14,8 @@ GLShader::GLShader()
       m_vertexId(0),
       m_fragmentId(0),
       m_geometryId(0),
-      m_computeId(0) {}
+      m_computeId(0),
+      m_textureCount(0) {}
 
 GLShader::~GLShader() {
     if (m_id != 0) glDeleteProgram(m_id);
@@ -83,9 +84,12 @@ void GLShader::linkShaders() {
     destroyShaders();
 }
 
-void GLShader::bind() const { glUseProgram(m_id); }
+void GLShader::bind() {
+    m_textureCount = 0;
+    glUseProgram(m_id);
+}
 
-void GLShader::unbind() const { glUseProgram(0); }
+void GLShader::unbind() { glUseProgram(0); }
 
 void GLShader::checkCompileErrors(uint32_t shader, const std::string& type) {
     int success;
@@ -106,49 +110,51 @@ void GLShader::checkCompileErrors(uint32_t shader, const std::string& type) {
     }
 }
 
-void GLShader::setBool(const std::string& name, bool value) const {
+void GLShader::setBool(const std::string& name, bool value) {
     glUniform1i(glGetUniformLocation(m_id, name.c_str()), value);
 }
 
-void GLShader::setInt(const std::string& name, int value) const {
+void GLShader::setInt(const std::string& name, int value) {
     glUniform1i(glGetUniformLocation(m_id, name.c_str()), value);
 }
 
-void GLShader::setUint(const std::string& name, uint32_t value) const {
+void GLShader::setUint(const std::string& name, uint32_t value) {
     glUniform1ui(glGetUniformLocation(m_id, name.c_str()), value);
 }
 
-void GLShader::setFloat(const std::string& name, float value) const {
+void GLShader::setFloat(const std::string& name, float value) {
     glUniform1f(glGetUniformLocation(m_id, name.c_str()), value);
 }
 
-void GLShader::setVec2(const std::string& name, const glm::vec2& value) const {
+void GLShader::setVec2(const std::string& name, const glm::vec2& value) {
     glUniform2fv(glGetUniformLocation(m_id, name.c_str()), 1, &value[0]);
 }
 
-void GLShader::setVec3(const std::string& name, const glm::vec3& value) const {
+void GLShader::setVec3(const std::string& name, const glm::vec3& value) {
     glUniform3fv(glGetUniformLocation(m_id, name.c_str()), 1, &value[0]);
 }
 
-void GLShader::setVec4(const std::string& name, const glm::vec4& value) const {
+void GLShader::setVec4(const std::string& name, const glm::vec4& value) {
     glUniform4fv(glGetUniformLocation(m_id, name.c_str()), 1, &value[0]);
 }
 
-void GLShader::setMat4(const std::string& name, const glm::mat4& value) const {
+void GLShader::setMat4(const std::string& name, const glm::mat4& value) {
     glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE,
                        glm::value_ptr(value));
 }
 
-void GLShader::setTexture(const Texture* texture, int index) const {
+void GLShader::setTexture(const std::string& name, const Texture* texture) {
+    setInt(name, m_textureCount);
     if (texture) {
-        texture->setSlot(index);
+        texture->setSlot(m_textureCount);
     } else {
-        glBindTextureUnit(index, 0);
+        glBindTextureUnit(m_textureCount, 0);
     }
+    m_textureCount++;
 }
 
 void GLShader::setUniformBuffer(const std::string& name,
-                                const UniformBuffer& buffer) const {
+                                const UniformBuffer& buffer) {
     buffer.bind();
     uint32_t index = glGetUniformBlockIndex(m_id, name.c_str());
     if (index != GL_INVALID_INDEX)

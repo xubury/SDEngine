@@ -13,7 +13,6 @@ struct CameraData {
 struct Renderer3DData {
     CameraData cameraBuffer;
     Ref<UniformBuffer> cameraUBO;
-    Ref<Shader> shader;
 };
 
 static Renderer3DData s_data;
@@ -22,9 +21,6 @@ void Renderer3D::init() {
     SD_CORE_TRACE("Initializing Renderer3D...");
     s_data.cameraUBO = UniformBuffer::create(
         &s_data.cameraUBO, sizeof(CameraData), BufferIOType::STATIC);
-
-    s_data.shader =
-        Graphics::assetManager().load<Shader>("shaders/simple3d.glsl");
 }
 
 void Renderer3D::beginScene(const Camera &camera, const RenderTarget *target) {
@@ -36,19 +32,18 @@ void Renderer3D::beginScene(const Camera &camera, const RenderTarget *target) {
     s_data.cameraBuffer.viewProjection = camera.getViewPorjection();
     s_data.cameraBuffer.viewPos = camera.getWorldPosition();
     s_data.cameraUBO->updateData(&s_data.cameraBuffer, sizeof(CameraData));
-    s_data.shader->bind();
-    s_data.shader->setUniformBuffer("Camera", *s_data.cameraUBO);
 }
 
-void Renderer3D::endScene() { s_data.shader->unbind(); }
+void Renderer3D::endScene() {}
 
-void Renderer3D::drawMesh(const Mesh &mesh, const Transform &transform,
-                          const uint32_t entityId) {
-    s_data.shader->setMat4("u_world", transform.getWorldTransform());
-    s_data.shader->setUint("u_entityId", entityId);
+void Renderer3D::drawMesh(const Mesh &mesh) {
     Ref<VertexArray> vao = mesh.getVertexArray();
     Renderer::submit(*vao, MeshTopology::TRIANGLES,
                      vao->getIndexBuffer()->getCount(), 0);
+}
+
+void Renderer3D::setShader(Shader &shader) {
+    shader.setUniformBuffer("Camera", *s_data.cameraUBO);
 }
 
 }  // namespace sd

@@ -3,12 +3,15 @@
 
 #include "ECS/System.hpp"
 #include "ECS/Scene.hpp"
+#include "Graphics/Shader.hpp"
 
 namespace sd {
 
 class RenderSystem : public System {
    public:
     RenderSystem(Scene *scene);
+
+    void init() override;
 
     void onTick(float dt) override;
 
@@ -18,6 +21,7 @@ class RenderSystem : public System {
 
    private:
     Scene *m_scene;
+    Ref<Shader> m_shader;
 };
 
 }  // namespace sd

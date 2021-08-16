@@ -30,34 +30,31 @@ class SD_API Shader {
 
     virtual void linkShaders() = 0;
 
-    virtual void bind() const = 0;
+    virtual void bind() = 0;
 
-    virtual void unbind() const = 0;
+    virtual void unbind() = 0;
 
-    virtual void setBool(const std::string& name, bool value) const = 0;
+    virtual void setBool(const std::string& name, bool value) = 0;
 
-    virtual void setInt(const std::string& name, int value) const = 0;
+    virtual void setInt(const std::string& name, int value) = 0;
 
-    virtual void setUint(const std::string& name, uint32_t value) const = 0;
+    virtual void setUint(const std::string& name, uint32_t value) = 0;
 
-    virtual void setFloat(const std::string& name, float value) const = 0;
+    virtual void setFloat(const std::string& name, float value) = 0;
 
-    virtual void setVec2(const std::string& name,
-                         const glm::vec2& value) const = 0;
+    virtual void setVec2(const std::string& name, const glm::vec2& value) = 0;
 
-    virtual void setVec3(const std::string& name,
-                         const glm::vec3& value) const = 0;
+    virtual void setVec3(const std::string& name, const glm::vec3& value) = 0;
 
-    virtual void setVec4(const std::string& name,
-                         const glm::vec4& value) const = 0;
+    virtual void setVec4(const std::string& name, const glm::vec4& value) = 0;
 
-    virtual void setMat4(const std::string& name,
-                         const glm::mat4& value) const = 0;
+    virtual void setMat4(const std::string& name, const glm::mat4& value) = 0;
 
-    virtual void setTexture(const Texture* texture, int index) const = 0;
+    virtual void setTexture(const std::string& name,
+                            const Texture* texture) = 0;
 
     virtual void setUniformBuffer(const std::string& name,
-                                  const UniformBuffer& buffer) const = 0;
+                                  const UniformBuffer& buffer) = 0;
 
    protected:
     Shader() = default;
