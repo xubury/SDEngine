@@ -11,8 +11,6 @@ class System {
     System() = default;
     virtual ~System() = default;
 
-    virtual void init() = 0;
-
     virtual void onTick(float dt) = 0;
 
     virtual void onRender() = 0;
@@ -39,7 +37,6 @@ template <typename SYSTEM, typename... ARGS>
 Ref<SYSTEM> SystemManager::addSystem(ARGS... args) {
     Ref<SYSTEM> system = createRef<SYSTEM>(std::forward<ARGS>(args)...);
     m_systems.emplace(system);
-    system->init();
     return system;
 }
 

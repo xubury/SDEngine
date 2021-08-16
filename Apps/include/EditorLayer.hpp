@@ -25,7 +25,7 @@ class EditorLayer : public sd::Layer {
 
     void newScene();
     void openScene();
-    void saveSceneAs();
+    void saveScene();
 
    private:
     void hide();
@@ -40,8 +40,6 @@ class EditorLayer : public sd::Layer {
     sd::Ref<sd::Framebuffer> m_frameBuffer;
     sd::Ref<sd::Texture> m_texture;
 
-    // This is used for restore the original render target
-    sd::Ref<sd::RenderTarget> m_defaultTarget;
     int m_width;
     int m_height;
 

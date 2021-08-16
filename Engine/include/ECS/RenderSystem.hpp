@@ -11,8 +11,6 @@ class RenderSystem : public System {
    public:
     RenderSystem(Scene *scene);
 
-    void init() override;
-
     void onTick(float dt) override;
 
     void onRender() override;

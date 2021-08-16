@@ -5,13 +5,11 @@
 
 namespace sd {
 
-RenderSystem::RenderSystem(Scene *scene) : m_scene(scene) {}
-
-void RenderSystem::setScene(Scene *scene) { m_scene = scene; }
-
-void RenderSystem::init() {
+RenderSystem::RenderSystem(Scene *scene) : m_scene(scene) {
     m_shader = Graphics::assetManager().load<Shader>("shaders/simple3d.glsl");
 }
+
+void RenderSystem::setScene(Scene *scene) { m_scene = scene; }
 
 void RenderSystem::onTick(float) {}
 

@@ -30,8 +30,6 @@ class Sandbox2DLayer : public sd::Layer {
     sd::Ref<sd::ParticleSystem> m_particleSystem;
 
     sd::OrthographicCamera m_masterCam;
-
-    sd::Ref<sd::Model> m_model;
 };
 
 #endif /* SANDBOX_2D_LAYER_HPP */

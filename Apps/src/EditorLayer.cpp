@@ -59,7 +59,11 @@ void EditorLayer::onDetech() {
 }
 
 void EditorLayer::onRender() {
-    sd::Renderer3D::beginScene(m_editorCamera, m_target.get());
+    if (m_hide) {
+        sd::Renderer3D::beginScene(m_editorCamera, nullptr);
+    } else {
+        sd::Renderer3D::beginScene(m_editorCamera, m_target.get());
+    }
     sd::Renderer::setClearColor(0.1, 0.2, 0.3, 1.0);
     sd::Renderer::clear();
 
@@ -132,7 +136,7 @@ void EditorLayer::onImGui() {
             }
 
             if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) {
-                saveSceneAs();
+                saveScene();
             }
 
             if (ImGui::MenuItem("Exit")) {
@@ -193,17 +197,11 @@ void EditorLayer::onImGui() {
 void EditorLayer::hide() {
     m_hide = true;
     setBlockEvent(false);
-    sd::Renderer::setDefaultTarget(m_defaultTarget);
-
-    m_defaultTarget->resize(sd::Application::getWindow().getWidth(),
-                            sd::Application::getWindow().getHeight());
 }
 
 void EditorLayer::show() {
     m_hide = false;
     setBlockEvent(true);
-    m_defaultTarget = sd::Renderer::getDefaultTarget();
-    sd::Renderer::setDefaultTarget(m_target);
 }
 
 void EditorLayer::onEventPoll(const SDL_Event& event) {
@@ -224,4 +222,4 @@ void EditorLayer::newScene() {
 
 void EditorLayer::openScene() {}
 
-void EditorLayer::saveSceneAs() {}
+void EditorLayer::saveScene() {}

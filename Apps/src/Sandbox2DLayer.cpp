@@ -24,8 +24,6 @@ Sandbox2DLayer::Sandbox2DLayer()
                         [](const SDL_Event &) { SD_TRACE("Key Pressed:B"); });
 
     m_particleSystem = m_systems.addSystem<sd::ParticleSystem>(10000);
-
-    m_model = sd::Graphics::assetManager().load<sd::Model>("models/cube.obj");
 }
 
 void Sandbox2DLayer::onAttach() {}
