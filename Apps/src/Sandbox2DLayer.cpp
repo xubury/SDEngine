@@ -34,6 +34,8 @@ void Sandbox2DLayer::onTick(float dt) { m_systems.tick(dt); }
 
 void Sandbox2DLayer::onRender() {
     sd::Renderer2D::beginScene(m_masterCam, nullptr);
+    sd::Renderer::setClearColor(0.1, 0.2, 0.3, 1.0);
+    sd::Renderer::clear();
     m_systems.render();
     sd::Renderer2D::drawTexture(
         glm::scale(glm::mat4(1.0f), glm::vec3(80.f, 24.f, 1.0f)),

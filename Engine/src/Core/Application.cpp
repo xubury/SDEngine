@@ -17,8 +17,8 @@ Application &Application::instance() { return *s_instance; }
 Application::Application() {
     std::string debugPath = "Debug.txt";
     Log::init(debugPath);
-    int width = 800;
-    int height = 600;
+    int width = 1440;
+    int height = 900;
     Random::init();
     SD_CORE_INFO("Debug info is output to: {}", debugPath);
 
@@ -35,7 +35,10 @@ Application::Application() {
 
     sd::Graphics::init(sd::API::OpenGL);
 
-    if (!m_window.create(Window::WindowProp())) {
+    Window::WindowProp prop;
+    prop.width = width;
+    prop.height = height;
+    if (!m_window.create(prop)) {
         exit(-1);
     }
 
