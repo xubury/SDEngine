@@ -139,8 +139,12 @@ void GLShader::setMat4(const std::string& name, const glm::mat4& value) const {
                        glm::value_ptr(value));
 }
 
-void GLShader::setTexture(const Texture& texture, int index) const {
-    texture.setSlot(index);
+void GLShader::setTexture(const Texture* texture, int index) const {
+    if (texture) {
+        texture->setSlot(index);
+    } else {
+        glBindTextureUnit(index, 0);
+    }
 }
 
 void GLShader::setUniformBuffer(const std::string& name,

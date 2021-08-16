@@ -151,7 +151,7 @@ void Renderer2D::flush() {
     s_data.shader->setUniformBuffer("Camera", *s_data.cameraUBO);
 
     for (uint32_t i = 0; i < s_data.textureSlotIndex; ++i) {
-        s_data.shader->setTexture(*s_data.textureSlots[i], i);
+        s_data.shader->setTexture(s_data.textureSlots[i].get(), i);
     }
 
     Renderer::submit(*s_data.quadVAO, MeshTopology::TRIANGLES,
