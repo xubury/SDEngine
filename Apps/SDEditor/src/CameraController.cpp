@@ -30,7 +30,7 @@ CameraController::CameraController()
          [this](const SDL_Event &) { move(CameraMovement::RIGHT); });
     bind(sd::Action(SDL_EventType::SDL_MOUSEMOTION),
          [this](const SDL_Event &event) {
-             if (sd::InputManager::isMouseDown(1)) {
+             if (sd::InputManager::isMouseDown(SDL_BUTTON_RIGHT)) {
                  rotate(-event.motion.xrel * 0.1f, -event.motion.yrel * 0.1f);
              }
          });
