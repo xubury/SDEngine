@@ -1,15 +1,15 @@
-#include "Sandbox2DApp.hpp"
+#include "SDEditor.hpp"
 #include "Common/Log.hpp"
 #include "Core/EntryPoint.hpp"
 #include "Sandbox2DLayer.hpp"
 #include "EditorLayer.hpp"
 
-sd::Application *sd::createApp() { return new Sandbox2DApp; }
+sd::Application *sd::createApp() { return new SDEditor; }
 
-void Sandbox2DApp::init() {
+void SDEditor::init() {
     // pushLayer(new Sandbox2DLayer());
 
     pushLayer(new EditorLayer());
 }
 
-void Sandbox2DApp::destroy() {}
+void SDEditor::destroy() {}

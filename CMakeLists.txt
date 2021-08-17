@@ -1,21 +1,21 @@
 cmake_minimum_required(VERSION 3.0.0)
 
-project(Sandbox2D VERSION 0.1.0)
+project(SDEditor VERSION 0.1.0)
 
 add_subdirectory(Engine)
 
-add_executable(Sandbox2D 
-    Apps/src/Sandbox2DApp.cpp 
+add_executable(SDEditor 
+    Apps/src/SDEditor.cpp 
     Apps/src/Sandbox2DLayer.cpp
     Apps/src/EditorLayer.cpp
     Apps/src/FileDialog.cpp
     Apps/src/ScenePanel.cpp)
 
-target_include_directories(Sandbox2D PUBLIC Apps/include)
+target_include_directories(SDEditor PUBLIC Apps/include)
 
-set_property(TARGET Sandbox2D PROPERTY CXX_STANDARD 17)
+set_property(TARGET SDEditor PROPERTY CXX_STANDARD 17)
 
-target_compile_options(Sandbox2D PUBLIC  -Wall -Wextra -Wundef -pedantic)
+target_compile_options(SDEditor PUBLIC  -Wall -Wextra -Wundef -pedantic)
 
-target_link_libraries(Sandbox2D PUBLIC sd-core)
+target_link_libraries(SDEditor PUBLIC sd-core)
 
