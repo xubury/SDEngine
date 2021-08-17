@@ -1,4 +1,5 @@
 #include "Core/Window.hpp"
+#include "Core/Context.hpp"
 #include "Common/Log.hpp"
 #include "Graphics/Graphics.hpp"
 
@@ -8,32 +9,12 @@ Window::Window() : m_shouldClose(false) {}
 
 bool Window::create(const WindowProp &property) {
     SD_CORE_TRACE("Initializing window...");
-    uint32_t sdlFlags = SDL_WINDOW_RESIZABLE;
-    switch (Graphics::getAPI()) {
-        case API::OpenGL:
-            sdlFlags |= SDL_WINDOW_OPENGL;
-            break;
-        default:
-            break;
-    }
-    if (property.flag & INVISIBLE) {
-        sdlFlags |= SDL_WINDOW_HIDDEN;
-    }
-    if (property.flag & FULLSCREEN) {
-        sdlFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-    }
-    if (property.flag & BORDERLESS) {
-        sdlFlags |= SDL_WINDOW_BORDERLESS;
-    }
 
-    m_window = SDL_CreateWindow(property.title.c_str(), property.x, property.y,
-                                property.width, property.height, sdlFlags);
+    m_context = Context::create(property, &m_window);
     if (m_window == nullptr) {
         SD_CORE_ERROR("SDL_CreateWindow failed: {}", SDL_GetError());
         return false;
     }
-
-    m_context = Context::create(m_window);
 
     return true;
 }

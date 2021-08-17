@@ -35,7 +35,7 @@ Application::Application() {
 
     sd::Graphics::init(sd::API::OpenGL);
 
-    Window::WindowProp prop;
+    WindowProp prop;
     prop.width = width;
     prop.height = height;
     if (!m_window.create(prop)) {

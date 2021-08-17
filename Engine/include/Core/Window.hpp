@@ -5,35 +5,36 @@
 #include <string>
 #include "Common/Export.hpp"
 #include "Common/Base.hpp"
-#include "Core/Context.hpp"
 
 namespace sd {
 
+enum WindowFlag {
+    WINDOWED = 0,
+    INVISIBLE = 0x01,
+    FULLSCREEN = 0x01 << 1,
+    BORDERLESS = 0x01 << 2
+};
+
+struct WindowProp {
+    std::string title;
+    int x;
+    int y;
+    int width;
+    int height;
+    WindowFlag flag;
+    WindowProp()
+        : title("SD Engine"),
+          x(SDL_WINDOWPOS_CENTERED),
+          y(SDL_WINDOWPOS_CENTERED),
+          width(1440),
+          height(900),
+          flag(WINDOWED) {}
+};
+
+class Context;
+
 class SD_API Window {
    public:
-    enum WindowFlag {
-        WINDOWED = 0,
-        INVISIBLE = 0x01,
-        FULLSCREEN = 0x01 << 1,
-        BORDERLESS = 0x01 << 2
-    };
-
-    struct WindowProp {
-        std::string title;
-        int x;
-        int y;
-        int width;
-        int height;
-        WindowFlag flag;
-        WindowProp()
-            : title("SD Engine"),
-              x(SDL_WINDOWPOS_CENTERED),
-              y(SDL_WINDOWPOS_CENTERED),
-              width(1440),
-              height(900),
-              flag(WINDOWED) {}
-    };
-
    public:
     Window();
     ~Window();

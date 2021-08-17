@@ -32,12 +32,17 @@ static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
 #define SDL(stmt) stmt
 #endif
 
-GLContext::GLContext(SDL_Window* window) : m_window(window) {
+GLContext::GLContext(const WindowProp& property, SDL_Window** window) {
     SD_CORE_TRACE("Initializing GLContext...");
-    m_context = SDL_GL_CreateContext(window);
-    if (m_context == nullptr) {
-        SD_CORE_ERROR("SDL_GL_CreateContext failed: {}", SDL_GetError());
-        return;
+    uint32_t sdlFlags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
+    if (property.flag & INVISIBLE) {
+        sdlFlags |= SDL_WINDOW_HIDDEN;
+    }
+    if (property.flag & FULLSCREEN) {
+        sdlFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+    }
+    if (property.flag & BORDERLESS) {
+        sdlFlags |= SDL_WINDOW_BORDERLESS;
     }
 
     // Double buffer
@@ -52,6 +57,14 @@ GLContext::GLContext(SDL_Window* window) : m_window(window) {
     // MultiSampling
     SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1));
     SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8));
+
+    m_window = SDL_CreateWindow(property.title.c_str(), property.x, property.y,
+                                property.width, property.height, sdlFlags);
+    m_context = SDL_GL_CreateContext(m_window);
+    *window = m_window;
+    if (m_context == nullptr) {
+        SD_CORE_ERROR("SDL_GL_CreateContext failed: {}", SDL_GetError());
+    }
 
     if (glewInit() != GLEW_OK) {
         SD_CORE_ERROR("glewInit failed!");

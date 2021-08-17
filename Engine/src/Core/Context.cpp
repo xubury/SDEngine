@@ -5,11 +5,11 @@
 
 namespace sd {
 
-Ref<Context> Context::create(SDL_Window *window) {
+Ref<Context> Context::create(const WindowProp &property, SDL_Window **window) {
     Ref<Context> context;
     switch (Graphics::getAPI()) {
         case API::OpenGL:
-            context = createRef<GLContext>(window);
+            context = createRef<GLContext>(property, window);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");

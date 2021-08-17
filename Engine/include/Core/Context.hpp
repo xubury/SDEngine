@@ -3,13 +3,14 @@
 
 #include "Common/Export.hpp"
 #include "Common/Base.hpp"
+#include "Core/Window.hpp"
 #include <SDL.h>
 
 namespace sd {
 
 class SD_API Context {
    public:
-    static Ref<Context> create(SDL_Window *window);
+    static Ref<Context> create(const WindowProp &property, SDL_Window **window);
 
     virtual ~Context() = default;
 
