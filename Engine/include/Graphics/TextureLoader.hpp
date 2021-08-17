@@ -6,7 +6,7 @@
 
 namespace sd {
 
-class TextureLoader : public AssetLoader<Texture> {
+class SD_API TextureLoader : public AssetLoader<Texture> {
    public:
     TextureLoader(AssetManager &manager);
 

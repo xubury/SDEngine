@@ -6,7 +6,7 @@
 
 namespace sd {
 
-class ShaderLoader : public AssetLoader<Shader> {
+class SD_API ShaderLoader : public AssetLoader<Shader> {
    public:
     ShaderLoader(AssetManager &manager);
 

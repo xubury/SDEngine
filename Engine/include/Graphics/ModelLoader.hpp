@@ -6,7 +6,7 @@
 
 namespace sd {
 
-class ModelLoader : public AssetLoader<Model> {
+class SD_API ModelLoader : public AssetLoader<Model> {
    public:
     ModelLoader(AssetManager &manager);
 

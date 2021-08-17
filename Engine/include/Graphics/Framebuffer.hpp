@@ -9,7 +9,7 @@ namespace sd {
 
 class Texture;
 
-class Framebuffer {
+class SD_API Framebuffer {
    public:
     static Ref<Framebuffer> create();
 

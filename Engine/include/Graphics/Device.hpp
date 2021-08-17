@@ -8,7 +8,7 @@ namespace sd {
 
 class Framebuffer;
 
-class Device {
+class SD_API Device {
    public:
     virtual ~Device() = default;
 

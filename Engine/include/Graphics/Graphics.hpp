@@ -48,7 +48,7 @@ enum BufferBit {
     STENCIL_BUFFER_BIT = 1 << 2
 };
 
-class Graphics {
+class SD_API Graphics {
    public:
     static void init(API api);
 

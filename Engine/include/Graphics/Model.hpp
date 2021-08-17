@@ -6,7 +6,7 @@
 
 namespace sd {
 
-class Model {
+class SD_API Model {
    public:
     const std::vector<Mesh> &getMeshes() const { return m_meshes; };
     const std::vector<Material> &getMaterials() const { return m_materials; }

@@ -7,7 +7,7 @@
 
 namespace sd {
 
-struct Vertex {
+struct SD_API Vertex {
     glm::vec3 position;
     glm::vec2 texCoord;
     glm::vec3 normal;
@@ -15,7 +15,7 @@ struct Vertex {
     glm::vec3 biTangent;
 };
 
-class Mesh {
+class SD_API Mesh {
    public:
     Mesh();
 
