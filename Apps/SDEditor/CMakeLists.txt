@@ -7,7 +7,8 @@ add_executable(SDEditor
     src/Sandbox2DLayer.cpp
     src/EditorLayer.cpp
     src/FileDialog.cpp
-    src/ScenePanel.cpp)
+    src/ScenePanel.cpp
+    src/CameraController.cpp)
 
 target_include_directories(SDEditor PUBLIC include)
 

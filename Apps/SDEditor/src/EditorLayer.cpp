@@ -9,8 +9,10 @@ EditorLayer::EditorLayer()
       m_width(0),
       m_height(0),
       m_hide(false),
-      m_editorCamera(45, 800.f / 600.f, 0.1f, 100.f) {
+      m_editorCamera(45, 800.f / 600.f, 0.1f, 100.f),
+      m_cameraController() {
     m_renderSystem = m_systems.addSystem<sd::RenderSystem>();
+    m_cameraController.setCamera(&m_editorCamera);
     newScene();
 }
 
@@ -58,9 +60,7 @@ void EditorLayer::onDetech() {
     m_target.reset();
 }
 
-void EditorLayer::onRender() {
-    m_systems.render();
-}
+void EditorLayer::onRender() { m_systems.render(); }
 
 void EditorLayer::onTick(float dt) { m_systems.tick(dt); }
 
@@ -194,6 +194,7 @@ void EditorLayer::show() {
 }
 
 void EditorLayer::onEventPoll(const SDL_Event& event) {
+    m_cameraController.processEvent(event);
     if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_z) {
         if (m_hide) {
             show();
@@ -202,6 +203,8 @@ void EditorLayer::onEventPoll(const SDL_Event& event) {
         }
     }
 }
+
+void EditorLayer::onEventProcess() { m_cameraController.processEvents(); }
 
 void EditorLayer::newScene() {
     m_scene = sd::createRef<sd::Scene>();

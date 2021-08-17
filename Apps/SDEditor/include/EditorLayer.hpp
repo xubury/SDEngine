@@ -6,6 +6,7 @@
 #include "Renderer/RenderTarget.hpp"
 #include "ECS/RenderSystem.hpp"
 #include "ScenePanel.hpp"
+#include "CameraController.hpp"
 
 class EditorLayer : public sd::Layer {
    public:
@@ -22,6 +23,8 @@ class EditorLayer : public sd::Layer {
     void onImGui() override;
 
     void onEventPoll(const SDL_Event &event) override;
+
+    void onEventProcess() override;
 
     void newScene();
     void openScene();
@@ -51,6 +54,8 @@ class EditorLayer : public sd::Layer {
 
     sd::Ref<sd::Scene> m_scene;
     ScenePanel m_scenePanel;
+
+    CameraController m_cameraController;
 };
 
 #endif /* EDITOR_LAYER_HPP */

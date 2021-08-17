@@ -24,8 +24,8 @@ Camera::~Camera() {}
 
 void Camera::setTransform(Transform *transform) { m_transform = transform; }
 
-void Camera::setPosition(const glm::vec3 &position) {
-    if (getPosition() != position) {
+void Camera::setLocalPosition(const glm::vec3 &position) {
+    if (getLocalPosition() != position) {
         if (m_transform) {
             m_transform->setLocalPosition(position);
         } else {
@@ -35,8 +35,8 @@ void Camera::setPosition(const glm::vec3 &position) {
     }
 }
 
-void Camera::setRotation(const glm::quat &rotation) {
-    if (getRotation() != rotation) {
+void Camera::setLocalRotation(const glm::quat &rotation) {
+    if (getLocalRotation() != rotation) {
         if (m_transform) {
             m_transform->setLocalRotation(rotation);
         } else {
@@ -46,7 +46,7 @@ void Camera::setRotation(const glm::quat &rotation) {
     }
 }
 
-glm::vec3 Camera::getPosition() const {
+glm::vec3 Camera::getLocalPosition() const {
     return m_transform ? m_transform->getLocalPosition() : m_position;
 }
 
@@ -54,7 +54,7 @@ glm::vec3 Camera::getWorldPosition() const {
     return m_transform ? m_transform->getWorldPosition() : m_position;
 }
 
-glm::quat Camera::getRotation() const {
+glm::quat Camera::getLocalRotation() const {
     return m_transform ? m_transform->getLocalRotation() : m_rotation;
 }
 
