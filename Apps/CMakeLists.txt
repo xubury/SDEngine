@@ -1,1 +1,1 @@
-add_subdirectory(SDEditor ${PROJECT_BINARY_DIR})
+add_subdirectory(SDEditor)
