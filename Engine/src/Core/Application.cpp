@@ -88,6 +88,12 @@ void Application::onEventPoll(const SDL_Event &event) {
             InputManager::instance().setMouseCoord(event.motion.x,
                                                    event.motion.y);
             break;
+        case SDL_WINDOWEVENT:
+            if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+                sd::Renderer::getDefaultTarget()->resize(event.window.data1,
+                                                         event.window.data2);
+            }
+            break;
         default:
             break;
     }

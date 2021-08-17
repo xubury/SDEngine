@@ -2,7 +2,9 @@
 #define SD_SCENE_HPP
 
 #include "Common/Export.hpp"
+#include "Common/Base.hpp"
 #include "entt/entt.hpp"
+#include "Graphics/Camera.hpp"
 
 namespace sd {
 

@@ -10,9 +10,8 @@ EditorLayer::EditorLayer()
       m_height(0),
       m_hide(false),
       m_editorCamera(45, 800.f / 600.f, 0.1f, 100.f) {
-    m_scene = sd::createRef<sd::Scene>();
-    m_scenePanel.setScene(m_scene.get());
-    m_renderSystem = m_systems.addSystem<sd::RenderSystem>(m_scene.get());
+    m_renderSystem = m_systems.addSystem<sd::RenderSystem>();
+    newScene();
 }
 
 void EditorLayer::onAttach() {
@@ -49,6 +48,7 @@ void EditorLayer::onAttach() {
         sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
         sd::TextureMipmapFilter::NEAREST));
     m_frameBuffer->setDrawable({0, 1});
+
     show();
 }
 
@@ -59,18 +59,7 @@ void EditorLayer::onDetech() {
 }
 
 void EditorLayer::onRender() {
-    if (m_hide) {
-        sd::Renderer3D::beginScene(m_editorCamera, nullptr);
-    } else {
-        sd::Renderer3D::beginScene(m_editorCamera, m_target.get());
-    }
-    sd::Renderer::setClearColor(0.1, 0.2, 0.3, 1.0);
-    sd::Renderer::clear();
-
-    m_target->getFramebuffer()->clearAttachment(1, &sd::Entity::INVALID_ID);
     m_systems.render();
-
-    sd::Renderer3D::endScene();
 }
 
 void EditorLayer::onTick(float dt) { m_systems.tick(dt); }
@@ -189,19 +178,19 @@ void EditorLayer::onImGui() {
     ImGui::PopStyleVar();
 
     ImGui::End();
-    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape))) {
-        SD_TRACE("escape");
-    }
 }
 
 void EditorLayer::hide() {
     m_hide = true;
     setBlockEvent(false);
+    m_renderSystem->setRenderTarget(sd::Renderer::getDefaultTarget().get());
 }
 
 void EditorLayer::show() {
     m_hide = false;
     setBlockEvent(true);
+    m_renderSystem->setCamera(&m_editorCamera);
+    m_renderSystem->setRenderTarget(m_target.get());
 }
 
 void EditorLayer::onEventPoll(const SDL_Event& event) {

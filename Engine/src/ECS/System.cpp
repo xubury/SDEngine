@@ -3,7 +3,7 @@
 
 namespace sd {
 
-void SystemManager::removeSystem(Ref<System> system) {
+void SystemManager::removeSystem(const Ref<System> &system) {
     if (m_systems.find(system) != m_systems.end()) {
         m_systems.erase(system);
     } else {

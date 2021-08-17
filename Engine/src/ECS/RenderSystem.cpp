@@ -5,15 +5,26 @@
 
 namespace sd {
 
-RenderSystem::RenderSystem(Scene *scene) : m_scene(scene) {
+RenderSystem::RenderSystem() : m_scene(nullptr) {
     m_shader = Graphics::assetManager().load<Shader>("shaders/simple3d.glsl");
 }
 
 void RenderSystem::setScene(Scene *scene) { m_scene = scene; }
 
+void RenderSystem::setRenderTarget(RenderTarget *target) { m_target = target; }
+
 void RenderSystem::onTick(float) {}
 
+void RenderSystem::setCamera(Camera *camera) { m_camera = camera; }
+
 void RenderSystem::onRender() {
+    sd::Renderer3D::beginScene(*m_camera, m_target);
+    sd::Renderer::setClearColor(0.1, 0.2, 0.3, 1.0);
+    sd::Renderer::clear();
+    auto framebuffer = m_target->getFramebuffer();
+    if (framebuffer) {
+        framebuffer->clearAttachment(1, &sd::Entity::INVALID_ID);
+    }
     auto view = m_scene->getRegistry()
                     .view<sd::TransformComponent, sd::ModelComponent>();
     m_shader->bind();
@@ -39,6 +50,7 @@ void RenderSystem::onRender() {
             Renderer3D::drawMesh(mesh);
         }
     });
+    sd::Renderer3D::endScene();
 }
 
 }  // namespace sd

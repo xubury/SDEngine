@@ -50,7 +50,7 @@ Ref<RenderTarget> Renderer::getDefaultTarget() {
     return instance().m_defaultTarget;
 }
 
-void Renderer::setDefaultTarget(Ref<RenderTarget> target) {
+void Renderer::setDefaultTarget(const Ref<RenderTarget> &target) {
     instance().m_defaultTarget = target;
 }
 

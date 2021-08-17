@@ -69,12 +69,6 @@ void Sandbox2DLayer::onEventPoll(const SDL_Event &event) {
             if (event.key.keysym.sym == SDLK_ESCAPE)
                 sd::Application::instance().quit();
             break;
-        case SDL_WINDOWEVENT:
-            if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                sd::Renderer::getDefaultTarget()->resize(event.window.data1,
-                                                         event.window.data2);
-            }
-            break;
     }
     m_actionTarget.processEvent(event);
 }

@@ -30,7 +30,7 @@ class SD_API Renderer {
 
     static Ref<RenderTarget> getDefaultTarget();
 
-    static void setDefaultTarget(Ref<RenderTarget> target);
+    static void setDefaultTarget(const Ref<RenderTarget> &target);
 
    private:
     Renderer() = default;

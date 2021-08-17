@@ -23,7 +23,7 @@ class SystemManager {
     template <typename SYSTEM, typename... ARGS>
     Ref<SYSTEM> addSystem(ARGS... args);
 
-    void removeSystem(Ref<System> system);
+    void removeSystem(const Ref<System> &system);
 
     void tick(float dt);
 
