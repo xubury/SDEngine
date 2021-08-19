@@ -19,9 +19,8 @@ class CameraController : public sd::ActionTarget<CameraMovement> {
    private:
     sd::ActionMap<CameraMovement> m_controllerMap;
     sd::Camera *m_camera;
-    sd::Transform m_transform;
     float m_yaw;
     float m_pitch;
 };
 
-#endif /* SD_CAMERA_CONTROLLER_HPP */
+#endif /* CAMERA_CONTROLLER_HPP */

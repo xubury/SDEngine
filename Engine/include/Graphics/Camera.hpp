@@ -14,9 +14,23 @@ class SD_API Camera {
 
     virtual ~Camera() = 0;
 
+    void translateLocal(const glm::vec3 &t);
+    void translateWorld(const glm::vec3 &t);
+
+    glm::vec3 getLocalRight() const;
+    glm::vec3 getLocalUp() const;
+    glm::vec3 getLocalFront() const;
+
+    glm::vec3 getWorldRight() const;
+    glm::vec3 getWorldUp() const;
+    glm::vec3 getWorldFront() const;
+
     void setTransform(Transform *transform);
     void setLocalPosition(const glm::vec3 &position);
     void setLocalRotation(const glm::quat &rotation);
+
+    void setWorldPosition(const glm::vec3 &position);
+    void setWorldRotation(const glm::quat &rotation);
 
     glm::vec3 getLocalPosition() const;
     glm::vec3 getWorldPosition() const;
@@ -40,8 +54,8 @@ class SD_API Camera {
     glm::vec3 mapWorldToClip(const glm::vec3 &pos) const;
 
     void updateView();
-   private:
 
+   private:
     glm::mat4 m_view;
     glm::mat4 m_projection;
 

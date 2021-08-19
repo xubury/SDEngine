@@ -123,7 +123,7 @@ void Renderer2D::init() {
         Graphics::assetManager().load<Shader>("shaders/simple.glsl");
 }
 
-void Renderer2D::beginScene(const OrthographicCamera& camera,
+void Renderer2D::beginScene(OrthographicCamera& camera,
                             const RenderTarget* target) {
     if (target) {
         target->use();

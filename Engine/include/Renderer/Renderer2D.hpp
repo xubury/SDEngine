@@ -21,7 +21,7 @@ class SD_API Renderer2D {
     static void flush();
     static void nextBatch();
 
-    static void beginScene(const OrthographicCamera &camera,
+    static void beginScene(OrthographicCamera &camera,
                            const RenderTarget *target);
     static void endScene();
 

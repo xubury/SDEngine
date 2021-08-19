@@ -23,7 +23,7 @@ void Renderer3D::init() {
         &s_data.cameraUBO, sizeof(CameraData), BufferIOType::STATIC);
 }
 
-void Renderer3D::beginScene(const Camera &camera, const RenderTarget *target) {
+void Renderer3D::beginScene(Camera &camera, const RenderTarget *target) {
     if (target) {
         target->use();
     } else {

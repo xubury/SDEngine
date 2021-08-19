@@ -22,6 +22,50 @@ Camera::Camera(const glm::vec3 &position, const glm::quat &rotation)
 
 Camera::~Camera() {}
 
+void Camera::translateLocal(const glm::vec3 &t) {
+    if (m_transform) {
+        m_transform->translateLocal(t);
+    } else {
+        m_position += t;
+    }
+    m_outdated = true;
+}
+
+void Camera::translateWorld(const glm::vec3 &t) {
+    if (m_transform) {
+        m_transform->translateWorld(t);
+    } else {
+        m_position += t;
+    }
+    m_outdated = true;
+}
+
+glm::vec3 Camera::getLocalRight() const {
+    return m_transform ? m_transform->getRight() : glm::toMat3(m_rotation)[0];
+}
+
+glm::vec3 Camera::getLocalUp() const {
+    return m_transform ? m_transform->getUp() : glm::toMat3(m_rotation)[1];
+}
+
+glm::vec3 Camera::getLocalFront() const {
+    return m_transform ? m_transform->getFront() : glm::toMat3(m_rotation)[2];
+}
+
+glm::vec3 Camera::getWorldRight() const {
+    return m_transform ? m_transform->getWorldRight()
+                       : glm::toMat3(m_rotation)[0];
+}
+
+glm::vec3 Camera::getWorldUp() const {
+    return m_transform ? m_transform->getWorldUp() : glm::toMat3(m_rotation)[1];
+}
+
+glm::vec3 Camera::getWorldFront() const {
+    return m_transform ? m_transform->getWorldFront()
+                       : glm::toMat3(m_rotation)[2];
+}
+
 void Camera::setTransform(Transform *transform) { m_transform = transform; }
 
 void Camera::setLocalPosition(const glm::vec3 &position) {
@@ -39,6 +83,28 @@ void Camera::setLocalRotation(const glm::quat &rotation) {
     if (getLocalRotation() != rotation) {
         if (m_transform) {
             m_transform->setLocalRotation(rotation);
+        } else {
+            m_rotation = rotation;
+        }
+        m_outdated = true;
+    }
+}
+
+void Camera::setWorldPosition(const glm::vec3 &position) {
+    if (getWorldPosition() != position) {
+        if (m_transform) {
+            m_transform->setWorldPosition(position);
+        } else {
+            m_position = position;
+        }
+        m_outdated = true;
+    }
+}
+
+void Camera::setWorldRotation(const glm::quat &rotation) {
+    if (getWorldRotation() != rotation) {
+        if (m_transform) {
+            m_transform->setWorldRotation(rotation);
         } else {
             m_rotation = rotation;
         }

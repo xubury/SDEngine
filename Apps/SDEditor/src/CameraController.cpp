@@ -39,19 +39,18 @@ CameraController::CameraController()
 void CameraController::move(CameraMovement movement) {
     switch (movement) {
         case CameraMovement::FORWARD:
-            m_transform.translateLocal(m_transform.getFront());
+            m_camera->translateLocal(m_camera->getLocalFront());
             break;
         case CameraMovement::BACKWARD:
-            m_transform.translateLocal(-m_transform.getFront());
+            m_camera->translateLocal(-m_camera->getLocalFront());
             break;
         case CameraMovement::LEFT:
-            m_transform.translateLocal(-m_transform.getRight());
+            m_camera->translateLocal(-m_camera->getLocalRight());
             break;
         case CameraMovement::RIGHT:
-            m_transform.translateLocal(m_transform.getRight());
+            m_camera->translateLocal(m_camera->getLocalRight());
             break;
     }
-    m_camera->updateView();
 }
 
 void CameraController::rotate(float yaw, float pitch) {
@@ -62,11 +61,7 @@ void CameraController::rotate(float yaw, float pitch) {
     } else if (m_pitch < -89.f) {
         m_pitch = -89.f;
     }
-    m_transform.setWorldRotation(glm::radians(glm::vec3(m_pitch, m_yaw, 0.f)));
-    m_camera->updateView();
+    m_camera->setWorldRotation(glm::radians(glm::vec3(m_pitch, m_yaw, 0.f)));
 }
 
-void CameraController::setCamera(sd::Camera *camera) {
-    m_camera = camera;
-    camera->setTransform(&m_transform);
-}
+void CameraController::setCamera(sd::Camera *camera) { m_camera = camera; }
