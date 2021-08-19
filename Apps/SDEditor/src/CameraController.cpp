@@ -3,7 +3,9 @@
 #include "Common/Log.hpp"
 
 CameraController::CameraController()
-    : sd::ActionTarget<CameraMovement>(m_controllerMap), m_camera(nullptr) {
+    : sd::ActionTarget<CameraMovement>(m_controllerMap),
+      m_camera(nullptr),
+      m_focus(0.f) {
     m_controllerMap.map(CameraMovement::FORWARD,
                         sd::Action(SDLK_s, sd::Action::Type::REAL_TIME |
                                                sd::Action::Type::DOWN));
@@ -54,23 +56,17 @@ void CameraController::move(CameraMovement movement) {
 }
 
 void CameraController::rotate(float yaw, float pitch) {
-    glm::vec3 euler =
-        glm::degrees(glm::eulerAngles(m_camera->getWorldRotation()));
-    euler.y += yaw;
-    euler.x += pitch;
-    if (euler.x > 89.f) {
-        euler.x = 89.f;
-    } else if (euler.x < -89.f) {
-        euler.x = -89.f;
-    }
-    m_camera->setWorldRotation(glm::radians(euler));
+    glm::quat rotation(1, 0, 0, 0);
+    rotation = glm::angleAxis(glm::radians(pitch), m_camera->getWorldRight());
+    rotation = glm::angleAxis(glm::radians(yaw), glm::vec3(0, 1, 0)) * rotation;
+    m_camera->setWorldRotation(rotation * m_camera->getWorldRotation());
 }
 
 void CameraController::rotateAround(float yaw, float pitch) {
     glm::mat4 transform(1.0f);
     transform = glm::translate(transform, m_focus);
     transform =
-        glm::rotate(transform, glm::radians(yaw), glm::vec3(0.f, 1.0f, 0.f));
+        glm::rotate(transform, glm::radians(yaw), glm::vec3(0.f, 1.f, 0.f));
     transform =
         glm::rotate(transform, glm::radians(pitch), m_camera->getWorldRight());
     transform = glm::translate(transform, -m_focus);

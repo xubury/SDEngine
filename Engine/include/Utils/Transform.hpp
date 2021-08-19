@@ -27,15 +27,11 @@ class SD_API Transform {
     void translateLocal(const glm::vec3 &t);
     void translateWorld(const glm::vec3 &t);
 
-    void rotateLocal(float radians, const glm::vec3 &axis);
-    void rotateWorld(float radians, const glm::vec3 &axis);
-
     void rotateLocal(const glm::quat &rotation);
     void rotateWorld(const glm::quat &rotation);
 
     void setLocalPosition(const glm::vec3 &position);
     void setLocalRotation(const glm::quat &rotation);
-    void setLocalRotation(const glm::vec3 &eulerAngle);
     void setLocalScale(const glm::vec3 &scale);
     void setLocalTransform(const glm::mat4 &transform);
 
@@ -47,7 +43,6 @@ class SD_API Transform {
 
     void setWorldPosition(const glm::vec3 &position);
     void setWorldRotation(const glm::quat &rotation);
-    void setWorldRotation(const glm::vec3 &eulerAngle);
     void setWorldScale(const glm::vec3 &scale);
     void setWorldTransform(const glm::mat4 &transform);
 

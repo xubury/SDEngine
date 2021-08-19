@@ -16,6 +16,8 @@ class SD_API Camera {
 
     void translateLocal(const glm::vec3 &t);
     void translateWorld(const glm::vec3 &t);
+    void rotateLocal(const glm::quat &r);
+    void rotateWorld(const glm::quat &r);
 
     glm::vec3 getLocalRight() const;
     glm::vec3 getLocalUp() const;

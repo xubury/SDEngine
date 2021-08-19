@@ -73,16 +73,6 @@ void Transform::translateWorld(const glm::vec3 &t) {
     updateLocalPosition();
 }
 
-void Transform::rotateLocal(float radians, const glm::vec3 &axis) {
-    m_localRotation = glm::angleAxis(radians, axis) * m_localRotation;
-    updateGlobalPosition();
-}
-
-void Transform::rotateWorld(float radians, const glm::vec3 &axis) {
-    m_rotation = glm::angleAxis(radians, axis) * m_rotation;
-    updateLocalRotation();
-}
-
 void Transform::rotateLocal(const glm::quat &rotation) {
     m_localRotation = rotation * m_localRotation;
     updateGlobalPosition();
@@ -103,16 +93,6 @@ void Transform::setLocalPosition(const glm::vec3 &position) {
 
 void Transform::setLocalRotation(const glm::quat &rotation) {
     m_localRotation = rotation;
-    updateGlobalRotation();
-    for (Transform *child : m_children) {
-        child->updateGlobalRotation();
-
-        child->updateGlobalPosition();
-    }
-}
-
-void Transform::setLocalRotation(const glm::vec3 &eulerAngle) {
-    m_localRotation = glm::quat(eulerAngle);
     updateGlobalRotation();
     for (Transform *child : m_children) {
         child->updateGlobalRotation();
@@ -172,16 +152,6 @@ void Transform::setWorldPosition(const glm::vec3 &position) {
 
 void Transform::setWorldRotation(const glm::quat &rotation) {
     m_rotation = rotation;
-    updateLocalRotation();
-    for (Transform *child : m_children) {
-        child->updateGlobalRotation();
-
-        child->updateGlobalPosition();
-    }
-}
-
-void Transform::setWorldRotation(const glm::vec3 &eulerAngle) {
-    m_rotation = glm::quat(eulerAngle);
     updateLocalRotation();
     for (Transform *child : m_children) {
         child->updateGlobalRotation();

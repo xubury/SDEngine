@@ -4,6 +4,120 @@
 #include "Core/Application.hpp"
 #include "ECS/Component.hpp"
 #include "imgui.h"
+#include "imgui_internal.h"
+
+static void drawVec3Control(const std::string &label, glm::vec3 &values,
+                            float resetValue = 0.0f,
+                            float columnWidth = 100.0f) {
+    ImGuiIO &io = ImGui::GetIO();
+    auto boldFont = io.Fonts->Fonts[0];
+
+    ImGui::PushID(label.c_str());
+
+    ImGui::Columns(2);
+    ImGui::SetColumnWidth(0, columnWidth);
+    ImGui::Text(label.c_str());
+    ImGui::NextColumn();
+
+    ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{0, 0});
+
+    float lineHeight =
+        GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+    ImVec2 buttonSize = {lineHeight + 3.0f, lineHeight};
+
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                          ImVec4{0.9f, 0.2f, 0.2f, 1.0f});
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+                          ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
+    ImGui::PushFont(boldFont);
+    if (ImGui::Button("X", buttonSize)) values.x = resetValue;
+    ImGui::PopFont();
+    ImGui::PopStyleColor(3);
+
+    ImGui::SameLine();
+    ImGui::DragFloat("##X", &values.x, 0.1f, 0.0f, 0.0f, "%.2f");
+    ImGui::PopItemWidth();
+    ImGui::SameLine();
+
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                          ImVec4{0.3f, 0.8f, 0.3f, 1.0f});
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+                          ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
+    ImGui::PushFont(boldFont);
+    if (ImGui::Button("Y", buttonSize)) values.y = resetValue;
+    ImGui::PopFont();
+    ImGui::PopStyleColor(3);
+
+    ImGui::SameLine();
+    ImGui::DragFloat("##Y", &values.y, 0.1f, 0.0f, 0.0f, "%.2f");
+    ImGui::PopItemWidth();
+    ImGui::SameLine();
+
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                          ImVec4{0.2f, 0.35f, 0.9f, 1.0f});
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+                          ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
+    ImGui::PushFont(boldFont);
+    if (ImGui::Button("Z", buttonSize)) values.z = resetValue;
+    ImGui::PopFont();
+    ImGui::PopStyleColor(3);
+
+    ImGui::SameLine();
+    ImGui::DragFloat("##Z", &values.z, 0.1f, 0.0f, 0.0f, "%.2f");
+    ImGui::PopItemWidth();
+
+    ImGui::PopStyleVar();
+
+    ImGui::Columns(1);
+
+    ImGui::PopID();
+}
+
+template <typename T, typename UIFunction>
+static void drawComponent(const std::string &name, sd::Entity entity,
+                          UIFunction uiFunction, bool removeable = true) {
+    const ImGuiTreeNodeFlags treeNodeFlags =
+        ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed |
+        ImGuiTreeNodeFlags_SpanAvailWidth |
+        ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
+    if (entity.hasComponent<T>()) {
+        auto &component = entity.getComponent<T>();
+        ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
+
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4, 4});
+        float lineHeight =
+            GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+        ImGui::Separator();
+        bool open = ImGui::TreeNodeEx((void *)typeid(T).hash_code(),
+                                      treeNodeFlags, name.c_str());
+        ImGui::PopStyleVar();
+        bool removeComponent = false;
+        if (removeable) {
+            ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
+            if (ImGui::Button("+", ImVec2{lineHeight, lineHeight})) {
+                ImGui::OpenPopup("ComponentSettings");
+            }
+
+            if (ImGui::BeginPopup("ComponentSettings")) {
+                if (ImGui::MenuItem("Remove component")) {
+                    removeComponent = true;
+                }
+                ImGui::EndPopup();
+            }
+        }
+
+        if (open) {
+            uiFunction(component);
+            ImGui::TreePop();
+        }
+
+        if (removeComponent) entity.removeComponent<T>();
+    }
+}
 
 EditorLayer::EditorLayer()
     : sd::Layer("Editor Layer"),
@@ -98,7 +212,7 @@ void EditorLayer::onImGui() {
     ImGuiWindowFlags windowFlags =
         ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
     if (fullScreen) {
-        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGuiViewport *viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->Pos);
         ImGui::SetNextWindowSize(viewport->Size);
         ImGui::SetNextWindowViewport(viewport->ID);
@@ -122,8 +236,8 @@ void EditorLayer::onImGui() {
         ImGui::PopStyleVar(2);
     }
 
-    ImGuiIO& io = ImGui::GetIO();
-    ImGuiStyle& style = ImGui::GetStyle();
+    ImGuiIO &io = ImGui::GetIO();
+    ImGuiStyle &style = ImGui::GetStyle();
     float minWinSizeX = style.WindowMinSize.x;
     style.WindowMinSize.x = 370.0f;
     if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
@@ -158,6 +272,26 @@ void EditorLayer::onImGui() {
 
     m_scenePanel.onImGui();
 
+    ImGui::Begin("Camera");
+    {
+        if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None)) {
+            if (ImGui::BeginTabItem("World")) {
+                glm::vec3 position = m_editorCamera.getWorldPosition();
+                drawVec3Control("Translation", position);
+                m_editorCamera.setWorldPosition(position);
+
+                glm::vec3 rotation = glm::degrees(
+                    glm::eulerAngles(m_editorCamera.getWorldRotation()));
+                drawVec3Control("Rotation", rotation);
+                m_editorCamera.setWorldRotation(glm::radians(rotation));
+                ImGui::EndTabItem();
+            }
+
+            ImGui::EndTabBar();
+        }
+    }
+    ImGui::End();
+
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
     ImGui::Begin("Scene");
     {
@@ -187,7 +321,7 @@ void EditorLayer::onImGui() {
 
         m_isViewportFocused = ImGui::IsWindowFocused();
         m_isViewportHovered = ImGui::IsWindowHovered();
-        ImGui::Image((void*)(intptr_t)m_texture->getId(), wsize, ImVec2(0, 1),
+        ImGui::Image((void *)(intptr_t)m_texture->getId(), wsize, ImVec2(0, 1),
                      ImVec2(1, 0));
     }
     ImGui::End();
@@ -209,7 +343,7 @@ void EditorLayer::show() {
     m_renderSystem->setRenderTarget(m_target.get());
 }
 
-void EditorLayer::onEventPoll(const SDL_Event& event) {
+void EditorLayer::onEventPoll(const SDL_Event &event) {
     if (m_isViewportFocused) {
         m_cameraController.processEvent(event);
     }
