@@ -6,12 +6,16 @@ namespace sd {
 void Material::setShader(const Ref<Shader> &shader) { m_shader = shader; }
 
 void Material::addTexture(MaterialType type, const Ref<Texture> &texture) {
-    TextureProp prop;
-    prop.texture = texture;
-    m_textures[type] = prop;
+    if (texture) {
+        TextureProp prop;
+        prop.texture = texture;
+        m_textures[type] = prop;
+    }
 }
 
-bool Material::hasTexture(MaterialType type) const { return m_textures.count(type); }
+bool Material::hasTexture(MaterialType type) const {
+    return m_textures.count(type);
+}
 
 void Material::removeTexture(MaterialType type) {
     auto iter = m_textures.find(type);

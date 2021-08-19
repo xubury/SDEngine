@@ -85,6 +85,14 @@ static Ref<Texture> processAiMaterial(const std::filesystem::path &directory,
     if (count > 1) SD_CORE_WARN("Cannot handle multiple texture of same type!");
     aiString texturePath;
     Ref<Texture> texture;
+    if (type == aiTextureType_DIFFUSE && count == 0) {
+        Material material;
+        float rgba[4] = {1.f, 1.f, 1.f, 1.f};
+        texture = Texture::create(1, 1, 1, TextureType::TEX_2D,
+                                  TextureFormat::RGBA, TextureFormatType::FLOAT,
+                                  TextureWrap::REPEAT, TextureFilter::NEAREST,
+                                  TextureMipmapFilter::NEAREST, rgba);
+    }
     for (uint32_t i = 0; i < count; ++i) {
         if (assimpMaterial->GetTexture(type, i, &texturePath) == AI_SUCCESS) {
             texture = Graphics::assetManager().load<sd::Texture>(
