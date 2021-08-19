@@ -58,6 +58,9 @@ void Transform::apply(const Transform &transform) {
     m_position += transform.m_position;
     m_rotation *= transform.m_rotation;
     m_scale *= transform.m_scale;
+    updateLocalScale();
+    updateLocalRotation();
+    updateLocalPosition();
 }
 
 void Transform::translateLocal(const glm::vec3 &t) {

@@ -3,10 +3,7 @@
 #include "Common/Log.hpp"
 
 CameraController::CameraController()
-    : sd::ActionTarget<CameraMovement>(m_controllerMap),
-      m_camera(nullptr),
-      m_yaw(0),
-      m_pitch(0) {
+    : sd::ActionTarget<CameraMovement>(m_controllerMap), m_camera(nullptr) {
     m_controllerMap.map(CameraMovement::FORWARD,
                         sd::Action(SDLK_s, sd::Action::Type::REAL_TIME |
                                                sd::Action::Type::DOWN));
@@ -31,6 +28,9 @@ CameraController::CameraController()
     bind(sd::Action(SDL_EventType::SDL_MOUSEMOTION),
          [this](const SDL_Event &event) {
              if (sd::InputManager::isMouseDown(SDL_BUTTON_RIGHT)) {
+                 rotateAround(-event.motion.xrel * 0.1f,
+                              -event.motion.yrel * 0.1f);
+             } else if (sd::InputManager::isMouseDown(SDL_BUTTON_MIDDLE)) {
                  rotate(-event.motion.xrel * 0.1f, -event.motion.yrel * 0.1f);
              }
          });
@@ -54,14 +54,29 @@ void CameraController::move(CameraMovement movement) {
 }
 
 void CameraController::rotate(float yaw, float pitch) {
-    m_yaw += yaw;
-    m_pitch += pitch;
-    if (m_pitch > 89.f) {
-        m_pitch = 89.f;
-    } else if (m_pitch < -89.f) {
-        m_pitch = -89.f;
+    glm::vec3 euler =
+        glm::degrees(glm::eulerAngles(m_camera->getWorldRotation()));
+    euler.y += yaw;
+    euler.x += pitch;
+    if (euler.x > 89.f) {
+        euler.x = 89.f;
+    } else if (euler.x < -89.f) {
+        euler.x = -89.f;
     }
-    m_camera->setWorldRotation(glm::radians(glm::vec3(m_pitch, m_yaw, 0.f)));
+    m_camera->setWorldRotation(glm::radians(euler));
+}
+
+void CameraController::rotateAround(float yaw, float pitch) {
+    glm::mat4 transform(1.0f);
+    transform = glm::translate(transform, m_focus);
+    transform =
+        glm::rotate(transform, glm::radians(yaw), glm::vec3(0.f, 1.0f, 0.f));
+    transform =
+        glm::rotate(transform, glm::radians(pitch), m_camera->getWorldRight());
+    transform = glm::translate(transform, -m_focus);
+    m_camera->setWorldTransform(transform * m_camera->getWorldTransform());
 }
 
 void CameraController::setCamera(sd::Camera *camera) { m_camera = camera; }
+
+void CameraController::setFocus(const glm::vec3 &focus) { m_focus = focus; }

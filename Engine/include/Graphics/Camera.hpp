@@ -38,6 +38,12 @@ class SD_API Camera {
     glm::quat getLocalRotation() const;
     glm::quat getWorldRotation() const;
 
+    glm::mat4 getLocalTransform() const;
+    glm::mat4 getWorldTransform() const;
+
+    void setWorldTransform(const glm::mat4 &transform);
+    void setLocalTransform(const glm::mat4 &transform);
+
     void setProjection(const glm::mat4 &projection);
 
     glm::mat4 getView();

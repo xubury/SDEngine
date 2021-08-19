@@ -14,13 +14,16 @@ class CameraController : public sd::ActionTarget<CameraMovement> {
 
     void setCamera(sd::Camera *camera);
 
+    void setFocus(const glm::vec3 &focus);
+
     void rotate(float yaw, float pitch);
+
+    void rotateAround(float yaw, float pitch);
 
    private:
     sd::ActionMap<CameraMovement> m_controllerMap;
     sd::Camera *m_camera;
-    float m_yaw;
-    float m_pitch;
+    glm::vec3 m_focus;
 };
 
 #endif /* CAMERA_CONTROLLER_HPP */

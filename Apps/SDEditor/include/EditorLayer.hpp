@@ -46,6 +46,10 @@ class EditorLayer : public sd::Layer {
     int m_width;
     int m_height;
 
+    glm::vec2 m_viewportBounds[2];
+    bool m_isViewportFocused;
+    bool m_isViewportHovered;
+
     bool m_hide;
 
     sd::PerspectiveCamera m_editorCamera;

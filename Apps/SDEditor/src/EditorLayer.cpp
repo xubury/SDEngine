@@ -2,15 +2,17 @@
 #include "Renderer/Renderer3D.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Core/Application.hpp"
+#include "ECS/Component.hpp"
 #include "imgui.h"
 
 EditorLayer::EditorLayer()
     : sd::Layer("Editor Layer"),
       m_width(0),
       m_height(0),
+      m_isViewportFocused(false),
+      m_isViewportHovered(false),
       m_hide(false),
-      m_editorCamera(45, 800.f / 600.f, 0.1f, 100.f),
-      m_cameraController() {
+      m_editorCamera(45, 800.f / 600.f, 0.1f, 100.f) {
     m_renderSystem = m_systems.addSystem<sd::RenderSystem>();
     m_cameraController.setCamera(&m_editorCamera);
     newScene();
@@ -62,7 +64,24 @@ void EditorLayer::onDetech() {
 
 void EditorLayer::onRender() { m_systems.render(); }
 
-void EditorLayer::onTick(float dt) { m_systems.tick(dt); }
+void EditorLayer::onTick(float dt) {
+    auto [mouseX, mouseY] = ImGui::GetMousePos();
+    mouseX -= m_viewportBounds[0].x;
+    mouseY -= m_viewportBounds[0].y;
+    glm::vec2 viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
+    if (ImGui::IsMouseDown(0) && m_isViewportHovered) {
+        uint32_t id =
+            m_frameBuffer->readPixels(1, mouseX, viewportSize.y - mouseY);
+        if (id != sd::Entity::INVALID_ID) {
+            m_scenePanel.setSelectedEntity(id);
+            sd::Entity entity(id, m_scene.get());
+            glm::vec3 pos = entity.getComponent<sd::TransformComponent>()
+                                .transform.getWorldPosition();
+            m_cameraController.setFocus(pos);
+        }
+    }
+    m_systems.tick(dt);
+}
 
 void EditorLayer::onImGui() {
     if (m_hide) {
@@ -143,11 +162,13 @@ void EditorLayer::onImGui() {
     ImGui::Begin("Scene");
     {
         ImVec2 wsize = ImGui::GetContentRegionAvail();
-        ImVec2 mousePos = ImGui::GetMousePos();
-        ImVec2 windowPos = ImGui::GetWindowPos();
-        ImVec2 viewportMin = ImGui::GetWindowContentRegionMin();
-        mousePos.x -= windowPos.x + viewportMin.x;
-        mousePos.y -= windowPos.y + viewportMin.y;
+        auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+        auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+        auto viewportOffset = ImGui::GetWindowPos();
+        m_viewportBounds[0] = {viewportMinRegion.x + viewportOffset.x,
+                               viewportMinRegion.y + viewportOffset.y};
+        m_viewportBounds[1] = {viewportMaxRegion.x + viewportOffset.x,
+                               viewportMaxRegion.y + viewportOffset.y};
         if (m_width != wsize.x || m_height != wsize.y) {
             if (wsize.x > 0 && wsize.y > 0) {
                 m_target->resize(wsize.x, wsize.y);
@@ -164,13 +185,8 @@ void EditorLayer::onImGui() {
                                 sd::BufferBit::COLOR_BUFFER_BIT,
                                 sd::TextureFilter::NEAREST);
 
-        if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
-            uint32_t id = m_frameBuffer->readPixels(1, mousePos.x, mousePos.y);
-            if (id != sd::Entity::INVALID_ID) {
-                m_scenePanel.setSelectedEntity(id);
-            }
-        }
-
+        m_isViewportFocused = ImGui::IsWindowFocused();
+        m_isViewportHovered = ImGui::IsWindowHovered();
         ImGui::Image((void*)(intptr_t)m_texture->getId(), wsize, ImVec2(0, 1),
                      ImVec2(1, 0));
     }
@@ -194,7 +210,9 @@ void EditorLayer::show() {
 }
 
 void EditorLayer::onEventPoll(const SDL_Event& event) {
-    m_cameraController.processEvent(event);
+    if (m_isViewportFocused) {
+        m_cameraController.processEvent(event);
+    }
     if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_z) {
         if (m_hide) {
             show();
@@ -204,7 +222,11 @@ void EditorLayer::onEventPoll(const SDL_Event& event) {
     }
 }
 
-void EditorLayer::onEventProcess() { m_cameraController.processEvents(); }
+void EditorLayer::onEventProcess() {
+    if (m_isViewportFocused) {
+        m_cameraController.processEvents();
+    }
+}
 
 void EditorLayer::newScene() {
     m_scene = sd::createRef<sd::Scene>();

@@ -1,4 +1,5 @@
 #include "Graphics/Camera.hpp"
+#include <glm/gtx/matrix_decompose.hpp>
 
 namespace sd {
 
@@ -126,6 +127,50 @@ glm::quat Camera::getLocalRotation() const {
 
 glm::quat Camera::getWorldRotation() const {
     return m_transform ? m_transform->getWorldRotation() : m_rotation;
+}
+
+glm::mat4 Camera::getLocalTransform() const {
+    if (m_transform) {
+        return m_transform->getLocalTransform();
+    } else {
+        return glm::translate(glm::mat4(1.0f), m_position) *
+               glm::toMat4(m_rotation);
+    }
+}
+
+glm::mat4 Camera::getWorldTransform() const {
+    if (m_transform) {
+        return m_transform->getWorldTransform();
+    } else {
+        return glm::translate(glm::mat4(1.0f), m_position) *
+               glm::toMat4(m_rotation);
+    }
+}
+
+void Camera::setWorldTransform(const glm::mat4 &transform) {
+    if (m_transform) {
+        m_transform->setWorldTransform(transform);
+    } else {
+        glm::vec3 skew;
+        glm::vec4 perspective;
+        glm::vec3 scale;
+        glm::decompose(transform, scale, m_rotation, m_position, skew,
+                       perspective);
+    }
+    m_outdated = true;
+}
+
+void Camera::setLocalTransform(const glm::mat4 &transform) {
+    if (m_transform) {
+        m_transform->setLocalTransform(transform);
+    } else {
+        glm::vec3 skew;
+        glm::vec4 perspective;
+        glm::vec3 scale;
+        glm::decompose(transform, scale, m_rotation, m_position, skew,
+                       perspective);
+    }
+    m_outdated = true;
 }
 
 void Camera::setProjection(const glm::mat4 &projection) {
