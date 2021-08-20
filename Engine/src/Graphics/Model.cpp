@@ -22,4 +22,6 @@ void Model::addMaterial(Material &&material) {
 
 void Model::clear() { m_meshes.clear(); }
 
+Ref<Model> Model::clone() { return std::make_shared<Model>(*this); }
+
 }  // namespace sd

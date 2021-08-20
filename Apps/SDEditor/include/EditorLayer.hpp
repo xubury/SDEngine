@@ -53,13 +53,12 @@ class EditorLayer : public sd::Layer {
     bool m_hide;
 
     sd::PerspectiveCamera m_editorCamera;
+    CameraController m_cameraController;
 
     sd::Ref<sd::RenderSystem> m_renderSystem;
 
     sd::Ref<sd::Scene> m_scene;
     ScenePanel m_scenePanel;
-
-    CameraController m_cameraController;
 };
 
 #endif /* EDITOR_LAYER_HPP */
