@@ -49,7 +49,6 @@ class SD_API Transform {
     glm::vec3 getWorldPosition() const;
     glm::quat getWorldRotation() const;
     glm::vec3 getWorldScale() const;
-    glm::vec3 getWorldEulerAngle() const;
     glm::mat4 getWorldTransform() const;
 
     glm::vec3 getRight() const;

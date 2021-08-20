@@ -27,7 +27,7 @@ class Sandbox2DLayer : public sd::Layer {
     sd::ActionTarget<int> m_actionTarget;
     sd::ActionMap<int> m_actionMap;
 
-    sd::Ref<sd::ParticleSystem> m_particleSystem;
+    sd::ParticleSystem *m_particleSystem;
 
     sd::OrthographicCamera m_masterCam;
 };

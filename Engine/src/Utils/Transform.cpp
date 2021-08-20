@@ -186,10 +186,6 @@ glm::quat Transform::getWorldRotation() const { return m_rotation; }
 
 glm::vec3 Transform::getWorldScale() const { return m_scale; }
 
-glm::vec3 Transform::getWorldEulerAngle() const {
-    return glm::eulerAngles(getWorldRotation());
-}
-
 glm::mat4 Transform::getWorldTransform() const {
     return glm::translate(glm::mat4(1.0f), m_position) *
            glm::toMat4(m_rotation) * glm::scale(glm::mat4(1.0f), m_scale);

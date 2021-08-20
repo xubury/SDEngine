@@ -33,6 +33,10 @@ int RenderTarget::getWidth() const { return m_width; }
 
 int RenderTarget::getHeight() const { return m_height; }
 
+float RenderTarget::getAspect() const {
+    return static_cast<float>(m_width) / m_height;
+}
+
 void RenderTarget::resize(int width, int height) {
     m_width = width;
     m_height = height;
@@ -65,6 +69,6 @@ glm::vec2 RenderTarget::mapClipToScreen(const glm::vec2 &pos) {
     return screen;
 }
 
-Ref<Framebuffer> RenderTarget::getFramebuffer() { return m_framebuffer; }
+Framebuffer *RenderTarget::getFramebuffer() { return m_framebuffer.get(); }
 
 }  // namespace sd

@@ -3,14 +3,8 @@
 
 namespace sd {
 
-void Material::setShader(const Ref<Shader> &shader) { m_shader = shader; }
-
-void Material::addTexture(MaterialType type, const Ref<Texture> &texture) {
-    if (texture) {
-        TextureProp prop;
-        prop.texture = texture;
-        m_textures[type] = prop;
-    }
+void Material::setTexture(MaterialType type, const TextureProp &prop) {
+    m_textures[type] = prop;
 }
 
 bool Material::hasTexture(MaterialType type) const {
@@ -27,8 +21,8 @@ void Material::removeTexture(MaterialType type) {
     }
 }
 
-Ref<Texture> Material::getTexture(MaterialType type) const {
-    return hasTexture(type) ? m_textures.at(type).texture : nullptr;
+Texture *Material::getTexture(MaterialType type) const {
+    return hasTexture(type) ? m_textures.at(type).texture.get() : nullptr;
 }
 
 }  // namespace sd

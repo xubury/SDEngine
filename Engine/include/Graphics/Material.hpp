@@ -23,23 +23,21 @@ class SD_API Material {
    public:
     struct SD_API TextureProp {
         Ref<Texture> texture;
+        std::string path;
     };
 
    public:
     Material() = default;
 
-    void setShader(const Ref<Shader> &shader);
-
-    void addTexture(MaterialType type, const Ref<Texture> &texture);
+    void setTexture(MaterialType type, const TextureProp &prop);
 
     bool hasTexture(MaterialType type) const;
 
     void removeTexture(MaterialType type);
 
-    Ref<Texture> getTexture(MaterialType type) const;
+    Texture *getTexture(MaterialType type) const;
 
    private:
-    Ref<Shader> m_shader;
     std::unordered_map<MaterialType, TextureProp> m_textures;
 };
 

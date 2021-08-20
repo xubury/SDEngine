@@ -23,8 +23,8 @@ class SD_API RenderTarget {
     void addTexture(const Ref<Texture> &texture);
 
     int getWidth() const;
-
     int getHeight() const;
+    float getAspect() const;
 
     void resize(int width, int height);
 
@@ -37,7 +37,7 @@ class SD_API RenderTarget {
     // map coordinate from clip space to screen space
     glm::vec2 mapClipToScreen(const glm::vec2 &pos);
 
-    Ref<Framebuffer> getFramebuffer();
+    Framebuffer *getFramebuffer();
 
    private:
     int m_x;

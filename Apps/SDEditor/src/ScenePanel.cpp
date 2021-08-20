@@ -251,8 +251,8 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
                     drawVec3Control("Translation", position);
                     component.transform.setWorldPosition(position);
 
-                    glm::vec3 rotation =
-                        glm::degrees(component.transform.getWorldEulerAngle());
+                    glm::vec3 rotation = glm::degrees(glm::eulerAngles(
+                        component.transform.getWorldRotation()));
                     drawVec3Control("Rotation", rotation);
                     component.transform.setWorldRotation(
                         glm::radians(rotation));

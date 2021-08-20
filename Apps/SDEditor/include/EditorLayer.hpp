@@ -55,7 +55,7 @@ class EditorLayer : public sd::Layer {
     sd::PerspectiveCamera m_editorCamera;
     CameraController m_cameraController;
 
-    sd::Ref<sd::RenderSystem> m_renderSystem;
+    sd::RenderSystem *m_renderSystem;
 
     sd::Ref<sd::Scene> m_scene;
     ScenePanel m_scenePanel;

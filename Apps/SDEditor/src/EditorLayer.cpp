@@ -273,7 +273,7 @@ void EditorLayer::onImGui() {
             m_height = wsize.y;
         }
         // Copy the multisample texture to normal texture
-        m_frameBuffer->copyFrom(m_target->getFramebuffer().get(),
+        m_frameBuffer->copyFrom(m_target->getFramebuffer(),
                                 sd::BufferBit::COLOR_BUFFER_BIT,
                                 sd::TextureFilter::NEAREST);
 

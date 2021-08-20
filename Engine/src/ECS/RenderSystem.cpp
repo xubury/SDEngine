@@ -21,7 +21,7 @@ void RenderSystem::onRender() {
     sd::Renderer3D::beginScene(*m_camera, m_target);
     sd::Renderer::setClearColor(0.1, 0.2, 0.3, 1.0);
     sd::Renderer::clear();
-    auto framebuffer = m_target->getFramebuffer();
+    Framebuffer *framebuffer = m_target->getFramebuffer();
     if (framebuffer) {
         framebuffer->clearAttachment(1, &sd::Entity::INVALID_ID);
     }
@@ -33,15 +33,12 @@ void RenderSystem::onRender() {
                      const TransformComponent &transformComp,
                      const ModelComponent &modelComp) {
         for (const auto &material : modelComp.model->getMaterials()) {
-            m_shader->setTexture(
-                "u_material.diffuse",
-                material.getTexture(MaterialType::DIFFUSE).get());
-            m_shader->setTexture(
-                "u_material.specular",
-                material.getTexture(MaterialType::SPECULAR).get());
-            m_shader->setTexture(
-                "u_material.ambient",
-                material.getTexture(MaterialType::AMBIENT).get());
+            m_shader->setTexture("u_material.diffuse",
+                                 material.getTexture(MaterialType::DIFFUSE));
+            m_shader->setTexture("u_material.specular",
+                                 material.getTexture(MaterialType::SPECULAR));
+            m_shader->setTexture("u_material.ambient",
+                                 material.getTexture(MaterialType::AMBIENT));
         }
         m_shader->setMat4("u_world",
                           transformComp.transform.getWorldTransform());
