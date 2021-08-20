@@ -77,48 +77,6 @@ static void drawVec3Control(const std::string &label, glm::vec3 &values,
     ImGui::PopID();
 }
 
-template <typename T, typename UIFunction>
-static void drawComponent(const std::string &name, sd::Entity entity,
-                          UIFunction uiFunction, bool removeable = true) {
-    const ImGuiTreeNodeFlags treeNodeFlags =
-        ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed |
-        ImGuiTreeNodeFlags_SpanAvailWidth |
-        ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
-    if (entity.hasComponent<T>()) {
-        auto &component = entity.getComponent<T>();
-        ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
-
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4, 4});
-        float lineHeight =
-            GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-        ImGui::Separator();
-        bool open = ImGui::TreeNodeEx((void *)typeid(T).hash_code(),
-                                      treeNodeFlags, name.c_str());
-        ImGui::PopStyleVar();
-        bool removeComponent = false;
-        if (removeable) {
-            ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
-            if (ImGui::Button("+", ImVec2{lineHeight, lineHeight})) {
-                ImGui::OpenPopup("ComponentSettings");
-            }
-
-            if (ImGui::BeginPopup("ComponentSettings")) {
-                if (ImGui::MenuItem("Remove component")) {
-                    removeComponent = true;
-                }
-                ImGui::EndPopup();
-            }
-        }
-
-        if (open) {
-            uiFunction(component);
-            ImGui::TreePop();
-        }
-
-        if (removeComponent) entity.removeComponent<T>();
-    }
-}
-
 EditorLayer::EditorLayer()
     : sd::Layer("Editor Layer"),
       m_width(0),
