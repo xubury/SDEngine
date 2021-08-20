@@ -72,7 +72,7 @@ void ImGuiLayer::onDetech() {
     ImGui_ImplSDL2_Shutdown();
 }
 
-void ImGuiLayer::onEventPoll(const SDL_Event& event) {
+void ImGuiLayer::onEventProcess(const SDL_Event& event) {
     ImGui_ImplSDL2_ProcessEvent(&event);
 }
 

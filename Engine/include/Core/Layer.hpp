@@ -29,9 +29,9 @@ class SD_API Layer {
 
     virtual void onImGui() {}
 
-    virtual void onEventPoll(const SDL_Event &) {}
+    virtual void onEventProcess(const SDL_Event &) {}
 
-    virtual void onEventProcess() {}
+    virtual void onEventsProcess() {}
 
     void setBlockEvent(bool block) { m_blockEvent = block; }
     bool isBlockEvent() const { return m_blockEvent; }

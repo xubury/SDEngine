@@ -42,7 +42,7 @@ void Sandbox2DLayer::onRender() {
     sd::Renderer2D::endScene();
 }
 
-void Sandbox2DLayer::onEventPoll(const SDL_Event &event) {
+void Sandbox2DLayer::onEventProcess(const SDL_Event &event) {
     switch (event.type) {
         case SDL_MOUSEMOTION: {
             sd::ParticleProp prop;
@@ -73,4 +73,4 @@ void Sandbox2DLayer::onEventPoll(const SDL_Event &event) {
     m_actionTarget.processEvent(event);
 }
 
-void Sandbox2DLayer::onEventProcess() { m_actionTarget.processEvents(); }
+void Sandbox2DLayer::onEventsProcess() { m_actionTarget.processEvents(); }

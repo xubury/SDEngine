@@ -302,7 +302,7 @@ void EditorLayer::show() {
     m_renderSystem->setRenderTarget(m_target.get());
 }
 
-void EditorLayer::onEventPoll(const SDL_Event &event) {
+void EditorLayer::onEventProcess(const SDL_Event &event) {
     if (m_isViewportFocused) {
         m_cameraController.processEvent(event);
     }
@@ -315,7 +315,7 @@ void EditorLayer::onEventPoll(const SDL_Event &event) {
     }
 }
 
-void EditorLayer::onEventProcess() {
+void EditorLayer::onEventsProcess() {
     if (m_isViewportFocused) {
         m_cameraController.processEvents();
     }

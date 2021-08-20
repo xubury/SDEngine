@@ -19,9 +19,9 @@ class Sandbox2DLayer : public sd::Layer {
 
     void onRender() override;
 
-    void onEventPoll(const SDL_Event &) override;
+    void onEventProcess(const SDL_Event &event) override;
 
-    void onEventProcess() override;
+    void onEventsProcess() override;
 
    private:
     sd::ActionTarget<int> m_actionTarget;

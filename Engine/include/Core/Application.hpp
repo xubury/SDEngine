@@ -40,9 +40,9 @@ class SD_API Application {
    private:
     static Application *s_instance;
 
-    void onEventPoll(const SDL_Event &event);
+    void processEvent(const SDL_Event &event);
 
-    void onEventProcess();
+    void processEvents();
 
     void tick(float dt);
     void render();

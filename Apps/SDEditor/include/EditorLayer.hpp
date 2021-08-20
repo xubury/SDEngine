@@ -22,9 +22,9 @@ class EditorLayer : public sd::Layer {
 
     void onImGui() override;
 
-    void onEventPoll(const SDL_Event &event) override;
+    void onEventProcess(const SDL_Event &event) override;
 
-    void onEventProcess() override;
+    void onEventsProcess() override;
 
     void newScene();
     void openScene();

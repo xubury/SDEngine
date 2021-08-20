@@ -67,7 +67,7 @@ void Application::popLayer(Layer *layer) { m_layers.popLayer(layer); }
 
 void Application::popOverlay(Layer *layer) { m_layers.popOverlay(layer); }
 
-void Application::onEventPoll(const SDL_Event &event) {
+void Application::processEvent(const SDL_Event &event) {
     switch (event.type) {
         case SDL_QUIT:
             quit();
@@ -98,14 +98,14 @@ void Application::onEventPoll(const SDL_Event &event) {
             break;
     }
     for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {
-        (*layer)->onEventPoll(event);
+        (*layer)->onEventProcess(event);
         if ((*layer)->isBlockEvent()) break;
     }
 }
 
-void Application::onEventProcess() {
+void Application::processEvents() {
     for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {
-        (*layer)->onEventProcess();
+        (*layer)->onEventsProcess();
         if ((*layer)->isBlockEvent()) break;
     }
 }
@@ -118,9 +118,9 @@ void Application::run() {
     uint32_t msElapsed = 0;
     while (!m_window.shouldClose()) {
         while (m_window.pollEvent(event)) {
-            onEventPoll(event);
+            processEvent(event);
         }
-        onEventProcess();
+        processEvents();
 
         msElapsed = clock.restart();
         while (msElapsed > msPerFrame) {
