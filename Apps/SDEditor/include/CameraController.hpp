@@ -10,7 +10,9 @@ class CameraController : public sd::ActionTarget<CameraMovement> {
    public:
     CameraController();
 
-    void move(CameraMovement movement);
+    void tick(float dt);
+
+    void move(const glm::vec3 &t);
 
     void setCamera(sd::Camera *camera);
 
@@ -26,6 +28,9 @@ class CameraController : public sd::ActionTarget<CameraMovement> {
     glm::vec3 m_focus;
     float m_pitch;
     float m_yaw;
+
+    glm::vec2 m_mouseMovement;
+    glm::vec2 m_mouseSmoothMovement;
 };
 
 #endif /* CAMERA_CONTROLLER_HPP */

@@ -152,6 +152,7 @@ void EditorLayer::onTick(float dt) {
             m_cameraController.setFocus(pos);
         }
     }
+    m_cameraController.tick(dt);
     m_systems.tick(dt);
 }
 
