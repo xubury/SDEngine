@@ -28,16 +28,16 @@ class SD_API Renderer {
 
     static void setFramebuffer(const Framebuffer *framebuffer);
 
-    static Ref<RenderTarget> getDefaultTarget();
+    static RenderTarget &getDefaultTarget();
 
-    static void setDefaultTarget(const Ref<RenderTarget> &target);
+    static void setDefaultTarget(const RenderTarget &target);
 
    private:
     Renderer() = default;
 
     static Renderer &instance();
 
-    Ref<RenderTarget> m_defaultTarget;
+    RenderTarget m_defaultTarget;
     Scope<Device> m_device;
 
 };  // namespace Renderer

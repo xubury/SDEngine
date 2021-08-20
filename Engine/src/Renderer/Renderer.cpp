@@ -23,7 +23,6 @@ void Renderer::init() {
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
-    instance().m_defaultTarget = createRef<RenderTarget>();
 }
 
 void Renderer::submit(const VertexArray &vao, MeshTopology topology,
@@ -46,11 +45,11 @@ void Renderer::setFramebuffer(const Framebuffer *framebuffer) {
     instance().m_device->setFramebuffer(framebuffer);
 }
 
-Ref<RenderTarget> Renderer::getDefaultTarget() {
+RenderTarget &Renderer::getDefaultTarget() {
     return instance().m_defaultTarget;
 }
 
-void Renderer::setDefaultTarget(const Ref<RenderTarget> &target) {
+void Renderer::setDefaultTarget(const RenderTarget &target) {
     instance().m_defaultTarget = target;
 }
 

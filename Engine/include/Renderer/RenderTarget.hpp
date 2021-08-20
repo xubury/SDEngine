@@ -15,9 +15,6 @@ class SD_API RenderTarget {
 
     ~RenderTarget() = default;
 
-    RenderTarget(const RenderTarget &) = delete;
-    RenderTarget &operator=(const RenderTarget &) = delete;
-
     void init();
 
     void addTexture(const Ref<Texture> &texture);

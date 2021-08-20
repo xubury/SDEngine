@@ -49,7 +49,7 @@ Application::Application() {
     sd::Renderer2D::init();
     sd::Renderer3D::init();
 
-    sd::Renderer::getDefaultTarget()->resize(width, height);
+    sd::Renderer::getDefaultTarget().resize(width, height);
     m_imguiLayer = new ImGuiLayer();
     pushOverlay(m_imguiLayer);
 }
@@ -90,8 +90,8 @@ void Application::processEvent(const SDL_Event &event) {
             break;
         case SDL_WINDOWEVENT:
             if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                sd::Renderer::getDefaultTarget()->resize(event.window.data1,
-                                                         event.window.data2);
+                sd::Renderer::getDefaultTarget().resize(event.window.data1,
+                                                        event.window.data2);
             }
             break;
         default:

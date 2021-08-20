@@ -79,8 +79,8 @@ static void drawVec3Control(const std::string &label, glm::vec3 &values,
 
 EditorLayer::EditorLayer()
     : sd::Layer("Editor Layer"),
-      m_width(0),
-      m_height(0),
+      m_width(800),
+      m_height(600),
       m_isViewportFocused(false),
       m_isViewportHovered(false),
       m_hide(false),
@@ -91,35 +91,33 @@ EditorLayer::EditorLayer()
 }
 
 void EditorLayer::onAttach() {
-    m_target = sd::createRef<sd::RenderTarget>();
-
     sd::Ref<sd::Texture> multisampleTexture = sd::Texture::create(
         1024, 1024, 8, sd::TextureType::TEX_2D_MULTISAMPLE,
         sd::TextureFormat::RGBA, sd::TextureFormatType::UBYTE,
         sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
         sd::TextureMipmapFilter::NEAREST);
-    m_target->addTexture(multisampleTexture);
-    m_target->addTexture(sd::Texture::create(
+    m_target.addTexture(multisampleTexture);
+    m_target.addTexture(sd::Texture::create(
         multisampleTexture->getWidth(), multisampleTexture->getHeight(), 8,
         sd::TextureType::TEX_2D_MULTISAMPLE, sd::TextureFormat::ALPHA,
         sd::TextureFormatType::UINT, sd::TextureWrap::BORDER,
         sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
-    m_target->addTexture(sd::Texture::create(
+    m_target.addTexture(sd::Texture::create(
         multisampleTexture->getWidth(), multisampleTexture->getHeight(), 8,
         sd::TextureType::TEX_2D_MULTISAMPLE, sd::TextureFormat::DEPTH,
         sd::TextureFormatType::FLOAT, sd::TextureWrap::BORDER,
         sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
-    m_target->init();
+    m_target.init();
 
     m_frameBuffer = sd::Framebuffer::create();
     m_texture = sd::Texture::create(
-        m_target->getWidth(), m_target->getHeight(), 1, sd::TextureType::TEX_2D,
+        m_target.getWidth(), m_target.getHeight(), 1, sd::TextureType::TEX_2D,
         sd::TextureFormat::RGBA, sd::TextureFormatType::UBYTE,
         sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
         sd::TextureMipmapFilter::NEAREST);
     m_frameBuffer->attachTexture(m_texture);
     m_frameBuffer->attachTexture(sd::Texture::create(
-        m_target->getWidth(), m_target->getHeight(), 1, sd::TextureType::TEX_2D,
+        m_target.getWidth(), m_target.getHeight(), 1, sd::TextureType::TEX_2D,
         sd::TextureFormat::ALPHA, sd::TextureFormatType::UINT,
         sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
         sd::TextureMipmapFilter::NEAREST));
@@ -131,7 +129,6 @@ void EditorLayer::onAttach() {
 void EditorLayer::onDetech() {
     hide();
     m_texture.reset();
-    m_target.reset();
 }
 
 void EditorLayer::onRender() { m_systems.render(); }
@@ -264,7 +261,7 @@ void EditorLayer::onImGui() {
                                viewportMaxRegion.y + viewportOffset.y};
         if (m_width != wsize.x || m_height != wsize.y) {
             if (wsize.x > 0 && wsize.y > 0) {
-                m_target->resize(wsize.x, wsize.y);
+                m_target.resize(wsize.x, wsize.y);
                 m_frameBuffer->resize(wsize.x, wsize.y);
                 m_editorCamera.setProjection(45.f, wsize.x / wsize.y, 0.1f,
                                              100.f);
@@ -274,7 +271,7 @@ void EditorLayer::onImGui() {
             m_height = wsize.y;
         }
         // Copy the multisample texture to normal texture
-        m_frameBuffer->copyFrom(m_target->getFramebuffer(),
+        m_frameBuffer->copyFrom(m_target.getFramebuffer(),
                                 sd::BufferBit::COLOR_BUFFER_BIT,
                                 sd::TextureFilter::NEAREST);
 
@@ -292,14 +289,18 @@ void EditorLayer::onImGui() {
 void EditorLayer::hide() {
     m_hide = true;
     setBlockEvent(false);
-    m_renderSystem->setRenderTarget(sd::Renderer::getDefaultTarget().get());
+    m_renderSystem->setRenderTarget(&sd::Renderer::getDefaultTarget());
+    m_editorCamera.setProjection(
+        45.f, sd::Renderer::getDefaultTarget().getAspect(), 0.1f, 100.f);
 }
 
 void EditorLayer::show() {
     m_hide = false;
     setBlockEvent(true);
     m_renderSystem->setCamera(&m_editorCamera);
-    m_renderSystem->setRenderTarget(m_target.get());
+    m_renderSystem->setRenderTarget(&m_target);
+    m_editorCamera.setProjection(45.f, static_cast<float>(m_width) / m_height,
+                                 0.1f, 100.f);
 }
 
 void EditorLayer::onEventProcess(const SDL_Event &event) {
