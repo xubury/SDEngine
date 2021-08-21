@@ -6,7 +6,7 @@
 
 namespace sd {
 
-class Terrain {
+class SD_API Terrain {
    public:
     Terrain(int gridSize, int vertexCount);
 
