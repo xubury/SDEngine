@@ -30,7 +30,6 @@ target_include_directories(sd-utils
 
 target_link_libraries(sd-utils PUBLIC sd-common)
 
-
 install(TARGETS sd-utils LIBRARY DESTINATION lib)
 
 install(FILES ${Graphics_Include} DESTINATION include/Utils)

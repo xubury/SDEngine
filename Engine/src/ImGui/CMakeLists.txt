@@ -2,11 +2,15 @@ set(Include_Root ${PROJECT_SOURCE_DIR}/include/ImGui)
 set(Src_Root ${PROJECT_SOURCE_DIR}/src/ImGui)
 
 set(ImGui_Include
-    ${Include_Root}/ImGuiLayer.hpp)
+    ${Include_Root}/FileDialog.hpp
+    ${Include_Root}/ImGuiLayer.hpp
+    ${Include_Root}/ImGuiWidget.hpp)
 
 set(ImGui_Src
+    ${Src_Root}/FileDialog.cpp
+    ${Src_Root}/ImGuiBuild.cpp
     ${Src_Root}/ImGuiLayer.cpp
-    ${Src_Root}/ImGuiBuild.cpp)
+    ${Src_Root}/ImGuiWidget.cpp)
 
 add_library(sd-imgui ${ImGui_Src})
 

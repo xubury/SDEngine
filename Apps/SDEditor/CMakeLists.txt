@@ -6,7 +6,6 @@ add_executable(SDEditor
     src/SDEditor.cpp
     src/Sandbox2DLayer.cpp
     src/EditorLayer.cpp
-    src/FileDialog.cpp
     src/ScenePanel.cpp
     src/CameraController.cpp)
 

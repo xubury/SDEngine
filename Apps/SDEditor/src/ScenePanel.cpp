@@ -2,7 +2,7 @@
 #include "ECS/Component.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
-#include "FileDialog.hpp"
+#include "ImGui/ImGuiWidget.hpp"
 
 ScenePanel::ScenePanel() : m_scene(nullptr), m_fileDialogOpen(false) {}
 
@@ -101,77 +101,6 @@ void ScenePanel::drawEntityNode(sd::Entity &entity) {
     }
 }
 
-static void drawVec3Control(const std::string &label, glm::vec3 &values,
-                            float resetValue = 0.0f,
-                            float columnWidth = 100.0f) {
-    ImGuiIO &io = ImGui::GetIO();
-    auto boldFont = io.Fonts->Fonts[0];
-
-    ImGui::PushID(label.c_str());
-
-    ImGui::Columns(2);
-    ImGui::SetColumnWidth(0, columnWidth);
-    ImGui::Text(label.c_str());
-    ImGui::NextColumn();
-
-    ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{0, 0});
-
-    float lineHeight =
-        GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-    ImVec2 buttonSize = {lineHeight + 3.0f, lineHeight};
-
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                          ImVec4{0.9f, 0.2f, 0.2f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-                          ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
-    ImGui::PushFont(boldFont);
-    if (ImGui::Button("X", buttonSize)) values.x = resetValue;
-    ImGui::PopFont();
-    ImGui::PopStyleColor(3);
-
-    ImGui::SameLine();
-    ImGui::DragFloat("##X", &values.x, 0.1f, 0.0f, 0.0f, "%.2f");
-    ImGui::PopItemWidth();
-    ImGui::SameLine();
-
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                          ImVec4{0.3f, 0.8f, 0.3f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-                          ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
-    ImGui::PushFont(boldFont);
-    if (ImGui::Button("Y", buttonSize)) values.y = resetValue;
-    ImGui::PopFont();
-    ImGui::PopStyleColor(3);
-
-    ImGui::SameLine();
-    ImGui::DragFloat("##Y", &values.y, 0.1f, 0.0f, 0.0f, "%.2f");
-    ImGui::PopItemWidth();
-    ImGui::SameLine();
-
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                          ImVec4{0.2f, 0.35f, 0.9f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-                          ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
-    ImGui::PushFont(boldFont);
-    if (ImGui::Button("Z", buttonSize)) values.z = resetValue;
-    ImGui::PopFont();
-    ImGui::PopStyleColor(3);
-
-    ImGui::SameLine();
-    ImGui::DragFloat("##Z", &values.z, 0.1f, 0.0f, 0.0f, "%.2f");
-    ImGui::PopItemWidth();
-
-    ImGui::PopStyleVar();
-
-    ImGui::Columns(1);
-
-    ImGui::PopID();
-}
-
 template <typename T, typename UIFunction>
 static void drawComponent(const std::string &name, sd::Entity entity,
                           UIFunction uiFunction, bool removeable = true) {
@@ -245,41 +174,39 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
     drawComponent<sd::TransformComponent>(
         "Transform", entity,
         [](sd::TransformComponent &component) {
-            if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None)) {
-                if (ImGui::BeginTabItem("World")) {
-                    glm::vec3 position = component.transform.getWorldPosition();
-                    drawVec3Control("Translation", position);
-                    component.transform.setWorldPosition(position);
+            static int transformType = 0;
+            static const int WORLD_TRANSFORM = 0;
+            static const int LOCAL_TRANSFORM = 1;
+            ImGui::RadioButton("World", &transformType, WORLD_TRANSFORM);
+            ImGui::SameLine();
+            ImGui::RadioButton("Local", &transformType, LOCAL_TRANSFORM);
+            if (transformType == WORLD_TRANSFORM) {
+                glm::vec3 position = component.transform.getWorldPosition();
+                ImGui::DrawVec3Control("Translation", position);
+                component.transform.setWorldPosition(position);
 
-                    glm::vec3 rotation = glm::degrees(glm::eulerAngles(
-                        component.transform.getWorldRotation()));
-                    drawVec3Control("Rotation", rotation);
-                    component.transform.setWorldRotation(
-                        glm::radians(rotation));
+                glm::vec3 rotation = glm::degrees(
+                    glm::eulerAngles(component.transform.getWorldRotation()));
+                ImGui::DrawVec3Control("Rotation", rotation);
+                component.transform.setWorldRotation(glm::radians(rotation));
 
-                    glm::vec3 scale = component.transform.getWorldScale();
-                    drawVec3Control("Scale", scale, 1.0f);
-                    component.transform.setWorldScale(scale);
-                    ImGui::EndTabItem();
-                }
-                if (ImGui::BeginTabItem("Local")) {
-                    glm::vec3 position = component.transform.getLocalPosition();
-                    drawVec3Control("Translation", position);
-                    component.transform.setLocalPosition(position);
+                glm::vec3 scale = component.transform.getWorldScale();
+                ImGui::DrawVec3Control("Scale", scale, 1.0f);
+                component.transform.setWorldScale(scale);
+            }
+            if (transformType == LOCAL_TRANSFORM) {
+                glm::vec3 position = component.transform.getLocalPosition();
+                ImGui::DrawVec3Control("Translation", position);
+                component.transform.setLocalPosition(position);
 
-                    glm::vec3 rotation =
-                        glm::degrees(component.transform.getLocalEulerAngle());
-                    drawVec3Control("Rotation", rotation);
-                    component.transform.setLocalRotation(
-                        glm::radians(rotation));
+                glm::vec3 rotation =
+                    glm::degrees(component.transform.getLocalEulerAngle());
+                ImGui::DrawVec3Control("Rotation", rotation);
+                component.transform.setLocalRotation(glm::radians(rotation));
 
-                    glm::vec3 scale = component.transform.getLocalScale();
-                    drawVec3Control("Scale", scale, 1.0f);
-                    component.transform.setLocalScale(scale);
-                    ImGui::EndTabItem();
-                }
-
-                ImGui::EndTabBar();
+                glm::vec3 scale = component.transform.getLocalScale();
+                ImGui::DrawVec3Control("Scale", scale, 1.0f);
+                component.transform.setLocalScale(scale);
             }
         },
         false);
