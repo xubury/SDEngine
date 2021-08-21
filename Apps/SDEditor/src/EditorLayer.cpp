@@ -16,7 +16,7 @@ EditorLayer::EditorLayer()
       m_isViewportFocused(false),
       m_isViewportHovered(false),
       m_hide(false),
-      m_fov(45.f),
+      m_fov(glm::radians(45.f)),
       m_nearZ(0.1f),
       m_farZ(100000.f),
       m_editorCamera(m_fov, static_cast<float>(m_width) / m_height, m_nearZ,
