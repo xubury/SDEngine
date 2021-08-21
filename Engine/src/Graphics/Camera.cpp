@@ -34,7 +34,7 @@ void Camera::translateLocal(const glm::vec3 &t) {
     if (m_transform) {
         m_transform->translateLocal(t);
     } else {
-        m_position += t;
+        m_position += getWorldRotation() * t;
     }
     m_outdated = true;
 }
@@ -52,7 +52,7 @@ void Camera::rotateLocal(const glm::quat &r) {
     if (m_transform) {
         m_transform->rotateLocal(r);
     } else {
-        m_rotation = r * m_rotation;
+        m_rotation = getWorldRotation() * r;
     }
     m_outdated = true;
 }
@@ -61,7 +61,7 @@ void Camera::rotateWorld(const glm::quat &r) {
     if (m_transform) {
         m_transform->rotateWorld(r);
     } else {
-        m_rotation = r * m_rotation;
+        m_rotation = r * getWorldRotation();
     }
     m_outdated = true;
 }

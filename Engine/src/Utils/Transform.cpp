@@ -64,8 +64,8 @@ void Transform::apply(const Transform &transform) {
 }
 
 void Transform::translateLocal(const glm::vec3 &t) {
-    m_localPosition += t;
-    updateGlobalPosition();
+    m_position += getWorldRotation() * t;
+    updateLocalPosition();
 }
 
 void Transform::translateWorld(const glm::vec3 &t) {
@@ -74,12 +74,12 @@ void Transform::translateWorld(const glm::vec3 &t) {
 }
 
 void Transform::rotateLocal(const glm::quat &rotation) {
-    m_localRotation = rotation * m_localRotation;
-    updateGlobalPosition();
+    m_rotation = getWorldRotation() * rotation;
+    updateLocalRotation();
 }
 
 void Transform::rotateWorld(const glm::quat &rotation) {
-    m_rotation = rotation * m_rotation;
+    m_rotation = rotation * getWorldRotation();
     updateLocalRotation();
 }
 
