@@ -27,7 +27,7 @@ class SD_API Material {
     };
 
    public:
-    Material() = default;
+    Material();
 
     void setTexture(MaterialType type, const TextureProp &prop);
 
@@ -36,7 +36,6 @@ class SD_API Material {
     void removeTexture(MaterialType type);
 
     Texture *getTexture(MaterialType type) const;
-
    private:
     std::unordered_map<MaterialType, TextureProp> m_textures;
 };

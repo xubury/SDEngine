@@ -16,7 +16,11 @@ EditorLayer::EditorLayer()
       m_isViewportFocused(false),
       m_isViewportHovered(false),
       m_hide(false),
-      m_editorCamera(45, 800.f / 600.f, 0.1f, 100.f) {
+      m_fov(45.f),
+      m_nearZ(0.1f),
+      m_farZ(100000.f),
+      m_editorCamera(m_fov, static_cast<float>(m_width) / m_height, m_nearZ,
+                     m_farZ) {
     m_renderSystem = m_systems.addSystem<sd::RenderSystem>();
     m_cameraController.setCamera(&m_editorCamera);
     newScene();
@@ -190,8 +194,8 @@ void EditorLayer::onImGui() {
             if (wsize.x > 0 && wsize.y > 0) {
                 m_target.resize(wsize.x, wsize.y);
                 m_frameBuffer->resize(wsize.x, wsize.y);
-                m_editorCamera.setProjection(45.f, wsize.x / wsize.y, 0.1f,
-                                             100.f);
+                m_editorCamera.setProjection(m_fov, wsize.x / wsize.y, m_nearZ,
+                                             m_farZ);
             }
 
             m_width = wsize.x;
@@ -242,7 +246,7 @@ void EditorLayer::hide() {
     setBlockEvent(false);
     m_renderSystem->setRenderTarget(&sd::Renderer::getDefaultTarget());
     m_editorCamera.setProjection(
-        45.f, sd::Renderer::getDefaultTarget().getAspect(), 0.1f, 100.f);
+        m_fov, sd::Renderer::getDefaultTarget().getAspect(), m_nearZ, m_farZ);
 }
 
 void EditorLayer::show() {
@@ -250,8 +254,8 @@ void EditorLayer::show() {
     setBlockEvent(true);
     m_renderSystem->setCamera(&m_editorCamera);
     m_renderSystem->setRenderTarget(&m_target);
-    m_editorCamera.setProjection(45.f, static_cast<float>(m_width) / m_height,
-                                 0.1f, 100.f);
+    m_editorCamera.setProjection(m_fov, static_cast<float>(m_width) / m_height,
+                                 m_nearZ, m_farZ);
 }
 
 void EditorLayer::onEventProcess(const SDL_Event &event) {

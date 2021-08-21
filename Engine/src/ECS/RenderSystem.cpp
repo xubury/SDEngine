@@ -25,13 +25,32 @@ void RenderSystem::onRender() {
     if (framebuffer) {
         framebuffer->clearAttachment(1, &sd::Entity::INVALID_ID);
     }
-    auto view = m_scene->getRegistry()
-                    .view<sd::TransformComponent, sd::ModelComponent>();
-    m_shader->bind();
     Renderer3D::setShader(*m_shader);
-    view.each([this](const entt::entity &entity,
-                     const TransformComponent &transformComp,
-                     const ModelComponent &modelComp) {
+
+    auto terrainView =
+        m_scene->getRegistry().view<TransformComponent, TerrainComponent>();
+    terrainView.each([this](const entt::entity &entity,
+                            const TransformComponent &transformComp,
+                            const TerrainComponent &terrainComp) {
+        const Material &material = terrainComp.m_terrain.getMaterial();
+        m_shader->setTexture("u_material.diffuse",
+                             material.getTexture(MaterialType::DIFFUSE));
+        m_shader->setTexture("u_material.specular",
+                             material.getTexture(MaterialType::SPECULAR));
+        m_shader->setTexture("u_material.ambient",
+                             material.getTexture(MaterialType::AMBIENT));
+        m_shader->setMat4("u_world",
+                          transformComp.transform.getWorldTransform());
+        m_shader->setUint("u_entityId", static_cast<uint32_t>(entity));
+        Renderer3D::drawMesh(terrainComp.m_terrain.getMesh());
+    });
+
+    auto modelView =
+        m_scene->getRegistry().view<TransformComponent, ModelComponent>();
+    m_shader->bind();
+    modelView.each([this](const entt::entity &entity,
+                          const TransformComponent &transformComp,
+                          const ModelComponent &modelComp) {
         for (const auto &material : modelComp.model->getMaterials()) {
             m_shader->setTexture("u_material.diffuse",
                                  material.getTexture(MaterialType::DIFFUSE));

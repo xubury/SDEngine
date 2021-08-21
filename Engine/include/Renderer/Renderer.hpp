@@ -28,6 +28,8 @@ class SD_API Renderer {
 
     static void setFramebuffer(const Framebuffer *framebuffer);
 
+    static void setWireframe(bool wireframe);
+
     static RenderTarget &getDefaultTarget();
 
     static void setDefaultTarget(const RenderTarget &target);

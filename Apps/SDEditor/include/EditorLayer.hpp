@@ -52,6 +52,9 @@ class EditorLayer : public sd::Layer {
 
     bool m_hide;
 
+    float m_fov;
+    float m_nearZ;
+    float m_farZ;
     sd::PerspectiveCamera m_editorCamera;
     CameraController m_cameraController;
 

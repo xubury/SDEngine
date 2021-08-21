@@ -6,6 +6,7 @@
 #include "ECS/Entity.hpp"
 #include "Graphics/Model.hpp"
 #include "Graphics/Mesh.hpp"
+#include "Graphics/Terrain.hpp"
 
 namespace sd {
 
@@ -28,6 +29,11 @@ struct SD_API ModelComponent {
     std::string path;
     Ref<Model> model;
     ModelComponent() : path("Empty"), model(sd::createRef<Model>()) {}
+};
+
+struct SD_API TerrainComponent {
+    Terrain m_terrain;
+    TerrainComponent() : m_terrain(1, 10) {}
 };
 
 }  // namespace sd

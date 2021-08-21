@@ -37,6 +37,7 @@ void Renderer3D::beginScene(Camera &camera, const RenderTarget *target) {
 void Renderer3D::endScene() {}
 
 void Renderer3D::drawMesh(const Mesh &mesh) {
+    Renderer::setWireframe(mesh.isWireframe());
     Ref<VertexArray> vao = mesh.getVertexArray();
     Renderer::submit(*vao, mesh.getTopology(),
                      vao->getIndexBuffer()->getCount(), 0);

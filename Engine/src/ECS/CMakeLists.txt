@@ -1,7 +1,7 @@
 set(Include_Root ${PROJECT_SOURCE_DIR}/include/ECS)
 set(Src_Root ${PROJECT_SOURCE_DIR}/src/ECS)
 
-set(ECS_Include 
+set(ECS_Include
     ${Include_Root}/Component.hpp
     ${Include_Root}/Entity.hpp
     ${Include_Root}/ParticleSystem.hpp

@@ -5,6 +5,7 @@ set(Utils_Include
     ${Include_Root}/AssetLoader.hpp
     ${Include_Root}/AssetManager.hpp
     ${Include_Root}/File.hpp
+    ${Include_Root}/Math.hpp
     ${Include_Root}/Transform.hpp)
 
 set(Utils_Src

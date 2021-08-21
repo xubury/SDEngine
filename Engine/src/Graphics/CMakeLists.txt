@@ -37,6 +37,7 @@ set(Graphics_Include
     ${Include_Root}/ModelLoader.hpp
     ${Include_Root}/Shader.hpp
     ${Include_Root}/ShaderLoader.hpp
+    ${Include_Root}/Terrain.hpp
     ${Include_Root}/Texture.hpp
     ${Include_Root}/TextureLoader.hpp
     ${Include_Root}/Translator.hpp
@@ -55,6 +56,7 @@ set(Graphics_Src
     ${Src_Root}/ModelLoader.cpp
     ${Src_Root}/Shader.cpp
     ${Src_Root}/ShaderLoader.cpp
+    ${Src_Root}/Terrain.cpp
     ${Src_Root}/Texture.cpp
     ${Src_Root}/TextureLoader.cpp
     ${Src_Root}/VertexArray.cpp)

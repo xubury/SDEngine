@@ -25,7 +25,15 @@ class SD_API Mesh {
 
     void addIndex(uint32_t index);
 
+    void setVerices(const std::vector<Vertex> &vertices);
+
+    void setIndices(const std::vector<uint32_t> &indices);
+
+    void clear();
+
     void init();
+
+    void update();
 
     Ref<VertexArray> getVertexArray() const { return m_vertexArray; }
 
@@ -33,11 +41,17 @@ class SD_API Mesh {
 
     MeshTopology getTopology() const { return m_topology; }
 
+    void setWireframe(bool wireframe);
+
+    bool isWireframe() const;
+
    private:
     std::vector<Vertex> m_vertices;
     std::vector<uint32_t> m_indices;
+    Ref<VertexBuffer> m_vertexBuffer;
     Ref<VertexArray> m_vertexArray;
     MeshTopology m_topology;
+    bool m_wireframe;
 };
 
 }  // namespace sd

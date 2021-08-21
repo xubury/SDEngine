@@ -177,6 +177,13 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
                 SD_CORE_WARN("This entity already has the Model Component!");
             ImGui::CloseCurrentPopup();
         }
+        if (ImGui::MenuItem("Terrain")) {
+            if (!m_selectedEntity.hasComponent<sd::TerrainComponent>())
+                m_selectedEntity.addComponent<sd::TerrainComponent>();
+            else
+                SD_CORE_WARN("This entity already has the Terrain Component!");
+            ImGui::CloseCurrentPopup();
+        }
 
         ImGui::EndPopup();
     }
@@ -184,7 +191,7 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
 
     drawComponent<sd::TransformComponent>(
         "Transform", entity,
-        [this](sd::TransformComponent &component) {
+        [&](sd::TransformComponent &component) {
             ImGui::RadioButton("World", &m_gizmoMode, ImGuizmo::WORLD);
             ImGui::SameLine();
             ImGui::RadioButton("Local", &m_gizmoMode, ImGuizmo::LOCAL);
@@ -210,7 +217,9 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
         false);
     drawComponent<sd::ModelComponent>(
         "Model", entity, [&](sd::ModelComponent &model) {
-            ImGui::TextEx(model.path.c_str());
+            ImGui::InputText("##Path", model.path.data(), model.path.size(),
+                             ImGuiInputTextFlags_ReadOnly);
+            ImGui::SameLine();
             if (ImGui::Button("Open")) {
                 m_fileDialogOpen = true;
                 m_fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
@@ -224,6 +233,19 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
                 model.model = sd::Graphics::assetManager()
                                   .load<sd::Model>(m_fileDialogInfo.resultPath)
                                   ->clone();
+            }
+        });
+    drawComponent<sd::TerrainComponent>(
+        "Terrain", entity, [&](sd::TerrainComponent &terrain) {
+            int gridSize = terrain.m_terrain.getGridSize();
+            int vertexCount = terrain.m_terrain.getVertexCount();
+            if (ImGui::InputInt("Grid size:", &gridSize)) {
+                terrain.m_terrain.setGridSize(std::max(gridSize, 1));
+                terrain.m_terrain.generateMesh();
+            }
+            if (ImGui::InputInt("Vertex count:", &vertexCount)) {
+                terrain.m_terrain.setVertexCount(std::max(vertexCount, 2));
+                terrain.m_terrain.generateMesh();
             }
         });
 }

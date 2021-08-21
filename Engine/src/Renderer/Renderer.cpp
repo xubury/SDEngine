@@ -45,6 +45,10 @@ void Renderer::setFramebuffer(const Framebuffer *framebuffer) {
     instance().m_device->setFramebuffer(framebuffer);
 }
 
+void Renderer::setWireframe(bool wireframe) {
+    instance().m_device->setWireframe(wireframe);
+}
+
 RenderTarget &Renderer::getDefaultTarget() {
     return instance().m_defaultTarget;
 }
