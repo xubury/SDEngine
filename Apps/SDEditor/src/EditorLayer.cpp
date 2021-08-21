@@ -75,11 +75,13 @@ void EditorLayer::onTick(float dt) {
             m_frameBuffer->readPixels(1, mouseX, viewportSize.y - mouseY);
         if (id != sd::Entity::INVALID_ID) {
             m_scenePanel.setSelectedEntity(id);
-            sd::Entity entity(id, m_scene.get());
-            glm::vec3 pos = entity.getComponent<sd::TransformComponent>()
-                                .transform.getWorldPosition();
-            m_cameraController.setFocus(pos);
         }
+    }
+    sd::Entity entity = m_scenePanel.getSelectedEntity();
+    if (entity) {
+        glm::vec3 pos = entity.getComponent<sd::TransformComponent>()
+                            .transform.getWorldPosition();
+        m_cameraController.setFocus(pos);
     }
     m_cameraController.tick(dt);
     m_systems.tick(dt);
