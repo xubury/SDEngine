@@ -15,7 +15,12 @@ class ScenePanel {
 
     void setSelectedEntity(uint32_t entityId);
 
+    sd::Entity getSelectedEntity() const;
+
     void onImGui();
+
+    int getGizmoMode() const;
+    int getGizmoType() const;
 
    private:
     void drawEntityNode(sd::Entity &entity);
@@ -27,6 +32,9 @@ class ScenePanel {
     sd::Entity m_destroyEntity;
     bool m_fileDialogOpen = false;
     ImFileDialogInfo m_fileDialogInfo;
+
+    int m_gizmoMode;
+    int m_gizmoType;
 };
 
 #endif /* SCENE_PANEL_HPP */

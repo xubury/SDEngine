@@ -4,8 +4,10 @@
 #include "Core/Application.hpp"
 #include "ECS/Component.hpp"
 #include "ImGui/ImGuiWidget.hpp"
+#include <glm/gtc/type_ptr.hpp>
 #include "imgui.h"
 #include "imgui_internal.h"
+#include "ImGuizmo.h"
 
 EditorLayer::EditorLayer()
     : sd::Layer("Editor Layer"),
@@ -68,7 +70,7 @@ void EditorLayer::onTick(float dt) {
     mouseX -= m_viewportBounds[0].x;
     mouseY -= m_viewportBounds[0].y;
     glm::vec2 viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
-    if (ImGui::IsMouseDown(0) && m_isViewportHovered) {
+    if (!ImGuizmo::IsUsing() && ImGui::IsMouseDown(0) && m_isViewportHovered) {
         uint32_t id =
             m_frameBuffer->readPixels(1, mouseX, viewportSize.y - mouseY);
         if (id != sd::Entity::INVALID_ID) {
@@ -202,6 +204,30 @@ void EditorLayer::onImGui() {
         m_isViewportHovered = ImGui::IsWindowHovered();
         ImGui::Image((void *)(intptr_t)m_texture->getId(), wsize, ImVec2(0, 1),
                      ImVec2(1, 0));
+
+        sd::Entity selectedEntity = m_scenePanel.getSelectedEntity();
+        if (selectedEntity) {
+            ImGuizmo::SetOrthographic(false);
+            ImGuizmo::SetDrawlist();
+            ImGuizmo::SetRect(m_viewportBounds[0].x, m_viewportBounds[0].y,
+                              m_viewportBounds[1].x - m_viewportBounds[0].x,
+                              m_viewportBounds[1].y - m_viewportBounds[0].y);
+            const glm::mat4 &view = m_editorCamera.getView();
+            const glm::mat4 &projection = m_editorCamera.getProjection();
+
+            glm::mat4 transform =
+                selectedEntity.getComponent<sd::TransformComponent>()
+                    .transform.getWorldTransform();
+            ImGuizmo::Manipulate(
+                glm::value_ptr(view), glm::value_ptr(projection),
+                static_cast<ImGuizmo::OPERATION>(m_scenePanel.getGizmoType()),
+                static_cast<ImGuizmo::MODE>(m_scenePanel.getGizmoMode()),
+                glm::value_ptr(transform), nullptr, nullptr);
+            if (ImGuizmo::IsUsing()) {
+                selectedEntity.getComponent<sd::TransformComponent>()
+                    .transform.setWorldTransform(transform);
+            }
+        }
     }
     ImGui::End();
     ImGui::PopStyleVar();
@@ -230,11 +256,15 @@ void EditorLayer::onEventProcess(const SDL_Event &event) {
     if (m_isViewportFocused) {
         m_cameraController.processEvent(event);
     }
-    if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_z) {
-        if (m_hide) {
-            show();
-        } else {
-            hide();
+    if (event.type == SDL_KEYDOWN) {
+        switch (event.key.keysym.sym) {
+            case SDLK_z: {
+                if (m_hide) {
+                    show();
+                } else {
+                    hide();
+                }
+            } break;
         }
     }
 }

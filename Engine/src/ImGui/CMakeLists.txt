@@ -30,6 +30,7 @@ target_include_directories(sd-imgui
     PUBLIC
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/libs/imgui
+    ${PROJECT_SOURCE_DIR}/libs/ImGuizmo
     PRIVATE
     ${PROJECT_SOURCE_DIR}/libs/imgui/backends)
 

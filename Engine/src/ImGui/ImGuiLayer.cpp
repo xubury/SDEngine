@@ -4,6 +4,7 @@
 #include "Graphics/Graphics.hpp"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl.h"
+#include "ImGuizmo.h"
 
 namespace sd {
 
@@ -19,6 +20,7 @@ void ImGuiLayer::begin() {
     }
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
+    ImGuizmo::BeginFrame();
 }
 
 void ImGuiLayer::end() {

@@ -3,8 +3,13 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "ImGui/ImGuiWidget.hpp"
+#include "ImGuizmo.h"
 
-ScenePanel::ScenePanel() : m_scene(nullptr), m_fileDialogOpen(false) {}
+ScenePanel::ScenePanel()
+    : m_scene(nullptr),
+      m_fileDialogOpen(false),
+      m_gizmoMode(ImGuizmo::WORLD),
+      m_gizmoType(ImGuizmo::TRANSLATE) {}
 
 ScenePanel::ScenePanel(sd::Scene *scene) : m_scene(scene) {}
 
@@ -13,6 +18,12 @@ void ScenePanel::setScene(sd::Scene *scene) { m_scene = scene; }
 void ScenePanel::setSelectedEntity(uint32_t entityId) {
     m_selectedEntity = sd::Entity(entityId, m_scene);
 }
+
+sd::Entity ScenePanel::getSelectedEntity() const { return m_selectedEntity; }
+
+int ScenePanel::getGizmoMode() const { return m_gizmoMode; }
+
+int ScenePanel::getGizmoType() const { return m_gizmoType; }
 
 void ScenePanel::onImGui() {
     if (m_scene == nullptr) {
@@ -173,41 +184,28 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
 
     drawComponent<sd::TransformComponent>(
         "Transform", entity,
-        [](sd::TransformComponent &component) {
-            static int transformType = 0;
-            static const int WORLD_TRANSFORM = 0;
-            static const int LOCAL_TRANSFORM = 1;
-            ImGui::RadioButton("World", &transformType, WORLD_TRANSFORM);
+        [this](sd::TransformComponent &component) {
+            ImGui::RadioButton("World", &m_gizmoMode, ImGuizmo::WORLD);
             ImGui::SameLine();
-            ImGui::RadioButton("Local", &transformType, LOCAL_TRANSFORM);
-            if (transformType == WORLD_TRANSFORM) {
-                glm::vec3 position = component.transform.getWorldPosition();
-                ImGui::DrawVec3Control("Translation", position);
-                component.transform.setWorldPosition(position);
+            ImGui::RadioButton("Local", &m_gizmoMode, ImGuizmo::LOCAL);
 
-                glm::vec3 rotation = glm::degrees(
-                    glm::eulerAngles(component.transform.getWorldRotation()));
-                ImGui::DrawVec3Control("Rotation", rotation);
-                component.transform.setWorldRotation(glm::radians(rotation));
+            ImGui::RadioButton("Translate", &m_gizmoType, ImGuizmo::TRANSLATE);
+            ImGui::SameLine();
+            ImGui::RadioButton("Rotate", &m_gizmoType, ImGuizmo::ROTATE);
+            ImGui::SameLine();
+            ImGui::RadioButton("Scale", &m_gizmoType, ImGuizmo::SCALE);
+            glm::vec3 position = component.transform.getWorldPosition();
+            ImGui::DrawVec3Control("Translation", position);
+            component.transform.setWorldPosition(position);
 
-                glm::vec3 scale = component.transform.getWorldScale();
-                ImGui::DrawVec3Control("Scale", scale, 1.0f);
-                component.transform.setWorldScale(scale);
-            }
-            if (transformType == LOCAL_TRANSFORM) {
-                glm::vec3 position = component.transform.getLocalPosition();
-                ImGui::DrawVec3Control("Translation", position);
-                component.transform.setLocalPosition(position);
+            glm::vec3 rotation = glm::degrees(
+                glm::eulerAngles(component.transform.getWorldRotation()));
+            ImGui::DrawVec3Control("Rotation", rotation);
+            component.transform.setWorldRotation(glm::radians(rotation));
 
-                glm::vec3 rotation =
-                    glm::degrees(component.transform.getLocalEulerAngle());
-                ImGui::DrawVec3Control("Rotation", rotation);
-                component.transform.setLocalRotation(glm::radians(rotation));
-
-                glm::vec3 scale = component.transform.getLocalScale();
-                ImGui::DrawVec3Control("Scale", scale, 1.0f);
-                component.transform.setLocalScale(scale);
-            }
+            glm::vec3 scale = component.transform.getWorldScale();
+            ImGui::DrawVec3Control("Scale", scale, 1.0f);
+            component.transform.setWorldScale(scale);
         },
         false);
     drawComponent<sd::ModelComponent>(
