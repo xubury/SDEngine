@@ -13,6 +13,8 @@ struct Ray {
 struct AABB {
     glm::vec3 min;
     glm::vec3 max;
+    AABB();
+    void updateBounds(const glm::vec3 &pos);
 };
 
 template <glm::length_t L, typename T, glm::qualifier Q>

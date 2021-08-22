@@ -32,7 +32,7 @@ void RenderSystem::onRender() {
     terrainView.each([this](const entt::entity &entity,
                             const TransformComponent &transformComp,
                             const TerrainComponent &terrainComp) {
-        const Material &material = terrainComp.m_terrain.getMaterial();
+        const Material &material = terrainComp.terrain.getMaterial();
         m_shader->setTexture("u_material.diffuse",
                              material.getTexture(MaterialType::DIFFUSE));
         m_shader->setTexture("u_material.specular",
@@ -42,7 +42,7 @@ void RenderSystem::onRender() {
         m_shader->setMat4("u_world",
                           transformComp.transform.getWorldTransform());
         m_shader->setUint("u_entityId", static_cast<uint32_t>(entity));
-        Renderer3D::drawMesh(terrainComp.m_terrain.getMesh());
+        Renderer3D::drawMesh(terrainComp.terrain.getMesh());
     });
 
     auto modelView =

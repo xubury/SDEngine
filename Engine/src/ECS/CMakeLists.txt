@@ -10,6 +10,7 @@ set(ECS_Include
     ${Include_Root}/System.hpp)
 
 set(ECS_Src
+    ${Src_Root}/Component.cpp
     ${Src_Root}/Entity.cpp
     ${Src_Root}/ParticleSystem.cpp
     ${Src_Root}/RenderSystem.cpp
@@ -34,7 +35,7 @@ target_include_directories(sd-ecs
     PRIVATE
     ${PROJECT_SOURCE_DIR}/libs/entt)
 
-target_link_libraries(sd-ecs PUBLIC sd-common EnTT::EnTT)
+target_link_libraries(sd-ecs PUBLIC sd-common sd-utils EnTT::EnTT)
 
 install(TARGETS sd-ecs LIBRARY DESTINATION lib)
 

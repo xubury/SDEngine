@@ -10,6 +10,7 @@ set(Utils_Include
 
 set(Utils_Src
     ${Src_Root}/File.cpp
+    ${Src_Root}/Math.cpp
     ${Src_Root}/Random.cpp
     ${Src_Root}/Transform.cpp)
 

@@ -3,6 +3,7 @@
 
 #include "Common/Export.hpp"
 #include "Utils/Transform.hpp"
+#include "Utils/Math.hpp"
 #include "ECS/Entity.hpp"
 #include "Graphics/Model.hpp"
 #include "Graphics/Mesh.hpp"
@@ -32,8 +33,11 @@ struct SD_API ModelComponent {
 };
 
 struct SD_API TerrainComponent {
-    Terrain m_terrain;
-    TerrainComponent() : m_terrain(1, 10) {}
+    Terrain terrain;
+    std::vector<std::vector<AABB>> aabb;
+    TerrainComponent();
+
+    void computeBounds();
 };
 
 }  // namespace sd
