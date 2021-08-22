@@ -52,10 +52,16 @@ void Mesh::update() {
     }
 }
 
+VertexArray *Mesh::getVertexArray() const { return m_vertexArray.get(); }
+
 void Mesh::setTopology(MeshTopology topology) { m_topology = topology; }
 
 void Mesh::setWireframe(bool wireframe) { m_wireframe = wireframe; }
 
 bool Mesh::isWireframe() const { return m_wireframe; }
+
+const std::vector<Vertex> &Mesh::getVertices() const { return m_vertices; }
+
+std::vector<Vertex> &Mesh::getVertices() { return m_vertices; }
 
 }  // namespace sd

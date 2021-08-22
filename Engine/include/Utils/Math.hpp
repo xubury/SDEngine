@@ -5,6 +5,16 @@
 
 namespace sd {
 
+struct Ray {
+    glm::vec3 origin;
+    glm::vec3 direction;
+};
+
+struct AABB {
+    glm::vec3 min;
+    glm::vec3 max;
+};
+
 template <glm::length_t L, typename T, glm::qualifier Q>
 inline void baryCentric(const glm::vec<L, T, Q> &a, const glm::vec<L, T, Q> &b,
                         const glm::vec<L, T, Q> &c,

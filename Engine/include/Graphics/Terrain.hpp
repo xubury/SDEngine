@@ -23,10 +23,13 @@ class SD_API Terrain {
 
     void setGridSize(int gridSize);
     void setVertexCount(int vertexCount);
+
+    const std::vector<Vertex> &getVertices() const;
+    std::vector<Vertex> &getVertices();
+
    private:
     Mesh m_mesh;
     Material m_material;
-    std::vector<Vertex> m_vertices;
     int m_gridSize;
     int m_vertexCount;
     void computeNormal();

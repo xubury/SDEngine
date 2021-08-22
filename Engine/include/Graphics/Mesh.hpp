@@ -35,7 +35,7 @@ class SD_API Mesh {
 
     void update();
 
-    Ref<VertexArray> getVertexArray() const { return m_vertexArray; }
+    VertexArray *getVertexArray() const;
 
     void setTopology(MeshTopology topology);
 
@@ -44,6 +44,9 @@ class SD_API Mesh {
     void setWireframe(bool wireframe);
 
     bool isWireframe() const;
+
+    const std::vector<Vertex> &getVertices() const;
+    std::vector<Vertex> &getVertices();
 
    private:
     std::vector<Vertex> m_vertices;

@@ -38,9 +38,11 @@ void Renderer3D::endScene() {}
 
 void Renderer3D::drawMesh(const Mesh &mesh) {
     Renderer::setWireframe(mesh.isWireframe());
-    Ref<VertexArray> vao = mesh.getVertexArray();
-    Renderer::submit(*vao, mesh.getTopology(),
-                     vao->getIndexBuffer()->getCount(), 0);
+    VertexArray *vao = mesh.getVertexArray();
+    if (vao) {
+        Renderer::submit(*vao, mesh.getTopology(),
+                         vao->getIndexBuffer()->getCount(), 0);
+    }
 }
 
 void Renderer3D::setShader(Shader &shader) {
