@@ -36,6 +36,10 @@ class QuadTree {
     void clear();
 
    private:
+    void subdivide();
+    void discardEmptyBuckets();
+    QuadTree *getChild(const Rect &bound) const;
+
     bool m_isLeaf;
     Rect m_bound;
     uint32_t m_level;
@@ -45,7 +49,6 @@ class QuadTree {
     QuadTree *m_children[4];
     std::vector<Collidable *> m_objects;
     std::vector<Collidable *> m_foundObjects;
-    void subdivide();
 };
 
 }  // namespace sd
