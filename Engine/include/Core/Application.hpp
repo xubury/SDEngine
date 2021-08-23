@@ -5,8 +5,7 @@
 #include "Core/LayerStack.hpp"
 #include "Utils/AssetManager.hpp"
 #include "ImGui/ImGuiLayer.hpp"
-#include "ECS/RenderSystem.hpp"
-#include "ECS/TerrainSystem.hpp"
+#include "Renderer/RenderEngine.hpp"
 
 namespace sd {
 
@@ -15,8 +14,7 @@ class SD_API Application {
     static Application &instance();
 
     static Window &getWindow();
-    static RenderSystem *getRenderSystem();
-    static TerrainSystem *getTerrainSystem();
+    static RenderEngine &getRenderEngine();
 
     Application(const Application &application) = delete;
     Application &operator=(const Application &application) = delete;
@@ -54,9 +52,9 @@ class SD_API Application {
     Window m_window;
     LayerStack m_layers;
     ImGuiLayer *m_imguiLayer;
+    SystemManager m_systems;
 
-    RenderSystem *m_renderSystem;
-    TerrainSystem *m_terrainSystem;
+    RenderEngine m_renderEngine;
 };
 
 }  // namespace sd

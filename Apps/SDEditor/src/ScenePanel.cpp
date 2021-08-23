@@ -243,12 +243,16 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
             if (ImGui::InputInt("Grid size:", &gridSize)) {
                 terrain.terrain.setGridSize(std::max(gridSize, 1));
                 terrain.terrain.generateMesh();
-                sd::Application::getTerrainSystem()->updateTerrain(entity);
+                sd::Application::getRenderEngine()
+                    .getTerrainSystem()
+                    ->updateTerrain(entity);
             }
             if (ImGui::InputInt("Vertex count:", &vertexCount)) {
                 terrain.terrain.setVertexCount(std::max(vertexCount, 2));
                 terrain.terrain.generateMesh();
-                sd::Application::getTerrainSystem()->updateTerrain(entity);
+                sd::Application::getRenderEngine()
+                    .getTerrainSystem()
+                    ->updateTerrain(entity);
             }
         });
 }

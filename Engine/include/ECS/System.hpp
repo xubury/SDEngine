@@ -25,29 +25,25 @@ class System {
 
 class SystemManager {
    public:
-    static SystemManager &instance();
-
     template <typename SYSTEM, typename... ARGS>
-    SYSTEM *addSystem(ARGS... args);
+    SYSTEM *addSystem(ARGS &&...args);
 
     void removeSystem(const Ref<System> &system);
 
     void setScene(Scene *scene);
 
-   private:
-    friend class Application;
+    SystemManager() = default;
 
     void tick(float dt);
 
     void render();
 
-    SystemManager() = default;
-
+   private:
     std::set<Ref<System>> m_systems;
 };
 
 template <typename SYSTEM, typename... ARGS>
-SYSTEM *SystemManager::addSystem(ARGS... args) {
+SYSTEM *SystemManager::addSystem(ARGS &&...args) {
     Ref<SYSTEM> system = createRef<SYSTEM>(std::forward<ARGS>(args)...);
     m_systems.emplace(system);
     return system.get();

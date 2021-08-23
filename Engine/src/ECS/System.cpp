@@ -3,11 +3,6 @@
 
 namespace sd {
 
-SystemManager &SystemManager::instance() {
-    static SystemManager s_instance;
-    return s_instance;
-}
-
 void SystemManager::removeSystem(const Ref<System> &system) {
     if (m_systems.find(system) != m_systems.end()) {
         m_systems.erase(system);

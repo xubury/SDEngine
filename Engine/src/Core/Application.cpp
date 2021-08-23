@@ -16,12 +16,8 @@ Application &Application::instance() { return *s_instance; }
 
 Window &Application::getWindow() { return s_instance->m_window; }
 
-RenderSystem *Application::getRenderSystem() {
-    return s_instance->m_renderSystem;
-}
-
-TerrainSystem *Application::getTerrainSystem() {
-    return s_instance->m_terrainSystem;
+RenderEngine &Application::getRenderEngine() {
+    return s_instance->m_renderEngine;
 }
 
 Application::Application() {
@@ -63,8 +59,7 @@ Application::Application() {
     m_imguiLayer = new ImGuiLayer();
     pushOverlay(m_imguiLayer);
 
-    m_renderSystem = SystemManager::instance().addSystem<RenderSystem>();
-    m_terrainSystem = SystemManager::instance().addSystem<TerrainSystem>();
+    m_renderEngine.init();
 }
 
 Application::~Application() {
@@ -151,14 +146,15 @@ void Application::quit() { m_window.setShouldClose(true); }
 void Application::tick(float dt) {
     InputManager::instance().tick();
 
-    SystemManager::instance().tick(dt);
+    m_renderEngine.tick(dt);
     for (auto &layer : m_layers) {
         layer->onTick(dt);
     }
 }
 
 void Application::render() {
-    SystemManager::instance().render();
+    m_renderEngine.render();
+
     for (auto &layer : m_layers) {
         layer->onRender();
     }
