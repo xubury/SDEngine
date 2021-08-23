@@ -27,6 +27,9 @@ class TerrainSystem : public System {
 
    private:
     std::unordered_map<uint32_t, TerrainGrid> m_terrainGrids;
+    QuadTree m_qtRoot;
+    glm::vec3 m_min;
+    glm::vec3 m_max;
 };
 
 }  // namespace sd
