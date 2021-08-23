@@ -14,6 +14,12 @@ Application *Application::s_instance = nullptr;
 
 Application &Application::instance() { return *s_instance; }
 
+Window &Application::getWindow() { return s_instance->m_window; }
+
+RenderSystem &Application::getRenderSystem() {
+    return *s_instance->m_renderSystem;
+}
+
 Application::Application() {
     std::string debugPath = "Debug.txt";
     Log::init(debugPath);
@@ -52,6 +58,8 @@ Application::Application() {
     sd::Renderer::getDefaultTarget().resize(width, height);
     m_imguiLayer = new ImGuiLayer();
     pushOverlay(m_imguiLayer);
+
+    m_renderSystem = m_systems.addSystem<sd::RenderSystem>();
 }
 
 Application::~Application() {
@@ -138,12 +146,14 @@ void Application::quit() { m_window.setShouldClose(true); }
 void Application::tick(float dt) {
     InputManager::instance().tick();
 
+    m_systems.tick(dt);
     for (auto &layer : m_layers) {
         layer->onTick(dt);
     }
 }
 
 void Application::render() {
+    m_systems.render();
     for (auto &layer : m_layers) {
         layer->onRender();
     }

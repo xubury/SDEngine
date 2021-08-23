@@ -5,12 +5,16 @@
 #include "Core/LayerStack.hpp"
 #include "Utils/AssetManager.hpp"
 #include "ImGui/ImGuiLayer.hpp"
+#include "ECS/RenderSystem.hpp"
 
 namespace sd {
 
 class SD_API Application {
    public:
     static Application &instance();
+
+    static Window &getWindow();
+    static RenderSystem &getRenderSystem();
 
     Application(const Application &application) = delete;
     Application &operator=(const Application &application) = delete;
@@ -31,8 +35,6 @@ class SD_API Application {
 
     void quit();
 
-    static const Window &getWindow() { return instance().m_window; }
-
    protected:
     Application();
     ~Application();
@@ -50,6 +52,9 @@ class SD_API Application {
     Window m_window;
     LayerStack m_layers;
     ImGuiLayer *m_imguiLayer;
+    SystemManager m_systems;
+
+    RenderSystem *m_renderSystem;
 };
 
 }  // namespace sd

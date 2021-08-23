@@ -8,7 +8,7 @@
 
 namespace sd {
 
-class RenderSystem : public System {
+class SD_API RenderSystem : public System {
    public:
     RenderSystem();
 

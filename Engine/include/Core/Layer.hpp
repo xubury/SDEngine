@@ -39,7 +39,6 @@ class SD_API Layer {
    protected:
     std::string m_name;
     bool m_blockEvent;
-    SystemManager m_systems;
 };
 
 }  // namespace sd

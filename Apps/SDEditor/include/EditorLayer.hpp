@@ -4,7 +4,6 @@
 #include "Core/Layer.hpp"
 #include "Graphics/Camera.hpp"
 #include "Renderer/RenderTarget.hpp"
-#include "ECS/RenderSystem.hpp"
 #include "ScenePanel.hpp"
 #include "CameraController.hpp"
 
@@ -57,8 +56,6 @@ class EditorLayer : public sd::Layer {
     float m_farZ;
     sd::PerspectiveCamera m_editorCamera;
     CameraController m_cameraController;
-
-    sd::RenderSystem *m_renderSystem;
 
     sd::Ref<sd::Scene> m_scene;
     ScenePanel m_scenePanel;

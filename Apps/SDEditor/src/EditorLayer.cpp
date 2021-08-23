@@ -21,7 +21,6 @@ EditorLayer::EditorLayer()
       m_farZ(100000.f),
       m_editorCamera(m_fov, static_cast<float>(m_width) / m_height, m_nearZ,
                      m_farZ) {
-    m_renderSystem = m_systems.addSystem<sd::RenderSystem>();
     m_cameraController.setCamera(&m_editorCamera);
     newScene();
 }
@@ -67,7 +66,7 @@ void EditorLayer::onDetech() {
     m_texture.reset();
 }
 
-void EditorLayer::onRender() { m_systems.render(); }
+void EditorLayer::onRender() {}
 
 void EditorLayer::onTick(float dt) {
     auto [mouseX, mouseY] = ImGui::GetMousePos();
@@ -88,7 +87,6 @@ void EditorLayer::onTick(float dt) {
         m_cameraController.setFocus(pos);
     }
     m_cameraController.tick(dt);
-    m_systems.tick(dt);
 }
 
 void EditorLayer::onImGui() {
@@ -244,7 +242,8 @@ void EditorLayer::onImGui() {
 void EditorLayer::hide() {
     m_hide = true;
     setBlockEvent(false);
-    m_renderSystem->setRenderTarget(&sd::Renderer::getDefaultTarget());
+    sd::Application::getRenderSystem().setRenderTarget(
+        &sd::Renderer::getDefaultTarget());
     m_editorCamera.setProjection(
         m_fov, sd::Renderer::getDefaultTarget().getAspect(), m_nearZ, m_farZ);
 }
@@ -252,8 +251,8 @@ void EditorLayer::hide() {
 void EditorLayer::show() {
     m_hide = false;
     setBlockEvent(true);
-    m_renderSystem->setCamera(&m_editorCamera);
-    m_renderSystem->setRenderTarget(&m_target);
+    sd::Application::getRenderSystem().setCamera(&m_editorCamera);
+    sd::Application::getRenderSystem().setRenderTarget(&m_target);
     m_editorCamera.setProjection(m_fov, static_cast<float>(m_width) / m_height,
                                  m_nearZ, m_farZ);
 }
@@ -284,7 +283,7 @@ void EditorLayer::onEventsProcess() {
 void EditorLayer::newScene() {
     m_scene = sd::createRef<sd::Scene>();
     m_scenePanel.setScene(m_scene.get());
-    m_renderSystem->setScene(m_scene.get());
+    sd::Application::getRenderSystem().setScene(m_scene.get());
 }
 
 void EditorLayer::openScene() {}
