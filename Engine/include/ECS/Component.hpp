@@ -4,7 +4,6 @@
 #include "Common/Export.hpp"
 #include "Utils/Transform.hpp"
 #include "Utils/Math.hpp"
-#include "Utils/QuadTree.hpp"
 #include "ECS/Entity.hpp"
 #include "Graphics/Model.hpp"
 #include "Graphics/Mesh.hpp"
@@ -35,10 +34,7 @@ struct SD_API ModelComponent {
 
 struct SD_API TerrainComponent {
     Terrain terrain;
-    std::vector<std::vector<Collidable>> objects;
     TerrainComponent();
-
-    void computeBounds();
 };
 
 }  // namespace sd

@@ -16,14 +16,13 @@ class SD_API RenderSystem : public System {
 
     void onRender() override;
 
-    void setScene(Scene *scene);
+    void onSceneChange() override{};
 
     void setRenderTarget(RenderTarget *target);
 
     void setCamera(Camera *camera);
 
    private:
-    Scene *m_scene;
     Ref<Shader> m_shader;
     RenderTarget *m_target;
     Camera *m_camera;

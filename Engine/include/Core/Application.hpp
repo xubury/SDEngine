@@ -6,6 +6,7 @@
 #include "Utils/AssetManager.hpp"
 #include "ImGui/ImGuiLayer.hpp"
 #include "ECS/RenderSystem.hpp"
+#include "ECS/TerrainSystem.hpp"
 
 namespace sd {
 
@@ -14,7 +15,8 @@ class SD_API Application {
     static Application &instance();
 
     static Window &getWindow();
-    static RenderSystem &getRenderSystem();
+    static RenderSystem *getRenderSystem();
+    static TerrainSystem *getTerrainSystem();
 
     Application(const Application &application) = delete;
     Application &operator=(const Application &application) = delete;
@@ -52,9 +54,9 @@ class SD_API Application {
     Window m_window;
     LayerStack m_layers;
     ImGuiLayer *m_imguiLayer;
-    SystemManager m_systems;
 
     RenderSystem *m_renderSystem;
+    TerrainSystem *m_terrainSystem;
 };
 
 }  // namespace sd

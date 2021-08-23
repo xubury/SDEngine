@@ -3,6 +3,7 @@
 
 #include <set>
 #include "Common/Base.hpp"
+#include "ECS/Scene.hpp"
 
 namespace sd {
 
@@ -14,22 +15,34 @@ class System {
     virtual void onTick(float dt) = 0;
 
     virtual void onRender() = 0;
+
+    virtual void onSceneChange() = 0;
+
+   protected:
+    friend class SystemManager;
+    Scene *m_scene;
 };
 
 class SystemManager {
    public:
-    SystemManager() = default;
+    static SystemManager &instance();
 
     template <typename SYSTEM, typename... ARGS>
     SYSTEM *addSystem(ARGS... args);
 
     void removeSystem(const Ref<System> &system);
 
+    void setScene(Scene *scene);
+
+   private:
+    friend class Application;
+
     void tick(float dt);
 
     void render();
 
-   private:
+    SystemManager() = default;
+
     std::set<Ref<System>> m_systems;
 };
 

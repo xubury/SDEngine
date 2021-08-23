@@ -7,7 +7,8 @@ set(ECS_Include
     ${Include_Root}/ParticleSystem.hpp
     ${Include_Root}/RenderSystem.hpp
     ${Include_Root}/Scene.hpp
-    ${Include_Root}/System.hpp)
+    ${Include_Root}/System.hpp
+    ${Include_Root}/TerrainSystem.hpp)
 
 set(ECS_Src
     ${Src_Root}/Component.cpp
@@ -15,7 +16,8 @@ set(ECS_Src
     ${Src_Root}/ParticleSystem.cpp
     ${Src_Root}/RenderSystem.cpp
     ${Src_Root}/Scene.cpp
-    ${Src_Root}/System.cpp)
+    ${Src_Root}/System.cpp
+    ${Src_Root}/TerrainSystem.cpp)
 
 add_library(sd-ecs ${ECS_Src})
 

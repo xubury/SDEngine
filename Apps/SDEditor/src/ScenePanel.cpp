@@ -1,5 +1,6 @@
 #include "ScenePanel.hpp"
 #include "ECS/Component.hpp"
+#include "Core/Application.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "ImGui/ImGuiWidget.hpp"
@@ -242,10 +243,12 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
             if (ImGui::InputInt("Grid size:", &gridSize)) {
                 terrain.terrain.setGridSize(std::max(gridSize, 1));
                 terrain.terrain.generateMesh();
+                sd::Application::getTerrainSystem()->updateTerrain(entity);
             }
             if (ImGui::InputInt("Vertex count:", &vertexCount)) {
                 terrain.terrain.setVertexCount(std::max(vertexCount, 2));
                 terrain.terrain.generateMesh();
+                sd::Application::getTerrainSystem()->updateTerrain(entity);
             }
         });
 }

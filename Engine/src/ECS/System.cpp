@@ -3,6 +3,11 @@
 
 namespace sd {
 
+SystemManager &SystemManager::instance() {
+    static SystemManager s_instance;
+    return s_instance;
+}
+
 void SystemManager::removeSystem(const Ref<System> &system) {
     if (m_systems.find(system) != m_systems.end()) {
         m_systems.erase(system);
@@ -20,6 +25,13 @@ void SystemManager::tick(float dt) {
 void SystemManager::render() {
     for (const auto &system : m_systems) {
         system->onRender();
+    }
+}
+
+void SystemManager::setScene(Scene *scene) {
+    for (auto &system : m_systems) {
+        system->m_scene = scene;
+        system->onSceneChange();
     }
 }
 

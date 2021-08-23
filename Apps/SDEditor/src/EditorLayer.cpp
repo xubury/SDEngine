@@ -242,7 +242,7 @@ void EditorLayer::onImGui() {
 void EditorLayer::hide() {
     m_hide = true;
     setBlockEvent(false);
-    sd::Application::getRenderSystem().setRenderTarget(
+    sd::Application::getRenderSystem()->setRenderTarget(
         &sd::Renderer::getDefaultTarget());
     m_editorCamera.setProjection(
         m_fov, sd::Renderer::getDefaultTarget().getAspect(), m_nearZ, m_farZ);
@@ -251,8 +251,8 @@ void EditorLayer::hide() {
 void EditorLayer::show() {
     m_hide = false;
     setBlockEvent(true);
-    sd::Application::getRenderSystem().setCamera(&m_editorCamera);
-    sd::Application::getRenderSystem().setRenderTarget(&m_target);
+    sd::Application::getRenderSystem()->setCamera(&m_editorCamera);
+    sd::Application::getRenderSystem()->setRenderTarget(&m_target);
     m_editorCamera.setProjection(m_fov, static_cast<float>(m_width) / m_height,
                                  m_nearZ, m_farZ);
 }
@@ -283,7 +283,7 @@ void EditorLayer::onEventsProcess() {
 void EditorLayer::newScene() {
     m_scene = sd::createRef<sd::Scene>();
     m_scenePanel.setScene(m_scene.get());
-    sd::Application::getRenderSystem().setScene(m_scene.get());
+    sd::SystemManager::instance().setScene(m_scene.get());
 }
 
 void EditorLayer::openScene() {}
