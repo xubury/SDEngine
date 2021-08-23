@@ -6,11 +6,13 @@ set(Utils_Include
     ${Include_Root}/AssetManager.hpp
     ${Include_Root}/File.hpp
     ${Include_Root}/Math.hpp
+    ${Include_Root}/QuadTree.hpp
     ${Include_Root}/Transform.hpp)
 
 set(Utils_Src
     ${Src_Root}/File.cpp
     ${Src_Root}/Math.cpp
+    ${Src_Root}/QuadTree.cpp
     ${Src_Root}/Random.cpp
     ${Src_Root}/Transform.cpp)
 

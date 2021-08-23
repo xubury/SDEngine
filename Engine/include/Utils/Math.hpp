@@ -10,11 +10,19 @@ struct Ray {
     glm::vec3 direction;
 };
 
-struct AABB {
-    glm::vec3 min;
-    glm::vec3 max;
-    AABB();
-    void updateBounds(const glm::vec3 &pos);
+struct Rect {
+    float x;
+    float y;
+    float width;
+    float height;
+    bool contains(const Rect &other) const;
+    bool intersects(const Rect &other) const;
+    float getLeft() const;
+    float getTop() const;
+    float getRight() const;
+    float getBottom() const;
+
+    Rect(float x = 0, float y = 0, float width = 0, float height = 0);
 };
 
 template <glm::length_t L, typename T, glm::qualifier Q>

@@ -2,11 +2,22 @@
 
 namespace sd {
 
-AABB::AABB() : min(FLT_MAX), max(-FLT_MAX) {}
+Rect::Rect(float x, float y, float width, float height)
+    : x(x), y(y), width(width), height(height) {}
 
-void AABB::updateBounds(const glm::vec3 &pos) {
-    min = glm::min(pos, min);
-    max = glm::max(pos, max);
+bool Rect::contains(const Rect &other) const {
+    return x <= other.x && y <= other.y && x + width >= other.x + other.width &&
+           y + height >= other.y + other.height;
 }
+
+bool Rect::intersects(const Rect &other) const {
+    return x <= other.x + other.width && x + width >= other.x &&
+           y <= other.y + other.height && y + height >= other.y;
+}
+
+float Rect::getLeft() const { return x - width * 0.5; }
+float Rect::getTop() const { return y + height * 0.5; }
+float Rect::getRight() const { return x + width * 0.5; }
+float Rect::getBottom() const { return y - height * 0.5; }
 
 }  // namespace sd
