@@ -24,7 +24,7 @@ void TerrainSystem::updateAllTerrains() {
         const auto &vertices = terrain.getVertices();
         const uint32_t vertexCount = terrain.getVertexCount();
         const uint32_t id = static_cast<uint32_t>(entity);
-        m_terrainGrids[id].assign(vertexCount,
+        m_terrainGrids[id].assign(vertexCount - 1,
                                   std::vector<Collidable>(vertexCount - 1));
         const Transform &transform = transformComp.transform;
         for (uint32_t z = 0; z < vertexCount - 1; ++z) {
