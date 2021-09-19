@@ -153,4 +153,10 @@ QuadTree *QuadTree::getChild(const Rect &bound) const {
     return nullptr;  // Cannot contain boundary -- too large
 }
 
+bool QuadTree::isLeaf() const { return m_isLeaf; }
+
+const std::array<QuadTree *, 4> &QuadTree::getChildren() const {
+    return m_children;
+}
+
 }  // namespace sd

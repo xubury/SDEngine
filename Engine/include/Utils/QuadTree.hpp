@@ -4,6 +4,7 @@
 #include <any>
 #include <cstdint>
 #include <vector>
+#include <array>
 #include "Utils/Math.hpp"
 
 namespace sd {
@@ -35,6 +36,9 @@ class QuadTree {
     bool update(Collidable *obj);
     void clear();
 
+    bool isLeaf() const;
+    const std::array<QuadTree *, 4> &getChildren() const;
+
    private:
     void subdivide();
     void discardEmptyBuckets();
@@ -46,7 +50,7 @@ class QuadTree {
     uint32_t m_capacity;
     uint32_t m_maxLevel;
     QuadTree *m_parent;
-    QuadTree *m_children[4];
+    std::array<QuadTree *, 4> m_children;
     std::vector<Collidable *> m_objects;
     std::vector<Collidable *> m_foundObjects;
 };
