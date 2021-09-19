@@ -31,6 +31,7 @@ set(Graphics_Include
     ${Include_Root}/Device.hpp
     ${Include_Root}/Framebuffer.hpp
     ${Include_Root}/Graphics.hpp
+    ${Include_Root}/Light.hpp
     ${Include_Root}/Material.hpp
     ${Include_Root}/Mesh.hpp
     ${Include_Root}/Model.hpp

@@ -185,6 +185,13 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
                 SD_CORE_WARN("This entity already has the Terrain Component!");
             ImGui::CloseCurrentPopup();
         }
+        if (ImGui::MenuItem("Light")) {
+            if (!m_selectedEntity.hasComponent<sd::LightComponent>())
+                m_selectedEntity.addComponent<sd::LightComponent>();
+            else
+                SD_CORE_WARN("This entity already has the Light Component!");
+            ImGui::CloseCurrentPopup();
+        }
 
         ImGui::EndPopup();
     }

@@ -28,7 +28,10 @@ class GLFramebuffer : public Framebuffer {
 
     void clearAttachment(uint32_t attachmentId, const void *value) override;
 
+    Texture *getTexture(uint32_t attachmentId) override;
+
     void resize(int width, int height) override;
+
    private:
     GLuint m_id;
     uint32_t m_textureCnt;

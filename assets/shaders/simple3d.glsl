@@ -26,6 +26,7 @@ void main() {
 #version 450 core
 
 #include shaders/material.glsl
+#include shaders/light.glsl
 
 layout (location = 0) out vec4 fragColor;
 layout (location = 1) out uint entityId;
@@ -41,6 +42,9 @@ uniform uint u_entityId;
 uniform Material u_material;
 
 void main() {
-    fragColor = vec4(texture(u_material.diffuse, in_vertex.texCoord).rgb, 1);
+    vec3 diffuse = texture(u_material.diffuse, in_vertex.texCoord).rgb;
+    vec3 ambient = texture(u_material.ambient, in_vertex.texCoord).rgb;
+    vec3 specular = texture(u_material.specular, in_vertex.texCoord).rgb;
+    fragColor = vec4(ambient + diffuse + specular, 1.0f);
     entityId = u_entityId;
 }

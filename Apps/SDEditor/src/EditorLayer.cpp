@@ -177,6 +177,18 @@ void EditorLayer::onImGui() {
     }
     ImGui::End();
 
+    ImGui::Begin("GBuffer");
+    {
+        ImVec2 wsize = ImGui::GetContentRegionAvail();
+        ImGui::Image((void *)(intptr_t)sd::Application::getRenderEngine()
+                         .getRenderSystem()
+                         ->getGBuffer()
+                         ->getTexture(0)
+                         ->getId(),
+                     wsize, ImVec2(0, 1), ImVec2(1, 0));
+    }
+    ImGui::End();
+
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
     ImGui::Begin("Scene");
     {

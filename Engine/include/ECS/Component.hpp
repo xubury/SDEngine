@@ -8,6 +8,7 @@
 #include "Graphics/Model.hpp"
 #include "Graphics/Mesh.hpp"
 #include "Graphics/Terrain.hpp"
+#include "Graphics/Light.hpp"
 
 namespace sd {
 
@@ -35,6 +36,10 @@ struct SD_API ModelComponent {
 struct SD_API TerrainComponent {
     Terrain terrain;
     TerrainComponent();
+};
+
+struct SD_API LightComponent {
+    Light light;
 };
 
 }  // namespace sd

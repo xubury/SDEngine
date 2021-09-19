@@ -99,6 +99,10 @@ void GLFramebuffer::clearAttachment(uint32_t attachmentId, const void *value) {
                     texture->getGLFormatType(), value);
 }
 
+Texture *GLFramebuffer::getTexture(uint32_t attachmentId) {
+    return m_attachments[attachmentId].second.get();
+}
+
 void GLFramebuffer::copyFrom(const Framebuffer *other, BufferBit mask,
                              TextureFilter filter) {
     const GLFramebuffer *glFb = dynamic_cast<const GLFramebuffer *>(other);
