@@ -180,12 +180,14 @@ void EditorLayer::onImGui() {
     ImGui::Begin("GBuffer");
     {
         ImVec2 wsize = ImGui::GetContentRegionAvail();
-        ImGui::Image((void *)(intptr_t)sd::Application::getRenderEngine()
-                         .getRenderSystem()
-                         ->getGBuffer()
-                         ->getTexture(0)
-                         ->getId(),
-                     wsize, ImVec2(0, 1), ImVec2(1, 0));
+        for (int i = 0; i < 4; ++i) {
+            ImGui::Image((void *)(intptr_t)sd::Application::getRenderEngine()
+                             .getRenderSystem()
+                             ->getGBuffer()
+                             ->getTexture(i)
+                             ->getId(),
+                         wsize, ImVec2(0, 1), ImVec2(1, 0));
+        }
     }
     ImGui::End();
 

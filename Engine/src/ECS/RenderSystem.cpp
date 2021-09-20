@@ -9,25 +9,58 @@ RenderSystem::RenderSystem() {
     m_shader = Graphics::assetManager().load<Shader>("shaders/simple3d.glsl");
     m_gbufferShader =
         Graphics::assetManager().load<Shader>("shaders/gbuffer.glsl");
-    m_gbufferTarget.addTexture(Texture::create(
+    // position
+    m_gBufferTarget.addTexture(Texture::create(
         800, 600, 8, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::RGBA,
-        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::NEAREST,
-        TextureMipmapFilter::NEAREST_NEAREST));
-    m_gbufferTarget.addTexture(Texture::create(
+        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
+        TextureMipmapFilter::LINEAR_NEAREST));
+    // normal
+    m_gBufferTarget.addTexture(Texture::create(
+        800, 600, 8, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::RGBA,
+        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
+        TextureMipmapFilter::LINEAR_NEAREST));
+    // albedo
+    m_gBufferTarget.addTexture(Texture::create(
+        800, 600, 8, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::RGBA,
+        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
+        TextureMipmapFilter::LINEAR_NEAREST));
+    // ambient
+    m_gBufferTarget.addTexture(Texture::create(
+        800, 600, 8, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::RGBA,
+        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
+        TextureMipmapFilter::LINEAR_NEAREST));
+    // depth
+    m_gBufferTarget.addTexture(Texture::create(
         800, 600, 8, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::DEPTH,
-        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::NEAREST,
-        TextureMipmapFilter::NEAREST));
-    m_gbufferTarget.init();
+        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
+        TextureMipmapFilter::LINEAR_NEAREST));
+    m_gBufferTarget.init();
 
     m_framebuffer = Framebuffer::create();
+    // position
     m_framebuffer->attachTexture(Texture::create(
         800, 600, 1, TextureType::TEX_2D, TextureFormat::RGBA,
-        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::NEAREST,
-        TextureMipmapFilter::NEAREST_NEAREST));
+        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
+        TextureMipmapFilter::LINEAR_NEAREST));
+    // normal
+    m_framebuffer->attachTexture(Texture::create(
+        800, 600, 1, TextureType::TEX_2D, TextureFormat::RGBA,
+        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
+        TextureMipmapFilter::LINEAR_NEAREST));
+    // albedo
+    m_framebuffer->attachTexture(Texture::create(
+        800, 600, 1, TextureType::TEX_2D, TextureFormat::RGBA,
+        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
+        TextureMipmapFilter::LINEAR_NEAREST));
+    // ambient
+    m_framebuffer->attachTexture(Texture::create(
+        800, 600, 1, TextureType::TEX_2D, TextureFormat::RGBA,
+        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
+        TextureMipmapFilter::LINEAR_NEAREST));
 }
 
 void RenderSystem::setRenderTarget(RenderTarget *target) {
-    m_gbufferTarget.resize(target->getWidth(), target->getHeight());
+    m_gBufferTarget.resize(target->getWidth(), target->getHeight());
     m_framebuffer->resize(target->getWidth(), target->getHeight());
     m_target = target;
 }
@@ -37,7 +70,7 @@ void RenderSystem::onTick(float) {}
 void RenderSystem::setCamera(Camera *camera) { m_camera = camera; }
 
 void RenderSystem::onRender() {
-    renderGbuffer();
+    renderGBuffer();
 
     Renderer3D::beginScene(*m_camera, m_target);
     Renderer::setClearColor(0.1, 0.2, 0.3, 1.0);
@@ -90,8 +123,8 @@ void RenderSystem::onRender() {
     Renderer3D::endScene();
 }
 
-void RenderSystem::renderGbuffer() {
-    Renderer3D::beginScene(*m_camera, &m_gbufferTarget);
+void RenderSystem::renderGBuffer() {
+    Renderer3D::beginScene(*m_camera, &m_gBufferTarget);
     Renderer::setClearColor(0.1, 0.2, 0.3, 1.0);
     Renderer::clear();
     Renderer3D::setShader(*m_gbufferShader);
@@ -102,14 +135,24 @@ void RenderSystem::renderGbuffer() {
                           const ModelComponent &modelComp) {
         m_gbufferShader->setMat4("u_world",
                                  transformComp.transform.getWorldTransform());
+        for (const auto &material : modelComp.model->getMaterials()) {
+            m_gbufferShader->setTexture("u_material.diffuse",
+                                 material.getTexture(MaterialType::DIFFUSE));
+            m_gbufferShader->setTexture("u_material.specular",
+                                 material.getTexture(MaterialType::SPECULAR));
+            m_gbufferShader->setTexture("u_material.ambient",
+                                 material.getTexture(MaterialType::AMBIENT));
+        }
         for (const auto &mesh : modelComp.model->getMeshes()) {
             Renderer3D::drawMesh(mesh);
         }
     });
-    m_framebuffer->copyFrom(m_gbufferTarget.getFramebuffer(),
+    m_framebuffer->copyFrom(m_gBufferTarget.getFramebuffer(),
                             BufferBit::COLOR_BUFFER_BIT,
                             TextureFilter::NEAREST);
     Renderer3D::endScene();
 }
+
+Framebuffer *RenderSystem::getGBuffer() { return m_framebuffer.get(); }
 
 }  // namespace sd

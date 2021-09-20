@@ -22,17 +22,17 @@ class SD_API RenderSystem : public System {
 
     void setCamera(Camera *camera);
 
-    void renderGbuffer();
+    void renderGBuffer();
 
-    Framebuffer *getGBuffer() { return m_framebuffer.get(); }
+    Framebuffer *getGBuffer();
 
    private:
     Ref<Shader> m_shader;
-    Ref<Shader> m_gbufferShader;
     RenderTarget *m_target;
     Camera *m_camera;
 
-    RenderTarget m_gbufferTarget;
+    Ref<Shader> m_gbufferShader;
+    RenderTarget m_gBufferTarget;
     Ref<Framebuffer> m_framebuffer;
 };
 
