@@ -49,6 +49,14 @@ void Renderer::setWireframe(bool wireframe) {
     instance().m_device->setWireframe(wireframe);
 }
 
+void Renderer::setDepthMask(bool depthMask) {
+    instance().m_device->setDepthMask(depthMask);
+}
+
+void Renderer::setBlend(bool blend) {
+    instance().m_device->setBlend(blend);
+}
+
 RenderTarget &Renderer::getDefaultTarget() {
     return instance().m_defaultTarget;
 }

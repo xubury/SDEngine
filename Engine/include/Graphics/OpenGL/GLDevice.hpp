@@ -19,6 +19,10 @@ class GLDevice : public Device {
     void setFramebuffer(const Framebuffer *framebuffer) override;
 
     void setWireframe(bool wireframe) override;
+
+    void setDepthMask(bool depthMask) override;
+
+    void setBlend(bool blend) override;
 };
 
 }  // namespace sd

@@ -30,6 +30,10 @@ class SD_API Renderer {
 
     static void setWireframe(bool wireframe);
 
+    static void setDepthMask(bool depthMask);
+
+    static void setBlend(bool blend);
+
     static RenderTarget &getDefaultTarget();
 
     static void setDefaultTarget(const RenderTarget &target);

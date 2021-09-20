@@ -1,50 +1,47 @@
 #shader vertex
 #version 450 core
 
-#include shaders/camera.glsl
-
 layout (location = 0) in vec3 a_pos;
 layout (location = 1) in vec2 a_texCoord;
-layout (location = 2) in vec3 a_normal;
-layout (location = 3) in vec3 a_tangent;
-layout (location = 4) in vec3 a_biTangent;
 
-struct VertexOutput {
-    vec2 texCoord;
-};
-
-layout (location = 0) out VertexOutput out_vertex;
-
-uniform mat4 u_world;
+layout (location = 0) out vec2 out_texCoord;
 
 void main() {
-    gl_Position = u_projectionView * u_world * vec4(a_pos, 1.0f);
-    out_vertex.texCoord = a_texCoord;
+    out_texCoord = a_texCoord;
+    gl_Position = vec4(a_pos, 1.0);
 }
 
 #shader fragment
 #version 450 core
 
+#include shaders/camera.glsl
 #include shaders/material.glsl
 #include shaders/light.glsl
 
 layout (location = 0) out vec4 fragColor;
 layout (location = 1) out uint entityId;
 
-struct VertexOutput {
-    vec2 texCoord;
-};
+layout (location = 0) in vec2 in_texCoord;
 
-layout (location = 0) in VertexOutput in_vertex;
+uniform DirLight u_light;
 
-uniform uint u_entityId;
-
-uniform Material u_material;
+uniform sampler2D u_position;
+uniform sampler2D u_normal;
+uniform sampler2D u_albedo;
+uniform sampler2D u_ambient;
+uniform usampler2D u_entityTexture;
 
 void main() {
-    vec3 diffuse = texture(u_material.diffuse, in_vertex.texCoord).rgb;
-    vec3 ambient = texture(u_material.ambient, in_vertex.texCoord).rgb;
-    vec3 specular = texture(u_material.specular, in_vertex.texCoord).rgb;
-    fragColor = vec4(ambient + diffuse + specular, 1.0f);
-    entityId = u_entityId;
+    vec3 fragPos = texture(u_position, in_texCoord).rgb;
+    vec3 normal = texture(u_normal, in_texCoord).rgb;
+    vec3 diffuse = texture(u_albedo, in_texCoord).rgb;
+    vec3 specular = vec3(texture(u_albedo, in_texCoord).a);
+    vec3 ambient = texture(u_ambient, in_texCoord).rgb;
+
+    vec3 viewDir = normalize(u_viewPos - fragPos);
+
+    vec3 lighting = calculateDirLight(u_light, fragPos, normal, viewDir, ambient, diffuse, specular);
+    fragColor = vec4(lighting, 1.0f);
+
+    entityId = texture(u_entityTexture, in_texCoord).r;
 }

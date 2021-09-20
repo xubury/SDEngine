@@ -24,7 +24,7 @@ void main() {
     gl_Position = u_projectionView * vec4(fragPos, 1.0f);
 
     out_vertex.position = fragPos;
-    out_vertex.normal = a_normal;
+    out_vertex.normal = normalize(mat3(transpose(inverse(u_world))) * a_normal);
     out_vertex.texCoord = a_texCoord;
 }
 
@@ -40,11 +40,13 @@ struct VertexOutput {
 };
 
 uniform Material u_material;
+uniform uint u_entityId;
 
 layout (location = 0) out vec4 g_position;
 layout (location = 1) out vec4 g_normal;
 layout (location = 2) out vec4 g_albedo;
 layout (location = 3) out vec4 g_ambient;
+layout (location = 4) out uint entityId;
 
 layout (location = 0) in VertexOutput in_vertex;
 
@@ -53,5 +55,7 @@ void main() {
     g_normal = vec4(in_vertex.normal, 1.0f);
     g_albedo.rgb = texture(u_material.diffuse, in_vertex.texCoord).rgb;
     g_albedo.a = texture(u_material.specular, in_vertex.texCoord).r;
-    g_ambient = vec4(texture(u_material.ambient, in_vertex.texCoord).rgb, 1.0f);
+    g_ambient = vec4(texture(u_material.ambient, in_vertex.texCoord).rgb, 1.f);
+
+    entityId = u_entityId;
 }

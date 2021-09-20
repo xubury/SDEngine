@@ -4,6 +4,7 @@
 #include "ECS/System.hpp"
 #include "ECS/Scene.hpp"
 #include "Graphics/Shader.hpp"
+#include "Graphics/VertexArray.hpp"
 #include "Renderer/RenderTarget.hpp"
 
 namespace sd {
@@ -34,6 +35,8 @@ class SD_API RenderSystem : public System {
     Ref<Shader> m_gbufferShader;
     RenderTarget m_gBufferTarget;
     Ref<Framebuffer> m_framebuffer;
+
+    Ref<VertexArray> m_vao;
 };
 
 }  // namespace sd

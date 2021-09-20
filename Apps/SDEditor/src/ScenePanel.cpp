@@ -262,4 +262,10 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
                     ->updateTerrain(entity);
             }
         });
+    drawComponent<sd::LightComponent>(
+        "Light", entity, [&](sd::LightComponent &light) {
+            ImGui::ColorEdit3("Diffuse", &light.light.diffuse[0]);
+            ImGui::ColorEdit3("Ambient", &light.light.ambient[0]);
+            ImGui::ColorEdit3("Specular", &light.light.specular[0]);
+        });
 }

@@ -38,4 +38,10 @@ void GLDevice::setWireframe(bool wireframe) {
     }
 }
 
+void GLDevice::setDepthMask(bool depthMask) { glDepthMask(depthMask); }
+
+void GLDevice::setBlend(bool blend) {
+    blend ? glEnable(GL_BLEND) : glDisable(GL_BLEND);
+}
+
 }  // namespace sd

@@ -27,8 +27,12 @@ class SD_API Device {
     virtual void setViewport(int x, int y, int width, int height) = 0;
 
     virtual void setFramebuffer(const Framebuffer *framebuffer) = 0;
-    
+
     virtual void setWireframe(bool wireframe) = 0;
+
+    virtual void setDepthMask(bool depthMask) = 0;
+
+    virtual void setBlend(bool blend) = 0;
 
     friend class Renderer;
 
