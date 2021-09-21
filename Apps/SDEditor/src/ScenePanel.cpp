@@ -239,9 +239,8 @@ void ScenePanel::drawComponents(sd::Entity entity) {
             }
             if (ImGui::FileDialog(&m_fileDialogOpen, &m_fileDialogInfo)) {
                 model.path = m_fileDialogInfo.resultPath.string();
-                model.model = sd::Graphics::assetManager()
-                                  .load<sd::Model>(m_fileDialogInfo.resultPath)
-                                  ->clone();
+                model.model = sd::Graphics::assetManager().load<sd::Model>(
+                    m_fileDialogInfo.resultPath);
             }
         });
     drawComponent<sd::TerrainComponent>(

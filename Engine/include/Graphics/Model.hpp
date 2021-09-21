@@ -20,8 +20,6 @@ class SD_API Model {
     void addMaterial(Material &&mesh);
 
     void clear();
-
-    Ref<Model> clone();
    private:
     std::vector<Mesh> m_meshes;
     std::vector<Material> m_materials;
