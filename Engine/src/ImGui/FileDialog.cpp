@@ -257,7 +257,7 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
             std::tm mt;
             localtime_s(&mt, &tt);
             std::stringstream ss;
-            ss << std::put_time(&mt, "%F %R");
+            ss << std::put_time(&mt, "%Y-%m-%d %H:%M");
             ImGui::TextUnformatted(ss.str().c_str());
             ImGui::NextColumn();
 
@@ -295,7 +295,7 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
             std::tm mt;
             localtime_s(&mt, &tt);
             std::stringstream ss;
-            ss << std::put_time(&mt, "%F %R");
+            ss << std::put_time(&mt, "%Y-%m-%d %H:%M");
             ImGui::TextUnformatted(ss.str().c_str());
             ImGui::NextColumn();
 
