@@ -47,6 +47,11 @@ struct SD_API ModelComponent {
     std::string path;
     Ref<Model> model;
     ModelComponent() : path("Empty"), model(sd::createRef<Model>()) {}
+
+    template <typename Archive>
+    void serialize(Archive& archive) {
+        archive(path);
+    }
 };
 
 struct SD_API TerrainComponent {
@@ -56,6 +61,11 @@ struct SD_API TerrainComponent {
 
 struct SD_API LightComponent {
     Light light;
+
+    template <typename Archive>
+    void serialize(Archive& archive) {
+        archive(light);
+    }
 };
 
 }  // namespace sd

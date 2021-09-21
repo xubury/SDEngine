@@ -311,7 +311,8 @@ void EditorLayer::openScene() {
         entt::snapshot_loader{m_scene->getRegistry()}
             .entities(archive)
             .component<sd::EntityDataComponent, sd::TagComponent,
-                       sd::TransformComponent>(archive);
+                       sd::TransformComponent, sd::ModelComponent,
+                       sd::LightComponent>(archive);
     }
     m_scene->refresh();
 }
@@ -322,5 +323,6 @@ void EditorLayer::saveScene() {
     entt::snapshot{m_scene->getRegistry()}
         .entities(archive)
         .component<sd::EntityDataComponent, sd::TagComponent,
-                   sd::TransformComponent>(archive);
+                   sd::TransformComponent, sd::ModelComponent,
+                   sd::LightComponent>(archive);
 }

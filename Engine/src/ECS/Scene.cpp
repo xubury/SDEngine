@@ -64,7 +64,13 @@ void Scene::refresh() {
     auto view = m_registry.view<EntityDataComponent>();
 
     for (auto entityId : view) {
-        addEntityChildTranforms({entityId, this});
+        Entity entity(entityId, this);
+        if (entity.hasComponent<ModelComponent>()) {
+            auto &modelComp = entity.getComponent<ModelComponent>();
+            modelComp.model =
+                Graphics::assetManager().load<Model>(modelComp.path);
+        }
+        addEntityChildTranforms(entity);
     }
 }
 
@@ -73,7 +79,7 @@ const entt::registry &Scene::getRegistry() const { return m_registry; }
 entt::registry &Scene::getRegistry() { return m_registry; }
 
 void Scene::addEntityChildTranforms(Entity entity) {
-    EntityDataComponent data = entity.getComponent<EntityDataComponent>();
+    EntityDataComponent &data = entity.getComponent<EntityDataComponent>();
     entity.getComponent<TransformComponent>().transform.getChildren().clear();
     Entity parent(data.m_parent, this);
     Transform *parentTransform =

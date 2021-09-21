@@ -10,6 +10,11 @@ struct SD_API Light {
     glm::vec3 ambient = glm::vec3(1.0f);
     glm::vec3 diffuse = glm::vec3(1.0f);
     glm::vec3 specular = glm::vec3(1.0f);
+
+    template <typename Archive>
+    void serialize(Archive& archive) {
+        archive(ambient, diffuse, specular);
+    }
 };
 
 }  // namespace sd

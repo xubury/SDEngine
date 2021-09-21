@@ -23,8 +23,8 @@ RenderEngine &Application::getRenderEngine() {
 Application::Application() {
     std::string debugPath = "Debug.txt";
     Log::init(debugPath);
-    int width = 1440;
-    int height = 900;
+    int width = 1280;
+    int height = 720;
     Random::init();
     SD_CORE_INFO("Debug info is output to: {}", debugPath);
 
