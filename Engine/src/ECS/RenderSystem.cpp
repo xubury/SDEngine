@@ -5,30 +5,23 @@
 
 namespace sd {
 
+static Ref<Texture> createGeometryTexture(int samples) {
+    return Texture::create(
+        800, 600, samples,
+        samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D,
+        TextureFormat::RGBA, TextureFormatType::FLOAT, TextureWrap::BORDER,
+        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_NEAREST);
+}
+
 RenderSystem::RenderSystem() {
     m_shader = Graphics::assetManager().load<Shader>("shaders/simple3d.glsl");
+    m_framebuffer = Framebuffer::create();
     m_gbufferShader =
         Graphics::assetManager().load<Shader>("shaders/gbuffer.glsl");
-    // position
-    m_gBufferTarget.addTexture(Texture::create(
-        800, 600, 8, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::RGBA,
-        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_NEAREST));
-    // normal
-    m_gBufferTarget.addTexture(Texture::create(
-        800, 600, 8, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::RGBA,
-        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_NEAREST));
-    // albedo
-    m_gBufferTarget.addTexture(Texture::create(
-        800, 600, 8, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::RGBA,
-        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_NEAREST));
-    // ambient
-    m_gBufferTarget.addTexture(Texture::create(
-        800, 600, 8, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::RGBA,
-        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_NEAREST));
+    for (int i = 0; i < 4; ++i) {
+        m_gBufferTarget.addTexture(createGeometryTexture(8));
+        m_framebuffer->attachTexture(createGeometryTexture(1));
+    }
     // entity id
     m_gBufferTarget.addTexture(Texture::create(
         800, 600, 8, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::ALPHA,
@@ -40,28 +33,6 @@ RenderSystem::RenderSystem() {
         TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
         TextureMipmapFilter::LINEAR_NEAREST));
     m_gBufferTarget.init();
-
-    m_framebuffer = Framebuffer::create();
-    // position
-    m_framebuffer->attachTexture(Texture::create(
-        800, 600, 1, TextureType::TEX_2D, TextureFormat::RGBA,
-        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_NEAREST));
-    // normal
-    m_framebuffer->attachTexture(Texture::create(
-        800, 600, 1, TextureType::TEX_2D, TextureFormat::RGBA,
-        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_NEAREST));
-    // albedo
-    m_framebuffer->attachTexture(Texture::create(
-        800, 600, 1, TextureType::TEX_2D, TextureFormat::RGBA,
-        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_NEAREST));
-    // ambient
-    m_framebuffer->attachTexture(Texture::create(
-        800, 600, 1, TextureType::TEX_2D, TextureFormat::RGBA,
-        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_NEAREST));
     // entity id
     m_framebuffer->attachTexture(
         Texture::create(800, 600, 1, TextureType::TEX_2D, TextureFormat::ALPHA,
