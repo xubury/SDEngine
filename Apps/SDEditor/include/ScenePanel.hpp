@@ -23,9 +23,9 @@ class ScenePanel {
     int getGizmoType() const;
 
    private:
-    void drawEntityNode(sd::Entity &entity);
+    void drawEntityNode(sd::Entity entity);
 
-    void drawComponents(sd::Entity &entity);
+    void drawComponents(sd::Entity entity);
 
     sd::Scene *m_scene;
     sd::Entity m_selectedEntity;

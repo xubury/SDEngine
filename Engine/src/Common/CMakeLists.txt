@@ -1,4 +1,6 @@
 find_package(spdlog REQUIRED)
+find_package(cereal REQUIRED)
+find_package(glm REQUIRED)
 
 set(Include_Root ${PROJECT_SOURCE_DIR}/include/Common)
 set(Src_Root ${PROJECT_SOURCE_DIR}/src/Common)
@@ -32,7 +34,8 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-common PUBLIC SD_SHARED)
 endif()
 
-target_link_libraries(sd-common PUBLIC spdlog::spdlog)
+target_link_libraries(sd-common PUBLIC spdlog::spdlog glm)
+add_dependencies(sd-common cereal)
 
 target_include_directories(sd-common
     PUBLIC

@@ -12,19 +12,35 @@
 
 namespace sd {
 
+struct SD_API EntityDataComponent {
+    std::set<entt::entity> m_children;
+    entt::entity m_parent;
+    EntityDataComponent() : m_parent(entt::null) {}
+
+    template <class Archive>
+    void serialize(Archive& archive) {
+        archive(m_parent, m_children);
+    }
+};
+
 struct SD_API TagComponent {
     std::string tag;
     TagComponent() = default;
     TagComponent(const std::string& tag) : tag(tag) {}
-};
 
-struct SD_API EntityDataComponent {
-    std::set<sd::Entity> m_children;
-    sd::Entity m_parent;
+    template <typename Archive>
+    void serialize(Archive& archive) {
+        archive(tag);
+    }
 };
 
 struct SD_API TransformComponent {
     Transform transform;
+
+    template <typename Archive>
+    void serialize(Archive& archive) {
+        archive(transform);
+    }
 };
 
 struct SD_API ModelComponent {

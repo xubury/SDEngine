@@ -38,7 +38,8 @@ void ScenePanel::onImGui() {
 
         sd::EntityDataComponent &data =
             entity.getComponent<sd::EntityDataComponent>();
-        if (!data.m_parent) {
+        sd::Entity parent(data.m_parent, m_scene);
+        if (!parent) {
             drawEntityNode(entity);
         }
     });
@@ -70,7 +71,7 @@ void ScenePanel::onImGui() {
     ImGui::End();
 }
 
-void ScenePanel::drawEntityNode(sd::Entity &entity) {
+void ScenePanel::drawEntityNode(sd::Entity entity) {
     sd::EntityDataComponent &data =
         entity.getComponent<sd::EntityDataComponent>();
 
@@ -106,8 +107,8 @@ void ScenePanel::drawEntityNode(sd::Entity &entity) {
     }
 
     if (opened) {
-        for (sd::Entity child : data.m_children) {
-            drawEntityNode(child);
+        for (entt::entity childId : data.m_children) {
+            drawEntityNode({childId, m_scene});
         }
         ImGui::TreePop();
     }
@@ -155,7 +156,7 @@ static void drawComponent(const std::string &name, sd::Entity entity,
     }
 }
 
-void ScenePanel::drawComponents(sd::Entity &entity) {
+void ScenePanel::drawComponents(sd::Entity entity) {
     if (entity.hasComponent<sd::TagComponent>()) {
         auto &tag = entity.getComponent<sd::TagComponent>().tag;
 

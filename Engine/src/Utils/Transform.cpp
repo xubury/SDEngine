@@ -20,6 +20,8 @@ Transform *Transform::getParent() { return m_parent; }
 
 const Transform *Transform::getParent() const { return m_parent; }
 
+void Transform::setParent(Transform *parent) { m_parent = parent; }
+
 std::set<Transform *> &Transform::getChildren() { return m_children; }
 
 const std::set<Transform *> &Transform::getChildren() const {

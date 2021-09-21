@@ -13,19 +13,19 @@ Entity Scene::createEntity(const std::string &name) {
     return entity;
 }
 
-void Scene::destroyEntity(Entity &entity, bool isRoot) {
+void Scene::destroyEntity(Entity entity, bool isRoot) {
     auto &data = entity.getComponent<EntityDataComponent>();
-    for (sd::Entity child : data.m_children) {
-        destroyEntity(child, false);
+    for (entt::entity entityId : data.m_children) {
+        destroyEntity({entityId, this}, false);
     }
-    sd::Entity parent = data.m_parent;
+    sd::Entity parent(data.m_parent, this);
     if (isRoot && parent) {
         removeChildFromEntity(parent, entity);
     }
     m_registry.destroy(entity);
 }
 
-void Scene::addChildToEntity(Entity &parent, Entity &child) {
+void Scene::addChildToEntity(Entity parent, Entity child) {
     if (parent == child) return;
     auto &parentData = parent.getComponent<EntityDataComponent>();
     auto &childData = child.getComponent<EntityDataComponent>();
@@ -36,8 +36,9 @@ void Scene::addChildToEntity(Entity &parent, Entity &child) {
     Transform *parentTransform =
         &parent.getComponent<TransformComponent>().transform;
 
-    if (childData.m_parent) {
-        removeChildFromEntity(childData.m_parent, child);
+    Entity oldParent(childData.m_parent, this);
+    if (oldParent) {
+        removeChildFromEntity(oldParent, child);
         childTransform->getParent()->removeChild(childTransform);
     }
     parentTransform->addChild(childTransform);
@@ -45,7 +46,7 @@ void Scene::addChildToEntity(Entity &parent, Entity &child) {
     childData.m_parent = parent;
 }
 
-void Scene::removeChildFromEntity(Entity &parent, Entity &child) {
+void Scene::removeChildFromEntity(Entity parent, Entity child) {
     auto &children = parent.getComponent<EntityDataComponent>().m_children;
     if (children.find(child) != children.end()) {
         children.erase(child);
@@ -57,8 +58,35 @@ void Scene::removeChildFromEntity(Entity &parent, Entity &child) {
     child.getComponent<EntityDataComponent>().m_parent = sd::Entity();
 }
 
+void Scene::clear() { m_registry.clear(); }
+
+void Scene::refresh() {
+    auto view = m_registry.view<EntityDataComponent>();
+
+    for (auto entityId : view) {
+        addEntityChildTranforms({entityId, this});
+    }
+}
+
 const entt::registry &Scene::getRegistry() const { return m_registry; }
 
 entt::registry &Scene::getRegistry() { return m_registry; }
+
+void Scene::addEntityChildTranforms(Entity entity) {
+    EntityDataComponent data = entity.getComponent<EntityDataComponent>();
+    entity.getComponent<TransformComponent>().transform.getChildren().clear();
+    Entity parent(data.m_parent, this);
+    Transform *parentTransform =
+        parent ? &parent.getComponent<TransformComponent>().transform : nullptr;
+    entity.getComponent<TransformComponent>().transform.setParent(
+        parentTransform);
+
+    for (entt::entity childId : data.m_children) {
+        Entity child(childId, this);
+        entity.getComponent<TransformComponent>().transform.addChild(
+            &child.getComponent<TransformComponent>().transform);
+        addEntityChildTranforms(child);
+    }
+}
 
 }  // namespace sd

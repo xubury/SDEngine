@@ -2,6 +2,7 @@
 #define SD_TRANSFORM_HPP
 
 #include "Common/Export.hpp"
+#include "Common/Serialize.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <set>
@@ -13,27 +14,29 @@ class SD_API Transform {
     Transform();
     virtual ~Transform() = default;
 
-    Transform *getParent();
-    const Transform *getParent() const;
+    Transform* getParent();
+    const Transform* getParent() const;
 
-    std::set<Transform *> &getChildren();
-    const std::set<Transform *> &getChildren() const;
+    void setParent(Transform* parent);
 
-    void addChild(Transform *child);
-    void removeChild(Transform *child);
+    std::set<Transform*>& getChildren();
+    const std::set<Transform*>& getChildren() const;
 
-    void apply(const Transform &transform);
+    void addChild(Transform* child);
+    void removeChild(Transform* child);
 
-    void translateLocal(const glm::vec3 &t);
-    void translateWorld(const glm::vec3 &t);
+    void apply(const Transform& transform);
 
-    void rotateLocal(const glm::quat &rotation);
-    void rotateWorld(const glm::quat &rotation);
+    void translateLocal(const glm::vec3& t);
+    void translateWorld(const glm::vec3& t);
 
-    void setLocalPosition(const glm::vec3 &position);
-    void setLocalRotation(const glm::quat &rotation);
-    void setLocalScale(const glm::vec3 &scale);
-    void setLocalTransform(const glm::mat4 &transform);
+    void rotateLocal(const glm::quat& rotation);
+    void rotateWorld(const glm::quat& rotation);
+
+    void setLocalPosition(const glm::vec3& position);
+    void setLocalRotation(const glm::quat& rotation);
+    void setLocalScale(const glm::vec3& scale);
+    void setLocalTransform(const glm::mat4& transform);
 
     glm::vec3 getLocalPosition() const;
     glm::quat getLocalRotation() const;
@@ -41,10 +44,10 @@ class SD_API Transform {
     glm::vec3 getLocalEulerAngle() const;
     glm::mat4 getLocalTransform() const;
 
-    void setWorldPosition(const glm::vec3 &position);
-    void setWorldRotation(const glm::quat &rotation);
-    void setWorldScale(const glm::vec3 &scale);
-    void setWorldTransform(const glm::mat4 &transform);
+    void setWorldPosition(const glm::vec3& position);
+    void setWorldRotation(const glm::quat& rotation);
+    void setWorldScale(const glm::vec3& scale);
+    void setWorldTransform(const glm::mat4& transform);
 
     glm::vec3 getWorldPosition() const;
     glm::quat getWorldRotation() const;
@@ -59,10 +62,16 @@ class SD_API Transform {
     glm::vec3 getWorldUp() const;
     glm::vec3 getWorldFront() const;
 
-    glm::vec3 toLocalSpace(const glm::vec3 &world) const;
-    glm::vec3 toWorldSpace(const glm::vec3 &local) const;
-    glm::vec3 toLocalVector(const glm::vec3 &worldVec) const;
-    glm::vec3 toWorldVector(const glm::vec3 &localVec) const;
+    glm::vec3 toLocalSpace(const glm::vec3& world) const;
+    glm::vec3 toWorldSpace(const glm::vec3& local) const;
+    glm::vec3 toLocalVector(const glm::vec3& worldVec) const;
+    glm::vec3 toWorldVector(const glm::vec3& localVec) const;
+
+    template <typename Archive>
+    void serialize(Archive& archive) {
+        archive(m_position, m_rotation, m_scale, m_localPosition,
+                m_localRotation, m_localScale);
+    }
 
    private:
     void updateGlobalPosition();
@@ -81,8 +90,8 @@ class SD_API Transform {
     glm::quat m_localRotation;
     glm::vec3 m_localScale;
 
-    std::set<Transform *> m_children;
-    Transform *m_parent;
+    std::set<Transform*> m_children;
+    Transform* m_parent;
 };
 
 }  // namespace sd

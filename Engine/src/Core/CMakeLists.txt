@@ -1,7 +1,6 @@
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(GLEW REQUIRED)
-find_package(glm REQUIRED)
 
 set(Include_Root ${PROJECT_SOURCE_DIR}/include/Core)
 set(Src_Root ${PROJECT_SOURCE_DIR}/src/Core)
@@ -49,7 +48,7 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-core PUBLIC SD_SHARED)
 endif()
 
-target_link_libraries(sd-core PUBLIC sd-utils sd-imgui sd-renderer sd-ecs SDL2::Main SDL2::Image GLEW::GLEW glm)
+target_link_libraries(sd-core PUBLIC sd-utils sd-imgui sd-renderer sd-ecs SDL2::Main SDL2::Image GLEW::GLEW)
 
 target_include_directories(sd-core 
     PUBLIC

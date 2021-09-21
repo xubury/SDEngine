@@ -1,6 +1,7 @@
 #include "EditorLayer.hpp"
 #include "Renderer/Renderer3D.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Common/Serialize.hpp"
 #include "Core/Application.hpp"
 #include "ECS/Component.hpp"
 #include "ImGui/ImGuiWidget.hpp"
@@ -302,6 +303,24 @@ void EditorLayer::newScene() {
     sd::Application::getRenderEngine().setScene(m_scene.get());
 }
 
-void EditorLayer::openScene() {}
+void EditorLayer::openScene() {
+    m_scene->clear();
+    std::ifstream os("out.cereal");
+    {
+        cereal::BinaryInputArchive archive(os);
+        entt::snapshot_loader{m_scene->getRegistry()}
+            .entities(archive)
+            .component<sd::EntityDataComponent, sd::TagComponent,
+                       sd::TransformComponent>(archive);
+    }
+    m_scene->refresh();
+}
 
-void EditorLayer::saveScene() {}
+void EditorLayer::saveScene() {
+    std::ofstream os("out.cereal");
+    cereal::BinaryOutputArchive archive(os);
+    entt::snapshot{m_scene->getRegistry()}
+        .entities(archive)
+        .component<sd::EntityDataComponent, sd::TagComponent,
+                   sd::TransformComponent>(archive);
+}
