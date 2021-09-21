@@ -18,4 +18,8 @@ void RenderEngine::render() { m_systems.render(); }
 
 void RenderEngine::setScene(Scene *scene) { m_systems.setScene(scene); }
 
+void RenderEngine::resize(int width, int height) {
+    m_renderSystem->resize(width, height);
+}
+
 }  // namespace sd

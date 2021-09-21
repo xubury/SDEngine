@@ -98,8 +98,9 @@ void Application::processEvent(const SDL_Event &event) {
             break;
         case SDL_WINDOWEVENT:
             if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                sd::Renderer::getDefaultTarget().resize(event.window.data1,
-                                                        event.window.data2);
+                Renderer::getDefaultTarget().resize(event.window.data1,
+                                                    event.window.data2);
+                m_renderEngine.resize(event.window.data1, event.window.data2);
             }
             break;
         default:

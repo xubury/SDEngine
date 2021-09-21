@@ -19,6 +19,8 @@ class SD_API RenderSystem : public System {
 
     void onSceneChange() override{};
 
+    void resize(int width, int height);
+
     void setRenderTarget(RenderTarget *target);
 
     void setCamera(Camera *camera);

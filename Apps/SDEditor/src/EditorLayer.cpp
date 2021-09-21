@@ -205,8 +205,11 @@ void EditorLayer::onImGui() {
                                viewportMaxRegion.y + viewportOffset.y};
         if (m_width != wsize.x || m_height != wsize.y) {
             if (wsize.x > 0 && wsize.y > 0) {
+                sd::Application::getRenderEngine().resize(wsize.x, wsize.y);
+
                 m_target.resize(wsize.x, wsize.y);
                 m_frameBuffer->resize(wsize.x, wsize.y);
+
                 m_editorCamera.setProjection(m_fov, wsize.x / wsize.y, m_nearZ,
                                              m_farZ);
             }

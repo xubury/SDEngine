@@ -14,9 +14,12 @@ class RenderEngine {
     TerrainSystem *getTerrainSystem();
 
     void tick(float dt);
+
     void render();
 
     void setScene(Scene *scene);
+
+    void resize(int width, int height);
 
    private:
     SystemManager m_systems;

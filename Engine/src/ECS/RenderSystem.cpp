@@ -60,9 +60,13 @@ RenderSystem::RenderSystem() {
 }
 
 void RenderSystem::setRenderTarget(RenderTarget *target) {
-    m_gBufferTarget.resize(target->getWidth(), target->getHeight());
-    m_framebuffer->resize(target->getWidth(), target->getHeight());
     m_target = target;
+    resize(target->getWidth(), target->getHeight());
+}
+
+void RenderSystem::resize(int width, int height) {
+    m_gBufferTarget.resize(width, height);
+    m_framebuffer->resize(width, height);
 }
 
 void RenderSystem::onTick(float) {}
