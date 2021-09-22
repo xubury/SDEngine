@@ -30,6 +30,8 @@ class EditorLayer : public sd::Layer {
     void saveScene();
 
    private:
+    void processDialog();
+
     void hide();
 
     void show();
@@ -59,6 +61,10 @@ class EditorLayer : public sd::Layer {
 
     sd::Ref<sd::Scene> m_scene;
     ScenePanel m_scenePanel;
+
+    bool m_openSceneOpen;
+    bool m_saveSceneOpen;
+    ImFileDialogInfo m_fileDialogInfo;
 };
 
 #endif /* EDITOR_LAYER_HPP */

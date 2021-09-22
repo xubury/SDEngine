@@ -21,7 +21,9 @@ EditorLayer::EditorLayer()
       m_nearZ(0.1f),
       m_farZ(100000.f),
       m_editorCamera(m_fov, static_cast<float>(m_width) / m_height, m_nearZ,
-                     m_farZ) {
+                     m_farZ),
+      m_openSceneOpen(false),
+      m_saveSceneOpen(false) {
     m_cameraController.setCamera(&m_editorCamera);
     newScene();
 }
@@ -255,6 +257,8 @@ void EditorLayer::onImGui() {
     ImGui::PopStyleVar();
 
     ImGui::End();
+
+    processDialog();
 }
 
 void EditorLayer::hide() {
@@ -307,25 +311,40 @@ void EditorLayer::newScene() {
 }
 
 void EditorLayer::openScene() {
-    m_scene->clear();
-    std::ifstream os("out.cereal");
-    {
+    m_openSceneOpen = true;
+    m_fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
+    m_fileDialogInfo.title = "Open File";
+    m_fileDialogInfo.fileName = "";
+    m_fileDialogInfo.directoryPath = std::filesystem::current_path();
+}
+
+void EditorLayer::saveScene() {
+    m_saveSceneOpen = true;
+    m_fileDialogInfo.type = ImGuiFileDialogType_SaveFile;
+    m_fileDialogInfo.title = "Save File";
+    m_fileDialogInfo.fileName = "test.scene";
+    m_fileDialogInfo.directoryPath = std::filesystem::current_path();
+}
+
+void EditorLayer::processDialog() {
+    if (ImGui::FileDialog(&m_openSceneOpen, &m_fileDialogInfo)) {
+        m_scene->clear();
+        std::ifstream os(m_fileDialogInfo.resultPath);
         cereal::BinaryInputArchive archive(os);
         entt::snapshot_loader{m_scene->getRegistry()}
             .entities(archive)
             .component<sd::EntityDataComponent, sd::TagComponent,
                        sd::TransformComponent, sd::ModelComponent,
                        sd::LightComponent>(archive);
+        m_scene->refresh();
     }
-    m_scene->refresh();
-}
-
-void EditorLayer::saveScene() {
-    std::ofstream os("out.cereal");
-    cereal::BinaryOutputArchive archive(os);
-    entt::snapshot{m_scene->getRegistry()}
-        .entities(archive)
-        .component<sd::EntityDataComponent, sd::TagComponent,
-                   sd::TransformComponent, sd::ModelComponent,
-                   sd::LightComponent>(archive);
+    if (ImGui::FileDialog(&m_saveSceneOpen, &m_fileDialogInfo)) {
+        std::ofstream os(m_fileDialogInfo.resultPath);
+        cereal::BinaryOutputArchive archive(os);
+        entt::snapshot{m_scene->getRegistry()}
+            .entities(archive)
+            .component<sd::EntityDataComponent, sd::TagComponent,
+                       sd::TransformComponent, sd::ModelComponent,
+                       sd::LightComponent>(archive);
+    }
 }

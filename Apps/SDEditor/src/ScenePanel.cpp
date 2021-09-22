@@ -233,7 +233,7 @@ void ScenePanel::drawComponents(sd::Entity entity) {
                 m_fileDialogOpen = true;
                 m_fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
                 m_fileDialogInfo.title = "Open File";
-                m_fileDialogInfo.fileName = "test.json";
+                m_fileDialogInfo.fileName = "";
                 m_fileDialogInfo.directoryPath =
                     std::filesystem::current_path();
             }
