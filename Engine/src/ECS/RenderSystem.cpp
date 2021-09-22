@@ -79,9 +79,8 @@ void RenderSystem::onRender() {
     Renderer3D::beginScene(*m_camera, m_target);
     Renderer::setClearColor(0.1, 0.2, 0.3, 1.0);
     Renderer::clear();
-    Renderer3D::setShader(*m_shader);
+    Renderer::setShader(*m_shader);
     Renderer::setDepthMask(false);
-    m_shader->bind();
     auto lightView =
         m_scene->getRegistry().view<TransformComponent, LightComponent>();
     lightView.each([this](const TransformComponent &transformComp,
@@ -109,8 +108,7 @@ void RenderSystem::renderGBuffer() {
     Renderer3D::beginScene(*m_camera, &m_gBufferTarget);
     Renderer::setClearColor(0.f, 0.f, 0.f, 1.0);
     Renderer::clear();
-    Renderer3D::setShader(*m_gbufferShader);
-    m_gbufferShader->bind();
+    Renderer::setShader(*m_gbufferShader);
     m_gBufferTarget.getFramebuffer()->clearAttachment(4, &Entity::INVALID_ID);
     auto modelView =
         m_scene->getRegistry().view<TransformComponent, ModelComponent>();

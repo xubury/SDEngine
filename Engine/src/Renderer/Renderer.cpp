@@ -4,9 +4,22 @@
 #include "Renderer/RenderTarget.hpp"
 #include "Graphics/OpenGL/GLDevice.hpp"
 #include "Graphics/Graphics.hpp"
+#include "Graphics/Camera.hpp"
 #include "Utils/Log.hpp"
 
 namespace sd {
+
+struct CameraData {
+    glm::mat4 viewProjection;
+    glm::vec3 viewPos;
+};
+
+struct RendererData {
+    CameraData cameraData;
+    Ref<UniformBuffer> cameraUBO;
+};
+
+static RendererData s_data;
 
 Renderer &Renderer::instance() {
     static Renderer s_instance;
@@ -23,6 +36,8 @@ void Renderer::init() {
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
+    s_data.cameraUBO = UniformBuffer::create(
+        &s_data.cameraData, sizeof(CameraData), BufferIOType::STATIC);
 }
 
 void Renderer::submit(const VertexArray &vao, MeshTopology topology,
@@ -53,9 +68,7 @@ void Renderer::setDepthMask(bool depthMask) {
     instance().m_device->setDepthMask(depthMask);
 }
 
-void Renderer::setBlend(bool blend) {
-    instance().m_device->setBlend(blend);
-}
+void Renderer::setBlend(bool blend) { instance().m_device->setBlend(blend); }
 
 RenderTarget &Renderer::getDefaultTarget() {
     return instance().m_defaultTarget;
@@ -63,6 +76,17 @@ RenderTarget &Renderer::getDefaultTarget() {
 
 void Renderer::setDefaultTarget(const RenderTarget &target) {
     instance().m_defaultTarget = target;
+}
+
+void Renderer::setShader(Shader &shader) {
+    shader.bind();
+    shader.setUniformBuffer("Camera", *s_data.cameraUBO);
+}
+
+void Renderer::setCamera(Camera &camera) {
+    s_data.cameraData.viewProjection = camera.getViewPorjection();
+    s_data.cameraData.viewPos = camera.getWorldPosition();
+    s_data.cameraUBO->updateData(&s_data.cameraData, sizeof(CameraData));
 }
 
 }  // namespace sd

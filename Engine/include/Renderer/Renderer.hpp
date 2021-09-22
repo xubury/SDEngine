@@ -13,6 +13,8 @@ class Framebuffer;
 
 class Device;
 
+class Camera;
+
 class SD_API Renderer {
    public:
     static void init();
@@ -38,6 +40,9 @@ class SD_API Renderer {
 
     static void setDefaultTarget(const RenderTarget &target);
 
+    static void setShader(Shader &shader);
+
+    static void setCamera(Camera &camera);
    private:
     Renderer() = default;
 

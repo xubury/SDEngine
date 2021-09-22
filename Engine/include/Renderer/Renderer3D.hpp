@@ -22,8 +22,6 @@ class SD_API Renderer3D {
 
     static void drawMesh(const Mesh &mesh);
 
-    static void setShader(Shader &shader);
-
    private:
     Renderer3D() = default;
 };

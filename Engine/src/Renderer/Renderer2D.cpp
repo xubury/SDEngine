@@ -28,11 +28,6 @@ struct QuadVertex {
           entityIndex(0) {}
 };
 
-struct CameraData {
-    glm::mat4 viewProjection;
-    glm::vec3 viewPos;
-};
-
 struct Renderer2DData {
     static const uint32_t MAX_QUADS = 20000;
     static const uint32_t MAX_VERTICES = MAX_QUADS * 4;
@@ -55,9 +50,6 @@ struct Renderer2DData {
     std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> textureSlots;
 
     Ref<Texture> whiteTexture;
-
-    CameraData cameraBuffer;
-    Ref<UniformBuffer> cameraUBO;
 };
 
 static Renderer2DData s_data;
@@ -116,9 +108,6 @@ void Renderer2D::init() {
         TextureMipmapFilter::LINEAR_LINEAR, &color);
     s_data.textureSlots[0] = s_data.whiteTexture;
 
-    s_data.cameraUBO = UniformBuffer::create(
-        &s_data.cameraBuffer, sizeof(CameraData), BufferIOType::STATIC);
-
     s_data.shader =
         Graphics::assetManager().load<Shader>("shaders/simple.glsl");
 }
@@ -130,9 +119,7 @@ void Renderer2D::beginScene(OrthographicCamera& camera,
     } else {
         Renderer::getDefaultTarget().use();
     }
-    s_data.cameraBuffer.viewProjection = camera.getViewPorjection();
-    s_data.cameraBuffer.viewPos = camera.getWorldPosition();
-    s_data.cameraUBO->updateData(&s_data.cameraBuffer, sizeof(CameraData));
+    Renderer::setCamera(camera);
     startBatch();
 }
 
@@ -147,8 +134,7 @@ void Renderer2D::flush() {
                       (uint8_t*)s_data.quadVertexBufferBase.data();
     s_data.quadVBO->updateData(s_data.quadVertexBufferBase.data(), dataSize);
 
-    s_data.shader->bind();
-    s_data.shader->setUniformBuffer("Camera", *s_data.cameraUBO);
+    Renderer::setShader(*s_data.shader);
 
     for (uint32_t i = 0; i < s_data.textureSlotIndex; ++i) {
         s_data.shader->setTexture("", s_data.textureSlots[i].get());
