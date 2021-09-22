@@ -312,6 +312,9 @@ void Transform::updateGlobalPosition() {
         glm::mat4 global = m_parent->getWorldTransform() * getLocalTransform();
         m_position = global[3];
     }
+    for (Transform *child : m_children) {
+        child->updateGlobalPosition();
+    }
 }
 
 void Transform::updateGlobalRotation() {
@@ -322,6 +325,9 @@ void Transform::updateGlobalRotation() {
             glm::mat4(m_parent->getWorldRotation()) * getLocalTransform();
         m_rotation = glm::quat(global);
     }
+    for (Transform *child : m_children) {
+        child->updateGlobalRotation();
+    }
 }
 
 void Transform::updateGlobalScale() {
@@ -331,6 +337,9 @@ void Transform::updateGlobalScale() {
         glm::mat4 global = glm::scale(glm::mat4(1.0f), m_parent->m_scale) *
                            glm::scale(glm::mat4(1.0f), m_localScale);
         m_scale = glm::vec3(global[0][0], global[1][1], global[2][2]);
+    }
+    for (Transform *child : m_children) {
+        child->updateGlobalScale();
     }
 }
 

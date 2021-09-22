@@ -232,17 +232,15 @@ void EditorLayer::onImGui() {
             const glm::mat4 &view = m_editorCamera.getView();
             const glm::mat4 &projection = m_editorCamera.getProjection();
 
-            glm::mat4 transform =
-                selectedEntity.getComponent<sd::TransformComponent>()
-                    .transform.getWorldTransform();
+            auto &tc = selectedEntity.getComponent<sd::TransformComponent>();
+            glm::mat4 transform = tc.transform.getWorldTransform();
             ImGuizmo::Manipulate(
                 glm::value_ptr(view), glm::value_ptr(projection),
                 static_cast<ImGuizmo::OPERATION>(m_scenePanel.getGizmoType()),
                 static_cast<ImGuizmo::MODE>(m_scenePanel.getGizmoMode()),
                 glm::value_ptr(transform), nullptr, nullptr);
             if (ImGuizmo::IsUsing()) {
-                selectedEntity.getComponent<sd::TransformComponent>()
-                    .transform.setWorldTransform(transform);
+                tc.transform.setWorldTransform(transform);
             }
         }
     }
