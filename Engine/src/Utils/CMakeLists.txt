@@ -1,16 +1,28 @@
+find_package(glm REQUIRED)
+find_package(spdlog REQUIRED)
+
 set(Include_Root ${PROJECT_SOURCE_DIR}/include/Utils)
 set(Src_Root ${PROJECT_SOURCE_DIR}/src/Utils)
 
 set(Utils_Include
+    ${Include_Root}/Assert.hpp
     ${Include_Root}/AssetLoader.hpp
     ${Include_Root}/AssetManager.hpp
+    ${Include_Root}/Base.hpp
+    ${Include_Root}/Config.hpp
+    ${Include_Root}/Export.hpp
     ${Include_Root}/File.hpp
+    ${Include_Root}/Log.hpp
     ${Include_Root}/Math.hpp
+    ${Include_Root}/PlatformDetection.hpp
     ${Include_Root}/QuadTree.hpp
+    ${Include_Root}/Random.hpp
+    ${Include_Root}/Serialize.hpp
     ${Include_Root}/Transform.hpp)
 
 set(Utils_Src
     ${Src_Root}/File.cpp
+    ${Src_Root}/Log.cpp
     ${Src_Root}/Math.cpp
     ${Src_Root}/QuadTree.cpp
     ${Src_Root}/Random.cpp
@@ -32,7 +44,7 @@ target_include_directories(sd-utils
     PUBLIC
     ${PROJECT_SOURCE_DIR}/include)
 
-target_link_libraries(sd-utils PUBLIC sd-common)
+target_link_libraries(sd-utils PUBLIC spdlog::spdlog glm)
 
 install(TARGETS sd-utils LIBRARY DESTINATION lib)
 

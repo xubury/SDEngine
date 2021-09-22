@@ -74,7 +74,7 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-graphics PUBLIC SD_SHARED)
 endif()
 
-target_link_libraries(sd-graphics PUBLIC sd-common sd-utils SDL2::Image GLEW::GLEW assimp::assimp)
+target_link_libraries(sd-graphics PUBLIC sd-utils SDL2::Image GLEW::GLEW assimp::assimp)
 
 target_include_directories(sd-graphics
     PUBLIC

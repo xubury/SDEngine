@@ -3,7 +3,7 @@
 
 #include "ECS/Scene.hpp"
 #include "ECS/Entity.hpp"
-#include "Common/Base.hpp"
+#include "Utils/Base.hpp"
 #include "ImGui/FileDialog.hpp"
 
 class ScenePanel {

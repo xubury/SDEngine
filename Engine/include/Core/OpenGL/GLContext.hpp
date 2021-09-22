@@ -1,7 +1,7 @@
 #ifndef SD_GL_CONTEXT_HPP
 #define SD_GL_CONTEXT_HPP
 
-#include "Common/Export.hpp"
+#include "Utils/Export.hpp"
 #include "Core/Context.hpp"
 #include <SDL.h>
 

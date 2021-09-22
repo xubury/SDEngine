@@ -1,7 +1,7 @@
 #ifndef SD_COMPONENT_HPP
 #define SD_COMPONENT_HPP
 
-#include "Common/Export.hpp"
+#include "Utils/Export.hpp"
 #include "Utils/Transform.hpp"
 #include "Utils/Math.hpp"
 #include "ECS/Entity.hpp"

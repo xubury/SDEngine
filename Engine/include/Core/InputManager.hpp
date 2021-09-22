@@ -4,7 +4,7 @@
 #include <SDL.h>
 #include <unordered_map>
 #include <glm/glm.hpp>
-#include "Common/Export.hpp"
+#include "Utils/Export.hpp"
 
 namespace sd {
 

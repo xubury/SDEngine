@@ -2,8 +2,8 @@
 #define SD_ASSET_MANAGER_HPP
 
 #include <filesystem>
-#include "Common/Export.hpp"
-#include "Common/Base.hpp"
+#include "Utils/Export.hpp"
+#include "Utils/Base.hpp"
 
 namespace sd {
 

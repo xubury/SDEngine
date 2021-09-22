@@ -1,7 +1,7 @@
 #ifndef SD_MATERIAL_HPP
 #define SD_MATERIAL_HPP
 
-#include "Common/Export.hpp"
+#include "Utils/Export.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/Shader.hpp"
 #include <string>

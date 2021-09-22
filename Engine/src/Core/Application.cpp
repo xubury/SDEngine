@@ -1,5 +1,5 @@
 #include "Core/Application.hpp"
-#include "Common/Log.hpp"
+#include "Utils/Log.hpp"
 #include <SDL_image.h>
 #include "Utils/Random.hpp"
 #include "Core/InputManager.hpp"

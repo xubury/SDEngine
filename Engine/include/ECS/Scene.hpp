@@ -1,8 +1,8 @@
 #ifndef SD_SCENE_HPP
 #define SD_SCENE_HPP
 
-#include "Common/Export.hpp"
-#include "Common/Base.hpp"
+#include "Utils/Export.hpp"
+#include "Utils/Base.hpp"
 #include "entt/entt.hpp"
 #include "Graphics/Camera.hpp"
 

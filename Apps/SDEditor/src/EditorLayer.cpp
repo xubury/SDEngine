@@ -1,7 +1,7 @@
 #include "EditorLayer.hpp"
 #include "Renderer/Renderer3D.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Common/Serialize.hpp"
+#include "Utils/Serialize.hpp"
 #include "Core/Application.hpp"
 #include "ECS/Component.hpp"
 #include "ImGui/ImGuiWidget.hpp"

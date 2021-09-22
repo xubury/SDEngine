@@ -6,7 +6,7 @@
 #include "Renderer/Renderer.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Texture.hpp"
-#include "Common/Log.hpp"
+#include "Utils/Log.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Core/InputManager.hpp"
 #include "Utils/Random.hpp"

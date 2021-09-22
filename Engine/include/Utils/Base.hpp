@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <cstdint>
-#include "Common/PlatformDetection.hpp"
+#include "Utils/PlatformDetection.hpp"
 
 namespace sd {
 

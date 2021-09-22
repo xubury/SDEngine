@@ -1,8 +1,8 @@
 #ifndef SD_TRANSFORM_HPP
 #define SD_TRANSFORM_HPP
 
-#include "Common/Export.hpp"
-#include "Common/Serialize.hpp"
+#include "Utils/Export.hpp"
+#include "Utils/Serialize.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <set>

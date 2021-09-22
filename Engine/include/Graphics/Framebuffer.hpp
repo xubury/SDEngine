@@ -1,7 +1,7 @@
 #ifndef SD_FRAME_BUFFER_HPP
 #define SD_FRAME_BUFFER_HPP
 
-#include "Common/Base.hpp"
+#include "Utils/Base.hpp"
 #include "Graphics/Graphics.hpp"
 #include <vector>
 

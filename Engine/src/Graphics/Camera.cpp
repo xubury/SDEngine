@@ -1,6 +1,6 @@
 #include "Graphics/Camera.hpp"
 #include <glm/gtx/matrix_decompose.hpp>
-#include "Common/Log.hpp"
+#include "Utils/Log.hpp"
 
 namespace sd {
 

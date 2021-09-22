@@ -1,7 +1,7 @@
 #ifndef SD_DEVICE_HPP
 #define SD_DEVICE_HPP
 
-#include "Common/Base.hpp"
+#include "Utils/Base.hpp"
 #include "Graphics/Graphics.hpp"
 
 namespace sd {

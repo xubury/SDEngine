@@ -1,8 +1,8 @@
 #ifndef SD_BUFFER_HPP
 #define SD_BUFFER_HPP
 
-#include "Common/Export.hpp"
-#include "Common/Base.hpp"
+#include "Utils/Export.hpp"
+#include "Utils/Base.hpp"
 #include "Graphics/Graphics.hpp"
 
 namespace sd {

@@ -1,7 +1,7 @@
 #ifndef SD_LIGHT_HPP
 #define SD_LIGHT_HPP
 
-#include "Common/Export.hpp"
+#include "Utils/Export.hpp"
 #include <glm/glm.hpp>
 
 namespace sd {

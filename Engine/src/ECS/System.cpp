@@ -1,5 +1,5 @@
 #include "ECS/System.hpp"
-#include "Common/Log.hpp"
+#include "Utils/Log.hpp"
 
 namespace sd {
 

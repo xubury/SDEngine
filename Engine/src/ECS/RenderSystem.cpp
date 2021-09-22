@@ -1,5 +1,5 @@
 #include "ECS/RenderSystem.hpp"
-#include "Common/Log.hpp"
+#include "Utils/Log.hpp"
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
 #include "Renderer/Renderer3D.hpp"

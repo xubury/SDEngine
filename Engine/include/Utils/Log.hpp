@@ -1,8 +1,8 @@
 #ifndef SD_LOG_HPP
 #define SD_LOG_HPP
 
-#include "Common/Base.hpp"
-#include "Common/Export.hpp"
+#include "Utils/Base.hpp"
+#include "Utils/Export.hpp"
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
 

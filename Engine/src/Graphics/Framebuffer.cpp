@@ -1,7 +1,7 @@
 #include "Graphics/Framebuffer.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Graphics/OpenGL/GLFramebuffer.hpp"
-#include "Common/Log.hpp"
+#include "Utils/Log.hpp"
 
 namespace sd {
 
