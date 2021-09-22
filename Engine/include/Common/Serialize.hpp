@@ -108,4 +108,4 @@ void serialize(Archive& archive, glm::dquat& q) {
 
 }  // namespace glm
 
-#endif /* SD_SD_SERIALIZE_HPPPP */
+#endif /* SD_SERIALIZE_HPP */

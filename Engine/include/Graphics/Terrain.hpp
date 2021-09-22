@@ -37,4 +37,4 @@ class SD_API Terrain {
 
 }  // namespace sd
 
-#endif /* TERRAIN_HPP */
+#endif /* SD_TERRAIN_HPP */
