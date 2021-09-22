@@ -12,22 +12,19 @@ void Random::init() {
 
 void Random::init(uint32_t seed) { s_randomEngine.seed(seed); }
 
+double Random::uniform() {
+    return static_cast<double>(s_distribution(s_randomEngine)) /
+           std::numeric_limits<uint32_t>::max();
+}
+
 float Random::rnd(float min, float max) {
-    return (float)s_distribution(s_randomEngine) /
-               (float)std::numeric_limits<uint32_t>::max() * (max - min) +
-           min;
+    return uniform() * (max - min) + min;
 }
 
 double Random::rnd(double min, double max) {
-    return (double)s_distribution(s_randomEngine) /
-               (double)std::numeric_limits<uint32_t>::max() * (max - min) +
-           min;
+    return uniform() * (max - min) + min;
 }
 
-int Random::rnd(int min, int max) {
-    return (float)s_distribution(s_randomEngine) /
-               (float)std::numeric_limits<uint32_t>::max() * (max - min) +
-           min;
-}
+int Random::rnd(int min, int max) { return uniform() * (max - min) + min; }
 
 }  // namespace sd

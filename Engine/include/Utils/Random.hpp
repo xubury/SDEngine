@@ -17,6 +17,8 @@ class SD_API Random {
     static void init(uint32_t seed);
 
    private:
+    static double uniform();
+
     static std::mt19937 s_randomEngine;
     static std::uniform_int_distribution<std::mt19937::result_type>
         s_distribution;
