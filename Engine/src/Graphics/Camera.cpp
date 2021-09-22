@@ -171,11 +171,8 @@ void Camera::setWorldTransform(const glm::mat4 &transform) {
     if (m_transform) {
         m_transform->setWorldTransform(transform);
     } else {
-        glm::vec3 skew;
-        glm::vec4 perspective;
         glm::vec3 scale;
-        glm::decompose(transform, scale, m_rotation, m_position, skew,
-                       perspective);
+        decomposeTransform(transform, m_position, m_rotation, scale);
     }
     m_outdated = true;
 }
