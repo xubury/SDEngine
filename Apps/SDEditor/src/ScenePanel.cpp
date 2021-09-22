@@ -211,17 +211,20 @@ void ScenePanel::drawComponents(sd::Entity entity) {
             ImGui::SameLine();
             ImGui::RadioButton("Scale", &m_gizmoType, ImGuizmo::SCALE);
             glm::vec3 position = component.transform.getWorldPosition();
-            ImGui::DrawVec3Control("Translation", position);
-            component.transform.setWorldPosition(position);
+            if (ImGui::DrawVec3Control("Translation", position)) {
+                component.transform.setWorldPosition(position);
+            }
 
             glm::vec3 rotation = glm::degrees(
                 glm::eulerAngles(component.transform.getWorldRotation()));
-            ImGui::DrawVec3Control("Rotation", rotation);
-            component.transform.setWorldRotation(glm::radians(rotation));
+            if (ImGui::DrawVec3Control("Rotation", rotation)) {
+                component.transform.setWorldRotation(glm::radians(rotation));
+            }
 
             glm::vec3 scale = component.transform.getWorldScale();
-            ImGui::DrawVec3Control("Scale", scale, 1.0f);
-            component.transform.setWorldScale(scale);
+            if (ImGui::DrawVec3Control("Scale", scale, 1.0f)) {
+                component.transform.setWorldScale(scale);
+            }
         },
         false);
     drawComponent<sd::ModelComponent>(

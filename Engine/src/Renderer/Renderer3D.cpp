@@ -16,7 +16,7 @@ void Renderer3D::beginScene(Camera &camera, const RenderTarget *target) {
     Renderer::setCamera(camera);
 }
 
-void Renderer3D::endScene() {}
+void Renderer3D::endScene() { Renderer::getDefaultTarget().use(); }
 
 void Renderer3D::drawMesh(const Mesh &mesh) {
     Renderer::setWireframe(mesh.isWireframe());

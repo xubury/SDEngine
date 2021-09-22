@@ -104,8 +104,8 @@ void RenderSystem::onRender() {
 }
 
 void RenderSystem::renderGBuffer() {
-    Renderer::setBlend(false);
     Renderer3D::beginScene(*m_camera, &m_gBufferTarget);
+    Renderer::setBlend(false);
     Renderer::setClearColor(0.f, 0.f, 0.f, 1.0);
     Renderer::clear();
     Renderer::setShader(*m_gbufferShader);
@@ -136,8 +136,8 @@ void RenderSystem::renderGBuffer() {
     m_framebuffer->copyFrom(m_gBufferTarget.getFramebuffer(),
                             BufferBit::COLOR_BUFFER_BIT,
                             TextureFilter::NEAREST);
-    Renderer3D::endScene();
     Renderer::setBlend(true);
+    Renderer3D::endScene();
 }
 
 Framebuffer *RenderSystem::getGBuffer() { return m_framebuffer.get(); }

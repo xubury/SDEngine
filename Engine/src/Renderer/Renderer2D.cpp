@@ -123,7 +123,10 @@ void Renderer2D::beginScene(OrthographicCamera& camera,
     startBatch();
 }
 
-void Renderer2D::endScene() { flush(); }
+void Renderer2D::endScene() {
+    flush();
+    Renderer::getDefaultTarget().use();
+}
 
 void Renderer2D::flush() {
     if (s_data.quadIndexCnt == 0) {

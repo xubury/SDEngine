@@ -9,6 +9,10 @@
 
 namespace sd {
 
+bool SD_API decomposeTransform(const glm::mat4& transform,
+                               glm::vec3& translation, glm::quat& rotation,
+                               glm::vec3& scale);
+
 class SD_API Transform {
    public:
     Transform();

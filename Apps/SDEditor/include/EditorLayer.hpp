@@ -39,10 +39,9 @@ class EditorLayer : public sd::Layer {
     // The multisampling texture render target.
     sd::RenderTarget m_target;
 
-    // The framebuffer and texture for copying multisampling texture.
+    // The framebuffer for copying multisampling texture.
     // You can't directly render multisampling texture.
     sd::Ref<sd::Framebuffer> m_frameBuffer;
-    sd::Ref<sd::Texture> m_texture;
 
     int m_width;
     int m_height;

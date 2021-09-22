@@ -31,9 +31,9 @@ EditorLayer::EditorLayer()
 void EditorLayer::onAttach() {
     sd::Ref<sd::Texture> multisampleTexture = sd::Texture::create(
         1024, 1024, 8, sd::TextureType::TEX_2D_MULTISAMPLE,
-        sd::TextureFormat::RGBA, sd::TextureFormatType::UBYTE,
-        sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
-        sd::TextureMipmapFilter::NEAREST);
+        sd::TextureFormat::RGBA, sd::TextureFormatType::FLOAT,
+        sd::TextureWrap::BORDER, sd::TextureFilter::LINEAR,
+        sd::TextureMipmapFilter::LINEAR_NEAREST);
     m_target.addTexture(multisampleTexture);
     m_target.addTexture(sd::Texture::create(
         multisampleTexture->getWidth(), multisampleTexture->getHeight(), 8,
@@ -48,12 +48,11 @@ void EditorLayer::onAttach() {
     m_target.init();
 
     m_frameBuffer = sd::Framebuffer::create();
-    m_texture = sd::Texture::create(
+    m_frameBuffer->attachTexture(sd::Texture::create(
         m_target.getWidth(), m_target.getHeight(), 1, sd::TextureType::TEX_2D,
-        sd::TextureFormat::RGBA, sd::TextureFormatType::UBYTE,
-        sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
-        sd::TextureMipmapFilter::NEAREST);
-    m_frameBuffer->attachTexture(m_texture);
+        sd::TextureFormat::RGBA, sd::TextureFormatType::FLOAT,
+        sd::TextureWrap::BORDER, sd::TextureFilter::LINEAR,
+        sd::TextureMipmapFilter::LINEAR_NEAREST));
     m_frameBuffer->attachTexture(sd::Texture::create(
         m_target.getWidth(), m_target.getHeight(), 1, sd::TextureType::TEX_2D,
         sd::TextureFormat::ALPHA, sd::TextureFormatType::UINT,
@@ -64,10 +63,7 @@ void EditorLayer::onAttach() {
     show();
 }
 
-void EditorLayer::onDetech() {
-    hide();
-    m_texture.reset();
-}
+void EditorLayer::onDetech() { hide(); }
 
 void EditorLayer::onRender() {}
 
@@ -96,9 +92,6 @@ void EditorLayer::onImGui() {
     if (m_hide) {
         return;
     }
-    sd::Renderer::setFramebuffer(nullptr);
-    sd::Renderer::setClearColor(0.3, 0.3, 0.3, 1.0f);
-    sd::Renderer::clear();
 
     static bool dockspaceOpen = true;
     static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
@@ -226,8 +219,8 @@ void EditorLayer::onImGui() {
 
         m_isViewportFocused = ImGui::IsWindowFocused();
         m_isViewportHovered = ImGui::IsWindowHovered();
-        ImGui::Image((void *)(intptr_t)m_texture->getId(), wsize, ImVec2(0, 1),
-                     ImVec2(1, 0));
+        ImGui::Image((void *)(intptr_t)m_frameBuffer->getTexture(0)->getId(),
+                     wsize, ImVec2(0, 1), ImVec2(1, 0));
 
         sd::Entity selectedEntity = m_scenePanel.getSelectedEntity();
         if (selectedEntity) {

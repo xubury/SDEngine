@@ -28,7 +28,14 @@ set(Utils_Src
     ${Src_Root}/Random.cpp
     ${Src_Root}/Transform.cpp)
 
+
 add_library(sd-utils ${Utils_Src})
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_link_options(sd-utils PUBLIC -mconsole)
+else()
+    target_link_options(sd-utils PUBLIC -mwindows)
+endif()
 
 set_property(TARGET sd-utils PROPERTY CXX_STANDARD 17)
 
