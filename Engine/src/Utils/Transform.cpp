@@ -127,33 +127,36 @@ void Transform::removeChild(Transform *child) {
     m_children.erase(child);
 }
 
-void Transform::apply(const Transform &transform) {
-    m_position += transform.m_position;
-    m_rotation *= transform.m_rotation;
-    m_scale *= transform.m_scale;
-    updateLocalScale();
-    updateLocalRotation();
-    updateLocalPosition();
-}
-
 void Transform::translateLocal(const glm::vec3 &t) {
     m_position += getWorldRotation() * t;
     updateLocalPosition();
+    for (Transform *child : m_children) {
+        child->updateGlobalPosition();
+    }
 }
 
 void Transform::translateWorld(const glm::vec3 &t) {
     m_position += t;
     updateLocalPosition();
+    for (Transform *child : m_children) {
+        child->updateGlobalPosition();
+    }
 }
 
 void Transform::rotateLocal(const glm::quat &rotation) {
     m_rotation = getWorldRotation() * rotation;
     updateLocalRotation();
+    for (Transform *child : m_children) {
+        child->updateGlobalRotation();
+    }
 }
 
 void Transform::rotateWorld(const glm::quat &rotation) {
     m_rotation = rotation * getWorldRotation();
     updateLocalRotation();
+    for (Transform *child : m_children) {
+        child->updateGlobalRotation();
+    }
 }
 
 void Transform::setLocalPosition(const glm::vec3 &position) {
@@ -202,10 +205,6 @@ glm::vec3 Transform::getLocalPosition() const { return m_localPosition; }
 glm::quat Transform::getLocalRotation() const { return m_localRotation; }
 
 glm::vec3 Transform::getLocalScale() const { return m_localScale; }
-
-glm::vec3 Transform::getLocalEulerAngle() const {
-    return glm::eulerAngles(getLocalRotation());
-}
 
 glm::mat4 Transform::getLocalTransform() const {
     return glm::translate(glm::mat4(1.0f), m_localPosition) *
@@ -322,7 +321,7 @@ void Transform::updateGlobalRotation() {
         m_rotation = m_localRotation;
     else {
         glm::mat4 global =
-            glm::mat4(m_parent->getWorldRotation()) * getLocalTransform();
+            glm::mat4(m_parent->m_rotation) * getLocalTransform();
         m_rotation = glm::quat(global);
     }
     for (Transform *child : m_children) {

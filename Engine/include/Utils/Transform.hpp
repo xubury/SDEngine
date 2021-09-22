@@ -29,8 +29,6 @@ class SD_API Transform {
     void addChild(Transform* child);
     void removeChild(Transform* child);
 
-    void apply(const Transform& transform);
-
     void translateLocal(const glm::vec3& t);
     void translateWorld(const glm::vec3& t);
 
@@ -45,7 +43,6 @@ class SD_API Transform {
     glm::vec3 getLocalPosition() const;
     glm::quat getLocalRotation() const;
     glm::vec3 getLocalScale() const;
-    glm::vec3 getLocalEulerAngle() const;
     glm::mat4 getLocalTransform() const;
 
     void setWorldPosition(const glm::vec3& position);

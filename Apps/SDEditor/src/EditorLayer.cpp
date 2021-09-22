@@ -234,13 +234,29 @@ void EditorLayer::onImGui() {
 
             auto &tc = selectedEntity.getComponent<sd::TransformComponent>();
             glm::mat4 transform = tc.transform.getWorldTransform();
-            ImGuizmo::Manipulate(
-                glm::value_ptr(view), glm::value_ptr(projection),
-                static_cast<ImGuizmo::OPERATION>(m_scenePanel.getGizmoType()),
-                static_cast<ImGuizmo::MODE>(m_scenePanel.getGizmoMode()),
-                glm::value_ptr(transform), nullptr, nullptr);
-            if (ImGuizmo::IsUsing()) {
-                tc.transform.setWorldTransform(transform);
+            ImGuizmo::OPERATION op =
+                static_cast<ImGuizmo::OPERATION>(m_scenePanel.getGizmoType());
+            ImGuizmo::MODE mode =
+                static_cast<ImGuizmo::MODE>(m_scenePanel.getGizmoMode());
+            if (ImGuizmo::Manipulate(
+                    glm::value_ptr(view), glm::value_ptr(projection), op, mode,
+                    glm::value_ptr(transform), nullptr, nullptr)) {
+                glm::vec3 pos, scl;
+                glm::quat rot;
+                sd::decomposeTransform(transform, pos, rot, scl);
+                switch (op) {
+                    case ImGuizmo::TRANSLATE:
+                        tc.transform.setWorldPosition(pos);
+                        break;
+                    case ImGuizmo::ROTATE:
+                        tc.transform.setWorldRotation(rot);
+                        break;
+                    case ImGuizmo::SCALE:
+                        tc.transform.setWorldScale(scl);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
