@@ -282,7 +282,7 @@ void EditorLayer::show() {
 }
 
 void EditorLayer::onEventProcess(const SDL_Event &event) {
-    if (m_isViewportFocused) {
+    if (m_isViewportFocused && m_isViewportHovered) {
         m_cameraController.processEvent(event);
     }
     if (event.type == SDL_KEYDOWN) {
@@ -299,7 +299,7 @@ void EditorLayer::onEventProcess(const SDL_Event &event) {
 }
 
 void EditorLayer::onEventsProcess() {
-    if (m_isViewportFocused) {
+    if (m_isViewportFocused && m_isViewportHovered) {
         m_cameraController.processEvents();
     }
 }
