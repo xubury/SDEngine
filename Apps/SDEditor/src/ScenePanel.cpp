@@ -16,7 +16,7 @@ ScenePanel::ScenePanel(sd::Scene *scene) : m_scene(scene) {}
 
 void ScenePanel::setScene(sd::Scene *scene) { m_scene = scene; }
 
-void ScenePanel::setSelectedEntity(uint32_t entityId) {
+void ScenePanel::setSelectedEntity(sd::EntityId entityId) {
     m_selectedEntity = sd::Entity(entityId, m_scene);
 }
 
@@ -87,8 +87,8 @@ void ScenePanel::drawEntityNode(sd::Entity &entity) {
         data.m_children.empty() ? leaf_flags : base_flags;
     flags |= ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) |
              ImGuiTreeNodeFlags_OpenOnArrow;
-    bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, flags,
-                                    tag.c_str());
+    bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(sd::EntityId)entity,
+                                    flags, tag.c_str());
     if (ImGui::IsItemClicked(0)) {
         m_selectedEntity = entity;
     }

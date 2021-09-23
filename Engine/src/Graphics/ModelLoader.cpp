@@ -108,14 +108,14 @@ static Material::TextureProp processAiMaterial(
 
 Ref<Model> ModelLoader::loadAsset(const std::string &filePath) {
     Ref<Model> model = createRef<Model>();
-    SD_CORE_TRACE("Loading mesh form: {}...", filePath);
+    SD_CORE_TRACE("Loading model form: {}...", filePath);
 
     Assimp::Importer importer;
     uint32_t importFlags = aiProcess_Triangulate | aiProcess_FlipUVs;
     const aiScene *scene = importer.ReadFile(filePath, importFlags);
     if (scene == nullptr) {
         std::string error = importer.GetErrorString();
-        SD_CORE_ERROR("Mesh loading failed: {}", error.c_str());
+        SD_CORE_ERROR("Model loading failed: {}", error.c_str());
         return model;
     }
 

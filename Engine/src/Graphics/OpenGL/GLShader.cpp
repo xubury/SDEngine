@@ -93,21 +93,26 @@ void GLShader::unbind() { glUseProgram(0); }
 
 void GLShader::checkCompileErrors(uint32_t shader, const std::string& type) {
     int success;
-    std::string infoLog(1024, 0);
+    int logSize = 0;
+    std::string infoLog;
     if (type != "Program") {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logSize);
+        infoLog.resize(logSize);
         if (!success) {
-            glGetShaderInfoLog(shader, 1024, nullptr, infoLog.data());
-            SD_CORE_ERROR("{0} Shader compilation error:\n{1}\n", type,
-                          infoLog);
+            glGetShaderInfoLog(shader, logSize, nullptr, infoLog.data());
+            SD_CORE_ERROR("{} Shader compilation error:\n{}", type, infoLog);
         }
     } else {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
+        glGetProgramiv(shader, GL_INFO_LOG_LENGTH, &logSize);
+        infoLog.resize(logSize);
         if (!success) {
-            glGetProgramInfoLog(shader, 1024, nullptr, infoLog.data());
-            SD_CORE_ERROR("Shader Program linking error:\n{0}\n", infoLog);
+            glGetProgramInfoLog(shader, logSize, nullptr, infoLog.data());
+            SD_CORE_ERROR("Shader Program linking error:\n{}", infoLog);
         }
     }
+    SD_CORE_ASSERT(success);
 }
 
 void GLShader::setBool(const std::string& name, bool value) {

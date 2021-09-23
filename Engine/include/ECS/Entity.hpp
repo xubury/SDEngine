@@ -8,13 +8,15 @@
 
 namespace sd {
 
+using EntityId = entt::id_type;
+
 class SD_API Entity {
    public:
-    static const uint32_t INVALID_ID;
+    static const EntityId INVALID_ID;
 
    public:
     Entity();
-    Entity(uint32_t handle, Scene *scene);
+    Entity(EntityId handle, Scene *scene);
     Entity(entt::entity handle, Scene *scene);
 
     template <typename T, typename... Args>
@@ -34,7 +36,7 @@ class SD_API Entity {
 
     operator bool() const;
     operator entt::entity() const;
-    operator uint32_t() const;
+    operator EntityId() const;
 
     bool operator==(const Entity &other) const;
     bool operator!=(const Entity &other) const;
@@ -49,8 +51,8 @@ class SD_API Entity {
 template <typename T, typename... Args>
 T &Entity::addComponent(Args &&...args) {
     SD_CORE_ASSERT(!hasComponent<T>(), "Entity already has this component!");
-    T &component = m_scene->emplace<T>(m_entityHandle,
-                                                  std::forward<Args>(args)...);
+    T &component =
+        m_scene->emplace<T>(m_entityHandle, std::forward<Args>(args)...);
     return component;
 }
 

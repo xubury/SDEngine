@@ -1,6 +1,7 @@
 #include "Graphics/ShaderLoader.hpp"
 #include "Utils/AssetManager.hpp"
 #include "Utils/File.hpp"
+#include "Utils/Assert.hpp"
 
 namespace sd {
 
@@ -28,6 +29,7 @@ Ref<Shader> ShaderLoader::loadAsset(const std::string &filePath) {
     readFile(filePath, source);
 
     size_t i = source.find("#shader");
+    bool success = true;
     while (i < source.size()) {
         size_t start = source.find('\n', i) + 1;
         if (i != 0 && start == 0) {
@@ -45,6 +47,7 @@ Ref<Shader> ShaderLoader::loadAsset(const std::string &filePath) {
         std::string code;
         if (type == ShaderType::INVALID) {
             SD_CORE_ERROR("Invalid shader type: {}", name);
+            success = false;
             break;
         } else {
             code = source.substr(start, end - start);
@@ -71,6 +74,7 @@ Ref<Shader> ShaderLoader::loadAsset(const std::string &filePath) {
         shader->compileShader(type, code.c_str());
     }
     shader->linkShaders();
+    SD_CORE_ASSERT(success, "Error building shader code");
     SD_CORE_TRACE("Finish builidng shader code from {}", filePath);
     return shader;
 }
