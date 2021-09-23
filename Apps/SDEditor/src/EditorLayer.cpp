@@ -323,7 +323,7 @@ void EditorLayer::processDialog() {
         m_scene->clear();
         std::ifstream os(m_fileDialogInfo.resultPath);
         cereal::BinaryInputArchive archive(os);
-        entt::snapshot_loader{m_scene->getRegistry()}
+        entt::snapshot_loader{*m_scene}
             .entities(archive)
             .component<sd::EntityDataComponent, sd::TagComponent,
                        sd::TransformComponent, sd::ModelComponent,
@@ -333,7 +333,7 @@ void EditorLayer::processDialog() {
     if (ImGui::FileDialog(&m_saveSceneOpen, &m_fileDialogInfo)) {
         std::ofstream os(m_fileDialogInfo.resultPath);
         cereal::BinaryOutputArchive archive(os);
-        entt::snapshot{m_scene->getRegistry()}
+        entt::snapshot{*m_scene}
             .entities(archive)
             .component<sd::EntityDataComponent, sd::TagComponent,
                        sd::TransformComponent, sd::ModelComponent,

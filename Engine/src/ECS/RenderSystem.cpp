@@ -82,8 +82,7 @@ void RenderSystem::onRender() {
     Device::instance().setClearColor(0.1, 0.2, 0.3, 1.0);
     Device::instance().clear();
     Device::instance().setDepthMask(false);
-    auto lightView =
-        m_scene->getRegistry().view<TransformComponent, LightComponent>();
+    auto lightView = m_scene->view<TransformComponent, LightComponent>();
     lightView.each([this](const TransformComponent &transformComp,
                           const LightComponent &lightComp) {
         m_shader->setVec3("u_light.direction",
@@ -111,8 +110,7 @@ void RenderSystem::renderGBuffer() {
     Device::instance().clear();
     Renderer::setShader(*m_gbufferShader);
     m_gBufferTarget.getFramebuffer()->clearAttachment(4, &Entity::INVALID_ID);
-    auto modelView =
-        m_scene->getRegistry().view<TransformComponent, ModelComponent>();
+    auto modelView = m_scene->view<TransformComponent, ModelComponent>();
     modelView.each([this](const entt::entity &entity,
                           const TransformComponent &transformComp,
                           const ModelComponent &modelComp) {

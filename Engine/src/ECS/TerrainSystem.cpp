@@ -13,8 +13,7 @@ void TerrainSystem::onRender() {}
 void TerrainSystem::onSceneChange() { updateAllTerrains(); }
 
 void TerrainSystem::updateAllTerrains() {
-    auto terrainView =
-        m_scene->getRegistry().view<TransformComponent, TerrainComponent>();
+    auto terrainView = m_scene->view<TransformComponent, TerrainComponent>();
     m_terrainGrids.clear();
 
     terrainView.each([this](const entt::entity &entity,

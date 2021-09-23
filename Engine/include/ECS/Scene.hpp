@@ -10,7 +10,7 @@ namespace sd {
 
 class Entity;
 
-class SD_API Scene {
+class SD_API Scene : public entt::registry {
    public:
     Scene() = default;
     ~Scene() = default;
@@ -22,20 +22,11 @@ class SD_API Scene {
 
     void removeChildFromEntity(Entity &parent, Entity &child);
 
-    const entt::registry &getRegistry() const;
-
-    entt::registry &getRegistry();
-
-    void clear();
-
     void refresh();
 
    private:
     void refreshEntityChildTranforms(Entity &entity);
     void refreshEntityModel(Entity &entity);
-
-    friend class Entity;
-    entt::registry m_registry;
 };
 
 }  // namespace sd

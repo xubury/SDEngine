@@ -6,7 +6,7 @@
 namespace sd {
 
 Entity Scene::createEntity(const std::string &name) {
-    Entity entity(m_registry.create(), this);
+    Entity entity(create(), this);
     entity.addComponent<TagComponent>(name);
     entity.addComponent<TransformComponent>();
     entity.addComponent<EntityDataComponent>();
@@ -23,7 +23,7 @@ void Scene::destroyEntity(Entity &entity, bool isRoot) {
     if (isRoot && parent) {
         removeChildFromEntity(parent, entity);
     }
-    m_registry.destroy(entity);
+    destroy(entity);
 }
 
 void Scene::addChildToEntity(Entity &parent, Entity &child) {
@@ -59,21 +59,15 @@ void Scene::removeChildFromEntity(Entity &parent, Entity &child) {
     child.getComponent<EntityDataComponent>().m_parent = Entity();
 }
 
-void Scene::clear() { m_registry.clear(); }
-
 void Scene::refresh() {
-    auto view = m_registry.view<EntityDataComponent>();
+    auto ecsData = view<EntityDataComponent>();
 
-    for (auto entityId : view) {
+    for (auto entityId : ecsData) {
         Entity entity(entityId, this);
         refreshEntityModel(entity);
         refreshEntityChildTranforms(entity);
     }
 }
-
-const entt::registry &Scene::getRegistry() const { return m_registry; }
-
-entt::registry &Scene::getRegistry() { return m_registry; }
 
 void Scene::refreshEntityModel(Entity &entity) {
     if (entity.hasComponent<ModelComponent>()) {

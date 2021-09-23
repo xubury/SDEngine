@@ -49,32 +49,32 @@ class SD_API Entity {
 template <typename T, typename... Args>
 T &Entity::addComponent(Args &&...args) {
     SD_CORE_ASSERT(!hasComponent<T>(), "Entity already has this component!");
-    T &component = m_scene->m_registry.emplace<T>(m_entityHandle,
+    T &component = m_scene->emplace<T>(m_entityHandle,
                                                   std::forward<Args>(args)...);
     return component;
 }
 
 template <typename T>
 bool Entity::hasComponent() const {
-    return m_scene->m_registry.all_of<T>(m_entityHandle);
+    return m_scene->all_of<T>(m_entityHandle);
 }
 
 template <typename T>
 void Entity::removeComponent() {
     SD_CORE_ASSERT(hasComponent<T>(), "Entity does not have this component!");
-    m_scene->m_registry.remove<T>(m_entityHandle);
+    m_scene->remove<T>(m_entityHandle);
 }
 
 template <typename T>
 T &Entity::getComponent() {
     SD_CORE_ASSERT(hasComponent<T>(), "Entity does not have this component!");
-    return m_scene->m_registry.get<T>(m_entityHandle);
+    return m_scene->get<T>(m_entityHandle);
 }
 
 template <typename T>
 const T &Entity::getComponent() const {
     SD_CORE_ASSERT(hasComponent<T>(), "Entity does not have this component!");
-    return m_scene->m_registry.get<T>(m_entityHandle);
+    return m_scene->get<T>(m_entityHandle);
 }
 
 }  // namespace sd

@@ -33,7 +33,7 @@ void ScenePanel::onImGui() {
 
     ImGui::Begin("Scene Hierarchy");
 
-    m_scene->getRegistry().each([&](auto entityID) {
+    m_scene->each([&](auto entityID) {
         sd::Entity entity{entityID, m_scene};
 
         sd::EntityDataComponent &data =
