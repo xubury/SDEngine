@@ -9,7 +9,7 @@
 
 namespace sd {
 
-bool SD_API decomposeTransform(const glm::mat4& transform,
+bool SD_API decompose(const glm::mat4& transform,
                                glm::vec3& translation, glm::quat& rotation,
                                glm::vec3& scale);
 

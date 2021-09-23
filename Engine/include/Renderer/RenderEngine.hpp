@@ -6,23 +6,16 @@
 
 namespace sd {
 
-class RenderEngine {
+class RenderEngine : public SystemManager {
    public:
     void init();
 
     RenderSystem *getRenderSystem();
     TerrainSystem *getTerrainSystem();
 
-    void tick(float dt);
-
-    void render();
-
-    void setScene(Scene *scene);
-
     void resize(int width, int height);
 
    private:
-    SystemManager m_systems;
     RenderSystem *m_renderSystem;
     TerrainSystem *m_terrainSystem;
 };

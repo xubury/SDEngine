@@ -172,7 +172,7 @@ void Camera::setWorldTransform(const glm::mat4 &transform) {
         m_transform->setWorldTransform(transform);
     } else {
         glm::vec3 scale;
-        decomposeTransform(transform, m_position, m_rotation, scale);
+        decompose(transform, m_position, m_rotation, scale);
     }
     m_outdated = true;
 }
