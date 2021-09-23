@@ -1,8 +1,9 @@
 #include "ECS/RenderSystem.hpp"
+#include "Graphics/Device.hpp"
+#include "Renderer/Renderer3D.hpp"
 #include "Utils/Log.hpp"
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
-#include "Renderer/Renderer3D.hpp"
 
 namespace sd {
 
@@ -77,10 +78,10 @@ void RenderSystem::onRender() {
     renderGBuffer();
 
     Renderer3D::beginScene(*m_camera, m_target);
-    Renderer::setClearColor(0.1, 0.2, 0.3, 1.0);
-    Renderer::clear();
     Renderer::setShader(*m_shader);
-    Renderer::setDepthMask(false);
+    Device::instance().setClearColor(0.1, 0.2, 0.3, 1.0);
+    Device::instance().clear();
+    Device::instance().setDepthMask(false);
     auto lightView =
         m_scene->getRegistry().view<TransformComponent, LightComponent>();
     lightView.each([this](const TransformComponent &transformComp,
@@ -99,15 +100,15 @@ void RenderSystem::onRender() {
     m_shader->setTexture("u_ambient", gBuffer->getTexture(3));
     m_shader->setTexture("u_entityTexture", gBuffer->getTexture(4));
     Renderer::submit(*m_vao.get(), MeshTopology::TRIANGLES, 6, 0);
-    Renderer::setDepthMask(true);
+    Device::instance().setDepthMask(true);
     Renderer3D::endScene();
 }
 
 void RenderSystem::renderGBuffer() {
     Renderer3D::beginScene(*m_camera, &m_gBufferTarget);
-    Renderer::setBlend(false);
-    Renderer::setClearColor(0.f, 0.f, 0.f, 1.0);
-    Renderer::clear();
+    Device::instance().setBlend(false);
+    Device::instance().setClearColor(0.f, 0.f, 0.f, 1.0);
+    Device::instance().clear();
     Renderer::setShader(*m_gbufferShader);
     m_gBufferTarget.getFramebuffer()->clearAttachment(4, &Entity::INVALID_ID);
     auto modelView =
@@ -136,7 +137,7 @@ void RenderSystem::renderGBuffer() {
     m_framebuffer->copyFrom(m_gBufferTarget.getFramebuffer(),
                             BufferBit::COLOR_BUFFER_BIT,
                             TextureFilter::NEAREST);
-    Renderer::setBlend(true);
+    Device::instance().setBlend(true);
     Renderer3D::endScene();
 }
 

@@ -10,9 +10,12 @@ class Framebuffer;
 
 class SD_API Device {
    public:
+    static void init();
+
+    static Device &instance();
+
     virtual ~Device() = default;
 
-   protected:
     Device(const Device &) = delete;
 
     Device &operator=(const Device &) = delete;
@@ -34,8 +37,7 @@ class SD_API Device {
 
     virtual void setBlend(bool blend) = 0;
 
-    friend class Renderer;
-
+   protected:
     Device() = default;
 };
 

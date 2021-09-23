@@ -1,5 +1,5 @@
 #include "Renderer/RenderTarget.hpp"
-#include "Renderer/Renderer.hpp"
+#include "Graphics/Device.hpp"
 #include "Utils/Log.hpp"
 
 namespace sd {
@@ -51,8 +51,8 @@ void RenderTarget::setOrigin(int x, int y) {
 }
 
 void RenderTarget::use() const {
-    Renderer::setFramebuffer(m_framebuffer.get());
-    Renderer::setViewport(m_x, m_y, m_width, m_height);
+    Device::instance().setFramebuffer(m_framebuffer.get());
+    Device::instance().setViewport(m_x, m_y, m_width, m_height);
 }
 
 glm::vec2 RenderTarget::mapScreenToClip(const glm::vec2 &pos) {

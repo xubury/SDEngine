@@ -49,6 +49,7 @@ set(Graphics_Src
     ${Src_Root}/Buffer.cpp
     ${Src_Root}/BufferLayout.cpp
     ${Src_Root}/Camera.cpp
+    ${Src_Root}/Device.cpp
     ${Src_Root}/Framebuffer.cpp
     ${Src_Root}/Graphics.cpp
     ${Src_Root}/Material.cpp

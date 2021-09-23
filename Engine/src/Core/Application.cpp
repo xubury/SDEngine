@@ -4,6 +4,7 @@
 #include "Utils/Random.hpp"
 #include "Core/InputManager.hpp"
 #include "Core/Timing.hpp"
+#include "Graphics/Device.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Renderer/Renderer3D.hpp"
@@ -39,7 +40,7 @@ Application::Application() {
         exit(-1);
     }
 
-    sd::Graphics::init(sd::API::OpenGL);
+    Graphics::init(API::OpenGL);
 
     WindowProp prop;
     prop.width = width;
@@ -50,12 +51,12 @@ Application::Application() {
 
     s_instance = this;
 
-    sd::Renderer::init();
+    Device::init();
+    Renderer::init();
+    Renderer2D::init();
+    Renderer3D::init();
 
-    sd::Renderer2D::init();
-    sd::Renderer3D::init();
-
-    sd::Renderer::getDefaultTarget().resize(width, height);
+    Renderer::getDefaultTarget().resize(width, height);
     m_imguiLayer = new ImGuiLayer();
     pushOverlay(m_imguiLayer);
 

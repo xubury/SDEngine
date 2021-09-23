@@ -1,6 +1,7 @@
 #include "Renderer/Renderer3D.hpp"
-#include "Graphics/Buffer.hpp"
 #include "Renderer/RenderTarget.hpp"
+#include "Graphics/Buffer.hpp"
+#include "Graphics/Device.hpp"
 #include "Graphics/Camera.hpp"
 
 namespace sd {
@@ -19,7 +20,7 @@ void Renderer3D::beginScene(Camera &camera, const RenderTarget *target) {
 void Renderer3D::endScene() { Renderer::getDefaultTarget().use(); }
 
 void Renderer3D::drawMesh(const Mesh &mesh) {
-    Renderer::setWireframe(mesh.isWireframe());
+    Device::instance().setWireframe(mesh.isWireframe());
     VertexArray *vao = mesh.getVertexArray();
     if (vao) {
         Renderer::submit(*vao, mesh.getTopology(),
