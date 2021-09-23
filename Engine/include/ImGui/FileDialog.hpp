@@ -14,6 +14,7 @@ enum ImGuiFileDialogType_ {
 
 struct ImFileDialogInfo {
     std::string title;
+    std::filesystem::path fileExtension;
     ImGuiFileDialogType type;
 
     std::filesystem::path fileName;

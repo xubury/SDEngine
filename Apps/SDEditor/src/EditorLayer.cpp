@@ -137,15 +137,15 @@ void EditorLayer::onImGui() {
 
     if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu("File")) {
-            if (ImGui::MenuItem("New", "Ctrl+N")) {
+            if (ImGui::MenuItem("New Scene", "Ctrl+N")) {
                 newScene();
             }
 
-            if (ImGui::MenuItem("Open...", "Ctrl+O")) {
+            if (ImGui::MenuItem("Open Scene...", "Ctrl+O")) {
                 openScene();
             }
 
-            if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) {
+            if (ImGui::MenuItem("Save Scene As...", "Ctrl+Shift+S")) {
                 saveScene();
             }
 
@@ -305,16 +305,18 @@ void EditorLayer::newScene() {
 void EditorLayer::openScene() {
     m_openSceneOpen = true;
     m_fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
-    m_fileDialogInfo.title = "Open File";
+    m_fileDialogInfo.title = "Open Scene";
     m_fileDialogInfo.fileName = "";
+    m_fileDialogInfo.fileExtension = ".scene";
     m_fileDialogInfo.directoryPath = std::filesystem::current_path();
 }
 
 void EditorLayer::saveScene() {
     m_saveSceneOpen = true;
     m_fileDialogInfo.type = ImGuiFileDialogType_SaveFile;
-    m_fileDialogInfo.title = "Save File";
+    m_fileDialogInfo.title = "Save Scene";
     m_fileDialogInfo.fileName = "test.scene";
+    m_fileDialogInfo.fileExtension = ".scene";
     m_fileDialogInfo.directoryPath = std::filesystem::current_path();
 }
 

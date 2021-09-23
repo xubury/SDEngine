@@ -27,7 +27,11 @@ void RefreshInfo(ImFileDialogInfo* dialogInfo) {
         if (entry.is_directory()) {
             dialogInfo->currentDirectories.push_back(entry);
         } else {
-            dialogInfo->currentFiles.push_back(entry);
+            if (dialogInfo->fileExtension.empty() ||
+                entry.path().extension() == dialogInfo->fileExtension) {
+
+                dialogInfo->currentFiles.push_back(entry);
+            }
         }
     }
 }
