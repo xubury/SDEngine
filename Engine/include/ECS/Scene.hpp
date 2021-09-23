@@ -16,11 +16,11 @@ class SD_API Scene {
     ~Scene() = default;
 
     Entity createEntity(const std::string &name = "Entity");
-    void destroyEntity(Entity entity, bool isRoot = true);
+    void destroyEntity(Entity &entity, bool isRoot = true);
 
-    void addChildToEntity(Entity parent, Entity child);
+    void addChildToEntity(Entity &parent, Entity &child);
 
-    void removeChildFromEntity(Entity parent, Entity child);
+    void removeChildFromEntity(Entity &parent, Entity &child);
 
     const entt::registry &getRegistry() const;
 
@@ -31,7 +31,9 @@ class SD_API Scene {
     void refresh();
 
    private:
-    void addEntityChildTranforms(Entity entity);
+    void refreshEntityChildTranforms(Entity &entity);
+    void refreshEntityModel(Entity &entity);
+
     friend class Entity;
     entt::registry m_registry;
 };

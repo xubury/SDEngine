@@ -21,13 +21,16 @@ class SD_API Entity {
     T &addComponent(Args &&...args);
 
     template <typename T>
-    bool hasComponent();
+    bool hasComponent() const;
 
     template <typename T>
     void removeComponent();
 
     template <typename T>
     T &getComponent();
+
+    template <typename T>
+    const T &getComponent() const;
 
     operator bool() const;
     operator entt::entity() const;
@@ -52,7 +55,7 @@ T &Entity::addComponent(Args &&...args) {
 }
 
 template <typename T>
-bool Entity::hasComponent() {
+bool Entity::hasComponent() const {
     return m_scene->m_registry.all_of<T>(m_entityHandle);
 }
 
@@ -64,6 +67,12 @@ void Entity::removeComponent() {
 
 template <typename T>
 T &Entity::getComponent() {
+    SD_CORE_ASSERT(hasComponent<T>(), "Entity does not have this component!");
+    return m_scene->m_registry.get<T>(m_entityHandle);
+}
+
+template <typename T>
+const T &Entity::getComponent() const {
     SD_CORE_ASSERT(hasComponent<T>(), "Entity does not have this component!");
     return m_scene->m_registry.get<T>(m_entityHandle);
 }

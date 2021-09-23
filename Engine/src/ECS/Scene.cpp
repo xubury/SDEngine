@@ -13,19 +13,20 @@ Entity Scene::createEntity(const std::string &name) {
     return entity;
 }
 
-void Scene::destroyEntity(Entity entity, bool isRoot) {
+void Scene::destroyEntity(Entity &entity, bool isRoot) {
     auto &data = entity.getComponent<EntityDataComponent>();
     for (entt::entity entityId : data.m_children) {
-        destroyEntity({entityId, this}, false);
+        Entity child(entityId, this);
+        destroyEntity(child, false);
     }
-    sd::Entity parent(data.m_parent, this);
+    Entity parent(data.m_parent, this);
     if (isRoot && parent) {
         removeChildFromEntity(parent, entity);
     }
     m_registry.destroy(entity);
 }
 
-void Scene::addChildToEntity(Entity parent, Entity child) {
+void Scene::addChildToEntity(Entity &parent, Entity &child) {
     if (parent == child) return;
     auto &parentData = parent.getComponent<EntityDataComponent>();
     auto &childData = child.getComponent<EntityDataComponent>();
@@ -46,7 +47,7 @@ void Scene::addChildToEntity(Entity parent, Entity child) {
     childData.m_parent = parent;
 }
 
-void Scene::removeChildFromEntity(Entity parent, Entity child) {
+void Scene::removeChildFromEntity(Entity &parent, Entity &child) {
     auto &children = parent.getComponent<EntityDataComponent>().m_children;
     if (children.find(child) != children.end()) {
         children.erase(child);
@@ -55,7 +56,7 @@ void Scene::removeChildFromEntity(Entity parent, Entity child) {
         parent.getComponent<TransformComponent>().transform.removeChild(
             childTransform);
     }
-    child.getComponent<EntityDataComponent>().m_parent = sd::Entity();
+    child.getComponent<EntityDataComponent>().m_parent = Entity();
 }
 
 void Scene::clear() { m_registry.clear(); }
@@ -65,12 +66,8 @@ void Scene::refresh() {
 
     for (auto entityId : view) {
         Entity entity(entityId, this);
-        if (entity.hasComponent<ModelComponent>()) {
-            auto &modelComp = entity.getComponent<ModelComponent>();
-            modelComp.model =
-                Graphics::assetManager().load<Model>(modelComp.path);
-        }
-        addEntityChildTranforms(entity);
+        refreshEntityModel(entity);
+        refreshEntityChildTranforms(entity);
     }
 }
 
@@ -78,7 +75,14 @@ const entt::registry &Scene::getRegistry() const { return m_registry; }
 
 entt::registry &Scene::getRegistry() { return m_registry; }
 
-void Scene::addEntityChildTranforms(Entity entity) {
+void Scene::refreshEntityModel(Entity &entity) {
+    if (entity.hasComponent<ModelComponent>()) {
+        auto &modelComp = entity.getComponent<ModelComponent>();
+        modelComp.model = Graphics::assetManager().load<Model>(modelComp.path);
+    }
+}
+
+void Scene::refreshEntityChildTranforms(Entity &entity) {
     EntityDataComponent &data = entity.getComponent<EntityDataComponent>();
     entity.getComponent<TransformComponent>().transform.getChildren().clear();
     Entity parent(data.m_parent, this);
@@ -91,7 +95,7 @@ void Scene::addEntityChildTranforms(Entity entity) {
         Entity child(childId, this);
         entity.getComponent<TransformComponent>().transform.addChild(
             &child.getComponent<TransformComponent>().transform);
-        addEntityChildTranforms(child);
+        refreshEntityChildTranforms(child);
     }
 }
 
