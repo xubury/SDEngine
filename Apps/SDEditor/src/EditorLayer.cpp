@@ -241,22 +241,7 @@ void EditorLayer::onImGui() {
             if (ImGuizmo::Manipulate(
                     glm::value_ptr(view), glm::value_ptr(projection), op, mode,
                     glm::value_ptr(transform), nullptr, nullptr)) {
-                glm::vec3 pos, scl;
-                glm::quat rot;
-                sd::decomposeTransform(transform, pos, rot, scl);
-                switch (op) {
-                    case ImGuizmo::TRANSLATE:
-                        tc.transform.setWorldPosition(pos);
-                        break;
-                    case ImGuizmo::ROTATE:
-                        tc.transform.setWorldRotation(rot);
-                        break;
-                    case ImGuizmo::SCALE:
-                        tc.transform.setWorldScale(scl);
-                        break;
-                    default:
-                        break;
-                }
+                tc.transform.setWorldTransform(transform);
             }
         }
     }

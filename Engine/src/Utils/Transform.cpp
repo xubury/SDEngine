@@ -242,13 +242,13 @@ void Transform::setWorldScale(const glm::vec3 &scale) {
 
 void Transform::setWorldTransform(const glm::mat4 &transform) {
     decomposeTransform(transform, m_position, m_rotation, m_scale);
-    updateLocalScale();
-    updateLocalRotation();
     updateLocalPosition();
+    updateLocalRotation();
+    updateLocalScale();
     for (Transform *child : m_children) {
-        child->updateGlobalScale();
-        child->updateGlobalRotation();
         child->updateGlobalPosition();
+        child->updateGlobalRotation();
+        child->updateGlobalScale();
     }
 }
 
@@ -321,7 +321,7 @@ void Transform::updateGlobalRotation() {
         m_rotation = m_localRotation;
     else {
         glm::mat4 global =
-            glm::mat4(m_parent->m_rotation) * getLocalTransform();
+            glm::mat4(m_parent->m_rotation) * glm::toMat4(getLocalRotation());
         m_rotation = glm::quat(global);
     }
     for (Transform *child : m_children) {
@@ -357,7 +357,7 @@ void Transform::updateLocalRotation() {
         m_localRotation = m_rotation;
     else {
         glm::mat4 global = glm::inverse(glm::toMat4(m_parent->m_rotation)) *
-                           getWorldTransform();
+                           glm::toMat4(getWorldRotation());
         m_localRotation = glm::quat(global);
     }
 }
