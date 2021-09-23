@@ -47,7 +47,6 @@ Ref<Shader> ShaderLoader::loadAsset(const std::string &filePath) {
             SD_CORE_ERROR("Invalid shader type: {}", name);
             break;
         } else {
-            SD_CORE_TRACE("Parsing {} shader code", name);
             code = source.substr(start, end - start);
         }
         // insert include code
@@ -67,9 +66,6 @@ Ref<Shader> ShaderLoader::loadAsset(const std::string &filePath) {
             code.insert(j, includeCode);
 
             j = code.find("#include", start);
-
-            SD_CORE_TRACE("Include shader source from {}",
-                          m_manager.getAbsolutePath(include).string());
         }
 
         shader->compileShader(type, code.c_str());
