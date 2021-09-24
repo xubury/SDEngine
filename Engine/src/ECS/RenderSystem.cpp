@@ -1,6 +1,7 @@
 #include "ECS/RenderSystem.hpp"
 #include "Graphics/Device.hpp"
 #include "Renderer/Renderer3D.hpp"
+#include "Renderer/RenderEngine.hpp"
 #include "Utils/Log.hpp"
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
@@ -15,7 +16,7 @@ static Ref<Texture> createGeometryTexture(int samples) {
         TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_NEAREST);
 }
 
-RenderSystem::RenderSystem() {
+RenderSystem::RenderSystem(RenderEngine *engine) : m_engine(engine) {
     m_shader = Graphics::assetManager().load<Shader>("shaders/simple3d.glsl");
     m_framebuffer = Framebuffer::create();
     m_gbufferShader =
@@ -60,11 +61,6 @@ RenderSystem::RenderSystem() {
     m_vao->setIndexBuffer(indexBuffer);
 }
 
-void RenderSystem::setRenderTarget(RenderTarget *target) {
-    m_target = target;
-    resize(target->getWidth(), target->getHeight());
-}
-
 void RenderSystem::resize(int width, int height) {
     m_gBufferTarget.resize(width, height);
     m_framebuffer->resize(width, height);
@@ -72,12 +68,10 @@ void RenderSystem::resize(int width, int height) {
 
 void RenderSystem::onTick(float) {}
 
-void RenderSystem::setCamera(Camera *camera) { m_camera = camera; }
-
 void RenderSystem::onRender() {
     renderGBuffer();
 
-    Renderer3D::beginScene(*m_camera, m_target);
+    Renderer3D::beginScene(*m_engine->getCamera(), m_engine->getRenderTarget());
     Renderer::setShader(*m_shader);
     Device::instance().setClearColor(0.1, 0.2, 0.3, 1.0);
     Device::instance().clear();
@@ -104,7 +98,7 @@ void RenderSystem::onRender() {
 }
 
 void RenderSystem::renderGBuffer() {
-    Renderer3D::beginScene(*m_camera, &m_gBufferTarget);
+    Renderer3D::beginScene(*m_engine->getCamera(), &m_gBufferTarget);
     Device::instance().setBlend(false);
     Device::instance().setClearColor(0.f, 0.f, 0.f, 1.0);
     Device::instance().clear();

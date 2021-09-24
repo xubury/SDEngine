@@ -9,9 +9,11 @@
 
 namespace sd {
 
+class RenderEngine;
+
 class SD_API RenderSystem : public System {
    public:
-    RenderSystem();
+    RenderSystem(RenderEngine *engine);
 
     void onTick(float dt) override;
 
@@ -21,18 +23,13 @@ class SD_API RenderSystem : public System {
 
     void resize(int width, int height);
 
-    void setRenderTarget(RenderTarget *target);
-
-    void setCamera(Camera *camera);
-
     void renderGBuffer();
 
     Framebuffer *getGBuffer();
 
    private:
+    RenderEngine *m_engine;
     Ref<Shader> m_shader;
-    RenderTarget *m_target;
-    Camera *m_camera;
 
     Ref<Shader> m_gbufferShader;
     RenderTarget m_gBufferTarget;

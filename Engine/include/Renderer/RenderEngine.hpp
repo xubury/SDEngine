@@ -8,6 +8,8 @@ namespace sd {
 
 class RenderEngine : public SystemManager {
    public:
+    RenderEngine();
+
     void init();
 
     RenderSystem *getRenderSystem();
@@ -15,9 +17,19 @@ class RenderEngine : public SystemManager {
 
     void resize(int width, int height);
 
+    void setRenderTarget(RenderTarget *target);
+
+    RenderTarget *getRenderTarget() const;
+
+    void setCamera(Camera *camera);
+
+    Camera *getCamera();
+
    private:
     RenderSystem *m_renderSystem;
     TerrainSystem *m_terrainSystem;
+    RenderTarget *m_target;
+    Camera *m_camera;
 };
 
 }  // namespace sd
