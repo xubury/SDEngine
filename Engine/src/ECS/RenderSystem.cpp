@@ -8,33 +8,35 @@
 
 namespace sd {
 
-static Ref<Texture> createGeometryTexture(int samples) {
+static Ref<Texture> createGeometryTexture(int width, int height, int samples) {
     return Texture::create(
-        800, 600, samples,
+        width, height, samples,
         samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D,
         TextureFormat::RGBA, TextureFormatType::FLOAT, TextureWrap::BORDER,
         TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_NEAREST);
 }
 
-RenderSystem::RenderSystem(RenderEngine *engine) : m_engine(engine) {
+RenderSystem::RenderSystem(RenderEngine *engine, int width, int height,
+                           int samples)
+    : m_engine(engine) {
     m_shader = Graphics::assetManager().load<Shader>("shaders/simple3d.glsl");
     m_framebuffer = Framebuffer::create();
     m_gbufferShader =
         Graphics::assetManager().load<Shader>("shaders/gbuffer.glsl");
     for (int i = 0; i < 4; ++i) {
-        m_gBufferTarget.addTexture(createGeometryTexture(8));
-        m_framebuffer->attachTexture(createGeometryTexture(1));
+        m_gBufferTarget.addTexture(createGeometryTexture(width, height, 8));
+        m_framebuffer->attachTexture(createGeometryTexture(width, height, 1));
     }
     // entity id
     m_gBufferTarget.addTexture(Texture::create(
-        800, 600, 8, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::ALPHA,
-        TextureFormatType::UINT, TextureWrap::BORDER, TextureFilter::NEAREST,
-        TextureMipmapFilter::NEAREST));
+        width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
+        TextureFormat::ALPHA, TextureFormatType::UINT, TextureWrap::BORDER,
+        TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
     // depth
     m_gBufferTarget.addTexture(Texture::create(
-        800, 600, 8, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::DEPTH,
-        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_NEAREST));
+        width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
+        TextureFormat::DEPTH, TextureFormatType::FLOAT, TextureWrap::BORDER,
+        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_NEAREST));
     m_gBufferTarget.init();
     // entity id
     m_framebuffer->attachTexture(

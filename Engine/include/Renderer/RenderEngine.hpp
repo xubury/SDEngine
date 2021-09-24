@@ -10,7 +10,7 @@ class RenderEngine : public SystemManager {
    public:
     RenderEngine();
 
-    void init(int width, int height);
+    void init(int width, int height, int samples);
 
     RenderSystem *getRenderSystem();
     TerrainSystem *getTerrainSystem();

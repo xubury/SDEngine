@@ -6,10 +6,10 @@ namespace sd {
 RenderEngine::RenderEngine()
     : m_renderSystem(nullptr), m_terrainSystem(nullptr), m_target(nullptr) {}
 
-void RenderEngine::init(int width, int height) {
-    m_renderSystem = addSystem<RenderSystem>(this);
+void RenderEngine::init(int width, int height, int samples) {
+    m_renderSystem = addSystem<RenderSystem>(this, width, height, samples);
     m_terrainSystem = addSystem<TerrainSystem>();
-    resize(width, height);
+    m_defaultTarget.resize(width, height);
 }
 
 RenderSystem *RenderEngine::getRenderSystem() { return m_renderSystem; }

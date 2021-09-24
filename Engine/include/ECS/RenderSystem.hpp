@@ -13,7 +13,7 @@ class RenderEngine;
 
 class SD_API RenderSystem : public System {
    public:
-    RenderSystem(RenderEngine *engine);
+    RenderSystem(RenderEngine *engine, int width, int height, int samples);
 
     void onTick(float dt) override;
 

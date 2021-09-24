@@ -26,6 +26,8 @@ Application::Application() {
     Log::init(debugPath);
     int width = 1280;
     int height = 720;
+    int samples = 8;
+
     Random::init();
     SD_CORE_INFO("Debug info is output to: {}", debugPath);
 
@@ -59,7 +61,7 @@ Application::Application() {
     m_imguiLayer = new ImGuiLayer();
     pushOverlay(m_imguiLayer);
 
-    m_renderEngine.init(width, height);
+    m_renderEngine.init(width, height, samples);
 }
 
 Application::~Application() {
