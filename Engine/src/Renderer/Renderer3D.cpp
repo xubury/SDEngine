@@ -11,13 +11,11 @@ void Renderer3D::init() { SD_CORE_TRACE("Initializing Renderer3D..."); }
 void Renderer3D::beginScene(Camera &camera, const RenderTarget *target) {
     if (target) {
         target->use();
-    } else {
-        Renderer::getDefaultTarget().use();
     }
     Renderer::setCamera(camera);
 }
 
-void Renderer3D::endScene() { Renderer::getDefaultTarget().use(); }
+void Renderer3D::endScene() {}
 
 void Renderer3D::drawMesh(const Mesh &mesh) {
     Device::instance().setWireframe(mesh.isWireframe());

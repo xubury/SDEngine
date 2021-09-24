@@ -111,17 +111,12 @@ void Renderer2D::beginScene(OrthographicCamera& camera,
                             const RenderTarget* target) {
     if (target) {
         target->use();
-    } else {
-        Renderer::getDefaultTarget().use();
     }
     Renderer::setCamera(camera);
     startBatch();
 }
 
-void Renderer2D::endScene() {
-    flush();
-    Renderer::getDefaultTarget().use();
-}
+void Renderer2D::endScene() { flush(); }
 
 void Renderer2D::flush() {
     if (s_data.quadIndexCnt == 0) {

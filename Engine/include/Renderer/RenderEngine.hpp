@@ -10,7 +10,7 @@ class RenderEngine : public SystemManager {
    public:
     RenderEngine();
 
-    void init();
+    void init(int width, int height);
 
     RenderSystem *getRenderSystem();
     TerrainSystem *getTerrainSystem();
@@ -19,7 +19,7 @@ class RenderEngine : public SystemManager {
 
     void setRenderTarget(RenderTarget *target);
 
-    RenderTarget *getRenderTarget() const;
+    const RenderTarget *getRenderTarget() const;
 
     void setCamera(Camera *camera);
 
@@ -30,6 +30,7 @@ class RenderEngine : public SystemManager {
     TerrainSystem *m_terrainSystem;
     RenderTarget *m_target;
     Camera *m_camera;
+    RenderTarget m_defaultTarget;
 };
 
 }  // namespace sd

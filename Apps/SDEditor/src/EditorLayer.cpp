@@ -202,7 +202,6 @@ void EditorLayer::onImGui() {
             if (wsize.x > 0 && wsize.y > 0) {
                 sd::Application::getRenderEngine().resize(wsize.x, wsize.y);
 
-                m_target.resize(wsize.x, wsize.y);
                 m_frameBuffer->resize(wsize.x, wsize.y);
 
                 m_editorCamera.setProjection(m_fov, wsize.x / wsize.y, m_nearZ,
@@ -256,10 +255,12 @@ void EditorLayer::onImGui() {
 void EditorLayer::hide() {
     m_hide = true;
     setBlockEvent(false);
-    sd::Application::getRenderEngine().setRenderTarget(
-        &sd::Renderer::getDefaultTarget());
-    m_editorCamera.setProjection(
-        m_fov, sd::Renderer::getDefaultTarget().getAspect(), m_nearZ, m_farZ);
+    int w = sd::Application::getWindow().getWidth();
+    int h = sd::Application::getWindow().getHeight();
+    sd::Application::getRenderEngine().setRenderTarget(nullptr);
+    sd::Application::getRenderEngine().resize(w, h);
+    m_editorCamera.setProjection(m_fov, static_cast<float>(w) / h, m_nearZ,
+                                 m_farZ);
 }
 
 void EditorLayer::show() {
@@ -267,6 +268,7 @@ void EditorLayer::show() {
     setBlockEvent(true);
     sd::Application::getRenderEngine().setCamera(&m_editorCamera);
     sd::Application::getRenderEngine().setRenderTarget(&m_target);
+    sd::Application::getRenderEngine().resize(m_width, m_height);
     m_editorCamera.setProjection(m_fov, static_cast<float>(m_width) / m_height,
                                  m_nearZ, m_farZ);
 }

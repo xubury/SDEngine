@@ -18,10 +18,6 @@ class SD_API Renderer {
     static void submit(const VertexArray &vao, MeshTopology topology,
                        size_t count, size_t offset);
 
-    static RenderTarget &getDefaultTarget();
-
-    static void setDefaultTarget(const RenderTarget &target);
-
     static void setShader(Shader &shader);
 
     static void setCamera(Camera &camera);
@@ -30,8 +26,6 @@ class SD_API Renderer {
     Renderer() = default;
 
     static Renderer &instance();
-
-    RenderTarget m_defaultTarget;
 
 };  // namespace Renderer
 

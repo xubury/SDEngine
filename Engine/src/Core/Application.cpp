@@ -56,11 +56,10 @@ Application::Application() {
     Renderer2D::init();
     Renderer3D::init();
 
-    Renderer::getDefaultTarget().resize(width, height);
     m_imguiLayer = new ImGuiLayer();
     pushOverlay(m_imguiLayer);
 
-    m_renderEngine.init();
+    m_renderEngine.init(width, height);
 }
 
 Application::~Application() {
@@ -99,8 +98,6 @@ void Application::processEvent(const SDL_Event &event) {
             break;
         case SDL_WINDOWEVENT:
             if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                Renderer::getDefaultTarget().resize(event.window.data1,
-                                                    event.window.data2);
                 m_renderEngine.resize(event.window.data1, event.window.data2);
             }
             break;

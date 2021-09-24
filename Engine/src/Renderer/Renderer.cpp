@@ -36,14 +36,6 @@ void Renderer::submit(const VertexArray &vao, MeshTopology topology,
     Device::instance().drawElements(topology, count, offset);
 }
 
-RenderTarget &Renderer::getDefaultTarget() {
-    return instance().m_defaultTarget;
-}
-
-void Renderer::setDefaultTarget(const RenderTarget &target) {
-    instance().m_defaultTarget = target;
-}
-
 void Renderer::setShader(Shader &shader) {
     shader.bind();
     shader.setUniformBuffer("Camera", *s_data.cameraUBO);
