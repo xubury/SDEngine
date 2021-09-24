@@ -263,15 +263,15 @@ glm::mat4 Transform::getWorldTransform() const {
            glm::toMat4(m_rotation) * glm::scale(glm::mat4(1.0f), m_scale);
 }
 
-glm::vec3 Transform::getRight() const {
+glm::vec3 Transform::getLocalRight() const {
     return m_localRotation * glm::vec3(1.f, 0.f, 0.f);
 }
 
-glm::vec3 Transform::getUp() const {
+glm::vec3 Transform::getLocalUp() const {
     return m_localRotation * glm::vec3(0.f, 1.f, 0.f);
 }
 
-glm::vec3 Transform::getFront() const {
+glm::vec3 Transform::getLocalFront() const {
     return m_localRotation * glm::vec3(0.f, 0.f, 1.f);
 }
 

@@ -67,16 +67,16 @@ void Camera::rotateWorld(const glm::quat &r) {
 }
 
 glm::vec3 Camera::getLocalRight() const {
-    return m_transform ? m_transform->getRight()
+    return m_transform ? m_transform->getLocalRight()
                        : m_rotation * glm::vec3(1, 0, 0);
 }
 
 glm::vec3 Camera::getLocalUp() const {
-    return m_transform ? m_transform->getUp() : m_rotation * glm::vec3(0, 1, 0);
+    return m_transform ? m_transform->getLocalUp() : m_rotation * glm::vec3(0, 1, 0);
 }
 
 glm::vec3 Camera::getLocalFront() const {
-    return m_transform ? m_transform->getFront()
+    return m_transform ? m_transform->getLocalFront()
                        : m_rotation * glm::vec3(0, 0, 1);
 }
 

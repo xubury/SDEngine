@@ -55,9 +55,9 @@ class SD_API Transform {
     glm::vec3 getWorldScale() const;
     glm::mat4 getWorldTransform() const;
 
-    glm::vec3 getRight() const;
-    glm::vec3 getUp() const;
-    glm::vec3 getFront() const;
+    glm::vec3 getLocalRight() const;
+    glm::vec3 getLocalUp() const;
+    glm::vec3 getLocalFront() const;
 
     glm::vec3 getWorldRight() const;
     glm::vec3 getWorldUp() const;
