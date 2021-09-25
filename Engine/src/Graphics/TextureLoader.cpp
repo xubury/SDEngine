@@ -1,5 +1,4 @@
 #include "Graphics/TextureLoader.hpp"
-#include "Utils/AssetManager.hpp"
 #include <SDL_image.h>
 
 namespace sd {

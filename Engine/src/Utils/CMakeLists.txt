@@ -7,7 +7,6 @@ set(Src_Root ${PROJECT_SOURCE_DIR}/src/Utils)
 set(Utils_Include
     ${Include_Root}/Assert.hpp
     ${Include_Root}/AssetLoader.hpp
-    ${Include_Root}/AssetManager.hpp
     ${Include_Root}/Base.hpp
     ${Include_Root}/Config.hpp
     ${Include_Root}/Export.hpp

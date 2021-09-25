@@ -3,7 +3,7 @@
 
 #include "Core/Window.hpp"
 #include "Core/LayerStack.hpp"
-#include "Utils/AssetManager.hpp"
+#include "Utils/AssetLoader.hpp"
 #include "ImGui/ImGuiLayer.hpp"
 #include "Renderer/RenderEngine.hpp"
 

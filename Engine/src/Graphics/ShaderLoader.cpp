@@ -1,5 +1,4 @@
 #include "Graphics/ShaderLoader.hpp"
-#include "Utils/AssetManager.hpp"
 #include "Utils/File.hpp"
 #include "Utils/Assert.hpp"
 

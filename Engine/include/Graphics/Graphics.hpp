@@ -1,7 +1,7 @@
 #ifndef SD_GRAPHICS_HPP
 #define SD_GRAPHICS_HPP
 
-#include "Utils/AssetManager.hpp"
+#include "Utils/AssetLoader.hpp"
 
 namespace sd {
 
