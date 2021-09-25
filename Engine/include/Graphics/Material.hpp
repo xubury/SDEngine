@@ -20,7 +20,6 @@ enum class MaterialType {
 
 class SD_API Material {
    public:
-   public:
     struct SD_API TextureProp {
         Ref<Texture> texture;
         std::string path;
