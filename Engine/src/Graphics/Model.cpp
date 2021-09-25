@@ -6,7 +6,6 @@ void Model::init() {
     for (auto &mesh : m_meshes) {
         mesh.init();
     }
-    m_material.init();
 }
 
 void Model::addMesh(const Mesh &mesh) { m_meshes.emplace_back(mesh); }

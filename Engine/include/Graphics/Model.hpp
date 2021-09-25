@@ -11,9 +11,6 @@ class SD_API Model {
     const std::vector<Mesh> &getMeshes() const { return m_meshes; };
     std::vector<Mesh> &getMeshes() { return m_meshes; };
 
-    const Material &getMaterial() const { return m_material; }
-    Material &getMaterial() { return m_material; }
-
     void init();
 
     void addMesh(const Mesh &mesh);
@@ -21,14 +18,8 @@ class SD_API Model {
 
     void clear();
 
-    template <typename Archive>
-    void serialize(Archive &archive) {
-        archive(m_material);
-    }
-
    private:
     std::vector<Mesh> m_meshes;
-    Material m_material;
 };
 
 }  // namespace sd

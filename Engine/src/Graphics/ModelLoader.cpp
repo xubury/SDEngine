@@ -78,30 +78,6 @@ static Mesh processAiMesh(const aiMesh *assimpMesh) {
     return mesh;
 }
 
-static void processAiMaterial(const std::filesystem::path &directory,
-                              Material &material, MaterialType materialType,
-                              const aiMaterial *assimpMaterial,
-                              aiTextureType assimpType) {
-    uint32_t count = assimpMaterial->GetTextureCount(assimpType);
-    if (material.hasTexture(materialType) || count < 1) return;
-
-    if (count > 1) SD_CORE_WARN("Cannot handle multiple texture of same type!");
-
-    Material::TextureProp prop;
-
-    aiString texturePath;
-    for (uint32_t i = 0; i < count; ++i) {
-        if (assimpMaterial->GetTexture(assimpType, i, &texturePath) ==
-            AI_SUCCESS) {
-            prop.isColor = false;
-            prop.path = (directory / texturePath.C_Str()).string();
-        } else {
-            SD_CORE_ERROR("Assimp GetTexture error!");
-        }
-    }
-    material.setTexture(materialType, prop);
-}
-
 Ref<Model> ModelLoader::loadAsset(const std::string &filePath) {
     Ref<Model> model = createRef<Model>();
     SD_CORE_TRACE("Loading model form: {}...", filePath);
@@ -117,19 +93,6 @@ Ref<Model> ModelLoader::loadAsset(const std::string &filePath) {
 
     for (uint32_t i = 0; i < scene->mNumMeshes; ++i) {
         model->addMesh(processAiMesh(scene->mMeshes[i]));
-    }
-
-    std::filesystem::path directory =
-        std::filesystem::path(filePath).parent_path();
-    for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
-        Material &material = model->getMaterial();
-
-        processAiMaterial(directory, material, MaterialType::DIFFUSE,
-                          scene->mMaterials[i], aiTextureType_DIFFUSE);
-        processAiMaterial(directory, material, MaterialType::SPECULAR,
-                          scene->mMaterials[i], aiTextureType_SPECULAR);
-        processAiMaterial(directory, material, MaterialType::AMBIENT,
-                          scene->mMaterials[i], aiTextureType_AMBIENT);
     }
 
     model->init();

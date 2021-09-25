@@ -3,18 +3,20 @@
 
 namespace sd {
 
+void Material::TextureProp::init() {
+    if (isColor) {
+        texture = Texture::create(1, 1, 1, TextureType::TEX_2D,
+                                  TextureFormat::RGBA, TextureFormatType::FLOAT,
+                                  TextureWrap::REPEAT, TextureFilter::LINEAR,
+                                  TextureMipmapFilter::LINEAR, color.data());
+    } else {
+        texture = Graphics::assetManager().load<Texture>(path);
+    }
+}
+
 void Material::init() {
-    for (auto &[type, texture] : m_textures) {
-        if (texture.isColor) {
-            texture.texture = Texture::create(
-                1, 1, 1, TextureType::TEX_2D, TextureFormat::RGBA,
-                TextureFormatType::FLOAT, TextureWrap::REPEAT,
-                TextureFilter::LINEAR, TextureMipmapFilter::LINEAR,
-                texture.color.data());
-        } else {
-            texture.texture =
-                Graphics::assetManager().load<Texture>(texture.path);
-        }
+    for (auto &[type, texture] : getTextures()) {
+        texture.init();
     }
 }
 

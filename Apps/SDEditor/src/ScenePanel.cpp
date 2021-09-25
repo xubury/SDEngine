@@ -228,8 +228,8 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
         },
         false);
     drawComponent<sd::ModelComponent>(
-        "Model", entity, [&](sd::ModelComponent &model) {
-            ImGui::InputText("##Path", model.path.data(), model.path.size(),
+        "Model", entity, [&](sd::ModelComponent &mc) {
+            ImGui::InputText("##Path", mc.path.data(), mc.path.size(),
                              ImGuiInputTextFlags_ReadOnly);
             ImGui::SameLine();
             if (ImGui::Button("Open")) {
@@ -241,13 +241,28 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
                     std::filesystem::current_path();
             }
             if (ImGui::FileDialog(&m_fileDialogOpen, &m_fileDialogInfo)) {
-                model.path = m_fileDialogInfo.resultPath.string();
-                model.model = sd::Graphics::assetManager().load<sd::Model>(
-                    m_fileDialogInfo.resultPath);
+                mc.path = m_fileDialogInfo.resultPath.string();
+                mc.model =
+                    sd::Graphics::assetManager().load<sd::Model>(mc.path);
+                mc.material =
+                    sd::Graphics::assetManager().load<sd::Material>(mc.path);
             }
 
             ImVec2 size(64, 64);
-            drawMaterial(model.model->getMaterial(), size);
+            drawMaterial(*mc.material, size);
+
+            if (ImGui::Button("Add Texture")) ImGui::OpenPopup("AddTexture");
+            if (ImGui::BeginPopup("AddTexture")) {
+                if (ImGui::MenuItem("Diffuse")) {
+                    sd::Material::TextureProp prop;
+                    prop.isColor = true;
+                    prop.color = {1.0f, 1.0f, 1.0f, 1.0f};
+                    prop.init();
+                    mc.material->setTexture(sd::MaterialType::DIFFUSE, prop);
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndPopup();
+            }
         });
     drawComponent<sd::TerrainComponent>(
         "Terrain", entity, [&](sd::TerrainComponent &terrain) {

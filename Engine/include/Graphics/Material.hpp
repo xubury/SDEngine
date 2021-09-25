@@ -30,6 +30,8 @@ class SD_API Material {
         void serialize(Archive &archive) {
             archive(isColor, color, path);
         }
+
+        void init();
     };
 
    public:
