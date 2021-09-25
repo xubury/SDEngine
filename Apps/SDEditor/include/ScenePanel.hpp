@@ -5,6 +5,7 @@
 #include "ECS/Entity.hpp"
 #include "Utils/Base.hpp"
 #include "ImGui/FileDialog.hpp"
+#include "ECS/Component.hpp"
 
 class ScenePanel {
    public:
@@ -26,6 +27,8 @@ class ScenePanel {
     void drawEntityNode(sd::Entity &entity);
 
     void drawComponents(sd::Entity &entity);
+
+    void drawMaterial(sd::Material &material, const ImVec2 &size);
 
     sd::Scene *m_scene;
     sd::Entity m_selectedEntity;

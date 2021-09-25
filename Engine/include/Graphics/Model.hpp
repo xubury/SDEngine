@@ -9,20 +9,26 @@ namespace sd {
 class SD_API Model {
    public:
     const std::vector<Mesh> &getMeshes() const { return m_meshes; };
-    const std::vector<Material> &getMaterials() const { return m_materials; }
+    std::vector<Mesh> &getMeshes() { return m_meshes; };
+
+    const Material &getMaterial() const { return m_material; }
+    Material &getMaterial() { return m_material; }
 
     void init();
 
     void addMesh(const Mesh &mesh);
     void addMesh(Mesh &&mesh);
 
-    void addMaterial(const Material &mesh);
-    void addMaterial(Material &&mesh);
-
     void clear();
+
+    template <typename Archive>
+    void serialize(Archive &archive) {
+        archive(m_material);
+    }
+
    private:
     std::vector<Mesh> m_meshes;
-    std::vector<Material> m_materials;
+    Material m_material;
 };
 
 }  // namespace sd

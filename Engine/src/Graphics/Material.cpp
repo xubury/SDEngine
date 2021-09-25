@@ -3,7 +3,20 @@
 
 namespace sd {
 
-Material::Material() {}
+void Material::init() {
+    for (auto &[type, texture] : m_textures) {
+        if (texture.isColor) {
+            texture.texture = Texture::create(
+                1, 1, 1, TextureType::TEX_2D, TextureFormat::RGBA,
+                TextureFormatType::FLOAT, TextureWrap::REPEAT,
+                TextureFilter::LINEAR, TextureMipmapFilter::LINEAR,
+                texture.color.data());
+        } else {
+            texture.texture =
+                Graphics::assetManager().load<Texture>(texture.path);
+        }
+    }
+}
 
 void Material::setTexture(MaterialType type, const TextureProp &prop) {
     m_textures[type] = prop;

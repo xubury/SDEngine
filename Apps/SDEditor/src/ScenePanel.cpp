@@ -1,5 +1,4 @@
 #include "ScenePanel.hpp"
-#include "ECS/Component.hpp"
 #include "Core/Application.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -246,6 +245,9 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
                 model.model = sd::Graphics::assetManager().load<sd::Model>(
                     m_fileDialogInfo.resultPath);
             }
+
+            ImVec2 size(64, 64);
+            drawMaterial(model.model->getMaterial(), size);
         });
     drawComponent<sd::TerrainComponent>(
         "Terrain", entity, [&](sd::TerrainComponent &terrain) {
@@ -272,4 +274,10 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
             ImGui::ColorEdit3("Ambient", &light.light.ambient[0]);
             ImGui::ColorEdit3("Specular", &light.light.specular[0]);
         });
+}
+
+void ScenePanel::drawMaterial(sd::Material &material, const ImVec2 &size) {
+    for (auto &[type, texture] : material.getTextures()) {
+        ImGui::DrawTexture(*texture.texture, size);
+    }
 }

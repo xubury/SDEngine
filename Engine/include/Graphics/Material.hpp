@@ -21,12 +21,19 @@ enum class MaterialType {
 class SD_API Material {
    public:
     struct SD_API TextureProp {
-        Ref<Texture> texture;
+        bool isColor = false;
+        std::array<float, 4> color;
         std::string path;
+        Ref<Texture> texture;
+
+        template <typename Archive>
+        void serialize(Archive &archive) {
+            archive(isColor, color, path);
+        }
     };
 
    public:
-    Material();
+    void init();
 
     void setTexture(MaterialType type, const TextureProp &prop);
 
@@ -35,6 +42,20 @@ class SD_API Material {
     void removeTexture(MaterialType type);
 
     Texture *getTexture(MaterialType type) const;
+
+    std::unordered_map<MaterialType, TextureProp> &getTextures() {
+        return m_textures;
+    }
+
+    const std::unordered_map<MaterialType, TextureProp> &getTextures() const {
+        return m_textures;
+    };
+
+    template <typename Archive>
+    void serialize(Archive &archive) {
+        archive(m_textures);
+    }
+
    private:
     std::unordered_map<MaterialType, TextureProp> m_textures;
 };

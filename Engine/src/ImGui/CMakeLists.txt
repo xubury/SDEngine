@@ -24,7 +24,7 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-imgui PUBLIC SD_SHARED)
 endif()
 
-target_link_libraries(sd-imgui PUBLIC sd-core)
+target_link_libraries(sd-imgui PUBLIC sd-core sd-graphics)
 
 target_include_directories(sd-imgui
     PUBLIC

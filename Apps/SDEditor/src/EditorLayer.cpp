@@ -173,21 +173,19 @@ void EditorLayer::onImGui() {
     }
     ImGui::End();
 
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
     ImGui::Begin("GBuffer");
     {
         ImVec2 wsize = ImGui::GetContentRegionAvail();
         for (int i = 0; i < 4; ++i) {
-            ImGui::Image((void *)(intptr_t)sd::Application::getRenderEngine()
-                             .getRenderSystem()
-                             ->getGBuffer()
-                             ->getTexture(i)
-                             ->getId(),
-                         wsize, ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::DrawTexture(*sd::Application::getRenderEngine()
+                                    .getRenderSystem()
+                                    ->getGBuffer()
+                                    ->getTexture(i),
+                               wsize);
         }
     }
     ImGui::End();
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
     ImGui::Begin("Scene");
     {
         ImVec2 wsize = ImGui::GetContentRegionAvail();
@@ -218,8 +216,7 @@ void EditorLayer::onImGui() {
 
         m_isViewportFocused = ImGui::IsWindowFocused();
         m_isViewportHovered = ImGui::IsWindowHovered();
-        ImGui::Image((void *)(intptr_t)m_frameBuffer->getTexture(0)->getId(),
-                     wsize, ImVec2(0, 1), ImVec2(1, 0));
+        ImGui::DrawTexture(*m_frameBuffer->getTexture(0), wsize);
 
         sd::Entity selectedEntity = m_scenePanel.getSelectedEntity();
         if (selectedEntity) {
@@ -323,7 +320,7 @@ void EditorLayer::saveScene() {
 void EditorLayer::processDialog() {
     if (ImGui::FileDialog(&m_openSceneOpen, &m_fileDialogInfo)) {
         m_scene->clear();
-        std::ifstream os(m_fileDialogInfo.resultPath);
+        std::ifstream os(m_fileDialogInfo.resultPath, std::ios::binary);
         cereal::BinaryInputArchive archive(os);
         entt::snapshot_loader{*m_scene}
             .entities(archive)
@@ -333,7 +330,7 @@ void EditorLayer::processDialog() {
         m_scene->refresh();
     }
     if (ImGui::FileDialog(&m_saveSceneOpen, &m_fileDialogInfo)) {
-        std::ofstream os(m_fileDialogInfo.resultPath);
+        std::ofstream os(m_fileDialogInfo.resultPath, std::ios::binary);
         cereal::BinaryOutputArchive archive(os);
         entt::snapshot{*m_scene}
             .entities(archive)

@@ -78,32 +78,28 @@ static Mesh processAiMesh(const aiMesh *assimpMesh) {
     return mesh;
 }
 
-static Material::TextureProp processAiMaterial(
-    const std::filesystem::path &directory, const aiMaterial *assimpMaterial,
-    aiTextureType type) {
-    Material::TextureProp prop;
-    uint32_t count = assimpMaterial->GetTextureCount(type);
+static void processAiMaterial(const std::filesystem::path &directory,
+                              Material &material, MaterialType materialType,
+                              const aiMaterial *assimpMaterial,
+                              aiTextureType assimpType) {
+    uint32_t count = assimpMaterial->GetTextureCount(assimpType);
+    if (material.hasTexture(materialType) || count < 1) return;
+
     if (count > 1) SD_CORE_WARN("Cannot handle multiple texture of same type!");
+
+    Material::TextureProp prop;
+
     aiString texturePath;
-    if (type == aiTextureType_DIFFUSE && count == 0) {
-        Material material;
-        float rgba[4] = {1.f, 1.f, 1.f, 1.f};
-        prop.texture = Texture::create(
-            1, 1, 1, TextureType::TEX_2D, TextureFormat::RGBA,
-            TextureFormatType::FLOAT, TextureWrap::REPEAT,
-            TextureFilter::NEAREST, TextureMipmapFilter::NEAREST, rgba);
-        prop.path = "Empty";
-    }
     for (uint32_t i = 0; i < count; ++i) {
-        if (assimpMaterial->GetTexture(type, i, &texturePath) == AI_SUCCESS) {
+        if (assimpMaterial->GetTexture(assimpType, i, &texturePath) ==
+            AI_SUCCESS) {
+            prop.isColor = false;
             prop.path = (directory / texturePath.C_Str()).string();
-            prop.texture =
-                Graphics::assetManager().load<sd::Texture>(prop.path);
         } else {
             SD_CORE_ERROR("Assimp GetTexture error!");
         }
     }
-    return prop;
+    material.setTexture(materialType, prop);
 }
 
 Ref<Model> ModelLoader::loadAsset(const std::string &filePath) {
@@ -126,19 +122,14 @@ Ref<Model> ModelLoader::loadAsset(const std::string &filePath) {
     std::filesystem::path directory =
         std::filesystem::path(filePath).parent_path();
     for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
-        Material material;
+        Material &material = model->getMaterial();
 
-        material.setTexture(MaterialType::DIFFUSE,
-                            processAiMaterial(directory, scene->mMaterials[i],
-                                              aiTextureType_DIFFUSE));
-        material.setTexture(MaterialType::SPECULAR,
-                            processAiMaterial(directory, scene->mMaterials[i],
-                                              aiTextureType_SPECULAR));
-        material.setTexture(MaterialType::AMBIENT,
-                            processAiMaterial(directory, scene->mMaterials[i],
-                                              aiTextureType_AMBIENT));
-
-        model->addMaterial(std::move(material));
+        processAiMaterial(directory, material, MaterialType::DIFFUSE,
+                          scene->mMaterials[i], aiTextureType_DIFFUSE);
+        processAiMaterial(directory, material, MaterialType::SPECULAR,
+                          scene->mMaterials[i], aiTextureType_SPECULAR);
+        processAiMaterial(directory, material, MaterialType::AMBIENT,
+                          scene->mMaterials[i], aiTextureType_AMBIENT);
     }
 
     model->init();
