@@ -2,7 +2,6 @@
 #include "Graphics/ShaderLoader.hpp"
 #include "Graphics/TextureLoader.hpp"
 #include "Graphics/ModelLoader.hpp"
-#include "Graphics/MaterialLoader.hpp"
 
 namespace sd {
 
@@ -13,7 +12,6 @@ void Graphics::init(API api) {
     Graphics::assetManager().setLoader<ShaderLoader>();
     Graphics::assetManager().setLoader<TextureLoader>();
     Graphics::assetManager().setLoader<ModelLoader>();
-    Graphics::assetManager().setLoader<MaterialLoader>();
 
     switch (api) {
         case API::OpenGL:

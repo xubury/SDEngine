@@ -3,24 +3,7 @@
 
 namespace sd {
 
-void Material::TextureProp::init() {
-    if (isColor) {
-        texture = Texture::create(1, 1, 1, TextureType::TEX_2D,
-                                  TextureFormat::RGBA, TextureFormatType::FLOAT,
-                                  TextureWrap::REPEAT, TextureFilter::LINEAR,
-                                  TextureMipmapFilter::LINEAR, color.data());
-    } else {
-        texture = Graphics::assetManager().load<Texture>(path);
-    }
-}
-
-void Material::init() {
-    for (auto &[type, texture] : getTextures()) {
-        texture.init();
-    }
-}
-
-void Material::setTexture(MaterialType type, const TextureProp &prop) {
+void Material::setTexture(MaterialType type, const Ref<Texture> &prop) {
     m_textures[type] = prop;
 }
 
@@ -39,7 +22,7 @@ void Material::removeTexture(MaterialType type) {
 }
 
 Texture *Material::getTexture(MaterialType type) const {
-    return hasTexture(type) ? m_textures.at(type).texture.get() : nullptr;
+    return hasTexture(type) ? m_textures.at(type).get() : nullptr;
 }
 
 }  // namespace sd

@@ -46,13 +46,12 @@ struct SD_API TransformComponent {
 struct SD_API ModelComponent {
     std::string path;
     Ref<Model> model;
-    Ref<Material> material;
-    ModelComponent()
-        : model(createRef<Model>()), material(createRef<Material>()) {}
+    glm::vec3 color;
+    ModelComponent() : model(createRef<Model>()) {}
 
     template <typename Archive>
     void serialize(Archive& archive) {
-        archive(path, material);
+        archive(path, color);
     }
 };
 

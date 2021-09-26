@@ -33,7 +33,6 @@ set(Graphics_Include
     ${Include_Root}/Graphics.hpp
     ${Include_Root}/Light.hpp
     ${Include_Root}/Material.hpp
-    ${Include_Root}/MaterialLoader.hpp
     ${Include_Root}/Mesh.hpp
     ${Include_Root}/Model.hpp
     ${Include_Root}/ModelLoader.hpp
@@ -54,7 +53,6 @@ set(Graphics_Src
     ${Src_Root}/Framebuffer.cpp
     ${Src_Root}/Graphics.cpp
     ${Src_Root}/Material.cpp
-    ${Src_Root}/MaterialLoader.cpp
     ${Src_Root}/Mesh.cpp
     ${Src_Root}/Model.cpp
     ${Src_Root}/ModelLoader.cpp

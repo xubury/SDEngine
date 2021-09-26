@@ -73,7 +73,6 @@ void Scene::refreshEntityModel(Entity &entity) {
     if (entity.hasComponent<ModelComponent>()) {
         auto &modelComp = entity.getComponent<ModelComponent>();
         modelComp.model = Graphics::assetManager().load<Model>(modelComp.path);
-        modelComp.material->init();
     }
 }
 

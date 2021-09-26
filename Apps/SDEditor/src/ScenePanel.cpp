@@ -244,25 +244,11 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
                 mc.path = m_fileDialogInfo.resultPath.string();
                 mc.model =
                     sd::Graphics::assetManager().load<sd::Model>(mc.path);
-                mc.material =
-                    sd::Graphics::assetManager().load<sd::Material>(mc.path);
             }
 
+            ImGui::ColorEdit3("Color", &mc.color[0]);
             ImVec2 size(64, 64);
-            drawMaterial(*mc.material, size);
-
-            if (ImGui::Button("Add Texture")) ImGui::OpenPopup("AddTexture");
-            if (ImGui::BeginPopup("AddTexture")) {
-                if (ImGui::MenuItem("Diffuse")) {
-                    sd::Material::TextureProp prop;
-                    prop.isColor = true;
-                    prop.color = {1.0f, 1.0f, 1.0f, 1.0f};
-                    prop.init();
-                    mc.material->setTexture(sd::MaterialType::DIFFUSE, prop);
-                    ImGui::CloseCurrentPopup();
-                }
-                ImGui::EndPopup();
-            }
+            drawMaterial(mc.model->getMaterial(), size);
         });
     drawComponent<sd::TerrainComponent>(
         "Terrain", entity, [&](sd::TerrainComponent &terrain) {
@@ -326,6 +312,6 @@ void ScenePanel::drawMaterial(sd::Material &material, const ImVec2 &size) {
     for (auto &[type, texture] : material.getTextures()) {
         ImGui::TextUnformatted(getTextureName(type));
         ImGui::SameLine(width / 2);
-        ImGui::DrawTexture(*texture.texture, size);
+        ImGui::DrawTexture(*texture, size);
     }
 }

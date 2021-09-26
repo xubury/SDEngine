@@ -39,6 +39,7 @@ struct VertexOutput {
     vec3 normal;
 };
 
+uniform vec3 u_color;
 uniform Material u_material;
 uniform uint u_entityId;
 
@@ -53,9 +54,10 @@ layout (location = 0) in VertexOutput in_vertex;
 void main() {
     g_position = vec4(in_vertex.position, 1.0f);
     g_normal = vec4(in_vertex.normal, 1.0f);
-    g_albedo.rgb = texture(u_material.diffuse, in_vertex.texCoord).rgb;
+    vec3 halfColor = u_color * 0.5f;
+    g_albedo.rgb = texture(u_material.diffuse, in_vertex.texCoord).rgb + halfColor;
     g_albedo.a = texture(u_material.specular, in_vertex.texCoord).r;
-    g_ambient = vec4(texture(u_material.ambient, in_vertex.texCoord).rgb, 1.f);
+    g_ambient = vec4(texture(u_material.ambient, in_vertex.texCoord).rgb + halfColor, 1.f);
 
     entityId = u_entityId;
 }
