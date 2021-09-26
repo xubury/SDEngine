@@ -9,7 +9,7 @@
 
 class EditorLayer : public sd::Layer {
    public:
-    EditorLayer();
+    EditorLayer(int width, int height);
 
     void onAttach() override;
 

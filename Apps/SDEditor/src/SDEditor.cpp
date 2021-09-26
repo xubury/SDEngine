@@ -5,6 +5,6 @@
 
 sd::Application *sd::createApp() { return new SDEditor; }
 
-void SDEditor::init() { pushLayer(new EditorLayer()); }
+void SDEditor::init() { pushLayer(new EditorLayer(800, 600)); }
 
 void SDEditor::destroy() {}

@@ -10,14 +10,14 @@
 #include "imgui_internal.h"
 #include "ImGuizmo.h"
 
-EditorLayer::EditorLayer()
+EditorLayer::EditorLayer(int width, int height)
     : sd::Layer("Editor Layer"),
-      m_width(800),
-      m_height(600),
+      m_width(width),
+      m_height(height),
       m_isViewportFocused(false),
       m_isViewportHovered(false),
       m_hide(false),
-      m_editorCamera(glm::radians(45.f), static_cast<float>(m_width) / m_height,
+      m_editorCamera(glm::radians(45.f), static_cast<float>(width) / height,
                      0.1, 100000.f),
       m_loadSceneOpen(false),
       m_saveSceneOpen(false) {
@@ -27,7 +27,7 @@ EditorLayer::EditorLayer()
 
 void EditorLayer::onAttach() {
     sd::Ref<sd::Texture> multisampleTexture = sd::Texture::create(
-        1024, 1024, 8, sd::TextureType::TEX_2D_MULTISAMPLE,
+        m_width, m_height, 8, sd::TextureType::TEX_2D_MULTISAMPLE,
         sd::TextureFormat::RGBA, sd::TextureFormatType::FLOAT,
         sd::TextureWrap::BORDER, sd::TextureFilter::LINEAR,
         sd::TextureMipmapFilter::LINEAR_NEAREST);

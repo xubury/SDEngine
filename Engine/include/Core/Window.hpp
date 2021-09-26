@@ -35,9 +35,10 @@ class Context;
 
 class SD_API Window {
    public:
-   public:
     Window();
     ~Window();
+    Window(const Window &other) = delete;
+    Window &operator=(const Window &other) = delete;
 
     bool create(const WindowProp &property);
 
