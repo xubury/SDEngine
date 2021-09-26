@@ -92,7 +92,7 @@ void Scene::save(const std::string &filePath) {
 void Scene::refreshEntityModel(Entity &entity) {
     if (entity.hasComponent<ModelComponent>()) {
         auto &modelComp = entity.getComponent<ModelComponent>();
-        modelComp.model = Graphics::assetManager().load<Model>(modelComp.path);
+        modelComp.model = Asset::manager().load<Model>(modelComp.path);
     }
 }
 

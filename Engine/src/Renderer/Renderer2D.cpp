@@ -103,8 +103,7 @@ void Renderer2D::init() {
         TextureMipmapFilter::LINEAR_LINEAR, &color);
     s_data.textureSlots[0] = s_data.whiteTexture;
 
-    s_data.shader =
-        Graphics::assetManager().load<Shader>("shaders/simple.glsl");
+    s_data.shader = Asset::manager().load<Shader>("shaders/simple.glsl");
 }
 
 void Renderer2D::beginScene(OrthographicCamera& camera,

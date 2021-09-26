@@ -53,8 +53,6 @@ class SD_API Graphics {
     static void init(API api);
 
     static API getAPI();
-
-    static AssetManager &assetManager();
 };
 
 }  // namespace sd

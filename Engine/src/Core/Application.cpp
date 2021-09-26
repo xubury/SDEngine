@@ -5,6 +5,9 @@
 #include "Core/InputManager.hpp"
 #include "Core/Timing.hpp"
 #include "Graphics/Device.hpp"
+#include "Graphics/ShaderLoader.hpp"
+#include "Graphics/TextureLoader.hpp"
+#include "Graphics/ModelLoader.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Renderer/Renderer3D.hpp"
@@ -39,6 +42,10 @@ Application::Application() {
         SD_CORE_ERROR("IMG_Init Failed: {}", IMG_GetError());
         exit(-1);
     }
+    Asset::manager().setRootPath("assets/");
+    Asset::manager().setLoader<ShaderLoader>();
+    Asset::manager().setLoader<TextureLoader>();
+    Asset::manager().setLoader<ModelLoader>();
 
     Graphics::init(API::OpenGL);
 

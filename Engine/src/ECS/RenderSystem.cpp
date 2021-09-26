@@ -19,10 +19,9 @@ static Ref<Texture> createGeometryTexture(int width, int height, int samples) {
 RenderSystem::RenderSystem(RenderEngine *engine, int width, int height,
                            int samples)
     : m_engine(engine) {
-    m_shader = Graphics::assetManager().load<Shader>("shaders/simple3d.glsl");
+    m_shader = Asset::manager().load<Shader>("shaders/simple3d.glsl");
     m_framebuffer = Framebuffer::create();
-    m_gbufferShader =
-        Graphics::assetManager().load<Shader>("shaders/gbuffer.glsl");
+    m_gbufferShader = Asset::manager().load<Shader>("shaders/gbuffer.glsl");
     for (int i = 0; i < 4; ++i) {
         m_gBufferTarget.addTexture(createGeometryTexture(width, height, 8));
         m_framebuffer->attachTexture(createGeometryTexture(width, height, 1));

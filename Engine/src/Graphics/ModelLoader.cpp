@@ -93,7 +93,7 @@ static void processAiMaterial(const std::filesystem::path &directory,
             AI_SUCCESS) {
             std::string path = (directory / texturePath.C_Str()).string();
             material.setTexture(materialType,
-                                Graphics::assetManager().load<Texture>(path));
+                                Asset::manager().load<Texture>(path));
         } else {
             SD_CORE_ERROR("Assimp GetTexture error!");
         }

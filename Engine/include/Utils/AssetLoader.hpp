@@ -91,6 +91,14 @@ class SD_API AssetManager {
     std::filesystem::path m_rootPath;
 };
 
+class Asset {
+   public:
+    static AssetManager &manager() {
+        static AssetManager s_instance;
+        return s_instance;
+    }
+};
+
 template <typename ASSET>
 AssetLoader<ASSET>::AssetLoader(AssetManager &manager)
     : AssetLoaderBase(manager) {

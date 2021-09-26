@@ -242,8 +242,7 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
             }
             if (ImGui::FileDialog(&m_fileDialogOpen, &m_fileDialogInfo)) {
                 mc.path = m_fileDialogInfo.resultPath.string();
-                mc.model =
-                    sd::Graphics::assetManager().load<sd::Model>(mc.path);
+                mc.model = sd::Asset::manager().load<sd::Model>(mc.path);
             }
 
             ImGui::ColorEdit3("Color", &mc.color[0]);
