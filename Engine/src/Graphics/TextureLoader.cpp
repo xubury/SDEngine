@@ -39,6 +39,8 @@ void TextureLoader::setFlipVertically(bool flip) { m_flip = flip; }
 
 Ref<Texture> TextureLoader::loadAsset(const std::string &filePath) {
     Ref<Texture> texture;
+    SD_CORE_TRACE("Loading texture form: {}...", filePath);
+
     SDL_Surface *image = loadSuface(filePath);
     if (m_flip) {
         flipSurface(image);
