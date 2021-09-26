@@ -24,6 +24,10 @@ class SD_API Scene : public entt::registry {
 
     void refresh();
 
+    void load(const std::string &filePath);
+
+    void save(const std::string &filePath);
+
    private:
     void refreshEntityChildTranforms(Entity &entity);
     void refreshEntityModel(Entity &entity);

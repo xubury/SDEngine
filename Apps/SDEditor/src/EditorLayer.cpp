@@ -1,7 +1,6 @@
 #include "EditorLayer.hpp"
 #include "Renderer/Renderer3D.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Utils/Serialize.hpp"
 #include "Core/Application.hpp"
 #include "Core/InputManager.hpp"
 #include "ECS/Component.hpp"
@@ -330,23 +329,9 @@ void EditorLayer::saveScene() {
 
 void EditorLayer::processDialog() {
     if (ImGui::FileDialog(&m_loadSceneOpen, &m_fileDialogInfo)) {
-        m_scene->clear();
-        std::ifstream os(m_fileDialogInfo.resultPath, std::ios::binary);
-        cereal::BinaryInputArchive archive(os);
-        entt::snapshot_loader{*m_scene}
-            .entities(archive)
-            .component<sd::EntityDataComponent, sd::TagComponent,
-                       sd::TransformComponent, sd::ModelComponent,
-                       sd::LightComponent>(archive);
-        m_scene->refresh();
+        m_scene->load(m_fileDialogInfo.resultPath.string());
     }
     if (ImGui::FileDialog(&m_saveSceneOpen, &m_fileDialogInfo)) {
-        std::ofstream os(m_fileDialogInfo.resultPath, std::ios::binary);
-        cereal::BinaryOutputArchive archive(os);
-        entt::snapshot{*m_scene}
-            .entities(archive)
-            .component<sd::EntityDataComponent, sd::TagComponent,
-                       sd::TransformComponent, sd::ModelComponent,
-                       sd::LightComponent>(archive);
+        m_scene->save(m_fileDialogInfo.resultPath.string());
     }
 }

@@ -69,6 +69,26 @@ void Scene::refresh() {
     }
 }
 
+void Scene::load(const std::string &filePath) {
+    clear();
+    std::ifstream os(filePath, std::ios::binary);
+    cereal::BinaryInputArchive archive(os);
+    entt::snapshot_loader{*this}
+        .entities(archive)
+        .component<EntityDataComponent, TagComponent, TransformComponent,
+                   ModelComponent, LightComponent>(archive);
+    refresh();
+}
+
+void Scene::save(const std::string &filePath) {
+    std::ofstream os(filePath, std::ios::binary);
+    cereal::BinaryOutputArchive archive(os);
+    entt::snapshot{*this}
+        .entities(archive)
+        .component<EntityDataComponent, TagComponent, TransformComponent,
+                   ModelComponent, LightComponent>(archive);
+}
+
 void Scene::refreshEntityModel(Entity &entity) {
     if (entity.hasComponent<ModelComponent>()) {
         auto &modelComp = entity.getComponent<ModelComponent>();
