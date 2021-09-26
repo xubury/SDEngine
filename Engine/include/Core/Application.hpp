@@ -7,22 +7,20 @@
 #include "ImGui/ImGuiLayer.hpp"
 #include "Renderer/RenderEngine.hpp"
 
+int main(int argc, char **argv);
+
 namespace sd {
 
 class SD_API Application {
    public:
-    static Application &instance();
-
     static Window &getWindow();
     static RenderEngine &getRenderEngine();
+    static void quit();
 
     Application(const Application &application) = delete;
     Application &operator=(const Application &application) = delete;
 
-    virtual void init() = 0;
-
-    virtual void destroy() = 0;
-
+   protected:
     void pushLayer(Layer *layer);
 
     void pushOverlay(Layer *layer);
@@ -31,15 +29,18 @@ class SD_API Application {
 
     void popOverlay(Layer *layer);
 
-    void run();
-
-    void quit();
-
-   protected:
     Application();
     ~Application();
 
    private:
+    friend int ::main(int argc, char **argv);
+
+    virtual void init() = 0;
+
+    void run();
+
+    virtual void destroy() = 0;
+
     static Application *s_instance;
 
     void processEvent(const SDL_Event &event);

@@ -3,6 +3,7 @@
 #include "Renderer/Renderer.hpp"
 #include "Utils/Serialize.hpp"
 #include "Core/Application.hpp"
+#include "Core/InputManager.hpp"
 #include "ECS/Component.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include <glm/gtc/type_ptr.hpp>
@@ -138,7 +139,7 @@ void EditorLayer::onImGui() {
                 newScene();
             }
 
-            if (ImGui::MenuItem("Load Scene...", "Ctrl+O")) {
+            if (ImGui::MenuItem("Load Scene...", "Ctrl+L")) {
                 loadScene();
             }
 
@@ -146,8 +147,8 @@ void EditorLayer::onImGui() {
                 saveScene();
             }
 
-            if (ImGui::MenuItem("Exit")) {
-                sd::Application::instance().quit();
+            if (ImGui::MenuItem("Exit", "Esc")) {
+                sd::Application::quit();
             }
             ImGui::EndMenu();
         }
@@ -264,6 +265,8 @@ void EditorLayer::onEventProcess(const SDL_Event &event) {
     if (m_isViewportFocused && m_isViewportHovered) {
         m_cameraController.processEvent(event);
     }
+    bool lshift = sd::InputManager::isKeyDown(SDLK_LSHIFT);
+    bool lctrl = sd::InputManager::isKeyDown(SDLK_LCTRL);
     if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
             case SDLK_z: {
@@ -272,6 +275,24 @@ void EditorLayer::onEventProcess(const SDL_Event &event) {
                 } else {
                     hide();
                 }
+            } break;
+            case SDLK_s: {
+                if (lshift && lctrl) {
+                    saveScene();
+                }
+            } break;
+            case SDLK_n: {
+                if (lctrl) {
+                    newScene();
+                }
+            } break;
+            case SDLK_l: {
+                if (lctrl) {
+                    loadScene();
+                }
+            } break;
+            case SDLK_ESCAPE: {
+                sd::Application::quit();
             } break;
         }
     }

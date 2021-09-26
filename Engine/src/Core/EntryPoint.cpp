@@ -2,7 +2,7 @@
 
 #include "Core/EntryPoint.hpp"
 
-int  main(int, char **) {
+int main(int, char **) {
     auto app = sd::createApp();
     app->init();
     app->run();

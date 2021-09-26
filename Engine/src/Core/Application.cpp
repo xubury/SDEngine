@@ -13,8 +13,6 @@ namespace sd {
 
 Application *Application::s_instance = nullptr;
 
-Application &Application::instance() { return *s_instance; }
-
 Window &Application::getWindow() { return s_instance->m_window; }
 
 RenderEngine &Application::getRenderEngine() {
@@ -142,7 +140,7 @@ void Application::run() {
     }
 }
 
-void Application::quit() { m_window.setShouldClose(true); }
+void Application::quit() { s_instance->m_window.setShouldClose(true); }
 
 void Application::tick(float dt) {
     InputManager::instance().tick();
