@@ -19,7 +19,7 @@ EditorLayer::EditorLayer()
       m_hide(false),
       m_editorCamera(glm::radians(45.f), static_cast<float>(m_width) / m_height,
                      0.1, 100000.f),
-      m_openSceneOpen(false),
+      m_loadSceneOpen(false),
       m_saveSceneOpen(false) {
     m_cameraController.setCamera(&m_editorCamera);
     newScene();
@@ -138,8 +138,8 @@ void EditorLayer::onImGui() {
                 newScene();
             }
 
-            if (ImGui::MenuItem("Open Scene...", "Ctrl+O")) {
-                openScene();
+            if (ImGui::MenuItem("Load Scene...", "Ctrl+O")) {
+                loadScene();
             }
 
             if (ImGui::MenuItem("Save Scene As...", "Ctrl+Shift+S")) {
@@ -289,10 +289,10 @@ void EditorLayer::newScene() {
     sd::Application::getRenderEngine().setScene(m_scene.get());
 }
 
-void EditorLayer::openScene() {
-    m_openSceneOpen = true;
+void EditorLayer::loadScene() {
+    m_loadSceneOpen = true;
     m_fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
-    m_fileDialogInfo.title = "Open Scene";
+    m_fileDialogInfo.title = "Load Scene";
     m_fileDialogInfo.fileName = "";
     m_fileDialogInfo.fileExtension = ".scene";
     m_fileDialogInfo.directoryPath = std::filesystem::current_path();
@@ -308,7 +308,7 @@ void EditorLayer::saveScene() {
 }
 
 void EditorLayer::processDialog() {
-    if (ImGui::FileDialog(&m_openSceneOpen, &m_fileDialogInfo)) {
+    if (ImGui::FileDialog(&m_loadSceneOpen, &m_fileDialogInfo)) {
         m_scene->clear();
         std::ifstream os(m_fileDialogInfo.resultPath, std::ios::binary);
         cereal::BinaryInputArchive archive(os);

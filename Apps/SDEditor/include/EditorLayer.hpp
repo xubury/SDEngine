@@ -26,7 +26,7 @@ class EditorLayer : public sd::Layer {
     void onEventsProcess() override;
 
     void newScene();
-    void openScene();
+    void loadScene();
     void saveScene();
 
    private:
@@ -58,7 +58,7 @@ class EditorLayer : public sd::Layer {
     sd::Ref<sd::Scene> m_scene;
     ScenePanel m_scenePanel;
 
-    bool m_openSceneOpen;
+    bool m_loadSceneOpen;
     bool m_saveSceneOpen;
     ImFileDialogInfo m_fileDialogInfo;
 };
