@@ -16,29 +16,15 @@ static Ref<Texture> createGeometryTexture(int width, int height, int samples) {
         TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_NEAREST);
 }
 
-static Ref<Texture> createColorTexture(int width, int height, int samples) {
-    return Texture::create(
-        width, height, samples,
-        samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D,
-        TextureFormat::RGBA, TextureFormatType::UBYTE, TextureWrap::BORDER,
-        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_NEAREST);
-}
-
 RenderSystem::RenderSystem(RenderEngine *engine, int width, int height,
                            int samples)
     : m_engine(engine) {
     m_shader = Asset::manager().load<Shader>("shaders/simple3d.glsl");
     m_framebuffer = Framebuffer::create();
     m_gbufferShader = Asset::manager().load<Shader>("shaders/gbuffer.glsl");
-    // position and normal
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 4; ++i) {
         m_gBufferTarget.addTexture(createGeometryTexture(width, height, 8));
         m_framebuffer->attachTexture(createGeometryTexture(width, height, 1));
-    }
-    // albedo and ambient
-    for (int i = 0; i < 2; ++i) {
-        m_gBufferTarget.addTexture(createColorTexture(width, height, 8));
-        m_framebuffer->attachTexture(createColorTexture(width, height, 1));
     }
     // entity id
     m_gBufferTarget.addTexture(Texture::create(
