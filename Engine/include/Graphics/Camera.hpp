@@ -14,6 +14,8 @@ class SD_API Camera {
 
     virtual ~Camera() = 0;
 
+    virtual void resize(float width, float height) = 0;
+
     void translateLocal(const glm::vec3 &t);
     void translateWorld(const glm::vec3 &t);
     void rotateLocal(const glm::quat &r);
@@ -77,7 +79,6 @@ class SD_API Camera {
 
 class SD_API OrthographicCamera : public Camera {
    public:
-    OrthographicCamera() = default;
     OrthographicCamera(float width, float height, float zNear, float zFar);
     OrthographicCamera(Transform *m_transform, float width, float height,
                        float zNear, float zFar);
@@ -86,11 +87,18 @@ class SD_API OrthographicCamera : public Camera {
     ~OrthographicCamera() = default;
 
     void setProjection(float width, float height, float zNear, float zFar);
+
+    void resize(float width, float height) override;
+
+   private:
+    float m_width;
+    float m_height;
+    float m_zNear;
+    float m_zFar;
 };
 
 class SD_API PerspectiveCamera : public Camera {
    public:
-    PerspectiveCamera() = default;
     PerspectiveCamera(float fov, float aspect, float zNear, float zFar);
     PerspectiveCamera(Transform *m_transform, float fov, float aspect,
                       float zNear, float zFar);
@@ -99,6 +107,14 @@ class SD_API PerspectiveCamera : public Camera {
     ~PerspectiveCamera() = default;
 
     void setProjection(float fov, float aspect, float zNear, float zFar);
+
+    void resize(float width, float height) override;
+
+   private:
+    float m_fov;
+    float m_aspect;
+    float m_zNear;
+    float m_zFar;
 };
 
 }  // namespace sd

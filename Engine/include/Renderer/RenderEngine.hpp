@@ -21,6 +21,8 @@ class RenderEngine : public SystemManager {
 
     const RenderTarget *getRenderTarget() const;
 
+    RenderTarget *getRenderTarget();
+
     void setCamera(Camera *camera);
 
     Camera *getCamera();
