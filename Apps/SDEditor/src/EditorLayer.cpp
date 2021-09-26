@@ -22,6 +22,7 @@ EditorLayer::EditorLayer(int width, int height)
       m_loadSceneOpen(false),
       m_saveSceneOpen(false) {
     m_cameraController.setCamera(&m_editorCamera);
+    m_editorCamera.setWorldPosition(glm::vec3(0, 0, 10));
     newScene();
 }
 
@@ -160,13 +161,20 @@ void EditorLayer::onImGui() {
     ImGui::Begin("Camera");
     {
         glm::vec3 position = m_editorCamera.getWorldPosition();
-        ImGui::DrawVec3Control("Translation", position);
-        m_editorCamera.setWorldPosition(position);
+        if (ImGui::DrawVec3Control("Translation", position)) {
+            m_editorCamera.setWorldPosition(position);
+        }
 
         glm::vec3 rotation =
             glm::degrees(glm::eulerAngles(m_editorCamera.getWorldRotation()));
-        ImGui::DrawVec3Control("Rotation", rotation);
-        m_editorCamera.setWorldRotation(glm::radians(rotation));
+        if (ImGui::DrawVec3Control("Rotation", rotation)) {
+            m_editorCamera.setWorldRotation(glm::radians(rotation));
+        }
+
+        float exposure = m_editorCamera.getExposure();
+        if (ImGui::SliderFloat("Exposure", &exposure, 0.5, 10)) {
+            m_editorCamera.setExposure(exposure);
+        }
     }
     ImGui::End();
 

@@ -23,7 +23,7 @@ layout (location = 1) out uint entityId;
 
 layout (location = 0) in vec2 in_texCoord;
 
-uniform DirLight u_light;
+uniform Light u_light;
 
 uniform sampler2D u_position;
 uniform sampler2D u_normal;
@@ -40,8 +40,11 @@ void main() {
 
     vec3 viewDir = normalize(u_viewPos - fragPos);
 
-    vec3 lighting = calculateDirLight(u_light, fragPos, normal, viewDir, ambient, diffuse, specular);
-    fragColor = vec4(lighting, 1.0f);
+    vec3 result = calculateLight(u_light, fragPos, normal, viewDir, ambient, diffuse, specular);
+    // hdr
+    result = vec3(1.0) - exp(-result * u_exposure);
+
+    fragColor = vec4(result, 1.0f);
 
     entityId = texture(u_entityTexture, in_texCoord).r;
 }

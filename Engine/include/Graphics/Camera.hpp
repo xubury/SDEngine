@@ -65,6 +65,9 @@ class SD_API Camera {
 
     void updateView();
 
+    float getExposure() const;
+    void setExposure(float exposure);
+
    private:
     glm::mat4 m_view;
     glm::mat4 m_projection;
@@ -75,6 +78,8 @@ class SD_API Camera {
     glm::quat m_rotation;
 
     bool m_outdated;
+
+    float m_exposure;
 };
 
 class SD_API OrthographicCamera : public Camera {

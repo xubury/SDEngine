@@ -80,11 +80,21 @@ void RenderSystem::onRender() {
     auto lightView = m_scene->view<TransformComponent, LightComponent>();
     lightView.each([this](const TransformComponent &transformComp,
                           const LightComponent &lightComp) {
-        m_shader->setVec3("u_light.direction",
-                          transformComp.transform.getWorldFront());
-        m_shader->setVec3("u_light.ambient", lightComp.light.ambient);
-        m_shader->setVec3("u_light.diffuse", lightComp.light.diffuse);
-        m_shader->setVec3("u_light.specular", lightComp.light.specular);
+        const Transform &transform = transformComp.transform;
+        const Light &light = lightComp.light;
+        m_shader->setVec3("u_light.direction", transform.getWorldFront());
+        m_shader->setVec3("u_light.ambient", light.ambient);
+        m_shader->setVec3("u_light.diffuse", light.diffuse);
+        m_shader->setVec3("u_light.specular", light.specular);
+        m_shader->setVec3("u_light.position", transform.getWorldPosition());
+        m_shader->setFloat("u_light.isDirectional", light.isDirectional);
+        m_shader->setFloat("u_light.cutOff",
+                           glm::cos(glm::radians(light.cutOff)));
+        m_shader->setFloat("u_light.outerCutOff",
+                           glm::cos(glm::radians(light.outerCutOff)));
+        m_shader->setFloat("u_light.constant", light.constant);
+        m_shader->setFloat("u_light.linear", light.linear);
+        m_shader->setFloat("u_light.quadratic", light.quadratic);
     });
 
     Framebuffer *gBuffer = getGBuffer();

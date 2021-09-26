@@ -47,7 +47,7 @@ struct SD_API ModelComponent {
     std::string path;
     Ref<Model> model;
     glm::vec3 color;
-    ModelComponent() : model(createRef<Model>()) {}
+    ModelComponent() : model(createRef<Model>()), color(0.f) {}
 
     template <typename Archive>
     void serialize(Archive& archive) {

@@ -269,10 +269,21 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
             }
         });
     drawComponent<sd::LightComponent>(
-        "Light", entity, [&](sd::LightComponent &light) {
-            ImGui::ColorEdit3("Diffuse", &light.light.diffuse[0]);
-            ImGui::ColorEdit3("Ambient", &light.light.ambient[0]);
-            ImGui::ColorEdit3("Specular", &light.light.specular[0]);
+        "Light", entity, [&](sd::LightComponent &lc) {
+            sd::Light &light = lc.light;
+            ImGui::ColorEdit3("Diffuse", &light.diffuse[0]);
+            ImGui::ColorEdit3("Ambient", &light.ambient[0]);
+            ImGui::ColorEdit3("Specular", &light.specular[0]);
+            ImGui::Checkbox("Directional", &light.isDirectional);
+            if (!light.isDirectional) {
+                ImGui::SliderFloat("Constant", &light.constant, 0.f, 1.0f);
+                ImGui::SliderFloat("Linear", &light.linear, 0.f, 1.0f);
+                ImGui::SliderFloat("Quadratic", &light.quadratic, 0.0002f,
+                                   0.1f);
+                ImGui::SliderFloat("cutOff", &light.cutOff, 0.f, 89.f);
+                ImGui::SliderFloat("outerCutOff", &light.outerCutOff, 1.0f,
+                                   90.0f);
+            }
         });
 }
 

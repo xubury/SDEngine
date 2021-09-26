@@ -1,12 +1,4 @@
-struct DirLight {
-    vec3 direction;
-
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-};
-
-struct PointLight {
+struct Light {
     vec3 position;
     vec3 direction;
 
@@ -20,10 +12,13 @@ struct PointLight {
     float constant;
     float linear;
     float quadratic;
+
+    bool isDirectional;
 };
 
-vec3 calculateDirLight(DirLight light, vec3 fragPos, vec3 normal, vec3 viewDir,
-                       vec3 ambient, vec3 diffuse, vec3 specular) {
+
+vec3 dirLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
+              vec3 ambient, vec3 diffuse, vec3 specular) {
     vec3 lightDir = normalize(light.direction);
 
     // ambient
@@ -42,8 +37,8 @@ vec3 calculateDirLight(DirLight light, vec3 fragPos, vec3 normal, vec3 viewDir,
     return ambient + diffuse + specular;
 }
 
-vec3 calculatePointLight(PointLight light, vec3 fragPos, vec3 normal,
-                         vec3 viewDir, vec3 ambient, vec3 diffuse, vec3 specular) {
+vec3 pointLight(Light light, vec3 fragPos, vec3 normal,
+                vec3 viewDir, vec3 ambient, vec3 diffuse, vec3 specular) {
     vec3 lightDir = normalize(fragPos - light.position);
 
     // ambient
@@ -74,4 +69,10 @@ vec3 calculatePointLight(PointLight light, vec3 fragPos, vec3 normal,
     specular *= intensity;
 
     return ambient + diffuse + specular;
+}
+
+vec3 calculateLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
+                    vec3 ambient, vec3 diffuse, vec3 specular) {
+    return light.isDirectional ? dirLight(light, fragPos, normal, viewDir, ambient, diffuse, specular)
+                               : pointLight(light, fragPos, normal, viewDir, ambient, diffuse, specular);
 }
