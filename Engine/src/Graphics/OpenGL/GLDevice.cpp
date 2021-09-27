@@ -1,9 +1,48 @@
 #include "Graphics/OpenGL/GLDevice.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
 #include "Graphics/OpenGL/GLFramebuffer.hpp"
+#include "Utils/Assert.hpp"
 #include <GL/glew.h>
 
 namespace sd {
+
+#ifdef DEBUG_BUILD
+static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
+                                  int, const char *message, const void *) {
+    switch (severity) {
+        case GL_DEBUG_SEVERITY_HIGH:
+            SD_CORE_CRITICAL(message);
+            return;
+        case GL_DEBUG_SEVERITY_MEDIUM:
+            SD_CORE_ERROR(message);
+            return;
+        case GL_DEBUG_SEVERITY_LOW:
+            SD_CORE_WARN(message);
+            return;
+        case GL_DEBUG_SEVERITY_NOTIFICATION:
+            SD_CORE_TRACE(message);
+            return;
+        default:
+            SD_CORE_ASSERT(false, "Unknown severity level!");
+    }
+}
+#endif
+
+void GLDevice::init() {
+#ifdef DEBUG_BUILD
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(OpenGLMessageCallback, nullptr);
+    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
+                          GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
+#endif
+    // Depth Test
+    setDepthTest(true);
+
+    // Blend
+    setBlend(true);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
 
 void GLDevice::drawElements(MeshTopology topology, size_t count,
                             size_t offset) {
@@ -42,6 +81,14 @@ void GLDevice::setDepthMask(bool depthMask) { glDepthMask(depthMask); }
 
 void GLDevice::setBlend(bool blend) {
     blend ? glEnable(GL_BLEND) : glDisable(GL_BLEND);
+}
+
+void GLDevice::setDepthTest(bool depthTest) {
+    depthTest ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST);
+}
+
+void GLDevice::setMultisample(bool multisample) {
+    multisample ? glEnable(GL_MULTISAMPLE) : glDisable(GL_MULTISAMPLE);
 }
 
 }  // namespace sd

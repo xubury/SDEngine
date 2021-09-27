@@ -19,6 +19,7 @@ static Ref<Texture> createGeometryTexture(int width, int height, int samples) {
 RenderSystem::RenderSystem(RenderEngine *engine, int width, int height,
                            int samples)
     : m_engine(engine) {
+    Device::instance().setMultisample(samples > 1);
     m_shader = Asset::manager().load<Shader>("shaders/simple3d.glsl");
     m_framebuffer = Framebuffer::create();
     m_gbufferShader = Asset::manager().load<Shader>("shaders/gbuffer.glsl");

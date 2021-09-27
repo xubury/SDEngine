@@ -21,6 +21,7 @@ struct WindowProp {
     int y;
     int width;
     int height;
+    int samples;
     WindowFlag flag;
     WindowProp()
         : title("SD Engine"),
@@ -28,6 +29,7 @@ struct WindowProp {
           y(SDL_WINDOWPOS_CENTERED),
           width(1440),
           height(900),
+          samples(8),
           flag(WINDOWED) {}
 };
 

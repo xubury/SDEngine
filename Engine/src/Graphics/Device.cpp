@@ -6,7 +6,7 @@ namespace sd {
 
 static Device *s_device;
 
-void Device::init() {
+void Device::create() {
     SD_CORE_TRACE("Initializing Graphic Device...");
     switch (Graphics::getAPI()) {
         case API::OpenGL:
@@ -16,6 +16,7 @@ void Device::init() {
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
+    s_device->init();
 }
 
 Device &Device::instance() { return *s_device; }

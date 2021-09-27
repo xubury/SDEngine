@@ -7,6 +7,8 @@ namespace sd {
 
 class GLDevice : public Device {
    public:
+    void init() override;
+
     void drawElements(MeshTopology topology, size_t count,
                       size_t offset) override;
 
@@ -23,6 +25,10 @@ class GLDevice : public Device {
     void setDepthMask(bool depthMask) override;
 
     void setBlend(bool blend) override;
+
+    void setDepthTest(bool depthTest) override;
+
+    void setMultisample(bool multisample) override;
 };
 
 }  // namespace sd

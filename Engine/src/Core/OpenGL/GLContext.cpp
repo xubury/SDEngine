@@ -3,27 +3,6 @@
 #include <GL/glew.h>
 
 namespace sd {
-#ifdef DEBUG_BUILD
-static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
-                                  int, const char* message, const void*) {
-    switch (severity) {
-        case GL_DEBUG_SEVERITY_HIGH:
-            SD_CORE_CRITICAL(message);
-            return;
-        case GL_DEBUG_SEVERITY_MEDIUM:
-            SD_CORE_ERROR(message);
-            return;
-        case GL_DEBUG_SEVERITY_LOW:
-            SD_CORE_WARN(message);
-            return;
-        case GL_DEBUG_SEVERITY_NOTIFICATION:
-            SD_CORE_TRACE(message);
-            return;
-        default:
-            SD_CORE_ASSERT(false, "Unknown severity level!");
-    }
-}
-#endif
 
 #ifdef DEBUG_BUILD
 #define SDL(stmt) \
@@ -56,7 +35,7 @@ GLContext::GLContext(const WindowProp& property, SDL_Window** window) {
 
     // MultiSampling
     SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1));
-    SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8));
+    SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, property.samples));
 
     m_window = SDL_CreateWindow(property.title.c_str(), property.x, property.y,
                                 property.width, property.height, sdlFlags);
@@ -70,22 +49,6 @@ GLContext::GLContext(const WindowProp& property, SDL_Window** window) {
         SD_CORE_ERROR("glewInit failed!");
         return;
     }
-#ifdef DEBUG_BUILD
-    glEnable(GL_DEBUG_OUTPUT);
-    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-    glDebugMessageCallback(OpenGLMessageCallback, nullptr);
-    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
-                          GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
-#endif
-    // Depth Test
-    glEnable(GL_DEPTH_TEST);
-
-    // Blend
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    // MultiSampling
-    glEnable(GL_MULTISAMPLE);
 }
 
 GLContext::~GLContext() { SDL_GL_DeleteContext(m_context); }

@@ -52,13 +52,14 @@ Application::Application() {
     WindowProp prop;
     prop.width = width;
     prop.height = height;
+    prop.samples = samples;
     if (!m_window.create(prop)) {
         exit(-1);
     }
 
     s_instance = this;
 
-    Device::init();
+    Device::create();
     Renderer::init();
     Renderer2D::init();
     Renderer3D::init();
