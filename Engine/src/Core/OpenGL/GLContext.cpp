@@ -43,11 +43,12 @@ GLContext::GLContext(const WindowProp& property, SDL_Window** window) {
     *window = m_window;
     if (m_context == nullptr) {
         SD_CORE_ERROR("SDL_GL_CreateContext failed: {}", SDL_GetError());
+        exit(-1);
     }
 
     if (glewInit() != GLEW_OK) {
         SD_CORE_ERROR("glewInit failed!");
-        return;
+        exit(-1);
     }
 }
 
