@@ -23,11 +23,12 @@ class SD_API RenderSystem : public System {
 
     void resize(int width, int height);
 
-    void renderGBuffer();
-
     Framebuffer *getGBuffer();
 
    private:
+    void renderGBuffer();
+    void renderMain();
+
     RenderEngine *m_engine;
     Ref<Shader> m_shader;
 

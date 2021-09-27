@@ -170,10 +170,14 @@ void EditorLayer::onImGui() {
         if (ImGui::DrawVec3Control("Rotation", rotation)) {
             m_editorCamera.setWorldRotation(glm::radians(rotation));
         }
+    }
+    ImGui::End();
 
-        float exposure = m_editorCamera.getExposure();
-        if (ImGui::SliderFloat("Exposure", &exposure, 0.5, 10)) {
-            m_editorCamera.setExposure(exposure);
+    ImGui::Begin("Render Settings");
+    {
+        float exposure = sd::Application::getRenderEngine().getExposure();
+        if (ImGui::SliderFloat("Exposure", &exposure, 0, 10)) {
+            sd::Application::getRenderEngine().setExposure(exposure);
         }
     }
     ImGui::End();

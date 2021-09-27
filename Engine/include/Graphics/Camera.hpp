@@ -12,8 +12,6 @@ class SD_API Camera {
     Camera(Transform *transform);
     Camera(const glm::vec3 &position, const glm::quat &rotation);
 
-    virtual ~Camera() = 0;
-
     virtual void resize(float width, float height) = 0;
 
     void translateLocal(const glm::vec3 &t);
@@ -65,9 +63,6 @@ class SD_API Camera {
 
     void updateView();
 
-    float getExposure() const;
-    void setExposure(float exposure);
-
    private:
     glm::mat4 m_view;
     glm::mat4 m_projection;
@@ -78,8 +73,6 @@ class SD_API Camera {
     glm::quat m_rotation;
 
     bool m_outdated;
-
-    float m_exposure;
 };
 
 class SD_API OrthographicCamera : public Camera {

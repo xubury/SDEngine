@@ -10,7 +10,6 @@ namespace sd {
 struct CameraData {
     glm::mat4 viewProjection;
     glm::vec3 viewPos;
-    float exposure;
 };
 
 struct RendererData {
@@ -45,7 +44,6 @@ void Renderer::setShader(Shader &shader) {
 void Renderer::setCamera(Camera &camera) {
     s_data.cameraData.viewProjection = camera.getViewPorjection();
     s_data.cameraData.viewPos = camera.getWorldPosition();
-    s_data.cameraData.exposure = camera.getExposure();
     s_data.cameraUBO->updateData(&s_data.cameraData, sizeof(CameraData));
 }
 

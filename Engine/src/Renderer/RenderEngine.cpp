@@ -4,7 +4,10 @@
 namespace sd {
 
 RenderEngine::RenderEngine()
-    : m_renderSystem(nullptr), m_terrainSystem(nullptr), m_target(nullptr) {}
+    : m_renderSystem(nullptr),
+      m_terrainSystem(nullptr),
+      m_target(nullptr),
+      m_exposure(1.5f) {}
 
 void RenderEngine::init(int width, int height, int samples) {
     m_renderSystem = addSystem<RenderSystem>(this, width, height, samples);
@@ -34,5 +37,9 @@ void RenderEngine::resize(int width, int height) {
 void RenderEngine::setCamera(Camera *camera) { m_camera = camera; }
 
 Camera *RenderEngine::getCamera() { return m_camera; }
+
+void RenderEngine::setExposure(float exposure) { m_exposure = exposure; }
+
+float RenderEngine::getExposure() const { return m_exposure; }
 
 }  // namespace sd

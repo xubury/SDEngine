@@ -27,12 +27,18 @@ class RenderEngine : public SystemManager {
 
     Camera *getCamera();
 
+    float getExposure() const;
+
+    void setExposure(float exposure);
+    
    private:
     RenderSystem *m_renderSystem;
     TerrainSystem *m_terrainSystem;
     RenderTarget *m_target;
     Camera *m_camera;
     RenderTarget m_defaultTarget;
+
+    float m_exposure;
 };
 
 }  // namespace sd

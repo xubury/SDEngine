@@ -23,6 +23,7 @@ layout (location = 1) out uint entityId;
 
 layout (location = 0) in vec2 in_texCoord;
 
+uniform float u_exposure;
 uniform Light u_light;
 
 uniform sampler2D u_position;
@@ -42,7 +43,9 @@ void main() {
 
     vec3 result = calculateLight(u_light, fragPos, normal, viewDir, ambient, diffuse, specular);
     // hdr
-    result = vec3(1.0) - exp(-result * u_exposure);
+    if (u_exposure > 0) {
+        result = vec3(1.0) - exp(-result * u_exposure);
+    }
 
     fragColor = vec4(result, 1.0f);
 

@@ -20,7 +20,7 @@ RenderSystem::RenderSystem(RenderEngine *engine, int width, int height,
                            int samples)
     : m_engine(engine) {
     Device::instance().setMultisample(samples > 1);
-    m_shader = Asset::manager().load<Shader>("shaders/simple3d.glsl");
+    m_shader = Asset::manager().load<Shader>("shaders/main3d.glsl");
     m_framebuffer = Framebuffer::create();
     m_gbufferShader = Asset::manager().load<Shader>("shaders/gbuffer.glsl");
     for (int i = 0; i < 4; ++i) {
@@ -72,7 +72,10 @@ void RenderSystem::onTick(float) {}
 
 void RenderSystem::onRender() {
     renderGBuffer();
+    renderMain();
+}
 
+void RenderSystem::renderMain() {
     Renderer3D::beginScene(*m_engine->getCamera(), m_engine->getRenderTarget());
     Renderer::setShader(*m_shader);
     Device::instance().setClearColor(0.1, 0.2, 0.3, 1.0);
@@ -104,6 +107,7 @@ void RenderSystem::onRender() {
     m_shader->setTexture("u_albedo", gBuffer->getTexture(2));
     m_shader->setTexture("u_ambient", gBuffer->getTexture(3));
     m_shader->setTexture("u_entityTexture", gBuffer->getTexture(4));
+    m_shader->setFloat("u_exposure", m_engine->getExposure());
     Renderer::submit(*m_vao.get(), MeshTopology::TRIANGLES, 6, 0);
     Device::instance().setDepthMask(true);
     Renderer3D::endScene();

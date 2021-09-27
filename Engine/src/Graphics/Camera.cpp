@@ -8,8 +8,7 @@ Camera::Camera()
     : m_transform(nullptr),
       m_position(0.f),
       m_rotation(1.f, 0.f, 0.f, 0.f),
-      m_outdated(true),
-      m_exposure(1.0f) {
+      m_outdated(true) {
     updateView();
 }
 
@@ -17,8 +16,7 @@ Camera::Camera(Transform *transform)
     : m_transform(transform),
       m_position(0.f),
       m_rotation(1.f, 0.f, 0.f, 0.f),
-      m_outdated(true),
-      m_exposure(1.0f) {
+      m_outdated(true) {
     updateView();
 }
 
@@ -26,12 +24,9 @@ Camera::Camera(const glm::vec3 &position, const glm::quat &rotation)
     : m_transform(nullptr),
       m_position(position),
       m_rotation(rotation),
-      m_outdated(true),
-      m_exposure(1.0f) {
+      m_outdated(true) {
     updateView();
 }
-
-Camera::~Camera() {}
 
 void Camera::translateLocal(const glm::vec3 &t) {
     if (m_transform) {
@@ -226,10 +221,6 @@ void Camera::updateView() {
 
     m_outdated = false;
 }
-
-float Camera::getExposure() const { return m_exposure; }
-
-void Camera::setExposure(float exposure) { m_exposure = exposure; }
 
 glm::vec3 Camera::mapClipToWorld(const glm::vec2 &pos) const {
     glm::mat4 projectionView = getViewPorjection();
