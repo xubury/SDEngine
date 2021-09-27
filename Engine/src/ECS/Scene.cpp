@@ -1,6 +1,7 @@
 #include "ECS/Scene.hpp"
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
+#include "Utils/Serialize.hpp"
 #include <stack>
 
 namespace sd {
