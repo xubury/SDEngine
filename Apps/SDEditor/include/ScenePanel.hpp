@@ -28,7 +28,8 @@ class ScenePanel {
 
     void drawComponents(sd::Entity &entity);
 
-    void drawMaterial(sd::Material &material, const ImVec2 &size);
+    void drawMaterials(const std::vector<sd::Material> &material,
+                       const ImVec2 &size);
 
     sd::Scene *m_scene;
     sd::Entity m_selectedEntity;

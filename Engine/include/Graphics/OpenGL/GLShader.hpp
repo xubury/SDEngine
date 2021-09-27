@@ -57,8 +57,6 @@ class SD_API GLShader : public Shader {
     GLuint m_fragmentId;
     GLuint m_geometryId;
     GLuint m_computeId;
-
-    uint32_t m_textureCount;
 };
 
 }  // namespace sd

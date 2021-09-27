@@ -52,6 +52,7 @@ static Mesh processAiMesh(const aiMesh *assimpMesh) {
             SD_CORE_WARN("[processAiMesh] Unhandled mesh topology!");
     };
     mesh.setTopology(topology);
+    mesh.setMaterialIndex(assimpMesh->mMaterialIndex);
 
     for (uint32_t i = 0; i < assimpMesh->mNumVertices; ++i) {
         const aiVector3D pos = assimpMesh->mVertices[i];
@@ -119,13 +120,14 @@ Ref<Model> ModelLoader::loadAsset(const std::string &filePath) {
     std::filesystem::path directory =
         std::filesystem::path(filePath).parent_path();
     for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
-        auto &material = model->getMaterial();
+        Material material;
         processAiMaterial(directory, material, MaterialType::DIFFUSE,
                           scene->mMaterials[i], aiTextureType_DIFFUSE);
         processAiMaterial(directory, material, MaterialType::SPECULAR,
                           scene->mMaterials[i], aiTextureType_SPECULAR);
         processAiMaterial(directory, material, MaterialType::AMBIENT,
                           scene->mMaterials[i], aiTextureType_AMBIENT);
+        model->addMaterial(std::move(material));
     }
 
     model->init();

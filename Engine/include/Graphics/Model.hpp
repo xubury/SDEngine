@@ -11,19 +11,22 @@ class SD_API Model {
     const std::vector<Mesh> &getMeshes() const { return m_meshes; };
     std::vector<Mesh> &getMeshes() { return m_meshes; };
 
-    const Material &getMaterial() const { return m_material; };
-    Material &getMaterial() { return m_material; };
+    const std::vector<Material> &getMaterial() const { return m_materials; };
+    std::vector<Material> &getMaterials() { return m_materials; };
 
     void init();
 
     void addMesh(const Mesh &mesh);
     void addMesh(Mesh &&mesh);
 
+    void addMaterial(const Material &material);
+    void addMaterial(Material &&material);
+
     void clear();
 
    private:
     std::vector<Mesh> m_meshes;
-    Material m_material;
+    std::vector<Material> m_materials;
 };
 
 }  // namespace sd

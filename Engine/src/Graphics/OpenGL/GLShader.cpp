@@ -14,8 +14,7 @@ GLShader::GLShader()
       m_vertexId(0),
       m_fragmentId(0),
       m_geometryId(0),
-      m_computeId(0),
-      m_textureCount(0) {}
+      m_computeId(0) {}
 
 GLShader::~GLShader() {
     if (m_id != 0) glDeleteProgram(m_id);
@@ -84,10 +83,7 @@ void GLShader::linkShaders() {
     destroyShaders();
 }
 
-void GLShader::bind() {
-    m_textureCount = 0;
-    glUseProgram(m_id);
-}
+void GLShader::bind() { glUseProgram(m_id); }
 
 void GLShader::unbind() { glUseProgram(0); }
 
@@ -149,13 +145,13 @@ void GLShader::setMat4(const std::string& name, const glm::mat4& value) {
 }
 
 void GLShader::setTexture(const std::string& name, const Texture* texture) {
-    setInt(name, m_textureCount);
+    int id = glGetUniformLocation(m_id, name.c_str());
+    setInt(name, id);
     if (texture) {
-        texture->setSlot(m_textureCount);
+        texture->setSlot(id);
     } else {
-        glBindTextureUnit(m_textureCount, 0);
+        glBindTextureUnit(id, 0);
     }
-    m_textureCount++;
 }
 
 void GLShader::setUniformBuffer(const std::string& name,

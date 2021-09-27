@@ -247,7 +247,7 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
 
             ImGui::ColorEdit3("Color", &mc.color[0]);
             ImVec2 size(64, 64);
-            drawMaterial(mc.model->getMaterial(), size);
+            drawMaterials(mc.model->getMaterials(), size);
         });
     drawComponent<sd::TerrainComponent>(
         "Terrain", entity, [&](sd::TerrainComponent &terrain) {
@@ -317,11 +317,14 @@ static const char *getTextureName(sd::MaterialType type) {
     return ret;
 }
 
-void ScenePanel::drawMaterial(sd::Material &material, const ImVec2 &size) {
+void ScenePanel::drawMaterials(const std::vector<sd::Material> &materials,
+                               const ImVec2 &size) {
     float width = ImGui::GetWindowWidth();
-    for (auto &[type, texture] : material.getTextures()) {
-        ImGui::TextUnformatted(getTextureName(type));
-        ImGui::SameLine(width / 2);
-        ImGui::DrawTexture(*texture, size);
+    for (const auto &material : materials) {
+        for (const auto &[type, texture] : material.getTextures()) {
+            ImGui::TextUnformatted(getTextureName(type));
+            ImGui::SameLine(width / 2);
+            ImGui::DrawTexture(*texture, size);
+        }
     }
 }

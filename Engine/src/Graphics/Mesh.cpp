@@ -2,7 +2,10 @@
 
 namespace sd {
 
-Mesh::Mesh() : m_topology(MeshTopology::TRIANGLES), m_wireframe(false) {}
+Mesh::Mesh()
+    : m_topology(MeshTopology::TRIANGLES),
+      m_materialId(0),
+      m_wireframe(false) {}
 
 void Mesh::addVertex(const Vertex &vertex) { m_vertices.emplace_back(vertex); }
 

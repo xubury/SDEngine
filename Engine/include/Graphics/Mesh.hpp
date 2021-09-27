@@ -38,12 +38,13 @@ class SD_API Mesh {
     VertexArray *getVertexArray() const;
 
     void setTopology(MeshTopology topology);
-
     MeshTopology getTopology() const { return m_topology; }
 
     void setWireframe(bool wireframe);
-
     bool isWireframe() const;
+
+    void setMaterialIndex(int index) { m_materialId = index; }
+    uint32_t getMaterialIndex() const { return m_materialId; };
 
     const std::vector<Vertex> &getVertices() const;
     std::vector<Vertex> &getVertices();
@@ -54,6 +55,7 @@ class SD_API Mesh {
     Ref<VertexBuffer> m_vertexBuffer;
     Ref<VertexArray> m_vertexArray;
     MeshTopology m_topology;
+    uint32_t m_materialId;
     bool m_wireframe;
 };
 

@@ -175,14 +175,18 @@ void RenderSystem::renderGBuffer() {
                                  transformComp.transform.getWorldTransform());
         m_gbufferShader->setUint("u_entityId", static_cast<uint32_t>(entity));
         m_gbufferShader->setVec3("u_color", modelComp.color);
-        auto &material = modelComp.model->getMaterial();
-        m_gbufferShader->setTexture("u_material.diffuse",
-                                    material.getTexture(MaterialType::DIFFUSE));
-        m_gbufferShader->setTexture(
-            "u_material.specular", material.getTexture(MaterialType::SPECULAR));
-        m_gbufferShader->setTexture("u_material.ambient",
-                                    material.getTexture(MaterialType::AMBIENT));
         for (const auto &mesh : modelComp.model->getMeshes()) {
+            auto &material =
+                modelComp.model->getMaterials()[mesh.getMaterialIndex()];
+            m_gbufferShader->setTexture(
+                "u_material.diffuse",
+                material.getTexture(MaterialType::DIFFUSE));
+            m_gbufferShader->setTexture(
+                "u_material.specular",
+                material.getTexture(MaterialType::SPECULAR));
+            m_gbufferShader->setTexture(
+                "u_material.ambient",
+                material.getTexture(MaterialType::AMBIENT));
             Renderer3D::drawMesh(mesh);
         }
     });
