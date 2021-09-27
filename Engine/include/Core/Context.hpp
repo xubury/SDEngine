@@ -18,6 +18,9 @@ class SD_API Context {
 
     virtual void swapBuffer() const = 0;
 
+    Context(const Context &) = delete;
+    Context &operator=(const Context &) = delete;
+
    protected:
     Context() = default;
 };
