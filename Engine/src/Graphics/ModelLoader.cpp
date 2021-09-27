@@ -105,7 +105,7 @@ Ref<Model> ModelLoader::loadAsset(const std::string &filePath) {
     SD_CORE_TRACE("Loading model form: {}...", filePath);
 
     Assimp::Importer importer;
-    uint32_t importFlags = aiProcess_Triangulate | aiProcess_FlipUVs;
+    uint32_t importFlags = aiProcess_Triangulate;
     const aiScene *scene = importer.ReadFile(filePath, importFlags);
     if (scene == nullptr) {
         std::string error = importer.GetErrorString();

@@ -27,14 +27,24 @@ class SD_API RenderSystem : public System {
 
    private:
     void renderGBuffer();
+    void renderLight();
+    void renderBlur();
     void renderMain();
 
     RenderEngine *m_engine;
-    Ref<Shader> m_shader;
+    Ref<Shader> m_mainShader;
+
+    Ref<Shader> m_blurShader;
+    Ref<Framebuffer> m_blurFb[2];
+    Texture *m_blurResult;
+
+    Ref<Shader> m_lightShader;
+    Ref<Framebuffer> m_lightFb;
 
     Ref<Shader> m_gbufferShader;
     RenderTarget m_gBufferTarget;
-    Ref<Framebuffer> m_framebuffer;
+    Ref<Framebuffer> m_gbufferFb;
+
 
     Ref<VertexArray> m_vao;
 };

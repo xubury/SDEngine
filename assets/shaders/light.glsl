@@ -19,18 +19,18 @@ struct Light {
 
 vec3 dirLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
               vec3 ambient, vec3 diffuse, vec3 specular) {
-    vec3 lightDir = normalize(light.direction);
+    vec3 lightDir = normalize(-light.direction);
 
     // ambient
     ambient = light.ambient * ambient;
 
     // diffuse
-    float diff = max(dot(-lightDir, normal), 0.0f);
+    float diff = max(dot(lightDir, normal), 0.0f);
     diffuse = light.diffuse * diff * diffuse;
 
     // specular
     // blinn-phong
-    vec3 halfwayDir = normalize(viewDir - lightDir);
+    vec3 halfwayDir = normalize(viewDir + lightDir);
     float spec = pow(max(dot(normal, halfwayDir), 0.0f), 64.0f);
     specular = light.specular * spec * specular;
 
@@ -39,18 +39,18 @@ vec3 dirLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
 
 vec3 pointLight(Light light, vec3 fragPos, vec3 normal,
                 vec3 viewDir, vec3 ambient, vec3 diffuse, vec3 specular) {
-    vec3 lightDir = normalize(fragPos - light.position);
+    vec3 lightDir = normalize(light.position - fragPos);
 
     // ambient
     ambient = light.ambient * ambient;
 
     // diffuse
-    float diff = max(dot(-lightDir, normal), 0.0f);
+    float diff = max(dot(lightDir, normal), 0.0f);
     diffuse = light.diffuse * diff * diffuse;
 
     // specular
     // blinn-phong
-    vec3 halfwayDir = normalize(viewDir - lightDir);
+    vec3 halfwayDir = normalize(viewDir + lightDir);
     float spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0f);
     specular = light.specular * spec * specular;
 
@@ -62,7 +62,7 @@ vec3 pointLight(Light light, vec3 fragPos, vec3 normal,
     specular *= attenuation;
 
     //spotlight
-    float theta = dot(lightDir, normalize(light.direction));
+    float theta = dot(lightDir, normalize(-light.direction));
     float epsilon = light.cutOff - light.outerCutOff;
     float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0f, 1.0f);
     diffuse *= intensity;
