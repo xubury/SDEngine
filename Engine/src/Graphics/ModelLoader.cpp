@@ -90,14 +90,26 @@ static void processAiMaterial(const std::filesystem::path &directory,
 
     aiString texturePath;
     for (uint32_t i = 0; i < count; ++i) {
-        if (assimpMaterial->GetTexture(assimpType, i, &texturePath) ==
+        if (assimpMaterial->GetTexture(assimpType, i, &texturePath) !=
             AI_SUCCESS) {
-            std::string path = (directory / texturePath.C_Str()).string();
-            material.setTexture(materialType,
-                                Asset::manager().load<Texture>(path));
-        } else {
             SD_CORE_ERROR("Assimp GetTexture error!");
+            continue;
         }
+        std::string path = (directory / texturePath.C_Str()).string();
+        material.setTexture(materialType, Asset::manager().load<Texture>(path));
+    }
+}
+
+static void processNode(const aiScene *scene, const aiNode *node,
+                        Ref<Model> &model) {
+    if (node == nullptr) return;
+    for (uint32_t i = 0; i < node->mNumChildren; ++i) {
+        const aiNode *child = node->mChildren[i];
+        for (uint32_t j = 0; j < child->mNumMeshes; ++j) {
+            uint32_t id = child->mMeshes[j];
+            model->addMesh(processAiMesh(scene->mMeshes[id]));
+        }
+        processNode(scene, child, model);
     }
 }
 
@@ -114,9 +126,7 @@ Ref<Model> ModelLoader::loadAsset(const std::string &filePath) {
         return model;
     }
 
-    for (uint32_t i = 0; i < scene->mNumMeshes; ++i) {
-        model->addMesh(processAiMesh(scene->mMeshes[i]));
-    }
+    processNode(scene, scene->mRootNode, model);
     std::filesystem::path directory =
         std::filesystem::path(filePath).parent_path();
     for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {

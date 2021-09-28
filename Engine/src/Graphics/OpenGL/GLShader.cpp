@@ -145,7 +145,7 @@ void GLShader::setMat4(const std::string& name, const glm::mat4& value) {
 }
 
 void GLShader::setTexture(const std::string& name, const Texture* texture) {
-    int id = glGetUniformLocation(m_id, name.c_str());
+    int id = glGetUniformLocation(m_id, name.c_str()) % GL_ACTIVE_TEXTURE;
     setInt(name, id);
     if (texture) {
         texture->setSlot(id);

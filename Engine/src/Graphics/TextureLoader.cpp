@@ -53,8 +53,8 @@ Ref<Texture> TextureLoader::loadAsset(const std::string &filePath) {
     }
     texture = sd::Texture::create(
         image->w, image->h, 1, sd::TextureType::TEX_2D, format, formatType,
-        sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
-        sd::TextureMipmapFilter::NEAREST_LINEAR, image->pixels);
+        sd::TextureWrap::REPEAT, sd::TextureFilter::LINEAR,
+        sd::TextureMipmapFilter::LINEAR_NEAREST, image->pixels);
 
     SDL_FreeSurface(image);
     return texture;
