@@ -1,5 +1,5 @@
-#ifndef SD_INPUT_MANAGER_HPP
-#define SD_INPUT_MANAGER_HPP
+#ifndef SD_INPUT_HPP
+#define SD_INPUT_HPP
 
 #include <SDL.h>
 #include <unordered_map>
@@ -8,7 +8,7 @@
 
 namespace sd {
 
-class SD_API InputManager {
+class SD_API Input {
    public:
     static bool isKeyDown(SDL_Keycode keycode);
     static bool wasKeyDown(SDL_Keycode keycode);
@@ -21,7 +21,7 @@ class SD_API InputManager {
     static glm::vec2 getMouseCoord();
 
    private:
-    static InputManager &instance();
+    static Input &manager();
 
     friend class Application;
 
@@ -35,11 +35,11 @@ class SD_API InputManager {
 
     void setMouseCoord(float x, float y);
 
-    InputManager() = default;
-    ~InputManager() = default;
+    Input() = default;
+    ~Input() = default;
 
-    InputManager(const InputManager &) = delete;
-    InputManager &operator=(const InputManager &) = delete;
+    Input(const Input &) = delete;
+    Input &operator=(const Input &) = delete;
 
     std::unordered_map<SDL_Keycode, bool> m_keyMap;
     std::unordered_map<SDL_Keycode, bool> m_lastKeyMap;
@@ -52,4 +52,4 @@ class SD_API InputManager {
 
 }  // namespace sd
 
-#endif /* SD_INPUT_MANAGER */
+#endif /* SD_INPUT_HPP */

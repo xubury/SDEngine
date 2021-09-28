@@ -19,7 +19,7 @@ set(Core_Include
     ${Include_Root}/Application.hpp
     ${Include_Root}/Context.hpp
     ${Include_Root}/EntryPoint.hpp
-    ${Include_Root}/InputManager.hpp
+    ${Include_Root}/Input.hpp
     ${Include_Root}/Layer.hpp
     ${Include_Root}/LayerStack.hpp
     ${Include_Root}/Timing.hpp
@@ -31,7 +31,7 @@ set(Core_Src
     ${Src_Root}/Application.cpp
     ${Src_Root}/Context.cpp
     ${Src_Root}/EntryPoint.cpp
-    ${Src_Root}/InputManager.cpp
+    ${Src_Root}/Input.cpp
     ${Src_Root}/LayerStack.cpp
     ${Src_Root}/Timing.cpp
     ${Src_Root}/Window.cpp)

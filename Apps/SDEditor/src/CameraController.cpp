@@ -1,5 +1,5 @@
 #include "CameraController.hpp"
-#include "Core/InputManager.hpp"
+#include "Core/Input.hpp"
 #include "Utils/Log.hpp"
 
 const float ROTATION_SPEED = 0.1;
@@ -37,7 +37,7 @@ CameraController::CameraController()
          [this](const SDL_Event &) { move(m_camera->getWorldRight()); });
     bind(sd::Action(SDL_EventType::SDL_MOUSEMOTION),
          [this](const SDL_Event &event) {
-             if (sd::InputManager::isMouseDown(SDL_BUTTON_RIGHT)) {
+             if (sd::Input::isMouseDown(SDL_BUTTON_RIGHT)) {
                  m_mouseMovement.x += event.motion.xrel;
                  m_mouseMovement.y += event.motion.yrel;
              }
@@ -47,10 +47,10 @@ CameraController::CameraController()
 void CameraController::tick(float dt) {
     m_mouseSmoothMovement =
         glm::mix(m_mouseSmoothMovement, m_mouseMovement, dt * SMOOTHNESS);
-    if (sd::InputManager::isKeyDown(SDLK_LALT)) {
+    if (sd::Input::isKeyDown(SDLK_LALT)) {
         rotate(-m_mouseSmoothMovement.x * ROTATION_SPEED,
                -m_mouseSmoothMovement.y * ROTATION_SPEED);
-    } else if (sd::InputManager::isKeyDown(SDLK_LSHIFT)) {
+    } else if (sd::Input::isKeyDown(SDLK_LSHIFT)) {
         move(m_camera->getWorldRight() * -m_mouseSmoothMovement.x *
              TRANSLATION_SPEED);
         move(m_camera->getWorldUp() * m_mouseSmoothMovement.y *

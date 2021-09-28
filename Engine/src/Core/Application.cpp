@@ -2,7 +2,7 @@
 #include "Utils/Log.hpp"
 #include <SDL_image.h>
 #include "Utils/Random.hpp"
-#include "Core/InputManager.hpp"
+#include "Core/Input.hpp"
 #include "Core/Timing.hpp"
 #include "Graphics/Device.hpp"
 #include "Graphics/ShaderLoader.hpp"
@@ -89,20 +89,19 @@ void Application::processEvent(const SDL_Event &event) {
             quit();
             break;
         case SDL_KEYDOWN:
-            InputManager::instance().pressKey(event.key.keysym.sym);
+            Input::manager().pressKey(event.key.keysym.sym);
             break;
         case SDL_KEYUP:
-            InputManager::instance().releaseKey(event.key.keysym.sym);
+            Input::manager().releaseKey(event.key.keysym.sym);
             break;
         case SDL_MOUSEBUTTONDOWN:
-            InputManager::instance().pressMouseButton(event.button.button);
+            Input::manager().pressMouseButton(event.button.button);
             break;
         case SDL_MOUSEBUTTONUP:
-            InputManager::instance().releaseMouseButton(event.button.button);
+            Input::manager().releaseMouseButton(event.button.button);
             break;
         case SDL_MOUSEMOTION:
-            InputManager::instance().setMouseCoord(event.motion.x,
-                                                   event.motion.y);
+            Input::manager().setMouseCoord(event.motion.x, event.motion.y);
             break;
         case SDL_WINDOWEVENT:
             if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
@@ -151,7 +150,7 @@ void Application::run() {
 void Application::quit() { s_instance->m_window.setShouldClose(true); }
 
 void Application::tick(float dt) {
-    InputManager::instance().tick();
+    Input::manager().tick();
 
     m_renderEngine.tick(dt);
     for (auto &layer : m_layers) {

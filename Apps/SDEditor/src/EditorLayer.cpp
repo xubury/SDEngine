@@ -2,7 +2,7 @@
 #include "Renderer/Renderer3D.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Core/Application.hpp"
-#include "Core/InputManager.hpp"
+#include "Core/Input.hpp"
 #include "ECS/Component.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include <glm/gtc/type_ptr.hpp>
@@ -276,8 +276,8 @@ void EditorLayer::onEventProcess(const SDL_Event &event) {
     if (m_isViewportFocused && m_isViewportHovered) {
         m_cameraController.processEvent(event);
     }
-    bool lshift = sd::InputManager::isKeyDown(SDLK_LSHIFT);
-    bool lctrl = sd::InputManager::isKeyDown(SDLK_LCTRL);
+    bool lshift = sd::Input::isKeyDown(SDLK_LSHIFT);
+    bool lctrl = sd::Input::isKeyDown(SDLK_LCTRL);
     if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
             case SDLK_z: {
