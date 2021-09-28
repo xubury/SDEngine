@@ -8,8 +8,9 @@ namespace sd {
 
 void Renderer3D::init() { SD_CORE_TRACE("Initializing Renderer3D..."); }
 
-void Renderer3D::beginScene(Camera &camera) {
+void Renderer3D::beginScene(Camera &camera, Shader &shader) {
     Renderer::setCamera(camera);
+    Renderer::setShader(shader);
 }
 
 void Renderer3D::endScene() {}

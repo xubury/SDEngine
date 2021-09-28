@@ -16,8 +16,8 @@ class RenderTarget;
 class SD_API Renderer3D {
    public:
     static void init();
-    static void beginScene(Camera &camera);
 
+    static void beginScene(Camera &camera, Shader &shader);
     static void endScene();
 
     static void drawMesh(const Mesh &mesh);

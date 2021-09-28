@@ -12,7 +12,7 @@ static Ref<Texture> createGeometryTexture(int width, int height, int samples) {
     return Texture::create(
         width, height, samples,
         samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D,
-        TextureFormat::RGBA, TextureFormatType::FLOAT, TextureWrap::BORDER,
+        TextureFormat::RGBA, TextureFormatType::UBYTE, TextureWrap::BORDER,
         TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_NEAREST);
 }
 
@@ -60,27 +60,29 @@ void RenderSystem::initQuad() {
 void RenderSystem::initGBuffer(int width, int height, int samples) {
     m_gBufferShader = Asset::manager().load<Shader>("shaders/gbuffer.glsl");
     m_gBuffer = Framebuffer::create();
-    for (int i = 0; i < GBUFFER_COUNT; ++i) {
+    for (int i = 0; i < G_ENTITY_ID; ++i) {
         m_gBufferTarget.addTexture(
             createGeometryTexture(width, height, samples));
         m_gBuffer->attachTexture(createGeometryTexture(width, height, 1));
     }
     // entity id
-    m_gBufferTarget.addTexture(Texture::create(
-        width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
-        TextureFormat::ALPHA, TextureFormatType::UINT, TextureWrap::BORDER,
-        TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
-    // depth
-    m_gBufferTarget.addTexture(Texture::create(
-        width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
-        TextureFormat::DEPTH, TextureFormatType::FLOAT, TextureWrap::BORDER,
-        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_NEAREST));
-    m_gBufferTarget.init();
-    // entity id
-    m_gBuffer->attachTexture(
-        Texture::create(800, 600, 1, TextureType::TEX_2D, TextureFormat::ALPHA,
+    TextureType type =
+        samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D;
+    m_gBufferTarget.addTexture(
+        Texture::create(width, height, samples, type, TextureFormat::ALPHA,
                         TextureFormatType::UINT, TextureWrap::BORDER,
                         TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
+    // depth
+    m_gBufferTarget.addTexture(Texture::create(
+        width, height, samples, type, TextureFormat::DEPTH,
+        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
+        TextureMipmapFilter::LINEAR_NEAREST));
+    m_gBufferTarget.init();
+    // entity id
+    m_gBuffer->attachTexture(Texture::create(
+        width, height, 1, TextureType::TEX_2D, TextureFormat::ALPHA,
+        TextureFormatType::UINT, TextureWrap::BORDER, TextureFilter::NEAREST,
+        TextureMipmapFilter::NEAREST));
 }
 
 void RenderSystem::resize(int width, int height) {
@@ -169,13 +171,13 @@ void RenderSystem::renderLight() {
 }
 
 void RenderSystem::renderGBuffer() {
-    Renderer3D::beginScene(*m_engine->getCamera());
+    Renderer3D::beginScene(*m_engine->getCamera(), *m_gBufferShader);
     m_gBufferTarget.use();
-    Renderer::setShader(*m_gBufferShader);
     Device::instance().setBlend(false);
     Device::instance().setClearColor(0.f, 0.f, 0.f, 1.0);
     Device::instance().clear();
-    m_gBufferTarget.getFramebuffer()->clearAttachment(4, &Entity::INVALID_ID);
+    m_gBufferTarget.getFramebuffer()->clearAttachment(G_ENTITY_ID,
+                                                      &Entity::INVALID_ID);
     auto modelView = m_scene->view<TransformComponent, ModelComponent>();
     modelView.each([this](const entt::entity &entity,
                           const TransformComponent &transformComp,

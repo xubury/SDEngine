@@ -18,13 +18,12 @@ class SD_API Renderer {
     static void submit(const VertexArray &vao, MeshTopology topology,
                        size_t count, size_t offset);
 
-    static void setShader(Shader &shader);
-
    private:
     friend class Renderer2D;
     friend class Renderer3D;
 
     static void setCamera(Camera &camera);
+    static void setShader(Shader &shader);
 
     Renderer() = default;
     static Renderer &instance();
