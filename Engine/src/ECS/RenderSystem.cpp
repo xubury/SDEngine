@@ -8,12 +8,13 @@
 
 namespace sd {
 
-static Ref<Texture> createGeometryTexture(int width, int height, int samples) {
+static Ref<Texture> createColorTexture(int width, int height, int samples,
+                                       TextureFormatType type) {
     return Texture::create(
         width, height, samples,
         samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D,
-        TextureFormat::RGBA, TextureFormatType::UBYTE, TextureWrap::BORDER,
-        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_NEAREST);
+        TextureFormat::RGBA, type, TextureWrap::BORDER, TextureFilter::LINEAR,
+        TextureMipmapFilter::LINEAR_NEAREST);
 }
 
 RenderSystem::RenderSystem(RenderEngine *engine, int width, int height,
@@ -27,11 +28,13 @@ RenderSystem::RenderSystem(RenderEngine *engine, int width, int height,
 
     for (int i = 0; i < 2; ++i) {
         m_blurBuffer[i] = Framebuffer::create();
-        m_blurBuffer[i]->attachTexture(createGeometryTexture(width, height, 1));
+        m_blurBuffer[i]->attachTexture(
+            createColorTexture(width, height, 1, TextureFormatType::UBYTE));
     }
 
     m_lightBuffer = Framebuffer::create();
-    m_lightBuffer->attachTexture(createGeometryTexture(width, height, 1));
+    m_lightBuffer->attachTexture(
+        createColorTexture(width, height, 1, TextureFormatType::FLOAT));
 
     initQuad();
     initGBuffer(width, height, samples);
@@ -61,9 +64,10 @@ void RenderSystem::initGBuffer(int width, int height, int samples) {
     m_gBufferShader = Asset::manager().load<Shader>("shaders/gbuffer.glsl");
     m_gBuffer = Framebuffer::create();
     for (int i = 0; i < G_ENTITY_ID; ++i) {
-        m_gBufferTarget.addTexture(
-            createGeometryTexture(width, height, samples));
-        m_gBuffer->attachTexture(createGeometryTexture(width, height, 1));
+        m_gBufferTarget.addTexture(createColorTexture(
+            width, height, samples, TextureFormatType::UBYTE));
+        m_gBuffer->attachTexture(
+            createColorTexture(width, height, 1, TextureFormatType::UBYTE));
     }
     // entity id
     TextureType type =
