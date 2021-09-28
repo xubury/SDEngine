@@ -49,18 +49,18 @@ void RenderSystem::initQuad() {
         quadVertices, sizeof(quadVertices), BufferIOType::STATIC);
     Ref<IndexBuffer> indexBuffer =
         IndexBuffer::create(indices, 6, BufferIOType::STATIC);
-    m_vao = VertexArray::create();
+    m_quad = VertexArray::create();
     VertexBufferLayout layout;
     layout.push<float>(3);
     layout.push<float>(2);
-    m_vao->addVertexBuffer(buffer, layout);
-    m_vao->setIndexBuffer(indexBuffer);
+    m_quad->addVertexBuffer(buffer, layout);
+    m_quad->setIndexBuffer(indexBuffer);
 }
 
 void RenderSystem::initGBuffer(int width, int height, int samples) {
     m_gBufferShader = Asset::manager().load<Shader>("shaders/gbuffer.glsl");
     m_gBuffer = Framebuffer::create();
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < GBUFFER_COUNT; ++i) {
         m_gBufferTarget.addTexture(
             createGeometryTexture(width, height, samples));
         m_gBuffer->attachTexture(createGeometryTexture(width, height, 1));
@@ -103,14 +103,15 @@ void RenderSystem::onRender() {
 
 void RenderSystem::renderMain() {
     m_engine->getRenderTarget()->use();
-    Device::instance().clear();
     Framebuffer *gBuffer = getGBuffer();
+    Device::instance().clear();
     m_mainShader->bind();
     m_mainShader->setTexture("u_lighting", m_lightBuffer->getTexture(0));
     m_mainShader->setTexture("u_blur", m_blurResult);
-    m_mainShader->setTexture("u_entityTexture", gBuffer->getTexture(4));
+    m_mainShader->setTexture("u_entityTexture",
+                             gBuffer->getTexture(G_ENTITY_ID));
     m_mainShader->setFloat("u_exposure", m_engine->getExposure());
-    Renderer::submit(*m_vao.get(), MeshTopology::TRIANGLES, 6, 0);
+    Renderer::submit(*m_quad.get(), MeshTopology::TRIANGLES, 6, 0);
 }
 
 void RenderSystem::renderBlur() {
@@ -126,7 +127,7 @@ void RenderSystem::renderBlur() {
         m_blurShader->setTexture("u_image",
                                  i == 0 ? m_lightBuffer->getTexture(0)
                                         : m_blurBuffer[inputId]->getTexture(0));
-        Renderer::submit(*m_vao.get(), MeshTopology::TRIANGLES, 6, 0);
+        Renderer::submit(*m_quad.get(), MeshTopology::TRIANGLES, 6, 0);
         horizontal = !horizontal;
     }
 }
@@ -159,11 +160,11 @@ void RenderSystem::renderLight() {
     });
 
     Framebuffer *gBuffer = getGBuffer();
-    m_lightShader->setTexture("u_position", gBuffer->getTexture(0));
-    m_lightShader->setTexture("u_normal", gBuffer->getTexture(1));
-    m_lightShader->setTexture("u_albedo", gBuffer->getTexture(2));
-    m_lightShader->setTexture("u_ambient", gBuffer->getTexture(3));
-    Renderer::submit(*m_vao.get(), MeshTopology::TRIANGLES, 6, 0);
+    m_lightShader->setTexture("u_position", gBuffer->getTexture(G_POSITION));
+    m_lightShader->setTexture("u_normal", gBuffer->getTexture(G_NORMAL));
+    m_lightShader->setTexture("u_albedo", gBuffer->getTexture(G_ALBEDO));
+    m_lightShader->setTexture("u_ambient", gBuffer->getTexture(G_AMBIENT));
+    Renderer::submit(*m_quad.get(), MeshTopology::TRIANGLES, 6, 0);
     Device::instance().setDepthMask(true);
 }
 

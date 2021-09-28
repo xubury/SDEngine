@@ -13,6 +13,16 @@ class RenderEngine;
 
 class SD_API RenderSystem : public System {
    public:
+    enum GBufferType {
+        G_POSITION = 0,
+        G_NORMAL,
+        G_ALBEDO,
+        G_AMBIENT,
+        G_ENTITY_ID,
+        GBUFFER_COUNT
+    };
+
+   public:
     RenderSystem(RenderEngine *engine, int width, int height, int samples);
 
     void onTick(float dt) override;
@@ -48,7 +58,7 @@ class SD_API RenderSystem : public System {
     RenderTarget m_gBufferTarget;
     Ref<Framebuffer> m_gBuffer;
 
-    Ref<VertexArray> m_vao;
+    Ref<VertexArray> m_quad;
 };
 
 }  // namespace sd

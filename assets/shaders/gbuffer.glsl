@@ -47,7 +47,7 @@ layout (location = 0) out vec4 g_position;
 layout (location = 1) out vec4 g_normal;
 layout (location = 2) out vec4 g_albedo;
 layout (location = 3) out vec4 g_ambient;
-layout (location = 4) out uint entityId;
+layout (location = 4) out uint g_entityId;
 
 layout (location = 0) in VertexOutput in_vertex;
 
@@ -59,5 +59,5 @@ void main() {
     g_albedo.a = texture(u_material.specular, in_vertex.texCoord).r;
     g_ambient = vec4(texture(u_material.ambient, in_vertex.texCoord).rgb + halfColor, 1.f);
 
-    entityId = u_entityId;
+    g_entityId = u_entityId;
 }

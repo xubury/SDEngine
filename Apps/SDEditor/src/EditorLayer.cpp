@@ -45,18 +45,18 @@ void EditorLayer::onAttach() {
         sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
     m_target.init();
 
-    m_frameBuffer = sd::Framebuffer::create();
-    m_frameBuffer->attachTexture(sd::Texture::create(
+    m_framebuffer = sd::Framebuffer::create();
+    m_framebuffer->attachTexture(sd::Texture::create(
         m_target.getWidth(), m_target.getHeight(), 1, sd::TextureType::TEX_2D,
         sd::TextureFormat::RGBA, sd::TextureFormatType::FLOAT,
         sd::TextureWrap::BORDER, sd::TextureFilter::LINEAR,
         sd::TextureMipmapFilter::LINEAR_NEAREST));
-    m_frameBuffer->attachTexture(sd::Texture::create(
+    m_framebuffer->attachTexture(sd::Texture::create(
         m_target.getWidth(), m_target.getHeight(), 1, sd::TextureType::TEX_2D,
         sd::TextureFormat::ALPHA, sd::TextureFormatType::UINT,
         sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
         sd::TextureMipmapFilter::NEAREST));
-    m_frameBuffer->setDrawable({0, 1});
+    m_framebuffer->setDrawable({0, 1});
 
     show();
 }
@@ -72,7 +72,7 @@ void EditorLayer::onTick(float dt) {
     glm::vec2 viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
     if (!ImGuizmo::IsUsing() && ImGui::IsMouseDown(0) && m_isViewportHovered) {
         sd::EntityId id =
-            m_frameBuffer->readPixels(1, mouseX, viewportSize.y - mouseY);
+            m_framebuffer->readPixels(1, mouseX, viewportSize.y - mouseY);
         if (id != sd::Entity::INVALID_ID) {
             m_scenePanel.setSelectedEntity(id);
         }
@@ -209,20 +209,20 @@ void EditorLayer::onImGui() {
             if (wsize.x > 0 && wsize.y > 0) {
                 sd::Application::getRenderEngine().resize(wsize.x, wsize.y);
 
-                m_frameBuffer->resize(wsize.x, wsize.y);
+                m_framebuffer->resize(wsize.x, wsize.y);
             }
 
             m_width = wsize.x;
             m_height = wsize.y;
         }
         // Copy the multisample texture to normal texture
-        m_frameBuffer->copyFrom(m_target.getFramebuffer(),
+        m_framebuffer->copyFrom(m_target.getFramebuffer(),
                                 sd::BufferBit::COLOR_BUFFER_BIT,
                                 sd::TextureFilter::NEAREST);
 
         m_isViewportFocused = ImGui::IsWindowFocused();
         m_isViewportHovered = ImGui::IsWindowHovered();
-        ImGui::DrawTexture(*m_frameBuffer->getTexture(0), wsize);
+        ImGui::DrawTexture(*m_framebuffer->getTexture(0), wsize);
 
         sd::Entity selectedEntity = m_scenePanel.getSelectedEntity();
         if (selectedEntity) {
