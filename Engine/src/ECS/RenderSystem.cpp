@@ -118,8 +118,8 @@ void RenderSystem::renderBlur() {
     const int amount = 10;
     bool horizontal = true;
     for (int i = 0; i < amount; ++i) {
-        int inputId = horizontal ? 0 : 1;
-        int outputId = horizontal ? 1 : 0;
+        int inputId = horizontal;
+        int outputId = !horizontal;
         m_blurBuffer[outputId]->bind();
         m_blurResult = m_blurBuffer[outputId]->getTexture(0);
         m_blurShader->bind();
