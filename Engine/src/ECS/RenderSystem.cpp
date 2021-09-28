@@ -23,40 +23,21 @@ RenderSystem::RenderSystem(RenderEngine *engine, int width, int height,
 
     m_mainShader = Asset::manager().load<Shader>("shaders/main.glsl");
     m_lightShader = Asset::manager().load<Shader>("shaders/lighting.glsl");
-    m_gbufferShader = Asset::manager().load<Shader>("shaders/gbuffer.glsl");
     m_blurShader = Asset::manager().load<Shader>("shaders/blur.glsl");
 
     for (int i = 0; i < 2; ++i) {
-        m_blurFb[i] = Framebuffer::create();
-        m_blurFb[i]->attachTexture(createGeometryTexture(width, height, 1));
+        m_blurBuffer[i] = Framebuffer::create();
+        m_blurBuffer[i]->attachTexture(createGeometryTexture(width, height, 1));
     }
 
-    m_lightFb = Framebuffer::create();
-    m_lightFb->attachTexture(createGeometryTexture(width, height, 1));
+    m_lightBuffer = Framebuffer::create();
+    m_lightBuffer->attachTexture(createGeometryTexture(width, height, 1));
 
-    m_gbufferFb = Framebuffer::create();
-    for (int i = 0; i < 4; ++i) {
-        m_gBufferTarget.addTexture(
-            createGeometryTexture(width, height, samples));
-        m_gbufferFb->attachTexture(createGeometryTexture(width, height, 1));
-    }
-    // entity id
-    m_gBufferTarget.addTexture(Texture::create(
-        width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
-        TextureFormat::ALPHA, TextureFormatType::UINT, TextureWrap::BORDER,
-        TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
-    // depth
-    m_gBufferTarget.addTexture(Texture::create(
-        width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
-        TextureFormat::DEPTH, TextureFormatType::FLOAT, TextureWrap::BORDER,
-        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_NEAREST));
-    m_gBufferTarget.init();
-    // entity id
-    m_gbufferFb->attachTexture(
-        Texture::create(800, 600, 1, TextureType::TEX_2D, TextureFormat::ALPHA,
-                        TextureFormatType::UINT, TextureWrap::BORDER,
-                        TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
+    initQuad();
+    initGBuffer(width, height, samples);
+}
 
+void RenderSystem::initQuad() {
     float quadVertices[] = {
         1.0f,  1.0f,  0.0f, 1.0f, 1.0f,  // top right
         1.0f,  -1.0f, 0.0f, 1.0f, 0.f,   // bottom right
@@ -76,13 +57,39 @@ RenderSystem::RenderSystem(RenderEngine *engine, int width, int height,
     m_vao->setIndexBuffer(indexBuffer);
 }
 
+void RenderSystem::initGBuffer(int width, int height, int samples) {
+    m_gBufferShader = Asset::manager().load<Shader>("shaders/gbuffer.glsl");
+    m_gBuffer = Framebuffer::create();
+    for (int i = 0; i < 4; ++i) {
+        m_gBufferTarget.addTexture(
+            createGeometryTexture(width, height, samples));
+        m_gBuffer->attachTexture(createGeometryTexture(width, height, 1));
+    }
+    // entity id
+    m_gBufferTarget.addTexture(Texture::create(
+        width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
+        TextureFormat::ALPHA, TextureFormatType::UINT, TextureWrap::BORDER,
+        TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
+    // depth
+    m_gBufferTarget.addTexture(Texture::create(
+        width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
+        TextureFormat::DEPTH, TextureFormatType::FLOAT, TextureWrap::BORDER,
+        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_NEAREST));
+    m_gBufferTarget.init();
+    // entity id
+    m_gBuffer->attachTexture(
+        Texture::create(800, 600, 1, TextureType::TEX_2D, TextureFormat::ALPHA,
+                        TextureFormatType::UINT, TextureWrap::BORDER,
+                        TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
+}
+
 void RenderSystem::resize(int width, int height) {
-    m_lightFb->resize(width, height);
+    m_lightBuffer->resize(width, height);
     for (int i = 0; i < 2; ++i) {
-        m_blurFb[i]->resize(width, height);
+        m_blurBuffer[i]->resize(width, height);
     }
     m_gBufferTarget.resize(width, height);
-    m_gbufferFb->resize(width, height);
+    m_gBuffer->resize(width, height);
 }
 
 void RenderSystem::onTick(float) {}
@@ -99,7 +106,7 @@ void RenderSystem::renderMain() {
     Device::instance().clear();
     Framebuffer *gBuffer = getGBuffer();
     m_mainShader->bind();
-    m_mainShader->setTexture("u_lighting", m_lightFb->getTexture(0));
+    m_mainShader->setTexture("u_lighting", m_lightBuffer->getTexture(0));
     m_mainShader->setTexture("u_blur", m_blurResult);
     m_mainShader->setTexture("u_entityTexture", gBuffer->getTexture(4));
     m_mainShader->setFloat("u_exposure", m_engine->getExposure());
@@ -112,20 +119,20 @@ void RenderSystem::renderBlur() {
     for (int i = 0; i < amount; ++i) {
         int inputId = horizontal ? 0 : 1;
         int outputId = horizontal ? 1 : 0;
-        m_blurFb[outputId]->bind();
-        m_blurResult = m_blurFb[outputId]->getTexture(0);
+        m_blurBuffer[outputId]->bind();
+        m_blurResult = m_blurBuffer[outputId]->getTexture(0);
         m_blurShader->bind();
         m_blurShader->setBool("u_horizontal", horizontal);
         m_blurShader->setTexture("u_image",
-                                 i == 0 ? m_lightFb->getTexture(0)
-                                        : m_blurFb[inputId]->getTexture(0));
+                                 i == 0 ? m_lightBuffer->getTexture(0)
+                                        : m_blurBuffer[inputId]->getTexture(0));
         Renderer::submit(*m_vao.get(), MeshTopology::TRIANGLES, 6, 0);
         horizontal = !horizontal;
     }
 }
 
 void RenderSystem::renderLight() {
-    m_lightFb->bind();
+    m_lightBuffer->bind();
     m_lightShader->bind();
     Device::instance().setClearColor(0.1, 0.2, 0.3, 1.0);
     Device::instance().clear();
@@ -165,37 +172,37 @@ void RenderSystem::renderGBuffer() {
     Device::instance().setBlend(false);
     Device::instance().setClearColor(0.f, 0.f, 0.f, 1.0);
     Device::instance().clear();
-    Renderer::setShader(*m_gbufferShader);
+    Renderer::setShader(*m_gBufferShader);
     m_gBufferTarget.getFramebuffer()->clearAttachment(4, &Entity::INVALID_ID);
     auto modelView = m_scene->view<TransformComponent, ModelComponent>();
     modelView.each([this](const entt::entity &entity,
                           const TransformComponent &transformComp,
                           const ModelComponent &modelComp) {
-        m_gbufferShader->setMat4("u_world",
+        m_gBufferShader->setMat4("u_world",
                                  transformComp.transform.getWorldTransform());
-        m_gbufferShader->setUint("u_entityId", static_cast<uint32_t>(entity));
-        m_gbufferShader->setVec3("u_color", modelComp.color);
+        m_gBufferShader->setUint("u_entityId", static_cast<uint32_t>(entity));
+        m_gBufferShader->setVec3("u_color", modelComp.color);
         for (const auto &mesh : modelComp.model->getMeshes()) {
             auto &material =
                 modelComp.model->getMaterials()[mesh.getMaterialIndex()];
-            m_gbufferShader->setTexture(
+            m_gBufferShader->setTexture(
                 "u_material.diffuse",
                 material.getTexture(MaterialType::DIFFUSE));
-            m_gbufferShader->setTexture(
+            m_gBufferShader->setTexture(
                 "u_material.specular",
                 material.getTexture(MaterialType::SPECULAR));
-            m_gbufferShader->setTexture(
+            m_gBufferShader->setTexture(
                 "u_material.ambient",
                 material.getTexture(MaterialType::AMBIENT));
             Renderer3D::drawMesh(mesh);
         }
     });
-    m_gbufferFb->copyFrom(m_gBufferTarget.getFramebuffer(),
-                          BufferBit::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
+    m_gBuffer->copyFrom(m_gBufferTarget.getFramebuffer(),
+                        BufferBit::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
     Device::instance().setBlend(true);
     Renderer3D::endScene();
 }
 
-Framebuffer *RenderSystem::getGBuffer() { return m_gbufferFb.get(); }
+Framebuffer *RenderSystem::getGBuffer() { return m_gBuffer.get(); }
 
 }  // namespace sd

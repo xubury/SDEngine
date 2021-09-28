@@ -26,6 +26,9 @@ class SD_API RenderSystem : public System {
     Framebuffer *getGBuffer();
 
    private:
+    void initQuad();
+    void initGBuffer(int width, int height, int samples);
+
     void renderGBuffer();
     void renderLight();
     void renderBlur();
@@ -35,16 +38,15 @@ class SD_API RenderSystem : public System {
     Ref<Shader> m_mainShader;
 
     Ref<Shader> m_blurShader;
-    Ref<Framebuffer> m_blurFb[2];
+    Ref<Framebuffer> m_blurBuffer[2];
     Texture *m_blurResult;
 
     Ref<Shader> m_lightShader;
-    Ref<Framebuffer> m_lightFb;
+    Ref<Framebuffer> m_lightBuffer;
 
-    Ref<Shader> m_gbufferShader;
+    Ref<Shader> m_gBufferShader;
     RenderTarget m_gBufferTarget;
-    Ref<Framebuffer> m_gbufferFb;
-
+    Ref<Framebuffer> m_gBuffer;
 
     Ref<VertexArray> m_vao;
 };
