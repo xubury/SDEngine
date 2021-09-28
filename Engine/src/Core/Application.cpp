@@ -139,9 +139,9 @@ void Application::run() {
         msElapsed = clock.restart();
         while (msElapsed > msPerFrame) {
             msElapsed -= msPerFrame;
-            tick(msPerFrame / 1000.f);
+            tick(msPerFrame * 1e-3);
         }
-        tick(msElapsed / 1000.f);
+        tick(msElapsed * 1e-3);
 
         render();
     }
