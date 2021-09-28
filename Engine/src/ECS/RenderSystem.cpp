@@ -117,12 +117,12 @@ void RenderSystem::renderMain() {
 void RenderSystem::renderBlur() {
     const int amount = 10;
     bool horizontal = true;
+    m_blurShader->bind();
     for (int i = 0; i < amount; ++i) {
         int inputId = horizontal;
         int outputId = !horizontal;
         m_blurBuffer[outputId]->bind();
         m_blurResult = m_blurBuffer[outputId]->getTexture(0);
-        m_blurShader->bind();
         m_blurShader->setBool("u_horizontal", horizontal);
         m_blurShader->setTexture("u_image",
                                  i == 0 ? m_lightBuffer->getTexture(0)
@@ -169,11 +169,12 @@ void RenderSystem::renderLight() {
 }
 
 void RenderSystem::renderGBuffer() {
-    Renderer3D::beginScene(*m_engine->getCamera(), &m_gBufferTarget);
+    Renderer3D::beginScene(*m_engine->getCamera());
+    m_gBufferTarget.use();
+    Renderer::setShader(*m_gBufferShader);
     Device::instance().setBlend(false);
     Device::instance().setClearColor(0.f, 0.f, 0.f, 1.0);
     Device::instance().clear();
-    Renderer::setShader(*m_gBufferShader);
     m_gBufferTarget.getFramebuffer()->clearAttachment(4, &Entity::INVALID_ID);
     auto modelView = m_scene->view<TransformComponent, ModelComponent>();
     modelView.each([this](const entt::entity &entity,

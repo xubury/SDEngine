@@ -20,11 +20,13 @@ class SD_API Renderer {
 
     static void setShader(Shader &shader);
 
+   private:
+    friend class Renderer2D;
+    friend class Renderer3D;
+
     static void setCamera(Camera &camera);
 
-   private:
     Renderer() = default;
-
     static Renderer &instance();
 
 };  // namespace Renderer

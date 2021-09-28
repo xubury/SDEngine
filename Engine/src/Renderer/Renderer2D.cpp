@@ -106,11 +106,7 @@ void Renderer2D::init() {
     s_data.shader = Asset::manager().load<Shader>("shaders/simple.glsl");
 }
 
-void Renderer2D::beginScene(OrthographicCamera& camera,
-                            const RenderTarget* target) {
-    if (target) {
-        target->use();
-    }
+void Renderer2D::beginScene(OrthographicCamera& camera) {
     Renderer::setCamera(camera);
     startBatch();
 }
