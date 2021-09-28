@@ -8,7 +8,7 @@
 namespace sd {
 
 bool decompose(const glm::mat4 &transform, glm::vec3 &translation,
-                        glm::quat &rotation, glm::vec3 &scale) {
+               glm::quat &rotation, glm::vec3 &scale) {
     // From glm::decompose in matrix_decompose.inl
 
     using namespace glm;
@@ -188,8 +188,7 @@ void Transform::setLocalScale(const glm::vec3 &scale) {
 }
 
 void Transform::setLocalTransform(const glm::mat4 &transform) {
-    decompose(transform, m_localPosition, m_localRotation,
-                       m_localScale);
+    decompose(transform, m_localPosition, m_localRotation, m_localScale);
     updateGlobalScale();
     updateGlobalRotation();
     updateGlobalPosition();

@@ -23,5 +23,4 @@ constexpr Ref<T> createRef(Args&&... args) {
 
 }  // namespace sd
 
-
 #endif

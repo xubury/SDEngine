@@ -30,7 +30,7 @@ class RenderEngine : public SystemManager {
     float getExposure() const;
 
     void setExposure(float exposure);
-    
+
    private:
     RenderSystem *m_renderSystem;
     TerrainSystem *m_terrainSystem;

@@ -18,13 +18,9 @@ void Input::tick() {
 
 void Input::pressKey(SDL_Keycode keycode) { m_keyMap[keycode] = true; }
 
-void Input::releaseKey(SDL_Keycode keycode) {
-    m_keyMap[keycode] = false;
-}
+void Input::releaseKey(SDL_Keycode keycode) { m_keyMap[keycode] = false; }
 
-void Input::pressMouseButton(uint8_t button) {
-    m_mouseBtnMap[button] = true;
-}
+void Input::pressMouseButton(uint8_t button) { m_mouseBtnMap[button] = true; }
 
 void Input::releaseMouseButton(uint8_t button) {
     m_mouseBtnMap[button] = false;

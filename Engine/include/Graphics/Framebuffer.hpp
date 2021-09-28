@@ -37,6 +37,7 @@ class SD_API Framebuffer {
                           TextureFilter filter) = 0;
 
     virtual void resize(int width, int height) = 0;
+
    protected:
     Framebuffer() = default;
 };

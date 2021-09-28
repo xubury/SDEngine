@@ -25,6 +25,8 @@ void VertexArray::setIndexBuffer(const Ref<IndexBuffer> &buffer) {
     m_indexBuffer = buffer;
 }
 
-const Ref<IndexBuffer> VertexArray::getIndexBuffer() const { return m_indexBuffer; }
+const Ref<IndexBuffer> VertexArray::getIndexBuffer() const {
+    return m_indexBuffer;
+}
 
 }  // namespace sd

@@ -15,6 +15,6 @@ bool SD_API DrawVec3Control(const std::string &label, glm::vec3 &values,
 
 void SD_API DrawTexture(const sd::Texture &texture, const ImVec2 &size);
 
-}  // namespace sd
+}  // namespace ImGui
 
 #endif
