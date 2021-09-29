@@ -7,7 +7,9 @@ RenderEngine::RenderEngine()
     : m_renderSystem(nullptr),
       m_terrainSystem(nullptr),
       m_target(nullptr),
-      m_exposure(1.5f) {}
+      m_exposure(1.5f),
+      m_bloom(1.0f),
+      m_isBloom(true) {}
 
 void RenderEngine::init(int width, int height, int samples) {
     m_renderSystem = addSystem<RenderSystem>(this, width, height, samples);
@@ -41,5 +43,13 @@ Camera *RenderEngine::getCamera() { return m_camera; }
 void RenderEngine::setExposure(float exposure) { m_exposure = exposure; }
 
 float RenderEngine::getExposure() const { return m_exposure; }
+
+void RenderEngine::setBloom(bool isBloom) { m_isBloom = isBloom; }
+
+bool RenderEngine::getBloom() const { return m_isBloom; }
+
+void RenderEngine::setBloomFactor(float bloom) { m_bloom = bloom; }
+
+float RenderEngine::getBloomFactor() const { return m_bloom; }
 
 }  // namespace sd

@@ -179,6 +179,15 @@ void EditorLayer::onImGui() {
         if (ImGui::SliderFloat("Exposure", &exposure, 0, 10)) {
             sd::Application::getRenderEngine().setExposure(exposure);
         }
+
+        bool isBloom = sd::Application::getRenderEngine().getBloom();
+        if (ImGui::Checkbox("Bloom", &isBloom)) {
+            sd::Application::getRenderEngine().setBloom(isBloom);
+        }
+        float bloom = sd::Application::getRenderEngine().getBloomFactor();
+        if (ImGui::SliderFloat("Bloom Factor", &bloom, 0.1, 1)) {
+            sd::Application::getRenderEngine().setBloomFactor(bloom);
+        }
     }
     ImGui::End();
 

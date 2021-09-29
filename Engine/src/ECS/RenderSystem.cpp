@@ -130,7 +130,9 @@ void RenderSystem::onTick(float) {}
 void RenderSystem::onRender() {
     renderGBuffer();
     renderLight();
-    renderBlur();
+    if (m_engine->getBloom()) {
+        renderBlur();
+    }
     renderMain();
 }
 
@@ -139,8 +141,13 @@ void RenderSystem::renderMain() {
     Framebuffer *gBuffer = getGBuffer();
     Device::instance().clear();
     m_mainShader->bind();
+    bool bloom = m_engine->getBloom();
+    m_mainShader->setBool("u_bloom", bloom);
+    if (bloom) {
+        m_mainShader->setFloat("u_bloomFactor", m_engine->getBloomFactor());
+        m_mainShader->setTexture("u_blur", m_blurResult);
+    }
     m_mainShader->setTexture("u_lighting", m_lightBuffer->getTexture(0));
-    m_mainShader->setTexture("u_blur", m_blurResult);
     m_mainShader->setTexture("u_entityTexture",
                              gBuffer->getTexture(G_ENTITY_ID));
     m_mainShader->setFloat("u_exposure", m_engine->getExposure());

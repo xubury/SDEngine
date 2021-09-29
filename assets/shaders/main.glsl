@@ -21,13 +21,18 @@ layout (location = 1) out uint entityId;
 layout (location = 0) in vec2 in_texCoord;
 
 uniform float u_exposure;
+uniform bool u_bloom;
+uniform float u_bloomFactor;
 uniform sampler2D u_lighting;
 uniform sampler2D u_blur;
 uniform usampler2D u_entityTexture;
 
 void main() {
     // bloom
-    vec3 result = texture(u_lighting, in_texCoord).rgb + texture(u_blur, in_texCoord).rgb;
+    vec3 result = texture(u_lighting, in_texCoord).rgb;
+    if (u_bloom) {
+        result += texture(u_blur, in_texCoord).rgb * u_bloomFactor;
+    }
     // hdr
     if (u_exposure > 0) {
         result = vec3(1.0) - exp(-result * u_exposure);
