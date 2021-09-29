@@ -28,10 +28,16 @@ class SD_API Scene : public entt::registry {
 
     void save(const std::string &filePath);
 
+    template <typename T>
+    void onComponentAdded(Entity &entity, T &component);
+
    private:
     void refreshEntityChildTranforms(Entity &entity);
     void refreshEntityModel(Entity &entity);
 };
+
+template <typename T>
+void Scene::onComponentAdded(Entity &, T &) {}
 
 }  // namespace sd
 
