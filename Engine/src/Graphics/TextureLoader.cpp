@@ -45,7 +45,8 @@ Ref<Texture> TextureLoader::loadAsset(const std::string &filePath) {
     if (m_flip) {
         flipSurface(image);
     }
-    // TODO: parse SDL_Surface here
+    // Convert other arrry order to RGB/RGBA, because it seems that OpenGL can't
+    // handle certain array order.
     TextureFormat format;
     TextureFormatType formatType = TextureFormatType::UBYTE;
     SDL_Surface *converted;
