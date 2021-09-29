@@ -19,7 +19,8 @@ layout (location = 0) out vec4 fragColor;
 
 layout (location = 0) in vec2 in_texCoord;
 
-uniform sampler2D u_image;
+layout (binding = 0) uniform sampler2D u_image;
+
 uniform bool u_horizontal;
 uniform float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
 

@@ -23,11 +23,11 @@ layout (location = 0) in vec2 in_texCoord;
 
 uniform Light u_light;
 
-uniform sampler2D u_lighting;
-uniform sampler2D u_gPosition;
-uniform sampler2D u_gNormal;
-uniform sampler2D u_gAlbedo;
-uniform sampler2D u_gAmbient;
+layout (binding = 0)uniform sampler2D u_lighting;
+layout (binding = 1)uniform sampler2D u_gPosition;
+layout (binding = 2)uniform sampler2D u_gNormal;
+layout (binding = 3)uniform sampler2D u_gAlbedo;
+layout (binding = 4)uniform sampler2D u_gAmbient;
 
 void main() {
     vec3 fragPos = texture(u_gPosition, in_texCoord).rgb;

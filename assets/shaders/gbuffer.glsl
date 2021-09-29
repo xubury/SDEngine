@@ -39,8 +39,9 @@ struct VertexOutput {
     vec3 normal;
 };
 
-uniform vec3 u_color;
 uniform Material u_material;
+
+uniform vec3 u_color;
 uniform uint u_entityId;
 
 layout (location = 0) out vec4 gPosition;

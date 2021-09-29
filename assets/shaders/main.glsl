@@ -23,9 +23,10 @@ layout (location = 0) in vec2 in_texCoord;
 uniform float u_exposure;
 uniform bool u_bloom;
 uniform float u_bloomFactor;
-uniform sampler2D u_lighting;
-uniform sampler2D u_blur;
-uniform usampler2D u_gEntityId;
+
+layout (binding = 0) uniform sampler2D u_lighting;
+layout (binding = 1) uniform sampler2D u_blur;
+layout (binding = 2) uniform usampler2D u_gEntityId;
 
 void main() {
     // bloom
