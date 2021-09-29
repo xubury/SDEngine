@@ -25,7 +25,7 @@ uniform bool u_bloom;
 uniform float u_bloomFactor;
 uniform sampler2D u_lighting;
 uniform sampler2D u_blur;
-uniform usampler2D u_entityTexture;
+uniform usampler2D u_gEntityId;
 
 void main() {
     // bloom
@@ -38,5 +38,5 @@ void main() {
         result = vec3(1.0) - exp(-result * u_exposure);
     }
     fragColor = vec4(result, 1.0f);
-    entityId = texture(u_entityTexture, in_texCoord).r;
+    entityId = texture(u_gEntityId, in_texCoord).r;
 }

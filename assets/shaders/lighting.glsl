@@ -24,23 +24,24 @@ layout (location = 0) in vec2 in_texCoord;
 uniform Light u_light;
 
 uniform sampler2D u_lighting;
-uniform sampler2D u_position;
-uniform sampler2D u_normal;
-uniform sampler2D u_albedo;
-uniform sampler2D u_ambient;
+uniform sampler2D u_gPosition;
+uniform sampler2D u_gNormal;
+uniform sampler2D u_gAlbedo;
+uniform sampler2D u_gAmbient;
 
 void main() {
-    vec3 fragPos = texture(u_position, in_texCoord).rgb;
-    vec3 normal = texture(u_normal, in_texCoord).rgb;
+    vec3 fragPos = texture(u_gPosition, in_texCoord).rgb;
+    vec3 normal = texture(u_gNormal, in_texCoord).rgb;
     normal = normalize(normal);
-    vec3 diffuse = texture(u_albedo, in_texCoord).rgb;
-    vec3 specular = vec3(texture(u_albedo, in_texCoord).a);
-    vec3 ambient = texture(u_ambient, in_texCoord).rgb;
+    vec4 albedo = texture(u_gAlbedo, in_texCoord);
+    vec3 diffuse = albedo.rgb;
+    vec3 specular = vec3(albedo.a);
+    vec3 ambient = texture(u_gAmbient, in_texCoord).rgb;
 
     vec3 viewDir = normalize(u_viewPos - fragPos);
 
     vec3 last = texture(u_lighting, in_texCoord).rgb;
     vec3 cur = calculateLight(u_light, fragPos, normal, viewDir, ambient, diffuse, specular);
-    vec3 result = last + cur; 
+    vec3 result = last + cur;
     fragColor = vec4(result, 1.0f);
 }

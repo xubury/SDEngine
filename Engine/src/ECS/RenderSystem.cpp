@@ -148,8 +148,7 @@ void RenderSystem::renderMain() {
         m_mainShader->setTexture("u_blur", m_blurResult);
     }
     m_mainShader->setTexture("u_lighting", m_lightResult);
-    m_mainShader->setTexture("u_entityTexture",
-                             gBuffer->getTexture(G_ENTITY_ID));
+    m_mainShader->setTexture("u_gEntityId", gBuffer->getTexture(G_ENTITY_ID));
     m_mainShader->setFloat("u_exposure", m_engine->getExposure());
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
 }
@@ -175,10 +174,10 @@ void RenderSystem::renderBlur() {
 void RenderSystem::renderLight() {
     m_lightShader->bind();
     Framebuffer *gBuffer = getGBuffer();
-    m_lightShader->setTexture("u_position", gBuffer->getTexture(G_POSITION));
-    m_lightShader->setTexture("u_normal", gBuffer->getTexture(G_NORMAL));
-    m_lightShader->setTexture("u_albedo", gBuffer->getTexture(G_ALBEDO));
-    m_lightShader->setTexture("u_ambient", gBuffer->getTexture(G_AMBIENT));
+    m_lightShader->setTexture("u_gPosition", gBuffer->getTexture(G_POSITION));
+    m_lightShader->setTexture("u_gNormal", gBuffer->getTexture(G_NORMAL));
+    m_lightShader->setTexture("u_gAlbedo", gBuffer->getTexture(G_ALBEDO));
+    m_lightShader->setTexture("u_gAmbient", gBuffer->getTexture(G_AMBIENT));
     Device::instance().setDepthMask(false);
     const uint8_t inputIndex = 0;
     const uint8_t outputIndex = 1;
@@ -229,7 +228,7 @@ void RenderSystem::renderGBuffer() {
     modelView.each([this](const entt::entity &entity,
                           const TransformComponent &transformComp,
                           const ModelComponent &modelComp) {
-        m_gBufferShader->setMat4("u_world",
+        m_gBufferShader->setMat4("u_model",
                                  transformComp.transform.getWorldTransform());
         m_gBufferShader->setUint("u_entityId", static_cast<uint32_t>(entity));
         m_gBufferShader->setVec3("u_color", modelComp.color);
