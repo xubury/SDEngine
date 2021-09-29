@@ -269,8 +269,7 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
             }
         });
     drawComponent<sd::LightComponent>(
-        "Light", entity, [&](sd::LightComponent &lc) {
-            sd::Light &light = lc.light;
+        "Light", entity, [&](sd::LightComponent &light) {
             ImGui::ColorEdit3("Diffuse", &light.diffuse[0]);
             ImGui::ColorEdit3("Ambient", &light.ambient[0]);
             ImGui::ColorEdit3("Specular", &light.specular[0]);

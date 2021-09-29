@@ -142,6 +142,7 @@ void RenderSystem::onRender() {
 
 void RenderSystem::renderMain() {
     m_engine->getRenderTarget().use();
+    Device::instance().clear();
     m_mainShader->bind();
     Framebuffer *gBuffer = getGBuffer();
     bool bloom = m_engine->getBloom();
@@ -191,13 +192,12 @@ void RenderSystem::renderLight() {
 
     auto lightView = m_scene->view<TransformComponent, LightComponent>();
     lightView.each([this](const TransformComponent &transformComp,
-                          const LightComponent &lightComp) {
+                          const LightComponent &light) {
         m_lightBuffer[outputIndex]->bind();
         m_lightResult = m_lightBuffer[outputIndex]->getTexture();
         m_lightShader->setTexture("u_lighting",
                                   m_lightBuffer[inputIndex]->getTexture());
         const Transform &transform = transformComp.transform;
-        const Light &light = lightComp.light;
         m_lightShader->setVec3("u_light.direction", transform.getWorldFront());
         m_lightShader->setVec3("u_light.ambient", light.ambient);
         m_lightShader->setVec3("u_light.diffuse", light.diffuse);
