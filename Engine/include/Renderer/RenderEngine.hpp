@@ -18,8 +18,8 @@ class RenderEngine : public SystemManager {
     void resize(int width, int height);
 
     void setRenderTarget(RenderTarget *target);
-    const RenderTarget *getRenderTarget() const;
-    RenderTarget *getRenderTarget();
+    const RenderTarget &getRenderTarget() const;
+    RenderTarget &getRenderTarget();
 
     void setCamera(Camera *camera);
     Camera *getCamera();

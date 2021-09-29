@@ -128,19 +128,22 @@ void RenderSystem::resize(int width, int height) {
 void RenderSystem::onTick(float) {}
 
 void RenderSystem::onRender() {
-    renderGBuffer();
-    renderLight();
-    if (m_engine->getBloom()) {
-        renderBlur();
+    if (m_engine->getCamera()) {
+        renderGBuffer();
+        renderLight();
+        if (m_engine->getBloom()) {
+            renderBlur();
+        }
+        renderMain();
+    } else {
+        SD_CORE_ASSERT(false, "No camera is set!");
     }
-    renderMain();
 }
 
 void RenderSystem::renderMain() {
-    m_engine->getRenderTarget()->use();
-    Framebuffer *gBuffer = getGBuffer();
-    Device::instance().clear();
+    m_engine->getRenderTarget().use();
     m_mainShader->bind();
+    Framebuffer *gBuffer = getGBuffer();
     bool bloom = m_engine->getBloom();
     m_mainShader->setBool("u_bloom", bloom);
     if (bloom) {

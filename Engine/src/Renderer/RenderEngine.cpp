@@ -23,16 +23,16 @@ TerrainSystem *RenderEngine::getTerrainSystem() { return m_terrainSystem; }
 
 void RenderEngine::setRenderTarget(RenderTarget *target) { m_target = target; }
 
-const RenderTarget *RenderEngine::getRenderTarget() const {
-    return m_target ? m_target : &m_defaultTarget;
+const RenderTarget &RenderEngine::getRenderTarget() const {
+    return m_target ? *m_target : m_defaultTarget;
 }
 
-RenderTarget *RenderEngine::getRenderTarget() {
-    return m_target ? m_target : &m_defaultTarget;
+RenderTarget &RenderEngine::getRenderTarget() {
+    return m_target ? *m_target : m_defaultTarget;
 }
 void RenderEngine::resize(int width, int height) {
     if (m_camera) m_camera->resize(width, height);
-    getRenderTarget()->resize(width, height);
+    getRenderTarget().resize(width, height);
     m_renderSystem->resize(width, height);
 }
 
