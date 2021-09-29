@@ -45,7 +45,7 @@ vec3 pointLight(Light light, vec3 fragPos, vec3 normal,
     ambient = light.ambient * ambient;
 
     // diffuse
-    float diff = max(dot(lightDir, normal), 0.0f);
+    float diff = max(dot(normal, lightDir), 0.0f);
     diffuse = light.diffuse * diff * diffuse;
 
     // specular

@@ -8,13 +8,47 @@
 
 namespace sd {
 
-static Ref<Texture> createColorTexture(int width, int height, int samples,
-                                       TextureFormatType type) {
+inline Ref<Texture> createTexture(int width, int height, int samples,
+                                  TextureFormat format, TextureFormatType type,
+                                  bool linear) {
     return Texture::create(
         width, height, samples,
         samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D,
-        TextureFormat::RGBA, type, TextureWrap::BORDER, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_NEAREST);
+        format, type, TextureWrap::BORDER,
+        linear ? TextureFilter::LINEAR : TextureFilter::NEAREST,
+        linear ? TextureMipmapFilter::LINEAR_NEAREST
+               : TextureMipmapFilter::NEAREST);
+}
+
+inline TextureFormat getTextureFormat(RenderSystem::GBufferType type) {
+    switch (type) {
+        case RenderSystem::G_POSITION:
+        case RenderSystem::G_NORMAL:
+        case RenderSystem::G_ALBEDO:
+        case RenderSystem::G_AMBIENT:
+            return TextureFormat::RGBA;
+        case RenderSystem::G_ENTITY_ID:
+            return TextureFormat::ALPHA;
+        default:
+            SD_CORE_WARN("Unknown GBuffer!");
+            return TextureFormat::RGBA;
+    }
+}
+
+inline TextureFormatType getTextureFormatType(RenderSystem::GBufferType type) {
+    switch (type) {
+        case RenderSystem::G_POSITION:
+        case RenderSystem::G_NORMAL:
+            return TextureFormatType::FLOAT;
+        case RenderSystem::G_ALBEDO:
+        case RenderSystem::G_AMBIENT:
+            return TextureFormatType::UBYTE;
+        case RenderSystem::G_ENTITY_ID:
+            return TextureFormatType::UINT;
+        default:
+            SD_CORE_WARN("Unknown GBuffer!");
+            return TextureFormatType::UBYTE;
+    }
 }
 
 RenderSystem::RenderSystem(RenderEngine *engine, int width, int height,
@@ -29,12 +63,13 @@ RenderSystem::RenderSystem(RenderEngine *engine, int width, int height,
     for (int i = 0; i < 2; ++i) {
         m_blurBuffer[i] = Framebuffer::create();
         m_blurBuffer[i]->attachTexture(
-            createColorTexture(width, height, 1, TextureFormatType::UBYTE));
+            createTexture(width, height, 1, TextureFormat::RGBA,
+                          TextureFormatType::UBYTE, true));
     }
 
     m_lightBuffer = Framebuffer::create();
-    m_lightBuffer->attachTexture(
-        createColorTexture(width, height, 1, TextureFormatType::FLOAT));
+    m_lightBuffer->attachTexture(createTexture(
+        width, height, 1, TextureFormat::RGBA, TextureFormatType::FLOAT, true));
 
     initQuad();
     initGBuffer(width, height, samples);
@@ -63,30 +98,22 @@ void RenderSystem::initQuad() {
 void RenderSystem::initGBuffer(int width, int height, int samples) {
     m_gBufferShader = Asset::manager().load<Shader>("shaders/gbuffer.glsl");
     m_gBuffer = Framebuffer::create();
-    for (int i = 0; i < G_ENTITY_ID; ++i) {
-        m_gBufferTarget.addTexture(createColorTexture(
-            width, height, samples, TextureFormatType::UBYTE));
+    for (int i = 0; i < GBUFFER_COUNT; ++i) {
+        TextureFormat format = getTextureFormat(GBufferType(i));
+        TextureFormatType type = getTextureFormatType(GBufferType(i));
+        bool linear = i != G_ENTITY_ID;
+        m_gBufferTarget.addTexture(
+            createTexture(width, height, samples, format, type, linear));
         m_gBuffer->attachTexture(
-            createColorTexture(width, height, 1, TextureFormatType::UBYTE));
+            createTexture(width, height, 1, format, type, linear));
     }
-    // entity id
-    TextureType type =
-        samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D;
-    m_gBufferTarget.addTexture(
-        Texture::create(width, height, samples, type, TextureFormat::ALPHA,
-                        TextureFormatType::UINT, TextureWrap::BORDER,
-                        TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
     // depth
     m_gBufferTarget.addTexture(Texture::create(
-        width, height, samples, type, TextureFormat::DEPTH,
-        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_NEAREST));
+        width, height, samples,
+        samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D,
+        TextureFormat::DEPTH, TextureFormatType::FLOAT, TextureWrap::BORDER,
+        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_NEAREST));
     m_gBufferTarget.init();
-    // entity id
-    m_gBuffer->attachTexture(Texture::create(
-        width, height, 1, TextureType::TEX_2D, TextureFormat::ALPHA,
-        TextureFormatType::UINT, TextureWrap::BORDER, TextureFilter::NEAREST,
-        TextureMipmapFilter::NEAREST));
 }
 
 void RenderSystem::resize(int width, int height) {

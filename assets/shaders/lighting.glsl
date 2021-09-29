@@ -15,7 +15,6 @@ void main() {
 #version 450 core
 
 #include shaders/camera.glsl
-#include shaders/material.glsl
 #include shaders/light.glsl
 
 layout (location = 0) out vec4 fragColor;
