@@ -23,6 +23,7 @@ layout (location = 0) in vec2 in_texCoord;
 
 uniform Light u_light;
 
+uniform sampler2D u_lighting;
 uniform sampler2D u_position;
 uniform sampler2D u_normal;
 uniform sampler2D u_albedo;
@@ -38,7 +39,8 @@ void main() {
 
     vec3 viewDir = normalize(u_viewPos - fragPos);
 
-    vec3 result = calculateLight(u_light, fragPos, normal, viewDir, ambient, diffuse, specular);
-
+    vec3 last = texture(u_lighting, in_texCoord).rgb;
+    vec3 cur = calculateLight(u_light, fragPos, normal, viewDir, ambient, diffuse, specular);
+    vec3 result = last + cur; 
     fragColor = vec4(result, 1.0f);
 }

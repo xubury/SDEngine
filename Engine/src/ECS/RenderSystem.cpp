@@ -53,7 +53,7 @@ inline TextureFormatType getTextureFormatType(RenderSystem::GBufferType type) {
 
 RenderSystem::RenderSystem(RenderEngine *engine, int width, int height,
                            int samples)
-    : m_engine(engine) {
+    : m_engine(engine), m_blurResult(nullptr), m_lightResult(nullptr) {
     Device::instance().setMultisample(samples > 1);
 
     m_mainShader = Asset::manager().load<Shader>("shaders/main.glsl");
@@ -65,11 +65,11 @@ RenderSystem::RenderSystem(RenderEngine *engine, int width, int height,
         m_blurBuffer[i]->attachTexture(
             createTexture(width, height, 1, TextureFormat::RGBA,
                           TextureFormatType::UBYTE, true));
+        m_lightBuffer[i] = Framebuffer::create();
+        m_lightBuffer[i]->attachTexture(
+            createTexture(width, height, 1, TextureFormat::RGBA,
+                          TextureFormatType::FLOAT, true));
     }
-
-    m_lightBuffer = Framebuffer::create();
-    m_lightBuffer->attachTexture(createTexture(
-        width, height, 1, TextureFormat::RGBA, TextureFormatType::FLOAT, true));
 
     initQuad();
     initGBuffer(width, height, samples);
@@ -117,8 +117,8 @@ void RenderSystem::initGBuffer(int width, int height, int samples) {
 }
 
 void RenderSystem::resize(int width, int height) {
-    m_lightBuffer->resize(width, height);
     for (int i = 0; i < 2; ++i) {
+        m_lightBuffer[i]->resize(width, height);
         m_blurBuffer[i]->resize(width, height);
     }
     m_gBufferTarget.resize(width, height);
@@ -147,11 +147,11 @@ void RenderSystem::renderMain() {
         m_mainShader->setFloat("u_bloomFactor", m_engine->getBloomFactor());
         m_mainShader->setTexture("u_blur", m_blurResult);
     }
-    m_mainShader->setTexture("u_lighting", m_lightBuffer->getTexture(0));
+    m_mainShader->setTexture("u_lighting", m_lightResult);
     m_mainShader->setTexture("u_entityTexture",
                              gBuffer->getTexture(G_ENTITY_ID));
     m_mainShader->setFloat("u_exposure", m_engine->getExposure());
-    Renderer::submit(*m_quad.get(), MeshTopology::TRIANGLES, 6, 0);
+    Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
 }
 
 void RenderSystem::renderBlur() {
@@ -159,28 +159,41 @@ void RenderSystem::renderBlur() {
     bool horizontal = true;
     m_blurShader->bind();
     for (int i = 0; i < amount; ++i) {
-        int inputId = horizontal;
-        int outputId = !horizontal;
+        const int inputId = horizontal;
+        const int outputId = !horizontal;
         m_blurBuffer[outputId]->bind();
         m_blurResult = m_blurBuffer[outputId]->getTexture(0);
         m_blurShader->setBool("u_horizontal", horizontal);
-        m_blurShader->setTexture("u_image",
-                                 i == 0 ? m_lightBuffer->getTexture(0)
-                                        : m_blurBuffer[inputId]->getTexture(0));
-        Renderer::submit(*m_quad.get(), MeshTopology::TRIANGLES, 6, 0);
+        m_blurShader->setTexture(
+            "u_image",
+            i == 0 ? m_lightResult : m_blurBuffer[inputId]->getTexture(0));
+        Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
         horizontal = !horizontal;
     }
 }
 
 void RenderSystem::renderLight() {
-    m_lightBuffer->bind();
     m_lightShader->bind();
-    Device::instance().setClearColor(0.1, 0.2, 0.3, 1.0);
-    Device::instance().clear();
+    Framebuffer *gBuffer = getGBuffer();
+    m_lightShader->setTexture("u_position", gBuffer->getTexture(G_POSITION));
+    m_lightShader->setTexture("u_normal", gBuffer->getTexture(G_NORMAL));
+    m_lightShader->setTexture("u_albedo", gBuffer->getTexture(G_ALBEDO));
+    m_lightShader->setTexture("u_ambient", gBuffer->getTexture(G_AMBIENT));
     Device::instance().setDepthMask(false);
+    const uint8_t inputIndex = 0;
+    const uint8_t outputIndex = 1;
+
+    // clear the last lighting pass' result
+    const float color[] = {0, 0, 0, 1.0};
+    m_lightBuffer[inputIndex]->clearAttachment(0, color);
+
     auto lightView = m_scene->view<TransformComponent, LightComponent>();
     lightView.each([this](const TransformComponent &transformComp,
                           const LightComponent &lightComp) {
+        m_lightBuffer[outputIndex]->bind();
+        m_lightResult = m_lightBuffer[outputIndex]->getTexture(0);
+        m_lightShader->setTexture("u_lighting",
+                                  m_lightBuffer[inputIndex]->getTexture(0));
         const Transform &transform = transformComp.transform;
         const Light &light = lightComp.light;
         m_lightShader->setVec3("u_light.direction", transform.getWorldFront());
@@ -197,14 +210,10 @@ void RenderSystem::renderLight() {
         m_lightShader->setFloat("u_light.constant", light.constant);
         m_lightShader->setFloat("u_light.linear", light.linear);
         m_lightShader->setFloat("u_light.quadratic", light.quadratic);
+        Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
+        std::swap(m_lightBuffer[outputIndex], m_lightBuffer[inputIndex]);
     });
 
-    Framebuffer *gBuffer = getGBuffer();
-    m_lightShader->setTexture("u_position", gBuffer->getTexture(G_POSITION));
-    m_lightShader->setTexture("u_normal", gBuffer->getTexture(G_NORMAL));
-    m_lightShader->setTexture("u_albedo", gBuffer->getTexture(G_ALBEDO));
-    m_lightShader->setTexture("u_ambient", gBuffer->getTexture(G_AMBIENT));
-    Renderer::submit(*m_quad.get(), MeshTopology::TRIANGLES, 6, 0);
     Device::instance().setDepthMask(true);
 }
 

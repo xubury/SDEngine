@@ -52,7 +52,8 @@ class SD_API RenderSystem : public System {
     Texture *m_blurResult;
 
     Ref<Shader> m_lightShader;
-    Ref<Framebuffer> m_lightBuffer;
+    Ref<Framebuffer> m_lightBuffer[2];
+    Texture *m_lightResult;
 
     Ref<Shader> m_gBufferShader;
     RenderTarget m_gBufferTarget;
