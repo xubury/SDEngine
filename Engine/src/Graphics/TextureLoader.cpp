@@ -46,17 +46,27 @@ Ref<Texture> TextureLoader::loadAsset(const std::string &filePath) {
         flipSurface(image);
     }
     // TODO: parse SDL_Surface here
-    TextureFormat format = TextureFormat::RGB;
+    TextureFormat format;
     TextureFormatType formatType = TextureFormatType::UBYTE;
+    SDL_Surface *converted;
     if (SDL_ISPIXELFORMAT_ALPHA(image->format->format)) {
+        SDL_PixelFormat *SDL_format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
+        converted = SDL_ConvertSurface(image, SDL_format, 0);
+        SDL_FreeFormat(SDL_format);
         format = TextureFormat::RGBA;
+    } else {
+        SDL_PixelFormat *SDL_format = SDL_AllocFormat(SDL_PIXELFORMAT_RGB24);
+        converted = SDL_ConvertSurface(image, SDL_format, 0);
+        SDL_FreeFormat(SDL_format);
+        format = TextureFormat::RGB;
     }
-    texture = sd::Texture::create(
-        image->w, image->h, 1, sd::TextureType::TEX_2D, format, formatType,
-        sd::TextureWrap::REPEAT, sd::TextureFilter::LINEAR,
-        sd::TextureMipmapFilter::LINEAR_NEAREST, image->pixels);
+    texture = Texture::create(
+        converted->w, converted->h, 1, TextureType::TEX_2D, format, formatType,
+        TextureWrap::REPEAT, TextureFilter::LINEAR,
+        TextureMipmapFilter::LINEAR_NEAREST, converted->pixels);
 
     SDL_FreeSurface(image);
+    SDL_FreeSurface(converted);
     return texture;
 }
 
