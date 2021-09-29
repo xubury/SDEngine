@@ -231,7 +231,7 @@ void EditorLayer::onImGui() {
 
         m_isViewportFocused = ImGui::IsWindowFocused();
         m_isViewportHovered = ImGui::IsWindowHovered();
-        ImGui::DrawTexture(*m_framebuffer->getTexture(0), wsize);
+        ImGui::DrawTexture(*m_framebuffer->getTexture(), wsize);
 
         sd::Entity selectedEntity = m_scenePanel.getSelectedEntity();
         if (selectedEntity) {

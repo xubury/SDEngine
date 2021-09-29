@@ -162,11 +162,11 @@ void RenderSystem::renderBlur() {
         const int inputId = horizontal;
         const int outputId = !horizontal;
         m_blurBuffer[outputId]->bind();
-        m_blurResult = m_blurBuffer[outputId]->getTexture(0);
+        m_blurResult = m_blurBuffer[outputId]->getTexture();
         m_blurShader->setBool("u_horizontal", horizontal);
         m_blurShader->setTexture(
             "u_image",
-            i == 0 ? m_lightResult : m_blurBuffer[inputId]->getTexture(0));
+            i == 0 ? m_lightResult : m_blurBuffer[inputId]->getTexture());
         Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
         horizontal = !horizontal;
     }
@@ -191,9 +191,9 @@ void RenderSystem::renderLight() {
     lightView.each([this](const TransformComponent &transformComp,
                           const LightComponent &lightComp) {
         m_lightBuffer[outputIndex]->bind();
-        m_lightResult = m_lightBuffer[outputIndex]->getTexture(0);
+        m_lightResult = m_lightBuffer[outputIndex]->getTexture();
         m_lightShader->setTexture("u_lighting",
-                                  m_lightBuffer[inputIndex]->getTexture(0));
+                                  m_lightBuffer[inputIndex]->getTexture());
         const Transform &transform = transformComp.transform;
         const Light &light = lightComp.light;
         m_lightShader->setVec3("u_light.direction", transform.getWorldFront());
