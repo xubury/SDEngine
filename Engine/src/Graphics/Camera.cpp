@@ -1,6 +1,7 @@
 #include "Graphics/Camera.hpp"
 #include <glm/gtx/matrix_decompose.hpp>
 #include "Utils/Log.hpp"
+#include "Utils/Assert.hpp"
 
 namespace sd {
 
@@ -311,6 +312,7 @@ void PerspectiveCamera::setProjection(float fov, float aspect, float zNear,
     m_aspect = aspect;
     m_zNear = zNear;
     m_zFar = zFar;
+    SD_CORE_ASSERT(aspect > 0);
     Camera::setProjection(glm::perspective(fov, aspect, zNear, zFar));
 }
 
