@@ -29,8 +29,6 @@ class SD_API RenderSystem : public System {
 
     void onRender() override;
 
-    void onSceneChange() override{};
-
     void resize(int width, int height);
 
     Framebuffer *getGBuffer();

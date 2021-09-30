@@ -12,11 +12,11 @@ class System {
     System() = default;
     virtual ~System() = default;
 
-    virtual void onTick(float dt) = 0;
+    virtual void onTick(float){};
 
-    virtual void onRender() = 0;
+    virtual void onRender(){};
 
-    virtual void onSceneChange() = 0;
+    virtual void onSceneChange(){};
 
    protected:
     friend class Layer;
