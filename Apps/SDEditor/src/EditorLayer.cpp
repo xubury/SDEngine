@@ -17,8 +17,7 @@ EditorLayer::EditorLayer(int width, int height)
       m_isViewportFocused(false),
       m_isViewportHovered(false),
       m_hide(false),
-      m_editorCamera(glm::radians(45.f), static_cast<float>(width) / height,
-                     0.1, 100000.f),
+      m_editorCamera(45.f, static_cast<float>(width) / height, 0.1, 100000.f),
       m_loadSceneOpen(false),
       m_saveSceneOpen(false) {
     m_cameraController.setCamera(&m_editorCamera);

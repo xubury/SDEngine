@@ -14,7 +14,44 @@ struct Light {
     float quadratic;
 
     bool isDirectional;
+    bool isCastShadow;
+
+    sampler2D shadowMap;
+    mat4 projectionView;
 };
+
+float shadowCalculation(Light light, vec3 fragPos, vec3 lightDir, vec3 normal)
+{
+    if (!light.isCastShadow) return 0.f;
+
+    vec4 fragPosLightSpace = light.projectionView * vec4(fragPos, 1.0);
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5f + 0.5f;
+
+
+    if (projCoords.z > 1.0f)
+        return 0.0f;
+
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(light.shadowMap, projCoords.xy).r;
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    // check whether current frag pos is in shadow
+    float bias = 0.005f;
+    float shadow = 0.0f;
+    vec2 texelSize = 1.0f / textureSize(light.shadowMap, 0);
+    for(int x = -1; x <= 1; ++x) {
+        for(int y = -1; y <= 1; ++y) {
+            float pcfDepth = texture(light.shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
+        }
+    }
+    shadow /= 9.0f;
+
+    return shadow;
+}
 
 
 vec3 dirLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
@@ -34,7 +71,8 @@ vec3 dirLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
     float spec = pow(max(dot(normal, halfwayDir), 0.0f), 64.0f);
     specular = light.specular * spec * specular;
 
-    return ambient + diffuse + specular;
+    float shadow = shadowCalculation(light, fragPos, lightDir, normal);
+    return ambient + (1.0f - shadow) * (diffuse + specular);
 }
 
 vec3 pointLight(Light light, vec3 fragPos, vec3 normal,

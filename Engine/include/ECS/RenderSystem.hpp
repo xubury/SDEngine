@@ -38,6 +38,7 @@ class SD_API RenderSystem : public System {
     void initGBuffer(int width, int height, int samples);
 
     void renderGBuffer();
+    void renderShadow();
     void renderLight();
     void renderBlur();
     void renderMain();
@@ -56,6 +57,8 @@ class SD_API RenderSystem : public System {
     Ref<Shader> m_gBufferShader;
     RenderTarget m_gBufferTarget;
     Ref<Framebuffer> m_gBuffer;
+
+    Ref<Shader> m_shadowShader;
 
     Ref<VertexArray> m_quad;
 };

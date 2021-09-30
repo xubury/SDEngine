@@ -59,6 +59,7 @@ RenderSystem::RenderSystem(RenderEngine *engine, int width, int height,
     m_mainShader = Asset::manager().load<Shader>("shaders/main.glsl");
     m_lightShader = Asset::manager().load<Shader>("shaders/lighting.glsl");
     m_blurShader = Asset::manager().load<Shader>("shaders/blur.glsl");
+    m_shadowShader = Asset::manager().load<Shader>("shaders/shadow.glsl");
 
     for (int i = 0; i < 2; ++i) {
         m_blurTarget[i].addTexture(
@@ -125,11 +126,20 @@ void RenderSystem::resize(int width, int height) {
     m_gBuffer->resize(width, height);
 }
 
-void RenderSystem::onTick(float) {}
+void RenderSystem::onTick(float) {
+    auto lightView = m_scene->view<LightComponent>();
+    const Camera *cam = m_engine->getCamera();
+    lightView.each([&cam](LightComponent &lightComponet) {
+        if (lightComponet.isCastShadow) {
+            lightComponet.shadowMap.computeLightSpaceMatrix(cam);
+        }
+    });
+}
 
 void RenderSystem::onRender() {
     if (m_engine->getCamera()) {
         renderGBuffer();
+        renderShadow();
         renderLight();
         if (m_engine->getBloom()) {
             renderBlur();
@@ -175,6 +185,30 @@ void RenderSystem::renderBlur() {
     }
 }
 
+void RenderSystem::renderShadow() {
+    auto lightView = m_scene->view<LightComponent>();
+    auto modelView = m_scene->view<TransformComponent, ModelComponent>();
+    m_shadowShader->bind();
+    lightView.each([this, &modelView](const LightComponent &light) {
+        if (!light.isCastShadow) return;
+
+        Renderer::setRenderTarget(light.shadowMap.getRenderTarget());
+        Device::instance().setClearColor(0, 0, 0, 1.0f);
+        Device::instance().clear();
+        m_shadowShader->setMat4("u_projectionView",
+                                light.shadowMap.getProjectionView());
+
+        modelView.each([this](const TransformComponent &transformComp,
+                              const ModelComponent &modelComp) {
+            m_shadowShader->setMat4(
+                "u_model", transformComp.transform.getWorldTransform());
+            for (const auto &mesh : modelComp.model->getMeshes()) {
+                Renderer3D::drawMesh(mesh);
+            }
+        });
+    });
+}
+
 void RenderSystem::renderLight() {
     m_lightShader->bind();
     Framebuffer *gBuffer = getGBuffer();
@@ -204,7 +238,6 @@ void RenderSystem::renderLight() {
         m_lightShader->setVec3("u_light.specular", light.specular);
         m_lightShader->setVec3("u_light.position",
                                transform.getWorldPosition());
-        m_lightShader->setFloat("u_light.isDirectional", light.isDirectional);
         m_lightShader->setFloat("u_light.cutOff",
                                 glm::cos(glm::radians(light.cutOff)));
         m_lightShader->setFloat("u_light.outerCutOff",
@@ -212,6 +245,13 @@ void RenderSystem::renderLight() {
         m_lightShader->setFloat("u_light.constant", light.constant);
         m_lightShader->setFloat("u_light.linear", light.linear);
         m_lightShader->setFloat("u_light.quadratic", light.quadratic);
+
+        m_lightShader->setBool("u_light.isDirectional", light.isDirectional);
+        m_lightShader->setBool("u_light.isCastShadow", light.isCastShadow);
+        m_lightShader->setTexture("u_light.shadowMap",
+                                  light.shadowMap.getShadowMap());
+        m_lightShader->setMat4("u_light.projectionView",
+                               light.shadowMap.getProjectionView());
         Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
         std::swap(m_lightTarget[outputIndex], m_lightTarget[inputIndex]);
     });

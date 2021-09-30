@@ -108,6 +108,12 @@ class SD_API PerspectiveCamera : public Camera {
 
     void resize(float width, float height) override;
 
+    float getFOV() const { return m_fov; }
+
+    float getAspect() const { return m_aspect; }
+
+    float getNearZ() const { return m_zNear; }
+    float getFarZ() const { return m_zFar; }
    private:
     float m_fov;
     float m_aspect;

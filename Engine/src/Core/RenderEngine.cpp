@@ -17,8 +17,11 @@ RenderEngine::RenderEngine(int width, int height, int samples)
 }
 
 void RenderEngine::onEventProcess(const SDL_Event &event) {
-    if (event.type == SDL_WINDOWEVENT_SIZE_CHANGED) {
-        resize(event.window.data1, event.window.data2);
+    if (event.type == SDL_WINDOWEVENT) {
+        switch (event.window.event) {
+            case SDL_WINDOWEVENT_SIZE_CHANGED:
+                resize(event.window.data1, event.window.data2);
+        }
     }
 }
 
