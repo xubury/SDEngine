@@ -11,8 +11,7 @@ set(Renderer_Src
     ${Src_Root}/RenderEngine.cpp
     ${Src_Root}/Renderer.cpp
     ${Src_Root}/Renderer2D.cpp
-    ${Src_Root}/Renderer3D.cpp
-    ${Src_Root}/RenderTarget.cpp)
+    ${Src_Root}/Renderer3D.cpp)
 
 add_library(sd-renderer ${Renderer_Src})
 

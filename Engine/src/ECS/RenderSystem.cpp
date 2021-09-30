@@ -61,14 +61,14 @@ RenderSystem::RenderSystem(RenderEngine *engine, int width, int height,
     m_blurShader = Asset::manager().load<Shader>("shaders/blur.glsl");
 
     for (int i = 0; i < 2; ++i) {
-        m_blurBuffer[i] = Framebuffer::create();
-        m_blurBuffer[i]->attachTexture(
+        m_blurTarget[i].addTexture(
             createTexture(width, height, 1, TextureFormat::RGBA,
                           TextureFormatType::UBYTE, true));
-        m_lightBuffer[i] = Framebuffer::create();
-        m_lightBuffer[i]->attachTexture(
+        m_lightTarget[i].addTexture(
             createTexture(width, height, 1, TextureFormat::RGBA,
                           TextureFormatType::FLOAT, true));
+        m_blurTarget[i].init();
+        m_lightTarget[i].init();
     }
 
     initQuad();
@@ -118,8 +118,8 @@ void RenderSystem::initGBuffer(int width, int height, int samples) {
 
 void RenderSystem::resize(int width, int height) {
     for (int i = 0; i < 2; ++i) {
-        m_lightBuffer[i]->resize(width, height);
-        m_blurBuffer[i]->resize(width, height);
+        m_lightTarget[i].resize(width, height);
+        m_blurTarget[i].resize(width, height);
     }
     m_gBufferTarget.resize(width, height);
     m_gBuffer->resize(width, height);
@@ -141,7 +141,7 @@ void RenderSystem::onRender() {
 }
 
 void RenderSystem::renderMain() {
-    m_engine->getRenderTarget().use();
+    Renderer::setRenderTarget(m_engine->getRenderTarget());
     Device::instance().clear();
     m_mainShader->bind();
     Framebuffer *gBuffer = getGBuffer();
@@ -164,12 +164,12 @@ void RenderSystem::renderBlur() {
     for (int i = 0; i < amount; ++i) {
         const int inputId = horizontal;
         const int outputId = !horizontal;
-        m_blurBuffer[outputId]->bind();
-        m_blurResult = m_blurBuffer[outputId]->getTexture();
+        Renderer::setRenderTarget(m_blurTarget[outputId]);
+        m_blurResult = m_blurTarget[outputId].getTexture();
         m_blurShader->setBool("u_horizontal", horizontal);
         m_blurShader->setTexture(
             "u_image",
-            i == 0 ? m_lightResult : m_blurBuffer[inputId]->getTexture());
+            i == 0 ? m_lightResult : m_blurTarget[inputId].getTexture());
         Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
         horizontal = !horizontal;
     }
@@ -188,15 +188,15 @@ void RenderSystem::renderLight() {
 
     // clear the last lighting pass' result
     const float color[] = {0, 0, 0, 1.0};
-    m_lightBuffer[inputIndex]->clearAttachment(0, color);
+    m_lightTarget[inputIndex].getFramebuffer()->clearAttachment(0, color);
 
     auto lightView = m_scene->view<TransformComponent, LightComponent>();
     lightView.each([this](const TransformComponent &transformComp,
                           const LightComponent &light) {
-        m_lightBuffer[outputIndex]->bind();
-        m_lightResult = m_lightBuffer[outputIndex]->getTexture();
+        Renderer::setRenderTarget(m_lightTarget[outputIndex]);
+        m_lightResult = m_lightTarget[outputIndex].getTexture();
         m_lightShader->setTexture("u_lighting",
-                                  m_lightBuffer[inputIndex]->getTexture());
+                                  m_lightTarget[inputIndex].getTexture());
         const Transform &transform = transformComp.transform;
         m_lightShader->setVec3("u_light.direction", transform.getWorldFront());
         m_lightShader->setVec3("u_light.ambient", light.ambient);
@@ -213,7 +213,7 @@ void RenderSystem::renderLight() {
         m_lightShader->setFloat("u_light.linear", light.linear);
         m_lightShader->setFloat("u_light.quadratic", light.quadratic);
         Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
-        std::swap(m_lightBuffer[outputIndex], m_lightBuffer[inputIndex]);
+        std::swap(m_lightTarget[outputIndex], m_lightTarget[inputIndex]);
     });
 
     Device::instance().setDepthMask(true);
@@ -221,7 +221,7 @@ void RenderSystem::renderLight() {
 
 void RenderSystem::renderGBuffer() {
     Renderer3D::beginScene(*m_engine->getCamera(), *m_gBufferShader);
-    m_gBufferTarget.use();
+    Renderer::setRenderTarget(m_gBufferTarget);
     Device::instance().setBlend(false);
     Device::instance().setClearColor(0.f, 0.f, 0.f, 1.0);
     Device::instance().clear();

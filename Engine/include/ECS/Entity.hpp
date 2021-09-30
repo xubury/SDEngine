@@ -53,7 +53,7 @@ T &Entity::addComponent(Args &&...args) {
     SD_CORE_ASSERT(!hasComponent<T>(), "Entity already has this component!");
     T &component =
         m_scene->emplace<T>(m_entityHandle, std::forward<Args>(args)...);
-    m_scene->onComponentAdded<T>(*this, component);
+    m_scene->onComponentAdded(*this, component);
     return component;
 }
 

@@ -5,9 +5,8 @@
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Shader.hpp"
-#include "Graphics/Buffer.hpp"
 #include "Graphics/VertexArray.hpp"
-#include "Renderer/RenderTarget.hpp"
+#include "Graphics/RenderTarget.hpp"
 
 namespace sd {
 
@@ -18,6 +17,7 @@ class SD_API Renderer {
     static void submit(const VertexArray &vao, MeshTopology topology,
                        size_t count, size_t offset);
 
+    static void setRenderTarget(const RenderTarget &target);
    private:
     friend class Renderer2D;
     friend class Renderer3D;
@@ -27,8 +27,7 @@ class SD_API Renderer {
 
     Renderer() = default;
     static Renderer &instance();
-
-};  // namespace Renderer
+};
 
 }  // namespace sd
 

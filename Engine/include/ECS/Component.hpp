@@ -1,13 +1,14 @@
 #ifndef SD_COMPONENT_HPP
 #define SD_COMPONENT_HPP
 
+#include "entt/entt.hpp"
 #include "Utils/Export.hpp"
 #include "Utils/Transform.hpp"
 #include "Utils/Math.hpp"
-#include "ECS/Entity.hpp"
 #include "Graphics/Model.hpp"
 #include "Graphics/Mesh.hpp"
 #include "Graphics/Terrain.hpp"
+#include "Graphics/ShadowMap.hpp"
 
 namespace sd {
 
@@ -71,6 +72,8 @@ struct SD_API LightComponent {
     float linear = 0.09;
     float quadratic = 0.032f;
 
+    bool isCastShadow = false;
+    ShadowMap shadowMap;
     template <typename Archive>
     void serialize(Archive& archive) {
         archive(ambient, diffuse, specular, isDirectional, cutOff, outerCutOff,

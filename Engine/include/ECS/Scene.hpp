@@ -4,7 +4,7 @@
 #include "Utils/Export.hpp"
 #include "Utils/Base.hpp"
 #include "entt/entt.hpp"
-#include "Graphics/Camera.hpp"
+#include "ECS/Component.hpp"
 
 namespace sd {
 
@@ -31,9 +31,12 @@ class SD_API Scene : public entt::registry {
     template <typename T>
     void onComponentAdded(Entity &entity, T &component);
 
+    void onComponentAdded(Entity &entity, LightComponent &component);
+
    private:
     void refreshEntityChildTranforms(Entity &entity);
     void refreshEntityModel(Entity &entity);
+    void refreshEntityLight(Entity &entity);
 };
 
 template <typename T>

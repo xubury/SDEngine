@@ -1,8 +1,9 @@
-#include "Renderer/RenderTarget.hpp"
+#include "Graphics/RenderTarget.hpp"
 #include "Graphics/Device.hpp"
 #include "Utils/Log.hpp"
 
 namespace sd {
+
 RenderTarget::RenderTarget() : m_x(0), m_y(0), m_width(0), m_height(0) {}
 
 void RenderTarget::init() {
@@ -29,6 +30,10 @@ void RenderTarget::addTexture(const Ref<Texture> &texture) {
     }
 }
 
+int RenderTarget::getX() const { return m_x; }
+
+int RenderTarget::getY() const { return m_y; }
+
 int RenderTarget::getWidth() const { return m_width; }
 
 int RenderTarget::getHeight() const { return m_height; }
@@ -50,11 +55,6 @@ void RenderTarget::setOrigin(int x, int y) {
     m_y = y;
 }
 
-void RenderTarget::use() const {
-    Device::instance().setFramebuffer(m_framebuffer.get());
-    Device::instance().setViewport(m_x, m_y, m_width, m_height);
-}
-
 glm::vec2 RenderTarget::mapScreenToClip(const glm::vec2 &pos) {
     glm::vec2 view;
     view.x = -1.f + 2.f * (pos.x - m_x) / m_width;
@@ -69,6 +69,12 @@ glm::vec2 RenderTarget::mapClipToScreen(const glm::vec2 &pos) {
     return screen;
 }
 
-Framebuffer *RenderTarget::getFramebuffer() { return m_framebuffer.get(); }
+Framebuffer *RenderTarget::getFramebuffer() const {
+    return m_framebuffer.get();
+}
+
+Texture *RenderTarget::getTexture(uint32_t attachmentId) const {
+    return m_framebuffer->getTexture(attachmentId);
+}
 
 }  // namespace sd

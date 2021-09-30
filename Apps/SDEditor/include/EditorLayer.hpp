@@ -3,7 +3,7 @@
 
 #include "Core/Layer.hpp"
 #include "Graphics/Camera.hpp"
-#include "Renderer/RenderTarget.hpp"
+#include "Graphics/RenderTarget.hpp"
 #include "ScenePanel.hpp"
 #include "CameraController.hpp"
 

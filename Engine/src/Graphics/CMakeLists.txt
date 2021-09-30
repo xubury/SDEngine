@@ -35,8 +35,10 @@ set(Graphics_Include
     ${Include_Root}/Mesh.hpp
     ${Include_Root}/Model.hpp
     ${Include_Root}/ModelLoader.hpp
+    ${Include_Root}/RenderTarget.hpp
     ${Include_Root}/Shader.hpp
     ${Include_Root}/ShaderLoader.hpp
+    ${Include_Root}/ShadowMap.hpp
     ${Include_Root}/Terrain.hpp
     ${Include_Root}/Texture.hpp
     ${Include_Root}/TextureLoader.hpp
@@ -55,8 +57,10 @@ set(Graphics_Src
     ${Src_Root}/Mesh.cpp
     ${Src_Root}/Model.cpp
     ${Src_Root}/ModelLoader.cpp
+    ${Src_Root}/RenderTarget.cpp
     ${Src_Root}/Shader.cpp
     ${Src_Root}/ShaderLoader.cpp
+    ${Src_Root}/ShadowMap.cpp
     ${Src_Root}/Terrain.cpp
     ${Src_Root}/Texture.cpp
     ${Src_Root}/TextureLoader.cpp

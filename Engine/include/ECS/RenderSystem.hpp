@@ -5,7 +5,7 @@
 #include "ECS/Scene.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"
-#include "Renderer/RenderTarget.hpp"
+#include "Graphics/RenderTarget.hpp"
 
 namespace sd {
 
@@ -48,11 +48,11 @@ class SD_API RenderSystem : public System {
     Ref<Shader> m_mainShader;
 
     Ref<Shader> m_blurShader;
-    Ref<Framebuffer> m_blurBuffer[2];
+    RenderTarget m_blurTarget[2];
     Texture *m_blurResult;
 
     Ref<Shader> m_lightShader;
-    Ref<Framebuffer> m_lightBuffer[2];
+    RenderTarget m_lightTarget[2];
     Texture *m_lightResult;
 
     Ref<Shader> m_gBufferShader;

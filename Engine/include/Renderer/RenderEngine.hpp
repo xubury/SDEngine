@@ -3,6 +3,7 @@
 
 #include "ECS/RenderSystem.hpp"
 #include "ECS/TerrainSystem.hpp"
+#include "Graphics/Camera.hpp"
 
 namespace sd {
 
