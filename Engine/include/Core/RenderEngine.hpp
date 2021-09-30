@@ -1,17 +1,18 @@
 #ifndef SD_RENDER_ENGINE_HPP
 #define SD_RENDER_ENGINE_HPP
 
+#include "Core/Layer.hpp"
 #include "ECS/RenderSystem.hpp"
 #include "ECS/TerrainSystem.hpp"
 #include "Graphics/Camera.hpp"
 
 namespace sd {
 
-class RenderEngine : public SystemManager {
+class RenderEngine : public Layer {
    public:
-    RenderEngine();
+    RenderEngine(int width, int height, int samples);
 
-    void init(int width, int height, int samples);
+    void onEventProcess(const SDL_Event &) override;
 
     RenderSystem *getRenderSystem();
     TerrainSystem *getTerrainSystem();

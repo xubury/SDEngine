@@ -1,20 +1,25 @@
-#include "Renderer/RenderEngine.hpp"
+#include "Core/RenderEngine.hpp"
 #include "Renderer/Renderer.hpp"
 
 namespace sd {
 
-RenderEngine::RenderEngine()
-    : m_renderSystem(nullptr),
+RenderEngine::RenderEngine(int width, int height, int samples)
+    : Layer("Render Engine"),
+      m_renderSystem(nullptr),
       m_terrainSystem(nullptr),
       m_target(nullptr),
+      m_defaultTarget(0, 0, width, height),
       m_exposure(1.5f),
       m_bloom(1.0f),
-      m_isBloom(true) {}
-
-void RenderEngine::init(int width, int height, int samples) {
+      m_isBloom(true) {
     m_renderSystem = addSystem<RenderSystem>(this, width, height, samples);
     m_terrainSystem = addSystem<TerrainSystem>();
-    m_defaultTarget.resize(width, height);
+}
+
+void RenderEngine::onEventProcess(const SDL_Event &event) {
+    if (event.type == SDL_WINDOWEVENT) {
+        resize(event.window.data1, event.window.data2);
+    }
 }
 
 RenderSystem *RenderEngine::getRenderSystem() { return m_renderSystem; }

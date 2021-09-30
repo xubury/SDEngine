@@ -3,9 +3,9 @@
 
 #include "Core/Window.hpp"
 #include "Core/LayerStack.hpp"
+#include "Core/RenderEngine.hpp"
 #include "Utils/AssetLoader.hpp"
 #include "ImGui/ImGuiLayer.hpp"
-#include "Renderer/RenderEngine.hpp"
 
 int main(int argc, char **argv);
 
@@ -53,9 +53,7 @@ class SD_API Application {
     Window m_window;
     LayerStack m_layers;
     ImGuiLayer *m_imguiLayer;
-    SystemManager m_systems;
-
-    RenderEngine m_renderEngine;
+    RenderEngine *m_renderEngine;
 };
 
 }  // namespace sd

@@ -12,6 +12,7 @@ namespace sd {
 class SD_API RenderTarget {
    public:
     RenderTarget();
+    RenderTarget(int x, int y, int width, int height);
 
     ~RenderTarget() = default;
 

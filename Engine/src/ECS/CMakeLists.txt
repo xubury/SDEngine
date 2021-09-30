@@ -16,7 +16,6 @@ set(ECS_Src
     ${Src_Root}/ParticleSystem.cpp
     ${Src_Root}/RenderSystem.cpp
     ${Src_Root}/Scene.cpp
-    ${Src_Root}/System.cpp
     ${Src_Root}/TerrainSystem.cpp)
 
 add_library(sd-ecs ${ECS_Src})
@@ -37,7 +36,7 @@ target_include_directories(sd-ecs
     PRIVATE
     ${PROJECT_SOURCE_DIR}/libs/entt)
 
-target_link_libraries(sd-ecs PUBLIC sd-utils EnTT::EnTT)
+target_link_libraries(sd-ecs PUBLIC sd-core sd-utils EnTT::EnTT)
 
 install(TARGETS sd-ecs LIBRARY DESTINATION lib)
 

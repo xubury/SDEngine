@@ -22,6 +22,7 @@ set(Core_Include
     ${Include_Root}/Input.hpp
     ${Include_Root}/Layer.hpp
     ${Include_Root}/LayerStack.hpp
+    ${Include_Root}/RenderEngine.hpp
     ${Include_Root}/Timing.hpp
     ${Include_Root}/Window.hpp)
 
@@ -32,7 +33,9 @@ set(Core_Src
     ${Src_Root}/Context.cpp
     ${Src_Root}/EntryPoint.cpp
     ${Src_Root}/Input.cpp
+    ${Src_Root}/Layer.cpp
     ${Src_Root}/LayerStack.cpp
+    ${Src_Root}/RenderEngine.cpp
     ${Src_Root}/Timing.cpp
     ${Src_Root}/Window.cpp)
 

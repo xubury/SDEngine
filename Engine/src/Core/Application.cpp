@@ -19,7 +19,7 @@ Application *Application::s_instance = nullptr;
 Window &Application::getWindow() { return s_instance->m_window; }
 
 RenderEngine &Application::getRenderEngine() {
-    return s_instance->m_renderEngine;
+    return *s_instance->m_renderEngine;
 }
 
 Application::Application() {
@@ -65,9 +65,9 @@ Application::Application() {
     Renderer3D::init();
 
     m_imguiLayer = new ImGuiLayer();
+    m_renderEngine = new RenderEngine(width, height, samples);
     pushOverlay(m_imguiLayer);
-
-    m_renderEngine.init(width, height, samples);
+    pushLayer(m_renderEngine);
 }
 
 Application::~Application() {
@@ -102,11 +102,6 @@ void Application::processEvent(const SDL_Event &event) {
             break;
         case SDL_MOUSEMOTION:
             Input::manager().setMouseCoord(event.motion.x, event.motion.y);
-            break;
-        case SDL_WINDOWEVENT:
-            if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                m_renderEngine.resize(event.window.data1, event.window.data2);
-            }
             break;
         default:
             break;
@@ -152,16 +147,19 @@ void Application::quit() { s_instance->m_window.setShouldClose(true); }
 void Application::tick(float dt) {
     Input::manager().tick();
 
-    m_renderEngine.tick(dt);
     for (auto &layer : m_layers) {
+        for (auto &system : layer->getSystems()) {
+            system->onTick(dt);
+        }
         layer->onTick(dt);
     }
 }
 
 void Application::render() {
-    m_renderEngine.render();
-
     for (auto &layer : m_layers) {
+        for (auto &system : layer->getSystems()) {
+            system->onRender();
+        }
         layer->onRender();
     }
     m_imguiLayer->begin();

@@ -36,10 +36,27 @@ class SD_API Layer {
     void setBlockEvent(bool block) { m_blockEvent = block; }
     bool isBlockEvent() const { return m_blockEvent; }
 
+    template <typename SYSTEM, typename... ARGS>
+    SYSTEM *addSystem(ARGS &&...args);
+
+    void removeSystem(const Ref<System> &system);
+    std::set<Ref<System>> &getSystems() { return m_systems; }
+
+    void setScene(Scene *scene);
+
    protected:
     std::string m_name;
     bool m_blockEvent;
+
+    std::set<Ref<System>> m_systems;
 };
+
+template <typename SYSTEM, typename... ARGS>
+SYSTEM *Layer::addSystem(ARGS &&...args) {
+    Ref<SYSTEM> system = createRef<SYSTEM>(std::forward<ARGS>(args)...);
+    m_systems.emplace(system);
+    return system.get();
+}
 
 }  // namespace sd
 
