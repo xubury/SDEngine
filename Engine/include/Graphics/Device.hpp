@@ -43,6 +43,8 @@ class SD_API Device {
 
     virtual void setMultisample(bool multisample) = 0;
 
+    virtual void setCullFace(CullFace cullFace) = 0;
+
    protected:
     Device() = default;
 };

@@ -113,7 +113,7 @@ void RenderSystem::initGBuffer(int width, int height, int samples) {
         width, height, samples,
         samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D,
         TextureFormat::DEPTH, TextureFormatType::FLOAT, TextureWrap::BORDER,
-        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_NEAREST));
+        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
     m_gBufferTarget.init();
 }
 
@@ -126,15 +126,7 @@ void RenderSystem::resize(int width, int height) {
     m_gBuffer->resize(width, height);
 }
 
-void RenderSystem::onTick(float) {
-    auto lightView = m_scene->view<LightComponent>();
-    const Camera *cam = m_engine->getCamera();
-    lightView.each([&cam](LightComponent &lightComponet) {
-        if (lightComponet.isCastShadow) {
-            lightComponet.shadowMap.computeLightSpaceMatrix(cam);
-        }
-    });
-}
+void RenderSystem::onTick(float) {}
 
 void RenderSystem::onRender() {
     if (m_engine->getCamera()) {
@@ -186,15 +178,21 @@ void RenderSystem::renderBlur() {
 }
 
 void RenderSystem::renderShadow() {
-    auto lightView = m_scene->view<LightComponent>();
+    auto lightView = m_scene->view<TransformComponent, LightComponent>();
     auto modelView = m_scene->view<TransformComponent, ModelComponent>();
     m_shadowShader->bind();
-    lightView.each([this, &modelView](const LightComponent &light) {
+
+    const Camera *cam = m_engine->getCamera();
+    Device::instance().setCullFace(CullFace::FRONT);
+    lightView.each([this, &modelView, cam](
+                       const TransformComponent &transformComp,
+                       LightComponent &light) {
         if (!light.isCastShadow) return;
 
         Renderer::setRenderTarget(light.shadowMap.getRenderTarget());
         Device::instance().setClearColor(0, 0, 0, 1.0f);
         Device::instance().clear();
+        light.shadowMap.computeLightSpaceMatrix(transformComp.transform, cam);
         m_shadowShader->setMat4("u_projectionView",
                                 light.shadowMap.getProjectionView());
 
@@ -207,6 +205,7 @@ void RenderSystem::renderShadow() {
             }
         });
     });
+    Device::instance().setCullFace(CullFace::BACK);
 }
 
 void RenderSystem::renderLight() {

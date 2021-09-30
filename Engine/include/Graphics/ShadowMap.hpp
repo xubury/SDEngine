@@ -12,19 +12,19 @@ class SD_API ShadowMap {
    public:
     ShadowMap();
 
-    void setTransfrom(Transform *transform);
+    const glm::mat4 &getProjectionView() const { return m_projectionView; }
 
-    void computeLightSpaceMatrix(const Camera *camera);
+    void computeLightSpaceMatrix(const Transform &transform,
+                                 const Camera *camera);
 
     const RenderTarget &getRenderTarget() const { return m_target; };
 
-    const glm::mat4 &getProjectionView() const { return m_projectionView; }
-
     Texture *getShadowMap() const;
+
    private:
-    void computeBoundingBox(const PerspectiveCamera &camera, glm::vec3 &min,
-                            glm::vec3 &max);
-    Transform *m_transform;
+    static void computeBoundingBox(const Transform &transform,
+                                   const PerspectiveCamera &camera,
+                                   glm::vec3 &min, glm::vec3 &max);
     RenderTarget m_target;
     glm::mat4 m_projectionView;
 };

@@ -67,7 +67,6 @@ void Scene::refresh() {
         Entity entity(entityId, this);
         refreshEntityChildTranforms(entity);
         refreshEntityModel(entity);
-        refreshEntityLight(entity);
     }
 }
 
@@ -82,11 +81,6 @@ void Scene::load(const std::string &filePath) {
     refresh();
 }
 
-void Scene::onComponentAdded(Entity &entity, LightComponent &light) {
-    light.shadowMap.setTransfrom(
-        &entity.getComponent<TransformComponent>().transform);
-}
-
 void Scene::save(const std::string &filePath) {
     std::ofstream os(filePath, std::ios::binary);
     cereal::BinaryOutputArchive archive(os);
@@ -94,14 +88,6 @@ void Scene::save(const std::string &filePath) {
         .entities(archive)
         .component<EntityDataComponent, TagComponent, TransformComponent,
                    ModelComponent, LightComponent>(archive);
-}
-
-void Scene::refreshEntityLight(Entity &entity) {
-    if (entity.hasComponent<LightComponent>()) {
-        auto &lc = entity.getComponent<LightComponent>();
-        lc.shadowMap.setTransfrom(
-            &entity.getComponent<TransformComponent>().transform);
-    }
 }
 
 void Scene::refreshEntityModel(Entity &entity) {

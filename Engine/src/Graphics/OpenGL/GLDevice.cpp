@@ -91,4 +91,18 @@ void GLDevice::setMultisample(bool multisample) {
     multisample ? glEnable(GL_MULTISAMPLE) : glDisable(GL_MULTISAMPLE);
 }
 
+void GLDevice::setCullFace(CullFace cullFace) {
+    switch (cullFace) {
+        case CullFace::FRONT:
+            glCullFace(GL_FRONT);
+            break;
+        case CullFace::BACK:
+            glCullFace(GL_BACK);
+            break;
+        case CullFace::BOTH:
+            glCullFace(GL_FRONT_AND_BACK);
+            break;
+    }
+}
+
 }  // namespace sd

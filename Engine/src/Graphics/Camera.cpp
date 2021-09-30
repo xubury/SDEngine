@@ -313,8 +313,7 @@ void PerspectiveCamera::setProjection(float fov, float aspect, float zNear,
     m_zNear = zNear;
     m_zFar = zFar;
     SD_CORE_ASSERT(aspect > 0);
-    Camera::setProjection(
-        glm::perspective(glm::radians(fov), aspect, zNear, zFar));
+    Camera::setProjection(glm::perspective(fov, aspect, zNear, zFar));
 }
 
 void PerspectiveCamera::resize(float width, float height) {

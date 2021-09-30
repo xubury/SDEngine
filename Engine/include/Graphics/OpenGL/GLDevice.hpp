@@ -29,6 +29,8 @@ class GLDevice : public Device {
     void setDepthTest(bool depthTest) override;
 
     void setMultisample(bool multisample) override;
+
+    void setCullFace(CullFace cullface) override;
 };
 
 }  // namespace sd
