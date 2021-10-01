@@ -4,8 +4,8 @@
 #include <string>
 #include <filesystem>
 #include <unordered_map>
-#include "Utils/Base.hpp"
-#include "Utils/Log.hpp"
+#include "Utility/Base.hpp"
+#include "Utility/Log.hpp"
 
 namespace sd {
 

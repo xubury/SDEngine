@@ -1,6 +1,6 @@
 #include "ECS/ParticleSystem.hpp"
 #include "Renderer/Renderer2D.hpp"
-#include "Utils/Random.hpp"
+#include "Utility/Random.hpp"
 
 #include <glm/gtc/constants.hpp>
 #define GLM_ENABLE_EXPERIMENTAL

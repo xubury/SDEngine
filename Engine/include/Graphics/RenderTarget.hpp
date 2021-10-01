@@ -1,7 +1,7 @@
 #ifndef SD_RENDER_TARGET_HPP
 #define SD_RENDER_TARGET_HPP
 
-#include "Utils/Base.hpp"
+#include "Utility/Base.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/Framebuffer.hpp"
 #include <vector>

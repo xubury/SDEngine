@@ -4,7 +4,6 @@
 #include "Core/Window.hpp"
 #include "Core/LayerStack.hpp"
 #include "Core/RenderEngine.hpp"
-#include "Utils/AssetLoader.hpp"
 #include "ImGui/ImGuiLayer.hpp"
 
 int main(int argc, char **argv);

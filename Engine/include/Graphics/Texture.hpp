@@ -1,8 +1,8 @@
 #ifndef SD_TEXTURE_HPP
 #define SD_TEXTURE_HPP
 
-#include "Utils/Export.hpp"
-#include "Utils/Base.hpp"
+#include "Utility/Export.hpp"
+#include "Utility/Base.hpp"
 #include "Graphics/Graphics.hpp"
 
 namespace sd {

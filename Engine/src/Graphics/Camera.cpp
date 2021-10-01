@@ -1,7 +1,7 @@
 #include "Graphics/Camera.hpp"
 #include <glm/gtx/matrix_decompose.hpp>
-#include "Utils/Log.hpp"
-#include "Utils/Assert.hpp"
+#include "Utility/Log.hpp"
+#include "Utility/Assert.hpp"
 
 namespace sd {
 

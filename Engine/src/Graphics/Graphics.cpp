@@ -1,5 +1,5 @@
 #include "Graphics/Graphics.hpp"
-#include "Graphics/TextureLoader.hpp"
+#include "Utility/Loader/TextureLoader.hpp"
 
 namespace sd {
 

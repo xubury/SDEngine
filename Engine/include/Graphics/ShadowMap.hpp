@@ -1,8 +1,8 @@
 #ifndef SD_SHADOW_MAP_HPP
 #define SD_SHADOW_MAP_HPP
 
-#include "Utils/Export.hpp"
-#include "Utils/Transform.hpp"
+#include "Utility/Export.hpp"
+#include "Utility/Transform.hpp"
 #include "Graphics/RenderTarget.hpp"
 #include "Graphics/Camera.hpp"
 

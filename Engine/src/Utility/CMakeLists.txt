@@ -1,12 +1,26 @@
 find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
+find_package(assimp REQUIRED)
+find_package(SDL2_image REQUIRED)
+find_package(SDL2_ttf REQUIRED)
 
-set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Utils)
-set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Utils)
+set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Utility)
+set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Utility)
 
-set(Utils_Include
+set(Loader_Include
+    ${Include_Root}/Loader/AssetLoader.hpp
+    ${Include_Root}/Loader/ModelLoader.hpp
+    ${Include_Root}/Loader/ShaderLoader.hpp
+    ${Include_Root}/Loader/TextureLoader.hpp)
+
+set(Loader_Src
+    ${Src_Root}/Loader/ModelLoader.cpp
+    ${Src_Root}/Loader/ShaderLoader.cpp
+    ${Src_Root}/Loader/TextureLoader.cpp)
+
+set(Utility_Include
+    ${Loader_Include}
     ${Include_Root}/Assert.hpp
-    ${Include_Root}/AssetLoader.hpp
     ${Include_Root}/Base.hpp
     ${Include_Root}/Config.hpp
     ${Include_Root}/Export.hpp
@@ -19,7 +33,8 @@ set(Utils_Include
     ${Include_Root}/Serialize.hpp
     ${Include_Root}/Transform.hpp)
 
-set(Utils_Src
+set(Utility_Src
+    ${Loader_Src}
     ${Src_Root}/File.cpp
     ${Src_Root}/Log.cpp
     ${Src_Root}/Math.cpp
@@ -28,7 +43,7 @@ set(Utils_Src
     ${Src_Root}/Transform.cpp)
 
 
-add_library(sd-utils ${Utils_Src})
+add_library(sd-utils ${Utility_Src})
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_link_options(sd-utils PUBLIC -mconsole)
@@ -50,8 +65,12 @@ target_include_directories(sd-utils
     PUBLIC
     ${SD_ENGINE_SOURCE_DIR}/include)
 
-target_link_libraries(sd-utils PUBLIC spdlog::spdlog glm)
+target_link_libraries(sd-utils 
+    PUBLIC 
+    spdlog::spdlog glm 
+    PRIVATE 
+    assimp::assimp SDL2::Image SDL2::TTF)
 
 install(TARGETS sd-utils LIBRARY DESTINATION lib)
 
-install(FILES ${Graphics_Include} DESTINATION include/Utils)
+install(FILES ${Graphics_Include} DESTINATION include/Utility)

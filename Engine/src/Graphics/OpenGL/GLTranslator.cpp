@@ -1,5 +1,5 @@
 #include "Graphics/OpenGL/GLTranslator.hpp"
-#include "Utils/Assert.hpp"
+#include "Utility/Assert.hpp"
 
 namespace sd {
 
@@ -75,10 +75,6 @@ GLenum translateFormat(TextureFormat textureFormat,
             return GL_RG;
         case TextureFormat::RGB:
             return GL_RGB;
-        case TextureFormat::BGR:
-            return GL_BGR;
-        case TextureFormat::BGRA:
-            return GL_BGRA;
         case TextureFormat::RGBA:
             return GL_RGBA;
         case TextureFormat::DEPTH:

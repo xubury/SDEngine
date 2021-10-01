@@ -1,4 +1,4 @@
-#include "Utils/QuadTree.hpp"
+#include "Utility/QuadTree.hpp"
 #include <algorithm>
 
 namespace sd {

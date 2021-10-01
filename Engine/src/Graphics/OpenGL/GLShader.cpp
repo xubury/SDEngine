@@ -1,8 +1,8 @@
 #include "Graphics/OpenGL/GLShader.hpp"
 #include "Graphics/OpenGL/GLBuffer.hpp"
 #include "Graphics/OpenGL/GLTexture.hpp"
-#include "Utils/Log.hpp"
-#include "Utils/Assert.hpp"
+#include "Utility/Log.hpp"
+#include "Utility/Assert.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
 #include <sstream>

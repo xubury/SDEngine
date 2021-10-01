@@ -1,5 +1,5 @@
 #include "Core/OpenGL/GLContext.hpp"
-#include "Utils/Assert.hpp"
+#include "Utility/Assert.hpp"
 #include <GL/glew.h>
 
 namespace sd {

@@ -4,7 +4,7 @@
 #include "ECS/System.hpp"
 #include "ECS/Entity.hpp"
 #include "Graphics/Terrain.hpp"
-#include "Utils/QuadTree.hpp"
+#include "Utility/QuadTree.hpp"
 
 namespace sd {
 

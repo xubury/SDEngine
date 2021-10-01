@@ -1,7 +1,7 @@
 #ifndef SD_GRAPHICS_HPP
 #define SD_GRAPHICS_HPP
 
-#include "Utils/AssetLoader.hpp"
+#include "Utility/Loader/AssetLoader.hpp"
 
 namespace sd {
 
@@ -21,7 +21,7 @@ enum class TextureFormatType { UBYTE, UINT, FLOAT };
 
 enum class CullFace { FRONT, BACK, BOTH };
 
-enum class TextureFormat { ALPHA, RG, RGB, RGBA, BGR, BGRA, DEPTH, STENCIL };
+enum class TextureFormat { ALPHA, RG, RGB, RGBA, DEPTH, STENCIL };
 
 enum class TextureWrap { EDGE, BORDER, MIRROR, REPEAT, MIRROR_EDGE };
 

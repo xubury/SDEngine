@@ -1,7 +1,7 @@
 #include "Graphics/Shader.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/OpenGL/GLShader.hpp"
-#include "Utils/Log.hpp"
+#include "Utility/Log.hpp"
 
 namespace sd {
 

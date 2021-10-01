@@ -1,7 +1,4 @@
-find_package(SDL2_image REQUIRED)
-find_package(SDL2_ttf REQUIRED)
 find_package(GLEW REQUIRED)
-find_package(assimp REQUIRED)
 
 set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Graphics)
 set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Graphics)
@@ -30,19 +27,17 @@ set(Graphics_Include
     ${Include_Root}/BufferLayout.hpp
     ${Include_Root}/Camera.hpp
     ${Include_Root}/Device.hpp
+    ${Include_Root}/Font.hpp
     ${Include_Root}/Framebuffer.hpp
     ${Include_Root}/Graphics.hpp
     ${Include_Root}/Material.hpp
     ${Include_Root}/Mesh.hpp
     ${Include_Root}/Model.hpp
-    ${Include_Root}/ModelLoader.hpp
     ${Include_Root}/RenderTarget.hpp
     ${Include_Root}/Shader.hpp
-    ${Include_Root}/ShaderLoader.hpp
     ${Include_Root}/ShadowMap.hpp
     ${Include_Root}/Terrain.hpp
     ${Include_Root}/Texture.hpp
-    ${Include_Root}/TextureLoader.hpp
     ${Include_Root}/Translator.hpp
     ${Include_Root}/VertexArray.hpp)
 
@@ -52,19 +47,17 @@ set(Graphics_Src
     ${Src_Root}/BufferLayout.cpp
     ${Src_Root}/Camera.cpp
     ${Src_Root}/Device.cpp
+    ${Src_Root}/Font.cpp
     ${Src_Root}/Framebuffer.cpp
     ${Src_Root}/Graphics.cpp
     ${Src_Root}/Material.cpp
     ${Src_Root}/Mesh.cpp
     ${Src_Root}/Model.cpp
-    ${Src_Root}/ModelLoader.cpp
     ${Src_Root}/RenderTarget.cpp
     ${Src_Root}/Shader.cpp
-    ${Src_Root}/ShaderLoader.cpp
     ${Src_Root}/ShadowMap.cpp
     ${Src_Root}/Terrain.cpp
     ${Src_Root}/Texture.cpp
-    ${Src_Root}/TextureLoader.cpp
     ${Src_Root}/VertexArray.cpp)
 
 add_library(sd-graphics ${Graphics_Src})
@@ -79,7 +72,7 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-graphics PUBLIC SD_SHARED)
 endif()
 
-target_link_libraries(sd-graphics PUBLIC sd-utils SDL2::Image SDL2::TTF GLEW::GLEW assimp::assimp)
+target_link_libraries(sd-graphics PUBLIC sd-utils GLEW::GLEW)
 
 target_include_directories(sd-graphics
     PUBLIC

@@ -1,6 +1,6 @@
 #include "Graphics/ShadowMap.hpp"
 #include "Graphics/Texture.hpp"
-#include "Utils/Assert.hpp"
+#include "Utility/Assert.hpp"
 
 namespace sd {
 

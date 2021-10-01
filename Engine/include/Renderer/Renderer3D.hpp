@@ -5,7 +5,7 @@
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/Mesh.hpp"
-#include "Utils/Transform.hpp"
+#include "Utility/Transform.hpp"
 
 namespace sd {
 

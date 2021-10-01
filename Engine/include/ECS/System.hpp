@@ -2,7 +2,7 @@
 #define SD_SYSTEM_HPP
 
 #include <set>
-#include "Utils/Base.hpp"
+#include "Utility/Base.hpp"
 #include "ECS/Scene.hpp"
 
 namespace sd {

@@ -2,7 +2,7 @@
 #include "Core/RenderEngine.hpp"
 #include "Graphics/Device.hpp"
 #include "Renderer/Renderer3D.hpp"
-#include "Utils/Log.hpp"
+#include "Utility/Log.hpp"
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
 

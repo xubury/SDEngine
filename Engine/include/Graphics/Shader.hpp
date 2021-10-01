@@ -1,8 +1,8 @@
 #ifndef SD_SHADER_HPP
 #define SD_SHADER_HPP
 
-#include "Utils/Base.hpp"
-#include "Utils/Export.hpp"
+#include "Utility/Base.hpp"
+#include "Utility/Export.hpp"
 #include <string>
 #include <vector>
 #include <glm/glm.hpp>

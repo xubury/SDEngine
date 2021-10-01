@@ -1,13 +1,12 @@
 #include "Core/Application.hpp"
-#include "Utils/Log.hpp"
-#include <SDL_image.h>
-#include "Utils/Random.hpp"
 #include "Core/Input.hpp"
 #include "Core/Timing.hpp"
+#include "Utility/Log.hpp"
+#include "Utility/Random.hpp"
+#include "Utility/Loader/ShaderLoader.hpp"
+#include "Utility/Loader/TextureLoader.hpp"
+#include "Utility/Loader/ModelLoader.hpp"
 #include "Graphics/Device.hpp"
-#include "Graphics/ShaderLoader.hpp"
-#include "Graphics/TextureLoader.hpp"
-#include "Graphics/ModelLoader.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Renderer/Renderer3D.hpp"
@@ -37,11 +36,6 @@ Application::Application() {
         exit(-1);
     }
 
-    int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
-    if ((IMG_Init(imgFlags) & imgFlags) != imgFlags) {
-        SD_CORE_ERROR("IMG_Init Failed: {}", IMG_GetError());
-        exit(-1);
-    }
     Asset::manager().setRootPath("assets/");
     Asset::manager().setLoader<ShaderLoader>();
     Asset::manager().setLoader<TextureLoader>();
@@ -71,7 +65,6 @@ Application::Application() {
 }
 
 Application::~Application() {
-    IMG_Quit();
     SDL_Quit();
 }
 

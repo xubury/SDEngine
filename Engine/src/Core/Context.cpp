@@ -1,7 +1,7 @@
 #include "Core/Context.hpp"
 #include "Core/OpenGL/GLContext.hpp"
 #include "Graphics/Graphics.hpp"
-#include "Utils/Log.hpp"
+#include "Utility/Log.hpp"
 
 namespace sd {
 

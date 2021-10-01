@@ -1,7 +1,7 @@
 #ifndef SD_EXPORT_HPP
 #define SD_EXPORT_HPP
 
-#include "Utils/Config.hpp"
+#include "Utility/Config.hpp"
 
 #ifdef SD_EXPORT
 #define SD_API SD_API_EXPORT

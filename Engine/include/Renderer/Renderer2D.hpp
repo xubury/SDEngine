@@ -1,8 +1,8 @@
 #ifndef SD_RENDERER_2D_HPP
 #define SD_RENDERER_2D_HPP
 
-#include "Utils/Export.hpp"
-#include "Utils/Base.hpp"
+#include "Utility/Export.hpp"
+#include "Utility/Base.hpp"
 #include <glm/glm.hpp>
 
 namespace sd {

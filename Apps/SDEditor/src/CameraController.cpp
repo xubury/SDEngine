@@ -1,6 +1,6 @@
 #include "CameraController.hpp"
 #include "Core/Input.hpp"
-#include "Utils/Log.hpp"
+#include "Utility/Log.hpp"
 
 const float ROTATION_SPEED = 0.1;
 const float TRANSLATION_SPEED = 0.01;

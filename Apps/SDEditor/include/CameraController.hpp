@@ -1,7 +1,7 @@
 #ifndef CAMERA_CONTROLLER_HPP
 #define CAMERA_CONTROLLER_HPP
 
-#include "Utils/Base.hpp"
+#include "Utility/Base.hpp"
 #include "Core/ActionTarget.hpp"
 #include "Graphics/Camera.hpp"
 

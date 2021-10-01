@@ -2,9 +2,9 @@
 #define SD_COMPONENT_HPP
 
 #include "entt/entt.hpp"
-#include "Utils/Export.hpp"
-#include "Utils/Transform.hpp"
-#include "Utils/Math.hpp"
+#include "Utility/Export.hpp"
+#include "Utility/Transform.hpp"
+#include "Utility/Math.hpp"
 #include "Graphics/Model.hpp"
 #include "Graphics/Mesh.hpp"
 #include "Graphics/Terrain.hpp"

@@ -1,6 +1,6 @@
 #include "Graphics/OpenGL/GLVertexArray.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
-#include "Utils/Assert.hpp"
+#include "Utility/Assert.hpp"
 
 namespace sd {
 

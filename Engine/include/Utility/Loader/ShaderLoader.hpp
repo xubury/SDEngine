@@ -1,7 +1,7 @@
 #ifndef SD_SHADER_LOADER_HPP
 #define SD_SHADER_LOADER_HPP
 
-#include "Utils/AssetLoader.hpp"
+#include "Utility/Loader/AssetLoader.hpp"
 #include "Graphics/Shader.hpp"
 
 namespace sd {

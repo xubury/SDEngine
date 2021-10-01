@@ -1,6 +1,6 @@
 #include "Core/Window.hpp"
 #include "Core/Context.hpp"
-#include "Utils/Log.hpp"
+#include "Utility/Log.hpp"
 #include "Graphics/Graphics.hpp"
 
 namespace sd {

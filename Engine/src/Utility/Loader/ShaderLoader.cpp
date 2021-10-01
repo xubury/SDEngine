@@ -1,6 +1,6 @@
-#include "Graphics/ShaderLoader.hpp"
-#include "Utils/File.hpp"
-#include "Utils/Assert.hpp"
+#include "Utility/Loader/ShaderLoader.hpp"
+#include "Utility/File.hpp"
+#include "Utility/Assert.hpp"
 
 namespace sd {
 

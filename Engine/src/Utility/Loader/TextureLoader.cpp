@@ -1,4 +1,4 @@
-#include "Graphics/TextureLoader.hpp"
+#include "Utility/Loader/TextureLoader.hpp"
 #include <SDL_image.h>
 
 namespace sd {
@@ -33,7 +33,15 @@ static void flipSurface(SDL_Surface *surface) {
 }
 
 TextureLoader::TextureLoader(AssetManager &manager)
-    : AssetLoader<Texture>(manager), m_flip(false) {}
+    : AssetLoader<Texture>(manager), m_flip(false) {
+    int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
+    if ((IMG_Init(imgFlags) & imgFlags) != imgFlags) {
+        SD_CORE_ERROR("IMG_Init Failed: {}", IMG_GetError());
+        exit(-1);
+    }
+}
+
+TextureLoader::~TextureLoader() { IMG_Quit(); }
 
 void TextureLoader::setFlipVertically(bool flip) { m_flip = flip; }
 

@@ -1,8 +1,8 @@
 #ifndef SD_GL_SHADER_HPP
 #define SD_GL_SHADER_HPP
 
-#include "Utils/Base.hpp"
-#include "Utils/Export.hpp"
+#include "Utility/Base.hpp"
+#include "Utility/Export.hpp"
 #include "Graphics/Shader.hpp"
 #include <GL/glew.h>
 #include <string>

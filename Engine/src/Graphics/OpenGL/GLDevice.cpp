@@ -1,7 +1,7 @@
 #include "Graphics/OpenGL/GLDevice.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
 #include "Graphics/OpenGL/GLFramebuffer.hpp"
-#include "Utils/Assert.hpp"
+#include "Utility/Assert.hpp"
 #include <GL/glew.h>
 
 namespace sd {
