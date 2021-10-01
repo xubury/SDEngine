@@ -1,8 +1,8 @@
 find_package(SDL2 REQUIRED)
 find_package(GLEW REQUIRED)
 
-set(Include_Root ${PROJECT_SOURCE_DIR}/include/Core)
-set(Src_Root ${PROJECT_SOURCE_DIR}/src/Core)
+set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Core)
+set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Core)
 
 set(OpenGL_Include
     ${Include_Root}/OpenGL/GLContext.hpp)
@@ -54,7 +54,7 @@ target_link_libraries(sd-core PUBLIC sd-utils sd-imgui sd-renderer sd-ecs SDL2::
 
 target_include_directories(sd-core 
     PUBLIC
-    ${PROJECT_SOURCE_DIR}/include)
+    ${SD_ENGINE_SOURCE_DIR}/include)
 
 install(TARGETS sd-core LIBRARY DESTINATION lib)
 

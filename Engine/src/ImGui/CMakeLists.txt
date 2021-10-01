@@ -1,5 +1,5 @@
-set(Include_Root ${PROJECT_SOURCE_DIR}/include/ImGui)
-set(Src_Root ${PROJECT_SOURCE_DIR}/src/ImGui)
+set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/ImGui)
+set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/ImGui)
 
 set(ImGui_Include
     ${Include_Root}/FileDialog.hpp
@@ -28,11 +28,11 @@ target_link_libraries(sd-imgui PUBLIC sd-core sd-graphics)
 
 target_include_directories(sd-imgui
     PUBLIC
-    ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/libs/imgui
-    ${PROJECT_SOURCE_DIR}/libs/ImGuizmo
+    ${SD_ENGINE_SOURCE_DIR}/include
+    ${SD_ENGINE_SOURCE_DIR}/libs/imgui
+    ${SD_ENGINE_SOURCE_DIR}/libs/ImGuizmo
     PRIVATE
-    ${PROJECT_SOURCE_DIR}/libs/imgui/backends)
+    ${SD_ENGINE_SOURCE_DIR}/libs/imgui/backends)
 
 
 install(TARGETS sd-imgui LIBRARY DESTINATION lib)

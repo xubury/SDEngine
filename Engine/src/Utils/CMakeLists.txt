@@ -1,8 +1,8 @@
 find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
 
-set(Include_Root ${PROJECT_SOURCE_DIR}/include/Utils)
-set(Src_Root ${PROJECT_SOURCE_DIR}/src/Utils)
+set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Utils)
+set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Utils)
 
 set(Utils_Include
     ${Include_Root}/Assert.hpp
@@ -48,7 +48,7 @@ endif()
 
 target_include_directories(sd-utils
     PUBLIC
-    ${PROJECT_SOURCE_DIR}/include)
+    ${SD_ENGINE_SOURCE_DIR}/include)
 
 target_link_libraries(sd-utils PUBLIC spdlog::spdlog glm)
 

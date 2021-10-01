@@ -1,5 +1,5 @@
-set(Include_Root ${PROJECT_SOURCE_DIR}/include/Renderer)
-set(Src_Root ${PROJECT_SOURCE_DIR}/src/Renderer)
+set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Renderer)
+set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Renderer)
 
 set(Renderer_Include
     ${Include_Root}/Renderer.hpp
@@ -27,7 +27,7 @@ target_link_libraries(sd-renderer PUBLIC sd-graphics)
 
 target_include_directories(sd-renderer
     PUBLIC
-    ${PROJECT_SOURCE_DIR}/include)
+    ${SD_ENGINE_SOURCE_DIR}/include)
 
 
 install(TARGETS sd-renderer LIBRARY DESTINATION lib)

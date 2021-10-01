@@ -1,5 +1,5 @@
-set(Include_Root ${PROJECT_SOURCE_DIR}/include/ECS)
-set(Src_Root ${PROJECT_SOURCE_DIR}/src/ECS)
+set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/ECS)
+set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/ECS)
 
 set(ECS_Include
     ${Include_Root}/Component.hpp
@@ -32,9 +32,9 @@ endif()
 
 target_include_directories(sd-ecs
     PUBLIC
-    ${PROJECT_SOURCE_DIR}/include
+    ${SD_ENGINE_SOURCE_DIR}/include
     PRIVATE
-    ${PROJECT_SOURCE_DIR}/libs/entt)
+    ${SD_ENGINE_SOURCE_DIR}/libs/entt)
 
 target_link_libraries(sd-ecs PUBLIC sd-core sd-utils EnTT::EnTT)
 

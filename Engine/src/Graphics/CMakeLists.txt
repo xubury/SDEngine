@@ -1,9 +1,10 @@
 find_package(SDL2_image REQUIRED)
+find_package(SDL2_ttf REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(assimp REQUIRED)
 
-set(Include_Root ${PROJECT_SOURCE_DIR}/include/Graphics)
-set(Src_Root ${PROJECT_SOURCE_DIR}/src/Graphics)
+set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Graphics)
+set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Graphics)
 
 set(OpenGL_Include
     ${Include_Root}/OpenGL/GLBuffer.hpp
@@ -78,11 +79,11 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-graphics PUBLIC SD_SHARED)
 endif()
 
-target_link_libraries(sd-graphics PUBLIC sd-utils SDL2::Image GLEW::GLEW assimp::assimp)
+target_link_libraries(sd-graphics PUBLIC sd-utils SDL2::Image SDL2::TTF GLEW::GLEW assimp::assimp)
 
 target_include_directories(sd-graphics
     PUBLIC
-    ${PROJECT_SOURCE_DIR}/include)
+    ${SD_ENGINE_SOURCE_DIR}/include)
 
 install(TARGETS sd-graphics LIBRARY DESTINATION lib)
 
