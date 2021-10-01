@@ -23,9 +23,9 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-renderer PUBLIC SD_SHARED)
 endif()
 
-target_link_libraries(sd-renderer PUBLIC sd-graphics sd-ecs)
+target_link_libraries(sd-renderer PUBLIC sd-graphics)
 
-target_include_directories(sd-renderer 
+target_include_directories(sd-renderer
     PUBLIC
     ${PROJECT_SOURCE_DIR}/include)
 
