@@ -64,7 +64,6 @@ struct SD_API LightComponent {
     glm::vec3 ambient = glm::vec3(1.0f);
     glm::vec3 diffuse = glm::vec3(1.0f);
     glm::vec3 specular = glm::vec3(1.0f);
-    bool isDirectional = false;
 
     float cutOff = 25.f;
     float outerCutOff = 35.f;
@@ -72,12 +71,13 @@ struct SD_API LightComponent {
     float linear = 0.09;
     float quadratic = 0.032f;
 
+    bool isDirectional = false;
     bool isCastShadow = false;
     ShadowMap shadowMap;
     template <typename Archive>
     void serialize(Archive& archive) {
-        archive(ambient, diffuse, specular, isDirectional, cutOff, outerCutOff,
-                constant, linear, quadratic);
+        archive(ambient, diffuse, specular, cutOff, outerCutOff, constant,
+                linear, quadratic, isDirectional, isCastShadow);
     }
 };
 

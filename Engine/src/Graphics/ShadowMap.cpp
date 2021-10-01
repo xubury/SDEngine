@@ -5,8 +5,8 @@
 namespace sd {
 
 ShadowMap::ShadowMap() {
-    const uint32_t width = 8192;
-    const uint32_t height = 8192;
+    const uint32_t width = 2 << 12;
+    const uint32_t height = 2 << 12;
 
     auto shadowMap = Texture::create(
         width, height, 1, TextureType::TEX_2D, TextureFormat::DEPTH,
@@ -32,7 +32,7 @@ void ShadowMap::computeLightSpaceMatrix(const Transform &transform,
         SD_CORE_ASSERT(false, "OrthographicCamera not implemented!");
     }
     // Add a offset for shadow behind the camera frustum
-    min.z -= 10.f;
+    min.z -= 100.f;
     glm::vec3 size = max - min;
     glm::vec3 center = (max + min) / 2.f;
     center.z -= size.z / 2.f;
@@ -55,7 +55,7 @@ void ShadowMap::computeBoundingBox(const Transform &transform,
     const glm::mat3 &lightTrans =
         rotaionInv * glm::mat3(camera.getWorldRotation());
     const float nearZ = camera.getNearZ();
-    const float farZ = camera.getFarZ();
+    const float farZ = camera.getFarZ() / 5.f;
     const float fov = camera.getFOV() / 2.f;
     const float aspect = camera.getAspect();
     const float nearHeight = nearZ * std::tan(fov);
@@ -64,23 +64,20 @@ void ShadowMap::computeBoundingBox(const Transform &transform,
     const float farWidth = farHeight * aspect;
     const glm::vec3 &camPos = rotaionInv * camera.getWorldPosition();
     std::array<glm::vec3, 8> vertices;
-    vertices[0] =
-        lightTrans * glm::vec3(-nearWidth, -nearHeight, -nearZ) + camPos;
-    vertices[1] =
-        lightTrans * glm::vec3(-nearWidth, nearHeight, -nearZ) + camPos;
-    vertices[2] =
-        lightTrans * glm::vec3(nearWidth, -nearHeight, -nearZ) + camPos;
-    vertices[3] =
-        lightTrans * glm::vec3(nearWidth, nearHeight, -nearZ) + camPos;
+    vertices[0] = glm::vec3(-nearWidth, -nearHeight, -nearZ);
+    vertices[1] = glm::vec3(-nearWidth, nearHeight, -nearZ);
+    vertices[2] = glm::vec3(nearWidth, -nearHeight, -nearZ);
+    vertices[3] = glm::vec3(nearWidth, nearHeight, -nearZ);
 
-    vertices[4] = lightTrans * glm::vec3(-farWidth, -farHeight, -farZ) + camPos;
-    vertices[5] = lightTrans * glm::vec3(-farWidth, farHeight, -farZ) + camPos;
-    vertices[6] = lightTrans * glm::vec3(farWidth, -farHeight, -farZ) + camPos;
-    vertices[7] = lightTrans * glm::vec3(farWidth, farHeight, -farZ) + camPos;
+    vertices[4] = glm::vec3(-farWidth, -farHeight, -farZ);
+    vertices[5] = glm::vec3(-farWidth, farHeight, -farZ);
+    vertices[6] = glm::vec3(farWidth, -farHeight, -farZ);
+    vertices[7] = glm::vec3(farWidth, farHeight, -farZ);
 
-    for (const auto vertex : vertices) {
-        min = glm::min(min, vertex);
-        max = glm::max(max, vertex);
+    for (const auto &vertex : vertices) {
+        const glm::vec pos = lightTrans * vertex + camPos;
+        min = glm::min(min, pos);
+        max = glm::max(max, pos);
     }
 }
 
