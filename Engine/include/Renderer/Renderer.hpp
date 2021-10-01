@@ -18,12 +18,12 @@ class SD_API Renderer {
                        size_t count, size_t offset);
 
     static void setRenderTarget(const RenderTarget &target);
+
    private:
     friend class Renderer2D;
     friend class Renderer3D;
 
-    static void setCamera(Camera &camera);
-    static void setShader(Shader &shader);
+    static void setCamera(Camera &camera, Shader &shader);
 
     Renderer() = default;
     static Renderer &instance();

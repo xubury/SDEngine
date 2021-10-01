@@ -107,7 +107,7 @@ void Renderer2D::init() {
 }
 
 void Renderer2D::beginScene(OrthographicCamera& camera) {
-    Renderer::setCamera(camera);
+    Renderer::setCamera(camera, *s_data.shader);
     startBatch();
 }
 
@@ -122,8 +122,7 @@ void Renderer2D::flush() {
                       (uint8_t*)s_data.quadVertexBufferBase.data();
     s_data.quadVBO->updateData(s_data.quadVertexBufferBase.data(), dataSize);
 
-    Renderer::setShader(*s_data.shader);
-
+    s_data.shader->bind();
     for (uint32_t i = 0; i < s_data.textureSlotIndex; ++i) {
         s_data.shader->setTexture("", s_data.textureSlots[i].get());
     }

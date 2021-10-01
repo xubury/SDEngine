@@ -1,8 +1,6 @@
 #include "Renderer/Renderer.hpp"
-#include "Graphics/RenderTarget.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Device.hpp"
-#include "Graphics/Camera.hpp"
 #include "Utils/Log.hpp"
 
 namespace sd {
@@ -36,21 +34,18 @@ void Renderer::submit(const VertexArray &vao, MeshTopology topology,
     Device::instance().drawElements(topology, count, offset);
 }
 
-void Renderer::setShader(Shader &shader) {
-    shader.bind();
-    shader.setUniformBuffer("Camera", *s_data.cameraUBO);
-}
-
 void Renderer::setRenderTarget(const RenderTarget &target) {
     Device::instance().setFramebuffer(target.getFramebuffer());
     Device::instance().setViewport(target.getX(), target.getY(),
                                    target.getWidth(), target.getHeight());
 }
 
-void Renderer::setCamera(Camera &camera) {
+void Renderer::setCamera(Camera &camera, Shader &shader) {
     s_data.cameraData.viewProjection = camera.getViewPorjection();
     s_data.cameraData.viewPos = camera.getWorldPosition();
     s_data.cameraUBO->updateData(&s_data.cameraData, sizeof(CameraData));
+    shader.bind();
+    shader.setUniformBuffer("Camera", *s_data.cameraUBO);
 }
 
 }  // namespace sd
