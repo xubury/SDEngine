@@ -43,6 +43,7 @@ class SD_API GLShader : public Shader {
     void setMat4(const std::string& name, const glm::mat4& value) override;
 
     void setTexture(const std::string& name, const Texture* texture) override;
+    void setTexture(uint32_t id, const Texture* texture) override;
 
     void setUniformBuffer(const std::string& name,
                           const UniformBuffer& buffer) override;

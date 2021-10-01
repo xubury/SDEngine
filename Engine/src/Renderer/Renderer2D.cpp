@@ -1,6 +1,6 @@
 #include "Renderer/Renderer2D.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Graphics/Graphics.hpp"
+#include "Graphics/Device.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Framebuffer.hpp"
@@ -124,7 +124,7 @@ void Renderer2D::flush() {
 
     s_data.shader->bind();
     for (uint32_t i = 0; i < s_data.textureSlotIndex; ++i) {
-        s_data.shader->setTexture("", s_data.textureSlots[i].get());
+        s_data.shader->setTexture(i, s_data.textureSlots[i].get());
     }
 
     Renderer::submit(*s_data.quadVAO, MeshTopology::TRIANGLES,

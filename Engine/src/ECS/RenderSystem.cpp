@@ -1,6 +1,7 @@
 #include "ECS/RenderSystem.hpp"
 #include "Core/RenderEngine.hpp"
 #include "Graphics/Device.hpp"
+#include "Renderer/Renderer2D.hpp"
 #include "Renderer/Renderer3D.hpp"
 #include "Utility/Log.hpp"
 #include "ECS/Entity.hpp"
@@ -78,10 +79,10 @@ RenderSystem::RenderSystem(RenderEngine *engine, int width, int height,
 
 void RenderSystem::initQuad() {
     float quadVertices[] = {
-        1.0f,  1.0f,  0.0f, 1.0f, 1.0f,  // top right
-        1.0f,  -1.0f, 0.0f, 1.0f, 0.f,   // bottom right
-        -1.0f, -1.0f, 0.0f, 0.f,  0.f,   // bottom left
-        -1.0f, 1.0f,  0.0f, 0.f,  1.0f   // top left
+        1.0f,  1.0f,  0.f, 1.0f, 1.0f,  // top right
+        1.0f,  -1.0f, 0.f, 1.0f, 0.f,   // bottom right
+        -1.0f, -1.0f, 0.f, 0.f,  0.f,   // bottom left
+        -1.0f, 1.0f,  0.f, 0.f,  1.0f   // top left
     };
     unsigned int indices[] = {0, 1, 3, 1, 2, 3};
     Ref<VertexBuffer> buffer = VertexBuffer::create(
@@ -145,6 +146,7 @@ void RenderSystem::onRender() {
 void RenderSystem::renderMain() {
     Renderer::setRenderTarget(m_engine->getRenderTarget());
     Device::instance().clear();
+
     m_mainShader->bind();
     Framebuffer *gBuffer = getGBuffer();
     bool bloom = m_engine->getBloom();
@@ -157,6 +159,17 @@ void RenderSystem::renderMain() {
     m_mainShader->setTexture("u_gEntityId", gBuffer->getTexture(G_ENTITY_ID));
     m_mainShader->setFloat("u_exposure", m_engine->getExposure());
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
+
+    // OrthographicCamera cam(m_engine->getRenderTarget().getWidth(),
+    //                        m_engine->getRenderTarget().getHeight(), -1, 1);
+    // Renderer2D::beginScene(cam);
+
+    // Renderer2D::drawQuad(glm::scale(glm::mat4(1.0f), glm::vec3(100, 100, 0)),
+    //                      glm::vec4(1.0f, 0.f, 0.f, 0.5f));
+    // Renderer2D::drawTexture(
+    //     glm::scale((glm::mat4(1.0f)), glm::vec3(80, 24, 0)),
+    //     Asset::manager().load<Texture>("textures/1_diagdown.png"));
+    // Renderer2D::endScene();
 }
 
 void RenderSystem::renderBlur() {

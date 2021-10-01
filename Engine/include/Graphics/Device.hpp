@@ -29,6 +29,8 @@ class SD_API Device {
 
     virtual void clear() = 0;
 
+    virtual void clearDepth() = 0;
+
     virtual void setViewport(int x, int y, int width, int height) = 0;
 
     virtual void setFramebuffer(const Framebuffer *framebuffer) = 0;

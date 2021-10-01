@@ -11,7 +11,7 @@ static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
                                   int, const char *message, const void *) {
     switch (severity) {
         case GL_DEBUG_SEVERITY_HIGH:
-            SD_CORE_CRITICAL(message);
+            SD_CORE_ASSERT(false, message);
             return;
         case GL_DEBUG_SEVERITY_MEDIUM:
             SD_CORE_ERROR(message);
@@ -55,6 +55,8 @@ void GLDevice::setClearColor(float r, float g, float b, float a) {
 }
 
 void GLDevice::clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
+
+void GLDevice::clearDepth() { glClear(GL_DEPTH_BUFFER_BIT); }
 
 void GLDevice::setViewport(int x, int y, int width, int height) {
     // opengl define viewport origin at bottom-left

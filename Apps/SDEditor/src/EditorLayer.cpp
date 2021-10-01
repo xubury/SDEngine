@@ -9,6 +9,7 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "ImGuizmo.h"
+#include "Graphics/Font.hpp"
 
 EditorLayer::EditorLayer(int width, int height)
     : sd::Layer("Editor Layer"),
@@ -29,7 +30,7 @@ EditorLayer::EditorLayer(int width, int height)
 void EditorLayer::onAttach() {
     sd::Ref<sd::Texture> multisampleTexture = sd::Texture::create(
         m_width, m_height, 8, sd::TextureType::TEX_2D_MULTISAMPLE,
-        sd::TextureFormat::RGBA, sd::TextureFormatType::FLOAT,
+        sd::TextureFormat::RGBA, sd::TextureFormatType::UBYTE,
         sd::TextureWrap::BORDER, sd::TextureFilter::LINEAR,
         sd::TextureMipmapFilter::LINEAR_NEAREST);
     m_target.addTexture(multisampleTexture);
@@ -48,7 +49,7 @@ void EditorLayer::onAttach() {
     m_framebuffer = sd::Framebuffer::create();
     m_framebuffer->attachTexture(sd::Texture::create(
         m_target.getWidth(), m_target.getHeight(), 1, sd::TextureType::TEX_2D,
-        sd::TextureFormat::RGBA, sd::TextureFormatType::FLOAT,
+        sd::TextureFormat::RGBA, sd::TextureFormatType::UBYTE,
         sd::TextureWrap::BORDER, sd::TextureFilter::LINEAR,
         sd::TextureMipmapFilter::LINEAR_NEAREST));
     m_framebuffer->attachTexture(sd::Texture::create(

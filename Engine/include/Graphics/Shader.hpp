@@ -52,6 +52,7 @@ class SD_API Shader {
 
     virtual void setTexture(const std::string& name,
                             const Texture* texture) = 0;
+    virtual void setTexture(const uint32_t id, const Texture* texture) = 0;
 
     virtual void setUniformBuffer(const std::string& name,
                                   const UniformBuffer& buffer) = 0;

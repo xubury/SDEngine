@@ -6,6 +6,7 @@
 #include "Utility/Loader/ShaderLoader.hpp"
 #include "Utility/Loader/TextureLoader.hpp"
 #include "Utility/Loader/ModelLoader.hpp"
+#include "Utility/Loader/FontLoader.hpp"
 #include "Graphics/Device.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Renderer2D.hpp"
@@ -40,6 +41,7 @@ Application::Application() {
     Asset::manager().setLoader<ShaderLoader>();
     Asset::manager().setLoader<TextureLoader>();
     Asset::manager().setLoader<ModelLoader>();
+    Asset::manager().setLoader<FontLoader>();
 
     Graphics::init(API::OpenGL);
 
@@ -64,9 +66,7 @@ Application::Application() {
     pushLayer(m_renderEngine);
 }
 
-Application::~Application() {
-    SDL_Quit();
-}
+Application::~Application() { SDL_Quit(); }
 
 void Application::pushLayer(Layer *layer) { m_layers.pushLayer(layer); }
 

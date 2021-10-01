@@ -14,10 +14,7 @@ class SD_API TextureLoader : public AssetLoader<Texture> {
     // TODO: perhaps I should make it parse json (compatibility for cubemap)
     Ref<Texture> loadAsset(const std::string &filePath) override;
 
-    void setFlipVertically(bool enable);
-
    private:
-    bool m_flip;
 };
 
 }  // namespace sd

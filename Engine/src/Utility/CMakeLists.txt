@@ -9,11 +9,13 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Utility)
 
 set(Loader_Include
     ${Include_Root}/Loader/AssetLoader.hpp
+    ${Include_Root}/Loader/FontLoader.hpp
     ${Include_Root}/Loader/ModelLoader.hpp
     ${Include_Root}/Loader/ShaderLoader.hpp
     ${Include_Root}/Loader/TextureLoader.hpp)
 
 set(Loader_Src
+    ${Src_Root}/Loader/FontLoader.cpp
     ${Src_Root}/Loader/ModelLoader.cpp
     ${Src_Root}/Loader/ShaderLoader.cpp
     ${Src_Root}/Loader/TextureLoader.cpp)
@@ -30,6 +32,7 @@ set(Utility_Include
     ${Include_Root}/PlatformDetection.hpp
     ${Include_Root}/QuadTree.hpp
     ${Include_Root}/Random.hpp
+    ${Include_Root}/SDLHelper.hpp
     ${Include_Root}/Serialize.hpp
     ${Include_Root}/Transform.hpp)
 
@@ -40,6 +43,7 @@ set(Utility_Src
     ${Src_Root}/Math.cpp
     ${Src_Root}/QuadTree.cpp
     ${Src_Root}/Random.cpp
+    ${Src_Root}/SDLHelper.cpp
     ${Src_Root}/Transform.cpp)
 
 

@@ -16,6 +16,8 @@ class GLDevice : public Device {
 
     void clear() override;
 
+    void clearDepth() override;
+
     void setViewport(int x, int y, int width, int height) override;
 
     void setFramebuffer(const Framebuffer *framebuffer) override;

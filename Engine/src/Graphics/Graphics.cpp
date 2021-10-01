@@ -10,7 +10,6 @@ void Graphics::init(API api) {
 
     switch (api) {
         case API::OpenGL:
-            Asset::manager().getLoader<TextureLoader>().setFlipVertically(true);
             SD_CORE_INFO("Using OpenGL as backend..");
             break;
         default:
