@@ -23,7 +23,6 @@ class SD_API VertexBufferLayout {
 
     template <typename T>
     void push(uint32_t) {
-        SD_CORE_ERROR("Cannot push invalid buffer type!");
         SD_CORE_ASSERT(false, "Cannot push invalid buffer type!");
     }
 
@@ -61,11 +60,6 @@ inline void VertexBufferLayout::push<uint32_t>(uint32_t count) {
     m_stride += count * getSizeOfType(BufferDataType::UINT);
 }
 
-template <>
-inline void VertexBufferLayout::push<uint8_t>(uint32_t count) {
-    m_elements.push_back({BufferDataType::UCHAR, count, true});
-    m_stride += count * getSizeOfType(BufferDataType::UCHAR);
-}
 }  // namespace sd
 
 #endif /* SD_BUFFER_LAYEROUT_HPP */

@@ -30,6 +30,11 @@ void GLTexture::init() {
 
     glCreateTextures(gl_type, 1, &gl_id);
 
+    if (m_format == TextureFormat::RED) {
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    } else {
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    }
     setPixels(m_width, m_height, m_data);
     if (m_type != TextureType::TEX_2D_MULTISAMPLE) {
         setWrap(m_wrap);

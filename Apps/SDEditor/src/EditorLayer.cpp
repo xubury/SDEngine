@@ -36,7 +36,7 @@ void EditorLayer::onAttach() {
     m_target.addTexture(multisampleTexture);
     m_target.addTexture(sd::Texture::create(
         multisampleTexture->getWidth(), multisampleTexture->getHeight(), 8,
-        sd::TextureType::TEX_2D_MULTISAMPLE, sd::TextureFormat::ALPHA,
+        sd::TextureType::TEX_2D_MULTISAMPLE, sd::TextureFormat::RED,
         sd::TextureFormatType::UINT, sd::TextureWrap::BORDER,
         sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
     m_target.addTexture(sd::Texture::create(
@@ -54,7 +54,7 @@ void EditorLayer::onAttach() {
         sd::TextureMipmapFilter::LINEAR_NEAREST));
     m_framebuffer->attachTexture(sd::Texture::create(
         m_target.getWidth(), m_target.getHeight(), 1, sd::TextureType::TEX_2D,
-        sd::TextureFormat::ALPHA, sd::TextureFormatType::UINT,
+        sd::TextureFormat::RED, sd::TextureFormatType::UINT,
         sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
         sd::TextureMipmapFilter::NEAREST));
     m_framebuffer->setDrawable({0, 1});

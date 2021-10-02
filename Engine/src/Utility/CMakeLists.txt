@@ -2,7 +2,7 @@ find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(assimp REQUIRED)
 find_package(SDL2_image REQUIRED)
-find_package(SDL2_ttf REQUIRED)
+find_package(Freetype REQUIRED)
 
 set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Utility)
 set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Utility)
@@ -73,7 +73,7 @@ target_link_libraries(sd-utils
     PUBLIC 
     spdlog::spdlog glm 
     PRIVATE 
-    assimp::assimp SDL2::Image SDL2::TTF)
+    assimp::assimp SDL2::Image Freetype::Freetype)
 
 install(TARGETS sd-utils LIBRARY DESTINATION lib)
 

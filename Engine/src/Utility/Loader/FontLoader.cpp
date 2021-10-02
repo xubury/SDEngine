@@ -1,52 +1,54 @@
 #include "Utility/Loader/FontLoader.hpp"
 #include "Utility/SDLHelper.hpp"
 #include "Graphics/Font.hpp"
-#include <SDL_ttf.h>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 namespace sd {
 
-FontLoader::FontLoader(AssetManager &manager) : AssetLoader<Font>(manager) {
-    TTF_Init();
-}
+FontLoader::FontLoader(AssetManager &manager) : AssetLoader<Font>(manager) {}
 
-FontLoader::~FontLoader() { TTF_Quit(); }
+FontLoader::~FontLoader() {}
 
 Ref<Font> FontLoader::loadAsset(const std::string &filePath) {
     Ref<Font> font;
-    TTF_Font *ttf = TTF_OpenFont(filePath.c_str(), 25);
-    if (ttf == nullptr) {
-        SD_CORE_ERROR("Failed to load font! SDL_ttf Error: {}", TTF_GetError());
-    } else {
-        font = createRef<Font>();
-        int minX = 0;
-        int minY = 0;
-        int maxX = 0;
-        int maxY = 0;
-        int advance = 0;
-        SDL_Color color = {0xff, 0xff, 0xff, 0xff};
-        Character c;
-        for (wchar_t ch = 20; ch < 128; ++ch) {
-            if (ch == 0 || ch == 8203 || ch == 65279) continue;  // zero width space
-            if (TTF_GlyphMetrics(ttf, ch, &minX, &maxX, &minY, &maxY,
-                                 &advance) == -1) {
-                SD_CORE_ERROR("TTF Error: {}", TTF_GetError());
-                break;
-            }
-            SDL_Surface *surface = TTF_RenderGlyph_Solid(ttf, ch, color);
-            if (surface == nullptr) {
-                SD_CORE_ERROR("TTF Error: {}. Unicode: \"{}\"",
-                              TTF_GetError(), ch);
-                continue;
-            }
-            c.texture = surfaceToTexture(surface);
-            c.size = glm::ivec2(maxX - minX, maxY - minY);
-            c.bearing = glm::ivec2(minX, maxY);
-            c.advance = advance;
-            font->setCharacter(ch, c);
+    do {
+        FT_Library ft;
+        if (FT_Init_FreeType(&ft)) {
+            SD_CORE_ERROR("Could not init Freetype library!");
+            break;
         }
 
-        TTF_CloseFont(ttf);
-    }
+        FT_Face face;
+        if (FT_New_Face(ft, filePath.c_str(), 0, &face)) {
+            SD_CORE_ERROR("Failed to load font!");
+            break;
+        }
+        FT_Set_Pixel_Sizes(face, 0, 48);
+        Character c;
+        font = createRef<Font>();
+        for (wchar_t ch = 0; ch < 128; ++ch) {
+            if (FT_Load_Char(face, ch, FT_LOAD_RENDER)) {
+                SD_CORE_WARN("Failed to load glyph!");
+                continue;
+            }
+            c.size =
+                glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows);
+            c.bearing =
+                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
+            c.advance = face->glyph->advance.x;
+            c.texture = Texture::create(
+                face->glyph->bitmap.width, face->glyph->bitmap.rows, 1,
+                TextureType::TEX_2D, TextureFormat::RED,
+                TextureFormatType::UBYTE, TextureWrap::EDGE,
+                TextureFilter::LINEAR, TextureMipmapFilter::LINEAR,
+                face->glyph->bitmap.buffer);
+            font->setCharacter(ch, c);
+        }
+        FT_Done_Face(face);
+        FT_Done_FreeType(ft);
+    } while (false);
+
     return font;
 }
 

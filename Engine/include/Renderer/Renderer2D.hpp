@@ -24,10 +24,13 @@ class SD_API Renderer2D {
 
     static void drawQuad(const glm::mat4 &transform, const glm::vec4 &color);
 
-    static void drawTexture(const glm::mat4 &transform,
-                            const Ref<Texture> &texture);
+    static void drawTexture(const Ref<Texture> &texture,
+                            const glm::mat4 &transform,
+                            const glm::vec4 &color = glm::vec4(1.0f));
 
-    // static void drawText(const glm::mat4 &transform, const std::wstring &text);
+    static void drawText(const std::wstring &text, float x, float y,
+                         float scale = 1,
+                         const glm::vec4 &color = glm::vec4(1.0f));
 
    private:
     Renderer2D() = default;

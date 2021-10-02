@@ -27,7 +27,7 @@ void GLVertexArray::addVertexBuffer(const Ref<VertexBuffer> &buffer,
 
     size_t offset = 0;
     uint32_t i = index > 0 ? index : m_vertexBuffers.size();
-    for (const VertexBufferLayoutElement &element : layout.getElements()) {
+    for (const auto &element : layout.getElements()) {
         glEnableVertexAttribArray(i);
         glVertexAttribDivisor(i, layout.getInstanceStride());
         switch (element.type) {

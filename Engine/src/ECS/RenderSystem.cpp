@@ -29,7 +29,7 @@ inline TextureFormat getTextureFormat(RenderSystem::GBufferType type) {
         case RenderSystem::G_AMBIENT:
             return TextureFormat::RGBA;
         case RenderSystem::G_ENTITY_ID:
-            return TextureFormat::ALPHA;
+            return TextureFormat::RED;
         default:
             SD_CORE_WARN("Unknown GBuffer!");
             return TextureFormat::RGBA;
@@ -166,13 +166,14 @@ void RenderSystem::renderMain() {
                            m_engine->getRenderTarget().getHeight(), -1, 1);
     Renderer2D::beginScene(cam);
 
-    Renderer2D::drawQuad(glm::scale(glm::mat4(1.0f), glm::vec3(100, 100, 0)),
-                         glm::vec4(1.0f, 0.f, 0.f, 1.0f));
-    Renderer2D::drawQuad(glm::scale(glm::mat4(1.0f), glm::vec3(50, 50, 0)),
+    Renderer2D::drawQuad(glm::scale(glm::mat4(1.0f), glm::vec3(50, 50, 1)),
                          glm::vec4(0.f, 1.f, 0.f, 1.f));
     Renderer2D::drawTexture(
-        glm::scale((glm::mat4(1.0f)), glm::vec3(80, 24, 0)),
-        Asset::manager().load<Texture>("textures/1_diagdown.png"));
+        Asset::manager().load<Texture>("textures/1_diagdown.png"),
+        glm::scale(glm::mat4(1.0f), glm::vec3(80, 24, 1)));
+
+    Renderer2D::drawText(L"G", 0, 0);
+    Renderer2D::drawText(L"Hello world", 0, 40);
     Renderer2D::endScene();
 }
 

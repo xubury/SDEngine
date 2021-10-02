@@ -4,6 +4,7 @@
 #include "Graphics/Texture.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Framebuffer.hpp"
+#include "Graphics/Font.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include <cstdint>
 
@@ -14,12 +15,14 @@ struct QuadVertex {
     glm::vec4 color;
     glm::vec2 texCoord;
     float texIndex;
+    uint32_t grayScale;
     uint32_t entityIndex;
     QuadVertex()
         : position(0.f),
           color(0.f),
           texCoord(0.f),
           texIndex(0.f),
+          grayScale(0),
           entityIndex(0) {}
 };
 
@@ -44,7 +47,7 @@ struct Renderer2DData {
     uint32_t textureSlotIndex = 1;
     std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> textureSlots;
 
-    Ref<Texture> whiteTexture;
+    Ref<Font> font;
 };
 
 static Renderer2DData s_data;
@@ -80,6 +83,7 @@ void Renderer2D::init() {
     layout.push<float>(4);     // color
     layout.push<float>(2);     // texCoord
     layout.push<float>(1);     // texIndex
+    layout.push<uint32_t>(1);  // grayScale
     layout.push<uint32_t>(1);  // entityIndex
 
     s_data.quadVAO = VertexArray::create();
@@ -97,13 +101,15 @@ void Renderer2D::init() {
     s_data.quadTexCoords[3] = {0.0f, 1.0f};
 
     uint32_t color = 0xffffffff;
-    s_data.whiteTexture = Texture::create(
+    s_data.textureSlots[0] = Texture::create(
         1, 1, 1, TextureType::TEX_2D, TextureFormat::RGBA,
         TextureFormatType::UBYTE, TextureWrap::REPEAT, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_LINEAR, &color);
-    s_data.textureSlots[0] = s_data.whiteTexture;
+        TextureMipmapFilter::LINEAR, &color);
 
     s_data.shader = Asset::manager().load<Shader>("shaders/simple.glsl");
+
+    s_data.font =
+        Asset::manager().load<Font>("fonts/opensans/OpenSans-Regular.ttf");
 }
 
 void Renderer2D::beginScene(OrthographicCamera& camera) {
@@ -162,8 +168,9 @@ void Renderer2D::drawQuad(const glm::mat4& transform, const glm::vec4& color) {
     s_data.quadIndexCnt += 6;
 }
 
-void Renderer2D::drawTexture(const glm::mat4& transform,
-                             const Ref<Texture>& texture) {
+void Renderer2D::drawTexture(const Ref<Texture>& texture,
+                             const glm::mat4& transform,
+                             const glm::vec4& color) {
     if (s_data.quadIndexCnt >= Renderer2DData::MAX_INDICES) {
         nextBatch();
     }
@@ -187,13 +194,30 @@ void Renderer2D::drawTexture(const glm::mat4& transform,
     for (uint32_t i = 0; i < 4; ++i) {
         s_data.quadVertexBufferPtr->position =
             transform * s_data.quadVertexPositions[i];
-        s_data.quadVertexBufferPtr->color = glm::vec4(1.0f);
+        s_data.quadVertexBufferPtr->color = color;
         s_data.quadVertexBufferPtr->texCoord = s_data.quadTexCoords[i];
         s_data.quadVertexBufferPtr->texIndex = textureIndex;
+        s_data.quadVertexBufferPtr->grayScale =
+            texture->getFormat() == TextureFormat::RED;
         s_data.quadVertexBufferPtr->entityIndex = 1;
         ++s_data.quadVertexBufferPtr;
     }
     s_data.quadIndexCnt += 6;
+}
+
+void Renderer2D::drawText(const std::wstring& text, float x, float y,
+                          float scale, const glm::vec4& color) {
+    for (const auto c : text) {
+        const Character& ch = s_data.font->getCharacter(c);
+        glm::mat4 transform = glm::translate(
+            glm::mat4(1.0f),
+            glm::vec3(x + ch.bearing.x * scale,
+                      y + (ch.bearing.y - ch.size.y) * scale, 0));
+        transform = glm::scale(
+            transform, glm::vec3(ch.size.x * scale, ch.size.y * scale, 1));
+        drawTexture(ch.texture, transform, color);
+        x += (ch.advance >> 6) * scale;
+    }
 }
 
 }  // namespace sd
