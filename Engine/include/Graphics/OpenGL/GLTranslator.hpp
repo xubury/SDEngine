@@ -28,6 +28,8 @@ GLint SD_API translate(TextureFilter textureFilter);
 
 GLint SD_API translate(TextureMipmapFilter textureMipmapFilter);
 
+GLenum SD_API translate(Operation operation);
+
 }  // namespace sd
 
 #endif /* SD_GL_TRANSLATOR_HPP */

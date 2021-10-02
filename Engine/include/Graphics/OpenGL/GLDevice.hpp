@@ -26,11 +26,9 @@ class GLDevice : public Device {
 
     void setDepthMask(bool depthMask) override;
 
-    void setBlend(bool blend) override;
+    void enable(Operation operation) override;
 
-    void setDepthTest(bool depthTest) override;
-
-    void setMultisample(bool multisample) override;
+    void disable(Operation operation) override;
 
     void setCullFace(CullFace cullface) override;
 };

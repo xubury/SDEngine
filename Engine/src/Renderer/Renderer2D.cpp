@@ -107,11 +107,16 @@ void Renderer2D::init() {
 }
 
 void Renderer2D::beginScene(OrthographicCamera& camera) {
+    Device::instance().clearDepth();
     Renderer::setCamera(camera, *s_data.shader);
+    Device::instance().disable(Operation::DEPTH_TEST);
     startBatch();
 }
 
-void Renderer2D::endScene() { flush(); }
+void Renderer2D::endScene() {
+    flush();
+    Device::instance().enable(Operation::DEPTH_TEST);
+}
 
 void Renderer2D::flush() {
     if (s_data.quadIndexCnt == 0) {

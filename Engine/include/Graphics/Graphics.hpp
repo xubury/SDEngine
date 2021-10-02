@@ -48,6 +48,8 @@ enum BufferBit {
     STENCIL_BUFFER_BIT = 1 << 2
 };
 
+enum class Operation { DEPTH_TEST, BLEND, STENCIL_TEST, MULTISAMPLE };
+
 class SD_API Graphics {
    public:
     static void init(API api);

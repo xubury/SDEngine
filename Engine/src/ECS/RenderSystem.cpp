@@ -55,7 +55,9 @@ inline TextureFormatType getTextureFormatType(RenderSystem::GBufferType type) {
 RenderSystem::RenderSystem(RenderEngine *engine, int width, int height,
                            int samples)
     : m_engine(engine), m_blurResult(nullptr), m_lightResult(nullptr) {
-    Device::instance().setMultisample(samples > 1);
+    if (samples > 1) {
+        Device::instance().enable(Operation::MULTISAMPLE);
+    }
 
     m_mainShader = Asset::manager().load<Shader>("shaders/main.glsl");
     m_lightShader = Asset::manager().load<Shader>("shaders/lighting.glsl");
@@ -160,16 +162,18 @@ void RenderSystem::renderMain() {
     m_mainShader->setFloat("u_exposure", m_engine->getExposure());
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
 
-    // OrthographicCamera cam(m_engine->getRenderTarget().getWidth(),
-    //                        m_engine->getRenderTarget().getHeight(), -1, 1);
-    // Renderer2D::beginScene(cam);
+    OrthographicCamera cam(m_engine->getRenderTarget().getWidth(),
+                           m_engine->getRenderTarget().getHeight(), -1, 1);
+    Renderer2D::beginScene(cam);
 
-    // Renderer2D::drawQuad(glm::scale(glm::mat4(1.0f), glm::vec3(100, 100, 0)),
-    //                      glm::vec4(1.0f, 0.f, 0.f, 0.5f));
-    // Renderer2D::drawTexture(
-    //     glm::scale((glm::mat4(1.0f)), glm::vec3(80, 24, 0)),
-    //     Asset::manager().load<Texture>("textures/1_diagdown.png"));
-    // Renderer2D::endScene();
+    Renderer2D::drawQuad(glm::scale(glm::mat4(1.0f), glm::vec3(100, 100, 0)),
+                         glm::vec4(1.0f, 0.f, 0.f, 1.0f));
+    Renderer2D::drawQuad(glm::scale(glm::mat4(1.0f), glm::vec3(50, 50, 0)),
+                         glm::vec4(0.f, 1.f, 0.f, 1.f));
+    Renderer2D::drawTexture(
+        glm::scale((glm::mat4(1.0f)), glm::vec3(80, 24, 0)),
+        Asset::manager().load<Texture>("textures/1_diagdown.png"));
+    Renderer2D::endScene();
 }
 
 void RenderSystem::renderBlur() {
@@ -274,7 +278,7 @@ void RenderSystem::renderLight() {
 void RenderSystem::renderGBuffer() {
     Renderer3D::beginScene(*m_engine->getCamera(), *m_gBufferShader);
     Renderer::setRenderTarget(m_gBufferTarget);
-    Device::instance().setBlend(false);
+    Device::instance().disable(Operation::BLEND);
     Device::instance().setClearColor(0.f, 0.f, 0.f, 1.0);
     Device::instance().clear();
     m_gBufferTarget.getFramebuffer()->clearAttachment(G_ENTITY_ID,
@@ -304,7 +308,7 @@ void RenderSystem::renderGBuffer() {
     });
     m_gBuffer->copyFrom(m_gBufferTarget.getFramebuffer(),
                         BufferBit::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
-    Device::instance().setBlend(true);
+    Device::instance().enable(Operation::BLEND);
     Renderer3D::endScene();
 }
 

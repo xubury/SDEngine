@@ -215,4 +215,18 @@ GLint translate(TextureMipmapFilter textureMipmapFilter) {
     return GL_INVALID_VALUE;
 }
 
+GLenum translate(Operation operation) {
+    switch (operation) {
+        case Operation::DEPTH_TEST:
+            return GL_DEPTH_TEST;
+        case Operation::BLEND:
+            return GL_BLEND;
+        case Operation::STENCIL_TEST:
+            return GL_STENCIL_TEST;
+        case Operation::MULTISAMPLE:
+            return GL_MULTISAMPLE;
+    }
+    return GL_INVALID_ENUM;
+}
+
 }  // namespace sd

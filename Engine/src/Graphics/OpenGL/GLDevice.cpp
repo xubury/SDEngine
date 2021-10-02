@@ -37,10 +37,10 @@ void GLDevice::init() {
                           GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 #endif
     // Depth Test
-    setDepthTest(true);
+    enable(Operation::DEPTH_TEST);
 
     // Blend
-    setBlend(true);
+    enable(Operation::BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
@@ -81,17 +81,9 @@ void GLDevice::setWireframe(bool wireframe) {
 
 void GLDevice::setDepthMask(bool depthMask) { glDepthMask(depthMask); }
 
-void GLDevice::setBlend(bool blend) {
-    blend ? glEnable(GL_BLEND) : glDisable(GL_BLEND);
-}
+void GLDevice::disable(Operation operation) { glDisable(translate(operation)); }
 
-void GLDevice::setDepthTest(bool depthTest) {
-    depthTest ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST);
-}
-
-void GLDevice::setMultisample(bool multisample) {
-    multisample ? glEnable(GL_MULTISAMPLE) : glDisable(GL_MULTISAMPLE);
-}
+void GLDevice::enable(Operation operation) { glEnable(translate(operation)); }
 
 void GLDevice::setCullFace(CullFace cullFace) {
     switch (cullFace) {

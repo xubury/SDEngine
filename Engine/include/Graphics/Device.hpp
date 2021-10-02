@@ -39,11 +39,9 @@ class SD_API Device {
 
     virtual void setDepthMask(bool depthMask) = 0;
 
-    virtual void setBlend(bool blend) = 0;
+    virtual void enable(Operation operation) = 0;
 
-    virtual void setDepthTest(bool depthTest) = 0;
-
-    virtual void setMultisample(bool multisample) = 0;
+    virtual void disable(Operation operation) = 0;
 
     virtual void setCullFace(CullFace cullFace) = 0;
 
