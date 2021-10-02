@@ -35,10 +35,6 @@ Ref<Font> FontLoader::loadAsset(const std::string &filePath) {
             c.bearing =
                 glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
             c.advance = face->glyph->advance.x;
-            if (Graphics::getAPI() == API::OpenGL) {
-                flipBitmap(face->glyph->bitmap.buffer,
-                           face->glyph->bitmap.width, face->glyph->bitmap.rows);
-            }
             c.texture = Texture::create(
                 face->glyph->bitmap.width, face->glyph->bitmap.rows, 1,
                 TextureType::TEX_2D, TextureFormat::RED,

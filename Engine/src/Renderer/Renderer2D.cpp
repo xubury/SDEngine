@@ -95,10 +95,10 @@ void Renderer2D::init() {
     s_data.quadVertexPositions[2] = {1.0f, 1.0f, 0.0f, 1.0f};
     s_data.quadVertexPositions[3] = {0.f, 1.0f, 0.0f, 1.0f};
 
-    s_data.quadTexCoords[0] = {0.0f, 0.0f};
-    s_data.quadTexCoords[1] = {1.0f, 0.0f};
-    s_data.quadTexCoords[2] = {1.0f, 1.0f};
-    s_data.quadTexCoords[3] = {0.0f, 1.0f};
+    s_data.quadTexCoords[0] = {0.0f, 1.0f};
+    s_data.quadTexCoords[1] = {1.0f, 1.0f};
+    s_data.quadTexCoords[2] = {1.0f, 0.0f};
+    s_data.quadTexCoords[3] = {0.0f, 0.0f};
 
     uint32_t color = 0xffffffff;
     s_data.textureSlots[0] = Texture::create(

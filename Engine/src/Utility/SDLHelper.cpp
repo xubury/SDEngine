@@ -20,11 +20,6 @@ void flipBitmap(void *data, int width, int height) {
 }
 
 Ref<Texture> surfaceToTexture(SDL_Surface *surface) {
-    if (Graphics::getAPI() == API::OpenGL) {
-        SDL_LockSurface(surface);
-        flipBitmap(surface->pixels, surface->pitch, surface->h);
-        SDL_UnlockSurface(surface);
-    }
     // Convert other arrry order to RGB/RGBA, because it seems that OpenGL
     // can't handle certain array order.
     TextureFormat format;

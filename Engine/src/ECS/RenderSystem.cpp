@@ -165,16 +165,12 @@ void RenderSystem::renderMain() {
     OrthographicCamera cam(m_engine->getRenderTarget().getWidth(),
                            m_engine->getRenderTarget().getHeight(), -1, 1);
     Renderer2D::beginScene(cam);
-
-    Renderer2D::drawQuad(glm::scale(glm::mat4(1.0f), glm::vec3(50, 50, 1)),
-                         glm::vec4(0.f, 1.f, 0.f, 1.f));
     Renderer2D::drawTexture(
         Asset::manager().load<Texture>("textures/1_diagdown.png"),
         glm::scale(glm::mat4(1.0f), glm::vec3(80, 24, 1)));
 
     Renderer2D::drawText(L"OpenGL", 0, 0, 0.5);
     Renderer2D::drawText(L"This is a test string!", 0, -40, 1.0);
-    Renderer2D::drawText(L"Hello world", 0, -80, 2);
     Renderer2D::endScene();
 }
 
