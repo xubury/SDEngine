@@ -10,6 +10,8 @@ namespace sd {
 
 class Texture;
 
+void flipBitmap(void *data, int width, int height);
+
 Ref<Texture> surfaceToTexture(SDL_Surface *surface);
 
 }  // namespace sd

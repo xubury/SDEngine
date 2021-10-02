@@ -4,28 +4,26 @@
 
 namespace sd {
 
-static void flipSurface(SDL_Surface *surface) {
-    SDL_LockSurface(surface);
+void flipBitmap(void *data, int width, int height) {
+    char *pixels = static_cast<char *>(data);
+    char *tmp = new char[width];
 
-    const uint32_t pitch = surface->pitch;
-    char *tmp = new char[pitch];
-    char *pixels = static_cast<char *>(surface->pixels);
-
-    for (int i = 0; i < surface->h / 2; ++i) {
-        char *row1 = pixels + i * pitch;
-        char *row2 = pixels + (surface->h - 1 - i) * pitch;
-        memcpy(tmp, row1, pitch);
-        memcpy(row1, row2, pitch);
-        memcpy(row2, tmp, pitch);
+    for (int i = 0; i < height / 2; ++i) {
+        char *row1 = pixels + i * width;
+        char *row2 = pixels + (height - 1 - i) * width;
+        memcpy(tmp, row1, width);
+        memcpy(row1, row2, width);
+        memcpy(row2, tmp, width);
     }
 
     delete[] tmp;
-    SDL_UnlockSurface(surface);
 }
 
 Ref<Texture> surfaceToTexture(SDL_Surface *surface) {
     if (Graphics::getAPI() == API::OpenGL) {
-        flipSurface(surface);
+        SDL_LockSurface(surface);
+        flipBitmap(surface->pixels, surface->pitch, surface->h);
+        SDL_UnlockSurface(surface);
     }
     // Convert other arrry order to RGB/RGBA, because it seems that OpenGL
     // can't handle certain array order.

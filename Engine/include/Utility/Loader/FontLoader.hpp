@@ -9,7 +9,6 @@ namespace sd {
 class FontLoader : public AssetLoader<Font> {
    public:
     FontLoader(AssetManager &manager);
-    ~FontLoader();
 
     Ref<Font> loadAsset(const std::string &filePath) override;
 };

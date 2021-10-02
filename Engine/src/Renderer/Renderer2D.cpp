@@ -90,10 +90,10 @@ void Renderer2D::init() {
     s_data.quadVAO->addVertexBuffer(s_data.quadVBO, layout);
     s_data.quadVAO->setIndexBuffer(s_data.quadEBO);
 
-    s_data.quadVertexPositions[0] = {-0.5f, -0.5f, 0.0f, 1.0f};
-    s_data.quadVertexPositions[1] = {0.5f, -0.5f, 0.0f, 1.0f};
-    s_data.quadVertexPositions[2] = {0.5f, 0.5f, 0.0f, 1.0f};
-    s_data.quadVertexPositions[3] = {-0.5f, 0.5f, 0.0f, 1.0f};
+    s_data.quadVertexPositions[0] = {0.f, 0.f, 0.0f, 1.0f};
+    s_data.quadVertexPositions[1] = {1.0f, 0.f, 0.0f, 1.0f};
+    s_data.quadVertexPositions[2] = {1.0f, 1.0f, 0.0f, 1.0f};
+    s_data.quadVertexPositions[3] = {0.f, 1.0f, 0.0f, 1.0f};
 
     s_data.quadTexCoords[0] = {0.0f, 0.0f};
     s_data.quadTexCoords[1] = {1.0f, 0.0f};
@@ -205,17 +205,22 @@ void Renderer2D::drawTexture(const Ref<Texture>& texture,
     s_data.quadIndexCnt += 6;
 }
 
+void Renderer2D::drawTexture(const Ref<Texture>& texture, const glm::vec3& pos,
+                             const glm::vec3& scale, const glm::vec4& color) {
+    drawTexture(texture,
+                glm::translate(glm::mat4(1.0f), pos) *
+                    glm::scale(glm::mat4(1.0f), scale),
+                color);
+}
+
 void Renderer2D::drawText(const std::wstring& text, float x, float y,
                           float scale, const glm::vec4& color) {
     for (const auto c : text) {
         const Character& ch = s_data.font->getCharacter(c);
-        glm::mat4 transform = glm::translate(
-            glm::mat4(1.0f),
-            glm::vec3(x + ch.bearing.x * scale,
-                      y + (ch.bearing.y - ch.size.y) * scale, 0));
-        transform = glm::scale(
-            transform, glm::vec3(ch.size.x * scale, ch.size.y * scale, 1));
-        drawTexture(ch.texture, transform, color);
+        drawTexture(ch.texture,
+                    glm::vec3(x + ch.bearing.x * scale,
+                              y + (ch.bearing.y - ch.size.y) * scale, 0),
+                    glm::vec3(ch.size.x * scale, ch.size.y * scale, 0), color);
         x += (ch.advance >> 6) * scale;
     }
 }

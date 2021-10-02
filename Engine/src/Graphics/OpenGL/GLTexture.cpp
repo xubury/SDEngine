@@ -28,13 +28,12 @@ void GLTexture::init() {
     gl_format = translateFormat(m_format, m_formatType);
     gl_formatType = translate(m_formatType);
 
-    glCreateTextures(gl_type, 1, &gl_id);
-
     if (m_format == TextureFormat::RED) {
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     } else {
         glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
     }
+    glCreateTextures(gl_type, 1, &gl_id);
     setPixels(m_width, m_height, m_data);
     if (m_type != TextureType::TEX_2D_MULTISAMPLE) {
         setWrap(m_wrap);
