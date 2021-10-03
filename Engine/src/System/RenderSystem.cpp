@@ -120,7 +120,7 @@ void RenderSystem::initGBuffer(int width, int height, int samples) {
     m_gBufferTarget.init();
 }
 
-void RenderSystem::resize(int width, int height) {
+void RenderSystem::onResize(int width, int height) {
     for (int i = 0; i < 2; ++i) {
         m_lightTarget[i].resize(width, height);
         m_blurTarget[i].resize(width, height);
@@ -161,18 +161,6 @@ void RenderSystem::renderMain() {
     m_mainShader->setTexture("u_gEntityId", gBuffer->getTexture(G_ENTITY_ID));
     m_mainShader->setFloat("u_exposure", m_engine->getExposure());
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
-
-    OrthographicCamera cam(m_engine->getRenderTarget().getWidth(),
-                           m_engine->getRenderTarget().getHeight(), -1, 1);
-    Renderer2D::beginScene(cam);
-    Renderer2D::drawTexture(
-        Asset::manager().load<Texture>("textures/1_diagdown.png"),
-        glm::scale(glm::mat4(1.0f), glm::vec3(80, 24, 1)));
-
-    Renderer2D::setTextOrigin(0, 0);
-    Renderer2D::drawText(L"OpenGL\nThis is a test string!", 0.5);
-    Renderer2D::drawText(L"Second\nThird", 1.0);
-    Renderer2D::endScene();
 }
 
 void RenderSystem::renderBlur() {

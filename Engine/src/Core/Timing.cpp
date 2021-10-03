@@ -13,15 +13,9 @@ uint32_t Clock::restart() {
     return elapsed;
 }
 
-void FpsCounter::begin() { m_clock.restart(); }
-
-float FpsCounter::end() {
-    calculateFps();
-    return m_fps;
+float FpsCounter::getFps() {
+    uint32_t elapsed = m_clock.restart();
+    return 1000.f / elapsed;
 }
-
-void FpsCounter::calculateFps() { m_fps = 1000.f / m_clock.getElapsedMS(); }
-
-float FpsCounter::getFps() const { return m_fps; }
 
 }  // namespace sd

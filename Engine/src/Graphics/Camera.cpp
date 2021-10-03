@@ -5,28 +5,47 @@
 
 namespace sd {
 
-Camera::Camera()
-    : m_transform(nullptr),
+Camera::Camera(float width, float height, float zNear, float zFar)
+    : m_width(width),
+      m_height(height),
+      m_zNear(zNear),
+      m_zFar(zFar),
+      m_transform(nullptr),
       m_position(0.f),
       m_rotation(1.f, 0.f, 0.f, 0.f),
       m_outdated(true) {
     updateView();
 }
 
-Camera::Camera(Transform *transform)
-    : m_transform(transform),
+Camera::Camera(float width, float height, float zNear, float zFar,
+               Transform *transform)
+    : m_width(width),
+      m_height(height),
+      m_zNear(zNear),
+      m_zFar(zFar),
+      m_transform(transform),
       m_position(0.f),
       m_rotation(1.f, 0.f, 0.f, 0.f),
       m_outdated(true) {
     updateView();
 }
 
-Camera::Camera(const glm::vec3 &position, const glm::quat &rotation)
-    : m_transform(nullptr),
+Camera::Camera(float width, float height, float zNear, float zFar,
+               const glm::vec3 &position, const glm::quat &rotation)
+    : m_width(width),
+      m_height(height),
+      m_zNear(zNear),
+      m_zFar(zFar),
+      m_transform(nullptr),
       m_position(position),
       m_rotation(rotation),
       m_outdated(true) {
     updateView();
+}
+
+void Camera::resize(float width, float height) {
+    m_width = width;
+    m_height = height;
 }
 
 void Camera::translateLocal(const glm::vec3 &t) {
@@ -240,84 +259,56 @@ glm::vec3 Camera::mapWorldToClip(const glm::vec3 &pos) const {
 
 OrthographicCamera::OrthographicCamera(float width, float height, float zNear,
                                        float zFar)
-    : m_width(width), m_height(height), m_zNear(zNear), m_zFar(zFar) {
-    setProjection(width, height, zNear, zFar);
+    : Camera(width, height, zNear, zFar) {
+    setProjection(glm::ortho(-width / 2.f, width / 2.f, -height / 2.f,
+                             height / 2.f, zNear, zFar));
 }
 
 OrthographicCamera::OrthographicCamera(Transform *transform, float width,
                                        float height, float zNear, float zFar)
-    : Camera(transform),
-      m_width(width),
-      m_height(height),
-      m_zNear(zNear),
-      m_zFar(zFar) {
-    setProjection(width, height, zNear, zFar);
+    : Camera(width, height, zNear, zFar, transform) {
+    setProjection(glm::ortho(-width / 2.f, width / 2.f, -height / 2.f,
+                             height / 2.f, zNear, zFar));
 }
 
 OrthographicCamera::OrthographicCamera(const glm::vec3 &position,
                                        const glm::quat &rotation, float width,
                                        float height, float zNear, float zFar)
-    : Camera(position, rotation),
-      m_width(width),
-      m_height(height),
-      m_zNear(zNear),
-      m_zFar(zFar) {
-    setProjection(width, height, zNear, zFar);
-}
-
-void OrthographicCamera::setProjection(float width, float height, float zNear,
-                                       float zFar) {
-    m_width = width;
-    m_height = height;
-    m_zNear = zNear;
-    m_zFar = zFar;
-    Camera::setProjection(glm::ortho(-width / 2, width / 2, -height / 2,
-                                     height / 2, zNear, zFar));
+    : Camera(width, height, zNear, zFar, position, rotation) {
+    setProjection(glm::ortho(-width / 2.f, width / 2.f, -height / 2.f,
+                             height / 2.f, zNear, zFar));
 }
 
 void OrthographicCamera::resize(float width, float height) {
-    setProjection(width, height, m_zNear, m_zFar);
+    setProjection(glm::ortho(-width / 2.f, width / 2.f, -height / 2.f,
+                             height / 2.f, m_zNear, m_zFar));
+    Camera::resize(width, height);
 }
 
-PerspectiveCamera::PerspectiveCamera(float fov, float aspect, float zNear,
-                                     float zFar)
-    : m_fov(fov), m_aspect(aspect), m_zNear(zNear), m_zFar(zFar) {
-    setProjection(fov, aspect, zNear, zFar);
+PerspectiveCamera::PerspectiveCamera(float fov, float width, float height,
+                                     float zNear, float zFar)
+    : Camera(width, height, zNear, zFar), m_fov(fov) {
+    setProjection(glm::perspective(fov, width / height, zNear, zFar));
 }
 
-PerspectiveCamera::PerspectiveCamera(Transform *transform, float fov,
-                                     float aspect, float zNear, float zFar)
-    : Camera(transform),
-      m_fov(fov),
-      m_aspect(aspect),
-      m_zNear(zNear),
-      m_zFar(zFar) {
-    setProjection(fov, aspect, zNear, zFar);
+PerspectiveCamera::PerspectiveCamera(float fov, float width, float height,
+                                     float zNear, float zFar,
+                                     Transform *transform)
+    : Camera(width, height, zNear, zFar, transform), m_fov(fov) {
+    setProjection(glm::perspective(fov, width / height, zNear, zFar));
 }
 
-PerspectiveCamera::PerspectiveCamera(const glm::vec3 &position,
-                                     const glm::quat &rotation, float fov,
-                                     float aspect, float zNear, float zFar)
-    : Camera(position, rotation),
-      m_fov(fov),
-      m_aspect(aspect),
-      m_zNear(zNear),
-      m_zFar(zFar) {
-    setProjection(fov, aspect, zNear, zFar);
-}
-
-void PerspectiveCamera::setProjection(float fov, float aspect, float zNear,
-                                      float zFar) {
-    m_fov = fov;
-    m_aspect = aspect;
-    m_zNear = zNear;
-    m_zFar = zFar;
-    SD_CORE_ASSERT(aspect > 0);
-    Camera::setProjection(glm::perspective(fov, aspect, zNear, zFar));
+PerspectiveCamera::PerspectiveCamera(float fov, float width, float height,
+                                     float zNear, float zFar,
+                                     const glm::vec3 &position,
+                                     const glm::quat &rotation)
+    : Camera(width, height, zNear, zFar, position, rotation), m_fov(fov) {
+    setProjection(glm::perspective(fov, width / height, zNear, zFar));
 }
 
 void PerspectiveCamera::resize(float width, float height) {
-    setProjection(m_fov, width / height, m_zNear, m_zFar);
+    setProjection(glm::perspective(m_fov, width / height, m_zNear, m_zFar));
+    Camera::resize(width, height);
 }
 
 }  // namespace sd

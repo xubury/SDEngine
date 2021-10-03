@@ -3,8 +3,9 @@
 namespace sd {
 
 void Layer::removeSystem(const Ref<System> &system) {
-    if (m_systems.find(system) != m_systems.end()) {
-        m_systems.erase(system);
+    auto iter = std::find(m_systems.begin(), m_systems.end(), system);
+    if (iter != m_systems.end()) {
+        m_systems.erase(iter);
     } else {
         SD_CORE_WARN("System does not exist!");
     }

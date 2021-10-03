@@ -40,7 +40,7 @@ class SD_API Layer {
     SYSTEM *addSystem(ARGS &&...args);
 
     void removeSystem(const Ref<System> &system);
-    std::set<Ref<System>> &getSystems() { return m_systems; }
+    std::list<Ref<System>> &getSystems() { return m_systems; }
 
     void setScene(Scene *scene);
 
@@ -48,13 +48,13 @@ class SD_API Layer {
     std::string m_name;
     bool m_blockEvent;
 
-    std::set<Ref<System>> m_systems;
+    std::list<Ref<System>> m_systems;
 };
 
 template <typename SYSTEM, typename... ARGS>
 SYSTEM *Layer::addSystem(ARGS &&...args) {
     Ref<SYSTEM> system = createRef<SYSTEM>(std::forward<ARGS>(args)...);
-    m_systems.emplace(system);
+    m_systems.emplace_back(system);
     return system.get();
 }
 

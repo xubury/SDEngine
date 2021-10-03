@@ -1,7 +1,6 @@
 #include "Core/RenderEngine.hpp"
 #include "Renderer/Renderer.hpp"
-#include "System/RenderSystem.hpp"
-#include "System/TerrainSystem.hpp"
+#include "System/ProfileSystem.hpp"
 
 namespace sd {
 
@@ -15,6 +14,7 @@ RenderEngine::RenderEngine(int width, int height, int samples)
       m_bloom(1.0f),
       m_isBloom(true) {
     m_renderSystem = addSystem<RenderSystem>(this, width, height, samples);
+    addSystem<ProfileSystem>();
     m_terrainSystem = addSystem<TerrainSystem>();
 }
 
@@ -43,7 +43,9 @@ RenderTarget &RenderEngine::getRenderTarget() {
 void RenderEngine::resize(int width, int height) {
     if (m_camera) m_camera->resize(width, height);
     getRenderTarget().resize(width, height);
-    m_renderSystem->resize(width, height);
+    for (auto &system : m_systems) {
+        system->onResize(width, height);
+    }
 }
 
 void RenderEngine::setCamera(Camera *camera) { m_camera = camera; }

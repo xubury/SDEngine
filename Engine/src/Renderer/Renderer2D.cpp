@@ -202,7 +202,7 @@ void Renderer2D::drawTexture(const Ref<Texture>& texture,
         s_data.quadVertexBufferPtr->texIndex = textureIndex;
         s_data.quadVertexBufferPtr->grayScale =
             texture->getFormat() == TextureFormat::RED;
-        s_data.quadVertexBufferPtr->entityIndex = 1;
+        s_data.quadVertexBufferPtr->entityIndex = -1;
         ++s_data.quadVertexBufferPtr;
     }
     s_data.quadIndexCnt += 6;

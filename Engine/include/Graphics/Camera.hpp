@@ -8,11 +8,13 @@ namespace sd {
 
 class SD_API Camera {
    public:
-    Camera();
-    Camera(Transform *transform);
-    Camera(const glm::vec3 &position, const glm::quat &rotation);
+    Camera(float width, float height, float zNear, float zFar);
+    Camera(float width, float height, float zNear, float zFar,
+           Transform *transform);
+    Camera(float width, float height, float zNear, float zFar,
+           const glm::vec3 &position, const glm::quat &rotation);
 
-    virtual void resize(float width, float height) = 0;
+    virtual void resize(float width, float height);
 
     void translateLocal(const glm::vec3 &t);
     void translateWorld(const glm::vec3 &t);
@@ -63,6 +65,17 @@ class SD_API Camera {
 
     void updateView();
 
+    float getWidth() const { return m_width; }
+    float getHeight() const { return m_height; }
+    float getNearZ() const { return m_zNear; }
+    float getFarZ() const { return m_zFar; }
+
+   protected:
+    float m_width;
+    float m_height;
+    float m_zNear;
+    float m_zFar;
+
    private:
     glm::mat4 m_view;
     glm::mat4 m_projection;
@@ -84,41 +97,28 @@ class SD_API OrthographicCamera : public Camera {
                        float width, float height, float zNear, float zFar);
     ~OrthographicCamera() = default;
 
-    void setProjection(float width, float height, float zNear, float zFar);
-
     void resize(float width, float height) override;
-
-   private:
-    float m_width;
-    float m_height;
-    float m_zNear;
-    float m_zFar;
 };
 
 class SD_API PerspectiveCamera : public Camera {
    public:
-    PerspectiveCamera(float fov, float aspect, float zNear, float zFar);
-    PerspectiveCamera(Transform *m_transform, float fov, float aspect,
-                      float zNear, float zFar);
-    PerspectiveCamera(const glm::vec3 &position, const glm::quat &rotation,
-                      float fov, float aspect, float zNear, float zFar);
+    PerspectiveCamera(float fov, float width, float height, float zNear,
+                      float zFar);
+    PerspectiveCamera(float fov, float width, float height, float zNear,
+                      float zFar, Transform *m_transform);
+    PerspectiveCamera(float fov, float width, float height, float zNear,
+                      float zFar, const glm::vec3 &position,
+                      const glm::quat &rotation);
     ~PerspectiveCamera() = default;
-
-    void setProjection(float fov, float aspect, float zNear, float zFar);
-
-    void resize(float width, float height) override;
 
     float getFOV() const { return m_fov; }
 
-    float getAspect() const { return m_aspect; }
+    float getAspect() const { return m_width / m_height; }
 
-    float getNearZ() const { return m_zNear; }
-    float getFarZ() const { return m_zFar; }
+    void resize(float width, float height) override;
+
    private:
     float m_fov;
-    float m_aspect;
-    float m_zNear;
-    float m_zFar;
 };
 
 }  // namespace sd

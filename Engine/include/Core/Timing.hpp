@@ -27,15 +27,9 @@ class SD_API FpsCounter {
     FpsCounter(const FpsCounter &) = delete;
     FpsCounter &operator=(const FpsCounter &) = delete;
 
-    void begin();
-    float end();
-
-    float getFps() const;
+    float getFps();
 
    private:
-    void calculateFps();
-
-    float m_fps;
     Clock m_clock;
 };
 

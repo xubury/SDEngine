@@ -18,6 +18,8 @@ class System {
 
     virtual void onSceneChange(){};
 
+    virtual void onResize(int, int){};
+
    protected:
     friend class Layer;
     Scene *m_scene;
