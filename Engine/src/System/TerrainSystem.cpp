@@ -1,4 +1,4 @@
-#include "ECS/TerrainSystem.hpp"
+#include "System/TerrainSystem.hpp"
 #include "ECS/Component.hpp"
 #include <glm/gtx/extended_min_max.hpp>
 

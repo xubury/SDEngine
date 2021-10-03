@@ -1,4 +1,4 @@
-#include "ECS/RenderSystem.hpp"
+#include "System/RenderSystem.hpp"
 #include "Core/RenderEngine.hpp"
 #include "Graphics/Device.hpp"
 #include "Renderer/Renderer2D.hpp"

@@ -50,7 +50,7 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-core PUBLIC SD_SHARED)
 endif()
 
-target_link_libraries(sd-core PUBLIC sd-utils sd-imgui sd-renderer sd-ecs SDL2::Main GLEW::GLEW)
+target_link_libraries(sd-core PUBLIC sd-system sd-utils sd-imgui SDL2::Main GLEW::GLEW)
 
 target_include_directories(sd-core 
     PUBLIC

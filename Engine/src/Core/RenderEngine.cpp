@@ -1,5 +1,7 @@
 #include "Core/RenderEngine.hpp"
 #include "Renderer/Renderer.hpp"
+#include "System/RenderSystem.hpp"
+#include "System/TerrainSystem.hpp"
 
 namespace sd {
 

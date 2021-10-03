@@ -2,8 +2,8 @@
 #define SD_RENDER_ENGINE_HPP
 
 #include "Core/Layer.hpp"
-#include "ECS/RenderSystem.hpp"
-#include "ECS/TerrainSystem.hpp"
+#include "System/RenderSystem.hpp"
+#include "System/TerrainSystem.hpp"
 #include "Graphics/Camera.hpp"
 
 namespace sd {

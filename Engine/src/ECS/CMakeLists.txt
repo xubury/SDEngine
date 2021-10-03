@@ -4,19 +4,13 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/ECS)
 set(ECS_Include
     ${Include_Root}/Component.hpp
     ${Include_Root}/Entity.hpp
-    ${Include_Root}/ParticleSystem.hpp
-    ${Include_Root}/RenderSystem.hpp
     ${Include_Root}/Scene.hpp
-    ${Include_Root}/System.hpp
-    ${Include_Root}/TerrainSystem.hpp)
+    ${Include_Root}/System.hpp)
 
 set(ECS_Src
     ${Src_Root}/Component.cpp
     ${Src_Root}/Entity.cpp
-    ${Src_Root}/ParticleSystem.cpp
-    ${Src_Root}/RenderSystem.cpp
-    ${Src_Root}/Scene.cpp
-    ${Src_Root}/TerrainSystem.cpp)
+    ${Src_Root}/Scene.cpp)
 
 add_library(sd-ecs ${ECS_Src})
 
@@ -36,7 +30,7 @@ target_include_directories(sd-ecs
     PRIVATE
     ${SD_ENGINE_SOURCE_DIR}/libs/entt)
 
-target_link_libraries(sd-ecs PUBLIC sd-core sd-utils EnTT::EnTT)
+target_link_libraries(sd-ecs PUBLIC sd-utils EnTT::EnTT)
 
 install(TARGETS sd-ecs LIBRARY DESTINATION lib)
 
