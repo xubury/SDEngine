@@ -169,8 +169,9 @@ void RenderSystem::renderMain() {
         Asset::manager().load<Texture>("textures/1_diagdown.png"),
         glm::scale(glm::mat4(1.0f), glm::vec3(80, 24, 1)));
 
-    Renderer2D::drawText(L"OpenGL", 0, 0, 0.5);
-    Renderer2D::drawText(L"This is a test string!", 0, -40, 1.0);
+    Renderer2D::setTextOrigin(0, 0);
+    Renderer2D::drawText(L"OpenGL\nThis is a test string!", 0.5);
+    Renderer2D::drawText(L"Second\nThird", 1.0);
     Renderer2D::endScene();
 }
 

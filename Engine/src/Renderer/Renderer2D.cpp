@@ -48,6 +48,8 @@ struct Renderer2DData {
     std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> textureSlots;
 
     Ref<Font> font;
+    glm::vec2 textOrigin;
+    glm::vec2 textCursor;
 };
 
 static Renderer2DData s_data;
@@ -140,6 +142,7 @@ void Renderer2D::flush() {
 
     Renderer::submit(*s_data.quadVAO, MeshTopology::TRIANGLES,
                      s_data.quadIndexCnt, 0);
+    setTextOrigin(0, 0);
 }
 
 void Renderer2D::startBatch() {
@@ -213,9 +216,16 @@ void Renderer2D::drawTexture(const Ref<Texture>& texture, const glm::vec3& pos,
                 color);
 }
 
-void Renderer2D::drawText(const std::wstring& text, float x, float y,
-                          float scale, const glm::vec4& color) {
+void Renderer2D::drawText(const std::wstring& text, float scale,
+                          const glm::vec4& color) {
+    float x = s_data.textCursor.x;
+    float y = s_data.textCursor.y;
     for (const auto c : text) {
+        if (c == '\n') {
+            x = s_data.textOrigin.x;
+            y -= s_data.font->getPixelSize() * scale;
+            continue;
+        }
         const Character& ch = s_data.font->getCharacter(c);
         drawTexture(ch.texture,
                     glm::vec3(x + ch.bearing.x * scale,
@@ -223,6 +233,14 @@ void Renderer2D::drawText(const std::wstring& text, float x, float y,
                     glm::vec3(ch.size.x * scale, ch.size.y * scale, 0), color);
         x += (ch.advance >> 6) * scale;
     }
+    s_data.textCursor.x = x;
+    s_data.textCursor.y = y;
+}
+
+void Renderer2D::setTextOrigin(float x, float y) {
+    s_data.textOrigin.x = x;
+    s_data.textOrigin.y = y;
+    s_data.textCursor = s_data.textOrigin;
 }
 
 }  // namespace sd

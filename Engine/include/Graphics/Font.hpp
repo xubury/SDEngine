@@ -24,8 +24,12 @@ class SD_API Font {
     void setCharacter(wchar_t ch, const Character &character);
     const Character &getCharacter(wchar_t ch) const;
 
+    void setPixelSize(int size) { m_size = size; };
+    int getPixelSize() const { return m_size; };
+
    private:
     std::unordered_map<wchar_t, Character> m_characters;
+    int m_size;
 };
 
 }  // namespace sd

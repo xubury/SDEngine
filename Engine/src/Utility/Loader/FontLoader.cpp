@@ -22,9 +22,11 @@ Ref<Font> FontLoader::loadAsset(const std::string &filePath) {
             SD_CORE_ERROR("Failed to load font!");
             break;
         }
-        FT_Set_Pixel_Sizes(face, 0, 48);
-        Character c;
+        int pixelSize = 48;
+        FT_Set_Pixel_Sizes(face, 0, pixelSize);
         font = createRef<Font>();
+        font->setPixelSize(48);
+        Character c;
         for (wchar_t ch = 0; ch < 128; ++ch) {
             if (FT_Load_Char(face, ch, FT_LOAD_RENDER)) {
                 SD_CORE_WARN("Failed to load glyph!");
