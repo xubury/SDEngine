@@ -7,7 +7,7 @@
 
 namespace sd {
 
-class OrthographicCamera;
+class Camera;
 
 class Texture;
 
@@ -19,7 +19,7 @@ class SD_API Renderer2D {
     static void flush();
     static void nextBatch();
 
-    static void beginScene(OrthographicCamera &camera);
+    static void beginScene(Camera &camera);
     static void endScene();
 
     static void drawQuad(const glm::mat4 &transform, const glm::vec4 &color);

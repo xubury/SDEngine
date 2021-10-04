@@ -114,7 +114,7 @@ void Renderer2D::init() {
         Asset::manager().load<Font>("fonts/opensans/OpenSans-Regular.ttf");
 }
 
-void Renderer2D::beginScene(OrthographicCamera& camera) {
+void Renderer2D::beginScene(Camera& camera) {
     Device::instance().clearDepth();
     Renderer::setCamera(camera, *s_data.shader);
     Device::instance().disable(Operation::DEPTH_TEST);
