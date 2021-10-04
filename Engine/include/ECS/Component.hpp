@@ -8,7 +8,7 @@
 #include "Graphics/Model.hpp"
 #include "Graphics/Mesh.hpp"
 #include "Graphics/Terrain.hpp"
-#include "Graphics/ShadowMap.hpp"
+#include "Graphics/Light.hpp"
 
 namespace sd {
 
@@ -61,23 +61,10 @@ struct SD_API TerrainComponent {
 };
 
 struct SD_API LightComponent {
-    glm::vec3 ambient = glm::vec3(1.0f);
-    glm::vec3 diffuse = glm::vec3(1.0f);
-    glm::vec3 specular = glm::vec3(1.0f);
-
-    float cutOff = 25.f;
-    float outerCutOff = 35.f;
-    float constant = 1.0f;
-    float linear = 0.09;
-    float quadratic = 0.032f;
-
-    bool isDirectional = false;
-    bool isCastShadow = false;
-    ShadowMap shadowMap;
+    Light light;
     template <typename Archive>
     void serialize(Archive& archive) {
-        archive(ambient, diffuse, specular, cutOff, outerCutOff, constant,
-                linear, quadratic, isDirectional, isCastShadow);
+        archive(light);
     }
 };
 

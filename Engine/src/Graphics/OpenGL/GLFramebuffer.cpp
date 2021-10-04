@@ -65,11 +65,15 @@ bool GLFramebuffer::attachTexture(const Ref<Texture> &texture) {
 
 void GLFramebuffer::setDrawable(const std::vector<uint32_t> &colorAttachments) {
     bind();
-    std::vector<GLenum> glAttachments;
-    for (const auto i : colorAttachments) {
-        glAttachments.emplace_back(GL_COLOR_ATTACHMENT0 + i);
+    if (colorAttachments.empty()) {
+        glDrawBuffer(GL_NONE);
+    } else {
+        std::vector<GLenum> glAttachments;
+        for (const auto i : colorAttachments) {
+            glAttachments.emplace_back(GL_COLOR_ATTACHMENT0 + i);
+        }
+        glDrawBuffers(glAttachments.size(), glAttachments.data());
     }
-    glDrawBuffers(glAttachments.size(), glAttachments.data());
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         SD_CORE_ERROR("FrameBuffer is not complete!");
     }

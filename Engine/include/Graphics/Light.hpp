@@ -1,16 +1,32 @@
-#ifndef SD_SHADOW_MAP_HPP
-#define SD_SHADOW_MAP_HPP
+#ifndef SD_LIGHT_HPP
+#define SD_LIGHT_HPP
 
 #include "Utility/Export.hpp"
 #include "Utility/Transform.hpp"
 #include "Graphics/RenderTarget.hpp"
 #include "Graphics/Camera.hpp"
+#include <glm/glm.hpp>
 
 namespace sd {
 
-class SD_API ShadowMap {
+class SD_API Light {
    public:
-    ShadowMap();
+    glm::vec3 ambient = glm::vec3(1.0f);
+    glm::vec3 diffuse = glm::vec3(1.0f);
+    glm::vec3 specular = glm::vec3(1.0f);
+
+    float cutOff = 25.f;
+    float outerCutOff = 35.f;
+    float constant = 1.0f;
+    float linear = 0.09;
+    float quadratic = 0.032f;
+
+    bool isDirectional = false;
+    bool isCastShadow = false;
+   public:
+    Light() = default;
+
+    void createShadowMap(int width, int height);
 
     const glm::mat4 &getProjectionView() const { return m_projectionView; }
 
@@ -20,6 +36,12 @@ class SD_API ShadowMap {
     const RenderTarget &getRenderTarget() const { return m_target; };
 
     Texture *getShadowMap() const;
+
+    template <typename Archive>
+    void serialize(Archive &archive) {
+        archive(ambient, diffuse, specular, cutOff, outerCutOff, constant,
+                linear, quadratic, isDirectional, isCastShadow);
+    }
 
    private:
     static void computeBoundingBox(const Transform &transform,
@@ -31,4 +53,4 @@ class SD_API ShadowMap {
 
 }  // namespace sd
 
-#endif /* SD_SHADOW_MAP_HPP */
+#endif /* SD_LIGHT_HPP */

@@ -14,11 +14,17 @@ class SD_API RenderTarget {
     RenderTarget();
     RenderTarget(int x, int y, int width, int height);
 
+    RenderTarget(const RenderTarget &) = delete;
+    RenderTarget &operator=(const RenderTarget &) = delete;
+    RenderTarget(RenderTarget &&) = default;
+    RenderTarget &operator=(RenderTarget &&) = default;
+
     ~RenderTarget() = default;
 
     void init();
 
     void addTexture(const Ref<Texture> &texture);
+    void clearTexture();
 
     int getX() const;
     int getY() const;

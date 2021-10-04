@@ -1,42 +1,45 @@
-#include "Graphics/ShadowMap.hpp"
-#include "Graphics/Texture.hpp"
+#include "Graphics/Light.hpp"
+#include "Utility/Log.hpp"
 #include "Utility/Assert.hpp"
 
 namespace sd {
 
-ShadowMap::ShadowMap() {
-    const uint32_t width = 2 << 12;
-    const uint32_t height = 2 << 12;
-
+void Light::createShadowMap(int width, int height) {
+    m_target.clearTexture();
     auto shadowMap = Texture::create(
         width, height, 1, TextureType::TEX_2D, TextureFormat::DEPTH,
-        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR);
+        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::NEAREST,
+        TextureMipmapFilter::NEAREST);
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
     shadowMap->setBorderColor(&color);
     m_target.addTexture(shadowMap);
-
     m_target.init();
 }
 
-Texture *ShadowMap::getShadowMap() const { return m_target.getTexture(); }
+Texture *Light::getShadowMap() const { return m_target.getTexture(); }
 
-void ShadowMap::computeLightSpaceMatrix(const Transform &transform,
-                                        const Camera *camera) {
+void Light::computeLightSpaceMatrix(const Transform &transform,
+                                    const Camera *camera) {
     glm::vec3 min;
     glm::vec3 max;
-    auto perspectiveCam = dynamic_cast<const PerspectiveCamera *>(camera);
-    if (perspectiveCam) {
-        computeBoundingBox(transform, *perspectiveCam, min, max);
+    if (isDirectional) {
+        auto perspectiveCam = dynamic_cast<const PerspectiveCamera *>(camera);
+        if (perspectiveCam) {
+            computeBoundingBox(transform, *perspectiveCam, min, max);
+        } else {
+            SD_CORE_ASSERT(false, "OrthographicCamera not implemented!");
+        }
+        // Add a offset for shadow behind the camera frustum
+        min.z -= 100.f;
     } else {
-        SD_CORE_ASSERT(false, "OrthographicCamera not implemented!");
+        min = glm::vec3(-50);
+        max = glm::vec3(50);
     }
-    // Add a offset for shadow behind the camera frustum
-    min.z -= 100.f;
     glm::vec3 size = max - min;
     glm::vec3 center = (max + min) / 2.f;
     center.z -= size.z / 2.f;
-    const glm::vec3 pos = transform.getWorldRotation() * center;
+    const glm::vec3 pos = isDirectional ? transform.getWorldRotation() * center
+                                        : transform.getWorldPosition();
     const glm::vec3 &up = transform.getWorldUp();
     const glm::vec3 &front = transform.getWorldFront();
     const glm::mat4 lightView = glm::lookAt(pos, pos + front, up);
@@ -45,9 +48,9 @@ void ShadowMap::computeLightSpaceMatrix(const Transform &transform,
     m_projectionView = lightProjection * lightView;
 }
 
-void ShadowMap::computeBoundingBox(const Transform &transform,
-                                   const PerspectiveCamera &camera,
-                                   glm::vec3 &min, glm::vec3 &max) {
+void Light::computeBoundingBox(const Transform &transform,
+                               const PerspectiveCamera &camera, glm::vec3 &min,
+                               glm::vec3 &max) {
     min = glm::vec3(std::numeric_limits<float>::max());
     max = glm::vec3(std::numeric_limits<float>::lowest());
     const glm::mat3 &rotaionInv =
@@ -55,7 +58,7 @@ void ShadowMap::computeBoundingBox(const Transform &transform,
     const glm::mat3 &lightTrans =
         rotaionInv * glm::mat3(camera.getWorldRotation());
     const float nearZ = camera.getNearZ();
-    const float farZ = camera.getFarZ() / 5.f;
+    const float farZ = camera.getFarZ();
     const float fov = camera.getFOV() / 2.f;
     const float aspect = camera.getAspect();
     const float nearHeight = nearZ * std::tan(fov);

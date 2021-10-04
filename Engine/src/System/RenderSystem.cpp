@@ -190,15 +190,14 @@ void RenderSystem::renderShadow() {
     Device::instance().setCullFace(CullFace::FRONT);
     lightView.each([this, &modelView, cam](
                        const TransformComponent &transformComp,
-                       LightComponent &light) {
+                       LightComponent &lightComp) {
+        Light &light = lightComp.light;
         if (!light.isCastShadow) return;
 
-        Renderer::setRenderTarget(light.shadowMap.getRenderTarget());
-        Device::instance().setClearColor(0, 0, 0, 1.0f);
-        Device::instance().clear();
-        light.shadowMap.computeLightSpaceMatrix(transformComp.transform, cam);
-        m_shadowShader->setMat4("u_projectionView",
-                                light.shadowMap.getProjectionView());
+        Renderer::setRenderTarget(light.getRenderTarget());
+        Device::instance().clearDepth();
+        light.computeLightSpaceMatrix(transformComp.transform, cam);
+        m_shadowShader->setMat4("u_projectionView", light.getProjectionView());
 
         modelView.each([this](const TransformComponent &transformComp,
                               const ModelComponent &modelComp) {
@@ -229,8 +228,9 @@ void RenderSystem::renderLight() {
 
     auto lightView = m_scene->view<TransformComponent, LightComponent>();
     lightView.each([this](const TransformComponent &transformComp,
-                          const LightComponent &light) {
+                          const LightComponent &lightComp) {
         Renderer::setRenderTarget(m_lightTarget[outputIndex]);
+        const Light &light = lightComp.light;
         m_lightResult = m_lightTarget[outputIndex].getTexture();
         m_lightShader->setTexture("u_lighting",
                                   m_lightTarget[inputIndex].getTexture());
@@ -251,10 +251,9 @@ void RenderSystem::renderLight() {
 
         m_lightShader->setBool("u_light.isDirectional", light.isDirectional);
         m_lightShader->setBool("u_light.isCastShadow", light.isCastShadow);
-        m_lightShader->setTexture("u_light.shadowMap",
-                                  light.shadowMap.getShadowMap());
+        m_lightShader->setTexture("u_light.shadowMap", light.getShadowMap());
         m_lightShader->setMat4("u_light.projectionView",
-                               light.shadowMap.getProjectionView());
+                               light.getProjectionView());
         Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
         std::swap(m_lightTarget[outputIndex], m_lightTarget[inputIndex]);
     });

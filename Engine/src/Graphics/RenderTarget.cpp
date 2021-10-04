@@ -18,7 +18,7 @@ void RenderTarget::init() {
             colors.push_back(colors.size());
         }
     }
-    if (colors.size()) m_framebuffer->setDrawable(colors);
+    m_framebuffer->setDrawable(colors);
 }
 
 void RenderTarget::addTexture(const Ref<Texture> &texture) {
@@ -32,6 +32,8 @@ void RenderTarget::addTexture(const Ref<Texture> &texture) {
         SD_CORE_WARN("Tried to add texture with diffrent dim!");
     }
 }
+
+void RenderTarget::clearTexture() { m_textures.clear(); }
 
 int RenderTarget::getX() const { return m_x; }
 

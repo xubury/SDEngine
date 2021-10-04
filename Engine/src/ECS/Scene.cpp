@@ -6,6 +6,9 @@
 
 namespace sd {
 
+const int SHADOW_MAP_WIDTH = 8192;
+const int SHADOW_MAP_HEIGHT = 8192;
+
 Entity Scene::createEntity(const std::string &name) {
     Entity entity(create(), this);
     entity.addComponent<TagComponent>(name);
@@ -67,6 +70,7 @@ void Scene::refresh() {
         Entity entity(entityId, this);
         refreshEntityChildTranforms(entity);
         refreshEntityModel(entity);
+        refreshLight(entity);
     }
 }
 
@@ -88,6 +92,13 @@ void Scene::save(const std::string &filePath) {
         .entities(archive)
         .component<EntityDataComponent, TagComponent, TransformComponent,
                    ModelComponent, LightComponent>(archive);
+}
+
+void Scene::refreshLight(Entity &entity) {
+    if (entity.hasComponent<LightComponent>()) {
+        auto &lightComp = entity.getComponent<LightComponent>();
+        lightComp.light.createShadowMap(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
+    }
 }
 
 void Scene::refreshEntityModel(Entity &entity) {
@@ -112,6 +123,10 @@ void Scene::refreshEntityChildTranforms(Entity &entity) {
             &child.getComponent<TransformComponent>().transform);
         refreshEntityChildTranforms(child);
     }
+}
+
+void Scene::onComponentAdded(Entity &, LightComponent &lightComp) {
+    lightComp.light.createShadowMap(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
 }
 
 }  // namespace sd

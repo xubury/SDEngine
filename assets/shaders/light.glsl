@@ -106,7 +106,8 @@ vec3 pointLight(Light light, vec3 fragPos, vec3 normal,
     diffuse *= intensity;
     specular *= intensity;
 
-    return ambient + diffuse + specular;
+    float shadow = shadowCalculation(light, fragPos, lightDir, normal);
+    return ambient + (1.0f - shadow) * (diffuse + specular);
 }
 
 vec3 calculateLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
