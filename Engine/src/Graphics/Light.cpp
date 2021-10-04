@@ -30,7 +30,7 @@ void Light::computeLightSpaceMatrix(const Transform &transform,
             SD_CORE_ASSERT(false, "OrthographicCamera not implemented!");
         }
         // Add a offset for shadow behind the camera frustum
-        min.z -= 100.f;
+        min.z -= camera->getFarZ();
     } else {
         min = glm::vec3(-50);
         max = glm::vec3(50);
