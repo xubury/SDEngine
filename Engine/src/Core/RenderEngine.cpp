@@ -6,10 +6,9 @@ namespace sd {
 
 RenderEngine::RenderEngine(int width, int height, int samples)
     : Layer("Render Engine"),
+      m_target(createRef<RenderTarget>(0, 0, width, height)),
       m_renderSystem(nullptr),
       m_terrainSystem(nullptr),
-      m_target(nullptr),
-      m_defaultTarget(0, 0, width, height),
       m_exposure(1.5f),
       m_bloom(1.0f),
       m_isBloom(true) {
@@ -31,15 +30,14 @@ RenderSystem *RenderEngine::getRenderSystem() { return m_renderSystem; }
 
 TerrainSystem *RenderEngine::getTerrainSystem() { return m_terrainSystem; }
 
-void RenderEngine::setRenderTarget(RenderTarget *target) { m_target = target; }
-
-const RenderTarget &RenderEngine::getRenderTarget() const {
-    return m_target ? *m_target : m_defaultTarget;
+void RenderEngine::setRenderTarget(const Ref<RenderTarget> &target) {
+    m_target = target;
 }
 
-RenderTarget &RenderEngine::getRenderTarget() {
-    return m_target ? *m_target : m_defaultTarget;
-}
+const RenderTarget &RenderEngine::getRenderTarget() const { return *m_target; }
+
+RenderTarget &RenderEngine::getRenderTarget() { return *m_target; }
+
 void RenderEngine::resize(int width, int height) {
     if (m_camera) m_camera->resize(width, height);
     getRenderTarget().resize(width, height);

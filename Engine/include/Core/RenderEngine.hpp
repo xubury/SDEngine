@@ -19,7 +19,7 @@ class RenderEngine : public Layer {
 
     void resize(int width, int height);
 
-    void setRenderTarget(RenderTarget *target);
+    void setRenderTarget(const Ref<RenderTarget> &target);
     const RenderTarget &getRenderTarget() const;
     RenderTarget &getRenderTarget();
 
@@ -36,11 +36,11 @@ class RenderEngine : public Layer {
     void setBloomFactor(float Bloom);
 
    private:
+    Ref<RenderTarget> m_target;
+
     RenderSystem *m_renderSystem;
     TerrainSystem *m_terrainSystem;
-    RenderTarget *m_target;
     Camera *m_camera;
-    RenderTarget m_defaultTarget;
 
     float m_exposure;
 

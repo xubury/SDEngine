@@ -27,41 +27,28 @@ EditorLayer::EditorLayer(int width, int height)
 }
 
 void EditorLayer::onAttach() {
-    sd::Ref<sd::Texture> multisampleTexture = sd::Texture::create(
-        m_width, m_height, 8, sd::TextureType::TEX_2D_MULTISAMPLE,
-        sd::TextureFormat::RGBA, sd::TextureFormatType::UBYTE,
-        sd::TextureWrap::BORDER, sd::TextureFilter::LINEAR,
-        sd::TextureMipmapFilter::LINEAR_NEAREST);
-    m_target.addTexture(multisampleTexture);
-    m_target.addTexture(sd::Texture::create(
-        multisampleTexture->getWidth(), multisampleTexture->getHeight(), 8,
-        sd::TextureType::TEX_2D_MULTISAMPLE, sd::TextureFormat::RED,
+    m_target = sd::createRef<sd::RenderTarget>(0, 0, m_width, m_height);
+    m_target->addTexture(sd::Texture::create(
+        m_width, m_height, 1, sd::TextureType::TEX_2D, sd::TextureFormat::RGBA,
+        sd::TextureFormatType::UBYTE, sd::TextureWrap::BORDER,
+        sd::TextureFilter::LINEAR, sd::TextureMipmapFilter::LINEAR_NEAREST));
+    m_target->addTexture(sd::Texture::create(
+        m_width, m_height, 8, sd::TextureType::TEX_2D, sd::TextureFormat::RED,
         sd::TextureFormatType::UINT, sd::TextureWrap::BORDER,
         sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
-    m_target.addTexture(sd::Texture::create(
-        multisampleTexture->getWidth(), multisampleTexture->getHeight(), 8,
-        sd::TextureType::TEX_2D_MULTISAMPLE, sd::TextureFormat::DEPTH,
+    m_target->addTexture(sd::Texture::create(
+        m_width, m_height, 8, sd::TextureType::TEX_2D, sd::TextureFormat::DEPTH,
         sd::TextureFormatType::FLOAT, sd::TextureWrap::BORDER,
         sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
-    m_target.init();
-
-    m_framebuffer = sd::Framebuffer::create();
-    m_framebuffer->attachTexture(sd::Texture::create(
-        m_target.getWidth(), m_target.getHeight(), 1, sd::TextureType::TEX_2D,
-        sd::TextureFormat::RGBA, sd::TextureFormatType::UBYTE,
-        sd::TextureWrap::BORDER, sd::TextureFilter::LINEAR,
-        sd::TextureMipmapFilter::LINEAR_NEAREST));
-    m_framebuffer->attachTexture(sd::Texture::create(
-        m_target.getWidth(), m_target.getHeight(), 1, sd::TextureType::TEX_2D,
-        sd::TextureFormat::RED, sd::TextureFormatType::UINT,
-        sd::TextureWrap::BORDER, sd::TextureFilter::NEAREST,
-        sd::TextureMipmapFilter::NEAREST));
-    m_framebuffer->setDrawable({0, 1});
+    m_target->init();
 
     show();
 }
 
-void EditorLayer::onDetech() { hide(); }
+void EditorLayer::onDetech() {
+    m_target.reset();
+    hide();
+}
 
 void EditorLayer::onRender() {}
 
@@ -71,8 +58,8 @@ void EditorLayer::onTick(float dt) {
     mouseY -= m_viewportBounds[0].y;
     glm::vec2 viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
     if (!ImGuizmo::IsUsing() && ImGui::IsMouseDown(0) && m_isViewportHovered) {
-        sd::EntityId id =
-            m_framebuffer->readPixels(1, mouseX, viewportSize.y - mouseY);
+        sd::EntityId id = m_target->getFramebuffer()->readPixels(
+            1, mouseX, viewportSize.y - mouseY);
         if (id != sd::Entity::INVALID_ID) {
             m_scenePanel.setSelectedEntity(id);
         }
@@ -90,6 +77,7 @@ void EditorLayer::onImGui() {
     if (m_hide) {
         return;
     }
+    m_target->getFramebuffer()->unbind();
 
     static bool dockspaceOpen = true;
     static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
@@ -217,21 +205,14 @@ void EditorLayer::onImGui() {
         if (m_width != wsize.x || m_height != wsize.y) {
             if (wsize.x > 0 && wsize.y > 0) {
                 sd::Application::getRenderEngine().resize(wsize.x, wsize.y);
-
-                m_framebuffer->resize(wsize.x, wsize.y);
             }
 
             m_width = wsize.x;
             m_height = wsize.y;
         }
-        // Copy the multisample texture to normal texture
-        m_framebuffer->copyFrom(m_target.getFramebuffer(),
-                                sd::BufferBit::COLOR_BUFFER_BIT,
-                                sd::TextureFilter::NEAREST);
-
         m_isViewportFocused = ImGui::IsWindowFocused();
         m_isViewportHovered = ImGui::IsWindowHovered();
-        ImGui::DrawTexture(*m_framebuffer->getTexture(), wsize);
+        ImGui::DrawTexture(*m_target->getTexture(), wsize);
 
         sd::Entity selectedEntity = m_scenePanel.getSelectedEntity();
         if (selectedEntity) {
@@ -269,7 +250,8 @@ void EditorLayer::hide() {
     setBlockEvent(false);
     int w = sd::Application::getWindow().getWidth();
     int h = sd::Application::getWindow().getHeight();
-    sd::Application::getRenderEngine().setRenderTarget(nullptr);
+    sd::Application::getRenderEngine().setRenderTarget(
+        sd::createRef<sd::RenderTarget>(0, 0, w, h));
     sd::Application::getRenderEngine().resize(w, h);
 }
 
@@ -277,7 +259,7 @@ void EditorLayer::show() {
     m_hide = false;
     setBlockEvent(true);
     sd::Application::getRenderEngine().setCamera(&m_editorCamera);
-    sd::Application::getRenderEngine().setRenderTarget(&m_target);
+    sd::Application::getRenderEngine().setRenderTarget(m_target);
     sd::Application::getRenderEngine().resize(m_width, m_height);
 }
 
