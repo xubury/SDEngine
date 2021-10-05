@@ -1,6 +1,7 @@
 #ifndef SD_EVENT_DISPATCHER_HPP
 #define SD_EVENT_DISPATCHER_HPP
 
+#include <cstdint>
 #include <functional>
 #include <vector>
 #include <unordered_map>

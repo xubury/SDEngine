@@ -2,6 +2,8 @@
 #define IMGUI_FILE_DIALOG_HPP
 #include <filesystem>
 #include <imgui.h>
+#include <vector>
+#include <algorithm>
 
 typedef int ImGuiFileDialogType;  // -> enum ImGuiFileDialogType_        //
                                   // Enum: A file dialog type

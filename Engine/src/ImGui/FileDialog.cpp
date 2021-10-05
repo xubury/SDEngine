@@ -1,4 +1,5 @@
 #include "ImGui/FileDialog.hpp"
+#include "Utility/PlatformDetection.hpp"
 #include "imgui.h"
 
 #include <chrono>
@@ -258,7 +259,13 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
                 std::chrono::system_clock::now());
             std::time_t tt = std::chrono::system_clock::to_time_t(st);
             std::tm mt;
+#if defined(SD_PLATFORM_WINDOWS)
             localtime_s(&mt, &tt);
+#elif defined(SD_PLATFORM_LINUX)
+            localtime_r(&tt, &mt);
+#else
+#error "Unknown platform!"
+#endif
             std::stringstream ss;
             ss << std::put_time(&mt, "%Y-%m-%d %H:%M");
             ImGui::TextUnformatted(ss.str().c_str());
@@ -296,7 +303,13 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
                 std::chrono::system_clock::now());
             std::time_t tt = std::chrono::system_clock::to_time_t(st);
             std::tm mt;
+#if defined(SD_PLATFORM_WINDOWS)
             localtime_s(&mt, &tt);
+#elif defined(SD_PLATFORM_LINUX)
+            localtime_r(&tt, &mt);
+#else
+#error "Unknown platform!"
+#endif
             std::stringstream ss;
             ss << std::put_time(&mt, "%Y-%m-%d %H:%M");
             ImGui::TextUnformatted(ss.str().c_str());
