@@ -1,7 +1,7 @@
 #ifndef SD_RENDER_SYSTEM_HPP
 #define SD_RENDER_SYSTEM_HPP
 
-#include "ECS/System.hpp"
+#include "Core/System.hpp"
 #include "ECS/Scene.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"
@@ -23,13 +23,15 @@ class SD_API RenderSystem : public System {
     };
 
    public:
-    RenderSystem(RenderEngine *engine, int width, int height, int samples);
+    RenderSystem(int width, int height, int samples);
+
+    void onInit() override;
 
     void onTick(float dt) override;
 
     void onRender() override;
 
-    void onResize(int width, int height) override;
+    void onSizeEvent(const SizeEvent &event);
 
     Framebuffer *getGBuffer();
 

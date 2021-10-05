@@ -12,6 +12,8 @@ ParticleSystem::ParticleSystem(int poolSize) : m_poolIndex(poolSize - 1) {
     m_particles.resize(poolSize);
 }
 
+void ParticleSystem::onInit() {}
+
 void ParticleSystem::onRender() {
     for (const auto &particle : m_particles) {
         if (!particle.active) continue;

@@ -4,8 +4,7 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/ECS)
 set(ECS_Include
     ${Include_Root}/Component.hpp
     ${Include_Root}/Entity.hpp
-    ${Include_Root}/Scene.hpp
-    ${Include_Root}/System.hpp)
+    ${Include_Root}/Scene.hpp)
 
 set(ECS_Src
     ${Src_Root}/Component.cpp

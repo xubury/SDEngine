@@ -6,14 +6,17 @@ namespace sd {
 
 TerrainSystem::TerrainSystem() : m_min(FLT_MAX), m_max(-FLT_MAX) {}
 
+void TerrainSystem::onInit() { registerEvent(this, &TerrainSystem::onSceneEvent); }
+
 void TerrainSystem::onTick(float) {}
 
 void TerrainSystem::onRender() {}
 
-void TerrainSystem::onSceneChange() { updateAllTerrains(); }
+void TerrainSystem::onSceneEvent(const SceneEvent &) { updateAllTerrains(); }
 
 void TerrainSystem::updateAllTerrains() {
-    auto terrainView = m_scene->view<TransformComponent, TerrainComponent>();
+    auto terrainView =
+        m_layer->getScene()->view<TransformComponent, TerrainComponent>();
     m_terrainGrids.clear();
 
     terrainView.each([this](const entt::entity &entity,
@@ -59,7 +62,7 @@ void TerrainSystem::updateAllTerrains() {
 }
 
 void TerrainSystem::updateTerrain(uint32_t id) {
-    Entity entity(id, m_scene);
+    Entity entity(id, m_layer->getScene());
     const auto &transformComp = entity.getComponent<TransformComponent>();
     const auto &terrainComp = entity.getComponent<TerrainComponent>();
     const auto &terrain = terrainComp.terrain;

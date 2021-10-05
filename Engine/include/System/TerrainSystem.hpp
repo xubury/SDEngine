@@ -1,7 +1,7 @@
 #ifndef SD_TERRAIN_SYSTEM_HPP
 #define SD_TERRAIN_SYSTEM_HPP
 
-#include "ECS/System.hpp"
+#include "Core/System.hpp"
 #include "ECS/Entity.hpp"
 #include "Graphics/Terrain.hpp"
 #include "Utility/QuadTree.hpp"
@@ -15,11 +15,13 @@ class TerrainSystem : public System {
    public:
     TerrainSystem();
 
+    void onInit() override;
+
     void onTick(float dt) override;
 
     void onRender() override;
 
-    void onSceneChange() override;
+    void onSceneEvent(const SceneEvent &event);
 
     void updateAllTerrains();
 

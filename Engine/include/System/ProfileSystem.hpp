@@ -1,7 +1,7 @@
 #ifndef SD_PROFILE_SYSTEM_HPP
 #define SD_PROFILE_SYSTEM_HPP
 
-#include "ECS/System.hpp"
+#include "Core/System.hpp"
 #include "Core/Timing.hpp"
 
 namespace sd {
@@ -12,9 +12,10 @@ class ProfileSystem : public System {
    public:
     ProfileSystem();
 
+    void onInit() override;
     void onTick(float dt) override;
     void onRender() override;
-    void onResize(int width, int height) override;
+    void onSizeEvent(const SizeEvent &event);
 
    private:
     OrthographicCamera m_camera;

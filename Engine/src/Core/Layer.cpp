@@ -1,4 +1,6 @@
 #include "Core/Layer.hpp"
+#include "Core/System.hpp"
+#include "ECS/Scene.hpp"
 
 namespace sd {
 
@@ -12,10 +14,12 @@ void Layer::removeSystem(const Ref<System> &system) {
 }
 
 void Layer::setScene(Scene *scene) {
-    for (auto &system : m_systems) {
-        system->m_scene = scene;
-        system->onSceneChange();
-    }
+    m_scene = scene;
+    SceneEvent event;
+    event.scene = scene;
+    m_dispatcher.dispatchEvent(event);
 }
+
+Scene *Layer::getScene() const { return m_scene; }
 
 }  // namespace sd

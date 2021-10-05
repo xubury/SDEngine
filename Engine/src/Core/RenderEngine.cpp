@@ -13,7 +13,7 @@ RenderEngine::RenderEngine(int width, int height, int samples)
       m_exposure(1.5f),
       m_bloom(1.0f),
       m_isBloom(true) {
-    m_renderSystem = addSystem<RenderSystem>(this, width, height, samples);
+    m_renderSystem = addSystem<RenderSystem>(width, height, samples);
     addSystem<ProfileSystem>();
     m_terrainSystem = addSystem<TerrainSystem>();
 }
@@ -43,9 +43,7 @@ RenderTarget &RenderEngine::getRenderTarget() {
 void RenderEngine::resize(int width, int height) {
     if (m_camera) m_camera->resize(width, height);
     getRenderTarget().resize(width, height);
-    for (auto &system : m_systems) {
-        system->onResize(width, height);
-    }
+    m_dispatcher.dispatchEvent(SizeEvent(width, height));
 }
 
 void RenderEngine::setCamera(Camera *camera) { m_camera = camera; }

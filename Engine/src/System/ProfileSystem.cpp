@@ -6,6 +6,10 @@ namespace sd {
 
 ProfileSystem::ProfileSystem() : m_camera(800, 600, -1.f, 1.f) {}
 
+void ProfileSystem::onInit() {
+    registerEvent(this, &ProfileSystem::onSizeEvent);
+}
+
 void ProfileSystem::onTick(float) {}
 
 void ProfileSystem::onRender() {
@@ -17,8 +21,8 @@ void ProfileSystem::onRender() {
     Renderer2D::endScene();
 }
 
-void ProfileSystem::onResize(int width, int height) {
-    m_camera.resize(width, height);
+void ProfileSystem::onSizeEvent(const SizeEvent &event) {
+    m_camera.resize(event.width, event.height);
 }
 
 }  // namespace sd

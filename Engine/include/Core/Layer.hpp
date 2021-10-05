@@ -1,13 +1,19 @@
 #ifndef SD_LAYER_HPP
 #define SD_LAYER_HPP
 
-#include <string>
 #include <SDL.h>
+#include <string>
+#include <list>
 
 #include "Utility/Export.hpp"
-#include "ECS/System.hpp"
+#include "Utility/Base.hpp"
+#include "Utility/EventDispatcher.hpp"
 
 namespace sd {
+
+class System;
+
+class Scene;
 
 class SD_API Layer {
    public:
@@ -43,18 +49,25 @@ class SD_API Layer {
     std::list<Ref<System>> &getSystems() { return m_systems; }
 
     void setScene(Scene *scene);
+    Scene *getScene() const;
+
+    EventDispatcher &getDispatcher() { return m_dispatcher; }
 
    protected:
     std::string m_name;
     bool m_blockEvent;
+    Scene *m_scene;
 
     std::list<Ref<System>> m_systems;
+    EventDispatcher m_dispatcher;
 };
 
 template <typename SYSTEM, typename... ARGS>
 SYSTEM *Layer::addSystem(ARGS &&...args) {
     Ref<SYSTEM> system = createRef<SYSTEM>(std::forward<ARGS>(args)...);
+    system->m_layer = this;
     m_systems.emplace_back(system);
+    system->onInit();
     return system.get();
 }
 
