@@ -212,7 +212,12 @@ void EditorLayer::onImGui() {
         }
         m_isViewportFocused = ImGui::IsWindowFocused();
         m_isViewportHovered = ImGui::IsWindowHovered();
-        ImGui::DrawTexture(*m_target->getTexture(), wsize);
+        if (sd::Graphics::getAPI() == sd::API::OpenGL) {
+            ImGui::DrawTexture(*m_target->getTexture(), wsize, ImVec2(0, 1),
+                               ImVec2(1, 0));
+        } else {
+            ImGui::DrawTexture(*m_target->getTexture(), wsize);
+        }
 
         sd::Entity selectedEntity = m_scenePanel.getSelectedEntity();
         if (selectedEntity) {
