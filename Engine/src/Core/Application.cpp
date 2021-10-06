@@ -53,8 +53,6 @@ Application::Application() {
         exit(-1);
     }
 
-    s_instance = this;
-
     Device::create();
     Renderer::init();
     Renderer2D::init();
@@ -64,6 +62,8 @@ Application::Application() {
     m_renderEngine = new RenderEngine(width, height, samples);
     pushOverlay(m_imguiLayer);
     pushLayer(m_renderEngine);
+
+    s_instance = this;
 }
 
 Application::~Application() { SDL_Quit(); }

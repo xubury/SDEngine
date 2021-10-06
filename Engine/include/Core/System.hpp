@@ -24,6 +24,7 @@ class System {
     System() = default;
     virtual ~System() = default;
 
+    // TODO: a onDestroy is needed too.
     virtual void onInit() = 0;
 
     virtual void onTick(float){};
