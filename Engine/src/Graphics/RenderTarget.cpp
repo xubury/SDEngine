@@ -9,7 +9,7 @@ RenderTarget::RenderTarget() : m_x(0), m_y(0), m_width(0), m_height(0) {}
 RenderTarget::RenderTarget(int x, int y, int width, int height)
     : m_x(x), m_y(y), m_width(width), m_height(height) {}
 
-void RenderTarget::init() {
+void RenderTarget::createFramebuffer() {
     m_framebuffer = Framebuffer::create();
     std::vector<uint32_t> colors;
     for (const auto &texture : m_textures) {

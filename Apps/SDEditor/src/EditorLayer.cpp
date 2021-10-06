@@ -40,7 +40,7 @@ void EditorLayer::onAttach() {
         m_width, m_height, 8, sd::TextureType::TEX_2D, sd::TextureFormat::DEPTH,
         sd::TextureFormatType::FLOAT, sd::TextureWrap::BORDER,
         sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
-    m_target->init();
+    m_target->createFramebuffer();
 
     show();
 }

@@ -69,8 +69,8 @@ RenderSystem::RenderSystem(int width, int height, int samples)
         m_lightTarget[i].addTexture(
             createTexture(width, height, 1, TextureFormat::RGBA,
                           TextureFormatType::FLOAT, true));
-        m_blurTarget[i].init();
-        m_lightTarget[i].init();
+        m_blurTarget[i].createFramebuffer();
+        m_lightTarget[i].createFramebuffer();
     }
 
     initQuad();
@@ -120,7 +120,7 @@ void RenderSystem::initGBuffer(int width, int height, int samples) {
         samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D,
         TextureFormat::DEPTH, TextureFormatType::FLOAT, TextureWrap::BORDER,
         TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
-    m_gBufferTarget.init();
+    m_gBufferTarget.createFramebuffer();
 }
 
 void RenderSystem::onSizeEvent(const SizeEvent &event) {

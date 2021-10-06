@@ -13,7 +13,7 @@ void Light::createShadowMap(int width, int height) {
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
     shadowMap->setBorderColor(&color);
     m_target.addTexture(shadowMap);
-    m_target.init();
+    m_target.createFramebuffer();
 }
 
 Texture *Light::getShadowMap() const { return m_target.getTexture(); }
