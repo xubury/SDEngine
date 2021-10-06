@@ -4,7 +4,7 @@
 #include "EditorLayer.hpp"
 #include "Utility/Log.hpp"
 
-sd::Application *sd::createApp() { return new SDEditor; }
+IMPLEMENT_APP(SDEditor);
 
 void SDEditor::init() { pushLayer(new EditorLayer(800, 600)); }
 
