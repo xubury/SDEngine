@@ -20,7 +20,7 @@ struct Light {
     mat4 projectionView;
 };
 
-float shadowCalculation(Light light, vec3 fragPos, vec3 lightDir, vec3 normal)
+float shadowCalculation(Light light, vec3 fragPos, vec3 normal)
 {
     if (!light.isCastShadow) return 0.f;
 
@@ -71,7 +71,7 @@ vec3 dirLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
     float spec = pow(max(dot(normal, halfwayDir), 0.0f), 64.0f);
     specular = light.specular * spec * specular;
 
-    float shadow = shadowCalculation(light, fragPos, lightDir, normal);
+    float shadow = shadowCalculation(light, fragPos, normal);
     return ambient + (1.0f - shadow) * (diffuse + specular);
 }
 
@@ -106,7 +106,7 @@ vec3 pointLight(Light light, vec3 fragPos, vec3 normal,
     diffuse *= intensity;
     specular *= intensity;
 
-    float shadow = shadowCalculation(light, fragPos, lightDir, normal);
+    float shadow = shadowCalculation(light, fragPos, normal);
     return ambient + (1.0f - shadow) * (diffuse + specular);
 }
 
