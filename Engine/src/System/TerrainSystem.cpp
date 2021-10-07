@@ -6,7 +6,11 @@ namespace sd {
 
 TerrainSystem::TerrainSystem() : m_min(FLT_MAX), m_max(-FLT_MAX) {}
 
-void TerrainSystem::onInit() { registerEvent(this, &TerrainSystem::onSceneEvent); }
+void TerrainSystem::onInit() {
+    registerEvent(this, &TerrainSystem::onSceneEvent);
+}
+
+void TerrainSystem::onDestroy() { unregisterEvent<SceneEvent>(this); }
 
 void TerrainSystem::onTick(float) {}
 

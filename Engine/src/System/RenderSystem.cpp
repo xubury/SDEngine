@@ -82,6 +82,8 @@ void RenderSystem::onInit() {
     registerEvent(this, &RenderSystem::onSizeEvent);
 }
 
+void RenderSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
+
 void RenderSystem::initQuad() {
     float quadVertices[] = {
         1.0f,  1.0f,  0.f, 1.0f, 1.0f,  // top right

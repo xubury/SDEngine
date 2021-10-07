@@ -23,6 +23,8 @@ RenderEngine &Application::getRenderEngine() {
 }
 
 Application::Application() {
+    s_instance = this;
+
     std::string debugPath = "Debug.txt";
     Log::init(debugPath);
     int width = 1280;
@@ -62,8 +64,6 @@ Application::Application() {
     m_renderEngine = new RenderEngine(width, height, samples);
     pushOverlay(m_imguiLayer);
     pushLayer(m_renderEngine);
-
-    s_instance = this;
 }
 
 Application::~Application() { SDL_Quit(); }

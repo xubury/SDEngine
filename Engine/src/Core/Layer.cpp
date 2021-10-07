@@ -5,6 +5,7 @@
 namespace sd {
 
 void Layer::removeSystem(const Ref<System> &system) {
+    system->onDestroy();
     auto iter = std::find(m_systems.begin(), m_systems.end(), system);
     if (iter != m_systems.end()) {
         m_systems.erase(iter);

@@ -27,6 +27,8 @@ class SD_API RenderSystem : public System {
 
     void onInit() override;
 
+    void onDestroy() override;
+
     void onTick(float dt) override;
 
     void onRender() override;

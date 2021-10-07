@@ -10,6 +10,8 @@ void ProfileSystem::onInit() {
     registerEvent(this, &ProfileSystem::onSizeEvent);
 }
 
+void ProfileSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
+
 void ProfileSystem::onTick(float) {}
 
 void ProfileSystem::onRender() {

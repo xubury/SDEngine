@@ -24,8 +24,9 @@ class System {
     System() = default;
     virtual ~System() = default;
 
-    // TODO: a onDestroy is needed too.
-    virtual void onInit() = 0;
+    virtual void onInit(){};
+
+    virtual void onDestroy(){};
 
     virtual void onTick(float){};
 
@@ -33,12 +34,17 @@ class System {
 
     template <typename Event>
     void registerEvent(EventListener<Event> listener) {
-        m_layer->getDispatcher().addListener(listener);
+        m_layer->getDispatcher().addKeyedListener(listener);
     }
 
     template <typename F, typename Event>
     void registerEvent(F *key, void (F::*listenerMethod)(const Event &)) {
-        m_layer->getDispatcher().addListener(key, listenerMethod);
+        m_layer->getDispatcher().addKeyedListener(key, listenerMethod);
+    }
+
+    template <typename Event, typename F>
+    void unregisterEvent(F *object) {
+        m_layer->getDispatcher().removeKeyedListener<Event>(object);
     }
 
    protected:
