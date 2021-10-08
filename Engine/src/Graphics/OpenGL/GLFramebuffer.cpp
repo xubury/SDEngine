@@ -63,6 +63,11 @@ bool GLFramebuffer::attachTexture(const Ref<Texture> &texture) {
     return isColor;
 }
 
+void GLFramebuffer::clear() {
+    m_textureCnt = 0;
+    m_attachments.clear();
+}
+
 void GLFramebuffer::setDrawable(const std::vector<uint32_t> &colorAttachments) {
     bind();
     if (colorAttachments.empty()) {

@@ -11,8 +11,12 @@ RenderEngine::RenderEngine(int width, int height, int samples)
       m_terrainSystem(nullptr),
       m_exposure(1.5f),
       m_bloom(1.0f),
-      m_isBloom(true) {
-    m_renderSystem = addSystem<RenderSystem>(width, height, samples);
+      m_isBloom(true),
+      m_samples(samples) {}
+
+void RenderEngine::onAttach() {
+    m_renderSystem = addSystem<RenderSystem>(m_target->getWidth(),
+                                             m_target->getHeight(), m_samples);
     addSystem<ProfileSystem>();
     m_terrainSystem = addSystem<TerrainSystem>();
 }

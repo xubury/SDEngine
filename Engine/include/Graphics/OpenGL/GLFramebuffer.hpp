@@ -15,7 +15,11 @@ class GLFramebuffer : public Framebuffer {
     virtual ~GLFramebuffer();
 
     void init() override;
+
     bool attachTexture(const Ref<Texture> &texture) override;
+
+    void clear() override;
+
     void setDrawable(const std::vector<uint32_t> &colorAttachments) override;
 
     int readPixels(uint32_t attachmentId, int x, int y) const override;

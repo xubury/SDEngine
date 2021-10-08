@@ -33,7 +33,10 @@ void RenderTarget::addTexture(const Ref<Texture> &texture) {
     }
 }
 
-void RenderTarget::clearTexture() { m_textures.clear(); }
+void RenderTarget::clear() {
+    if (m_framebuffer) m_framebuffer->clear();
+    m_textures.clear();
+}
 
 int RenderTarget::getX() const { return m_x; }
 

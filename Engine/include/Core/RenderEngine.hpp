@@ -8,9 +8,21 @@
 
 namespace sd {
 
+enum GeometryBufferType {
+    G_POSITION = 0,
+    G_NORMAL,
+    G_ALBEDO,
+    G_AMBIENT,
+    G_ENTITY_ID,
+    GBUFFER_COUNT
+};
+
 class RenderEngine : public Layer {
    public:
+   public:
     RenderEngine(int width, int height, int samples);
+
+    void onAttach() override;
 
     void onEventProcess(const SDL_Event &) override;
 
@@ -36,6 +48,7 @@ class RenderEngine : public Layer {
     void setBloomFactor(float Bloom);
 
     void setScene(Scene *scene);
+
    private:
     Ref<RenderTarget> m_target;
 
@@ -47,6 +60,7 @@ class RenderEngine : public Layer {
 
     float m_bloom;
     bool m_isBloom;
+    int m_samples;
 };
 
 }  // namespace sd

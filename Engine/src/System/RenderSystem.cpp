@@ -21,14 +21,14 @@ inline Ref<Texture> createTexture(int width, int height, int samples,
                : TextureMipmapFilter::NEAREST);
 }
 
-inline TextureFormat getTextureFormat(RenderSystem::GBufferType type) {
+inline TextureFormat getTextureFormat(GeometryBufferType type) {
     switch (type) {
-        case RenderSystem::G_POSITION:
-        case RenderSystem::G_NORMAL:
-        case RenderSystem::G_ALBEDO:
-        case RenderSystem::G_AMBIENT:
+        case GeometryBufferType::G_POSITION:
+        case GeometryBufferType::G_NORMAL:
+        case GeometryBufferType::G_ALBEDO:
+        case GeometryBufferType::G_AMBIENT:
             return TextureFormat::RGBA;
-        case RenderSystem::G_ENTITY_ID:
+        case GeometryBufferType::G_ENTITY_ID:
             return TextureFormat::RED;
         default:
             SD_CORE_WARN("Unknown GBuffer!");
@@ -36,15 +36,15 @@ inline TextureFormat getTextureFormat(RenderSystem::GBufferType type) {
     }
 }
 
-inline TextureFormatType getTextureFormatType(RenderSystem::GBufferType type) {
+inline TextureFormatType getTextureFormatType(GeometryBufferType type) {
     switch (type) {
-        case RenderSystem::G_POSITION:
-        case RenderSystem::G_NORMAL:
+        case GeometryBufferType::G_POSITION:
+        case GeometryBufferType::G_NORMAL:
             return TextureFormatType::FLOAT;
-        case RenderSystem::G_ALBEDO:
-        case RenderSystem::G_AMBIENT:
+        case GeometryBufferType::G_ALBEDO:
+        case GeometryBufferType::G_AMBIENT:
             return TextureFormatType::UBYTE;
-        case RenderSystem::G_ENTITY_ID:
+        case GeometryBufferType::G_ENTITY_ID:
             return TextureFormatType::UINT;
         default:
             SD_CORE_WARN("Unknown GBuffer!");
@@ -53,7 +53,10 @@ inline TextureFormatType getTextureFormatType(RenderSystem::GBufferType type) {
 }
 
 RenderSystem::RenderSystem(int width, int height, int samples)
-    : m_blurResult(nullptr), m_lightResult(nullptr), m_scene(nullptr) {
+    : m_blurResult(nullptr),
+      m_lightResult(nullptr),
+      m_gBuffer(Framebuffer::create()),
+      m_scene(nullptr) {
     if (samples > 1) {
         Device::instance().enable(Operation::MULTISAMPLE);
     }
@@ -109,11 +112,12 @@ void RenderSystem::initQuad() {
 
 void RenderSystem::initGBuffer(int width, int height, int samples) {
     m_gBufferShader = Asset::manager().load<Shader>("shaders/gbuffer.glsl");
-    m_gBuffer = Framebuffer::create();
-    for (int i = 0; i < GBUFFER_COUNT; ++i) {
-        TextureFormat format = getTextureFormat(GBufferType(i));
-        TextureFormatType type = getTextureFormatType(GBufferType(i));
-        bool linear = i != G_ENTITY_ID;
+    m_gBuffer->clear();
+    m_gBufferTarget.clear();
+    for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
+        TextureFormat format = getTextureFormat(GeometryBufferType(i));
+        TextureFormatType type = getTextureFormatType(GeometryBufferType(i));
+        bool linear = i != GeometryBufferType::G_ENTITY_ID;
         m_gBufferTarget.addTexture(
             createTexture(width, height, samples, format, type, linear));
         m_gBuffer->attachTexture(
@@ -171,7 +175,8 @@ void RenderSystem::renderMain() {
         m_mainShader->setTexture("u_blur", m_blurResult);
     }
     m_mainShader->setTexture("u_lighting", m_lightResult);
-    m_mainShader->setTexture("u_gEntityId", gBuffer->getTexture(G_ENTITY_ID));
+    m_mainShader->setTexture(
+        "u_gEntityId", gBuffer->getTexture(GeometryBufferType::G_ENTITY_ID));
     m_mainShader->setFloat("u_exposure",
                            Application::getRenderEngine().getExposure());
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
@@ -228,10 +233,14 @@ void RenderSystem::renderShadow() {
 void RenderSystem::renderLight() {
     m_lightShader->bind();
     Framebuffer *gBuffer = getGBuffer();
-    m_lightShader->setTexture("u_gPosition", gBuffer->getTexture(G_POSITION));
-    m_lightShader->setTexture("u_gNormal", gBuffer->getTexture(G_NORMAL));
-    m_lightShader->setTexture("u_gAlbedo", gBuffer->getTexture(G_ALBEDO));
-    m_lightShader->setTexture("u_gAmbient", gBuffer->getTexture(G_AMBIENT));
+    m_lightShader->setTexture(
+        "u_gPosition", gBuffer->getTexture(GeometryBufferType::G_POSITION));
+    m_lightShader->setTexture(
+        "u_gNormal", gBuffer->getTexture(GeometryBufferType::G_NORMAL));
+    m_lightShader->setTexture(
+        "u_gAlbedo", gBuffer->getTexture(GeometryBufferType::G_ALBEDO));
+    m_lightShader->setTexture(
+        "u_gAmbient", gBuffer->getTexture(GeometryBufferType::G_AMBIENT));
     Device::instance().setDepthMask(false);
     const uint8_t inputIndex = 0;
     const uint8_t outputIndex = 1;
@@ -282,8 +291,8 @@ void RenderSystem::renderGBuffer() {
     Device::instance().disable(Operation::BLEND);
     Device::instance().setClearColor(0.f, 0.f, 0.f, 1.0);
     Device::instance().clear();
-    m_gBufferTarget.getFramebuffer()->clearAttachment(G_ENTITY_ID,
-                                                      &Entity::INVALID_ID);
+    m_gBufferTarget.getFramebuffer()->clearAttachment(
+        GeometryBufferType::G_ENTITY_ID, &Entity::INVALID_ID);
 
     auto terrainView = m_scene->view<TransformComponent, TerrainComponent>();
     terrainView.each([this](const entt::entity &entity,
@@ -327,12 +336,10 @@ void RenderSystem::renderGBuffer() {
         }
     });
 
-    m_gBuffer->copyFrom(m_gBufferTarget.getFramebuffer(),
-                        BufferBit::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
+    getGBuffer()->copyFrom(m_gBufferTarget.getFramebuffer(),
+                           BufferBit::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
     Device::instance().enable(Operation::BLEND);
     Renderer3D::endScene();
 }
-
-Framebuffer *RenderSystem::getGBuffer() { return m_gBuffer.get(); }
 
 }  // namespace sd

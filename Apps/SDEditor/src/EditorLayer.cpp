@@ -183,7 +183,7 @@ void EditorLayer::onImGui() {
     ImGui::Begin("GBuffer");
     {
         ImVec2 wsize = ImGui::GetContentRegionAvail();
-        for (int i = 0; i < sd::RenderSystem::G_ENTITY_ID; ++i) {
+        for (int i = 0; i < sd::GeometryBufferType::G_ENTITY_ID; ++i) {
             ImGui::DrawTexture(*sd::Application::getRenderEngine()
                                     .getRenderSystem()
                                     ->getGBuffer()

@@ -5,7 +5,7 @@
 namespace sd {
 
 void Light::createShadowMap(int width, int height) {
-    m_target.clearTexture();
+    m_target.clear();
     auto shadowMap = Texture::create(
         width, height, 1, TextureType::TEX_2D, TextureFormat::DEPTH,
         TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::NEAREST,

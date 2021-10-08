@@ -22,6 +22,8 @@ class SD_API Framebuffer {
 
     virtual bool attachTexture(const Ref<Texture> &texture) = 0;
 
+    virtual void clear() = 0;
+
     virtual void setDrawable(const std::vector<uint32_t> &colorAttachments) = 0;
 
     virtual int readPixels(uint32_t attachmentId, int x, int y) const = 0;

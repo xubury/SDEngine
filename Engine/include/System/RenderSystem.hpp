@@ -9,19 +9,7 @@
 
 namespace sd {
 
-class RenderEngine;
-
 class SD_API RenderSystem : public System {
-   public:
-    enum GBufferType {
-        G_POSITION = 0,
-        G_NORMAL,
-        G_ALBEDO,
-        G_AMBIENT,
-        G_ENTITY_ID,
-        GBUFFER_COUNT
-    };
-
    public:
     RenderSystem(int width, int height, int samples);
 
@@ -36,8 +24,7 @@ class SD_API RenderSystem : public System {
     void onSizeEvent(const SizeEvent &event);
     void onSceneEvent(const SceneEvent &event);
 
-    Framebuffer *getGBuffer();
-
+    Framebuffer *getGBuffer() const { return m_gBuffer.get(); }
    private:
     void initQuad();
     void initGBuffer(int width, int height, int samples);

@@ -24,7 +24,7 @@ class SD_API RenderTarget {
     void createFramebuffer();
 
     void addTexture(const Ref<Texture> &texture);
-    void clearTexture();
+    void clear();
 
     int getX() const;
     int getY() const;
