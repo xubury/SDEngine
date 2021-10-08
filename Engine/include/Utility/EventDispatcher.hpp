@@ -14,25 +14,12 @@ using EventListener = std::function<void(const Event&)>;
 
 class SD_API EventDispatcher {
    public:
-    template <typename Event>
-    void addListener(EventListener<Event> listener) {
-        getListener<Event>().push_back(listener);
-    }
-
-    template <typename F, typename Event>
-    void addListener(F* key, void (F::*listenerMethod)(const Event&)) {
-        EventListener<Event> listener = [key, listenerMethod](const Event& e) {
-            (key->*listenerMethod)(e);
-        };
-        getListener<Event>().push_back(listener);
-    }
-
     template <typename F, typename Event>
     void addKeyedListener(F* key, void (F::*listenerMethod)(const Event&)) {
         EventListener<Event> listener = [key, listenerMethod](const Event& e) {
             (key->*listenerMethod)(e);
         };
-        auto& listeners = getListener<Event>();
+        auto& listeners = getListeners<Event>();
         listeners.push_back(listener);
         getKeys<Event>()[reinterpret_cast<intptr_t>(key)] =
             listeners.size() - 1;
@@ -41,7 +28,7 @@ class SD_API EventDispatcher {
     template <typename Event, typename F>
     void removeKeyedListener(F* object) {
         auto& keys = getKeys<Event>();
-        auto& listeners = getListener<Event>();
+        auto& listeners = getListeners<Event>();
 
         intptr_t key = reinterpret_cast<intptr_t>(object);
         int index = keys[key];
@@ -54,12 +41,13 @@ class SD_API EventDispatcher {
 
     template <typename Event>
     void dispatchEvent(const Event& e) {
-        for (EventListener<Event>& listener : getListener<Event>()) listener(e);
+        for (EventListener<Event>& listener : getListeners<Event>())
+            listener(e);
     }
 
    private:
     template <typename Event>
-    std::vector<EventListener<Event>>& getListener() {
+    std::vector<EventListener<Event>>& getListeners() {
         static std::vector<EventListener<Event>> listeners;
         return listeners;
     }

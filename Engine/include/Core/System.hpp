@@ -32,11 +32,6 @@ class System {
 
     virtual void onRender(){};
 
-    template <typename Event>
-    void registerEvent(EventListener<Event> listener) {
-        m_layer->getDispatcher().addKeyedListener(listener);
-    }
-
     template <typename F, typename Event>
     void registerEvent(F *key, void (F::*listenerMethod)(const Event &)) {
         m_layer->getDispatcher().addKeyedListener(key, listenerMethod);
