@@ -19,7 +19,6 @@ enum GeometryBufferType {
 
 class RenderEngine : public Layer {
    public:
-   public:
     RenderEngine(int width, int height, int samples);
 
     void onAttach() override;
