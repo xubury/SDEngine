@@ -86,13 +86,15 @@ static void processAiMaterial(const std::filesystem::path &directory,
     uint32_t count = assimpMaterial->GetTextureCount(assimpType);
     if (material.hasTexture(materialType) || count < 1) return;
 
-    if (count > 1) SD_CORE_WARN("Cannot handle multiple texture of same type!");
+    if (count > 1)
+        SD_CORE_WARN(
+            "[processAiMaterial] Cannot handle multiple texture of same type!");
 
     aiString texturePath;
     for (uint32_t i = 0; i < count; ++i) {
         if (assimpMaterial->GetTexture(assimpType, i, &texturePath) !=
             AI_SUCCESS) {
-            SD_CORE_ERROR("Assimp GetTexture error!");
+            SD_CORE_ERROR("[processAiMaterial] Assimp GetTexture error!");
             continue;
         }
         std::string path = (directory / texturePath.C_Str()).string();
