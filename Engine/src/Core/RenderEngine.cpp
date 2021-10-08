@@ -61,9 +61,7 @@ void RenderEngine::setBloomFactor(float bloom) { m_bloom = bloom; }
 float RenderEngine::getBloomFactor() const { return m_bloom; }
 
 void RenderEngine::setScene(Scene *scene) {
-    SceneEvent event;
-    event.scene = scene;
-    m_dispatcher.dispatchEvent(event);
+    m_dispatcher.dispatchEvent(SceneEvent(scene));
 }
 
 }  // namespace sd

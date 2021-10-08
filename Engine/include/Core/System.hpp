@@ -16,6 +16,7 @@ struct SizeEvent {
 };
 
 struct SceneEvent {
+    SceneEvent(Scene *scene) : scene(scene) {}
     Scene *scene;
 };
 
