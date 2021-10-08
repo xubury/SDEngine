@@ -7,15 +7,12 @@
 
 namespace sd {
 
-class RenderEngine;
-
 class ProfileSystem : public System {
    public:
-    ProfileSystem();
+    ProfileSystem(int width, int height);
 
     void onInit() override;
     void onDestroy() override;
-    void onTick(float dt) override;
     void onRender() override;
     void onSizeEvent(const SizeEvent &event);
 

@@ -17,7 +17,7 @@ RenderEngine::RenderEngine(int width, int height, int samples)
 void RenderEngine::onAttach() {
     m_renderSystem = addSystem<RenderSystem>(m_target->getWidth(),
                                              m_target->getHeight(), m_samples);
-    addSystem<ProfileSystem>();
+    addSystem<ProfileSystem>(m_target->getWidth(), m_target->getHeight());
     m_terrainSystem = addSystem<TerrainSystem>();
 }
 

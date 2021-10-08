@@ -4,7 +4,8 @@
 
 namespace sd {
 
-ProfileSystem::ProfileSystem() : m_camera(800, 600, -1.f, 1.f) {
+ProfileSystem::ProfileSystem(int width, int height)
+    : m_camera(width, height, -1.f, 1.f) {
     m_font = Asset::manager().load<Font>("fonts/opensans/OpenSans-Regular.ttf");
 }
 
@@ -13,8 +14,6 @@ void ProfileSystem::onInit() {
 }
 
 void ProfileSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
-
-void ProfileSystem::onTick(float) {}
 
 void ProfileSystem::onRender() {
     Renderer::setRenderTarget(Application::getRenderEngine().getRenderTarget());

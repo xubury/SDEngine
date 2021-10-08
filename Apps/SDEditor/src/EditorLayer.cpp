@@ -9,7 +9,6 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "ImGuizmo.h"
-#include "Graphics/Font.hpp"
 
 EditorLayer::EditorLayer(int width, int height)
     : sd::Layer("Editor Layer"),
@@ -33,11 +32,11 @@ void EditorLayer::onAttach() {
         sd::TextureFormatType::UBYTE, sd::TextureWrap::BORDER,
         sd::TextureFilter::LINEAR, sd::TextureMipmapFilter::LINEAR_NEAREST));
     m_target->addTexture(sd::Texture::create(
-        m_width, m_height, 8, sd::TextureType::TEX_2D, sd::TextureFormat::RED,
+        m_width, m_height, 1, sd::TextureType::TEX_2D, sd::TextureFormat::RED,
         sd::TextureFormatType::UINT, sd::TextureWrap::BORDER,
         sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
     m_target->addTexture(sd::Texture::create(
-        m_width, m_height, 8, sd::TextureType::TEX_2D, sd::TextureFormat::DEPTH,
+        m_width, m_height, 1, sd::TextureType::TEX_2D, sd::TextureFormat::DEPTH,
         sd::TextureFormatType::FLOAT, sd::TextureWrap::BORDER,
         sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
     m_target->createFramebuffer();
