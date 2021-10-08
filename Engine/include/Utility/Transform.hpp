@@ -19,8 +19,6 @@ class SD_API Transform {
     Transform* getParent();
     const Transform* getParent() const;
 
-    void setParent(Transform* parent);
-
     std::set<Transform*>& getChildren();
     const std::set<Transform*>& getChildren() const;
 

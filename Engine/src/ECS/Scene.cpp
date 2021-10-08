@@ -110,12 +110,13 @@ void Scene::refreshEntityModel(Entity &entity) {
 
 void Scene::refreshEntityChildTranforms(Entity &entity) {
     EntityDataComponent &data = entity.getComponent<EntityDataComponent>();
-    entity.getComponent<TransformComponent>().transform.getChildren().clear();
+    Transform &transform = entity.getComponent<TransformComponent>().transform;
+    transform.getChildren().clear();
     Entity parent(data.m_parent, this);
-    Transform *parentTransform =
-        parent ? &parent.getComponent<TransformComponent>().transform : nullptr;
-    entity.getComponent<TransformComponent>().transform.setParent(
-        parentTransform);
+    if (parent) {
+        parent.getComponent<TransformComponent>().transform.addChild(
+            &transform);
+    }
 
     for (entt::entity childId : data.m_children) {
         Entity child(childId, this);
