@@ -19,6 +19,7 @@ set(Core_Include
     ${Include_Root}/Context.hpp
     ${Include_Root}/EntryPoint.hpp
     ${Include_Root}/Input.hpp
+    ${Include_Root}/InputEngine.hpp
     ${Include_Root}/Layer.hpp
     ${Include_Root}/LayerStack.hpp
     ${Include_Root}/RenderEngine.hpp
@@ -33,6 +34,7 @@ set(Core_Src
     ${Src_Root}/Context.cpp
     ${Src_Root}/EntryPoint.cpp
     ${Src_Root}/Input.cpp
+    ${Src_Root}/InputEngine.cpp
     ${Src_Root}/Layer.cpp
     ${Src_Root}/LayerStack.cpp
     ${Src_Root}/RenderEngine.cpp

@@ -4,6 +4,7 @@
 #include "Core/Window.hpp"
 #include "Core/LayerStack.hpp"
 #include "Core/RenderEngine.hpp"
+#include "Core/InputEngine.hpp"
 #include "ImGui/ImGuiLayer.hpp"
 
 int main(int argc, char **argv);
@@ -14,6 +15,7 @@ class SD_API Application {
    public:
     static Window &getWindow();
     static RenderEngine &getRenderEngine();
+    static InputEngine &getInputEngine();
     static void quit();
 
     Application(const Application &application) = delete;
@@ -53,6 +55,7 @@ class SD_API Application {
     LayerStack m_layers;
     ImGuiLayer *m_imguiLayer;
     RenderEngine *m_renderEngine;
+    InputEngine *m_inputEngine;
 };
 
 }  // namespace sd

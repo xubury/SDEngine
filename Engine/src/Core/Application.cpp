@@ -22,6 +22,10 @@ RenderEngine &Application::getRenderEngine() {
     return *s_instance->m_renderEngine;
 }
 
+InputEngine &Application::getInputEngine() {
+    return *s_instance->m_inputEngine;
+}
+
 Application::Application() {
     s_instance = this;
 
@@ -60,9 +64,11 @@ Application::Application() {
     Renderer2D::init();
     Renderer3D::init();
 
+    m_inputEngine = new InputEngine();
     m_imguiLayer = new ImGuiLayer();
     m_renderEngine = new RenderEngine(width, height, samples);
     pushOverlay(m_imguiLayer);
+    pushOverlay(m_inputEngine);
     pushLayer(m_renderEngine);
 }
 
@@ -77,27 +83,8 @@ void Application::popLayer(Layer *layer) { m_layers.popLayer(layer); }
 void Application::popOverlay(Layer *layer) { m_layers.popOverlay(layer); }
 
 void Application::processEvent(const SDL_Event &event) {
-    switch (event.type) {
-        case SDL_QUIT:
-            quit();
-            break;
-        case SDL_KEYDOWN:
-            Input::manager().pressKey(event.key.keysym.sym);
-            break;
-        case SDL_KEYUP:
-            Input::manager().releaseKey(event.key.keysym.sym);
-            break;
-        case SDL_MOUSEBUTTONDOWN:
-            Input::manager().pressMouseButton(event.button.button);
-            break;
-        case SDL_MOUSEBUTTONUP:
-            Input::manager().releaseMouseButton(event.button.button);
-            break;
-        case SDL_MOUSEMOTION:
-            Input::manager().setMouseCoord(event.motion.x, event.motion.y);
-            break;
-        default:
-            break;
+    if (event.type == SDL_QUIT) {
+        quit();
     }
     for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {
         (*layer)->onEventProcess(event);
@@ -138,9 +125,8 @@ void Application::run() {
 void Application::quit() { s_instance->m_window.setShouldClose(true); }
 
 void Application::tick(float dt) {
-    Input::manager().tick();
-
-    for (auto &layer : m_layers) {
+    for (auto iter = m_layers.rbegin(); iter != m_layers.rend(); ++iter) {
+        auto &layer = *iter;
         for (auto &system : layer->getSystems()) {
             system->onTick(dt);
         }
