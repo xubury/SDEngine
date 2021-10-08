@@ -42,7 +42,7 @@ class System {
         m_layer->getDispatcher().removeKeyedListener<Event>(object);
     }
 
-   protected:
+   private:
     friend class Layer;
     Layer *m_layer;
 };

@@ -1,6 +1,6 @@
 #include "System/ProfileSystem.hpp"
 #include "Renderer/Renderer2D.hpp"
-#include "Core/RenderEngine.hpp"
+#include "Core/Application.hpp"
 
 namespace sd {
 
@@ -17,6 +17,7 @@ void ProfileSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
 void ProfileSystem::onTick(float) {}
 
 void ProfileSystem::onRender() {
+    Renderer::setRenderTarget(Application::getRenderEngine().getRenderTarget());
     Renderer2D::beginScene(m_camera);
 
     Renderer2D::setTextOrigin(

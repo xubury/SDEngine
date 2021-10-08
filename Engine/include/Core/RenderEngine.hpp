@@ -35,6 +35,7 @@ class RenderEngine : public Layer {
     float getBloomFactor() const;
     void setBloomFactor(float Bloom);
 
+    void setScene(Scene *scene);
    private:
     Ref<RenderTarget> m_target;
 

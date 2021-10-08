@@ -14,13 +14,4 @@ void Layer::removeSystem(const Ref<System> &system) {
     }
 }
 
-void Layer::setScene(Scene *scene) {
-    m_scene = scene;
-    SceneEvent event;
-    event.scene = scene;
-    m_dispatcher.dispatchEvent(event);
-}
-
-Scene *Layer::getScene() const { return m_scene; }
-
 }  // namespace sd

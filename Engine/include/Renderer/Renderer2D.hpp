@@ -3,6 +3,7 @@
 
 #include "Utility/Export.hpp"
 #include "Utility/Base.hpp"
+#include "Renderer/Renderer.hpp"
 #include <glm/glm.hpp>
 
 namespace sd {

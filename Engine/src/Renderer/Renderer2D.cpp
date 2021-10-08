@@ -1,5 +1,4 @@
 #include "Renderer/Renderer2D.hpp"
-#include "Renderer/Renderer.hpp"
 #include "Graphics/Device.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/Camera.hpp"

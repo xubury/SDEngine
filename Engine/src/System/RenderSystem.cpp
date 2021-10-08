@@ -1,5 +1,5 @@
 #include "System/RenderSystem.hpp"
-#include "Core/RenderEngine.hpp"
+#include "Core/Application.hpp"
 #include "Graphics/Device.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Renderer/Renderer3D.hpp"
@@ -53,7 +53,7 @@ inline TextureFormatType getTextureFormatType(RenderSystem::GBufferType type) {
 }
 
 RenderSystem::RenderSystem(int width, int height, int samples)
-    : m_engine(nullptr), m_blurResult(nullptr), m_lightResult(nullptr) {
+    : m_blurResult(nullptr), m_lightResult(nullptr), m_scene(nullptr) {
     if (samples > 1) {
         Device::instance().enable(Operation::MULTISAMPLE);
     }
@@ -78,11 +78,14 @@ RenderSystem::RenderSystem(int width, int height, int samples)
 }
 
 void RenderSystem::onInit() {
-    m_engine = dynamic_cast<RenderEngine *>(m_layer);
     registerEvent(this, &RenderSystem::onSizeEvent);
+    registerEvent(this, &RenderSystem::onSceneEvent);
 }
 
-void RenderSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
+void RenderSystem::onDestroy() {
+    unregisterEvent<SizeEvent>(this);
+    unregisterEvent<SceneEvent>(this);
+}
 
 void RenderSystem::initQuad() {
     float quadVertices[] = {
@@ -134,14 +137,22 @@ void RenderSystem::onSizeEvent(const SizeEvent &event) {
     m_gBuffer->resize(event.width, event.height);
 }
 
+void RenderSystem::onSceneEvent(const SceneEvent &event) {
+    m_scene = event.scene;
+}
+
 void RenderSystem::onTick(float) {}
 
 void RenderSystem::onRender() {
-    if (m_engine->getCamera()) {
+    if (m_scene == nullptr) {
+        SD_CORE_WARN("No active scene.");
+        return;
+    }
+    if (Application::getRenderEngine().getCamera()) {
         renderGBuffer();
         renderShadow();
         renderLight();
-        if (m_engine->getBloom()) {
+        if (Application::getRenderEngine().getBloom()) {
             renderBlur();
         }
         renderMain();
@@ -151,20 +162,22 @@ void RenderSystem::onRender() {
 }
 
 void RenderSystem::renderMain() {
-    Renderer::setRenderTarget(m_engine->getRenderTarget());
+    Renderer::setRenderTarget(Application::getRenderEngine().getRenderTarget());
     Device::instance().clear();
 
     m_mainShader->bind();
     Framebuffer *gBuffer = getGBuffer();
-    bool bloom = m_engine->getBloom();
+    bool bloom = Application::getRenderEngine().getBloom();
     m_mainShader->setBool("u_bloom", bloom);
     if (bloom) {
-        m_mainShader->setFloat("u_bloomFactor", m_engine->getBloomFactor());
+        m_mainShader->setFloat("u_bloomFactor",
+                               Application::getRenderEngine().getBloomFactor());
         m_mainShader->setTexture("u_blur", m_blurResult);
     }
     m_mainShader->setTexture("u_lighting", m_lightResult);
     m_mainShader->setTexture("u_gEntityId", gBuffer->getTexture(G_ENTITY_ID));
-    m_mainShader->setFloat("u_exposure", m_engine->getExposure());
+    m_mainShader->setFloat("u_exposure",
+                           Application::getRenderEngine().getExposure());
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
 }
 
@@ -187,13 +200,11 @@ void RenderSystem::renderBlur() {
 }
 
 void RenderSystem::renderShadow() {
-    auto lightView =
-        m_engine->getScene()->view<TransformComponent, LightComponent>();
-    auto modelView =
-        m_engine->getScene()->view<TransformComponent, ModelComponent>();
+    auto lightView = m_scene->view<TransformComponent, LightComponent>();
+    auto modelView = m_scene->view<TransformComponent, ModelComponent>();
     m_shadowShader->bind();
 
-    const Camera *cam = m_engine->getCamera();
+    const Camera *cam = Application::getRenderEngine().getCamera();
     Device::instance().setCullFace(CullFace::FRONT);
     lightView.each([this, &modelView, cam](
                        const TransformComponent &transformComp,
@@ -233,8 +244,7 @@ void RenderSystem::renderLight() {
     const float color[] = {0, 0, 0, 1.0};
     m_lightTarget[inputIndex].getFramebuffer()->clearAttachment(0, color);
 
-    auto lightView =
-        m_engine->getScene()->view<TransformComponent, LightComponent>();
+    auto lightView = m_scene->view<TransformComponent, LightComponent>();
     lightView.each([this](const TransformComponent &transformComp,
                           const LightComponent &lightComp) {
         Renderer::setRenderTarget(m_lightTarget[outputIndex]);
@@ -270,15 +280,15 @@ void RenderSystem::renderLight() {
 }
 
 void RenderSystem::renderGBuffer() {
-    Renderer3D::beginScene(*m_engine->getCamera(), *m_gBufferShader);
+    Renderer3D::beginScene(*Application::getRenderEngine().getCamera(),
+                           *m_gBufferShader);
     Renderer::setRenderTarget(m_gBufferTarget);
     Device::instance().disable(Operation::BLEND);
     Device::instance().setClearColor(0.f, 0.f, 0.f, 1.0);
     Device::instance().clear();
     m_gBufferTarget.getFramebuffer()->clearAttachment(G_ENTITY_ID,
                                                       &Entity::INVALID_ID);
-    auto modelView =
-        m_engine->getScene()->view<TransformComponent, ModelComponent>();
+    auto modelView = m_scene->view<TransformComponent, ModelComponent>();
     modelView.each([this](const entt::entity &entity,
                           const TransformComponent &transformComp,
                           const ModelComponent &modelComp) {

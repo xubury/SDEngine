@@ -34,6 +34,7 @@ class SD_API RenderSystem : public System {
     void onRender() override;
 
     void onSizeEvent(const SizeEvent &event);
+    void onSceneEvent(const SceneEvent &event);
 
     Framebuffer *getGBuffer();
 
@@ -47,7 +48,6 @@ class SD_API RenderSystem : public System {
     void renderBlur();
     void renderMain();
 
-    RenderEngine *m_engine;
     Ref<Shader> m_mainShader;
 
     Ref<Shader> m_blurShader;
@@ -65,6 +65,8 @@ class SD_API RenderSystem : public System {
     Ref<Shader> m_shadowShader;
 
     Ref<VertexArray> m_quad;
+
+    Scene *m_scene;
 };
 
 }  // namespace sd

@@ -48,9 +48,6 @@ class SD_API Layer {
     void removeSystem(const Ref<System> &system);
     std::list<Ref<System>> &getSystems() { return m_systems; }
 
-    void setScene(Scene *scene);
-    Scene *getScene() const;
-
     EventDispatcher &getDispatcher() { return m_dispatcher; }
 
    protected:
