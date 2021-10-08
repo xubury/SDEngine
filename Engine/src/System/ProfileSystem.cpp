@@ -4,7 +4,9 @@
 
 namespace sd {
 
-ProfileSystem::ProfileSystem() : m_camera(800, 600, -1.f, 1.f) {}
+ProfileSystem::ProfileSystem() : m_camera(800, 600, -1.f, 1.f) {
+    m_font = Asset::manager().load<Font>("fonts/opensans/OpenSans-Regular.ttf");
+}
 
 void ProfileSystem::onInit() {
     registerEvent(this, &ProfileSystem::onSizeEvent);
@@ -17,9 +19,12 @@ void ProfileSystem::onTick(float) {}
 void ProfileSystem::onRender() {
     Renderer2D::beginScene(m_camera);
 
-    Renderer2D::setTextOrigin(-m_camera.getWidth() / 2.f,
-                              m_camera.getHeight() / 2.f - 20);
-    Renderer2D::drawText(L"FPS:" + std::to_wstring(m_fps.getFps()), 0.3);
+    Renderer2D::setTextOrigin(
+        -m_camera.getWidth() / 2.f,
+        m_camera.getHeight() / 2.f - m_font->getPixelSize());
+    Renderer2D::drawText(
+        *m_font,
+        L"FPS:" + std::to_wstring(static_cast<uint32_t>(m_fps.getFps())));
     Renderer2D::endScene();
 }
 

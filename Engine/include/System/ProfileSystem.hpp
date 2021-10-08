@@ -3,6 +3,7 @@
 
 #include "Core/System.hpp"
 #include "Core/Timing.hpp"
+#include "Graphics/Font.hpp"
 
 namespace sd {
 
@@ -21,6 +22,7 @@ class ProfileSystem : public System {
    private:
     OrthographicCamera m_camera;
     FpsCounter m_fps;
+    Ref<Font> m_font;
 };
 
 }  // namespace sd

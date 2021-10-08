@@ -47,7 +47,6 @@ struct Renderer2DData {
     uint32_t textureSlotIndex = 1;
     std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> textureSlots;
 
-    Ref<Font> font;
     glm::vec2 textOrigin;
     glm::vec2 textCursor;
 };
@@ -109,9 +108,6 @@ void Renderer2D::init() {
         TextureMipmapFilter::LINEAR, &color);
 
     s_data.shader = Asset::manager().load<Shader>("shaders/simple.glsl");
-
-    s_data.font =
-        Asset::manager().load<Font>("fonts/opensans/OpenSans-Regular.ttf");
 }
 
 void Renderer2D::beginScene(Camera& camera) {
@@ -216,17 +212,17 @@ void Renderer2D::drawTexture(const Ref<Texture>& texture, const glm::vec3& pos,
                 color);
 }
 
-void Renderer2D::drawText(const std::wstring& text, float scale,
-                          const glm::vec4& color) {
+void Renderer2D::drawText(const Font& font, const std::wstring& text,
+                          float scale, const glm::vec4& color) {
     float x = s_data.textCursor.x;
     float y = s_data.textCursor.y;
     for (const auto c : text) {
         if (c == '\n') {
             x = s_data.textOrigin.x;
-            y -= s_data.font->getPixelSize() * scale;
+            y -= font.getPixelSize() * scale;
             continue;
         }
-        const Character& ch = s_data.font->getCharacter(c);
+        const Character& ch = font.getCharacter(c);
         drawTexture(ch.texture,
                     glm::vec3(x + ch.bearing.x * scale,
                               y + (ch.bearing.y - ch.size.y) * scale, 0),
