@@ -10,7 +10,6 @@ namespace sd {
 class SD_API InputEngine : public Layer {
    public:
     InputEngine();
-    ~InputEngine() = default;
 
     void onTick(float dt) override;
 
