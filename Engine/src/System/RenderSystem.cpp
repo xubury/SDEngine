@@ -201,7 +201,7 @@ void RenderSystem::renderShadow() {
     m_shadowShader->bind();
 
     const Camera *cam = Application::getRenderEngine().getCamera();
-    Device::instance().setCullFace(CullFace::FRONT);
+    Device::instance().setCullFace(Face::FRONT);
     lightView.each([this, &modelView, cam](
                        const TransformComponent &transformComp,
                        LightComponent &lightComp) {
@@ -222,7 +222,7 @@ void RenderSystem::renderShadow() {
             }
         });
     });
-    Device::instance().setCullFace(CullFace::BACK);
+    Device::instance().setCullFace(Face::BACK);
 }
 
 void RenderSystem::renderLight() {
@@ -284,6 +284,25 @@ void RenderSystem::renderGBuffer() {
     Device::instance().clear();
     m_gBufferTarget.getFramebuffer()->clearAttachment(G_ENTITY_ID,
                                                       &Entity::INVALID_ID);
+
+    auto terrainView = m_scene->view<TransformComponent, TerrainComponent>();
+    terrainView.each([this](const entt::entity &entity,
+                            const TransformComponent &transformComp,
+                            const TerrainComponent &terrainComp) {
+        m_gBufferShader->setMat4("u_model",
+                                 transformComp.transform.getWorldTransform());
+        m_gBufferShader->setUint("u_entityId", static_cast<uint32_t>(entity));
+        auto &terrain = terrainComp.terrain;
+        auto &material = terrain.getMaterial();
+        m_gBufferShader->setTexture("u_material.diffuse",
+                                    material.getTexture(MaterialType::DIFFUSE));
+        m_gBufferShader->setTexture(
+            "u_material.specular", material.getTexture(MaterialType::SPECULAR));
+        m_gBufferShader->setTexture("u_material.ambient",
+                                    material.getTexture(MaterialType::AMBIENT));
+        Renderer3D::drawMesh(terrain.getMesh());
+    });
+
     auto modelView = m_scene->view<TransformComponent, ModelComponent>();
     modelView.each([this](const entt::entity &entity,
                           const TransformComponent &transformComp,
@@ -307,6 +326,7 @@ void RenderSystem::renderGBuffer() {
             Renderer3D::drawMesh(mesh);
         }
     });
+
     m_gBuffer->copyFrom(m_gBufferTarget.getFramebuffer(),
                         BufferBit::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
     Device::instance().enable(Operation::BLEND);

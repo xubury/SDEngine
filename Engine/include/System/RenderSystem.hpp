@@ -45,7 +45,9 @@ class SD_API RenderSystem : public System {
     void renderGBuffer();
     void renderShadow();
     void renderLight();
+
     void renderBlur();
+
     void renderMain();
 
     Ref<Shader> m_mainShader;

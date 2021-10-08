@@ -12,7 +12,7 @@ GLenum translate(BufferDataType dataType) {
         case BufferDataType::UCHAR:
             return GL_UNSIGNED_BYTE;
     }
-    return GL_INVALID_VALUE;
+    return GL_INVALID_ENUM;
 }
 
 GLenum translate(MeshTopology meshType) {
@@ -29,6 +29,18 @@ GLenum translate(MeshTopology meshType) {
             return GL_QUADS;
         case MeshTopology::SEGMENTS:
             return GL_LINE_STRIP;
+    }
+    return GL_INVALID_ENUM;
+}
+
+GLenum translate(PolygonMode mode) {
+    switch (mode) {
+        case PolygonMode::POINT:
+            return GL_POINT;
+        case PolygonMode::LINE:
+            return GL_LINE;
+        case PolygonMode::FILL:
+            return GL_FILL;
     }
     return GL_INVALID_VALUE;
 }
@@ -55,7 +67,7 @@ GLenum translate(TextureType textureType) {
             return GL_TEXTURE_CUBE_MAP;
     }
 
-    return GL_INVALID_VALUE;
+    return GL_INVALID_ENUM;
 }
 
 GLenum translateFormat(TextureFormat textureFormat,
@@ -82,7 +94,7 @@ GLenum translateFormat(TextureFormat textureFormat,
         case TextureFormat::STENCIL:
             return GL_STENCIL_COMPONENTS;
     }
-    return GL_INVALID_VALUE;
+    return GL_INVALID_ENUM;
 }
 
 GLenum translate(TextureFormatType textureFormatType) {
@@ -225,6 +237,18 @@ GLenum translate(Operation operation) {
             return GL_STENCIL_TEST;
         case Operation::MULTISAMPLE:
             return GL_MULTISAMPLE;
+    }
+    return GL_INVALID_ENUM;
+}
+
+GLenum translate(Face cullFace) {
+    switch (cullFace) {
+        case Face::FRONT:
+            return GL_FRONT;
+        case Face::BACK:
+            return GL_BACK;
+        case Face::BOTH:
+            return GL_FRONT_AND_BACK;
     }
     return GL_INVALID_ENUM;
 }

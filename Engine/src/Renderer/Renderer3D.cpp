@@ -15,7 +15,8 @@ void Renderer3D::beginScene(Camera &camera, Shader &shader) {
 void Renderer3D::endScene() {}
 
 void Renderer3D::drawMesh(const Mesh &mesh) {
-    Device::instance().setWireframe(mesh.isWireframe());
+    Device::instance().setPolygonMode(
+        mesh.isWireframe() ? PolygonMode::LINE : PolygonMode::FILL, Face::BOTH);
     VertexArray *vao = mesh.getVertexArray();
     if (vao) {
         Renderer::submit(*vao, mesh.getTopology(),

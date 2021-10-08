@@ -10,6 +10,8 @@ GLenum SD_API translate(BufferDataType dataType);
 
 GLenum SD_API translate(MeshTopology meshType);
 
+GLenum SD_API translate(PolygonMode mode);
+
 GLint SD_API translate(BufferIOType ioType);
 
 GLenum SD_API translate(TextureType textureType);
@@ -29,6 +31,8 @@ GLint SD_API translate(TextureFilter textureFilter);
 GLint SD_API translate(TextureMipmapFilter textureMipmapFilter);
 
 GLenum SD_API translate(Operation operation);
+
+GLenum SD_API translate(Face cullFace);
 
 }  // namespace sd
 

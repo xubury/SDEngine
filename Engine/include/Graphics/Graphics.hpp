@@ -15,11 +15,13 @@ enum class MeshTopology {
     LOOP
 };
 
+enum class PolygonMode { POINT, LINE, FILL };
+
 enum class TextureType { TEX_2D, TEX_2D_MULTISAMPLE, TEX_3D, TEX_CUBE };
 
 enum class TextureFormatType { UBYTE, UINT, FLOAT };
 
-enum class CullFace { FRONT, BACK, BOTH };
+enum class Face { FRONT, BACK, BOTH };
 
 enum class TextureFormat { RED, RG, RGB, RGBA, DEPTH, STENCIL };
 

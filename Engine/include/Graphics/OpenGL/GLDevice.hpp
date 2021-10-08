@@ -22,7 +22,7 @@ class GLDevice : public Device {
 
     void setFramebuffer(const Framebuffer *framebuffer) override;
 
-    void setWireframe(bool wireframe) override;
+    void setPolygonMode(PolygonMode mode, Face face) override;
 
     void setDepthMask(bool depthMask) override;
 
@@ -30,7 +30,7 @@ class GLDevice : public Device {
 
     void disable(Operation operation) override;
 
-    void setCullFace(CullFace cullface) override;
+    void setCullFace(Face cullface) override;
 };
 
 }  // namespace sd

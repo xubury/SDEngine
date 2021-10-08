@@ -71,12 +71,8 @@ void GLDevice::setFramebuffer(const Framebuffer *framebuffer) {
     }
 }
 
-void GLDevice::setWireframe(bool wireframe) {
-    if (wireframe) {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    } else {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    }
+void GLDevice::setPolygonMode(PolygonMode mode, Face face) {
+    glPolygonMode(translate(face), translate(mode));
 }
 
 void GLDevice::setDepthMask(bool depthMask) { glDepthMask(depthMask); }
@@ -85,18 +81,6 @@ void GLDevice::disable(Operation operation) { glDisable(translate(operation)); }
 
 void GLDevice::enable(Operation operation) { glEnable(translate(operation)); }
 
-void GLDevice::setCullFace(CullFace cullFace) {
-    switch (cullFace) {
-        case CullFace::FRONT:
-            glCullFace(GL_FRONT);
-            break;
-        case CullFace::BACK:
-            glCullFace(GL_BACK);
-            break;
-        case CullFace::BOTH:
-            glCullFace(GL_FRONT_AND_BACK);
-            break;
-    }
-}
+void GLDevice::setCullFace(Face cullFace) { glCullFace(translate(cullFace)); }
 
 }  // namespace sd
