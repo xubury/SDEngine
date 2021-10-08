@@ -144,21 +144,17 @@ void RenderSystem::onSceneEvent(const SceneEvent &event) {
 void RenderSystem::onTick(float) {}
 
 void RenderSystem::onRender() {
-    if (m_scene == nullptr) {
-        SD_CORE_WARN("No active scene.");
-        return;
+    SD_CORE_ASSERT(m_scene, "No active scene.");
+    SD_CORE_ASSERT(Application::getRenderEngine().getCamera(),
+                   "No camera is set!");
+
+    renderGBuffer();
+    renderShadow();
+    renderLight();
+    if (Application::getRenderEngine().getBloom()) {
+        renderBlur();
     }
-    if (Application::getRenderEngine().getCamera()) {
-        renderGBuffer();
-        renderShadow();
-        renderLight();
-        if (Application::getRenderEngine().getBloom()) {
-            renderBlur();
-        }
-        renderMain();
-    } else {
-        SD_CORE_ASSERT(false, "No camera is set!");
-    }
+    renderMain();
 }
 
 void RenderSystem::renderMain() {
