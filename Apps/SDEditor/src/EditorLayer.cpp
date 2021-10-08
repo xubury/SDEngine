@@ -264,7 +264,7 @@ void EditorLayer::show() {
 }
 
 void EditorLayer::onEventProcess(const SDL_Event &event) {
-    if (m_isViewportFocused && m_isViewportHovered) {
+    if (m_isViewportHovered) {
         m_cameraController.processEvent(event);
     }
     bool lshift = sd::Input::isKeyDown(SDLK_LSHIFT);
@@ -303,7 +303,7 @@ void EditorLayer::onEventProcess(const SDL_Event &event) {
 }
 
 void EditorLayer::onEventsProcess() {
-    if (m_isViewportFocused && m_isViewportHovered) {
+    if (m_isViewportHovered) {
         m_cameraController.processEvents();
     }
 }
