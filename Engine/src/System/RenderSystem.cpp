@@ -178,7 +178,6 @@ void RenderSystem::renderMain() {
     m_mainShader->setTexture("u_lighting", m_lightResult);
     m_mainShader->setFloat("u_exposure", m_exposure);
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
-    m_mainShader->unbind();
 }
 
 void RenderSystem::renderBlur() {
@@ -197,7 +196,6 @@ void RenderSystem::renderBlur() {
         Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
         horizontal = !horizontal;
     }
-    m_blurShader->unbind();
 }
 
 void RenderSystem::renderShadow() {
@@ -226,8 +224,6 @@ void RenderSystem::renderShadow() {
         });
     });
     Device::instance().setCullFace(Face::BACK);
-
-    m_shadowShader->unbind();
 }
 
 void RenderSystem::renderLight() {
@@ -282,7 +278,6 @@ void RenderSystem::renderLight() {
     });
 
     Device::instance().setDepthMask(true);
-    m_lightShader->unbind();
 }
 
 void RenderSystem::renderGBuffer() {
@@ -344,7 +339,6 @@ void RenderSystem::renderGBuffer() {
     Renderer3D::endScene();
 
     Device::instance().enable(Operation::BLEND);
-    m_gBufferShader->unbind();
 }
 
 void RenderSystem::setCamera(Camera *camera) { m_camera = camera; }
