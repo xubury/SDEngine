@@ -13,16 +13,8 @@ namespace sd {
 
 GLContext::GLContext(const WindowProp& property, SDL_Window** window) {
     SD_CORE_TRACE("Initializing GLContext...");
-    uint32_t sdlFlags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
-    if (property.flag & INVISIBLE) {
-        sdlFlags |= SDL_WINDOW_HIDDEN;
-    }
-    if (property.flag & FULLSCREEN) {
-        sdlFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-    }
-    if (property.flag & BORDERLESS) {
-        sdlFlags |= SDL_WINDOW_BORDERLESS;
-    }
+    uint32_t sdlFlags =
+        property.flag | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
 
     // Double buffer
     SDL(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1));

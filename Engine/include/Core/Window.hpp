@@ -8,13 +8,6 @@
 
 namespace sd {
 
-enum WindowFlag {
-    WINDOWED = 0,
-    INVISIBLE = 0x01,
-    FULLSCREEN = 0x01 << 1,
-    BORDERLESS = 0x01 << 2
-};
-
 struct WindowProp {
     std::string title;
     int x;
@@ -23,7 +16,7 @@ struct WindowProp {
     int height;
     int samples;
     bool vsync;
-    WindowFlag flag;
+    SDL_WindowFlags flag;
     WindowProp()
         : title("SD Engine"),
           x(SDL_WINDOWPOS_CENTERED),
@@ -31,8 +24,7 @@ struct WindowProp {
           width(1440),
           height(900),
           samples(8),
-          vsync(true),
-          flag(WINDOWED) {}
+          vsync(true) {}
 };
 
 class Context;
