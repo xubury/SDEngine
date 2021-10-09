@@ -110,7 +110,7 @@ void Renderer2D::init() {
 }
 
 void Renderer2D::beginScene(Camera& camera) {
-    Device::instance().clearDepth();
+    Device::instance().clear(BufferBitMask::DEPTH_BUFFER_BIT);
     Renderer::setCamera(camera, *s_data.shader);
     Device::instance().disable(Operation::DEPTH_TEST);
     startBatch();

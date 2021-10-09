@@ -54,9 +54,11 @@ void GLDevice::setClearColor(float r, float g, float b, float a) {
     glClearColor(r, g, b, a);
 }
 
-void GLDevice::clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
-
-void GLDevice::clearDepth() { glClear(GL_DEPTH_BUFFER_BIT); }
+void GLDevice::clear(BufferBitMask bit) {
+    glClear(translate(bit & BufferBitMask::COLOR_BUFFER_BIT) |
+            translate(bit & BufferBitMask::DEPTH_BUFFER_BIT) |
+            translate(bit & BufferBitMask::STENCIL_BUFFER_BIT));
+}
 
 void GLDevice::setViewport(int x, int y, int width, int height) {
     // opengl define viewport origin at bottom-left

@@ -214,7 +214,7 @@ void RenderSystem::renderShadow() {
         if (!light.isCastShadow) return;
 
         Renderer::setRenderTarget(light.getRenderTarget());
-        Device::instance().clearDepth();
+        Device::instance().clear(BufferBitMask::DEPTH_BUFFER_BIT);
         light.computeLightSpaceMatrix(transformComp.transform, cam);
         m_shadowShader->setMat4("u_projectionView", light.getProjectionView());
 
@@ -337,7 +337,7 @@ void RenderSystem::renderGBuffer() {
     });
 
     getGBuffer()->copyFrom(m_gBufferTarget.getFramebuffer(),
-                           BufferBit::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
+                           BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
     Device::instance().enable(Operation::BLEND);
     Renderer3D::endScene();
 }

@@ -241,14 +241,26 @@ GLenum translate(Operation operation) {
     return GL_INVALID_ENUM;
 }
 
-GLenum translate(Face cullFace) {
-    switch (cullFace) {
+GLenum translate(Face face) {
+    switch (face) {
         case Face::FRONT:
             return GL_FRONT;
         case Face::BACK:
             return GL_BACK;
         case Face::BOTH:
             return GL_FRONT_AND_BACK;
+    }
+    return GL_INVALID_ENUM;
+}
+
+GLenum translate(BufferBitMask bit) {
+    switch (bit) {
+        case BufferBitMask::COLOR_BUFFER_BIT:
+            return GL_COLOR_BUFFER_BIT;
+        case BufferBitMask::DEPTH_BUFFER_BIT:
+            return GL_DEPTH_BUFFER_BIT;
+        case BufferBitMask::STENCIL_BUFFER_BIT:
+            return GL_STENCIL_BUFFER_BIT;
     }
     return GL_INVALID_ENUM;
 }

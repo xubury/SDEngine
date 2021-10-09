@@ -112,31 +112,16 @@ Texture *GLFramebuffer::getTexture(uint32_t attachmentId) {
     return m_attachments[attachmentId].second.get();
 }
 
-void GLFramebuffer::copyFrom(const Framebuffer *other, BufferBit mask,
+void GLFramebuffer::copyFrom(const Framebuffer *other, BufferBitMask mask,
                              TextureFilter filter) {
     const GLFramebuffer *glFb = dynamic_cast<const GLFramebuffer *>(other);
     if (glFb) {
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_id);
         glBindFramebuffer(GL_READ_FRAMEBUFFER, glFb->m_id);
-        GLenum glMask = 0;
-        if (mask & BufferBit::COLOR_BUFFER_BIT) {
-            glMask |= GL_COLOR_BUFFER_BIT;
-        }
-        if (mask & BufferBit::DEPTH_BUFFER_BIT) {
-            glMask |= GL_DEPTH_BUFFER_BIT;
-        }
-        if (mask & BufferBit::STENCIL_BUFFER_BIT) {
-            glMask |= GL_STENCIL_BUFFER_BIT;
-        }
-        GLenum glFilter;
-        switch (filter) {
-            case TextureFilter::LINEAR:
-                glFilter = GL_LINEAR;
-                break;
-            case TextureFilter::NEAREST:
-                glFilter = GL_NEAREST;
-                break;
-        }
+        GLenum glMask = translate(mask & BufferBitMask::COLOR_BUFFER_BIT) |
+                        translate(mask & BufferBitMask::DEPTH_BUFFER_BIT) |
+                        translate(mask & BufferBitMask::STENCIL_BUFFER_BIT);
+        GLenum glFilter = translate(filter);
         for (const auto &[attachment, texture] : m_attachments) {
             glReadBuffer(attachment);
             glDrawBuffer(attachment);

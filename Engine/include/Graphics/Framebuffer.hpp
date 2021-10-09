@@ -35,7 +35,7 @@ class SD_API Framebuffer {
     virtual void bind() const = 0;
     virtual void unbind() const = 0;
 
-    virtual void copyFrom(const Framebuffer *other, BufferBit bufferbit,
+    virtual void copyFrom(const Framebuffer *other, BufferBitMask bufferbit,
                           TextureFilter filter) = 0;
 
     virtual void resize(int width, int height) = 0;

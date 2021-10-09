@@ -27,9 +27,8 @@ class SD_API Device {
 
     virtual void setClearColor(float r, float g, float b, float a) = 0;
 
-    virtual void clear() = 0;
-
-    virtual void clearDepth() = 0;
+    virtual void clear(BufferBitMask bit = BufferBitMask::COLOR_BUFFER_BIT |
+                                       BufferBitMask::DEPTH_BUFFER_BIT) = 0;
 
     virtual void setViewport(int x, int y, int width, int height) = 0;
 

@@ -32,7 +32,9 @@ GLint SD_API translate(TextureMipmapFilter textureMipmapFilter);
 
 GLenum SD_API translate(Operation operation);
 
-GLenum SD_API translate(Face cullFace);
+GLenum SD_API translate(Face face);
+
+GLenum SD_API translate(BufferBitMask bit);
 
 }  // namespace sd
 
