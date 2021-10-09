@@ -56,7 +56,11 @@ RenderSystem::RenderSystem(int width, int height, int samples)
     : m_blurResult(nullptr),
       m_lightResult(nullptr),
       m_gBuffer(Framebuffer::create()),
-      m_scene(nullptr) {
+      m_scene(nullptr),
+      m_camera(nullptr),
+      m_exposure(1.5f),
+      m_bloom(1.0f),
+      m_isBloom(true) {
     if (samples > 1) {
         Device::instance().enable(Operation::MULTISAMPLE);
     }
@@ -133,6 +137,7 @@ void RenderSystem::initGBuffer(int width, int height, int samples) {
 }
 
 void RenderSystem::onSizeEvent(const SizeEvent &event) {
+    m_camera->resize(event.width, event.height);
     for (int i = 0; i < 2; ++i) {
         m_lightTarget[i].resize(event.width, event.height);
         m_blurTarget[i].resize(event.width, event.height);
@@ -149,13 +154,12 @@ void RenderSystem::onTick(float) {}
 
 void RenderSystem::onRender() {
     SD_CORE_ASSERT(m_scene, "No active scene.");
-    SD_CORE_ASSERT(Application::getRenderEngine().getCamera(),
-                   "No camera is set!");
+    SD_CORE_ASSERT(m_camera, "No camera is set!");
 
     renderGBuffer();
     renderShadow();
     renderLight();
-    if (Application::getRenderEngine().getBloom()) {
+    if (m_isBloom) {
         renderBlur();
     }
     renderMain();
@@ -167,18 +171,15 @@ void RenderSystem::renderMain() {
 
     m_mainShader->bind();
     Framebuffer *gBuffer = getGBuffer();
-    bool bloom = Application::getRenderEngine().getBloom();
-    m_mainShader->setBool("u_bloom", bloom);
-    if (bloom) {
-        m_mainShader->setFloat("u_bloomFactor",
-                               Application::getRenderEngine().getBloomFactor());
+    m_mainShader->setBool("u_bloom", m_isBloom);
+    if (m_isBloom) {
+        m_mainShader->setFloat("u_bloomFactor", m_bloom);
         m_mainShader->setTexture("u_blur", m_blurResult);
     }
     m_mainShader->setTexture("u_lighting", m_lightResult);
     m_mainShader->setTexture(
         "u_gEntityId", gBuffer->getTexture(GeometryBufferType::G_ENTITY_ID));
-    m_mainShader->setFloat("u_exposure",
-                           Application::getRenderEngine().getExposure());
+    m_mainShader->setFloat("u_exposure", m_exposure);
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
 }
 
@@ -205,17 +206,15 @@ void RenderSystem::renderShadow() {
     auto modelView = m_scene->view<TransformComponent, ModelComponent>();
     m_shadowShader->bind();
 
-    const Camera *cam = Application::getRenderEngine().getCamera();
     Device::instance().setCullFace(Face::FRONT);
-    lightView.each([this, &modelView, cam](
-                       const TransformComponent &transformComp,
-                       LightComponent &lightComp) {
+    lightView.each([this, &modelView](const TransformComponent &transformComp,
+                                      LightComponent &lightComp) {
         Light &light = lightComp.light;
         if (!light.isCastShadow) return;
 
         Renderer::setRenderTarget(light.getRenderTarget());
         Device::instance().clear(BufferBitMask::DEPTH_BUFFER_BIT);
-        light.computeLightSpaceMatrix(transformComp.transform, cam);
+        light.computeLightSpaceMatrix(transformComp.transform, m_camera);
         m_shadowShader->setMat4("u_projectionView", light.getProjectionView());
 
         modelView.each([this](const TransformComponent &transformComp,
@@ -285,8 +284,7 @@ void RenderSystem::renderLight() {
 }
 
 void RenderSystem::renderGBuffer() {
-    Renderer3D::beginScene(*Application::getRenderEngine().getCamera(),
-                           *m_gBufferShader);
+    Renderer3D::beginScene(*m_camera, *m_gBufferShader);
     Renderer::setRenderTarget(m_gBufferTarget);
     Device::instance().disable(Operation::BLEND);
     Device::instance().setClearColor(0.f, 0.f, 0.f, 1.0);
@@ -337,9 +335,26 @@ void RenderSystem::renderGBuffer() {
     });
 
     getGBuffer()->copyFrom(m_gBufferTarget.getFramebuffer(),
-                           BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
+                           BufferBitMask::COLOR_BUFFER_BIT,
+                           TextureFilter::NEAREST);
     Device::instance().enable(Operation::BLEND);
     Renderer3D::endScene();
 }
+
+void RenderSystem::setCamera(Camera *camera) { m_camera = camera; }
+
+Camera *RenderSystem::getCamera() { return m_camera; }
+
+void RenderSystem::setExposure(float exposure) { m_exposure = exposure; }
+
+float RenderSystem::getExposure() const { return m_exposure; }
+
+void RenderSystem::setBloom(bool isBloom) { m_isBloom = isBloom; }
+
+bool RenderSystem::getBloom() const { return m_isBloom; }
+
+void RenderSystem::setBloomFactor(float bloom) { m_bloom = bloom; }
+
+float RenderSystem::getBloomFactor() const { return m_bloom; }
 
 }  // namespace sd

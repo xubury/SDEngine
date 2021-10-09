@@ -25,6 +25,19 @@ class SD_API RenderSystem : public System {
     void onSceneEvent(const SceneEvent &event);
 
     Framebuffer *getGBuffer() const { return m_gBuffer.get(); }
+
+    void setCamera(Camera *camera);
+    Camera *getCamera();
+
+    float getExposure() const;
+    void setExposure(float exposure);
+
+    bool getBloom() const;
+    void setBloom(bool isBloom);
+
+    float getBloomFactor() const;
+    void setBloomFactor(float Bloom);
+
    private:
     void initQuad();
     void initGBuffer(int width, int height, int samples);
@@ -56,6 +69,12 @@ class SD_API RenderSystem : public System {
     Ref<VertexArray> m_quad;
 
     Scene *m_scene;
+    Camera *m_camera;
+
+    float m_exposure;
+
+    float m_bloom;
+    bool m_isBloom;
 };
 
 }  // namespace sd

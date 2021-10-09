@@ -162,18 +162,26 @@ void EditorLayer::onImGui() {
 
     ImGui::Begin("Render Settings");
     {
-        float exposure = sd::Application::getRenderEngine().getExposure();
+        float exposure =
+            sd::Application::getRenderEngine().getRenderSystem()->getExposure();
         if (ImGui::SliderFloat("Exposure", &exposure, 0, 10)) {
-            sd::Application::getRenderEngine().setExposure(exposure);
+            sd::Application::getRenderEngine().getRenderSystem()->setExposure(
+                exposure);
         }
 
-        bool isBloom = sd::Application::getRenderEngine().getBloom();
+        bool isBloom =
+            sd::Application::getRenderEngine().getRenderSystem()->getBloom();
         if (ImGui::Checkbox("Bloom", &isBloom)) {
-            sd::Application::getRenderEngine().setBloom(isBloom);
+            sd::Application::getRenderEngine().getRenderSystem()->setBloom(
+                isBloom);
         }
-        float bloom = sd::Application::getRenderEngine().getBloomFactor();
+        float bloom = sd::Application::getRenderEngine()
+                          .getRenderSystem()
+                          ->getBloomFactor();
         if (ImGui::SliderFloat("Bloom Factor", &bloom, 0.1, 1)) {
-            sd::Application::getRenderEngine().setBloomFactor(bloom);
+            sd::Application::getRenderEngine()
+                .getRenderSystem()
+                ->setBloomFactor(bloom);
         }
     }
     ImGui::End();
@@ -257,7 +265,8 @@ void EditorLayer::hide() {
 void EditorLayer::show() {
     m_hide = false;
     setBlockEvent(true);
-    sd::Application::getRenderEngine().setCamera(&m_editorCamera);
+    sd::Application::getRenderEngine().getRenderSystem()->setCamera(
+        &m_editorCamera);
     sd::Application::getRenderEngine().setRenderTarget(m_target);
     sd::Application::getRenderEngine().resize(m_width, m_height);
 }

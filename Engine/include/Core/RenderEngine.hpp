@@ -21,8 +21,6 @@ class RenderEngine : public Layer {
    public:
     RenderEngine(int width, int height, int samples);
 
-    void onAttach() override;
-
     void onEventProcess(const SDL_Event &) override;
 
     RenderSystem *getRenderSystem();
@@ -34,18 +32,6 @@ class RenderEngine : public Layer {
     const RenderTarget &getRenderTarget() const;
     RenderTarget &getRenderTarget();
 
-    void setCamera(Camera *camera);
-    Camera *getCamera();
-
-    float getExposure() const;
-    void setExposure(float exposure);
-
-    bool getBloom() const;
-    void setBloom(bool isBloom);
-
-    float getBloomFactor() const;
-    void setBloomFactor(float Bloom);
-
     void setScene(Scene *scene);
 
    private:
@@ -53,13 +39,6 @@ class RenderEngine : public Layer {
 
     RenderSystem *m_renderSystem;
     TerrainSystem *m_terrainSystem;
-    Camera *m_camera;
-
-    float m_exposure;
-
-    float m_bloom;
-    bool m_isBloom;
-    int m_samples;
 };
 
 }  // namespace sd

@@ -8,16 +8,9 @@ RenderEngine::RenderEngine(int width, int height, int samples)
     : Layer("Render Engine"),
       m_target(createRef<RenderTarget>(0, 0, width, height)),
       m_renderSystem(nullptr),
-      m_terrainSystem(nullptr),
-      m_exposure(1.5f),
-      m_bloom(1.0f),
-      m_isBloom(true),
-      m_samples(samples) {}
-
-void RenderEngine::onAttach() {
-    m_renderSystem = addSystem<RenderSystem>(m_target->getWidth(),
-                                             m_target->getHeight(), m_samples);
-    addSystem<ProfileSystem>(m_target->getWidth(), m_target->getHeight());
+      m_terrainSystem(nullptr) {
+    m_renderSystem = addSystem<RenderSystem>(width, height, samples);
+    addSystem<ProfileSystem>(width, height);
     m_terrainSystem = addSystem<TerrainSystem>();
 }
 
@@ -43,26 +36,9 @@ const RenderTarget &RenderEngine::getRenderTarget() const { return *m_target; }
 RenderTarget &RenderEngine::getRenderTarget() { return *m_target; }
 
 void RenderEngine::resize(int width, int height) {
-    if (m_camera) m_camera->resize(width, height);
     getRenderTarget().resize(width, height);
     m_dispatcher.dispatchEvent(SizeEvent(width, height));
 }
-
-void RenderEngine::setCamera(Camera *camera) { m_camera = camera; }
-
-Camera *RenderEngine::getCamera() { return m_camera; }
-
-void RenderEngine::setExposure(float exposure) { m_exposure = exposure; }
-
-float RenderEngine::getExposure() const { return m_exposure; }
-
-void RenderEngine::setBloom(bool isBloom) { m_isBloom = isBloom; }
-
-bool RenderEngine::getBloom() const { return m_isBloom; }
-
-void RenderEngine::setBloomFactor(float bloom) { m_bloom = bloom; }
-
-float RenderEngine::getBloomFactor() const { return m_bloom; }
 
 void RenderEngine::setScene(Scene *scene) {
     m_dispatcher.dispatchEvent(SceneEvent(scene));
