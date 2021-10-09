@@ -181,6 +181,7 @@ void RenderSystem::renderMain() {
         "u_gEntityId", gBuffer->getTexture(GeometryBufferType::G_ENTITY_ID));
     m_mainShader->setFloat("u_exposure", m_exposure);
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
+    m_mainShader->unbind();
 }
 
 void RenderSystem::renderBlur() {
@@ -199,6 +200,7 @@ void RenderSystem::renderBlur() {
         Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
         horizontal = !horizontal;
     }
+    m_blurShader->unbind();
 }
 
 void RenderSystem::renderShadow() {
@@ -227,6 +229,8 @@ void RenderSystem::renderShadow() {
         });
     });
     Device::instance().setCullFace(Face::BACK);
+
+    m_shadowShader->unbind();
 }
 
 void RenderSystem::renderLight() {
@@ -281,17 +285,20 @@ void RenderSystem::renderLight() {
     });
 
     Device::instance().setDepthMask(true);
+    m_lightShader->unbind();
 }
 
 void RenderSystem::renderGBuffer() {
-    Renderer3D::beginScene(*m_camera, *m_gBufferShader);
-    Renderer::setRenderTarget(m_gBufferTarget);
     Device::instance().disable(Operation::BLEND);
+    Renderer::setRenderTarget(m_gBufferTarget);
     Device::instance().setClearColor(0.f, 0.f, 0.f, 1.0);
     Device::instance().clear();
+
+    Renderer3D::beginScene(*m_camera, *m_gBufferShader);
     m_gBufferTarget.getFramebuffer()->clearAttachment(
         GeometryBufferType::G_ENTITY_ID, &Entity::INVALID_ID);
 
+    m_gBufferShader->bind();
     auto terrainView = m_scene->view<TransformComponent, TerrainComponent>();
     terrainView.each([this](const entt::entity &entity,
                             const TransformComponent &transformComp,
@@ -337,8 +344,10 @@ void RenderSystem::renderGBuffer() {
     getGBuffer()->copyFrom(m_gBufferTarget.getFramebuffer(),
                            BufferBitMask::COLOR_BUFFER_BIT,
                            TextureFilter::NEAREST);
-    Device::instance().enable(Operation::BLEND);
     Renderer3D::endScene();
+
+    Device::instance().enable(Operation::BLEND);
+    m_gBufferShader->unbind();
 }
 
 void RenderSystem::setCamera(Camera *camera) { m_camera = camera; }

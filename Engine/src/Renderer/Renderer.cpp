@@ -44,7 +44,6 @@ void Renderer::setCamera(Camera &camera, Shader &shader) {
     s_data.cameraData.viewProjection = camera.getViewPorjection();
     s_data.cameraData.viewPos = camera.getWorldPosition();
     s_data.cameraUBO->updateData(&s_data.cameraData, sizeof(CameraData));
-    shader.bind();
     shader.setUniformBuffer("Camera", *s_data.cameraUBO);
 }
 

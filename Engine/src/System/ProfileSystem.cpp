@@ -1,4 +1,5 @@
 #include "System/ProfileSystem.hpp"
+#include "Graphics/Device.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Core/Application.hpp"
 
@@ -17,6 +18,7 @@ void ProfileSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
 
 void ProfileSystem::onRender() {
     Renderer::setRenderTarget(Application::getRenderEngine().getRenderTarget());
+    Device::instance().clear(BufferBitMask::DEPTH_BUFFER_BIT);
     Renderer2D::beginScene(m_camera);
 
     Renderer2D::setTextOrigin(

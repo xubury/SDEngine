@@ -110,7 +110,8 @@ void Renderer2D::init() {
 }
 
 void Renderer2D::beginScene(Camera& camera) {
-    Device::instance().clear(BufferBitMask::DEPTH_BUFFER_BIT);
+    s_data.shader->bind();
+
     Renderer::setCamera(camera, *s_data.shader);
     Device::instance().disable(Operation::DEPTH_TEST);
     startBatch();
@@ -119,6 +120,8 @@ void Renderer2D::beginScene(Camera& camera) {
 void Renderer2D::endScene() {
     flush();
     Device::instance().enable(Operation::DEPTH_TEST);
+
+    s_data.shader->unbind();
 }
 
 void Renderer2D::flush() {
@@ -130,7 +133,6 @@ void Renderer2D::flush() {
                       (uint8_t*)s_data.quadVertexBufferBase.data();
     s_data.quadVBO->updateData(s_data.quadVertexBufferBase.data(), dataSize);
 
-    s_data.shader->bind();
     for (uint32_t i = 0; i < s_data.textureSlotIndex; ++i) {
         s_data.shader->setTexture(i, s_data.textureSlots[i].get());
     }
