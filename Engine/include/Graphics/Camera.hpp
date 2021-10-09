@@ -8,13 +8,12 @@ namespace sd {
 
 class SD_API Camera {
    public:
-    Camera(float width, float height, float zNear, float zFar);
-    Camera(float width, float height, float zNear, float zFar,
-           Transform *transform);
-    Camera(float width, float height, float zNear, float zFar,
-           const glm::vec3 &position, const glm::quat &rotation);
+    Camera(float zNear, float zFar);
+    Camera(Transform *transform, float zNear, float zFar);
+    Camera(const glm::vec3 &position, const glm::quat &rotation, float zNear,
+           float zFar);
 
-    virtual void resize(float width, float height);
+    virtual void resize(float width, float height) = 0;
 
     void translateLocal(const glm::vec3 &t);
     void translateWorld(const glm::vec3 &t);
@@ -65,14 +64,16 @@ class SD_API Camera {
 
     void updateView();
 
-    float getWidth() const { return m_width; }
-    float getHeight() const { return m_height; }
+    virtual float getNearWidth() const = 0;
+    virtual float getNearHeight() const = 0;
+
+    virtual float getFarWidth() const = 0;
+    virtual float getFarHeight() const = 0;
+
     float getNearZ() const { return m_zNear; }
     float getFarZ() const { return m_zFar; }
 
    protected:
-    float m_width;
-    float m_height;
     float m_zNear;
     float m_zFar;
 
@@ -98,6 +99,16 @@ class SD_API OrthographicCamera : public Camera {
     ~OrthographicCamera() = default;
 
     void resize(float width, float height) override;
+
+    float getNearWidth() const override { return m_width; };
+    float getNearHeight() const override { return m_height; };
+
+    float getFarWidth() const override { return m_width; };
+    float getFarHeight() const override { return m_height; };
+
+   private:
+    float m_width;
+    float m_height;
 };
 
 class SD_API PerspectiveCamera : public Camera {
@@ -113,12 +124,23 @@ class SD_API PerspectiveCamera : public Camera {
 
     float getFOV() const { return m_fov; }
 
-    float getAspect() const { return m_width / m_height; }
+    float getAspect() const { return m_aspect; }
 
     void resize(float width, float height) override;
 
+    float getNearWidth() const override { return getNearHeight() * m_aspect; };
+    float getNearHeight() const override {
+        return std::tan(m_fov / 2.f) * m_zNear * 2.f;
+    };
+
+    float getFarWidth() const override { return getFarHeight() * m_aspect; };
+    float getFarHeight() const override {
+        return std::tan(m_fov / 2.f) * m_zFar * 2.f;
+    };
+
    private:
     float m_fov;
+    float m_aspect;
 };
 
 }  // namespace sd

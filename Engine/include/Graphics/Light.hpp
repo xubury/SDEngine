@@ -23,6 +23,7 @@ class SD_API Light {
 
     bool isDirectional = false;
     bool isCastShadow = false;
+
    public:
     Light() = default;
 
@@ -45,8 +46,8 @@ class SD_API Light {
 
    private:
     static void computeBoundingBox(const Transform &transform,
-                                   const PerspectiveCamera &camera,
-                                   glm::vec3 &min, glm::vec3 &max);
+                                   const Camera &camera, glm::vec3 &min,
+                                   glm::vec3 &max);
     RenderTarget m_target;
     glm::mat4 m_projectionView;
 };

@@ -23,12 +23,7 @@ void Light::computeLightSpaceMatrix(const Transform &transform,
     glm::vec3 min;
     glm::vec3 max;
     if (isDirectional) {
-        auto perspectiveCam = dynamic_cast<const PerspectiveCamera *>(camera);
-        if (perspectiveCam) {
-            computeBoundingBox(transform, *perspectiveCam, min, max);
-        } else {
-            SD_CORE_ASSERT(false, "OrthographicCamera not implemented!");
-        }
+        computeBoundingBox(transform, *camera, min, max);
         // Add a offset for shadow behind the camera frustum
         min.z -= camera->getFarZ();
     } else {
@@ -48,9 +43,8 @@ void Light::computeLightSpaceMatrix(const Transform &transform,
     m_projectionView = lightProjection * lightView;
 }
 
-void Light::computeBoundingBox(const Transform &transform,
-                               const PerspectiveCamera &camera, glm::vec3 &min,
-                               glm::vec3 &max) {
+void Light::computeBoundingBox(const Transform &transform, const Camera &camera,
+                               glm::vec3 &min, glm::vec3 &max) {
     min = glm::vec3(std::numeric_limits<float>::max());
     max = glm::vec3(std::numeric_limits<float>::lowest());
     const glm::mat3 &rotaionInv =
@@ -59,12 +53,11 @@ void Light::computeBoundingBox(const Transform &transform,
         rotaionInv * glm::mat3(camera.getWorldRotation());
     const float nearZ = camera.getNearZ();
     const float farZ = camera.getFarZ();
-    const float fov = camera.getFOV() / 2.f;
-    const float aspect = camera.getAspect();
-    const float nearHeight = nearZ * std::tan(fov);
-    const float nearWidth = nearHeight * aspect;
-    const float farHeight = farZ * std::tan(fov);
-    const float farWidth = farHeight * aspect;
+
+    const float nearWidth = camera.getNearWidth() / 2.f;
+    const float farWidth = camera.getFarWidth() / 2.f;
+    const float nearHeight = camera.getNearHeight() / 2.f;
+    const float farHeight = camera.getFarHeight() / 2.f;
     const glm::vec3 &camPos = rotaionInv * camera.getWorldPosition();
     std::array<glm::vec3, 8> vertices;
     vertices[0] = glm::vec3(-nearWidth, -nearHeight, -nearZ);
