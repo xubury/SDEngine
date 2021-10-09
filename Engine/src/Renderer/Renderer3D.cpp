@@ -18,10 +18,9 @@ void Renderer3D::drawMesh(const Mesh &mesh) {
     Device::instance().setPolygonMode(
         mesh.isWireframe() ? PolygonMode::LINE : PolygonMode::FILL, Face::BOTH);
     VertexArray *vao = mesh.getVertexArray();
-    if (vao) {
-        Renderer::submit(*vao, mesh.getTopology(),
-                         vao->getIndexBuffer()->getCount(), 0);
-    }
+    SD_CORE_ASSERT(vao, "Invalid mesh!");
+    Renderer::submit(*vao, mesh.getTopology(),
+                     vao->getIndexBuffer()->getCount(), 0);
 }
 
 }  // namespace sd
