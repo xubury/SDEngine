@@ -38,8 +38,8 @@ Ref<Texture> surfaceToTexture(SDL_Surface *surface) {
     }
     Ref<Texture> texture = Texture::create(
         converted->w, converted->h, 1, TextureType::TEX_2D, format, formatType,
-        TextureWrap::REPEAT, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_NEAREST, converted->pixels);
+        TextureWrap::REPEAT, TextureFilter::LINEAR, TextureMipmapFilter::LINEAR,
+        converted->pixels);
 
     SDL_FreeSurface(surface);
     SDL_FreeSurface(converted);

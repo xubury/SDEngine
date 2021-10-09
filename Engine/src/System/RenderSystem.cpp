@@ -17,8 +17,7 @@ inline Ref<Texture> createTexture(int width, int height, int samples,
         samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D,
         format, type, TextureWrap::BORDER,
         linear ? TextureFilter::LINEAR : TextureFilter::NEAREST,
-        linear ? TextureMipmapFilter::LINEAR_NEAREST
-               : TextureMipmapFilter::NEAREST);
+        linear ? TextureMipmapFilter::LINEAR : TextureMipmapFilter::NEAREST);
 }
 
 inline TextureFormat getTextureFormat(GeometryBufferType type) {

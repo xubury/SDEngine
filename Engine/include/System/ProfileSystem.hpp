@@ -13,6 +13,7 @@ class ProfileSystem : public System {
 
     void onInit() override;
     void onDestroy() override;
+    void onTick(float dt) override;
     void onRender() override;
     void onSizeEvent(const SizeEvent &event);
 

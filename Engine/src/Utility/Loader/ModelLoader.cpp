@@ -98,7 +98,9 @@ static void processAiMaterial(const std::filesystem::path &directory,
             continue;
         }
         std::string path = (directory / texturePath.C_Str()).string();
-        material.setTexture(materialType, Asset::manager().load<Texture>(path));
+        auto texture = Asset::manager().load<Texture>(path);
+        texture->setMipmapFilter(TextureMipmapFilter::LINEAR_LINEAR);
+        material.setTexture(materialType, texture);
     }
 }
 

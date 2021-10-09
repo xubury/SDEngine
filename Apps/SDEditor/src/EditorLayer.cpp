@@ -30,7 +30,7 @@ void EditorLayer::onAttach() {
     m_target->addTexture(sd::Texture::create(
         m_width, m_height, 1, sd::TextureType::TEX_2D, sd::TextureFormat::RGBA,
         sd::TextureFormatType::UBYTE, sd::TextureWrap::BORDER,
-        sd::TextureFilter::LINEAR, sd::TextureMipmapFilter::LINEAR_NEAREST));
+        sd::TextureFilter::LINEAR, sd::TextureMipmapFilter::LINEAR));
     m_target->addTexture(sd::Texture::create(
         m_width, m_height, 1, sd::TextureType::TEX_2D, sd::TextureFormat::DEPTH,
         sd::TextureFormatType::FLOAT, sd::TextureWrap::BORDER,

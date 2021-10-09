@@ -6,7 +6,7 @@
 namespace sd {
 
 ProfileSystem::ProfileSystem(int width, int height)
-    : m_camera(width, height, -1.f, 1.f), m_fps(20) {
+    : m_camera(width, height, -1000.f, 1000.f), m_fps(20) {
     m_font = Asset::manager().load<Font>("fonts/opensans/OpenSans-Regular.ttf");
 }
 
@@ -15,6 +15,10 @@ void ProfileSystem::onInit() {
 }
 
 void ProfileSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
+
+static float angle = 0.f;
+
+void ProfileSystem::onTick(float dt) { angle += dt * 100; }
 
 void ProfileSystem::onRender() {
     Renderer::setRenderTarget(Application::getRenderEngine().getRenderTarget());
@@ -26,6 +30,10 @@ void ProfileSystem::onRender() {
         m_camera.getNearHeight() / 2.f - m_font->getPixelSize());
     std::wstring fpsStr =
         L"FPS:" + std::to_wstring(static_cast<uint32_t>(m_fps.getFps()));
+
+    Renderer2D::drawTexture(
+        Asset::manager().load<Texture>("textures/1_diagdown.png"),
+        glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1, 0, 0)));
     Renderer2D::drawText(*m_font, fpsStr);
     Renderer2D::endScene();
 }
