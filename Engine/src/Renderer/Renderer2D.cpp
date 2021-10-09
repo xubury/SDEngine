@@ -201,14 +201,6 @@ void Renderer2D::drawTexture(const Ref<Texture>& texture,
     s_data.quadIndexCnt += 6;
 }
 
-void Renderer2D::drawTexture(const Ref<Texture>& texture, const glm::vec3& pos,
-                             const glm::vec3& scale, const glm::vec4& color) {
-    drawTexture(texture,
-                glm::translate(glm::mat4(1.0f), pos) *
-                    glm::scale(glm::mat4(1.0f), scale),
-                color);
-}
-
 void Renderer2D::drawText(const Font& font, const std::wstring& text,
                           float scale, const glm::vec4& color) {
     float x = s_data.textCursor.x;
@@ -220,10 +212,14 @@ void Renderer2D::drawText(const Font& font, const std::wstring& text,
             continue;
         }
         const Character& ch = font.getCharacter(c);
-        drawTexture(ch.texture,
-                    glm::vec3(x + ch.bearing.x * scale,
-                              y + (ch.bearing.y - ch.size.y) * scale, 0),
-                    glm::vec3(ch.size.x * scale, ch.size.y * scale, 0), color);
+        glm::mat4 transform =
+            glm::translate(
+                glm::mat4(1.0f),
+                glm::vec3(x + ch.bearing.x * scale,
+                          y + (ch.bearing.y - ch.size.y) * scale, 0)) *
+            glm::scale(glm::mat4(1.0f),
+                       glm::vec3(ch.size.x * scale, ch.size.y * scale, 0));
+        drawTexture(ch.texture, transform, color);
         x += (ch.advance >> 6) * scale;
     }
     s_data.textCursor.x = x;

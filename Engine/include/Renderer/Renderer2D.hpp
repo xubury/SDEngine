@@ -28,12 +28,7 @@ class SD_API Renderer2D {
     static void drawQuad(const glm::mat4 &transform, const glm::vec4 &color);
 
     static void drawTexture(const Ref<Texture> &texture,
-                            const glm::mat4 &transform,
-                            const glm::vec4 &color = glm::vec4(1.0f));
-
-    static void drawTexture(const Ref<Texture> &texture, const glm::vec3 &pos,
-                            const glm::vec3 &scale,
-                            const glm::vec4 &color = glm::vec4(1.0f));
+                            const glm::mat4 &transform, const glm::vec4 &color);
 
     static void drawText(const Font &font, const std::wstring &text,
                          float scale = 1,

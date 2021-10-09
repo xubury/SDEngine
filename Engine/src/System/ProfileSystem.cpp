@@ -24,9 +24,9 @@ void ProfileSystem::onRender() {
     Renderer2D::setTextOrigin(
         -m_camera.getNearWidth() / 2.f,
         m_camera.getNearHeight() / 2.f - m_font->getPixelSize());
-    Renderer2D::drawText(
-        *m_font,
-        L"FPS:" + std::to_wstring(static_cast<uint32_t>(m_fps.getFps())));
+    std::wstring fpsStr =
+        L"FPS:" + std::to_wstring(static_cast<uint32_t>(m_fps.getFps()));
+    Renderer2D::drawText(*m_font, fpsStr);
     Renderer2D::endScene();
 }
 
