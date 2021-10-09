@@ -1,4 +1,5 @@
 #include "Core/Timing.hpp"
+#include <numeric>
 #include <SDL.h>
 
 namespace sd {
@@ -13,9 +14,16 @@ uint32_t Clock::restart() {
     return elapsed;
 }
 
+FpsCounter::FpsCounter(uint8_t capacity) : m_capacity(capacity) {}
+
 float FpsCounter::getFps() {
-    uint32_t elapsed = m_clock.restart();
-    return 1000.f / elapsed;
+    float fps = 1000.f / (float)m_clock.restart();
+    m_queue.push_back(fps);
+    if (m_queue.size() > m_capacity) {
+        m_queue.pop_front();
+    }
+
+    return std::accumulate(m_queue.begin(), m_queue.end(), 0.f) / m_capacity;
 }
 
 }  // namespace sd

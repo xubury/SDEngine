@@ -2,6 +2,7 @@
 #define SD_TIMING_HPP
 
 #include <cstdint>
+#include <queue>
 #include "Utility/Export.hpp"
 
 namespace sd {
@@ -21,8 +22,7 @@ class SD_API Clock {
 
 class SD_API FpsCounter {
    public:
-    FpsCounter() = default;
-    ~FpsCounter() = default;
+    FpsCounter(uint8_t capacity);
 
     FpsCounter(const FpsCounter &) = delete;
     FpsCounter &operator=(const FpsCounter &) = delete;
@@ -31,6 +31,8 @@ class SD_API FpsCounter {
 
    private:
     Clock m_clock;
+    std::deque<float> m_queue;
+    uint8_t m_capacity;
 };
 
 }  // namespace sd

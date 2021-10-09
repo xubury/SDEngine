@@ -6,7 +6,7 @@
 namespace sd {
 
 ProfileSystem::ProfileSystem(int width, int height)
-    : m_camera(width, height, -1.f, 1.f) {
+    : m_camera(width, height, -1.f, 1.f), m_fps(20) {
     m_font = Asset::manager().load<Font>("fonts/opensans/OpenSans-Regular.ttf");
 }
 
