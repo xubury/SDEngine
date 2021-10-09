@@ -32,10 +32,6 @@ void EditorLayer::onAttach() {
         sd::TextureFormatType::UBYTE, sd::TextureWrap::BORDER,
         sd::TextureFilter::LINEAR, sd::TextureMipmapFilter::LINEAR_NEAREST));
     m_target->addTexture(sd::Texture::create(
-        m_width, m_height, 1, sd::TextureType::TEX_2D, sd::TextureFormat::RED,
-        sd::TextureFormatType::UINT, sd::TextureWrap::BORDER,
-        sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
-    m_target->addTexture(sd::Texture::create(
         m_width, m_height, 1, sd::TextureType::TEX_2D, sd::TextureFormat::DEPTH,
         sd::TextureFormatType::FLOAT, sd::TextureWrap::BORDER,
         sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
@@ -57,8 +53,11 @@ void EditorLayer::onTick(float dt) {
     mouseY -= m_viewportBounds[0].y;
     glm::vec2 viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
     if (!ImGuizmo::IsUsing() && ImGui::IsMouseDown(0) && m_isViewportHovered) {
-        sd::EntityId id = m_target->getFramebuffer()->readPixels(
-            1, mouseX, viewportSize.y - mouseY);
+        sd::EntityId id = sd::Application::getRenderEngine()
+                              .getRenderSystem()
+                              ->getGBuffer()
+                              ->readPixels(sd::GeometryBufferType::G_ENTITY_ID,
+                                           mouseX, viewportSize.y - mouseY);
         if (id != sd::Entity::INVALID_ID) {
             m_scenePanel.setSelectedEntity(id);
         }

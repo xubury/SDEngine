@@ -170,15 +170,12 @@ void RenderSystem::renderMain() {
     Device::instance().clear();
 
     m_mainShader->bind();
-    Framebuffer *gBuffer = getGBuffer();
     m_mainShader->setBool("u_bloom", m_isBloom);
     if (m_isBloom) {
         m_mainShader->setFloat("u_bloomFactor", m_bloom);
         m_mainShader->setTexture("u_blur", m_blurResult);
     }
     m_mainShader->setTexture("u_lighting", m_lightResult);
-    m_mainShader->setTexture(
-        "u_gEntityId", gBuffer->getTexture(GeometryBufferType::G_ENTITY_ID));
     m_mainShader->setFloat("u_exposure", m_exposure);
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
     m_mainShader->unbind();

@@ -15,14 +15,12 @@ struct QuadVertex {
     glm::vec2 texCoord;
     float texIndex;
     uint32_t grayScale;
-    uint32_t entityIndex;
     QuadVertex()
         : position(0.f),
           color(0.f),
           texCoord(0.f),
           texIndex(0.f),
-          grayScale(0),
-          entityIndex(0) {}
+          grayScale(0) {}
 };
 
 struct Renderer2DData {
@@ -84,7 +82,6 @@ void Renderer2D::init() {
     layout.push<float>(2);     // texCoord
     layout.push<float>(1);     // texIndex
     layout.push<uint32_t>(1);  // grayScale
-    layout.push<uint32_t>(1);  // entityIndex
 
     s_data.quadVAO = VertexArray::create();
     s_data.quadVAO->addVertexBuffer(s_data.quadVBO, layout);
@@ -199,7 +196,6 @@ void Renderer2D::drawTexture(const Ref<Texture>& texture,
         s_data.quadVertexBufferPtr->texIndex = textureIndex;
         s_data.quadVertexBufferPtr->grayScale =
             texture->getFormat() == TextureFormat::RED;
-        s_data.quadVertexBufferPtr->entityIndex = -1;
         ++s_data.quadVertexBufferPtr;
     }
     s_data.quadIndexCnt += 6;
