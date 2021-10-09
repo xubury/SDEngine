@@ -22,6 +22,7 @@ struct WindowProp {
     int width;
     int height;
     int samples;
+    bool vsync;
     WindowFlag flag;
     WindowProp()
         : title("SD Engine"),
@@ -30,6 +31,7 @@ struct WindowProp {
           width(1440),
           height(900),
           samples(8),
+          vsync(true),
           flag(WINDOWED) {}
 };
 
