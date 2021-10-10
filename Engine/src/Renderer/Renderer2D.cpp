@@ -206,24 +206,21 @@ void Renderer2D::drawTexture(const Ref<Texture>& texture,
 }
 
 void Renderer2D::drawText(const Font& font, const std::wstring& text,
-                          const glm::vec4& color, float scale) {
+                          const glm::vec4& color, const glm::mat4& transform) {
     float x = s_data.textCursor.x;
     float y = s_data.textCursor.y;
     for (const auto c : text) {
         if (c == '\n') {
             x = s_data.textOrigin.x;
-            y -= font.getPixelSize() * scale;
+            y -= font.getPixelSize();
             continue;
         }
         const Character& ch = font.getCharacter(c);
-        glm::mat4 transform =
-            glm::translate(
-                glm::mat4(1.0f),
-                glm::vec3(x + ch.bearing.x * scale,
-                          y + (ch.bearing.y - ch.size.y) * scale, 0)) *
-            glm::scale(glm::mat4(1.0f), glm::vec3(scale, scale, 1));
-        drawTexture(ch.texture, transform, color);
-        x += (ch.advance >> 6) * scale;
+        glm::mat4 t = glm::translate(
+            glm::mat4(1.0f),
+            glm::vec3(x + ch.bearing.x, y + (ch.bearing.y - ch.size.y), 0));
+        drawTexture(ch.texture, transform * t, color);
+        x += (ch.advance >> 6);
     }
     s_data.textCursor.x = x;
     s_data.textCursor.y = y;

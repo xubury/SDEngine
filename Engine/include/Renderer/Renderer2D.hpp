@@ -33,7 +33,7 @@ class SD_API Renderer2D {
 
     static void drawText(const Font &font, const std::wstring &text,
                          const glm::vec4 &color = glm::vec4(1.0f),
-                         float scale = 1);
+                         const glm::mat4 &transform = glm::mat4(1.0f));
 
     static void setTextOrigin(float x, float y);
 

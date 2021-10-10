@@ -16,9 +16,7 @@ void ProfileSystem::onInit() {
 
 void ProfileSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
 
-static float angle = 0.f;
-
-void ProfileSystem::onTick(float dt) { angle += dt * 100; }
+void ProfileSystem::onTick(float) {}
 
 void ProfileSystem::onRender() {
     Renderer::setRenderTarget(Application::getRenderEngine().getRenderTarget());
@@ -31,9 +29,6 @@ void ProfileSystem::onRender() {
     std::wstring fpsStr =
         L"FPS:" + std::to_wstring(static_cast<uint32_t>(m_fps.getFps()));
 
-    Renderer2D::drawTexture(
-        Asset::manager().load<Texture>("textures/1_diagdown.png"),
-        glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1, 0, 0)));
     Renderer2D::drawText(*m_font, fpsStr);
     Renderer2D::endScene();
 }
