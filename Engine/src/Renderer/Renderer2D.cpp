@@ -108,16 +108,12 @@ void Renderer2D::init() {
 
 void Renderer2D::beginScene(Camera& camera) {
     s_data.shader->bind();
-
     Renderer::setCamera(camera, *s_data.shader);
-    Device::instance().disable(Operation::DEPTH_TEST);
     startBatch();
 }
 
 void Renderer2D::endScene() {
     flush();
-    Device::instance().enable(Operation::DEPTH_TEST);
-
     s_data.shader->unbind();
 }
 

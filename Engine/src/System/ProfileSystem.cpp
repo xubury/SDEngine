@@ -6,7 +6,7 @@
 namespace sd {
 
 ProfileSystem::ProfileSystem(int width, int height)
-    : m_camera(width, height, -1000.f, 1000.f), m_fps(20) {
+    : m_camera(width, height, 0.f, 1000.f), m_fps(20) {
     m_font = Asset::manager().load<Font>("fonts/opensans/OpenSans-Regular.ttf");
 }
 
@@ -19,8 +19,9 @@ void ProfileSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
 void ProfileSystem::onTick(float) {}
 
 void ProfileSystem::onRender() {
+    Device::instance().disable(Operation::DEPTH_TEST);
+
     Renderer::setRenderTarget(Application::getRenderEngine().getRenderTarget());
-    Device::instance().clear(BufferBitMask::DEPTH_BUFFER_BIT);
     Renderer2D::beginScene(m_camera);
 
     Renderer2D::setTextOrigin(
@@ -31,6 +32,8 @@ void ProfileSystem::onRender() {
 
     Renderer2D::drawText(*m_font, fpsStr);
     Renderer2D::endScene();
+
+    Device::instance().enable(Operation::DEPTH_TEST);
 }
 
 void ProfileSystem::onSizeEvent(const SizeEvent &event) {
