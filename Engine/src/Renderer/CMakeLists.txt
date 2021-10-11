@@ -2,14 +2,10 @@ set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Renderer)
 set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Renderer)
 
 set(Renderer_Include
-    ${Include_Root}/Renderer.hpp
-    ${Include_Root}/Renderer2D.hpp
-    ${Include_Root}/Renderer3D.hpp)
+    ${Include_Root}/Renderer.hpp)
 
 set(Renderer_Src
-    ${Src_Root}/Renderer.cpp
-    ${Src_Root}/Renderer2D.cpp
-    ${Src_Root}/Renderer3D.cpp)
+    ${Src_Root}/Renderer.cpp)
 
 add_library(sd-renderer ${Renderer_Src})
 

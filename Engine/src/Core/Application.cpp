@@ -9,8 +9,6 @@
 #include "Utility/Loader/FontLoader.hpp"
 #include "Graphics/Device.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Renderer/Renderer2D.hpp"
-#include "Renderer/Renderer3D.hpp"
 
 namespace sd {
 
@@ -61,8 +59,6 @@ Application::Application() {
 
     Device::create();
     Renderer::init();
-    Renderer2D::init();
-    Renderer3D::init();
 
     m_inputEngine = new InputEngine();
     m_imguiLayer = new ImGuiLayer();

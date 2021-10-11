@@ -1,6 +1,6 @@
 #include "System/ProfileSystem.hpp"
 #include "Graphics/Device.hpp"
-#include "Renderer/Renderer2D.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Core/Application.hpp"
 
 namespace sd {
@@ -22,16 +22,16 @@ void ProfileSystem::onRender() {
     Device::instance().disable(Operation::DEPTH_TEST);
 
     Renderer::setRenderTarget(Application::getRenderEngine().getRenderTarget());
-    Renderer2D::beginScene(m_camera);
+    Renderer::beginScene(m_camera);
 
-    Renderer2D::setTextOrigin(
+    Renderer::setTextOrigin(
         -m_camera.getNearWidth() / 2.f,
         m_camera.getNearHeight() / 2.f - m_font->getPixelSize());
     std::wstring fpsStr =
         L"FPS:" + std::to_wstring(static_cast<uint32_t>(m_fps.getFps()));
 
-    Renderer2D::drawText(*m_font, fpsStr);
-    Renderer2D::endScene();
+    Renderer::drawText(*m_font, fpsStr);
+    Renderer::endScene();
 
     Device::instance().enable(Operation::DEPTH_TEST);
 }

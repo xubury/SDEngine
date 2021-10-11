@@ -5,8 +5,9 @@
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Shader.hpp"
-#include "Graphics/VertexArray.hpp"
 #include "Graphics/RenderTarget.hpp"
+#include "Graphics/Font.hpp"
+#include "Graphics/Mesh.hpp"
 
 namespace sd {
 
@@ -19,14 +20,28 @@ class SD_API Renderer {
 
     static void setRenderTarget(const RenderTarget &target);
 
-   private:
-    friend class Renderer2D;
-    friend class Renderer3D;
+    static void startBatch();
+    static void flush();
+    static void nextBatch();
 
-    static void setCamera(Camera &camera, Shader &shader);
+    static void beginScene(Camera &camera);
+    static void endScene();
 
-    Renderer() = default;
-    static Renderer &instance();
+    static void drawQuad(const glm::mat4 &transform, const glm::vec4 &color);
+
+    static void drawTexture(const Ref<Texture> &texture,
+                            const glm::mat4 &transform,
+                            const glm::vec4 &color = glm::vec4(1.0f));
+
+    static void drawText(const Font &font, const std::wstring &text,
+                         const glm::vec4 &color = glm::vec4(1.0f),
+                         const glm::mat4 &transform = glm::mat4(1.0f));
+
+    static void setTextOrigin(float x, float y);
+
+    static void drawMesh(const Mesh &mesh);
+
+    static void setShader(Shader &shader);
 };
 
 }  // namespace sd

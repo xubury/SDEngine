@@ -1,8 +1,7 @@
 #include "System/RenderSystem.hpp"
 #include "Core/Application.hpp"
 #include "Graphics/Device.hpp"
-#include "Renderer/Renderer2D.hpp"
-#include "Renderer/Renderer3D.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Utility/Log.hpp"
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
@@ -218,7 +217,7 @@ void RenderSystem::renderShadow() {
             m_shadowShader->setMat4(
                 "u_model", transformComp.transform.getWorldTransform());
             for (const auto &mesh : modelComp.model->getMeshes()) {
-                Renderer3D::drawMesh(mesh);
+                Renderer::drawMesh(mesh);
             }
         });
     });
@@ -226,7 +225,7 @@ void RenderSystem::renderShadow() {
 }
 
 void RenderSystem::renderLight() {
-    m_lightShader->bind();
+    Renderer::setShader(*m_lightShader);
     Framebuffer *gBuffer = getGBuffer();
     m_lightShader->setTexture(
         "u_gPosition", gBuffer->getTexture(GeometryBufferType::G_POSITION));
@@ -285,7 +284,8 @@ void RenderSystem::renderGBuffer() {
     Device::instance().setClearColor(0.f, 0.f, 0.f, 1.0);
     Device::instance().clear();
 
-    Renderer3D::beginScene(*m_camera, *m_gBufferShader);
+    Renderer::beginScene(*m_camera);
+    Renderer::setShader(*m_gBufferShader);
     m_gBufferTarget.getFramebuffer()->clearAttachment(
         GeometryBufferType::G_ENTITY_ID, &Entity::INVALID_ID);
 
@@ -305,7 +305,7 @@ void RenderSystem::renderGBuffer() {
             "u_material.specular", material.getTexture(MaterialType::SPECULAR));
         m_gBufferShader->setTexture("u_material.ambient",
                                     material.getTexture(MaterialType::AMBIENT));
-        Renderer3D::drawMesh(terrain.getMesh());
+        Renderer::drawMesh(terrain.getMesh());
     });
 
     auto modelView = m_scene->view<TransformComponent, ModelComponent>();
@@ -328,14 +328,14 @@ void RenderSystem::renderGBuffer() {
             m_gBufferShader->setTexture(
                 "u_material.ambient",
                 material.getTexture(MaterialType::AMBIENT));
-            Renderer3D::drawMesh(mesh);
+            Renderer::drawMesh(mesh);
         }
     });
 
     getGBuffer()->copyFrom(m_gBufferTarget.getFramebuffer(),
                            BufferBitMask::COLOR_BUFFER_BIT,
                            TextureFilter::NEAREST);
-    Renderer3D::endScene();
+    Renderer::endScene();
 
     Device::instance().enable(Operation::BLEND);
 }
