@@ -31,9 +31,10 @@ void EditorLayer::onAttach() {
         sd::TextureFormatType::UBYTE, sd::TextureWrap::BORDER,
         sd::TextureFilter::LINEAR, sd::TextureMipmapFilter::LINEAR));
     m_target->addTexture(sd::Texture::create(
-        m_width, m_height, 1, sd::TextureType::TEX_2D, sd::TextureFormat::DEPTH,
-        sd::TextureFormatType::FLOAT, sd::TextureWrap::BORDER,
-        sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
+        m_width, m_height, 1, sd::TextureType::TEX_2D,
+        sd::TextureFormat::DEPTH_STENCIL, sd::TextureFormatType::UINT24_8,
+        sd::TextureWrap::BORDER, sd::TextureFilter::LINEAR,
+        sd::TextureMipmapFilter::LINEAR));
     m_target->createFramebuffer();
 
     show();

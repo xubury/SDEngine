@@ -30,7 +30,6 @@ class SD_API RenderTarget {
     int getY() const;
     int getWidth() const;
     int getHeight() const;
-    float getAspect() const;
 
     void resize(int width, int height);
 

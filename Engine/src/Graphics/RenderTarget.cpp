@@ -46,10 +46,6 @@ int RenderTarget::getWidth() const { return m_width; }
 
 int RenderTarget::getHeight() const { return m_height; }
 
-float RenderTarget::getAspect() const {
-    return static_cast<float>(m_width) / m_height;
-}
-
 void RenderTarget::resize(int width, int height) {
     m_width = width;
     m_height = height;
@@ -64,10 +60,10 @@ void RenderTarget::setOrigin(int x, int y) {
 }
 
 glm::vec2 RenderTarget::mapScreenToClip(const glm::vec2 &pos) {
-    glm::vec2 view;
-    view.x = -1.f + 2.f * (pos.x - m_x) / m_width;
-    view.y = 1.f - 2.f * (pos.y - m_y) / m_height;
-    return view;
+    glm::vec2 clip;
+    clip.x = -1.f + 2.f * (pos.x - m_x) / m_width;
+    clip.y = 1.f - 2.f * (pos.y - m_y) / m_height;
+    return clip;
 }
 
 glm::vec2 RenderTarget::mapClipToScreen(const glm::vec2 &pos) {

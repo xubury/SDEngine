@@ -98,6 +98,7 @@ void GLTexture::setBorderColor(const void *color) {
         case TextureFormatType::FLOAT:
             glTexParameterfv(gl_type, GL_TEXTURE_BORDER_COLOR, (float *)color);
             break;
+        case TextureFormatType::UINT24_8:
         case TextureFormatType::UINT:
         case TextureFormatType::UBYTE:
             glTexParameteriv(gl_type, GL_TEXTURE_BORDER_COLOR, (int *)color);

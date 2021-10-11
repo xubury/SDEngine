@@ -40,11 +40,11 @@ enum class PolygonMode { POINT, LINE, FILL };
 
 enum class TextureType { TEX_2D, TEX_2D_MULTISAMPLE, TEX_3D, TEX_CUBE };
 
-enum class TextureFormatType { UBYTE, UINT, FLOAT };
+enum class TextureFormatType { UBYTE, UINT, FLOAT, UINT24_8 };
 
 enum class Face { FRONT, BACK, BOTH };
 
-enum class TextureFormat { ALPHA, RED, RG, RGB, RGBA, DEPTH, STENCIL };
+enum class TextureFormat { ALPHA, RED, RG, RGB, RGBA, DEPTH, DEPTH_STENCIL };
 
 enum class TextureWrap { EDGE, BORDER, MIRROR, REPEAT, MIRROR_EDGE };
 

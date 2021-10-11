@@ -76,10 +76,10 @@ GLenum translateFormat(TextureFormat textureFormat,
         case TextureFormat::ALPHA:
         case TextureFormat::RED: {
             switch (textureFormatType) {
+                case TextureFormatType::UINT24_8:
                 case TextureFormatType::UINT:
                     return GL_RED_INTEGER;
                 case TextureFormatType::FLOAT:
-                    return GL_RED;
                 case TextureFormatType::UBYTE:
                     return GL_RED;
             }
@@ -92,8 +92,8 @@ GLenum translateFormat(TextureFormat textureFormat,
             return GL_RGBA;
         case TextureFormat::DEPTH:
             return GL_DEPTH_COMPONENT;
-        case TextureFormat::STENCIL:
-            return GL_STENCIL_COMPONENTS;
+        case TextureFormat::DEPTH_STENCIL:
+            return GL_DEPTH_STENCIL;
     }
     return GL_INVALID_ENUM;
 }
@@ -102,6 +102,8 @@ GLenum translate(TextureFormatType textureFormatType) {
     switch (textureFormatType) {
         case TextureFormatType::UBYTE:
             return GL_UNSIGNED_BYTE;
+        case TextureFormatType::UINT24_8:
+            return GL_UNSIGNED_INT_24_8;
         case TextureFormatType::UINT:
             return GL_UNSIGNED_INT;
         case TextureFormatType::FLOAT:
@@ -119,6 +121,7 @@ GLint translateInternalFormat(TextureFormat textureFormat,
             switch (textureFormatType) {
                 case TextureFormatType::UBYTE:
                     return GL_R8;
+                case TextureFormatType::UINT24_8:
                 case TextureFormatType::UINT:
                     return GL_R32UI;
                 case TextureFormatType::FLOAT:
@@ -126,11 +129,11 @@ GLint translateInternalFormat(TextureFormat textureFormat,
             }
             break;
         }
-
         case TextureFormat::RG: {
             switch (textureFormatType) {
                 case TextureFormatType::UBYTE:
                     return GL_RG8;
+                case TextureFormatType::UINT24_8:
                 case TextureFormatType::UINT:
                     return GL_RG32UI;
                 case TextureFormatType::FLOAT:
@@ -138,11 +141,11 @@ GLint translateInternalFormat(TextureFormat textureFormat,
             }
             break;
         }
-
         case TextureFormat::RGB: {
             switch (textureFormatType) {
                 case TextureFormatType::UBYTE:
                     return GL_RGB8;
+                case TextureFormatType::UINT24_8:
                 case TextureFormatType::UINT:
                     return GL_RGB32UI;
                 case TextureFormatType::FLOAT:
@@ -150,11 +153,11 @@ GLint translateInternalFormat(TextureFormat textureFormat,
             }
             break;
         }
-
         case TextureFormat::RGBA: {
             switch (textureFormatType) {
                 case TextureFormatType::UBYTE:
                     return GL_RGBA8;
+                case TextureFormatType::UINT24_8:
                 case TextureFormatType::UINT:
                     return GL_RGBA32UI;
                 case TextureFormatType::FLOAT:
@@ -162,24 +165,11 @@ GLint translateInternalFormat(TextureFormat textureFormat,
             }
             break;
         }
-
-        case TextureFormat::DEPTH: {
-            switch (textureFormatType) {
-                case TextureFormatType::UBYTE:
-                    return GL_DEPTH_COMPONENT;
-                case TextureFormatType::UINT:
-                    return GL_DEPTH_COMPONENT32;
-                case TextureFormatType::FLOAT:
-                    return GL_DEPTH_COMPONENT24;
-            }
-            break;
-        }
-
-        case TextureFormat::STENCIL: {
-            return GL_STENCIL_COMPONENTS;
-        }
+        case TextureFormat::DEPTH:
+            return GL_DEPTH_COMPONENT;
+        case TextureFormat::DEPTH_STENCIL:
+            return GL_DEPTH_STENCIL;
     }
-
     return GL_INVALID_VALUE;
 }
 

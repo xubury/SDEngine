@@ -129,8 +129,9 @@ void RenderSystem::initGBuffer(int width, int height, int samples) {
     m_gBufferTarget.addTexture(Texture::create(
         width, height, samples,
         samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D,
-        TextureFormat::DEPTH, TextureFormatType::FLOAT, TextureWrap::BORDER,
-        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
+        TextureFormat::DEPTH, TextureFormatType::FLOAT,
+        TextureWrap::BORDER, TextureFilter::LINEAR,
+        TextureMipmapFilter::LINEAR));
     m_gBufferTarget.createFramebuffer();
 }
 

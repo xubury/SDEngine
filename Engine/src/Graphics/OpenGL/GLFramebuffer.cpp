@@ -25,10 +25,14 @@ bool GLFramebuffer::attachTexture(const Ref<Texture> &texture) {
             case TextureFormat::DEPTH:
                 attachment = GL_DEPTH_ATTACHMENT;
                 break;
-            case TextureFormat::STENCIL:
-                attachment = GL_STENCIL_ATTACHMENT;
+            case TextureFormat::DEPTH_STENCIL:
+                attachment = GL_DEPTH_STENCIL_ATTACHMENT;
                 break;
-            default:
+            case TextureFormat::ALPHA:
+            case TextureFormat::RED:
+            case TextureFormat::RG:
+            case TextureFormat::RGB:
+            case TextureFormat::RGBA:
                 isColor = true;
                 attachment = GL_COLOR_ATTACHMENT0 + m_textureCnt++;
                 break;
