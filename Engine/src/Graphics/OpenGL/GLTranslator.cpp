@@ -254,7 +254,7 @@ GLenum translate(BufferBitMask bit) {
         case BufferBitMask::STENCIL_BUFFER_BIT:
             return GL_STENCIL_BUFFER_BIT;
     }
-    return GL_INVALID_ENUM;
+    return 0;
 }
 
 }  // namespace sd

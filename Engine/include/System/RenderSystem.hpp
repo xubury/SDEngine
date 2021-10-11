@@ -9,6 +9,15 @@
 
 namespace sd {
 
+enum GeometryBufferType {
+    G_POSITION = 0,
+    G_NORMAL,
+    G_ALBEDO,
+    G_AMBIENT,
+    G_ENTITY_ID,
+    GBUFFER_COUNT
+};
+
 class SD_API RenderSystem : public System {
    public:
     RenderSystem(int width, int height, int samples);

@@ -116,8 +116,8 @@ Texture *GLFramebuffer::getTexture(uint32_t attachmentId) {
     return m_attachments[attachmentId].second.get();
 }
 
-void GLFramebuffer::copyFrom(const Framebuffer *other, BufferBitMask mask,
-                             TextureFilter filter) {
+void GLFramebuffer::copyFrom(const Framebuffer *other, uint32_t index,
+                             BufferBitMask mask, TextureFilter filter) {
     const GLFramebuffer *glFb = dynamic_cast<const GLFramebuffer *>(other);
     if (glFb) {
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_id);
@@ -126,13 +126,12 @@ void GLFramebuffer::copyFrom(const Framebuffer *other, BufferBitMask mask,
                         translate(mask & BufferBitMask::DEPTH_BUFFER_BIT) |
                         translate(mask & BufferBitMask::STENCIL_BUFFER_BIT);
         GLenum glFilter = translate(filter);
-        for (const auto &[attachment, texture] : m_attachments) {
-            glReadBuffer(attachment);
-            glDrawBuffer(attachment);
-            glBlitFramebuffer(0, 0, texture->getWidth(), texture->getHeight(),
-                              0, 0, texture->getWidth(), texture->getHeight(),
-                              glMask, glFilter);
-        }
+        const auto &[attachment, texture] = m_attachments[index];
+        glReadBuffer(attachment);
+        glDrawBuffer(attachment);
+        glBlitFramebuffer(0, 0, texture->getWidth(), texture->getHeight(), 0, 0,
+                          texture->getWidth(), texture->getHeight(), glMask,
+                          glFilter);
 
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
         glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);

@@ -129,9 +129,8 @@ void RenderSystem::initGBuffer(int width, int height, int samples) {
     m_gBufferTarget.addTexture(Texture::create(
         width, height, samples,
         samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D,
-        TextureFormat::DEPTH, TextureFormatType::FLOAT,
-        TextureWrap::BORDER, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR));
+        TextureFormat::DEPTH, TextureFormatType::FLOAT, TextureWrap::BORDER,
+        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
     m_gBufferTarget.createFramebuffer();
 }
 
@@ -333,9 +332,13 @@ void RenderSystem::renderGBuffer() {
         }
     });
 
-    getGBuffer()->copyFrom(m_gBufferTarget.getFramebuffer(),
-                           BufferBitMask::COLOR_BUFFER_BIT,
-                           TextureFilter::NEAREST);
+    for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
+        getGBuffer()->copyFrom(m_gBufferTarget.getFramebuffer(), i,
+                               BufferBitMask::COLOR_BUFFER_BIT,
+                               i == GeometryBufferType::G_ENTITY_ID
+                                   ? TextureFilter::NEAREST
+                                   : TextureFilter::LINEAR);
+    }
     Renderer::endScene();
 
     Device::instance().enable(Operation::BLEND);
