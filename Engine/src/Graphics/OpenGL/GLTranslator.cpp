@@ -73,6 +73,7 @@ GLenum translate(TextureType textureType) {
 GLenum translateFormat(TextureFormat textureFormat,
                        TextureFormatType textureFormatType) {
     switch (textureFormat) {
+        case TextureFormat::ALPHA:
         case TextureFormat::RED: {
             switch (textureFormatType) {
                 case TextureFormatType::UINT:
@@ -113,6 +114,7 @@ GLenum translate(TextureFormatType textureFormatType) {
 GLint translateInternalFormat(TextureFormat textureFormat,
                               TextureFormatType textureFormatType) {
     switch (textureFormat) {
+        case TextureFormat::ALPHA:
         case TextureFormat::RED: {
             switch (textureFormatType) {
                 case TextureFormatType::UBYTE:

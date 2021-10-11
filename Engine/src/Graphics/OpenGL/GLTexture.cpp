@@ -28,12 +28,19 @@ void GLTexture::init() {
     gl_format = translateFormat(m_format, m_formatType);
     gl_formatType = translate(m_formatType);
 
-    if (m_format == TextureFormat::RED) {
+    glCreateTextures(gl_type, 1, &gl_id);
+    if (m_format == TextureFormat::RED || m_format == TextureFormat::ALPHA) {
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     } else {
         glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
     }
-    glCreateTextures(gl_type, 1, &gl_id);
+
+    if (m_format == TextureFormat::ALPHA) {
+        bind();
+        GLint swizzleMask[] = {GL_ONE, GL_ONE, GL_ONE, GL_RED};
+        glTexParameteriv(gl_type, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+    }
+
     setPixels(m_width, m_height, m_data);
     if (m_type != TextureType::TEX_2D_MULTISAMPLE) {
         setWrap(m_wrap);
@@ -106,6 +113,7 @@ void GLTexture::setWrap(TextureWrap wrap) {
     glTexParameteri(gl_type, GL_TEXTURE_WRAP_R, glWrap);
     glTexParameteri(gl_type, GL_TEXTURE_WRAP_S, glWrap);
     glTexParameteri(gl_type, GL_TEXTURE_WRAP_T, glWrap);
+    unbind();
 }
 
 void GLTexture::setFilter(TextureFilter filter) {
@@ -114,6 +122,7 @@ void GLTexture::setFilter(TextureFilter filter) {
     bind();
     GLint glFilter = translate(m_filter);
     glTexParameteri(gl_type, GL_TEXTURE_MAG_FILTER, glFilter);
+    unbind();
 }
 
 void GLTexture::setMipmapFilter(TextureMipmapFilter mipmapFilter) {
@@ -122,11 +131,13 @@ void GLTexture::setMipmapFilter(TextureMipmapFilter mipmapFilter) {
     bind();
     GLint glMipmapFilter = translate(m_mipmapFilter);
     glTexParameteri(gl_type, GL_TEXTURE_MIN_FILTER, glMipmapFilter);
+    unbind();
 }
 
 void GLTexture::genareteMipmap() const {
     bind();
     glGenerateMipmap(gl_type);
+    unbind();
 }
 
 GLenum GLTexture::getGLType() const { return gl_type; }

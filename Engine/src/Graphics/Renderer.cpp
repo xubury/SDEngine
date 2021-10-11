@@ -10,13 +10,7 @@ struct QuadVertex {
     glm::vec4 color;
     glm::vec2 texCoord;
     float texIndex;
-    uint32_t grayScale;
-    QuadVertex()
-        : position(0.f),
-          color(0.f),
-          texCoord(0.f),
-          texIndex(0.f),
-          grayScale(0) {}
+    QuadVertex() : position(0.f), color(0.f), texCoord(0.f), texIndex(0.f) {}
 };
 
 struct CameraData {
@@ -84,11 +78,10 @@ void Renderer::init() {
         s_data.MAX_VERTICES * sizeof(QuadVertex), BufferIOType::DYNAMIC);
 
     VertexBufferLayout layout;
-    layout.push<float>(3);     // position
-    layout.push<float>(4);     // color
-    layout.push<float>(2);     // texCoord
-    layout.push<float>(1);     // texIndex
-    layout.push<uint32_t>(1);  // grayScale
+    layout.push<float>(3);  // position
+    layout.push<float>(4);  // color
+    layout.push<float>(2);  // texCoord
+    layout.push<float>(1);  // texIndex
 
     s_data.quadVAO = VertexArray::create();
     s_data.quadVAO->addVertexBuffer(s_data.quadVBO, layout);
@@ -110,7 +103,7 @@ void Renderer::init() {
         TextureFormatType::UBYTE, TextureWrap::REPEAT, TextureFilter::LINEAR,
         TextureMipmapFilter::LINEAR, &color);
 
-    s_data.shader = Asset::manager().load<Shader>("shaders/simple.glsl");
+    s_data.shader = Asset::manager().load<Shader>("shaders/2d.glsl");
 }
 
 void Renderer::submit(const VertexArray& vao, MeshTopology topology,
@@ -217,8 +210,6 @@ void Renderer::drawTexture(const Ref<Texture>& texture,
         s_data.quadVertexBufferPtr->color = color;
         s_data.quadVertexBufferPtr->texCoord = s_data.quadTexCoords[i];
         s_data.quadVertexBufferPtr->texIndex = textureIndex;
-        s_data.quadVertexBufferPtr->grayScale =
-            texture->getFormat() == TextureFormat::RED;
         ++s_data.quadVertexBufferPtr;
     }
     s_data.quadIndexCnt += 6;

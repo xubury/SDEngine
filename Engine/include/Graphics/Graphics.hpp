@@ -44,7 +44,7 @@ enum class TextureFormatType { UBYTE, UINT, FLOAT };
 
 enum class Face { FRONT, BACK, BOTH };
 
-enum class TextureFormat { RED, RG, RGB, RGBA, DEPTH, STENCIL };
+enum class TextureFormat { ALPHA, RED, RG, RGB, RGBA, DEPTH, STENCIL };
 
 enum class TextureWrap { EDGE, BORDER, MIRROR, REPEAT, MIRROR_EDGE };
 

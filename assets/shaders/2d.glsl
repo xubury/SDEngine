@@ -7,7 +7,6 @@ layout (location = 0) in vec3 a_pos;
 layout (location = 1) in vec4 a_color;
 layout (location = 2) in vec2 a_texCoord;
 layout (location = 3) in float a_texIndex;
-layout (location = 4) in uint a_grayScale;
 
 struct VertexOutput {
     vec4 color;
@@ -16,7 +15,6 @@ struct VertexOutput {
 };
 
 layout (location = 0) out VertexOutput out_vertex;
-layout (location = 4) out flat uint out_grayScale;
 
 
 void main() {
@@ -24,7 +22,6 @@ void main() {
     out_vertex.color = a_color;
     out_vertex.texCoord = a_texCoord;
     out_vertex.texIndex = a_texIndex;
-    out_grayScale = a_grayScale;
 }
 
 #shader fragment
@@ -40,13 +37,9 @@ struct VertexOutput {
 };
 
 layout (location = 0) in VertexOutput in_vertex;
-layout (location = 4) in flat uint in_grayScale;
 
 void main() {
     uint id = uint(in_vertex.texIndex);
-    if (in_grayScale != 0) {
-        fragColor = vec4(in_vertex.color.rgb, texture(u_textures[id], in_vertex.texCoord).r);
-    } else {
-        fragColor = in_vertex.color * texture(u_textures[id], in_vertex.texCoord);
-    }
+    vec4 textureColor = texture(u_textures[id], in_vertex.texCoord);
+    fragColor = textureColor * in_vertex.color;
 }

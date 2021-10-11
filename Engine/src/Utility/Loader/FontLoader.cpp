@@ -39,7 +39,7 @@ Ref<Font> FontLoader::loadAsset(const std::string &filePath) {
             c.advance = face->glyph->advance.x;
             c.texture = Texture::create(
                 face->glyph->bitmap.width, face->glyph->bitmap.rows, 1,
-                TextureType::TEX_2D, TextureFormat::RED,
+                TextureType::TEX_2D, TextureFormat::ALPHA,
                 TextureFormatType::UBYTE, TextureWrap::EDGE,
                 TextureFilter::LINEAR, TextureMipmapFilter::LINEAR,
                 face->glyph->bitmap.buffer);
