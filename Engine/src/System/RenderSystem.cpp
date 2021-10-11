@@ -1,7 +1,7 @@
 #include "System/RenderSystem.hpp"
 #include "Core/Application.hpp"
 #include "Graphics/Device.hpp"
-#include "Renderer/Renderer.hpp"
+#include "Graphics/Renderer.hpp"
 #include "Utility/Log.hpp"
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"

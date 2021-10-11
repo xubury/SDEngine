@@ -1,5 +1,5 @@
 #include "Core/RenderEngine.hpp"
-#include "Renderer/Renderer.hpp"
+#include "Graphics/Renderer.hpp"
 #include "System/ProfileSystem.hpp"
 
 namespace sd {

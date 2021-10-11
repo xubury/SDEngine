@@ -8,7 +8,7 @@
 #include "Utility/Loader/ModelLoader.hpp"
 #include "Utility/Loader/FontLoader.hpp"
 #include "Graphics/Device.hpp"
-#include "Renderer/Renderer.hpp"
+#include "Graphics/Renderer.hpp"
 
 namespace sd {
 

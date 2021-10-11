@@ -11,7 +11,6 @@ add_subdirectory(src/Utility)
 add_subdirectory(src/ECS)
 add_subdirectory(src/ImGui)
 add_subdirectory(src/Graphics)
-add_subdirectory(src/Renderer)
 add_subdirectory(src/System)
 
 add_subdirectory(libs/entt)

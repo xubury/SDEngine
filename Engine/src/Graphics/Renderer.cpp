@@ -1,4 +1,4 @@
-#include "Renderer/Renderer.hpp"
+#include "Graphics/Renderer.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Device.hpp"
 #include "Utility/Log.hpp"

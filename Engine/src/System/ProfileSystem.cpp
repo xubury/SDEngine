@@ -1,6 +1,6 @@
 #include "System/ProfileSystem.hpp"
 #include "Graphics/Device.hpp"
-#include "Renderer/Renderer.hpp"
+#include "Graphics/Renderer.hpp"
 #include "Core/Application.hpp"
 
 namespace sd {

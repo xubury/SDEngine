@@ -30,7 +30,7 @@ target_include_directories(sd-system
     PUBLIC
     ${SD_ENGINE_SOURCE_DIR}/include)
 
-target_link_libraries(sd-system PUBLIC sd-core sd-ecs sd-renderer)
+target_link_libraries(sd-system PUBLIC sd-core sd-ecs sd-graphics)
 
 install(TARGETS sd-system LIBRARY DESTINATION lib)
 

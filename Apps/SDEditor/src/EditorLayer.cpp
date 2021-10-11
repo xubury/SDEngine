@@ -1,5 +1,5 @@
 #include "EditorLayer.hpp"
-#include "Renderer/Renderer.hpp"
+#include "Graphics/Renderer.hpp"
 #include "Core/Application.hpp"
 #include "Core/Input.hpp"
 #include "ECS/Component.hpp"
