@@ -10,8 +10,6 @@ CameraController::CameraController()
     : sd::ActionTarget<CameraMovement>(m_controllerMap),
       m_camera(nullptr),
       m_focus(0.f),
-      m_pitch(0),
-      m_yaw(0),
       m_mouseMovement(0),
       m_mouseSmoothMovement(0) {
     m_controllerMap.map(CameraMovement::FORWARD,
@@ -67,11 +65,8 @@ void CameraController::move(const glm::vec3 &t) { m_camera->translateWorld(t); }
 
 void CameraController::rotate(float yaw, float pitch) {
     glm::quat rotation = m_camera->getWorldRotation();
-    m_yaw += yaw;
-    m_pitch += pitch;
-    if (m_pitch <= -89.f || m_pitch >= 89.f) {
-        m_pitch -= pitch;
-    } else {
+    float totalPitch = glm::eulerAngles(rotation)[0] + pitch;
+    if (totalPitch > -89.f && totalPitch < 89.f) {
         rotation =
             glm::angleAxis(glm::radians(pitch), m_camera->getWorldRight()) *
             rotation;
@@ -83,11 +78,9 @@ void CameraController::rotate(float yaw, float pitch) {
 void CameraController::rotateAround(float yaw, float pitch) {
     glm::mat4 transform(1.0f);
     transform = glm::translate(transform, m_focus);
-    m_yaw += yaw;
-    m_pitch += pitch;
-    if (m_pitch <= -89.f || m_pitch >= 89.f) {
-        m_pitch -= pitch;
-    } else {
+    glm::quat rotation = m_camera->getWorldRotation();
+    float totalPitch = glm::eulerAngles(rotation)[0] + pitch;
+    if (totalPitch > -89.f && totalPitch < 89.f) {
         transform = glm::rotate(transform, glm::radians(pitch),
                                 m_camera->getWorldRight());
     }

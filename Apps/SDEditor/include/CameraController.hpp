@@ -27,8 +27,6 @@ class CameraController : public sd::ActionTarget<CameraMovement> {
     sd::ActionMap<CameraMovement> m_controllerMap;
     sd::Camera *m_camera;
     glm::vec3 m_focus;
-    float m_pitch;
-    float m_yaw;
 
     glm::vec2 m_mouseMovement;
     glm::vec2 m_mouseSmoothMovement;
