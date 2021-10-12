@@ -32,6 +32,7 @@ class SD_API Scene : public entt::registry {
     void onComponentAdded(Entity &entity, T &component);
 
     void onComponentAdded(Entity &entity, LightComponent &light);
+
    private:
     void refreshEntityChildTranforms(Entity &entity);
     void refreshEntityModel(Entity &entity);
