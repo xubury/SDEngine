@@ -253,20 +253,19 @@ void RenderSystem::renderLight() {
                                   m_lightTarget[inputIndex].getTexture());
         const Transform &transform = transformComp.transform;
         m_lightShader->setVec3("u_light.direction", transform.getWorldFront());
-        m_lightShader->setVec3("u_light.ambient", light.ambient);
-        m_lightShader->setVec3("u_light.diffuse", light.diffuse);
-        m_lightShader->setVec3("u_light.specular", light.specular);
+        m_lightShader->setVec3("u_light.ambient", light.getAmbient());
+        m_lightShader->setVec3("u_light.diffuse", light.getDiffuse());
+        m_lightShader->setVec3("u_light.specular", light.getSpecular());
         m_lightShader->setVec3("u_light.position",
                                transform.getWorldPosition());
-        m_lightShader->setFloat("u_light.cutOff",
-                                glm::cos(glm::radians(light.cutOff)));
+        m_lightShader->setFloat("u_light.cutOff", glm::cos(light.getCutOff()));
         m_lightShader->setFloat("u_light.outerCutOff",
-                                glm::cos(glm::radians(light.outerCutOff)));
-        m_lightShader->setFloat("u_light.constant", light.constant);
-        m_lightShader->setFloat("u_light.linear", light.linear);
-        m_lightShader->setFloat("u_light.quadratic", light.quadratic);
+                                glm::cos(light.getOuterCutOff()));
+        m_lightShader->setFloat("u_light.constant", light.getConstant());
+        m_lightShader->setFloat("u_light.linear", light.getLinear());
+        m_lightShader->setFloat("u_light.quadratic", light.getQuadratic());
 
-        m_lightShader->setBool("u_light.isDirectional", light.isDirectional);
+        m_lightShader->setBool("u_light.isDirectional", light.isDirectional());
         m_lightShader->setBool("u_light.isCastShadow", light.isCastShadow());
         m_lightShader->setTexture("u_light.shadowMap", light.getShadowMap());
         m_lightShader->setMat4("u_light.projectionView",

@@ -271,23 +271,50 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
     drawComponent<sd::LightComponent>(
         "Light", entity, [&](sd::LightComponent &lightComp) {
             sd::Light &light = lightComp.light;
-            ImGui::ColorEdit3("Diffuse", &light.diffuse[0]);
-            ImGui::ColorEdit3("Ambient", &light.ambient[0]);
-            ImGui::ColorEdit3("Specular", &light.specular[0]);
-            ImGui::Checkbox("Directional", &light.isDirectional);
+            glm::vec3 diffuse = light.getDiffuse();
+            if (ImGui::ColorEdit3("Diffuse", &diffuse[0])) {
+                light.setDiffuse(diffuse);
+            }
+            glm::vec3 ambient = light.getAmbient();
+            if (ImGui::ColorEdit3("Ambient", &ambient[0])) {
+                light.setAmbient(ambient);
+            }
+            glm::vec3 specular = light.getSpecular();
+            if (ImGui::ColorEdit3("Specular", &specular[0])) {
+                light.setSpecular(specular);
+            }
+            bool isDirectional = light.isDirectional();
+            if (ImGui::Checkbox("Directional", &isDirectional)) {
+                light.setDirectional(isDirectional);
+            }
             ImGui::SameLine();
             bool isCastShadow = light.isCastShadow();
             if (ImGui::Checkbox("Cast Shadow", &isCastShadow)) {
                 light.setCastShadow(isCastShadow);
             }
-            if (!light.isDirectional) {
-                ImGui::SliderFloat("Constant", &light.constant, 0.f, 1.0f);
-                ImGui::SliderFloat("Linear", &light.linear, 0.f, 1.0f);
-                ImGui::SliderFloat("Quadratic", &light.quadratic, 0.0002f,
-                                   0.1f);
-                ImGui::SliderFloat("cutOff", &light.cutOff, 0.f, 89.f);
-                ImGui::SliderFloat("outerCutOff", &light.outerCutOff, 1.0f,
-                                   90.0f);
+            if (!light.isDirectional()) {
+                float constant = light.getConstant();
+                if (ImGui::SliderFloat("Constant", &constant, 0.f, 1.0f)) {
+                    light.setConstant(constant);
+                }
+                float linear = light.getLinear();
+                if (ImGui::SliderFloat("Linear", &linear, 0.f, 1.0f)) {
+                    light.setLinear(linear);
+                }
+                float quadratic = light.getQuadratic();
+                if (ImGui::SliderFloat("Quadratic", &quadratic, 0.0002f,
+                                       0.1f)) {
+                    light.setQuadratic(quadratic);
+                }
+                float cutOff = glm::degrees(light.getCutOff());
+                if (ImGui::SliderFloat("cutOff", &cutOff, 0.f, 89.f)) {
+                    light.setCutOff(glm::radians(cutOff));
+                }
+                float outerCutOff = glm::degrees(light.getOuterCutOff());
+                if (ImGui::SliderFloat("outerCutOff", &outerCutOff, 1.0f,
+                                       90.0f)) {
+                    light.setOuterCutOff(glm::radians(outerCutOff));
+                }
             }
         });
 }

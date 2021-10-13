@@ -11,23 +11,37 @@ namespace sd {
 
 class SD_API Light {
    public:
-    glm::vec3 ambient = glm::vec3(1.0f);
-    glm::vec3 diffuse = glm::vec3(1.0f);
-    glm::vec3 specular = glm::vec3(1.0f);
-
-    float cutOff = 25.f;
-    float outerCutOff = 35.f;
-    float constant = 1.0f;
-    float linear = 0.09;
-    float quadratic = 0.032f;
-
-    bool isDirectional = false;
-
-   public:
     Light();
 
     void setCastShadow(bool cast);
     bool isCastShadow() const;
+
+    void setDirectional(bool directional);
+    bool isDirectional() const;
+
+    void setAmbient(const glm::vec3 &ambient);
+    const glm::vec3 &getAmbient() const;
+
+    void setDiffuse(const glm::vec3 &diffuse);
+    const glm::vec3 &getDiffuse() const;
+
+    void setSpecular(const glm::vec3 &specular);
+    const glm::vec3 &getSpecular() const;
+
+    void setCutOff(float cutOff);
+    float getCutOff() const;
+
+    void setOuterCutOff(float outerCutOff);
+    float getOuterCutOff() const;
+
+    void setConstant(float constant);
+    float getConstant() const;
+
+    void setLinear(float linear);
+    float getLinear() const;
+
+    void setQuadratic(float quadratic);
+    float getQuadratic() const;
 
     void createShadowMap();
     void destroyShadowMap();
@@ -43,8 +57,9 @@ class SD_API Light {
 
     template <typename Archive>
     void serialize(Archive &archive) {
-        archive(ambient, diffuse, specular, cutOff, outerCutOff, constant,
-                linear, quadratic, isDirectional, m_isCastShadow);
+        archive(m_ambient, m_diffuse, m_specular, m_cutOff, m_outerCutOff,
+                m_constant, m_linear, m_quadratic, m_isDirectional,
+                m_isCastShadow);
     }
 
    private:
@@ -55,6 +70,17 @@ class SD_API Light {
     glm::mat4 m_projectionView;
 
     bool m_isCastShadow;
+    bool m_isDirectional;
+
+    glm::vec3 m_ambient;
+    glm::vec3 m_diffuse;
+    glm::vec3 m_specular;
+
+    float m_cutOff = 25.f;
+    float m_outerCutOff = 35.f;
+    float m_constant = 1.0f;
+    float m_linear = 0.09;
+    float m_quadratic = 0.032f;
 };
 
 }  // namespace sd

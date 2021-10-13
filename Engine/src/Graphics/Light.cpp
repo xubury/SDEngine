@@ -7,7 +7,17 @@ namespace sd {
 const int SHADOW_MAP_WIDTH = 8192;
 const int SHADOW_MAP_HEIGHT = 8192;
 
-Light::Light() : m_isCastShadow(false) {}
+Light::Light()
+    : m_isCastShadow(false),
+      m_isDirectional(false),
+      m_ambient(1.0f),
+      m_diffuse(1.0f),
+      m_specular(1.0f),
+      m_cutOff(glm::radians(25.f)),
+      m_outerCutOff(glm::radians(35.f)),
+      m_constant(1.0f),
+      m_linear(0.09f),
+      m_quadratic(0.032) {}
 
 bool Light::isCastShadow() const { return m_isCastShadow; }
 
@@ -18,6 +28,42 @@ void Light::setCastShadow(bool cast) {
         createShadowMap();
     }
 }
+
+void Light::setDirectional(bool directional) { m_isDirectional = directional; }
+
+bool Light::isDirectional() const { return m_isDirectional; }
+
+void Light::setAmbient(const glm::vec3 &ambient) { m_ambient = ambient; }
+
+const glm::vec3 &Light::getAmbient() const { return m_ambient; }
+
+void Light::setDiffuse(const glm::vec3 &diffuse) { m_diffuse = diffuse; }
+
+const glm::vec3 &Light::getDiffuse() const { return m_diffuse; }
+
+void Light::setSpecular(const glm::vec3 &specular) { m_specular = specular; }
+
+const glm::vec3 &Light::getSpecular() const { return m_specular; }
+
+void Light::setCutOff(float cutOff) { m_cutOff = cutOff; }
+
+float Light::getCutOff() const { return m_cutOff; }
+
+void Light::setOuterCutOff(float outerCutOff) { m_outerCutOff = outerCutOff; }
+
+float Light::getOuterCutOff() const { return m_outerCutOff; }
+
+void Light::setConstant(float constant) { m_constant = constant; }
+
+float Light::getConstant() const { return m_constant; }
+
+void Light::setLinear(float linear) { m_linear = linear; }
+
+float Light::getLinear() const { return m_linear; }
+
+void Light::setQuadratic(float quadratic) { m_quadratic = quadratic; }
+
+float Light::getQuadratic() const { return m_quadratic; }
 
 void Light::createShadowMap() {
     auto shadowMap = Texture::create(
@@ -40,7 +86,7 @@ void Light::computeLightSpaceMatrix(const Transform &transform,
                                     const Camera *camera) {
     glm::vec3 min;
     glm::vec3 max;
-    if (isDirectional) {
+    if (m_isDirectional) {
         computeBoundingBox(transform, *camera, min, max);
         // Add a offset for shadow behind the camera frustum
         min.z -= camera->getFarZ();
@@ -51,8 +97,9 @@ void Light::computeLightSpaceMatrix(const Transform &transform,
     glm::vec3 size = max - min;
     glm::vec3 center = (max + min) / 2.f;
     center.z -= size.z / 2.f;
-    const glm::vec3 pos = isDirectional ? transform.getWorldRotation() * center
-                                        : transform.getWorldPosition();
+    const glm::vec3 pos = m_isDirectional
+                              ? transform.getWorldRotation() * center
+                              : transform.getWorldPosition();
     const glm::vec3 &up = transform.getWorldUp();
     const glm::vec3 &front = transform.getWorldFront();
     const glm::mat4 lightView = glm::lookAt(pos, pos + front, up);
