@@ -30,6 +30,8 @@ class CameraController : public sd::ActionTarget<CameraMovement> {
 
     glm::vec2 m_mouseMovement;
     glm::vec2 m_mouseSmoothMovement;
+
+    float m_pitch;
 };
 
 #endif /* CAMERA_CONTROLLER_HPP */

@@ -11,7 +11,8 @@ CameraController::CameraController()
       m_camera(nullptr),
       m_focus(0.f),
       m_mouseMovement(0),
-      m_mouseSmoothMovement(0) {
+      m_mouseSmoothMovement(0),
+      m_pitch(0.f) {
     m_controllerMap.map(CameraMovement::FORWARD,
                         sd::Action(SDLK_w, sd::Action::Type::REAL_TIME |
                                                sd::Action::Type::DOWN));
@@ -65,11 +66,13 @@ void CameraController::move(const glm::vec3 &t) { m_camera->translateWorld(t); }
 
 void CameraController::rotate(float yaw, float pitch) {
     glm::quat rotation = m_camera->getWorldRotation();
-    float totalPitch = glm::eulerAngles(rotation)[0] + pitch;
-    if (totalPitch > -89.f && totalPitch < 89.f) {
+    m_pitch += pitch;
+    if (std::abs(m_pitch) < 90.f) {
         rotation =
             glm::angleAxis(glm::radians(pitch), m_camera->getWorldRight()) *
             rotation;
+    } else {
+        m_pitch -= pitch;
     }
     rotation = glm::angleAxis(glm::radians(yaw), glm::vec3(0, 1, 0)) * rotation;
     m_camera->setWorldRotation(rotation);
@@ -78,11 +81,12 @@ void CameraController::rotate(float yaw, float pitch) {
 void CameraController::rotateAround(float yaw, float pitch) {
     glm::mat4 transform(1.0f);
     transform = glm::translate(transform, m_focus);
-    glm::quat rotation = m_camera->getWorldRotation();
-    float totalPitch = glm::eulerAngles(rotation)[0] + pitch;
-    if (totalPitch > -89.f && totalPitch < 89.f) {
+    m_pitch += pitch;
+    if (std::abs(m_pitch) < 90.f) {
         transform = glm::rotate(transform, glm::radians(pitch),
                                 m_camera->getWorldRight());
+    } else {
+        m_pitch -= pitch;
     }
     transform =
         glm::rotate(transform, glm::radians(yaw), glm::vec3(0.f, 1.f, 0.f));
@@ -90,6 +94,9 @@ void CameraController::rotateAround(float yaw, float pitch) {
     m_camera->setWorldTransform(transform * m_camera->getWorldTransform());
 }
 
-void CameraController::setCamera(sd::Camera *camera) { m_camera = camera; }
+void CameraController::setCamera(sd::Camera *camera) {
+    m_camera = camera;
+    m_pitch = glm::eulerAngles(m_camera->getWorldRotation())[0];
+}
 
 void CameraController::setFocus(const glm::vec3 &focus) { m_focus = focus; }
