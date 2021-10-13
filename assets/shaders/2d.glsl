@@ -3,10 +3,10 @@
 
 #include shaders/camera.glsl
 
-layout (location = 0) in vec3 a_pos;
-layout (location = 1) in vec4 a_color;
-layout (location = 2) in vec2 a_texCoord;
-layout (location = 3) in float a_texIndex;
+layout(location = 0) in vec3 a_pos;
+layout(location = 1) in vec4 a_color;
+layout(location = 2) in vec2 a_texCoord;
+layout(location = 3) in float a_texIndex;
 
 struct VertexOutput {
     vec4 color;
@@ -14,8 +14,7 @@ struct VertexOutput {
     float texIndex;
 };
 
-layout (location = 0) out VertexOutput out_vertex;
-
+layout(location = 0) out VertexOutput out_vertex;
 
 void main() {
     gl_Position = u_projectionView * vec4(a_pos, 1.0f);
@@ -28,7 +27,7 @@ void main() {
 #version 450 core
 out vec4 fragColor;
 
-layout (binding = 0) uniform sampler2D u_textures[32];
+layout(binding = 0) uniform sampler2D u_textures[32];
 
 struct VertexOutput {
     vec4 color;
@@ -36,7 +35,7 @@ struct VertexOutput {
     float texIndex;
 };
 
-layout (location = 0) in VertexOutput in_vertex;
+layout(location = 0) in VertexOutput in_vertex;
 
 void main() {
     uint id = uint(in_vertex.texIndex);

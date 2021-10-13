@@ -1,10 +1,10 @@
 #shader vertex
 #version 450 core
 
-layout (location = 0) in vec3 a_pos;
-layout (location = 1) in vec2 a_texCoord;
+layout(location = 0) in vec3 a_pos;
+layout(location = 1) in vec2 a_texCoord;
 
-layout (location = 0) out vec2 out_texCoord;
+layout(location = 0) out vec2 out_texCoord;
 
 void main() {
     out_texCoord = a_texCoord;
@@ -17,17 +17,17 @@ void main() {
 #include shaders/camera.glsl
 #include shaders/light.glsl
 
-layout (location = 0) out vec4 fragColor;
+layout(location = 0) out vec4 fragColor;
 
-layout (location = 0) in vec2 in_texCoord;
+layout(location = 0) in vec2 in_texCoord;
 
 uniform Light u_light;
 
-layout (binding = 0) uniform sampler2D u_lighting;
-layout (binding = 1) uniform sampler2D u_gPosition;
-layout (binding = 2) uniform sampler2D u_gNormal;
-layout (binding = 3) uniform sampler2D u_gAlbedo;
-layout (binding = 4) uniform sampler2D u_gAmbient;
+layout(binding = 0) uniform sampler2D u_lighting;
+layout(binding = 1) uniform sampler2D u_gPosition;
+layout(binding = 2) uniform sampler2D u_gNormal;
+layout(binding = 3) uniform sampler2D u_gAlbedo;
+layout(binding = 4) uniform sampler2D u_gAmbient;
 
 void main() {
     vec3 fragPos = texture(u_gPosition, in_texCoord).rgb;
@@ -41,7 +41,8 @@ void main() {
     vec3 viewDir = normalize(u_viewPos - fragPos);
 
     vec3 last = texture(u_lighting, in_texCoord).rgb;
-    vec3 cur = calculateLight(u_light, fragPos, normal, viewDir, ambient, diffuse, specular);
+    vec3 cur = calculateLight(u_light, fragPos, normal, viewDir, ambient,
+                              diffuse, specular);
     vec3 result = last + cur;
     fragColor = vec4(result, 1.0f);
 }

@@ -1,8 +1,8 @@
 #shader vertex
 #version 450 core
 
-layout (location = 0) in vec3 a_pos;
-layout (location = 1) in vec2 a_texCoord;
+layout(location = 0) in vec3 a_pos;
+layout(location = 1) in vec2 a_texCoord;
 
 out vec2 texCoord;
 
@@ -10,7 +10,6 @@ void main() {
     texCoord = a_texCoord;
     gl_Position = vec4(a_pos, 1.0);
 }
-
 
 #shader fragment
 #version 450 core
@@ -22,8 +21,8 @@ uniform float u_exposure;
 uniform bool u_bloom;
 uniform float u_bloomFactor;
 
-layout (binding = 0) uniform sampler2D u_lighting;
-layout (binding = 1) uniform sampler2D u_blur;
+layout(binding = 0) uniform sampler2D u_lighting;
+layout(binding = 1) uniform sampler2D u_blur;
 
 void main() {
     // bloom
