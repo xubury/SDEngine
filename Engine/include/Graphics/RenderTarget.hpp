@@ -22,27 +22,23 @@ class SD_API RenderTarget {
     ~RenderTarget() = default;
 
     void createFramebuffer();
+    Framebuffer *getFramebuffer() const;
 
     void addTexture(const Ref<Texture> &texture);
+    Texture *getTexture(uint32_t attachmentId = 0) const;
     void clear();
 
+    void setOrigin(int x, int y);
     int getX() const;
     int getY() const;
     int getWidth() const;
     int getHeight() const;
-
     void resize(int width, int height);
-
-    void setOrigin(int x, int y);
 
     // map coordinate from screen space to clip space
     glm::vec2 mapScreenToClip(const glm::vec2 &pos);
     // map coordinate from clip space to screen space
     glm::vec2 mapClipToScreen(const glm::vec2 &pos);
-
-    Framebuffer *getFramebuffer() const;
-
-    Texture *getTexture(uint32_t attachmentId = 0) const;
 
    private:
     int m_x;

@@ -205,7 +205,7 @@ void RenderSystem::renderShadow() {
     lightView.each([this, &modelView](const TransformComponent &transformComp,
                                       LightComponent &lightComp) {
         Light &light = lightComp.light;
-        if (!light.isCastShadow) return;
+        if (!light.isCastShadow()) return;
 
         Renderer::setRenderTarget(light.getRenderTarget());
         Device::instance().clear(BufferBitMask::DEPTH_BUFFER_BIT);
@@ -267,7 +267,7 @@ void RenderSystem::renderLight() {
         m_lightShader->setFloat("u_light.quadratic", light.quadratic);
 
         m_lightShader->setBool("u_light.isDirectional", light.isDirectional);
-        m_lightShader->setBool("u_light.isCastShadow", light.isCastShadow);
+        m_lightShader->setBool("u_light.isCastShadow", light.isCastShadow());
         m_lightShader->setTexture("u_light.shadowMap", light.getShadowMap());
         m_lightShader->setMat4("u_light.projectionView",
                                light.getProjectionView());

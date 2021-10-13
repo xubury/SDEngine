@@ -22,12 +22,15 @@ class SD_API Light {
     float quadratic = 0.032f;
 
     bool isDirectional = false;
-    bool isCastShadow = false;
 
    public:
-    Light() = default;
+    Light();
 
-    void createShadowMap(int width, int height);
+    void setCastShadow(bool cast);
+    bool isCastShadow() const;
+
+    void createShadowMap();
+    void destroyShadowMap();
 
     const glm::mat4 &getProjectionView() const { return m_projectionView; }
 
@@ -41,7 +44,7 @@ class SD_API Light {
     template <typename Archive>
     void serialize(Archive &archive) {
         archive(ambient, diffuse, specular, cutOff, outerCutOff, constant,
-                linear, quadratic, isDirectional, isCastShadow);
+                linear, quadratic, isDirectional, m_isCastShadow);
     }
 
    private:
@@ -50,6 +53,8 @@ class SD_API Light {
                                    glm::vec3 &max);
     RenderTarget m_target;
     glm::mat4 m_projectionView;
+
+    bool m_isCastShadow;
 };
 
 }  // namespace sd

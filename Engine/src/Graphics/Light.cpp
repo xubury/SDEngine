@@ -4,19 +4,37 @@
 
 namespace sd {
 
-void Light::createShadowMap(int width, int height) {
-    m_target.clear();
+const int SHADOW_MAP_WIDTH = 8192;
+const int SHADOW_MAP_HEIGHT = 8192;
+
+Light::Light() : m_isCastShadow(false) {}
+
+bool Light::isCastShadow() const { return m_isCastShadow; }
+
+void Light::setCastShadow(bool cast) {
+    m_isCastShadow = cast;
+    destroyShadowMap();
+    if (cast) {
+        createShadowMap();
+    }
+}
+
+void Light::createShadowMap() {
     auto shadowMap = Texture::create(
-        width, height, 1, TextureType::TEX_2D, TextureFormat::DEPTH,
-        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::NEAREST,
-        TextureMipmapFilter::NEAREST);
+        SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, 1, TextureType::TEX_2D,
+        TextureFormat::DEPTH, TextureFormatType::FLOAT, TextureWrap::BORDER,
+        TextureFilter::NEAREST, TextureMipmapFilter::NEAREST);
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
     shadowMap->setBorderColor(&color);
     m_target.addTexture(shadowMap);
     m_target.createFramebuffer();
 }
 
-Texture *Light::getShadowMap() const { return m_target.getTexture(); }
+void Light::destroyShadowMap() { m_target.clear(); }
+
+Texture *Light::getShadowMap() const {
+    return m_isCastShadow ? m_target.getTexture() : nullptr;
+}
 
 void Light::computeLightSpaceMatrix(const Transform &transform,
                                     const Camera *camera) {

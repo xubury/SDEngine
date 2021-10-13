@@ -276,7 +276,10 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
             ImGui::ColorEdit3("Specular", &light.specular[0]);
             ImGui::Checkbox("Directional", &light.isDirectional);
             ImGui::SameLine();
-            ImGui::Checkbox("Cast Shadow", &light.isCastShadow);
+            bool isCastShadow = light.isCastShadow();
+            if (ImGui::Checkbox("Cast Shadow", &isCastShadow)) {
+                light.setCastShadow(isCastShadow);
+            }
             if (!light.isDirectional) {
                 ImGui::SliderFloat("Constant", &light.constant, 0.f, 1.0f);
                 ImGui::SliderFloat("Linear", &light.linear, 0.f, 1.0f);
