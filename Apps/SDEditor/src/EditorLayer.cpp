@@ -52,7 +52,8 @@ void EditorLayer::onTick(float dt) {
     mouseX -= m_viewportBounds[0].x;
     mouseY -= m_viewportBounds[0].y;
     glm::vec2 viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
-    if (!ImGuizmo::IsUsing() && ImGui::IsMouseDown(0) && m_isViewportHovered) {
+    if (!ImGuizmo::IsUsing() && !m_hide && ImGui::IsMouseDown(0) &&
+        m_isViewportHovered) {
         sd::EntityId id = sd::Application::getRenderEngine()
                               .getRenderSystem()
                               ->getGBuffer()
