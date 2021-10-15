@@ -1,6 +1,6 @@
 #include "Core/Timing.hpp"
+#include "Core/SDL.hpp"
 #include <numeric>
-#include <SDL.h>
 
 namespace sd {
 

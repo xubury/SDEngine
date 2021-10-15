@@ -1,9 +1,9 @@
 #ifndef SD_INPUT_HPP
 #define SD_INPUT_HPP
 
-#include <SDL.h>
 #include <unordered_map>
 #include <glm/glm.hpp>
+#include "Core/SDL.hpp"
 #include "Utility/Export.hpp"
 
 namespace sd {

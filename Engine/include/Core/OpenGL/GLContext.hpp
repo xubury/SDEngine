@@ -3,7 +3,6 @@
 
 #include "Utility/Export.hpp"
 #include "Core/Context.hpp"
-#include <SDL.h>
 
 namespace sd {
 

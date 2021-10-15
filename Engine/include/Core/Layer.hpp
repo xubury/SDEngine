@@ -1,10 +1,10 @@
 #ifndef SD_LAYER_HPP
 #define SD_LAYER_HPP
 
-#include <SDL.h>
 #include <string>
 #include <list>
 
+#include "Core/SDL.hpp"
 #include "Utility/Export.hpp"
 #include "Utility/Base.hpp"
 #include "Utility/EventDispatcher.hpp"

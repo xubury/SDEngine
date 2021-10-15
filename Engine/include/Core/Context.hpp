@@ -4,7 +4,6 @@
 #include "Utility/Export.hpp"
 #include "Utility/Base.hpp"
 #include "Core/Window.hpp"
-#include <SDL.h>
 
 namespace sd {
 

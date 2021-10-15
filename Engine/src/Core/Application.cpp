@@ -35,11 +35,7 @@ Application::Application() {
 
     Random::init();
     SD_CORE_INFO("Debug info is output to: {}", debugPath);
-
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-        SD_CORE_ERROR("SDL_Init failed: {}", SDL_GetError());
-        exit(-1);
-    }
+    SDL(SDL_Init(SDL_INIT_EVERYTHING));
 
     Asset::manager().setRootPath("assets/");
     Asset::manager().setLoader<ShaderLoader>();

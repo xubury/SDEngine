@@ -1,8 +1,8 @@
 #ifndef SD_WINDOW_HPP
 #define SD_WINDOW_HPP
 
-#include <SDL.h>
 #include <string>
+#include "Core/SDL.hpp"
 #include "Utility/Export.hpp"
 #include "Utility/Base.hpp"
 

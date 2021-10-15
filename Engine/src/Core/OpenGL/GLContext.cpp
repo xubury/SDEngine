@@ -1,15 +1,9 @@
 #include "Core/OpenGL/GLContext.hpp"
+#include "Core/SDL.hpp"
 #include "Utility/Assert.hpp"
 #include <GL/glew.h>
 
 namespace sd {
-
-#ifdef DEBUG_BUILD
-#define SDL(stmt) \
-    if (stmt != 0) SD_CORE_ERROR(#stmt " Failed: {}", SDL_GetError())
-#else
-#define SDL(stmt) stmt
-#endif
 
 GLContext::GLContext(const WindowProp& property, SDL_Window** window) {
     SD_CORE_TRACE("Initializing GLContext...");
