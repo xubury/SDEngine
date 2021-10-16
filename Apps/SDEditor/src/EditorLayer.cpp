@@ -45,7 +45,30 @@ void EditorLayer::onDetech() {
     hide();
 }
 
-void EditorLayer::onRender() {}
+void EditorLayer::onRender() {
+    if (m_hide) return;
+
+    sd::Renderer::setRenderTarget(
+        sd::Application::getRenderEngine().getRenderTarget());
+    sd::Device::instance().clear(sd::BufferBitMask::DEPTH_BUFFER_BIT);
+    sd::Renderer::beginScene(m_editorCamera);
+    auto lightView =
+        m_scene->view<sd::LightComponent, sd::TransformComponent>();
+    lightView.each([this](const sd::LightComponent &,
+                          const sd::TransformComponent &transComp) {
+        glm::vec3 pos = transComp.transform.getWorldPosition();
+        auto lightImage =
+            sd::Asset::manager().load<sd::Texture>("textures/light.png");
+        float dist = glm::distance(pos, m_editorCamera.getWorldPosition());
+        float scale = dist / 20;
+        sd::Renderer::drawTexture(
+            lightImage,
+            glm::translate(glm::mat4(1.0f), pos) *
+                glm::toMat4(m_editorCamera.getWorldRotation()) *
+                glm::scale(glm::mat4(1.0f), glm::vec3(scale, scale, 1)));
+    });
+    sd::Renderer::endScene();
+}
 
 void EditorLayer::onTick(float dt) {
     auto [mouseX, mouseY] = ImGui::GetMousePos();

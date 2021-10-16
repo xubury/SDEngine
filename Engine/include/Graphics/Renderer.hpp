@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include "Graphics/Graphics.hpp"
+#include "Graphics/Device.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/RenderTarget.hpp"

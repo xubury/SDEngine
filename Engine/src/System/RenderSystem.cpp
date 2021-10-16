@@ -181,6 +181,12 @@ void RenderSystem::renderMain() {
     m_mainShader->setTexture("u_lighting", m_lightResult);
     m_mainShader->setFloat("u_exposure", m_exposure);
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
+
+    Renderer::setRenderTarget(Application::getRenderEngine().getRenderTarget());
+    Device::instance().clear(BufferBitMask::DEPTH_BUFFER_BIT);
+    getGBuffer()->copyTo(
+        Application::getRenderEngine().getRenderTarget().getFramebuffer(), 0,
+        BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
 }
 
 void RenderSystem::renderBlur() {
@@ -348,11 +354,6 @@ void RenderSystem::renderGBuffer() {
 }
 
 void RenderSystem::renderText() {
-    Renderer::setRenderTarget(Application::getRenderEngine().getRenderTarget());
-    Device::instance().clear(BufferBitMask::DEPTH_BUFFER_BIT);
-    getGBuffer()->copyTo(
-        Application::getRenderEngine().getRenderTarget().getFramebuffer(), 0,
-        BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
     Renderer::beginScene(*m_camera);
     Renderer::drawText(
         *Asset::manager().load<Font>("fonts/opensans/OpenSans-Regular.ttf"),
