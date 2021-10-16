@@ -24,15 +24,15 @@ void ProfileSystem::onRender() {
     Renderer::setRenderTarget(Application::getRenderEngine().getRenderTarget());
     Renderer::beginScene(m_camera);
 
-    Renderer::setTextOrigin(
-        -m_camera.getNearWidth() / 2.f,
-        m_camera.getNearHeight() / 2.f - m_font->getPixelSize());
     std::wstring fpsStr =
         L"FPS:" + std::to_wstring(static_cast<uint32_t>(m_fps.getFps()));
 
-    Renderer::drawText(*m_font, fpsStr);
+    float size = 20;
+    Renderer::setTextOrigin(-m_camera.getNearWidth() / 2.f,
+                            m_camera.getNearHeight() / 2.f - size);
+    glm::mat4 t = glm::scale(glm::mat4(1.0f), glm::vec3(size, size, 1));
+    Renderer::drawText(*m_font, fpsStr, t, glm::vec4(1.0f));
     Renderer::endScene();
-
     Device::instance().enable(Operation::DEPTH_TEST);
 }
 

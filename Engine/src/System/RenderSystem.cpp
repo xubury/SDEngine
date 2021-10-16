@@ -126,6 +126,10 @@ void RenderSystem::initGBuffer(int width, int height, int samples) {
             createTexture(width, height, 1, format, type, linear));
     }
     // depth
+    m_gBuffer->attachTexture(Texture::create(
+        width, height, 1, TextureType::TEX_2D, TextureFormat::DEPTH,
+        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
+        TextureMipmapFilter::LINEAR));
     m_gBufferTarget.addTexture(Texture::create(
         width, height, samples,
         samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D,
@@ -161,6 +165,7 @@ void RenderSystem::onRender() {
         renderBlur();
     }
     renderMain();
+    renderText();
 }
 
 void RenderSystem::renderMain() {
@@ -332,15 +337,27 @@ void RenderSystem::renderGBuffer() {
     });
 
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-        getGBuffer()->copyFrom(m_gBufferTarget.getFramebuffer(), i,
-                               BufferBitMask::COLOR_BUFFER_BIT,
-                               i == GeometryBufferType::G_ENTITY_ID
-                                   ? TextureFilter::NEAREST
-                                   : TextureFilter::LINEAR);
+        m_gBufferTarget.getFramebuffer()->copyTo(
+            getGBuffer(), i,
+            BufferBitMask::COLOR_BUFFER_BIT | BufferBitMask::DEPTH_BUFFER_BIT,
+            TextureFilter::NEAREST);
     }
     Renderer::endScene();
 
     Device::instance().enable(Operation::BLEND);
+}
+
+void RenderSystem::renderText() {
+    Renderer::setRenderTarget(Application::getRenderEngine().getRenderTarget());
+    Device::instance().clear(BufferBitMask::DEPTH_BUFFER_BIT);
+    getGBuffer()->copyTo(
+        Application::getRenderEngine().getRenderTarget().getFramebuffer(), 0,
+        BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
+    Renderer::beginScene(*m_camera);
+    Renderer::drawText(
+        *Asset::manager().load<Font>("fonts/opensans/OpenSans-Regular.ttf"),
+        L"3d text\nhoho");
+    Renderer::endScene();
 }
 
 void RenderSystem::setCamera(Camera *camera) { m_camera = camera; }

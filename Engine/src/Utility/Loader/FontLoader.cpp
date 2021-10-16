@@ -22,7 +22,7 @@ Ref<Font> FontLoader::loadAsset(const std::string &filePath) {
             SD_CORE_ERROR("Failed to load font!");
             break;
         }
-        int pixelSize = 18;
+        int pixelSize = 20;
         FT_Set_Pixel_Sizes(face, 0, pixelSize);
         font = createRef<Font>();
         font->setPixelSize(pixelSize);
@@ -40,8 +40,8 @@ Ref<Font> FontLoader::loadAsset(const std::string &filePath) {
             c.texture = Texture::create(
                 face->glyph->bitmap.width, face->glyph->bitmap.rows, 1,
                 TextureType::TEX_2D, TextureFormat::ALPHA,
-                TextureFormatType::UBYTE, TextureWrap::EDGE,
-                TextureFilter::LINEAR, TextureMipmapFilter::LINEAR,
+                TextureFormatType::UBYTE, TextureWrap::BORDER,
+                TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_LINEAR,
                 face->glyph->bitmap.buffer);
             font->setCharacter(ch, c);
         }

@@ -38,7 +38,7 @@ struct VertexOutput {
 layout(location = 0) in VertexOutput in_vertex;
 
 void main() {
-    uint id = uint(in_vertex.texIndex);
+    uint id = uint(in_vertex.texIndex + 0.5);
     vec4 textureColor = texture(u_textures[id], in_vertex.texCoord);
     fragColor = textureColor * in_vertex.color;
 }

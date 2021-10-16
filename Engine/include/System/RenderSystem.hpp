@@ -59,6 +59,8 @@ class SD_API RenderSystem : public System {
 
     void renderMain();
 
+    void renderText();
+
     Ref<Shader> m_mainShader;
 
     Ref<Shader> m_blurShader;

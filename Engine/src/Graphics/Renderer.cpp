@@ -149,6 +149,7 @@ void Renderer::flush() {
     Renderer::submit(*s_data.quadVAO, MeshTopology::TRIANGLES,
                      s_data.quadIndexCnt, 0);
     s_data.shader->unbind();
+
     setTextOrigin(0, 0);
 }
 
@@ -161,6 +162,13 @@ void Renderer::startBatch() {
 void Renderer::nextBatch() {
     flush();
     startBatch();
+}
+
+void Renderer::setTextOrigin(float x, float y) {
+    s_data.textOrigin.x = x;
+    s_data.textOrigin.y = y;
+    s_data.textCursor.x = 0;
+    s_data.textCursor.y = 0;
 }
 
 void Renderer::drawQuad(const glm::mat4& transform, const glm::vec4& color) {
@@ -200,13 +208,9 @@ void Renderer::drawTexture(const Ref<Texture>& texture,
         s_data.textureSlots[s_data.textureSlotIndex++] = texture;
     }
 
-    const glm::mat4& t =
-        transform *
-        glm::scale(glm::mat4(1.0f),
-                   glm::vec3(texture->getWidth(), texture->getHeight(), 1.0f));
     for (uint32_t i = 0; i < 4; ++i) {
         s_data.quadVertexBufferPtr->position =
-            t * s_data.quadVertexPositions[i];
+            transform * s_data.quadVertexPositions[i];
         s_data.quadVertexBufferPtr->color = color;
         s_data.quadVertexBufferPtr->texCoord = s_data.quadTexCoords[i];
         s_data.quadVertexBufferPtr->texIndex = textureIndex;
@@ -216,30 +220,30 @@ void Renderer::drawTexture(const Ref<Texture>& texture,
 }
 
 void Renderer::drawText(const Font& font, const std::wstring& text,
-                        const glm::vec4& color, const glm::mat4& transform) {
-    float x = s_data.textCursor.x;
-    float y = s_data.textCursor.y;
+                        const glm::mat4& transform, const glm::vec4& color) {
+    glm::mat4 t =
+        glm::translate(glm::mat4(1.0f),
+                       glm::vec3(s_data.textOrigin.x, s_data.textOrigin.y, 0)) *
+        glm::scale(glm::mat4(1.0f),
+                   glm::vec3(1.f / font.getPixelSize(),
+                             1.f / font.getPixelSize(), 1.0f)) *
+        transform;
     for (const auto c : text) {
         if (c == '\n') {
-            x = s_data.textOrigin.x;
-            y -= font.getPixelSize();
+            s_data.textCursor.x = 0;
+            s_data.textCursor.y -= font.getPixelSize();
             continue;
         }
         const Character& ch = font.getCharacter(c);
-        glm::mat4 t = glm::translate(
-            glm::mat4(1.0f),
-            glm::vec3(x + ch.bearing.x, y + (ch.bearing.y - ch.size.y), 0));
-        drawTexture(ch.texture, transform * t, color);
-        x += (ch.advance >> 6);
+        glm::mat4 offset =
+            glm::translate(
+                glm::mat4(1.0f),
+                glm::vec3(s_data.textCursor.x + ch.bearing.x,
+                          s_data.textCursor.y + ch.bearing.y - ch.size.y, 0)) *
+            glm::scale(glm::mat4(1.0f), glm::vec3(ch.size.x, ch.size.y, 1.0f));
+        drawTexture(ch.texture, t * offset, color);
+        s_data.textCursor.x += ch.advance >> 6;
     }
-    s_data.textCursor.x = x;
-    s_data.textCursor.y = y;
-}
-
-void Renderer::setTextOrigin(float x, float y) {
-    s_data.textOrigin.x = x;
-    s_data.textOrigin.y = y;
-    s_data.textCursor = s_data.textOrigin;
 }
 
 void Renderer::drawMesh(const Mesh& mesh) {

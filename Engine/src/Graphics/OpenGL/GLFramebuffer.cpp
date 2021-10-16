@@ -116,28 +116,23 @@ Texture *GLFramebuffer::getTexture(uint32_t attachmentId) {
     return m_attachments[attachmentId].second.get();
 }
 
-void GLFramebuffer::copyFrom(const Framebuffer *other, uint32_t index,
-                             BufferBitMask mask, TextureFilter filter) {
+void GLFramebuffer::copyTo(Framebuffer *other, uint32_t index,
+                           BufferBitMask mask, TextureFilter filter) const {
     const GLFramebuffer *glFb = dynamic_cast<const GLFramebuffer *>(other);
-    if (glFb) {
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_id);
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, glFb->m_id);
-        GLenum glMask = translate(mask & BufferBitMask::COLOR_BUFFER_BIT) |
-                        translate(mask & BufferBitMask::DEPTH_BUFFER_BIT) |
-                        translate(mask & BufferBitMask::STENCIL_BUFFER_BIT);
-        GLenum glFilter = translate(filter);
-        const auto &[attachment, texture] = m_attachments[index];
-        glReadBuffer(attachment);
-        glDrawBuffer(attachment);
-        glBlitFramebuffer(0, 0, texture->getWidth(), texture->getHeight(), 0, 0,
-                          texture->getWidth(), texture->getHeight(), glMask,
-                          glFilter);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, glFb ? glFb->m_id : 0);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_id);
+    GLenum glMask = translate(mask & BufferBitMask::COLOR_BUFFER_BIT) |
+                    translate(mask & BufferBitMask::DEPTH_BUFFER_BIT) |
+                    translate(mask & BufferBitMask::STENCIL_BUFFER_BIT);
+    GLenum glFilter = translate(filter);
+    const auto &[attachment, texture] = m_attachments[index];
+    glReadBuffer(attachment);
+    glDrawBuffer(glFb ? attachment : GL_BACK);
+    glBlitFramebuffer(0, 0, texture->getWidth(), texture->getHeight(), 0, 0,
+                      texture->getWidth(), texture->getHeight(), glMask,
+                      glFilter);
 
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-    } else {
-        SD_CORE_ERROR("Mismatched API!");
-    }
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 }
 
 void GLFramebuffer::resize(int width, int height) {

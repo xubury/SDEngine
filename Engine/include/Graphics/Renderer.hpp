@@ -27,6 +27,8 @@ class SD_API Renderer {
     static void beginScene(Camera &camera);
     static void endScene();
 
+    static void setTextOrigin(float x, float y);
+
     static void drawQuad(const glm::mat4 &transform, const glm::vec4 &color);
 
     static void drawTexture(const Ref<Texture> &texture,
@@ -34,10 +36,8 @@ class SD_API Renderer {
                             const glm::vec4 &color = glm::vec4(1.0f));
 
     static void drawText(const Font &font, const std::wstring &text,
-                         const glm::vec4 &color = glm::vec4(1.0f),
-                         const glm::mat4 &transform = glm::mat4(1.0f));
-
-    static void setTextOrigin(float x, float y);
+                         const glm::mat4 &transform = glm::mat4(1.0f),
+                         const glm::vec4 &color = glm::vec4(1.0f));
 
     static void drawMesh(const Mesh &mesh);
 

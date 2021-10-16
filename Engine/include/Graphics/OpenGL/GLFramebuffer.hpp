@@ -27,8 +27,8 @@ class GLFramebuffer : public Framebuffer {
     void bind() const override;
     void unbind() const override;
 
-    void copyFrom(const Framebuffer *other, uint32_t index, BufferBitMask mask,
-                  TextureFilter filter) override;
+    void copyTo(Framebuffer *other, uint32_t index, BufferBitMask mask,
+                TextureFilter filter) const override;
 
     void clearAttachment(uint32_t attachmentId, const void *value) override;
 
