@@ -80,7 +80,7 @@ enum class Operation { DEPTH_TEST, BLEND, STENCIL_TEST, MULTISAMPLE };
 
 class SD_API Graphics {
    public:
-    static void init(API api);
+    static void setAPI(API api);
 
     static API getAPI();
 };

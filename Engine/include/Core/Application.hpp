@@ -61,7 +61,7 @@ class SD_API Application {
     void tick(float dt);
     void render();
 
-    Window m_window;
+    Ref<Window> m_context;
     LayerStack m_layers;
     Ref<ImGuiLayer> m_imguiLayer;
     Ref<RenderEngine> m_renderEngine;

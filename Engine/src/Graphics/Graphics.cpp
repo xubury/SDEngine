@@ -5,9 +5,7 @@ namespace sd {
 
 static API s_api;
 
-void Graphics::init(API api) {
-    SD_CORE_TRACE("Initializing Graphics...");
-
+void Graphics::setAPI(API api) {
     switch (api) {
         case API::OpenGL:
             SD_CORE_INFO("Using OpenGL as backend..");

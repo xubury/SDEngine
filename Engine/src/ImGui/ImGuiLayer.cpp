@@ -61,7 +61,7 @@ void ImGuiLayer::onAttach() {
         case API::OpenGL:
             ImGui_ImplSDL2_InitForOpenGL(
                 Application::getWindow().getHandle(),
-                Application::getWindow().getGraphicContext());
+                Application::getWindow().getGraphicsContext());
             ImGui_ImplOpenGL3_Init("#version 450");
             break;
         default:

@@ -7,7 +7,7 @@ namespace sd {
 static Device *s_device;
 
 void Device::create() {
-    SD_CORE_TRACE("Initializing Graphic Device...");
+    SD_CORE_TRACE("Initializing Graphics Device...");
     switch (Graphics::getAPI()) {
         case API::OpenGL:
             s_device = new GLDevice();

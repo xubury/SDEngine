@@ -14,7 +14,7 @@ namespace sd {
 
 Application *Application::s_instance = nullptr;
 
-Window &Application::getWindow() { return s_instance->m_window; }
+Window &Application::getWindow() { return *s_instance->m_context; }
 
 RenderEngine &Application::getRenderEngine() {
     return *s_instance->m_renderEngine;
@@ -43,15 +43,13 @@ Application::Application() {
     Asset::manager().setLoader<ModelLoader>();
     Asset::manager().setLoader<FontLoader>();
 
-    Graphics::init(API::OpenGL);
+    Graphics::setAPI(API::OpenGL);
 
     WindowProp prop;
     prop.width = width;
     prop.height = height;
     prop.samples = samples;
-    if (!m_window.create(prop)) {
-        exit(-1);
-    }
+    m_context = Window::create(prop);
 
     Device::create();
     Renderer::init();
@@ -94,8 +92,8 @@ void Application::run() {
     SDL_Event event;
     float msPerFrame = 1000.f / minFps;
     uint32_t msElapsed = 0;
-    while (!m_window.shouldClose()) {
-        while (m_window.pollEvent(event)) {
+    while (!m_context->shouldClose()) {
+        while (m_context->pollEvent(event)) {
             processEvent(event);
         }
         processEvents();
@@ -111,7 +109,7 @@ void Application::run() {
     }
 }
 
-void Application::quit() { s_instance->m_window.setShouldClose(true); }
+void Application::quit() { s_instance->m_context->setShouldClose(true); }
 
 void Application::tick(float dt) {
     for (auto iter = m_layers.rbegin(); iter != m_layers.rend(); ++iter) {
@@ -129,7 +127,7 @@ void Application::render() {
     }
     m_imguiLayer->end();
 
-    m_window.swapBuffer();
+    m_context->swapBuffer();
 }
 
 }  // namespace sd

@@ -74,7 +74,6 @@ Ref<Shader> ShaderLoader::loadAsset(const std::string &filePath) {
     }
     shader->linkShaders();
     SD_CORE_ASSERT(success, "Error building shader code");
-    SD_CORE_TRACE("Finish builidng shader code from {}", filePath);
     return shader;
 }
 

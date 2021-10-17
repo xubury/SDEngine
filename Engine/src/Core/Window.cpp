@@ -1,33 +1,29 @@
 #include "Core/Window.hpp"
-#include "Core/Context.hpp"
-#include "Utility/Log.hpp"
+#include "Core/OpenGL/GLWindow.hpp"
 #include "Graphics/Graphics.hpp"
+#include "Utility/Log.hpp"
 
 namespace sd {
 
-Window::Window() : m_shouldClose(false) {}
-
-bool Window::create(const WindowProp &property) {
-    SD_CORE_TRACE("Initializing window...");
-
-    m_context = Context::create(property, &m_window);
-    if (m_window == nullptr) {
-        SD_CORE_ERROR("SDL_CreateWindow failed: {}", SDL_GetError());
-        return false;
+Ref<Window> Window::create(const WindowProp &property) {
+    SD_CORE_TRACE("Initializing Window...");
+    Ref<Window> context;
+    switch (Graphics::getAPI()) {
+        case API::OpenGL:
+            context = createRef<GLWindow>(property);
+            break;
+        default:
+            SD_CORE_ERROR("Unsupported API!");
+            break;
     }
-
-    return true;
+    return context;
 }
-
-Window::~Window() { SDL_DestroyWindow(m_window); }
 
 bool Window::pollEvent(SDL_Event &event) { return SDL_PollEvent(&event) == 1; }
 
 bool Window::shouldClose() const { return m_shouldClose; }
 
 void Window::setShouldClose(bool shouldClose) { m_shouldClose = shouldClose; }
-
-void Window::swapBuffer() { m_context->swapBuffer(); }
 
 int Window::getWidth() const {
     int w = 0, _;
@@ -43,6 +39,6 @@ int Window::getHeight() const {
 
 SDL_Window *Window::getHandle() const { return m_window; }
 
-void *Window::getGraphicContext() const { return m_context->getHandle(); }
+void Window::swapBuffer() const { SDL_GL_SwapWindow(m_window); }
 
 }  // namespace sd

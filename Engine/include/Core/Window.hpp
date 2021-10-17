@@ -28,23 +28,20 @@ struct WindowProp {
           flag(SDL_WindowFlags(0)) {}
 };
 
-class Context;
-
 class SD_API Window {
    public:
-    Window();
-    ~Window();
-    Window(const Window &other) = delete;
-    Window &operator=(const Window &other) = delete;
+    static Ref<Window> create(const WindowProp &property);
 
-    bool create(const WindowProp &property);
+    virtual ~Window() = default;
 
+    Window(const Window &) = delete;
+    Window &operator=(const Window &) = delete;
+
+    void swapBuffer() const;
     bool pollEvent(SDL_Event &event);
 
     bool shouldClose() const;
     void setShouldClose(bool shouldClose);
-
-    void swapBuffer();
 
     int getWidth() const;
 
@@ -52,14 +49,14 @@ class SD_API Window {
 
     SDL_Window *getHandle() const;
 
-    void *getGraphicContext() const;
+    virtual void *getGraphicsContext() const = 0;
 
-   private:
-    Ref<Context> m_context;
+   protected:
+    Window() = default;
+
     SDL_Window *m_window;
     bool m_shouldClose;
 };
 
 }  // namespace sd
-
-#endif /* WINDOW_HPP */
+#endif /* SD_WINDOW_HPP */
