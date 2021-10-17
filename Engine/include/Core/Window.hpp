@@ -24,7 +24,8 @@ struct WindowProp {
           width(1440),
           height(900),
           samples(8),
-          vsync(true) {}
+          vsync(true),
+          flag(SDL_WindowFlags(0)) {}
 };
 
 class Context;

@@ -22,13 +22,23 @@ class SD_API Application {
     Application &operator=(const Application &application) = delete;
 
    protected:
-    void pushLayer(Layer *layer);
+    template <typename LAYER, typename... ARGS>
+    Ref<LAYER> pushLayer(ARGS &&...args) {
+        auto layer =
+            m_layers.pushLayer(createRef<LAYER>(std::forward<ARGS>(args)...));
+        return std::static_pointer_cast<LAYER>(layer);
+    }
 
-    void pushOverlay(Layer *layer);
+    template <typename LAYER, typename... ARGS>
+    Ref<LAYER> pushOverlay(ARGS &&...args) {
+        auto layer =
+            m_layers.pushOverlay(createRef<LAYER>(std::forward<ARGS>(args)...));
+        return std::static_pointer_cast<LAYER>(layer);
+    }
 
-    void popLayer(Layer *layer);
+    void popLayer(const Ref<Layer> &layer);
 
-    void popOverlay(Layer *layer);
+    void popOverlay(const Ref<Layer> &layer);
 
     Application();
     ~Application();
@@ -53,9 +63,9 @@ class SD_API Application {
 
     Window m_window;
     LayerStack m_layers;
-    ImGuiLayer *m_imguiLayer;
-    RenderEngine *m_renderEngine;
-    InputEngine *m_inputEngine;
+    Ref<ImGuiLayer> m_imguiLayer;
+    Ref<RenderEngine> m_renderEngine;
+    Ref<InputEngine> m_inputEngine;
 };
 
 }  // namespace sd

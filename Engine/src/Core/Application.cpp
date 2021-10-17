@@ -56,23 +56,20 @@ Application::Application() {
     Device::create();
     Renderer::init();
 
-    m_inputEngine = new InputEngine();
-    m_imguiLayer = new ImGuiLayer();
-    m_renderEngine = new RenderEngine(width, height, samples);
-    pushOverlay(m_imguiLayer);
-    pushOverlay(m_inputEngine);
-    pushLayer(m_renderEngine);
+    m_imguiLayer = pushOverlay<ImGuiLayer>();
+    m_inputEngine = pushOverlay<InputEngine>();
+    m_renderEngine = pushLayer<RenderEngine>(width, height, samples);
 }
 
 Application::~Application() { SDL_Quit(); }
 
-void Application::pushLayer(Layer *layer) { m_layers.pushLayer(layer); }
+void Application::popLayer(const Ref<Layer> &layer) {
+    m_layers.popLayer(layer);
+}
 
-void Application::pushOverlay(Layer *layer) { m_layers.pushOverlay(layer); }
-
-void Application::popLayer(Layer *layer) { m_layers.popLayer(layer); }
-
-void Application::popOverlay(Layer *layer) { m_layers.popOverlay(layer); }
+void Application::popOverlay(const Ref<Layer> &layer) {
+    m_layers.popOverlay(layer);
+}
 
 void Application::processEvent(const SDL_Event &event) {
     if (event.type == SDL_QUIT) {

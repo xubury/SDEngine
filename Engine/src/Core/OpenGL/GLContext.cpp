@@ -25,6 +25,11 @@ GLContext::GLContext(const WindowProp& property, SDL_Window** window) {
 
     m_window = SDL_CreateWindow(property.title.c_str(), property.x, property.y,
                                 property.width, property.height, sdlFlags);
+    if (m_window == nullptr) {
+        SD_CORE_ERROR("SDL_CreateWindow failed: {}", SDL_GetError());
+        exit(-1);
+    }
+
     m_context = SDL_GL_CreateContext(m_window);
 
     SDL(SDL_GL_SetSwapInterval(property.vsync ? 1 : 0));

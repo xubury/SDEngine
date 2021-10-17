@@ -1,4 +1,5 @@
 #include "Core/LayerStack.hpp"
+#include "Utility/Log.hpp"
 #include <algorithm>
 
 namespace sd {
@@ -6,44 +7,49 @@ namespace sd {
 LayerStack::LayerStack() : m_layerInsertId(0) {}
 
 LayerStack::~LayerStack() {
-    for (Layer *layer : m_layers) {
+    for (auto &layer : m_layers) {
         layer->onDetech();
-        delete layer;
     }
     m_layers.clear();
 }
 
-void LayerStack::pushLayer(Layer *layer) {
+Ref<Layer> LayerStack::pushLayer(const Ref<Layer> &layer) {
     m_layers.emplace(m_layers.begin() + m_layerInsertId, layer);
     ++m_layerInsertId;
     layer->onAttach();
+    return layer;
 }
 
-void LayerStack::pushOverlay(Layer *overlay) {
+Ref<Layer> LayerStack::pushOverlay(const Ref<Layer> &overlay) {
     m_layers.emplace_back(overlay);
     overlay->onAttach();
+    return overlay;
 }
 
-void LayerStack::popLayer(Layer *layer) {
+void LayerStack::popLayer(const Ref<Layer> &layer) {
     auto iter =
         std::find(m_layers.begin(), m_layers.begin() + m_layerInsertId, layer);
     if (iter != m_layers.begin() + m_layerInsertId) {
         layer->onDetech();
         m_layers.erase(iter);
         --m_layerInsertId;
+    } else {
+        SD_CORE_ERROR("LayerStack::popLayer Failed! No layer found!");
     }
 }
 
-void LayerStack::popOverlay(Layer *overlay) {
+void LayerStack::popOverlay(const Ref<Layer> &overlay) {
     auto iter =
         std::find(m_layers.begin() + m_layerInsertId, m_layers.end(), overlay);
     if (iter != m_layers.end()) {
         overlay->onDetech();
         m_layers.erase(iter);
+    } else {
+        SD_CORE_ERROR("LayerStack::popOverLay Failed! No layer found!");
     }
 }
 
-bool LayerStack::hasLayer(const Layer *layer) const {
+bool LayerStack::hasLayer(const Ref<Layer> &layer) const {
     auto iter = std::find(m_layers.begin(), m_layers.end(), layer);
     return iter != m_layers.end();
 }
