@@ -49,6 +49,7 @@ Application::Application() {
     prop.width = width;
     prop.height = height;
     prop.samples = samples;
+    prop.flag = SDL_WINDOW_MAXIMIZED;
     m_context = Window::create(prop);
 
     Device::create();
