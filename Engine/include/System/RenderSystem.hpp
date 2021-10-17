@@ -1,7 +1,8 @@
 #ifndef SD_RENDER_SYSTEM_HPP
 #define SD_RENDER_SYSTEM_HPP
 
-#include "Core/System.hpp"
+#include "System/System.hpp"
+#include "System/Event.hpp"
 #include "ECS/Scene.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"

@@ -1,9 +1,11 @@
 #ifndef SD_PROFILE_SYSTEM_HPP
 #define SD_PROFILE_SYSTEM_HPP
 
-#include "Core/System.hpp"
+#include "System/System.hpp"
+#include "System/Event.hpp"
 #include "Core/Timing.hpp"
 #include "Graphics/Font.hpp"
+#include "Graphics/Camera.hpp"
 
 namespace sd {
 

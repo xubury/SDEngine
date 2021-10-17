@@ -6,7 +6,7 @@
 #include "Utility/Export.hpp"
 #include "Graphics/RenderTarget.hpp"
 #include "Graphics/Camera.hpp"
-#include "Core/System.hpp"
+#include "System/System.hpp"
 
 namespace sd {
 

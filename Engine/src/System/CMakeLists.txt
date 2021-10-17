@@ -2,15 +2,18 @@ set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/System)
 set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/System)
 
 set(System_Include
+    ${Include_Root}/Event.hpp
     ${Include_Root}/ParticleSystem.hpp
     ${Include_Root}/ProfileSystem.hpp
     ${Include_Root}/RenderSystem.hpp
+    ${Include_Root}/System.hpp
     ${Include_Root}/TerrainSystem.hpp)
 
 set(System_Src
     ${Src_Root}/ParticleSystem.cpp
     ${Src_Root}/ProfileSystem.cpp
     ${Src_Root}/RenderSystem.cpp
+    ${Src_Root}/System.cpp
     ${Src_Root}/TerrainSystem.cpp)
 
 

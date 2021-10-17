@@ -8,10 +8,12 @@
 
 namespace sd {
 
-class RenderEngine : public Layer {
+class RenderEngine : public Layer, public SystemManager {
    public:
     RenderEngine(int width, int height, int samples);
 
+    void onTick(float dt) override;
+    void onRender() override;
     void onEventProcess(const SDL_Event &) override;
 
     RenderSystem *getRenderSystem();

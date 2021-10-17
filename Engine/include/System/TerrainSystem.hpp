@@ -1,7 +1,8 @@
 #ifndef SD_TERRAIN_SYSTEM_HPP
 #define SD_TERRAIN_SYSTEM_HPP
 
-#include "Core/System.hpp"
+#include "System/System.hpp"
+#include "System/Event.hpp"
 #include "ECS/Entity.hpp"
 #include "Graphics/Terrain.hpp"
 #include "Utility/QuadTree.hpp"

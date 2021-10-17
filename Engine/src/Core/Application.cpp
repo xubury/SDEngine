@@ -118,19 +118,12 @@ void Application::quit() { s_instance->m_window.setShouldClose(true); }
 
 void Application::tick(float dt) {
     for (auto iter = m_layers.rbegin(); iter != m_layers.rend(); ++iter) {
-        auto &layer = *iter;
-        for (auto &system : layer->getSystems()) {
-            system->onTick(dt);
-        }
-        layer->onTick(dt);
+        (*iter)->onTick(dt);
     }
 }
 
 void Application::render() {
     for (auto &layer : m_layers) {
-        for (auto &system : layer->getSystems()) {
-            system->onRender();
-        }
         layer->onRender();
     }
     m_imguiLayer->begin();

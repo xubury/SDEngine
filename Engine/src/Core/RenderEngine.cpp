@@ -9,9 +9,21 @@ RenderEngine::RenderEngine(int width, int height, int samples)
       m_target(createRef<RenderTarget>(0, 0, width, height)),
       m_renderSystem(nullptr),
       m_terrainSystem(nullptr) {
-    m_renderSystem = addSystem<RenderSystem>(width, height, samples);
+    m_renderSystem = addSystem<RenderSystem>(width, height, samples).get();
     addSystem<ProfileSystem>(width, height);
-    m_terrainSystem = addSystem<TerrainSystem>();
+    m_terrainSystem = addSystem<TerrainSystem>().get();
+}
+
+void RenderEngine::onTick(float dt) {
+    for (auto &system : getSystems()) {
+        system->onTick(dt);
+    }
+}
+
+void RenderEngine::onRender() {
+    for (auto &system : getSystems()) {
+        system->onRender();
+    }
 }
 
 void RenderEngine::onEventProcess(const SDL_Event &event) {
@@ -37,11 +49,9 @@ RenderTarget &RenderEngine::getRenderTarget() { return *m_target; }
 
 void RenderEngine::resize(int width, int height) {
     getRenderTarget().resize(width, height);
-    m_dispatcher.dispatchEvent(SizeEvent(width, height));
+    dispatchEvent(SizeEvent(width, height));
 }
 
-void RenderEngine::setScene(Scene *scene) {
-    m_dispatcher.dispatchEvent(SceneEvent(scene));
-}
+void RenderEngine::setScene(Scene *scene) { dispatchEvent(SceneEvent(scene)); }
 
 }  // namespace sd
