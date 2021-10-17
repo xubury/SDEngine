@@ -65,38 +65,40 @@ void CameraController::tick(float dt) {
 void CameraController::move(const glm::vec3 &t) { m_camera->translateWorld(t); }
 
 void CameraController::rotate(float yaw, float pitch) {
+    yaw = glm::radians(yaw);
+    pitch = glm::radians(pitch);
+
     glm::quat rotation = m_camera->getWorldRotation();
     m_pitch += pitch;
-    if (std::abs(m_pitch) < 90.f) {
-        rotation =
-            glm::angleAxis(glm::radians(pitch), m_camera->getWorldRight()) *
-            rotation;
+    if (std::abs(m_pitch) < glm::radians(89.f)) {
+        rotation = glm::angleAxis(pitch, m_camera->getWorldRight()) * rotation;
     } else {
         m_pitch -= pitch;
     }
-    rotation = glm::angleAxis(glm::radians(yaw), glm::vec3(0, 1, 0)) * rotation;
+    rotation = glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotation;
     m_camera->setWorldRotation(rotation);
 }
 
 void CameraController::rotateAround(float yaw, float pitch) {
+    yaw = glm::radians(yaw);
+    pitch = glm::radians(pitch);
+
     glm::mat4 transform(1.0f);
     transform = glm::translate(transform, m_focus);
     m_pitch += pitch;
-    if (std::abs(m_pitch) < 90.f) {
-        transform = glm::rotate(transform, glm::radians(pitch),
-                                m_camera->getWorldRight());
+    if (std::abs(m_pitch) < glm::radians(89.f)) {
+        transform = glm::rotate(transform, pitch, m_camera->getWorldRight());
     } else {
         m_pitch -= pitch;
     }
-    transform =
-        glm::rotate(transform, glm::radians(yaw), glm::vec3(0.f, 1.f, 0.f));
+    transform = glm::rotate(transform, yaw, glm::vec3(0.f, 1.f, 0.f));
     transform = glm::translate(transform, -m_focus);
     m_camera->setWorldTransform(transform * m_camera->getWorldTransform());
 }
 
 void CameraController::setCamera(sd::Camera *camera) {
     m_camera = camera;
-    m_pitch = glm::eulerAngles(m_camera->getWorldRotation())[0];
+    m_pitch = glm::pitch(m_camera->getWorldRotation());
 }
 
 void CameraController::setFocus(const glm::vec3 &focus) { m_focus = focus; }
