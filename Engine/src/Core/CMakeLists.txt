@@ -34,7 +34,6 @@ set(Core_Src
     ${Src_Root}/EntryPoint.cpp
     ${Src_Root}/Input.cpp
     ${Src_Root}/InputEngine.cpp
-    ${Src_Root}/Layer.cpp
     ${Src_Root}/LayerStack.cpp
     ${Src_Root}/RenderEngine.cpp
     ${Src_Root}/Timing.cpp)
