@@ -30,8 +30,8 @@ class RenderEngine : public Layer, public SystemManager {
    private:
     Ref<RenderTarget> m_target;
 
-    RenderSystem *m_renderSystem;
-    TerrainSystem *m_terrainSystem;
+    Ref<RenderSystem> m_renderSystem;
+    Ref<TerrainSystem> m_terrainSystem;
 };
 
 }  // namespace sd

@@ -9,9 +9,9 @@ RenderEngine::RenderEngine(int width, int height, int samples)
       m_target(createRef<RenderTarget>(0, 0, width, height)),
       m_renderSystem(nullptr),
       m_terrainSystem(nullptr) {
-    m_renderSystem = addSystem<RenderSystem>(width, height, samples).get();
+    m_renderSystem = addSystem<RenderSystem>(width, height, samples);
     addSystem<ProfileSystem>(width, height);
-    m_terrainSystem = addSystem<TerrainSystem>().get();
+    m_terrainSystem = addSystem<TerrainSystem>();
 }
 
 void RenderEngine::onTick(float dt) {
@@ -35,9 +35,11 @@ void RenderEngine::onEventProcess(const SDL_Event &event) {
     }
 }
 
-RenderSystem *RenderEngine::getRenderSystem() { return m_renderSystem; }
+RenderSystem *RenderEngine::getRenderSystem() { return m_renderSystem.get(); }
 
-TerrainSystem *RenderEngine::getTerrainSystem() { return m_terrainSystem; }
+TerrainSystem *RenderEngine::getTerrainSystem() {
+    return m_terrainSystem.get();
+}
 
 void RenderEngine::setRenderTarget(const Ref<RenderTarget> &target) {
     m_target = target;
