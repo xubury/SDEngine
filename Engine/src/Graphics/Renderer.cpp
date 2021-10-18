@@ -87,10 +87,10 @@ void Renderer::init() {
     s_data.quadVAO->addVertexBuffer(s_data.quadVBO, layout);
     s_data.quadVAO->setIndexBuffer(s_data.quadEBO);
 
-    s_data.quadVertexPositions[0] = {0.f, 0.f, 0.0f, 1.0f};
-    s_data.quadVertexPositions[1] = {1.0f, 0.f, 0.0f, 1.0f};
-    s_data.quadVertexPositions[2] = {1.0f, 1.0f, 0.0f, 1.0f};
-    s_data.quadVertexPositions[3] = {0.f, 1.0f, 0.0f, 1.0f};
+    s_data.quadVertexPositions[0] = {-0.5f, -0.5f, 0.0f, 1.0f};
+    s_data.quadVertexPositions[1] = {0.5f, -0.5f, 0.0f, 1.0f};
+    s_data.quadVertexPositions[2] = {0.5f, 0.5f, 0.0f, 1.0f};
+    s_data.quadVertexPositions[3] = {-0.5f, 0.5f, 0.0f, 1.0f};
 
     s_data.quadTexCoords[0] = {0.0f, 1.0f};
     s_data.quadTexCoords[1] = {1.0f, 1.0f};
@@ -238,8 +238,8 @@ void Renderer::drawText(const Font& font, const std::wstring& text,
         glm::mat4 offset =
             glm::translate(
                 glm::mat4(1.0f),
-                glm::vec3(s_data.textCursor.x + ch.bearing.x,
-                          s_data.textCursor.y + ch.bearing.y - ch.size.y, 0)) *
+                glm::vec3(s_data.textCursor.x + ch.bearing.x + ch.size.x / 2.f,
+                          s_data.textCursor.y + ch.bearing.y - ch.size.y / 2.f, 0)) *
             glm::scale(glm::mat4(1.0f), glm::vec3(ch.size.x, ch.size.y, 1.0f));
         drawTexture(ch.texture, t * offset, color);
         s_data.textCursor.x += ch.advance >> 6;
