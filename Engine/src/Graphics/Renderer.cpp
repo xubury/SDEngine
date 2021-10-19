@@ -247,6 +247,13 @@ void Renderer::drawText(const Font& font, const std::wstring& text,
     }
 }
 
+void Renderer::drawText(const Font& font, const std::wstring& text,
+                        float pixelScale, const glm::vec4& color) {
+    drawText(font, text,
+             glm::scale(glm::mat4(1.0f), glm::vec3(pixelScale, pixelScale, 1)),
+             color);
+}
+
 void Renderer::drawMesh(const Mesh& mesh) {
     Device::instance().setPolygonMode(
         mesh.isWireframe() ? PolygonMode::LINE : PolygonMode::FILL, Face::BOTH);

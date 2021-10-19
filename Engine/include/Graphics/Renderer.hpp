@@ -37,7 +37,11 @@ class SD_API Renderer {
                             const glm::vec4 &color = glm::vec4(1.0f));
 
     static void drawText(const Font &font, const std::wstring &text,
-                         const glm::mat4 &transform = glm::mat4(1.0f),
+                         const glm::mat4 &transform,
+                         const glm::vec4 &color = glm::vec4(1.0f));
+
+    static void drawText(const Font &font, const std::wstring &text,
+                         float pixelScale = 10,
                          const glm::vec4 &color = glm::vec4(1.0f));
 
     static void drawMesh(const Mesh &mesh);

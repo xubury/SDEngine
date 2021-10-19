@@ -357,7 +357,7 @@ void RenderSystem::renderText() {
     Renderer::beginScene(*m_camera);
     Renderer::drawText(
         *Asset::manager().load<Font>("fonts/opensans/OpenSans-Regular.ttf"),
-        L"3d text\nhoho");
+        L"3d text\nhoho", glm::mat4(1.0f));
     Renderer::endScene();
 }
 
