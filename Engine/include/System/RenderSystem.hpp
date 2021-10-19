@@ -70,7 +70,7 @@ class SD_API RenderSystem : public System {
 
     Ref<Shader> m_lightShader;
     RenderTarget m_lightTarget[2];
-    Texture *m_lightResult;
+    RenderTarget *m_lightResult;
 
     Ref<Shader> m_gBufferShader;
     RenderTarget m_gBufferTarget;

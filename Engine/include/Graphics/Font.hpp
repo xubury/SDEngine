@@ -16,7 +16,7 @@ struct SD_API Character {
 
 class SD_API Font {
    public:
-    Font() = default;
+    Font(int size);
 
     Font(const Font &) = delete;
     Font operator=(const Font &) = delete;
@@ -24,7 +24,6 @@ class SD_API Font {
     void setCharacter(wchar_t ch, const Character &character);
     const Character &getCharacter(wchar_t ch) const;
 
-    void setPixelSize(int size) { m_size = size; };
     int getPixelSize() const { return m_size; };
 
    private:

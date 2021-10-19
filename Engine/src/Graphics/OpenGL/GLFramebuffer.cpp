@@ -132,6 +132,7 @@ void GLFramebuffer::copyTo(Framebuffer *other, uint32_t index,
                       texture->getWidth(), texture->getHeight(), glMask,
                       glFilter);
 
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 }
 

@@ -74,6 +74,9 @@ RenderSystem::RenderSystem(int width, int height, int samples)
         m_lightTarget[i].addTexture(
             createTexture(width, height, 1, TextureFormat::RGBA,
                           TextureFormatType::FLOAT, true));
+        m_lightTarget[i].addTexture(
+            createTexture(width, height, 1, TextureFormat::DEPTH,
+                          TextureFormatType::FLOAT, true));
         m_blurTarget[i].createFramebuffer();
         m_lightTarget[i].createFramebuffer();
     }
@@ -126,15 +129,12 @@ void RenderSystem::initGBuffer(int width, int height, int samples) {
             createTexture(width, height, 1, format, type, linear));
     }
     // depth
-    m_gBuffer->attachTexture(Texture::create(
-        width, height, 1, TextureType::TEX_2D, TextureFormat::DEPTH,
-        TextureFormatType::FLOAT, TextureWrap::BORDER, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR));
-    m_gBufferTarget.addTexture(Texture::create(
-        width, height, samples,
-        samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D,
-        TextureFormat::DEPTH, TextureFormatType::FLOAT, TextureWrap::BORDER,
-        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
+    m_gBuffer->attachTexture(createTexture(width, height, 1,
+                                           TextureFormat::DEPTH,
+                                           TextureFormatType::FLOAT, true));
+    m_gBufferTarget.addTexture(createTexture(width, height, samples,
+                                             TextureFormat::DEPTH,
+                                             TextureFormatType::FLOAT, true));
     m_gBufferTarget.createFramebuffer();
 }
 
@@ -161,11 +161,11 @@ void RenderSystem::onRender() {
     renderGBuffer();
     renderShadow();
     renderLight();
+    renderText();
     if (m_isBloom) {
         renderBlur();
     }
     renderMain();
-    renderText();
 }
 
 void RenderSystem::renderMain() {
@@ -178,13 +178,11 @@ void RenderSystem::renderMain() {
         m_mainShader->setFloat("u_bloomFactor", m_bloom);
         m_mainShader->setTexture("u_blur", m_blurResult);
     }
-    m_mainShader->setTexture("u_lighting", m_lightResult);
+    m_mainShader->setTexture("u_lighting", m_lightResult->getTexture());
     m_mainShader->setFloat("u_exposure", m_exposure);
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
 
-    Renderer::setRenderTarget(Application::getRenderEngine().getRenderTarget());
-    Device::instance().clear(BufferBitMask::DEPTH_BUFFER_BIT);
-    getGBuffer()->copyTo(
+    m_lightResult->getFramebuffer()->copyTo(
         Application::getRenderEngine().getRenderTarget().getFramebuffer(), 0,
         BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
 }
@@ -199,9 +197,9 @@ void RenderSystem::renderBlur() {
         Renderer::setRenderTarget(m_blurTarget[outputId]);
         m_blurResult = m_blurTarget[outputId].getTexture();
         m_blurShader->setBool("u_horizontal", horizontal);
-        m_blurShader->setTexture(
-            "u_image",
-            i == 0 ? m_lightResult : m_blurTarget[inputId].getTexture());
+        m_blurShader->setTexture("u_image",
+                                 i == 0 ? m_lightResult->getTexture()
+                                        : m_blurTarget[inputId].getTexture());
         Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
         horizontal = !horizontal;
     }
@@ -236,6 +234,8 @@ void RenderSystem::renderShadow() {
 }
 
 void RenderSystem::renderLight() {
+    Device::instance().setDepthMask(false);
+    Device::instance().disable(Operation::DEPTH_TEST);
     Renderer::setShader(*m_lightShader);
     Framebuffer *gBuffer = getGBuffer();
     m_lightShader->setTexture(
@@ -246,9 +246,9 @@ void RenderSystem::renderLight() {
         "u_gAlbedo", gBuffer->getTexture(GeometryBufferType::G_ALBEDO));
     m_lightShader->setTexture(
         "u_gAmbient", gBuffer->getTexture(GeometryBufferType::G_AMBIENT));
-    Device::instance().setDepthMask(false);
     const uint8_t inputIndex = 0;
     const uint8_t outputIndex = 1;
+    m_lightResult = &m_lightTarget[inputIndex];
 
     // clear the last lighting pass' result
     const float color[] = {0, 0, 0, 1.0};
@@ -259,7 +259,6 @@ void RenderSystem::renderLight() {
                           const LightComponent &lightComp) {
         Renderer::setRenderTarget(m_lightTarget[outputIndex]);
         const Light &light = lightComp.light;
-        m_lightResult = m_lightTarget[outputIndex].getTexture();
         m_lightShader->setTexture("u_lighting",
                                   m_lightTarget[inputIndex].getTexture());
         const Transform &transform = transformComp.transform;
@@ -286,6 +285,11 @@ void RenderSystem::renderLight() {
     });
 
     Device::instance().setDepthMask(true);
+    Device::instance().enable(Operation::DEPTH_TEST);
+
+    getGBuffer()->copyTo(m_lightResult->getFramebuffer(), 0,
+                         BufferBitMask::DEPTH_BUFFER_BIT,
+                         TextureFilter::NEAREST);
 }
 
 void RenderSystem::renderGBuffer() {
@@ -354,6 +358,7 @@ void RenderSystem::renderGBuffer() {
 }
 
 void RenderSystem::renderText() {
+    Renderer::setRenderTarget(*m_lightResult);
     Renderer::beginScene(*m_camera);
     Renderer::drawText(
         *Asset::manager().load<Font>("fonts/opensans/OpenSans-Regular.ttf"),

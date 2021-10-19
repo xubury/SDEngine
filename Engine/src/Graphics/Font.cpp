@@ -2,6 +2,8 @@
 
 namespace sd {
 
+Font::Font(int size) : m_size(size) {}
+
 void Font::setCharacter(wchar_t ch, const Character &character) {
     m_characters[ch] = character;
 }
