@@ -60,7 +60,7 @@ void EditorLayer::onRender() {
         auto lightImage =
             sd::Asset::manager().load<sd::Texture>("icons/light.png");
         float dist = glm::distance(pos, m_editorCamera.getWorldPosition());
-        float scale = dist / 20;
+        float scale = (dist - m_editorCamera.getNearZ()) / 20;
         sd::Renderer::drawTexture(
             lightImage,
             glm::translate(glm::mat4(1.0f), pos) *
