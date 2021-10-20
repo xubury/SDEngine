@@ -350,6 +350,7 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
             std::string utf8Str = wstringToString(textComp.text);
             memset(buffer, 0, sizeof(buffer));
             std::strncpy(buffer, utf8Str.c_str(), utf8Str.size());
+            ImGui::Text("Font File:");
             ImGui::InputText("##Path", textComp.fontPath.data(),
                              textComp.fontPath.size(),
                              ImGuiInputTextFlags_ReadOnly);
@@ -365,10 +366,13 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
             if (ImGui::FileDialog(&m_fileDialogOpen, &m_fileDialogInfo)) {
                 textComp.fontPath = m_fileDialogInfo.resultPath.string();
             }
+            ImGui::Text("Text Content:");
             if (ImGui::InputText("##TextEdit", buffer, sizeof(buffer))) {
                 textComp.text = stringToWstring(buffer);
             }
+            ImGui::Text("Pixel Size");
             ImGui::InputInt("##PixelSize", &textComp.pixelSize);
+            ImGui::Text("Color");
             ImGui::ColorEdit4("##TextColor", &textComp.color[0]);
         });
 }

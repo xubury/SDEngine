@@ -235,8 +235,8 @@ void Renderer::drawText(Font& font, const std::wstring& text, int pixelSize,
         glm::mat4 offset =
             glm::translate(
                 glm::mat4(1.0f),
-                glm::vec3(s_data.textCursor.x + ch.bearing.x + ch.size.x / 2.f,
-                          s_data.textCursor.y + ch.bearing.y - ch.size.y / 2.f,
+                glm::vec3(s_data.textCursor.x + ch.bearing.x + ch.size.x * 0.5f,
+                          s_data.textCursor.y + ch.bearing.y - ch.size.y * 0.5f,
                           0)) *
             glm::scale(glm::mat4(1.0f), glm::vec3(ch.size.x, ch.size.y, 1.0f));
         drawTexture(ch.texture, t * offset, color);
