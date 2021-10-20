@@ -358,13 +358,19 @@ void RenderSystem::renderGBuffer() {
 }
 
 void RenderSystem::renderText() {
-    auto font = Asset::manager().load<Font>("fonts/msyh_0.ttc");
     Renderer::setRenderTarget(*m_lightResult);
     Renderer::beginScene(*m_camera);
+    auto textView = m_scene->view<TransformComponent, TextComponent>();
+    textView.each([](const TransformComponent &transformComp,
+                     const TextComponent &textComp) {
+        if (textComp.fontPath.size()) {
+            auto font = Asset::manager().load<Font>(textComp.fontPath);
+            Renderer::drawText(*font, textComp.text, textComp.pixelSize,
+                               transformComp.transform.getWorldTransform(),
+                               textComp.color);
+        }
+    });
 
-    Renderer::drawText(
-        *font, L"FPS: 3d text\nhoho中文测试", 100,
-        glm::scale(glm::mat4(1.0f), glm::vec3(0.01f, 0.01f, 1.f)));
     Renderer::endScene();
 }
 

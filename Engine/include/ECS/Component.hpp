@@ -9,6 +9,7 @@
 #include "Graphics/Mesh.hpp"
 #include "Graphics/Terrain.hpp"
 #include "Graphics/Light.hpp"
+#include "Graphics/Font.hpp"
 
 namespace sd {
 
@@ -65,6 +66,18 @@ struct SD_API LightComponent {
     template <typename Archive>
     void serialize(Archive& archive) {
         archive(light);
+    }
+};
+
+struct SD_API TextComponent {
+    std::string fontPath;
+    int pixelSize = 10;
+    glm::vec4 color = glm::vec4(1);
+    std::wstring text;
+
+    template <typename Archive>
+    void serialize(Archive& archive) {
+        archive(fontPath, pixelSize, color, text);
     }
 };
 

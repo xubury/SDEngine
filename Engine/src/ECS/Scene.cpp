@@ -78,7 +78,7 @@ void Scene::load(const std::string &filePath) {
     entt::snapshot_loader{*this}
         .entities(archive)
         .component<EntityDataComponent, TagComponent, TransformComponent,
-                   ModelComponent, LightComponent>(archive);
+                   ModelComponent, LightComponent, TextComponent>(archive);
     refresh();
 }
 
@@ -88,7 +88,7 @@ void Scene::save(const std::string &filePath) {
     entt::snapshot{*this}
         .entities(archive)
         .component<EntityDataComponent, TagComponent, TransformComponent,
-                   ModelComponent, LightComponent>(archive);
+                   ModelComponent, LightComponent, TextComponent>(archive);
 }
 
 void Scene::refreshLight(Entity &entity) {

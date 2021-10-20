@@ -4,6 +4,25 @@
 #include "imgui_internal.h"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGuizmo.h"
+#include <codecvt>
+
+std::wstring stringToWstring(const std::string &t_str) {
+    // setup converter
+    typedef std::codecvt_utf8<wchar_t> convert_type;
+    std::wstring_convert<convert_type, wchar_t> converter;
+
+    // use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
+    return converter.from_bytes(t_str);
+}
+
+std::string wstringToString(const std::wstring &wstr) {
+    // setup converter
+    typedef std::codecvt_utf8<wchar_t> convert_type;
+    std::wstring_convert<convert_type, wchar_t> converter;
+
+    // use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
+    return converter.to_bytes(wstr);
+}
 
 ScenePanel::ScenePanel()
     : m_scene(nullptr),
@@ -193,6 +212,13 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
                 SD_CORE_WARN("This entity already has the Light Component!");
             ImGui::CloseCurrentPopup();
         }
+        if (ImGui::MenuItem("Text")) {
+            if (!m_selectedEntity.hasComponent<sd::TextComponent>())
+                m_selectedEntity.addComponent<sd::TextComponent>();
+            else
+                SD_CORE_WARN("This entity already has the Text Component!");
+            ImGui::CloseCurrentPopup();
+        }
 
         ImGui::EndPopup();
     }
@@ -316,6 +342,34 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
                     light.setOuterCutOff(glm::radians(outerCutOff));
                 }
             }
+        });
+    drawComponent<sd::TextComponent>(
+        "Text", entity, [&](sd::TextComponent &textComp) {
+            // TODO: Can ImGui support UTF-16?
+            char buffer[256];
+            std::string utf8Str = wstringToString(textComp.text);
+            memset(buffer, 0, sizeof(buffer));
+            std::strncpy(buffer, utf8Str.c_str(), utf8Str.size());
+            ImGui::InputText("##Path", textComp.fontPath.data(),
+                             textComp.fontPath.size(),
+                             ImGuiInputTextFlags_ReadOnly);
+            ImGui::SameLine();
+            if (ImGui::Button("Open")) {
+                m_fileDialogOpen = true;
+                m_fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
+                m_fileDialogInfo.title = "Open File";
+                m_fileDialogInfo.fileName = "";
+                m_fileDialogInfo.directoryPath =
+                    std::filesystem::current_path();
+            }
+            if (ImGui::FileDialog(&m_fileDialogOpen, &m_fileDialogInfo)) {
+                textComp.fontPath = m_fileDialogInfo.resultPath.string();
+            }
+            if (ImGui::InputText("##TextEdit", buffer, sizeof(buffer))) {
+                textComp.text = stringToWstring(buffer);
+            }
+            ImGui::InputInt("##PixelSize", &textComp.pixelSize);
+            ImGui::ColorEdit4("##TextColor", &textComp.color[0]);
         });
 }
 
