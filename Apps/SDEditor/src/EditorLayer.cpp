@@ -58,7 +58,7 @@ void EditorLayer::onRender() {
                           const sd::TransformComponent &transComp) {
         glm::vec3 pos = transComp.transform.getWorldPosition();
         auto lightImage =
-            sd::Asset::manager().load<sd::Texture>("textures/light.png");
+            sd::Asset::manager().load<sd::Texture>("icons/light.png");
         float dist = glm::distance(pos, m_editorCamera.getWorldPosition());
         float scale = dist / 20;
         sd::Renderer::drawTexture(
