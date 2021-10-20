@@ -219,22 +219,19 @@ void Renderer::drawTexture(const Ref<Texture>& texture,
     s_data.quadIndexCnt += 6;
 }
 
-void Renderer::drawText(const Font& font, const std::wstring& text,
+void Renderer::drawText(Font& font, const std::wstring& text, int pixelSize,
                         const glm::mat4& transform, const glm::vec4& color) {
     glm::mat4 t =
         glm::translate(glm::mat4(1.0f),
                        glm::vec3(s_data.textOrigin.x, s_data.textOrigin.y, 0)) *
-        glm::scale(glm::mat4(1.0f),
-                   glm::vec3(1.f / font.getPixelSize(),
-                             1.f / font.getPixelSize(), 1.0f)) *
         transform;
     for (const auto c : text) {
         if (c == '\n') {
             s_data.textCursor.x = 0;
-            s_data.textCursor.y -= font.getPixelSize();
+            s_data.textCursor.y -= pixelSize;
             continue;
         }
-        const Character& ch = font.getCharacter(c);
+        const Character& ch = font.getCharacter(c, pixelSize);
         glm::mat4 offset =
             glm::translate(
                 glm::mat4(1.0f),
@@ -245,13 +242,6 @@ void Renderer::drawText(const Font& font, const std::wstring& text,
         drawTexture(ch.texture, t * offset, color);
         s_data.textCursor.x += ch.advance >> 6;
     }
-}
-
-void Renderer::drawText(const Font& font, const std::wstring& text,
-                        float pixelScale, const glm::vec4& color) {
-    drawText(font, text,
-             glm::scale(glm::mat4(1.0f), glm::vec3(pixelScale, pixelScale, 1)),
-             color);
 }
 
 void Renderer::drawMesh(const Mesh& mesh) {

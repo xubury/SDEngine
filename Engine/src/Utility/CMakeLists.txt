@@ -73,8 +73,9 @@ target_include_directories(sd-utils
 target_link_libraries(sd-utils 
     PUBLIC 
     spdlog::spdlog glm 
+    Freetype::Freetype
     PRIVATE 
-    assimp::assimp SDL2::Image Freetype::Freetype)
+    assimp::assimp SDL2::Image)
 
 install(TARGETS sd-utils LIBRARY DESTINATION lib)
 

@@ -28,7 +28,7 @@ void ProfileSystem::onRender() {
     float size = 20;
     Renderer::setTextOrigin(-m_camera.getNearWidth() / 2.f,
                             m_camera.getNearHeight() / 2.f - size);
-    Renderer::drawText(*m_font, fpsStr, size, glm::vec4(1.0f));
+    Renderer::drawText(*m_font, fpsStr, size, glm::mat4(1.0f));
     Renderer::endScene();
 }
 

@@ -358,11 +358,13 @@ void RenderSystem::renderGBuffer() {
 }
 
 void RenderSystem::renderText() {
+    auto font = Asset::manager().load<Font>("fonts/msyh_0.ttc");
     Renderer::setRenderTarget(*m_lightResult);
     Renderer::beginScene(*m_camera);
+
     Renderer::drawText(
-        *Asset::manager().load<Font>("fonts/opensans/OpenSans-Regular.ttf"),
-        L"3d text\nhoho", glm::mat4(1.0f));
+        *font, L"FPS: 3d text\nhoho中文测试", 100,
+        glm::scale(glm::mat4(1.0f), glm::vec3(0.01f, 0.01f, 1.f)));
     Renderer::endScene();
 }
 
