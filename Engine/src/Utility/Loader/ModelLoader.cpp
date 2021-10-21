@@ -84,24 +84,22 @@ static void processAiMaterial(const std::filesystem::path &directory,
                               const aiMaterial *assimpMaterial,
                               aiTextureType assimpType) {
     uint32_t count = assimpMaterial->GetTextureCount(assimpType);
-    if (material.hasTexture(materialType) || count < 1) return;
-
-    if (count > 1)
+    if (count < 1) {
+        return;
+    } else if (count > 1) {
         SD_CORE_WARN(
             "[processAiMaterial] Cannot handle multiple texture of same type!");
+    }
 
     aiString texturePath;
-    for (uint32_t i = 0; i < count; ++i) {
-        if (assimpMaterial->GetTexture(assimpType, i, &texturePath) !=
-            AI_SUCCESS) {
-            SD_CORE_ERROR("[processAiMaterial] Assimp GetTexture error!");
-            continue;
-        }
-        std::string path = (directory / texturePath.C_Str()).string();
-        auto texture = Asset::manager().load<Texture>(path);
-        texture->setMipmapFilter(TextureMipmapFilter::LINEAR_LINEAR);
-        material.setTexture(materialType, texture);
+    if (assimpMaterial->GetTexture(assimpType, 0, &texturePath) != AI_SUCCESS) {
+        SD_CORE_ERROR("[processAiMaterial] Assimp GetTexture error!");
+        return;
     }
+    std::string path = (directory / texturePath.C_Str()).string();
+    auto texture = Asset::manager().load<Texture>(path);
+    texture->setMipmapFilter(TextureMipmapFilter::LINEAR_LINEAR);
+    material.setTexture(materialType, texture);
 }
 
 static void processNode(const aiScene *scene, const aiNode *node,
