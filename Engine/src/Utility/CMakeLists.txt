@@ -35,6 +35,7 @@ set(Utility_Include
     ${Include_Root}/Random.hpp
     ${Include_Root}/SDLHelper.hpp
     ${Include_Root}/Serialize.hpp
+    ${Include_Root}/String.hpp
     ${Include_Root}/Transform.hpp)
 
 set(Utility_Src
