@@ -249,7 +249,9 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
                     std::filesystem::current_path();
             }
             if (ImGui::FileDialog(&m_fileDialogOpen, &m_fileDialogInfo)) {
-                mc.path = m_fileDialogInfo.resultPath.string();
+                mc.path = sd::Asset::manager()
+                              .getRelativePath(m_fileDialogInfo.resultPath)
+                              .string();
                 mc.model = sd::Asset::manager().load<sd::Model>(mc.path);
             }
 
@@ -329,7 +331,7 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
         "Text", entity, [&](sd::TextComponent &textComp) {
             // TODO: Can ImGui support UTF-16?
             char buffer[256];
-            std::string utf8Str = wstringToString(textComp.text);
+            std::string utf8Str = sd::wstringToString(textComp.text);
             memset(buffer, 0, sizeof(buffer));
             std::strncpy(buffer, utf8Str.c_str(), utf8Str.size());
             ImGui::Text("Font File:");
@@ -346,11 +348,14 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
                     std::filesystem::current_path();
             }
             if (ImGui::FileDialog(&m_fileDialogOpen, &m_fileDialogInfo)) {
-                textComp.fontPath = m_fileDialogInfo.resultPath.string();
+                textComp.fontPath =
+                    sd::Asset::manager()
+                        .getRelativePath(m_fileDialogInfo.resultPath)
+                        .string();
             }
             ImGui::Text("Text Content:");
             if (ImGui::InputText("##TextEdit", buffer, sizeof(buffer))) {
-                textComp.text = stringToWstring(buffer);
+                textComp.text = sd::stringToWstring(buffer);
             }
             ImGui::Text("Pixel Size");
             ImGui::InputInt("##PixelSize", &textComp.pixelSize);

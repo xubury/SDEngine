@@ -79,6 +79,10 @@ class SD_API AssetManager {
             path.is_relative() ? std::filesystem::current_path() / path : path;
     }
 
+    std::filesystem::path getRelativePath(const std::filesystem::path &path) {
+        return path.lexically_relative(m_rootPath);
+    }
+
     std::filesystem::path getRootPath() const { return m_rootPath; };
 
     std::filesystem::path getAbsolutePath(
