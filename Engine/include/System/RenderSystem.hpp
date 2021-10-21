@@ -72,6 +72,8 @@ class SD_API RenderSystem : public System {
     RenderTarget m_blurTarget[2];
     Texture *m_blurResult;
 
+    Ref<Shader> m_emssiveShader;
+
     Ref<Shader> m_lightShader;
     RenderTarget m_lightTarget[2];
 

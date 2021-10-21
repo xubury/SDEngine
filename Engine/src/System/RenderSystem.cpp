@@ -65,6 +65,7 @@ RenderSystem::RenderSystem(int width, int height, int samples)
         Device::instance().enable(Operation::MULTISAMPLE);
     }
     m_mainShader = Asset::manager().load<Shader>("shaders/main.glsl");
+    m_emssiveShader = Asset::manager().load<Shader>("shaders/emissive.glsl");
     m_lightShader = Asset::manager().load<Shader>("shaders/lighting.glsl");
     m_blurShader = Asset::manager().load<Shader>("shaders/blur.glsl");
     m_shadowShader = Asset::manager().load<Shader>("shaders/shadow.glsl");
@@ -227,10 +228,9 @@ void RenderSystem::renderText() {
 
 void RenderSystem::renderEmissive() {
     Renderer::setRenderTarget(getLightResult());
-    auto shader = Asset::manager().load<Shader>("shaders/emissive.glsl");
-    shader->bind();
-    shader->setTexture("u_lighting", getLightResult().getTexture());
-    shader->setTexture("u_gEmissive", getGBuffer()->getTexture(
+    m_emssiveShader->bind();
+    m_emssiveShader->setTexture("u_lighting", getLightResult().getTexture());
+    m_emssiveShader->setTexture("u_gEmissive", getGBuffer()->getTexture(
                                           GeometryBufferType::G_EMISSIVE));
     Device::instance().setDepthMask(false);
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
