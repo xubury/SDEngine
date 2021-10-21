@@ -24,8 +24,8 @@ inline TextureFormat getTextureFormat(GeometryBufferType type) {
         case GeometryBufferType::G_POSITION:
         case GeometryBufferType::G_NORMAL:
         case GeometryBufferType::G_ALBEDO:
-        case GeometryBufferType::G_AMBIENT:
             return TextureFormat::RGBA;
+        case GeometryBufferType::G_AMBIENT:
         case GeometryBufferType::G_EMISSIVE:
             return TextureFormat::RGB;
         case GeometryBufferType::G_ENTITY_ID:
