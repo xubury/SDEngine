@@ -141,6 +141,14 @@ Ref<Model> ModelLoader::loadAsset(const std::string &filePath) {
                           scene->mMaterials[i], aiTextureType_SPECULAR);
         processAiMaterial(directory, material, MaterialType::AMBIENT,
                           scene->mMaterials[i], aiTextureType_AMBIENT);
+        processAiMaterial(directory, material, MaterialType::EMISSIVE,
+                          scene->mMaterials[i], aiTextureType_EMISSIVE);
+        processAiMaterial(directory, material, MaterialType::HEIGHT,
+                          scene->mMaterials[i], aiTextureType_HEIGHT);
+        processAiMaterial(directory, material, MaterialType::NORMALS,
+                          scene->mMaterials[i], aiTextureType_NORMALS);
+        processAiMaterial(directory, material, MaterialType::SHININESS,
+                          scene->mMaterials[i], aiTextureType_SHININESS);
         model->addMaterial(std::move(material));
     }
 

@@ -3,8 +3,8 @@
 
 namespace sd {
 
-void Material::setTexture(MaterialType type, const Ref<Texture> &prop) {
-    m_textures[type] = prop;
+void Material::setTexture(MaterialType type, const Ref<Texture> &texture) {
+    m_textures[type] = texture;
 }
 
 bool Material::hasTexture(MaterialType type) const {

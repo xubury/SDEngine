@@ -22,7 +22,7 @@ class SD_API Material {
    public:
     void init();
 
-    void setTexture(MaterialType type, const Ref<Texture> &prop);
+    void setTexture(MaterialType type, const Ref<Texture> &texture);
 
     bool hasTexture(MaterialType type) const;
 
