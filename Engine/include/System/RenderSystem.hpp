@@ -49,6 +49,8 @@ class SD_API RenderSystem : public System {
     float getBloomFactor() const;
     void setBloomFactor(float Bloom);
 
+    const RenderTarget &getLightResult() const { return m_lightTarget[0]; };
+
    private:
     void initQuad();
     void initGBuffer(int width, int height, int samples);
@@ -72,7 +74,6 @@ class SD_API RenderSystem : public System {
 
     Ref<Shader> m_lightShader;
     RenderTarget m_lightTarget[2];
-    RenderTarget *m_lightResult;
 
     Ref<Shader> m_gBufferShader;
     RenderTarget m_gBufferTarget;

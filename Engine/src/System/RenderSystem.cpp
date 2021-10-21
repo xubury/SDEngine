@@ -55,7 +55,6 @@ inline TextureFormatType getTextureFormatType(GeometryBufferType type) {
 
 RenderSystem::RenderSystem(int width, int height, int samples)
     : m_blurResult(nullptr),
-      m_lightResult(nullptr),
       m_gBuffer(Framebuffer::create()),
       m_scene(nullptr),
       m_camera(nullptr),
@@ -182,11 +181,11 @@ void RenderSystem::renderMain() {
         m_mainShader->setFloat("u_bloomFactor", m_bloom);
         m_mainShader->setTexture("u_blur", m_blurResult);
     }
-    m_mainShader->setTexture("u_lighting", m_lightResult->getTexture());
+    m_mainShader->setTexture("u_lighting", getLightResult().getTexture());
     m_mainShader->setFloat("u_exposure", m_exposure);
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
 
-    m_lightResult->getFramebuffer()->copyTo(
+    getLightResult().getFramebuffer()->copyTo(
         Application::getRenderEngine().getRenderTarget().getFramebuffer(), 0,
         BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
 }
@@ -202,7 +201,7 @@ void RenderSystem::renderBlur() {
         m_blurResult = m_blurTarget[outputId].getTexture();
         m_blurShader->setBool("u_horizontal", horizontal);
         m_blurShader->setTexture("u_image",
-                                 i == 0 ? m_lightResult->getTexture()
+                                 i == 0 ? getLightResult().getTexture()
                                         : m_blurTarget[inputId].getTexture());
         Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
         horizontal = !horizontal;
@@ -210,7 +209,7 @@ void RenderSystem::renderBlur() {
 }
 
 void RenderSystem::renderText() {
-    Renderer::setRenderTarget(*m_lightResult);
+    Renderer::setRenderTarget(getLightResult());
     Renderer::beginScene(*m_camera);
     auto textView = m_scene->view<TransformComponent, TextComponent>();
     textView.each([](const TransformComponent &transformComp,
@@ -227,10 +226,10 @@ void RenderSystem::renderText() {
 }
 
 void RenderSystem::renderEmissive() {
-    Renderer::setRenderTarget(*m_lightResult);
+    Renderer::setRenderTarget(getLightResult());
     auto shader = Asset::manager().load<Shader>("shaders/emissive.glsl");
     shader->bind();
-    shader->setTexture("u_lighting", m_lightResult->getTexture());
+    shader->setTexture("u_lighting", getLightResult().getTexture());
     shader->setTexture("u_gEmissive", getGBuffer()->getTexture(
                                           GeometryBufferType::G_EMISSIVE));
     Device::instance().setDepthMask(false);
@@ -281,11 +280,10 @@ void RenderSystem::renderLight() {
         "u_gAmbient", gBuffer->getTexture(GeometryBufferType::G_AMBIENT));
     const uint8_t inputIndex = 0;
     const uint8_t outputIndex = 1;
-    m_lightResult = &m_lightTarget[inputIndex];
 
     // clear the last lighting pass' result
     const float color[] = {0, 0, 0, 1.0};
-    m_lightTarget[inputIndex].getFramebuffer()->clearAttachment(0, color);
+    getLightResult().getFramebuffer()->clearAttachment(0, color);
 
     auto lightView = m_scene->view<TransformComponent, LightComponent>();
     lightView.each([this](const TransformComponent &transformComp,
@@ -320,7 +318,7 @@ void RenderSystem::renderLight() {
     Device::instance().setDepthMask(true);
     Device::instance().enable(Operation::DEPTH_TEST);
 
-    getGBuffer()->copyTo(m_lightResult->getFramebuffer(), 0,
+    getGBuffer()->copyTo(getLightResult().getFramebuffer(), 0,
                          BufferBitMask::DEPTH_BUFFER_BIT,
                          TextureFilter::NEAREST);
 }
