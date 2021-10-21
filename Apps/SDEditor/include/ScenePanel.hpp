@@ -34,8 +34,6 @@ class ScenePanel {
     sd::Scene *m_scene;
     sd::Entity m_selectedEntity;
     sd::Entity m_destroyEntity;
-    bool m_fileDialogOpen = false;
-    ImFileDialogInfo m_fileDialogInfo;
 
     int m_gizmoMode;
     int m_gizmoType;

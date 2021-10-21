@@ -8,7 +8,6 @@
 
 ScenePanel::ScenePanel()
     : m_scene(nullptr),
-      m_fileDialogOpen(false),
       m_gizmoMode(ImGuizmo::WORLD),
       m_gizmoType(ImGuizmo::TRANSLATE) {}
 
@@ -237,20 +236,21 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
         false);
     drawComponent<sd::ModelComponent>(
         "Model", entity, [&](sd::ModelComponent &mc) {
+            static bool fileDialogOpen = false;
+            static ImFileDialogInfo fileDialogInfo;
             ImGui::InputText("##Path", mc.path.data(), mc.path.size(),
                              ImGuiInputTextFlags_ReadOnly);
             ImGui::SameLine();
             if (ImGui::Button("Open")) {
-                m_fileDialogOpen = true;
-                m_fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
-                m_fileDialogInfo.title = "Open File";
-                m_fileDialogInfo.fileName = "";
-                m_fileDialogInfo.directoryPath =
-                    std::filesystem::current_path();
+                fileDialogOpen = true;
+                fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
+                fileDialogInfo.title = "Open File";
+                fileDialogInfo.fileName = "";
+                fileDialogInfo.directoryPath = std::filesystem::current_path();
             }
-            if (ImGui::FileDialog(&m_fileDialogOpen, &m_fileDialogInfo)) {
+            if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
                 mc.path = sd::Asset::manager()
-                              .getRelativePath(m_fileDialogInfo.resultPath)
+                              .getRelativePath(fileDialogInfo.resultPath)
                               .string();
                 mc.model = sd::Asset::manager().load<sd::Model>(mc.path);
             }
@@ -330,6 +330,8 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
     drawComponent<sd::TextComponent>(
         "Text", entity, [&](sd::TextComponent &textComp) {
             // TODO: Can ImGui support UTF-16?
+            static bool fileDialogOpen = false;
+            static ImFileDialogInfo fileDialogInfo;
             char buffer[256];
             std::string utf8Str = sd::wstringToString(textComp.text);
             memset(buffer, 0, sizeof(buffer));
@@ -340,17 +342,16 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
                              ImGuiInputTextFlags_ReadOnly);
             ImGui::SameLine();
             if (ImGui::Button("Open")) {
-                m_fileDialogOpen = true;
-                m_fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
-                m_fileDialogInfo.title = "Open File";
-                m_fileDialogInfo.fileName = "";
-                m_fileDialogInfo.directoryPath =
-                    std::filesystem::current_path();
+                fileDialogOpen = true;
+                fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
+                fileDialogInfo.title = "Open File";
+                fileDialogInfo.fileName = "";
+                fileDialogInfo.directoryPath = std::filesystem::current_path();
             }
-            if (ImGui::FileDialog(&m_fileDialogOpen, &m_fileDialogInfo)) {
+            if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
                 textComp.fontPath =
                     sd::Asset::manager()
-                        .getRelativePath(m_fileDialogInfo.resultPath)
+                        .getRelativePath(fileDialogInfo.resultPath)
                         .string();
             }
             ImGui::Text("Text Content:");
