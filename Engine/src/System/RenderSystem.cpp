@@ -26,6 +26,8 @@ inline TextureFormat getTextureFormat(GeometryBufferType type) {
         case GeometryBufferType::G_ALBEDO:
         case GeometryBufferType::G_AMBIENT:
             return TextureFormat::RGBA;
+        case GeometryBufferType::G_EMISSIVE:
+            return TextureFormat::RGB;
         case GeometryBufferType::G_ENTITY_ID:
             return TextureFormat::RED;
         default:
@@ -41,6 +43,7 @@ inline TextureFormatType getTextureFormatType(GeometryBufferType type) {
             return TextureFormatType::FLOAT;
         case GeometryBufferType::G_ALBEDO:
         case GeometryBufferType::G_AMBIENT:
+        case GeometryBufferType::G_EMISSIVE:
             return TextureFormatType::UBYTE;
         case GeometryBufferType::G_ENTITY_ID:
             return TextureFormatType::UINT;
@@ -161,6 +164,7 @@ void RenderSystem::onRender() {
     renderGBuffer();
     renderShadow();
     renderLight();
+    renderEmissive();
     renderText();
     if (m_isBloom) {
         renderBlur();
@@ -203,6 +207,35 @@ void RenderSystem::renderBlur() {
         Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
         horizontal = !horizontal;
     }
+}
+
+void RenderSystem::renderText() {
+    Renderer::setRenderTarget(*m_lightResult);
+    Renderer::beginScene(*m_camera);
+    auto textView = m_scene->view<TransformComponent, TextComponent>();
+    textView.each([](const TransformComponent &transformComp,
+                     const TextComponent &textComp) {
+        if (textComp.fontPath.size()) {
+            auto font = Asset::manager().load<Font>(textComp.fontPath);
+            Renderer::drawText(*font, textComp.text, textComp.pixelSize,
+                               transformComp.transform.getWorldTransform(),
+                               textComp.color);
+        }
+    });
+
+    Renderer::endScene();
+}
+
+void RenderSystem::renderEmissive() {
+    Renderer::setRenderTarget(*m_lightResult);
+    auto shader = Asset::manager().load<Shader>("shaders/emissive.glsl");
+    shader->bind();
+    shader->setTexture("u_lighting", m_lightResult->getTexture());
+    shader->setTexture("u_gEmissive", getGBuffer()->getTexture(
+                                          GeometryBufferType::G_EMISSIVE));
+    Device::instance().setDepthMask(false);
+    Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
+    Device::instance().setDepthMask(true);
 }
 
 void RenderSystem::renderShadow() {
@@ -319,6 +352,8 @@ void RenderSystem::renderGBuffer() {
             "u_material.specular", material.getTexture(MaterialType::SPECULAR));
         m_gBufferShader->setTexture("u_material.ambient",
                                     material.getTexture(MaterialType::AMBIENT));
+        m_gBufferShader->setTexture(
+            "u_material.emissive", material.getTexture(MaterialType::EMISSIVE));
         Renderer::drawMesh(terrain.getMesh());
     });
 
@@ -342,6 +377,9 @@ void RenderSystem::renderGBuffer() {
             m_gBufferShader->setTexture(
                 "u_material.ambient",
                 material.getTexture(MaterialType::AMBIENT));
+            m_gBufferShader->setTexture(
+                "u_material.emissive",
+                material.getTexture(MaterialType::EMISSIVE));
             Renderer::drawMesh(mesh);
         }
     });
@@ -355,23 +393,6 @@ void RenderSystem::renderGBuffer() {
     Renderer::endScene();
 
     Device::instance().enable(Operation::BLEND);
-}
-
-void RenderSystem::renderText() {
-    Renderer::setRenderTarget(*m_lightResult);
-    Renderer::beginScene(*m_camera);
-    auto textView = m_scene->view<TransformComponent, TextComponent>();
-    textView.each([](const TransformComponent &transformComp,
-                     const TextComponent &textComp) {
-        if (textComp.fontPath.size()) {
-            auto font = Asset::manager().load<Font>(textComp.fontPath);
-            Renderer::drawText(*font, textComp.text, textComp.pixelSize,
-                               transformComp.transform.getWorldTransform(),
-                               textComp.color);
-        }
-    });
-
-    Renderer::endScene();
 }
 
 void RenderSystem::setCamera(Camera *camera) { m_camera = camera; }

@@ -15,6 +15,7 @@ enum GeometryBufferType {
     G_NORMAL,
     G_ALBEDO,
     G_AMBIENT,
+    G_EMISSIVE,
     G_ENTITY_ID,
     GBUFFER_COUNT
 };
@@ -56,11 +57,12 @@ class SD_API RenderSystem : public System {
     void renderShadow();
     void renderLight();
 
-    void renderBlur();
-
-    void renderMain();
+    void renderEmissive();
 
     void renderText();
+
+    void renderBlur();
+    void renderMain();
 
     Ref<Shader> m_mainShader;
 

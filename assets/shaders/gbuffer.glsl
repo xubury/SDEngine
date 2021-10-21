@@ -48,7 +48,8 @@ layout(location = 0) out vec4 gPosition;
 layout(location = 1) out vec4 gNormal;
 layout(location = 2) out vec4 gAlbedo;
 layout(location = 3) out vec4 gAmbient;
-layout(location = 4) out uint gEntityId;
+layout(location = 4) out vec3 gEmissive;
+layout(location = 5) out uint gEntityId;
 
 layout(location = 0) in VertexOutput in_vertex;
 
@@ -61,6 +62,7 @@ void main() {
     gAlbedo.a = texture(u_material.specular, in_vertex.texCoord).r;
     gAmbient = vec4(
         texture(u_material.ambient, in_vertex.texCoord).rgb + halfColor, 1.f);
+    gEmissive = texture(u_material.emissive, in_vertex.texCoord).rgb;
 
     gEntityId = u_entityId;
 }
