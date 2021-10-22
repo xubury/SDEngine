@@ -20,6 +20,7 @@ struct CameraData {
 
 struct RendererData {
     CameraData cameraData;
+    Camera* camera;
     Ref<UniformBuffer> cameraUBO;
 
     static const uint32_t MAX_QUADS = 20000;
@@ -126,6 +127,7 @@ void Renderer::setShader(Shader& shader) {
 void Renderer::beginScene(Camera& camera) {
     s_data.cameraData.viewProjection = camera.getViewPorjection();
     s_data.cameraData.viewPos = camera.getWorldPosition();
+    s_data.camera = &camera;
     s_data.cameraUBO->updateData(&s_data.cameraData, sizeof(CameraData));
     startBatch();
 }
@@ -217,6 +219,16 @@ void Renderer::drawTexture(const Ref<Texture>& texture,
         ++s_data.quadVertexBufferPtr;
     }
     s_data.quadIndexCnt += 6;
+}
+
+void Renderer::drawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
+                             const glm::vec2& scale, const glm::vec4& color) {
+    drawTexture(
+        texture,
+        glm::translate(glm::mat4(1.0f), pos) *
+            glm::toMat4(s_data.camera->getWorldRotation()) *
+            glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
+        color);
 }
 
 void Renderer::drawText(Font& font, const std::wstring& text, int pixelSize,

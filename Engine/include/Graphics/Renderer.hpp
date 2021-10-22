@@ -36,6 +36,10 @@ class SD_API Renderer {
                             const glm::mat4 &transform,
                             const glm::vec4 &color = glm::vec4(1.0f));
 
+    static void drawBillboard(const Ref<Texture> &texture, const glm::vec3 &pos,
+                              const glm::vec2 &scale,
+                              const glm::vec4 &color = glm::vec4(1.0f));
+
     static void drawText(Font &font, const std::wstring &text, int pixleSize,
                          const glm::mat4 &transform,
                          const glm::vec4 &color = glm::vec4(1.0f));

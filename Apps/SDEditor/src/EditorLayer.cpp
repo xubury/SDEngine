@@ -61,11 +61,7 @@ void EditorLayer::onRender() {
             sd::Asset::manager().load<sd::Texture>("icons/light.png");
         float dist = glm::distance(pos, m_editorCamera.getWorldPosition());
         float scale = (dist - m_editorCamera.getNearZ()) / 20;
-        sd::Renderer::drawTexture(
-            lightImage,
-            glm::translate(glm::mat4(1.0f), pos) *
-                glm::toMat4(m_editorCamera.getWorldRotation()) *
-                glm::scale(glm::mat4(1.0f), glm::vec3(scale, scale, 1)));
+        sd::Renderer::drawBillboard(lightImage, pos, glm::vec2(scale));
     });
     sd::Renderer::endScene();
 }
