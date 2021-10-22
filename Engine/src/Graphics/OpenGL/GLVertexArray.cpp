@@ -32,6 +32,9 @@ void GLVertexArray::addVertexBuffer(const Ref<VertexBuffer> &buffer,
         glVertexAttribDivisor(i, layout.getInstanceStride());
         switch (element.type) {
             case BufferDataType::FLOAT:
+            case BufferDataType::FLOAT2:
+            case BufferDataType::FLOAT3:
+            case BufferDataType::FLOAT4:
                 glVertexAttribPointer(i, element.count, translate(element.type),
                                       element.normalized, layout.getStride(),
                                       (const void *)offset);

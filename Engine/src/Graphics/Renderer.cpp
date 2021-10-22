@@ -54,10 +54,6 @@ void Renderer::init() {
     s_data.cameraUBO = UniformBuffer::create(
         &s_data.cameraData, sizeof(CameraData), BufferIOType::STATIC);
 
-    for (int i = 0; i < 4; ++i) {
-        s_data.quadVertexBufferBase[i].position = s_data.quadVertexPositions[i];
-    }
-
     std::array<uint32_t, s_data.MAX_INDICES> quadIndices;
     uint32_t offset = 0;
     for (uint32_t i = 0; i < s_data.MAX_INDICES; i += 6) {
@@ -71,18 +67,19 @@ void Renderer::init() {
 
         offset += 4;
     }
-    s_data.quadEBO = IndexBuffer::create(quadIndices.data(), s_data.MAX_INDICES,
+    s_data.quadEBO = IndexBuffer::create(quadIndices.data(), quadIndices.size(),
                                          BufferIOType::STATIC);
 
     s_data.quadVBO = VertexBuffer::create(
         s_data.quadVertexBufferBase.data(),
-        s_data.MAX_VERTICES * sizeof(QuadVertex), BufferIOType::DYNAMIC);
+        s_data.quadVertexBufferBase.size() * sizeof(QuadVertex),
+        BufferIOType::DYNAMIC);
 
     VertexBufferLayout layout;
-    layout.push<float>(3);  // position
-    layout.push<float>(4);  // color
-    layout.push<float>(2);  // texCoord
-    layout.push<float>(1);  // texIndex
+    layout.push(BufferDataType::FLOAT, 3);  // position
+    layout.push(BufferDataType::FLOAT, 4);  // color
+    layout.push(BufferDataType::FLOAT, 2);  // texCoord
+    layout.push(BufferDataType::FLOAT, 1);  // texIndex
 
     s_data.quadVAO = VertexArray::create();
     s_data.quadVAO->addVertexBuffer(s_data.quadVBO, layout);

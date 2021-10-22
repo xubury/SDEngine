@@ -31,11 +31,11 @@ void Mesh::clear() {
 void Mesh::init() {
     m_vertexArray = VertexArray::create();
     VertexBufferLayout layout;
-    layout.push<float>(3);
-    layout.push<float>(2);
-    layout.push<float>(3);
-    layout.push<float>(3);
-    layout.push<float>(3);
+    layout.push(BufferDataType::FLOAT, 3);
+    layout.push(BufferDataType::FLOAT, 2);
+    layout.push(BufferDataType::FLOAT, 3);
+    layout.push(BufferDataType::FLOAT, 3);
+    layout.push(BufferDataType::FLOAT, 3);
 
     m_vertexBuffer = VertexBuffer::create(m_vertices.data(),
                                           m_vertices.size() * sizeof(Vertex),

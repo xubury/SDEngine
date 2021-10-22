@@ -112,8 +112,8 @@ void RenderSystem::initQuad() {
         IndexBuffer::create(indices, 6, BufferIOType::STATIC);
     m_quad = VertexArray::create();
     VertexBufferLayout layout;
-    layout.push<float>(3);
-    layout.push<float>(2);
+    layout.push(BufferDataType::FLOAT, 3);
+    layout.push(BufferDataType::FLOAT, 2);
     m_quad->addVertexBuffer(buffer, layout);
     m_quad->setIndexBuffer(indexBuffer);
 }
@@ -230,8 +230,9 @@ void RenderSystem::renderEmissive() {
     Renderer::setRenderTarget(getLightResult());
     m_emssiveShader->bind();
     m_emssiveShader->setTexture("u_lighting", getLightResult().getTexture());
-    m_emssiveShader->setTexture("u_gEmissive", getGBuffer()->getTexture(
-                                          GeometryBufferType::G_EMISSIVE));
+    m_emssiveShader->setTexture(
+        "u_gEmissive",
+        getGBuffer()->getTexture(GeometryBufferType::G_EMISSIVE));
     Device::instance().setDepthMask(false);
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
     Device::instance().setDepthMask(true);

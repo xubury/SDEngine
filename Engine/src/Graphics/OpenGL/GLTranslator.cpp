@@ -6,6 +6,9 @@ namespace sd {
 GLenum translate(BufferDataType dataType) {
     switch (dataType) {
         case BufferDataType::FLOAT:
+        case BufferDataType::FLOAT2:
+        case BufferDataType::FLOAT3:
+        case BufferDataType::FLOAT4:
             return GL_FLOAT;
         case BufferDataType::UINT:
             return GL_UNSIGNED_INT;

@@ -4,18 +4,29 @@ namespace sd {
 
 uint32_t getSizeOfType(BufferDataType type) {
     switch (type) {
-        case BufferDataType::FLOAT:
-        case BufferDataType::UINT:
-            return 4;
         case BufferDataType::UCHAR:
             return 1;
-        default:
-            return 0;
+        case BufferDataType::UINT:
+        case BufferDataType::FLOAT:
+            return 4;
+        case BufferDataType::FLOAT2:
+            return 2 * 4;
+        case BufferDataType::FLOAT3:
+            return 3 * 4;
+        case BufferDataType::FLOAT4:
+            return 4 * 4;
     }
+    return 0;
 }
 
 VertexBufferLayout::VertexBufferLayout(uint32_t instanceStride)
     : m_stride(0), m_instanceStride(instanceStride) {}
+
+void VertexBufferLayout::push(BufferDataType type, uint32_t count,
+                              bool normalized) {
+    m_elements.push_back({type, count, normalized});
+    m_stride += count * getSizeOfType(type);
+}
 
 void VertexBufferLayout::clear() {
     m_elements.clear();

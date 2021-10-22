@@ -59,7 +59,7 @@ enum class TextureMipmapFilter {
     LINEAR_LINEAR,
 };
 
-enum class BufferDataType { FLOAT, UINT, UCHAR };
+enum class BufferDataType { UCHAR, UINT, FLOAT, FLOAT2, FLOAT3, FLOAT4 };
 
 enum class BufferIOType { STATIC, DYNAMIC };
 
