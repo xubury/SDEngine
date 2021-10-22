@@ -13,6 +13,15 @@ struct QuadVertex {
     QuadVertex() : position(0.f), color(0.f), texCoord(0.f), texIndex(0.f) {}
 };
 
+struct Quad {
+    std::array<QuadVertex, 4> vertices;
+    glm::vec3 getCenter() const {
+        return (vertices[0].position + vertices[1].position +
+                vertices[2].position + vertices[3].position) /
+               glm::vec3(4);
+    }
+};
+
 struct CameraData {
     glm::mat4 viewProjection;
     glm::vec3 viewPos;
@@ -34,8 +43,8 @@ struct RendererData {
     Ref<Shader> shader;
 
     size_t quadIndexCnt = 0;
-    std::array<QuadVertex, MAX_VERTICES> quadVertexBufferBase;
-    QuadVertex* quadVertexBufferPtr = nullptr;
+    std::array<Quad, MAX_QUADS> quadVertexBufferBase;
+    Quad* quadVertexBufferPtr = nullptr;
 
     std::array<glm::vec4, 4> quadVertexPositions;
     std::array<glm::vec2, 4> quadTexCoords;
@@ -70,10 +79,10 @@ void Renderer::init() {
     s_data.quadEBO = IndexBuffer::create(quadIndices.data(), quadIndices.size(),
                                          BufferIOType::STATIC);
 
-    s_data.quadVBO = VertexBuffer::create(
-        s_data.quadVertexBufferBase.data(),
-        s_data.quadVertexBufferBase.size() * sizeof(QuadVertex),
-        BufferIOType::DYNAMIC);
+    s_data.quadVBO =
+        VertexBuffer::create(s_data.quadVertexBufferBase.data(),
+                             s_data.quadVertexBufferBase.size() * sizeof(Quad),
+                             BufferIOType::DYNAMIC);
 
     VertexBufferLayout layout;
     layout.push(BufferDataType::FLOAT, 3);  // position
@@ -135,10 +144,20 @@ void Renderer::flush() {
     if (s_data.quadIndexCnt == 0) {
         return;
     }
+    size_t offset =
+        s_data.quadVertexBufferPtr - s_data.quadVertexBufferBase.data();
 
-    size_t dataSize = (uint8_t*)s_data.quadVertexBufferPtr -
-                      (uint8_t*)s_data.quadVertexBufferBase.data();
-    s_data.quadVBO->updateData(s_data.quadVertexBufferBase.data(), dataSize);
+    // sort the drawing order to render transparent texture properly.
+    std::sort(s_data.quadVertexBufferBase.begin(),
+              s_data.quadVertexBufferBase.begin() + offset,
+              [&viewPos = s_data.cameraData.viewPos](const Quad& lhs,
+                                                     const Quad& rhs) {
+                  return glm::distance2(lhs.getCenter(), viewPos) >
+                         glm::distance2(rhs.getCenter(), viewPos);
+              });
+
+    s_data.quadVBO->updateData(s_data.quadVertexBufferBase.data(),
+                               offset * sizeof(Quad));
 
     s_data.shader->bind();
     for (uint32_t i = 0; i < s_data.textureSlotIndex; ++i) {
@@ -175,13 +194,14 @@ void Renderer::drawQuad(const glm::mat4& transform, const glm::vec4& color) {
         nextBatch();
     }
     for (uint32_t i = 0; i < 4; ++i) {
-        s_data.quadVertexBufferPtr->position =
+        s_data.quadVertexBufferPtr->vertices[i].position =
             transform * s_data.quadVertexPositions[i];
-        s_data.quadVertexBufferPtr->color = color;
-        s_data.quadVertexBufferPtr->texCoord = s_data.quadTexCoords[i];
-        s_data.quadVertexBufferPtr->texIndex = 0;
-        ++s_data.quadVertexBufferPtr;
+        s_data.quadVertexBufferPtr->vertices[i].color = color;
+        s_data.quadVertexBufferPtr->vertices[i].texCoord =
+            s_data.quadTexCoords[i];
+        s_data.quadVertexBufferPtr->vertices[i].texIndex = 0;
     }
+    ++s_data.quadVertexBufferPtr;
     s_data.quadIndexCnt += 6;
 }
 
@@ -208,13 +228,14 @@ void Renderer::drawTexture(const Ref<Texture>& texture,
     }
 
     for (uint32_t i = 0; i < 4; ++i) {
-        s_data.quadVertexBufferPtr->position =
+        s_data.quadVertexBufferPtr->vertices[i].position =
             transform * s_data.quadVertexPositions[i];
-        s_data.quadVertexBufferPtr->color = color;
-        s_data.quadVertexBufferPtr->texCoord = s_data.quadTexCoords[i];
-        s_data.quadVertexBufferPtr->texIndex = textureIndex;
-        ++s_data.quadVertexBufferPtr;
+        s_data.quadVertexBufferPtr->vertices[i].color = color;
+        s_data.quadVertexBufferPtr->vertices[i].texCoord =
+            s_data.quadTexCoords[i];
+        s_data.quadVertexBufferPtr->vertices[i].texIndex = textureIndex;
     }
+    ++s_data.quadVertexBufferPtr;
     s_data.quadIndexCnt += 6;
 }
 
