@@ -100,12 +100,12 @@ void RenderSystem::onDestroy() {
 
 void RenderSystem::initQuad() {
     float quadVertices[] = {
-        1.0f,  1.0f,  0.f, 1.0f, 1.0f,  // top right
-        1.0f,  -1.0f, 0.f, 1.0f, 0.f,   // bottom right
         -1.0f, -1.0f, 0.f, 0.f,  0.f,   // bottom left
-        -1.0f, 1.0f,  0.f, 0.f,  1.0f   // top left
+        1.0f,  -1.0f, 0.f, 1.0f, 0.f,   // bottom right
+        1.0f,  1.0f,  0.f, 1.0f, 1.0f,  // top right
+        -1.0f, 1.0f,  0.f, 0.f,  1.0f,  // top left
     };
-    unsigned int indices[] = {0, 1, 3, 1, 2, 3};
+    unsigned int indices[] = {0, 1, 2, 2, 3, 0};
     Ref<VertexBuffer> buffer = VertexBuffer::create(
         quadVertices, sizeof(quadVertices), BufferIOType::STATIC);
     Ref<IndexBuffer> indexBuffer =

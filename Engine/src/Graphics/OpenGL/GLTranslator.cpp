@@ -232,6 +232,8 @@ GLenum translate(Operation operation) {
             return GL_STENCIL_TEST;
         case Operation::MULTISAMPLE:
             return GL_MULTISAMPLE;
+        case Operation::CULL_FACE:
+            return GL_CULL_FACE;
     }
     return GL_INVALID_ENUM;
 }

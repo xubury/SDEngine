@@ -76,7 +76,13 @@ struct enable_bitmask_operators<BufferBitMask> {
     static constexpr bool enable = true;
 };
 
-enum class Operation { DEPTH_TEST, BLEND, STENCIL_TEST, MULTISAMPLE };
+enum class Operation {
+    DEPTH_TEST,
+    BLEND,
+    STENCIL_TEST,
+    MULTISAMPLE,
+    CULL_FACE
+};
 
 class SD_API Graphics {
    public:
