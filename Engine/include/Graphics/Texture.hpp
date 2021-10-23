@@ -29,28 +29,20 @@ class SD_API Texture {
     virtual void setFilter(TextureFilter filter) = 0;
     virtual void setMipmapFilter(TextureMipmapFilter filter) = 0;
 
-    virtual void genareteMipmap() const = 0;
-
     bool operator==(const Texture &other) const;
-
     bool operator!=(const Texture &other) const;
 
     virtual uint32_t getId() const = 0;
 
     int getWidth() const;
-
     int getHeight() const;
-
     int getSamples() const;
 
     const void *getData() const;
-
     void *getData();
 
     TextureType getType() const;
-
     TextureFormat getFormat() const;
-
     TextureFormatType getFormatType() const;
 
    protected:

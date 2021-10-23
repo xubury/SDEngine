@@ -135,12 +135,6 @@ void GLTexture::setMipmapFilter(TextureMipmapFilter mipmapFilter) {
     unbind();
 }
 
-void GLTexture::genareteMipmap() const {
-    bind();
-    glGenerateMipmap(gl_type);
-    unbind();
-}
-
 GLenum GLTexture::getGLType() const { return gl_type; }
 
 GLenum GLTexture::getGLFormat() const { return gl_format; }
