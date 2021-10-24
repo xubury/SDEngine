@@ -10,8 +10,6 @@ namespace sd {
 
 class SD_API GLBuffer : virtual public Buffer {
    public:
-    virtual void init() override;
-
     void updateData(const void *data, size_t size, size_t offset) override;
 
     void bind() const override;
@@ -47,8 +45,6 @@ class SD_API GLIndexBuffer : public IndexBuffer, public GLBuffer {
     GLIndexBuffer(const uint32_t *data, uint32_t count, BufferIOType io);
 
     ~GLIndexBuffer() = default;
-
-    void init() override;
 
     uint32_t getCount() const override;
 

@@ -13,7 +13,6 @@ namespace sd {
 
 class SD_API Application {
    public:
-    static Window &getWindow();
     static RenderEngine &getRenderEngine();
     static InputEngine &getInputEngine();
     static void quit();
@@ -61,7 +60,6 @@ class SD_API Application {
     void tick(float dt);
     void render();
 
-    Ref<Window> m_context;
     LayerStack m_layers;
     Ref<ImGuiLayer> m_imguiLayer;
     Ref<RenderEngine> m_renderEngine;

@@ -7,7 +7,7 @@ namespace sd {
 
 class GLDevice : public Device {
    public:
-    void init() override;
+    GLDevice();
 
     void drawElements(MeshTopology topology, size_t count,
                       size_t offset) override;

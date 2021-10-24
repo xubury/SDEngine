@@ -14,15 +14,7 @@ GLTexture::GLTexture(int width, int height, int samples, TextureType type,
       gl_type(0),
       gl_iFormat(0),
       gl_format(0),
-      gl_formatType(0) {}
-
-GLTexture::~GLTexture() {
-    if (gl_id != 0) glDeleteTextures(1, &gl_id);
-}
-
-void GLTexture::init() {
-    if (gl_id != 0) glDeleteTextures(1, &gl_id);
-
+      gl_formatType(0) {
     gl_type = translate(m_type);
     gl_iFormat = translateInternalFormat(m_format, m_formatType);
     gl_format = translateFormat(m_format, m_formatType);
@@ -48,6 +40,8 @@ void GLTexture::init() {
         setMipmapFilter(m_mipmapFilter);
     }
 }
+
+GLTexture::~GLTexture() { glDeleteTextures(1, &gl_id); }
 
 uint32_t GLTexture::getId() const { return gl_id; }
 

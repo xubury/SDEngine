@@ -24,8 +24,6 @@ class SD_API Shader {
 
     Shader& operator=(const Shader&) = delete;
 
-    virtual void init() = 0;
-
     virtual void compileShader(ShaderType type, const char* code) = 0;
 
     virtual void linkShaders() = 0;

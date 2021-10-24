@@ -11,11 +11,6 @@ class SD_API GLWindow : public Window {
     GLWindow(const WindowProp &property);
 
     ~GLWindow();
-
-    void *getGraphicsContext() const override;
-
-   private:
-    SDL_GLContext m_context;
 };
 
 }  // namespace sd

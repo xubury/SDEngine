@@ -10,20 +10,13 @@
 namespace sd {
 
 GLShader::GLShader()
-    : m_id(0),
-      m_vertexId(0),
-      m_fragmentId(0),
-      m_geometryId(0),
-      m_computeId(0) {}
-
-GLShader::~GLShader() {
-    if (m_id != 0) glDeleteProgram(m_id);
-    destroyShaders();
+    : m_id(0), m_vertexId(0), m_fragmentId(0), m_geometryId(0), m_computeId(0) {
+    m_id = glCreateProgram();
 }
 
-void GLShader::init() {
-    if (m_id != 0) glDeleteProgram(m_id);
-    m_id = glCreateProgram();
+GLShader::~GLShader() {
+    glDeleteProgram(m_id);
+    destroyShaders();
 }
 
 void GLShader::compileShader(ShaderType type, const char* code) {

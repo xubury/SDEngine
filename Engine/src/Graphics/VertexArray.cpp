@@ -15,7 +15,6 @@ Ref<VertexArray> VertexArray::create() {
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
-    if (va) va->init();
     return va;
 }
 

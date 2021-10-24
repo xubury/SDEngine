@@ -15,8 +15,6 @@ class SD_API Buffer {
 
     Buffer &operator=(const Buffer &) = delete;
 
-    virtual void init() = 0;
-
     virtual void updateData(const void *data, size_t size,
                             size_t offset = 0) = 0;
 

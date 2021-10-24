@@ -14,8 +14,6 @@ class GLFramebuffer : public Framebuffer {
     GLFramebuffer();
     virtual ~GLFramebuffer();
 
-    void init() override;
-
     bool attachTexture(const Ref<Texture> &texture) override;
 
     void clear() override;

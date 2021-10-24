@@ -18,8 +18,6 @@ class SD_API Framebuffer {
     Framebuffer(const Framebuffer &) = delete;
     Framebuffer &operator=(const Framebuffer &) = delete;
 
-    virtual void init() = 0;
-
     virtual bool attachTexture(const Ref<Texture> &texture) = 0;
 
     virtual void clear() = 0;

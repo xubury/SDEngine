@@ -10,7 +10,7 @@ class Framebuffer;
 
 class SD_API Device {
    public:
-    static void create();
+    static void init();
 
     static Device &instance();
 
@@ -19,8 +19,6 @@ class SD_API Device {
     Device(const Device &) = delete;
 
     Device &operator=(const Device &) = delete;
-
-    virtual void init() = 0;
 
     virtual void drawElements(MeshTopology topology, size_t count,
                               size_t offset) = 0;

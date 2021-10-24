@@ -15,7 +15,6 @@ Ref<Framebuffer> Framebuffer::create() {
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
-    if (frameBuffer) frameBuffer->init();
     return frameBuffer;
 }
 

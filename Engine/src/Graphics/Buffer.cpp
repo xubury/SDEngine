@@ -16,7 +16,6 @@ Ref<VertexBuffer> VertexBuffer::create(const void *data, size_t size,
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
-    if (vb) vb->init();
     return vb;
 }
 
@@ -31,7 +30,6 @@ Ref<IndexBuffer> IndexBuffer::create(const uint32_t *data, uint32_t count,
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
-    if (eb) eb->init();
     return eb;
 }
 
@@ -46,7 +44,6 @@ Ref<UniformBuffer> UniformBuffer::create(const void *data, size_t size,
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
-    if (ub) ub->init();
     return ub;
 }
 

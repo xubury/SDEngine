@@ -51,8 +51,6 @@ class SD_API Texture {
             TextureWrap wrap, TextureFilter filter,
             TextureMipmapFilter mipmapFilter, void *data);
 
-    virtual void init() = 0;
-
     int m_width;
     int m_height;
     int m_samples;

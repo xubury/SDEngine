@@ -19,8 +19,6 @@ class SD_API GLShader : public Shader {
 
     ~GLShader();
 
-    void init() override;
-
     void compileShader(ShaderType type, const char* code) override;
 
     void linkShaders() override;

@@ -32,9 +32,6 @@ class GLTexture : public Texture {
     GLenum getGLFormat() const;
     GLenum getGLFormatType() const;
 
-   protected:
-    void init() override;
-
    private:
     GLuint gl_id;
     GLenum gl_type;

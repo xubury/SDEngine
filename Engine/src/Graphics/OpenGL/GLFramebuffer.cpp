@@ -5,16 +5,11 @@
 #include "Utility/Assert.hpp"
 
 namespace sd {
-GLFramebuffer::GLFramebuffer() : m_id(0), m_textureCnt(0) {}
-
-GLFramebuffer::~GLFramebuffer() {
-    if (m_id != 0) glDeleteFramebuffers(1, &m_id);
-}
-
-void GLFramebuffer::init() {
-    if (m_id != 0) glDeleteFramebuffers(1, &m_id);
+GLFramebuffer::GLFramebuffer() : m_id(0), m_textureCnt(0) {
     glGenFramebuffers(1, &m_id);
 }
+
+GLFramebuffer::~GLFramebuffer() { glDeleteFramebuffers(1, &m_id); }
 
 bool GLFramebuffer::attachTexture(const Ref<Texture> &texture) {
     Ref<GLTexture> glTexture = std::static_pointer_cast<GLTexture>(texture);

@@ -4,16 +4,9 @@
 
 namespace sd {
 
-GLVertexArray::GLVertexArray() : m_id(0) {}
+GLVertexArray::GLVertexArray() : m_id(0) { glGenVertexArrays(1, &m_id); }
 
-GLVertexArray::~GLVertexArray() {
-    if (m_id != 0) glDeleteVertexArrays(1, &m_id);
-}
-
-void GLVertexArray::init() {
-    if (m_id != 0) glDeleteVertexArrays(1, &m_id);
-    glGenVertexArrays(1, &m_id);
-}
+GLVertexArray::~GLVertexArray() { glDeleteVertexArrays(1, &m_id); }
 
 void GLVertexArray::bind() const { glBindVertexArray(m_id); }
 

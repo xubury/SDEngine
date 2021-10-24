@@ -274,8 +274,8 @@ void EditorLayer::onImGui() {
 void EditorLayer::hide() {
     m_hide = true;
     setBlockEvent(false);
-    int w = sd::Application::getWindow().getWidth();
-    int h = sd::Application::getWindow().getHeight();
+    int w = sd::Window::getWidth();
+    int h = sd::Window::getHeight();
     sd::Application::getRenderEngine().setRenderTarget(
         sd::createRef<sd::RenderTarget>(0, 0, w, h));
     sd::Application::getRenderEngine().resize(w, h);

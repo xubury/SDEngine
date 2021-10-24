@@ -22,11 +22,6 @@ Ref<Texture> Texture::create(int width, int height, int samples,
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
-
-    if (texture) {
-        texture->init();
-    }
-
     return texture;
 }
 

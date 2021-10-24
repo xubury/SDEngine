@@ -28,7 +28,7 @@ static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
 }
 #endif
 
-void GLDevice::init() {
+GLDevice::GLDevice() {
 #ifdef DEBUG_BUILD
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);

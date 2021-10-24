@@ -25,8 +25,8 @@ void ImGuiLayer::begin() {
 
 void ImGuiLayer::end() {
     ImGuiIO& io = ImGui::GetIO();
-    io.DisplaySize = ImVec2((float)Application::getWindow().getWidth(),
-                            (float)Application::getWindow().getHeight());
+    io.DisplaySize =
+        ImVec2((float)Window::getWidth(), (float)Window::getHeight());
     ImGui::Render();
     switch (Graphics::getAPI()) {
         case API::OpenGL:
@@ -59,9 +59,8 @@ void ImGuiLayer::onAttach() {
     // Setup Platform/Renderer backends
     switch (Graphics::getAPI()) {
         case API::OpenGL:
-            ImGui_ImplSDL2_InitForOpenGL(
-                Application::getWindow().getHandle(),
-                Application::getWindow().getGraphicsContext());
+            ImGui_ImplSDL2_InitForOpenGL(Window::getHandle(),
+                                         Window::getGraphicsContext());
             ImGui_ImplOpenGL3_Init("#version 450");
             break;
         default:

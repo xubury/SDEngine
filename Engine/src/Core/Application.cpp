@@ -14,8 +14,6 @@ namespace sd {
 
 Application *Application::s_instance = nullptr;
 
-Window &Application::getWindow() { return *s_instance->m_context; }
-
 RenderEngine &Application::getRenderEngine() {
     return *s_instance->m_renderEngine;
 }
@@ -50,9 +48,9 @@ Application::Application() {
     prop.height = height;
     prop.samples = samples;
     prop.flag = SDL_WINDOW_MAXIMIZED;
-    m_context = Window::create(prop);
+    Window::init(prop);
 
-    Device::create();
+    Device::init();
     Renderer::init();
 
     m_imguiLayer = pushOverlay<ImGuiLayer>();
@@ -93,8 +91,8 @@ void Application::run() {
     SDL_Event event;
     float msPerFrame = 1000.f / minFps;
     uint32_t msElapsed = 0;
-    while (!m_context->shouldClose()) {
-        while (m_context->pollEvent(event)) {
+    while (!Window::shouldClose()) {
+        while (Window::pollEvent(event)) {
             processEvent(event);
         }
         processEvents();
@@ -110,7 +108,7 @@ void Application::run() {
     }
 }
 
-void Application::quit() { s_instance->m_context->setShouldClose(true); }
+void Application::quit() { Window::setShouldClose(true); }
 
 void Application::tick(float dt) {
     for (auto iter = m_layers.rbegin(); iter != m_layers.rend(); ++iter) {
@@ -128,7 +126,7 @@ void Application::render() {
     }
     m_imguiLayer->end();
 
-    m_context->swapBuffer();
+    Window::swapBuffer();
 }
 
 }  // namespace sd
