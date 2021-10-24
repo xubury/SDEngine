@@ -2,8 +2,9 @@
 #define SD_ASSERT_HPP
 
 #include <filesystem>
-
 #include "Utility/Log.hpp"
+
+#define SD_ENABLE_ASSERTS
 
 #ifdef DEBUG_BUILD
 #if defined(SD_PLATFORM_WINDOWS)
@@ -14,7 +15,6 @@
 #else
 #error "Platform doesn't support debugbreak yet!"
 #endif
-#define SD_ENABLE_ASSERTS
 #else
 #define SD_DEBUGBREAK()
 #endif
