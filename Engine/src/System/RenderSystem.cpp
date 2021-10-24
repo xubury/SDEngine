@@ -21,10 +21,10 @@ inline Ref<Texture> createTexture(int width, int height, int samples,
 
 inline TextureFormat getTextureFormat(GeometryBufferType type) {
     switch (type) {
-        case GeometryBufferType::G_POSITION:
-        case GeometryBufferType::G_NORMAL:
         case GeometryBufferType::G_ALBEDO:
             return TextureFormat::RGBA;
+        case GeometryBufferType::G_POSITION:
+        case GeometryBufferType::G_NORMAL:
         case GeometryBufferType::G_AMBIENT:
         case GeometryBufferType::G_EMISSIVE:
             return TextureFormat::RGB;
@@ -268,7 +268,6 @@ void RenderSystem::renderShadow() {
 
 void RenderSystem::renderLight() {
     Device::instance().setDepthMask(false);
-    Device::instance().disable(Operation::DEPTH_TEST);
     Renderer::setShader(*m_lightShader);
     Framebuffer *gBuffer = getGBuffer();
     m_lightShader->setTexture(
@@ -315,9 +314,7 @@ void RenderSystem::renderLight() {
         Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
         std::swap(m_lightTarget[outputIndex], m_lightTarget[inputIndex]);
     });
-
     Device::instance().setDepthMask(true);
-    Device::instance().enable(Operation::DEPTH_TEST);
 
     getGBuffer()->copyTo(getLightResult().getFramebuffer(), 0,
                          BufferBitMask::DEPTH_BUFFER_BIT,

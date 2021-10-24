@@ -69,7 +69,7 @@ void Light::createShadowMap() {
     auto shadowMap = Texture::create(
         SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, 1, TextureType::TEX_2D,
         TextureFormat::DEPTH, TextureFormatType::FLOAT, TextureWrap::BORDER,
-        TextureFilter::NEAREST, TextureMipmapFilter::NEAREST);
+        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR);
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
     shadowMap->setBorderColor(&color);
     m_target.addTexture(shadowMap);

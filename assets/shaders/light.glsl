@@ -40,15 +40,16 @@ float shadowCalculation(Light light, vec3 fragPos, vec3 normal) {
     float bias = 0.005f;
     float shadow = 0.0f;
     vec2 texelSize = 1.0f / textureSize(light.shadowMap, 0);
-    for (int x = -1; x <= 1; ++x) {
-        for (int y = -1; y <= 1; ++y) {
+    const int halfKernelWidth = 3;
+    for (int x = -halfKernelWidth; x <= halfKernelWidth; ++x) {
+        for (int y = -halfKernelWidth; y <= halfKernelWidth; ++y) {
             float pcfDepth =
                 texture(light.shadowMap, projCoords.xy + vec2(x, y) * texelSize)
                     .r;
             shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
         }
     }
-    shadow /= 9.0f;
+    shadow /= (halfKernelWidth * 2 + 1) * (halfKernelWidth * 2 + 1);
 
     return shadow;
 }

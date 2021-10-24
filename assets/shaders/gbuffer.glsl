@@ -24,7 +24,7 @@ void main() {
     gl_Position = u_projectionView * vec4(fragPos, 1.0f);
 
     out_vertex.position = fragPos;
-    out_vertex.normal = normalize(mat3(transpose(inverse(u_model))) * a_normal);
+    out_vertex.normal = transpose(inverse(mat3(u_model))) * a_normal;
     out_vertex.texCoord = a_texCoord;
 }
 
@@ -44,8 +44,8 @@ uniform Material u_material;
 uniform vec3 u_color;
 uniform uint u_entityId;
 
-layout(location = 0) out vec4 gPosition;
-layout(location = 1) out vec4 gNormal;
+layout(location = 0) out vec3 gPosition;
+layout(location = 1) out vec3 gNormal;
 layout(location = 2) out vec4 gAlbedo;
 layout(location = 3) out vec3 gAmbient;
 layout(location = 4) out vec3 gEmissive;
@@ -54,8 +54,8 @@ layout(location = 5) out uint gEntityId;
 layout(location = 0) in VertexOutput in_vertex;
 
 void main() {
-    gPosition = vec4(in_vertex.position, 1.0f);
-    gNormal = vec4(in_vertex.normal, 1.0f);
+    gPosition = in_vertex.position;
+    gNormal = normalize(in_vertex.normal);
     vec3 halfColor = u_color * 0.5f;
     gAlbedo.rgb =
         texture(u_material.diffuse, in_vertex.texCoord).rgb + halfColor;

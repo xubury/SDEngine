@@ -32,7 +32,6 @@ layout(binding = 4) uniform sampler2D u_gAmbient;
 void main() {
     vec3 fragPos = texture(u_gPosition, in_texCoord).rgb;
     vec3 normal = texture(u_gNormal, in_texCoord).rgb;
-    normal = normalize(normal);
     vec4 albedo = texture(u_gAlbedo, in_texCoord);
     vec3 diffuse = albedo.rgb;
     vec3 specular = vec3(albedo.a);
