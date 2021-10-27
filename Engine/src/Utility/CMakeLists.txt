@@ -3,6 +3,7 @@ find_package(spdlog REQUIRED)
 find_package(assimp REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(Freetype REQUIRED)
+find_package(cereal REQUIRED)
 
 set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Utility)
 set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Utility)
@@ -51,10 +52,12 @@ set(Utility_Src
 
 add_library(sd-utils ${Utility_Src})
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_link_options(sd-utils PUBLIC -mconsole)
-else()
-    target_link_options(sd-utils PUBLIC -mwindows)
+if(CMAKE_SYSTEM_NAME STREQUAL "WIN32")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        target_link_options(sd-utils PUBLIC -mconsole)
+    else()
+        target_link_options(sd-utils PUBLIC -mwindows)
+    endif()
 endif()
 
 set_property(TARGET sd-utils PROPERTY CXX_STANDARD 17)
@@ -76,7 +79,7 @@ target_link_libraries(sd-utils
     spdlog::spdlog glm 
     Freetype::Freetype
     PRIVATE 
-    assimp::assimp SDL2::Image)
+    ${ASSIMP_LIBRARIES} SDL2::Image)
 
 install(TARGETS sd-utils LIBRARY DESTINATION lib)
 

@@ -61,7 +61,7 @@ static RendererData s_data;
 void Renderer::init() {
     SD_CORE_TRACE("Initializing Renderer...");
     s_data.cameraUBO = UniformBuffer::create(
-        &s_data.cameraData, sizeof(CameraData), BufferIOType::STATIC);
+        &s_data.cameraData, sizeof(CameraData), BufferIOType::DYNAMIC);
 
     std::array<uint32_t, s_data.MAX_INDICES> quadIndices;
     uint32_t offset = 0;

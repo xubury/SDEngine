@@ -16,7 +16,7 @@ struct WindowProp {
     int height;
     int samples;
     bool vsync;
-    SDL_WindowFlags flag;
+    uint32_t flag;
     WindowProp()
         : title("SD Engine"),
           x(SDL_WINDOWPOS_CENTERED),
@@ -25,7 +25,7 @@ struct WindowProp {
           height(900),
           samples(8),
           vsync(true),
-          flag(SDL_WindowFlags(0)) {}
+          flag(0) {}
 };
 
 class SD_API Window {

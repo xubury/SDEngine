@@ -1,3 +1,4 @@
+find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
 set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Graphics)
@@ -74,7 +75,7 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-graphics PUBLIC SD_SHARED)
 endif()
 
-target_link_libraries(sd-graphics PUBLIC sd-utils GLEW::GLEW)
+target_link_libraries(sd-graphics PUBLIC sd-utils GLEW::GLEW OpenGL::GL)
 
 target_include_directories(sd-graphics
     PUBLIC
