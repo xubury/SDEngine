@@ -52,12 +52,14 @@ set(Utility_Src
 
 add_library(sd-utils ${Utility_Src})
 
-if(CMAKE_SYSTEM_NAME STREQUAL "WIN32")
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         target_link_options(sd-utils PUBLIC -mconsole)
     else()
         target_link_options(sd-utils PUBLIC -mwindows)
     endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    target_link_libraries(sd-utils PUBLIC ${CMAKE_DL_LIBS} pthread) 
 endif()
 
 set_property(TARGET sd-utils PROPERTY CXX_STANDARD 17)

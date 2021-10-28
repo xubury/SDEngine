@@ -1,5 +1,4 @@
 find_package(SDL2 REQUIRED)
-find_package(GLEW REQUIRED)
 
 set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Core)
 set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Core)
@@ -51,7 +50,7 @@ if(BUILD_SHARED_LIBS)
 endif()
 
 target_link_libraries(sd-core PUBLIC 
-    sd-system sd-utils sd-imgui SDL2::Main GLEW::GLEW ${CMAKE_DL_LIBS})
+    sd-system sd-utils sd-imgui SDL2::Main)
 
 target_include_directories(sd-core 
     PUBLIC

@@ -75,7 +75,11 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-graphics PUBLIC SD_SHARED)
 endif()
 
-target_link_libraries(sd-graphics PUBLIC sd-utils GLEW::GLEW OpenGL::GL)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    target_link_libraries(sd-graphics PUBLIC X11 Xrandr Xi)
+endif()
+
+target_link_libraries(sd-graphics PUBLIC sd-utils GLEW::GLEW GL)
 
 target_include_directories(sd-graphics
     PUBLIC
