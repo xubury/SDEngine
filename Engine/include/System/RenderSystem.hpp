@@ -54,6 +54,7 @@ class SD_API RenderSystem : public System {
    private:
     void initQuad();
     void initGBuffer(int width, int height, int samples);
+    void initSkybox();
 
     void renderGBuffer();
     void renderShadow();
@@ -65,6 +66,8 @@ class SD_API RenderSystem : public System {
 
     void renderBlur();
     void renderMain();
+
+    void renderSkybox();
 
     Ref<Shader> m_mainShader;
 
@@ -84,6 +87,9 @@ class SD_API RenderSystem : public System {
     Ref<Shader> m_shadowShader;
 
     Ref<VertexArray> m_quad;
+
+    Ref<Shader> m_skyboxShader;
+    Ref<VertexArray> m_skybox;
 
     Scene *m_scene;
     Camera *m_camera;

@@ -5,6 +5,7 @@
 #include "Utility/Log.hpp"
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
+#include <GL/glew.h>
 
 namespace sd {
 
@@ -86,6 +87,7 @@ RenderSystem::RenderSystem(int width, int height, int samples)
 
     initQuad();
     initGBuffer(width, height, samples);
+    initSkybox();
 }
 
 void RenderSystem::onInit() {
@@ -141,6 +143,37 @@ void RenderSystem::initGBuffer(int width, int height, int samples) {
     m_gBufferTarget.createFramebuffer();
 }
 
+void RenderSystem::initSkybox() {
+    float skyboxVertices[] = {
+        // front
+        -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
+        // back
+        -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0};
+
+    uint32_t skyboxIndices[] = {// front
+                                0, 1, 2, 2, 3, 0,
+                                // right
+                                1, 5, 6, 6, 2, 1,
+                                // back
+                                7, 6, 5, 5, 4, 7,
+                                // left
+                                4, 0, 3, 3, 7, 4,
+                                // bottom
+                                4, 5, 1, 1, 0, 4,
+                                // top
+                                3, 2, 6, 6, 7, 3};
+    m_skybox = VertexArray::create();
+    VertexBufferLayout layout;
+    layout.push(BufferDataType::FLOAT, 3);
+    auto vbo = VertexBuffer::create(skyboxVertices, sizeof(skyboxVertices),
+                                    BufferIOType::STATIC);
+    auto ibo = IndexBuffer::create(skyboxIndices, 36, BufferIOType::STATIC);
+    m_skybox->addVertexBuffer(vbo, layout);
+    m_skybox->setIndexBuffer(ibo);
+
+    m_skyboxShader = Asset::manager().load<Shader>("shaders/skybox.glsl");
+}
+
 void RenderSystem::onSizeEvent(const SizeEvent &event) {
     m_camera->resize(event.width, event.height);
     for (int i = 0; i < 2; ++i) {
@@ -165,11 +198,31 @@ void RenderSystem::onRender() {
     renderShadow();
     renderLight();
     renderEmissive();
+    renderSkybox();
     renderText();
     if (m_isBloom) {
         renderBlur();
     }
     renderMain();
+}
+
+void RenderSystem::renderSkybox() {
+    glm::vec3 pos = m_camera->getWorldPosition();
+    m_camera->setWorldPosition(glm::vec3(0));
+
+    m_skyboxShader->bind();
+    glDepthFunc(GL_LEQUAL);
+    Device::instance().disable(Operation::CULL_FACE);
+    Device::instance().setCullFace(Face::FRONT);
+
+    Renderer::setRenderTarget(getLightResult());
+    Renderer::beginScene(*m_camera);
+    Renderer::submit(*m_skybox, MeshTopology::TRIANGLES, 36, 0);
+    Renderer::endScene();
+    Device::instance().setCullFace(Face::BACK);
+    Device::instance().enable(Operation::CULL_FACE);
+    m_camera->setWorldPosition(pos);
+    glDepthFunc(GL_LESS);
 }
 
 void RenderSystem::renderMain() {
