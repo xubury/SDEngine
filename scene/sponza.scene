@@ -243,7 +243,7 @@
 	<value40>2</value40>
 	<value41>0</value41>
 	<value42>
-		<value0>models\Sponza\sponza.obj</value0>
+        <value0>models/Sponza/sponza.obj</value0>
 		<value1>
 			<value0>0</value0>
 			<value1>0</value1>
@@ -252,7 +252,7 @@
 	</value42>
 	<value43>4</value43>
 	<value44>
-		<value0>models\vampire\dancing_vampire.dae</value0>
+        <value0>models/vampire/dancing_vampire.dae</value0>
 		<value1>
 			<value0>0</value0>
 			<value1>0</value1>
@@ -317,7 +317,7 @@
 	<value50>1</value50>
 	<value51>3</value51>
 	<value52>
-		<value0>fonts\msyh_0.ttc</value0>
+        <value0>fonts/msyh_0.ttc</value0>
 		<value1>50</value1>
 		<value2>
 			<value0>1</value0>
@@ -325,7 +325,7 @@
 			<value2>1</value2>
 			<value3>1</value3>
 		</value2>
-		<value3>Welcome to my engine!sdsss</value3>
+		<value3>Welcome to my engine!</value3>
 	</value52>
 </cereal>
 
