@@ -1,6 +1,6 @@
 #include "Core/Application.hpp"
 #include "Core/Input.hpp"
-#include "Core/Timing.hpp"
+#include "Utility/Timing.hpp"
 #include "Utility/Log.hpp"
 #include "Utility/Random.hpp"
 #include "Utility/Loader/ShaderLoader.hpp"

@@ -3,21 +3,26 @@
 
 #include <cstdint>
 #include <queue>
+#include <chrono>
 #include "Utility/Export.hpp"
 
 namespace sd {
+
+using ClockType = std::chrono::high_resolution_clock;
 
 class SD_API Clock {
    public:
     Clock();
 
-    uint32_t getElapsedMS() const;
+    uint64_t getElapsedMS() const;
+
+    uint64_t getElapsedSec() const;
 
     // Restart the clock, and return elapsed millisecond.
-    uint32_t restart();
+    uint64_t restart();
 
    private:
-    uint32_t m_lastTicks;
+    std::chrono::time_point<ClockType> m_lastTicks;
 };
 
 class SD_API FpsCounter {

@@ -79,7 +79,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     target_link_libraries(sd-graphics PUBLIC X11 Xrandr Xi)
 endif()
 
-target_link_libraries(sd-graphics PUBLIC sd-utils GLEW::GLEW GL)
+target_link_libraries(sd-graphics PUBLIC sd-utils GLEW::GLEW OpenGL::GL)
 
 target_include_directories(sd-graphics
     PUBLIC

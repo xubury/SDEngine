@@ -3,7 +3,7 @@
 
 #include "System/System.hpp"
 #include "System/Event.hpp"
-#include "Core/Timing.hpp"
+#include "Utility/Timing.hpp"
 #include "Graphics/Font.hpp"
 #include "Graphics/Camera.hpp"
 
