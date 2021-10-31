@@ -73,8 +73,8 @@ void Scene::refresh() {
 
 void Scene::load(const std::string &filePath) {
     clear();
-    std::ifstream os(filePath, std::ios::binary);
-    cereal::BinaryInputArchive archive(os);
+    std::ifstream is(filePath, std::ios::binary);
+    cereal::XMLInputArchive archive(is);
     entt::snapshot_loader{*this}
         .entities(archive)
         .component<EntityDataComponent, TagComponent, TransformComponent,
@@ -84,7 +84,7 @@ void Scene::load(const std::string &filePath) {
 
 void Scene::save(const std::string &filePath) {
     std::ofstream os(filePath, std::ios::binary);
-    cereal::BinaryOutputArchive archive(os);
+    cereal::XMLOutputArchive archive(os);
     entt::snapshot{*this}
         .entities(archive)
         .component<EntityDataComponent, TagComponent, TransformComponent,
