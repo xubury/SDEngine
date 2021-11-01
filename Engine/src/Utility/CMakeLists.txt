@@ -76,7 +76,11 @@ endif()
 
 target_include_directories(sd-utils
     PUBLIC
-    ${SD_ENGINE_SOURCE_DIR}/include)
+    ${SD_ENGINE_SOURCE_DIR}/include
+    PRIVATE
+    ${ASSIMP_INCLUDE_DIRS})
+
+target_link_directories(sd-utils PRIVATE ${ASSIMP_LIBRARY_DIRS})
 
 target_link_libraries(sd-utils 
     PUBLIC 
