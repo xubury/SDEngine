@@ -2,6 +2,7 @@
 #include "Graphics/Renderer.hpp"
 #include "Core/Application.hpp"
 #include "Core/Input.hpp"
+#include "Utility/Image.hpp"
 #include "ECS/Component.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include <glm/gtc/type_ptr.hpp>
@@ -21,6 +22,15 @@ EditorLayer::EditorLayer(int width, int height)
       m_saveSceneOpen(false) {
     m_cameraController.setCamera(&m_editorCamera);
     m_editorCamera.setWorldPosition(glm::vec3(0, 0, 10));
+    auto image = sd::Asset::manager().load<sd::Image>("icons/light.png");
+
+    m_lightIcon = sd::Texture::create(
+        image->width(), image->height(), 1, sd::TextureType::TEX_2D,
+        image->hasAlpha() ? sd::TextureFormat::RGBA : sd::TextureFormat::RGB,
+        sd::TextureFormatType::UBYTE, sd::TextureWrap::REPEAT,
+        sd::TextureFilter::LINEAR, sd::TextureMipmapFilter::LINEAR_LINEAR,
+        image->data());
+
     newScene();
 }
 
@@ -57,11 +67,9 @@ void EditorLayer::onRender() {
     lightView.each([this](const sd::LightComponent &,
                           const sd::TransformComponent &transComp) {
         glm::vec3 pos = transComp.transform.getWorldPosition();
-        auto lightImage =
-            sd::Asset::manager().load<sd::Texture>("icons/light.png");
         float dist = glm::distance(pos, m_editorCamera.getWorldPosition());
         float scale = (dist - m_editorCamera.getNearZ()) / 20;
-        sd::Renderer::drawBillboard(lightImage, pos, glm::vec2(scale));
+        sd::Renderer::drawBillboard(m_lightIcon, pos, glm::vec2(scale));
     });
     sd::Renderer::endScene();
 }

@@ -1,4 +1,5 @@
 #include "Utility/Loader/ModelLoader.hpp"
+#include "Utility/Image.hpp"
 #include "Graphics/Material.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -97,8 +98,12 @@ static void processAiMaterial(const std::filesystem::path &directory,
         return;
     }
     std::string path = (directory / texturePath.C_Str()).string();
-    auto texture = Asset::manager().load<Texture>(path);
-    texture->setMipmapFilter(TextureMipmapFilter::LINEAR_LINEAR);
+    auto image = Asset::manager().load<Image>(path);
+    auto texture = Texture::create(
+        image->width(), image->height(), 1, TextureType::TEX_2D,
+        image->hasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
+        TextureFormatType::UBYTE, TextureWrap::REPEAT, TextureFilter::LINEAR,
+        TextureMipmapFilter::LINEAR_LINEAR, image->data());
     material.setTexture(materialType, texture);
 }
 

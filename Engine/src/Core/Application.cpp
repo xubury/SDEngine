@@ -4,7 +4,7 @@
 #include "Utility/Log.hpp"
 #include "Utility/Random.hpp"
 #include "Utility/Loader/ShaderLoader.hpp"
-#include "Utility/Loader/TextureLoader.hpp"
+#include "Utility/Loader/ImageLoader.hpp"
 #include "Utility/Loader/ModelLoader.hpp"
 #include "Utility/Loader/FontLoader.hpp"
 #include "Graphics/Device.hpp"
@@ -37,7 +37,7 @@ Application::Application() {
 
     Asset::manager().setRootPath("assets/");
     Asset::manager().setLoader<ShaderLoader>();
-    Asset::manager().setLoader<TextureLoader>();
+    Asset::manager().setLoader<ImageLoader>();
     Asset::manager().setLoader<ModelLoader>();
     Asset::manager().setLoader<FontLoader>();
 

@@ -56,6 +56,8 @@ class EditorLayer : public sd::Layer {
     bool m_loadSceneOpen;
     bool m_saveSceneOpen;
     ImFileDialogInfo m_fileDialogInfo;
+
+    sd::Ref<sd::Texture> m_lightIcon;
 };
 
 #endif /* EDITOR_LAYER_HPP */

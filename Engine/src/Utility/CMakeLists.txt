@@ -11,15 +11,15 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Utility)
 set(Loader_Include
     ${Include_Root}/Loader/AssetLoader.hpp
     ${Include_Root}/Loader/FontLoader.hpp
+    ${Include_Root}/Loader/ImageLoader.hpp
     ${Include_Root}/Loader/ModelLoader.hpp
-    ${Include_Root}/Loader/ShaderLoader.hpp
-    ${Include_Root}/Loader/TextureLoader.hpp)
+    ${Include_Root}/Loader/ShaderLoader.hpp)
 
 set(Loader_Src
     ${Src_Root}/Loader/FontLoader.cpp
+    ${Src_Root}/Loader/ImageLoader.cpp
     ${Src_Root}/Loader/ModelLoader.cpp
-    ${Src_Root}/Loader/ShaderLoader.cpp
-    ${Src_Root}/Loader/TextureLoader.cpp)
+    ${Src_Root}/Loader/ShaderLoader.cpp)
 
 set(Utility_Include
     ${Loader_Include}
@@ -29,6 +29,7 @@ set(Utility_Include
     ${Include_Root}/EventDispatcher.hpp
     ${Include_Root}/Export.hpp
     ${Include_Root}/File.hpp
+    ${Include_Root}/Image.hpp
     ${Include_Root}/Log.hpp
     ${Include_Root}/Math.hpp
     ${Include_Root}/PlatformDetection.hpp
@@ -43,6 +44,7 @@ set(Utility_Include
 set(Utility_Src
     ${Loader_Src}
     ${Src_Root}/File.cpp
+    ${Src_Root}/Image.cpp
     ${Src_Root}/Log.cpp
     ${Src_Root}/Math.cpp
     ${Src_Root}/QuadTree.cpp
@@ -61,7 +63,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         target_link_options(sd-utils PUBLIC -mwindows)
     endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    target_link_libraries(sd-utils PUBLIC ${CMAKE_DL_LIBS} pthread) 
+    target_link_libraries(sd-utils PUBLIC ${CMAKE_DL_LIBS} pthread)
 endif()
 
 set_property(TARGET sd-utils PROPERTY CXX_STANDARD 17)
@@ -82,11 +84,11 @@ target_include_directories(sd-utils
 
 target_link_directories(sd-utils PRIVATE ${ASSIMP_LIBRARY_DIRS})
 
-target_link_libraries(sd-utils 
-    PUBLIC 
-    spdlog::spdlog glm 
+target_link_libraries(sd-utils
+    PUBLIC
+    spdlog::spdlog glm
     Freetype::Freetype
-    PRIVATE 
+    PRIVATE
     ${ASSIMP_LIBRARIES} SDL2::Image)
 
 install(TARGETS sd-utils LIBRARY DESTINATION lib)
