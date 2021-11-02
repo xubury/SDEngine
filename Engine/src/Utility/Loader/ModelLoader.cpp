@@ -7,8 +7,6 @@
 
 namespace sd {
 
-ModelLoader::ModelLoader(AssetManager &manager) : AssetLoader<Model>(manager) {}
-
 static Vertex constructVertex(const aiVector3D &pos, const aiVector3D &texCoord,
                               const aiVector3D &normal,
                               const aiVector3D &tangent,
@@ -31,28 +29,27 @@ static Vertex constructVertex(const aiVector3D &pos, const aiVector3D &texCoord,
     return vertex;
 }
 
+static MeshTopology convertAssimpPrimitive(aiPrimitiveType type) {
+    switch (type) {
+        case aiPrimitiveType_LINE:
+            return MeshTopology::LINES;
+        case aiPrimitiveType_POINT:
+            return MeshTopology::POINTS;
+        case aiPrimitiveType_TRIANGLE:
+            return MeshTopology::TRIANGLES;
+        case aiPrimitiveType_POLYGON:
+            return MeshTopology::QUADS;
+        default:
+            SD_CORE_WARN("[convertAssimpPrimitive] Unhandled mesh topology!");
+            return MeshTopology::TRIANGLES;
+    };
+}
+
 static Mesh processAiMesh(const aiMesh *assimpMesh) {
     Mesh mesh;
     const aiVector3D aiZeroVector(0.0f, 0.0f, 0.0f);
-    MeshTopology topology;
-    switch (assimpMesh->mPrimitiveTypes) {
-        case aiPrimitiveType_LINE:
-            topology = MeshTopology::LINES;
-            break;
-        case aiPrimitiveType_POINT:
-            topology = MeshTopology::POINTS;
-            break;
-        case aiPrimitiveType_TRIANGLE:
-            topology = MeshTopology::TRIANGLES;
-            break;
-        case aiPrimitiveType_POLYGON:
-            topology = MeshTopology::QUADS;
-            break;
-        default:
-            topology = MeshTopology::TRIANGLES;
-            SD_CORE_WARN("[processAiMesh] Unhandled mesh topology!");
-    };
-    mesh.setTopology(topology);
+    mesh.setTopology(convertAssimpPrimitive(
+        static_cast<aiPrimitiveType>(assimpMesh->mPrimitiveTypes)));
     mesh.setMaterialIndex(assimpMesh->mMaterialIndex);
 
     for (uint32_t i = 0; i < assimpMesh->mNumVertices; ++i) {
@@ -80,6 +77,22 @@ static Mesh processAiMesh(const aiMesh *assimpMesh) {
     return mesh;
 }
 
+static TextureWrap convertAssimpMapMode(aiTextureMapMode mode) {
+    switch (mode) {
+        case aiTextureMapMode_Clamp:
+            return TextureWrap::EDGE;
+        case aiTextureMapMode_Decal:
+            return TextureWrap::BORDER;
+        case aiTextureMapMode_Mirror:
+            return TextureWrap::MIRROR;
+        case aiTextureMapMode_Wrap:
+            return TextureWrap::REPEAT;
+        default:
+            SD_CORE_WARN("[convertAssimpMapMode] invalid wrap mode!");
+            return TextureWrap::REPEAT;
+    }
+}
+
 static void processAiMaterial(const std::filesystem::path &directory,
                               Material &material, MaterialType materialType,
                               const aiMaterial *assimpMaterial,
@@ -93,7 +106,10 @@ static void processAiMaterial(const std::filesystem::path &directory,
     }
 
     aiString texturePath;
-    if (assimpMaterial->GetTexture(assimpType, 0, &texturePath) != AI_SUCCESS) {
+    aiTextureMapMode wrapMode;
+    if (assimpMaterial->GetTexture(assimpType, 0, &texturePath, nullptr,
+                                   nullptr, nullptr, nullptr,
+                                   &wrapMode) != AI_SUCCESS) {
         SD_CORE_ERROR("[processAiMaterial] Assimp GetTexture error!");
         return;
     }
@@ -102,8 +118,9 @@ static void processAiMaterial(const std::filesystem::path &directory,
     auto texture = Texture::create(
         image->width(), image->height(), 1, TextureType::TEX_2D,
         image->hasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
-        TextureFormatType::UBYTE, TextureWrap::REPEAT, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_LINEAR, image->data());
+        TextureFormatType::UBYTE, convertAssimpMapMode(wrapMode),
+        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_LINEAR,
+        image->data());
     material.setTexture(materialType, texture);
 }
 
@@ -119,6 +136,8 @@ static void processNode(const aiScene *scene, const aiNode *node,
         processNode(scene, child, model);
     }
 }
+
+ModelLoader::ModelLoader(AssetManager &manager) : AssetLoader<Model>(manager) {}
 
 Ref<Model> ModelLoader::loadAsset(const std::string &filePath) {
     Ref<Model> model = createRef<Model>();
