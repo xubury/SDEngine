@@ -10,7 +10,8 @@ namespace sd {
 
 class SD_API GLBuffer : virtual public Buffer {
    public:
-    void updateData(const void *data, size_t size, size_t offset) override;
+    void updateData(const void *data, uint32_t count, uint8_t elementSize,
+                    size_t offset) override;
 
     void bind() const override;
 
@@ -36,21 +37,21 @@ class SD_API GLBuffer : virtual public Buffer {
 
 class SD_API GLVertexBuffer : public VertexBuffer, public GLBuffer {
    public:
-    GLVertexBuffer(const void *data, size_t size, BufferIOType io);
+    GLVertexBuffer(const void *data, uint32_t count, uint8_t elementSize,
+                   BufferIOType io);
 
     ~GLVertexBuffer() = default;
 };
 
 class SD_API GLIndexBuffer : public IndexBuffer, public GLBuffer {
    public:
-    GLIndexBuffer(const uint32_t *data, uint32_t count, BufferIOType io);
+    GLIndexBuffer(const void *data, uint32_t count, uint8_t elementSize,
+                  BufferIOType io);
+
+    void updateData(const void *data, uint32_t count, uint8_t elementSize,
+                    size_t offset) override;
 
     ~GLIndexBuffer() = default;
-
-    uint32_t getCount() const override;
-
-   private:
-    uint32_t m_count;
 };
 
 class SD_API GLUniformBuffer : public UniformBuffer, public GLBuffer {

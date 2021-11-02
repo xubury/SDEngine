@@ -107,11 +107,11 @@ void RenderSystem::initQuad() {
         1.0f,  1.0f,  0.f, 1.0f, 1.0f,  // top right
         -1.0f, 1.0f,  0.f, 0.f,  1.0f,  // top left
     };
-    unsigned int indices[] = {0, 1, 2, 2, 3, 0};
+    uint32_t indices[] = {0, 1, 2, 2, 3, 0};
     Ref<VertexBuffer> buffer = VertexBuffer::create(
-        quadVertices, sizeof(quadVertices), BufferIOType::STATIC);
+        quadVertices, 20, sizeof(float), BufferIOType::STATIC);
     Ref<IndexBuffer> indexBuffer =
-        IndexBuffer::create(indices, 6, BufferIOType::STATIC);
+        IndexBuffer::create(indices, 6, sizeof(uint32_t), BufferIOType::STATIC);
     m_quad = VertexArray::create();
     VertexBufferLayout layout;
     layout.push(BufferDataType::FLOAT, 3);
@@ -165,9 +165,10 @@ void RenderSystem::initSkybox() {
     m_skybox = VertexArray::create();
     VertexBufferLayout layout;
     layout.push(BufferDataType::FLOAT, 3);
-    auto vbo = VertexBuffer::create(skyboxVertices, sizeof(skyboxVertices),
+    auto vbo = VertexBuffer::create(skyboxVertices, 24, sizeof(float),
                                     BufferIOType::STATIC);
-    auto ibo = IndexBuffer::create(skyboxIndices, 36, BufferIOType::STATIC);
+    auto ibo = IndexBuffer::create(skyboxIndices, 36, sizeof(uint32_t),
+                                   BufferIOType::STATIC);
     m_skybox->addVertexBuffer(vbo, layout);
     m_skybox->setIndexBuffer(ibo);
 

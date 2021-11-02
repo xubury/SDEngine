@@ -5,12 +5,12 @@
 
 namespace sd {
 
-Ref<VertexBuffer> VertexBuffer::create(const void *data, size_t size,
-                                       BufferIOType io) {
+Ref<VertexBuffer> VertexBuffer::create(const void *data, uint32_t count,
+                                       uint8_t elementSize, BufferIOType io) {
     Ref<VertexBuffer> vb;
     switch (Graphics::getAPI()) {
         case API::OpenGL:
-            vb = createRef<GLVertexBuffer>(data, size, io);
+            vb = createRef<GLVertexBuffer>(data, count, elementSize, io);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
@@ -19,12 +19,12 @@ Ref<VertexBuffer> VertexBuffer::create(const void *data, size_t size,
     return vb;
 }
 
-Ref<IndexBuffer> IndexBuffer::create(const uint32_t *data, uint32_t count,
-                                     BufferIOType io) {
+Ref<IndexBuffer> IndexBuffer::create(const void *data, uint32_t count,
+                                     uint8_t elementSize, BufferIOType io) {
     Ref<IndexBuffer> eb;
     switch (Graphics::getAPI()) {
         case API::OpenGL:
-            eb = createRef<GLIndexBuffer>(data, count, io);
+            eb = createRef<GLIndexBuffer>(data, count, elementSize, io);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
@@ -46,5 +46,9 @@ Ref<UniformBuffer> UniformBuffer::create(const void *data, size_t size,
     }
     return ub;
 }
+
+IndexBuffer::IndexBuffer(uint32_t count) : m_count(count) {}
+
+uint32_t IndexBuffer::getCount() const { return m_count; }
 
 }  // namespace sd

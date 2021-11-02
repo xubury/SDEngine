@@ -8,12 +8,13 @@ Mesh::Mesh()
       m_topology(MeshTopology::TRIANGLES),
       m_materialId(0),
       m_wireframe(false) {
-    m_vertexBuffer = VertexBuffer::create(m_vertices.data(),
-                                          m_vertices.size() * sizeof(Vertex),
-                                          BufferIOType::DYNAMIC);
+    m_vertexBuffer =
+        VertexBuffer::create(m_vertices.data(), m_vertices.size(),
+                             sizeof(Vertex), BufferIOType::DYNAMIC);
 
-    m_indexBuffer = IndexBuffer::create(m_indices.data(), m_indices.size(),
-                                        BufferIOType::DYNAMIC);
+    m_indexBuffer =
+        IndexBuffer::create(m_indices.data(), m_indices.size(),
+                            sizeof(uint32_t), BufferIOType::DYNAMIC);
 
     m_vertexArray = VertexArray::create();
     VertexBufferLayout layout;
@@ -33,12 +34,13 @@ Mesh::Mesh(const std::vector<Vertex> &vertices,
       m_topology(MeshTopology::TRIANGLES),
       m_materialId(0),
       m_wireframe(false) {
-    m_vertexBuffer = VertexBuffer::create(m_vertices.data(),
-                                          m_vertices.size() * sizeof(Vertex),
-                                          BufferIOType::DYNAMIC);
+    m_vertexBuffer =
+        VertexBuffer::create(m_vertices.data(), m_vertices.size(),
+                             sizeof(Vertex), BufferIOType::DYNAMIC);
 
-    m_indexBuffer = IndexBuffer::create(m_indices.data(), m_indices.size(),
-                                        BufferIOType::DYNAMIC);
+    m_indexBuffer =
+        IndexBuffer::create(m_indices.data(), m_indices.size(),
+                            sizeof(uint32_t), BufferIOType::DYNAMIC);
 
     m_vertexArray = VertexArray::create();
     VertexBufferLayout layout;
@@ -60,10 +62,10 @@ void Mesh::setIndices(const std::vector<uint32_t> &indices) {
 }
 
 void Mesh::update() {
-    m_indexBuffer->updateData(m_indices.data(),
-                              m_indices.size() * sizeof(uint32_t));
-    m_vertexBuffer->updateData(m_vertices.data(),
-                               m_vertices.size() * sizeof(Vertex));
+    m_indexBuffer->updateData(m_indices.data(), m_indices.size(),
+                              sizeof(uint32_t));
+    m_vertexBuffer->updateData(m_vertices.data(), m_vertices.size(),
+                               sizeof(Vertex));
 }
 
 void Mesh::clear() {

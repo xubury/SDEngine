@@ -12,7 +12,9 @@ GLBuffer::GLBuffer(GLenum type, GLenum io, const void *data, size_t size)
 
 GLBuffer::~GLBuffer() { glDeleteBuffers(1, &m_id); }
 
-void GLBuffer::updateData(const void *data, size_t size, size_t offset) {
+void GLBuffer::updateData(const void *data, uint32_t count, uint8_t elementSize,
+                          size_t offset) {
+    auto size = count * elementSize;
     if (size > m_size) {
         m_size = size;
         glNamedBufferData(m_id, size, data, m_io);
@@ -32,16 +34,22 @@ void GLBuffer::bindBase(uint32_t index) const {
 
 void GLBuffer::unbind() const { glBindBuffer(m_type, 0); }
 
-GLVertexBuffer::GLVertexBuffer(const void *data, size_t size, BufferIOType io)
-    : GLBuffer(GL_ARRAY_BUFFER, translate(io), data, size) {}
+GLVertexBuffer::GLVertexBuffer(const void *data, uint32_t count,
+                               uint8_t elementSize, BufferIOType io)
+    : GLBuffer(GL_ARRAY_BUFFER, translate(io), data, count * elementSize) {}
 
-GLIndexBuffer::GLIndexBuffer(const uint32_t *data, uint32_t count,
-                             BufferIOType io)
-    : GLBuffer(GL_ELEMENT_ARRAY_BUFFER, translate(io), data,
-               count * sizeof(uint32_t)),
-      m_count(count) {}
+GLIndexBuffer::GLIndexBuffer(const void *data, uint32_t count,
+                             uint8_t elementSize, BufferIOType io)
+    : IndexBuffer(count),
+      GLBuffer(GL_ELEMENT_ARRAY_BUFFER, translate(io), data,
+               count * elementSize) {}
 
-uint32_t GLIndexBuffer::getCount() const { return m_count; }
+void GLIndexBuffer::updateData(const void *data, uint32_t count,
+                               uint8_t elementSize, size_t offset) {
+    GLBuffer::updateData(data, count, elementSize, offset);
+    m_count = count;
+}
+
 
 uint32_t GLUniformBuffer::s_count = 0;
 

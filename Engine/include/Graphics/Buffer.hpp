@@ -15,8 +15,8 @@ class SD_API Buffer {
 
     Buffer &operator=(const Buffer &) = delete;
 
-    virtual void updateData(const void *data, size_t size,
-                            size_t offset = 0) = 0;
+    virtual void updateData(const void *data, uint32_t count,
+                            uint8_t elementSize, size_t offset = 0) = 0;
 
     virtual void bind() const = 0;
 
@@ -30,8 +30,8 @@ class SD_API Buffer {
 
 class SD_API VertexBuffer : virtual public Buffer {
    public:
-    static Ref<VertexBuffer> create(const void *data, size_t size,
-                                    BufferIOType io);
+    static Ref<VertexBuffer> create(const void *data, uint32_t count,
+                                    uint8_t elementSize, BufferIOType io);
 
     virtual ~VertexBuffer() = default;
 
@@ -41,15 +41,17 @@ class SD_API VertexBuffer : virtual public Buffer {
 
 class SD_API IndexBuffer : virtual public Buffer {
    public:
-    static Ref<IndexBuffer> create(const uint32_t *data, uint32_t count,
-                                   BufferIOType io);
+    static Ref<IndexBuffer> create(const void *data, uint32_t count,
+                                   uint8_t elementSize, BufferIOType io);
 
     virtual ~IndexBuffer() = default;
 
-    virtual uint32_t getCount() const = 0;
+    uint32_t getCount() const;
 
    protected:
-    IndexBuffer() = default;
+    IndexBuffer(uint32_t count);
+
+    uint32_t m_count;
 };
 
 class SD_API UniformBuffer : virtual public Buffer {
