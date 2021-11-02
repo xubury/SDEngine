@@ -138,7 +138,10 @@ void Renderer::beginScene(Camera& camera) {
     startBatch();
 }
 
-void Renderer::endScene() { flush(); }
+void Renderer::endScene() {
+    flush();
+    Device::instance().setPolygonMode(PolygonMode::FILL, Face::BOTH);
+}
 
 void Renderer::flush() {
     if (s_data.quadIndexCnt == 0) {
