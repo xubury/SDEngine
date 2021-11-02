@@ -3,17 +3,53 @@
 namespace sd {
 
 Mesh::Mesh()
-    : m_topology(MeshTopology::TRIANGLES),
+    : m_vertices(0),
+      m_indices(0),
+      m_topology(MeshTopology::TRIANGLES),
       m_materialId(0),
-      m_wireframe(false) {}
+      m_wireframe(false) {
+    m_vertexBuffer = VertexBuffer::create(m_vertices.data(),
+                                          m_vertices.size() * sizeof(Vertex),
+                                          BufferIOType::DYNAMIC);
 
-void Mesh::addVertex(const Vertex &vertex) { m_vertices.emplace_back(vertex); }
+    m_indexBuffer = IndexBuffer::create(m_indices.data(), m_indices.size(),
+                                        BufferIOType::DYNAMIC);
 
-void Mesh::addVertex(Vertex &&vertex) {
-    m_vertices.emplace_back(std::move(vertex));
+    m_vertexArray = VertexArray::create();
+    VertexBufferLayout layout;
+    layout.push(BufferDataType::FLOAT, 3);
+    layout.push(BufferDataType::FLOAT, 2);
+    layout.push(BufferDataType::FLOAT, 3);
+    layout.push(BufferDataType::FLOAT, 3);
+    layout.push(BufferDataType::FLOAT, 3);
+    m_vertexArray->addVertexBuffer(m_vertexBuffer, layout);
+    m_vertexArray->setIndexBuffer(m_indexBuffer);
 }
 
-void Mesh::addIndex(uint32_t index) { m_indices.push_back(index); }
+Mesh::Mesh(const std::vector<Vertex> &vertices,
+           const std::vector<uint32_t> &indices)
+    : m_vertices(vertices),
+      m_indices(indices),
+      m_topology(MeshTopology::TRIANGLES),
+      m_materialId(0),
+      m_wireframe(false) {
+    m_vertexBuffer = VertexBuffer::create(m_vertices.data(),
+                                          m_vertices.size() * sizeof(Vertex),
+                                          BufferIOType::DYNAMIC);
+
+    m_indexBuffer = IndexBuffer::create(m_indices.data(), m_indices.size(),
+                                        BufferIOType::DYNAMIC);
+
+    m_vertexArray = VertexArray::create();
+    VertexBufferLayout layout;
+    layout.push(BufferDataType::FLOAT, 3);
+    layout.push(BufferDataType::FLOAT, 2);
+    layout.push(BufferDataType::FLOAT, 3);
+    layout.push(BufferDataType::FLOAT, 3);
+    layout.push(BufferDataType::FLOAT, 3);
+    m_vertexArray->addVertexBuffer(m_vertexBuffer, layout);
+    m_vertexArray->setIndexBuffer(m_indexBuffer);
+}
 
 void Mesh::setVerices(const std::vector<Vertex> &vertices) {
     m_vertices = vertices;
@@ -23,36 +59,16 @@ void Mesh::setIndices(const std::vector<uint32_t> &indices) {
     m_indices = indices;
 }
 
+void Mesh::update() {
+    m_indexBuffer->updateData(m_indices.data(),
+                              m_indices.size() * sizeof(uint32_t));
+    m_vertexBuffer->updateData(m_vertices.data(),
+                               m_vertices.size() * sizeof(Vertex));
+}
+
 void Mesh::clear() {
     m_vertices.clear();
     m_indices.clear();
-}
-
-void Mesh::init() {
-    m_vertexArray = VertexArray::create();
-    VertexBufferLayout layout;
-    layout.push(BufferDataType::FLOAT, 3);
-    layout.push(BufferDataType::FLOAT, 2);
-    layout.push(BufferDataType::FLOAT, 3);
-    layout.push(BufferDataType::FLOAT, 3);
-    layout.push(BufferDataType::FLOAT, 3);
-
-    m_vertexBuffer = VertexBuffer::create(m_vertices.data(),
-                                          m_vertices.size() * sizeof(Vertex),
-                                          BufferIOType::DYNAMIC);
-
-    Ref<IndexBuffer> ebo = IndexBuffer::create(
-        m_indices.data(), m_indices.size(), BufferIOType::STATIC);
-
-    m_vertexArray->addVertexBuffer(m_vertexBuffer, layout);
-    m_vertexArray->setIndexBuffer(ebo);
-}
-
-void Mesh::update() {
-    if (m_vertexBuffer) {
-        m_vertexBuffer->updateData(m_vertices.data(),
-                                   m_vertices.size() * sizeof(Vertex));
-    }
 }
 
 VertexArray *Mesh::getVertexArray() const { return m_vertexArray.get(); }

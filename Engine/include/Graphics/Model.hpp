@@ -14,8 +14,6 @@ class SD_API Model {
     const std::vector<Material> &getMaterial() const { return m_materials; };
     std::vector<Material> &getMaterials() { return m_materials; };
 
-    void init();
-
     void addMesh(const Mesh &mesh);
     void addMesh(Mesh &&mesh);
 

@@ -5,8 +5,9 @@
 #include "Utility/Assert.hpp"
 
 namespace sd {
+
 GLFramebuffer::GLFramebuffer() : m_id(0), m_textureCnt(0) {
-    glGenFramebuffers(1, &m_id);
+    glCreateFramebuffers(1, &m_id);
 }
 
 GLFramebuffer::~GLFramebuffer() { glDeleteFramebuffers(1, &m_id); }
@@ -33,28 +34,8 @@ bool GLFramebuffer::attachTexture(const Ref<Texture> &texture) {
                 break;
         }
         m_attachments.emplace_back(attachment, glTexture);
-        bind();
-        glTexture->bind();
-        switch (glTexture->getType()) {
-            case TextureType::TEX_2D:
-            case TextureType::TEX_2D_MULTISAMPLE:
-                glFramebufferTexture2D(GL_FRAMEBUFFER, attachment,
-                                       glTexture->getGLType(),
-                                       glTexture->getId(), 0);
-                break;
-            case TextureType::TEX_3D:
-            case TextureType::TEX_CUBE:
-                glFramebufferTexture(GL_FRAMEBUFFER, attachment,
-                                     glTexture->getId(), 0);
-                break;
-            default:
-                SD_CORE_ERROR(
-                    "[GLFramebuffer::attachTexture] Invalid texture attachment "
-                    "type!");
-        }
+        glNamedFramebufferTexture(m_id, attachment, glTexture->getId(), 0);
 
-        glTexture->unbind();
-        unbind();
     } else {
         SD_CORE_ERROR("Mismatched API!");
     }
@@ -68,37 +49,30 @@ void GLFramebuffer::clear() {
 }
 
 void GLFramebuffer::setDrawable(const std::vector<uint32_t> &colorAttachments) {
-    bind();
     if (colorAttachments.empty()) {
-        glDrawBuffer(GL_NONE);
+        glNamedFramebufferDrawBuffer(m_id, GL_NONE);
     } else {
         std::vector<GLenum> glAttachments;
         for (const auto i : colorAttachments) {
             glAttachments.emplace_back(GL_COLOR_ATTACHMENT0 + i);
         }
-        glDrawBuffers(glAttachments.size(), glAttachments.data());
+        glNamedFramebufferDrawBuffers(m_id, glAttachments.size(),
+                                      glAttachments.data());
     }
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         SD_CORE_ERROR("FrameBuffer is not complete!");
     }
-    unbind();
 }
 
 void GLFramebuffer::bind() const { glBindFramebuffer(GL_FRAMEBUFFER, m_id); }
 
 void GLFramebuffer::unbind() const { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
-int GLFramebuffer::readPixels(uint32_t attachmentId, int x, int y) const {
-    bind();
-    GLenum glAttachmentId = m_attachments.at(attachmentId).first;
-    glReadBuffer(glAttachmentId);
-
-    int data = 0;
-    GLTexture *texture = m_attachments.at(attachmentId).second.get();
-    glReadPixels(x, y, 1, 1, texture->getGLFormat(), texture->getGLFormatType(),
-                 &data);
-    unbind();
-    return data;
+void GLFramebuffer::readPixels(uint32_t attachmentId, int level, int x, int y,
+                               int z, int w, int h, int d, size_t size,
+                               void *data) const {
+    auto glTexture = m_attachments.at(attachmentId).second;
+    glTexture->readPixels(level, x, y, z, w, h, d, size, data);
 }
 
 void GLFramebuffer::clearAttachment(uint32_t attachmentId, const void *value) {
@@ -114,21 +88,17 @@ Texture *GLFramebuffer::getTexture(uint32_t attachmentId) {
 void GLFramebuffer::copyTo(Framebuffer *other, uint32_t index,
                            BufferBitMask mask, TextureFilter filter) const {
     const GLFramebuffer *glFb = dynamic_cast<const GLFramebuffer *>(other);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, glFb ? glFb->m_id : 0);
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_id);
+    int targetId = glFb ? glFb->m_id : 0;
     GLenum glMask = translate(mask & BufferBitMask::COLOR_BUFFER_BIT) |
                     translate(mask & BufferBitMask::DEPTH_BUFFER_BIT) |
                     translate(mask & BufferBitMask::STENCIL_BUFFER_BIT);
     GLenum glFilter = translate(filter);
     const auto &[attachment, texture] = m_attachments[index];
-    glReadBuffer(attachment);
-    glDrawBuffer(glFb ? attachment : GL_BACK);
-    glBlitFramebuffer(0, 0, texture->getWidth(), texture->getHeight(), 0, 0,
-                      texture->getWidth(), texture->getHeight(), glMask,
-                      glFilter);
-
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    glNamedFramebufferReadBuffer(m_id, attachment);
+    glNamedFramebufferDrawBuffer(targetId, glFb ? attachment : GL_BACK);
+    glBlitNamedFramebuffer(m_id, targetId, 0, 0, texture->getWidth(),
+                           texture->getHeight(), 0, 0, texture->getWidth(),
+                           texture->getHeight(), glMask, glFilter);
 }
 
 void GLFramebuffer::resize(int width, int height) {

@@ -29,6 +29,9 @@ class SD_API Texture {
     virtual void setFilter(TextureFilter filter) = 0;
     virtual void setMipmapFilter(TextureMipmapFilter filter) = 0;
 
+    virtual void readPixels(int level, int x, int y, int z, int w, int h, int d,
+                            size_t size, void *data) const = 0;
+
     bool operator==(const Texture &other) const;
     bool operator!=(const Texture &other) const;
 

@@ -28,14 +28,11 @@ class SD_API VertexArray {
     virtual void updateBuffer(size_t index, const void *data, size_t size,
                               size_t offset = 0) = 0;
 
-    void setIndexBuffer(const Ref<IndexBuffer> &buffer);
-
-    const Ref<IndexBuffer> getIndexBuffer() const;
+    virtual void setIndexBuffer(const Ref<IndexBuffer> &buffer) = 0;
+    virtual Ref<IndexBuffer> getIndexBuffer() = 0;
 
    protected:
     VertexArray() = default;
-
-    Ref<IndexBuffer> m_indexBuffer;
 };
 
 }  // namespace sd

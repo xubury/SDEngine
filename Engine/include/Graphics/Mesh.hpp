@@ -18,22 +18,15 @@ struct SD_API Vertex {
 class SD_API Mesh {
    public:
     Mesh();
+    Mesh(const std::vector<Vertex> &vertices,
+         const std::vector<uint32_t> &indices);
 
-    void addVertex(const Vertex &vertex);
-
-    void addVertex(Vertex &&vertex);
-
-    void addIndex(uint32_t index);
+    void update();
+    void clear();
 
     void setVerices(const std::vector<Vertex> &vertices);
 
     void setIndices(const std::vector<uint32_t> &indices);
-
-    void clear();
-
-    void init();
-
-    void update();
 
     VertexArray *getVertexArray() const;
 
@@ -53,6 +46,7 @@ class SD_API Mesh {
     std::vector<Vertex> m_vertices;
     std::vector<uint32_t> m_indices;
     Ref<VertexBuffer> m_vertexBuffer;
+    Ref<IndexBuffer> m_indexBuffer;
     Ref<VertexArray> m_vertexArray;
     MeshTopology m_topology;
     uint32_t m_materialId;

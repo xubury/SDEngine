@@ -24,7 +24,9 @@ class SD_API Framebuffer {
 
     virtual void setDrawable(const std::vector<uint32_t> &colorAttachments) = 0;
 
-    virtual int readPixels(uint32_t attachmentId, int x, int y) const = 0;
+    virtual void readPixels(uint32_t attachmentId, int level, int x, int y,
+                            int z, int w, int h, int d, size_t size,
+                            void *data) const = 0;
 
     virtual void clearAttachment(uint32_t attachmentId, const void *value) = 0;
 

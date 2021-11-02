@@ -20,7 +20,9 @@ class GLFramebuffer : public Framebuffer {
 
     void setDrawable(const std::vector<uint32_t> &colorAttachments) override;
 
-    int readPixels(uint32_t attachmentId, int x, int y) const override;
+    void readPixels(uint32_t attachmentId, int level, int x, int y, int z,
+                    int w, int h, int d, size_t size,
+                    void *data) const override;
 
     void bind() const override;
     void unbind() const override;

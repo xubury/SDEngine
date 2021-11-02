@@ -29,6 +29,7 @@ class SD_API Terrain {
 
    private:
     Mesh m_mesh;
+    std::vector<Vertex> m_vertices;
     Material m_material;
     int m_gridSize;
     int m_vertexCount;

@@ -28,6 +28,9 @@ class GLTexture : public Texture {
     void setFilter(TextureFilter filter) override;
     void setMipmapFilter(TextureMipmapFilter mipmapFilter) override;
 
+    void readPixels(int level, int x, int y, int z, int w, int h, int d,
+                    size_t size, void *data) const override;
+
     GLenum getGLType() const;
     GLenum getGLFormat() const;
     GLenum getGLFormatType() const;

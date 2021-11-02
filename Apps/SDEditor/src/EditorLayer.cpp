@@ -81,11 +81,12 @@ void EditorLayer::onTick(float dt) {
     glm::vec2 viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
     if (!ImGuizmo::IsUsing() && !m_hide && ImGui::IsMouseDown(0) &&
         m_isViewportHovered) {
-        sd::EntityId id = sd::Application::getRenderEngine()
-                              .getRenderSystem()
-                              ->getGBuffer()
-                              ->readPixels(sd::GeometryBufferType::G_ENTITY_ID,
-                                           mouseX, viewportSize.y - mouseY);
+        sd::EntityId id = sd::Entity::INVALID_ID;
+        sd::Application::getRenderEngine()
+            .getRenderSystem()
+            ->getGBuffer()
+            ->readPixels(sd::GeometryBufferType::G_ENTITY_ID, 0, mouseX,
+                         viewportSize.y - mouseY, 0, 1, 1, 1, sizeof(id), &id);
         if (id != sd::Entity::INVALID_ID) {
             m_scenePanel.setSelectedEntity(id);
         }

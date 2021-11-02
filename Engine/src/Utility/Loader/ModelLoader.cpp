@@ -46,12 +46,9 @@ static MeshTopology convertAssimpPrimitive(aiPrimitiveType type) {
 }
 
 static Mesh processAiMesh(const aiMesh *assimpMesh) {
-    Mesh mesh;
     const aiVector3D aiZeroVector(0.0f, 0.0f, 0.0f);
-    mesh.setTopology(convertAssimpPrimitive(
-        static_cast<aiPrimitiveType>(assimpMesh->mPrimitiveTypes)));
-    mesh.setMaterialIndex(assimpMesh->mMaterialIndex);
-
+    std::vector<Vertex> vertices;
+    std::vector<uint32_t> indices;
     for (uint32_t i = 0; i < assimpMesh->mNumVertices; ++i) {
         const aiVector3D pos = assimpMesh->mVertices[i];
         const aiVector3D normal =
@@ -65,15 +62,19 @@ static Mesh processAiMesh(const aiMesh *assimpMesh) {
         const aiVector3D biTangent = assimpMesh->HasTangentsAndBitangents()
                                          ? assimpMesh->mBitangents[i]
                                          : aiZeroVector;
-        mesh.addVertex(
+        vertices.push_back(
             constructVertex(pos, texCoord, normal, tangent, biTangent));
     }
     for (uint32_t i = 0; i < assimpMesh->mNumFaces; ++i) {
         const aiFace &face = assimpMesh->mFaces[i];
         for (uint32_t j = 0; j < face.mNumIndices; ++j) {
-            mesh.addIndex(face.mIndices[j]);
+            indices.push_back(face.mIndices[j]);
         }
     }
+    Mesh mesh(vertices, indices);
+    mesh.setTopology(convertAssimpPrimitive(
+        static_cast<aiPrimitiveType>(assimpMesh->mPrimitiveTypes)));
+    mesh.setMaterialIndex(assimpMesh->mMaterialIndex);
     return mesh;
 }
 
@@ -174,7 +175,6 @@ Ref<Model> ModelLoader::loadAsset(const std::string &filePath) {
         model->addMaterial(std::move(material));
     }
 
-    model->init();
     return model;
 }
 

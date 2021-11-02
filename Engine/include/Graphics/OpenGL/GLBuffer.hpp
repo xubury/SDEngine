@@ -18,6 +18,8 @@ class SD_API GLBuffer : virtual public Buffer {
 
     void unbind() const override;
 
+    GLuint getId() const { return m_id; }
+
    protected:
     GLBuffer(GLenum type, GLenum io, const void *data, size_t size);
 
@@ -29,7 +31,6 @@ class SD_API GLBuffer : virtual public Buffer {
     GLenum m_type;
     GLenum m_io;
 
-    const void *m_data;
     size_t m_size;
 };
 

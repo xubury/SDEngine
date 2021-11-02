@@ -25,11 +25,14 @@ class SD_API GLVertexArray : public VertexArray {
     void updateBuffer(size_t index, const void *data, size_t size,
                       size_t offset = 0) override;
 
+    void setIndexBuffer(const Ref<IndexBuffer> &buffer) override;
+
+    Ref<IndexBuffer> getIndexBuffer() override;
    private:
     GLuint m_id;
     std::vector<Ref<VertexBuffer>> m_vertexBuffers;
+    Ref<IndexBuffer> m_indexBuffer;
     std::vector<VertexBufferLayout> m_layouts;
-
 };
 
 }  // namespace sd
