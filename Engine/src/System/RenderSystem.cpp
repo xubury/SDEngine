@@ -9,17 +9,6 @@
 
 namespace sd {
 
-inline Ref<Texture> createTexture(int width, int height, int samples,
-                                  TextureFormat format, TextureFormatType type,
-                                  bool linear) {
-    return Texture::create(
-        width, height, samples,
-        samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D,
-        format, type, TextureWrap::BORDER,
-        linear ? TextureFilter::LINEAR : TextureFilter::NEAREST,
-        linear ? TextureMipmapFilter::LINEAR : TextureMipmapFilter::NEAREST);
-}
-
 inline TextureFormat getTextureFormat(GeometryBufferType type) {
     switch (type) {
         case GeometryBufferType::G_ALBEDO:
@@ -53,64 +42,77 @@ inline TextureFormatType getTextureFormatType(GeometryBufferType type) {
             return TextureFormatType::UBYTE;
     }
 }
+inline Ref<Texture> createTexture(int width, int height, int samples,
+                                  TextureFormat format, TextureFormatType type,
+                                  bool linear) {
+    return Texture::create(
+        width, height, samples,
+        samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D,
+        format, type, TextureWrap::BORDER,
+        linear ? TextureFilter::LINEAR : TextureFilter::NEAREST,
+        linear ? TextureMipmapFilter::LINEAR : TextureMipmapFilter::NEAREST);
+}
 
 RenderSystem::RenderSystem(int width, int height, int samples)
-    : m_blurResult(nullptr),
-      m_gBuffer(Framebuffer::create()),
-      m_scene(nullptr),
-      m_camera(nullptr),
-      m_exposure(1.5f),
-      m_bloom(1.0f),
-      m_isBloom(true) {
-    if (samples > 1) {
-        Device::instance().enable(Operation::MULTISAMPLE);
-    }
-    m_mainShader = Asset::manager().load<Shader>("shaders/main.glsl");
-    m_emssiveShader = Asset::manager().load<Shader>("shaders/emissive.glsl");
-    m_lightShader = Asset::manager().load<Shader>("shaders/lighting.glsl");
-    m_blurShader = Asset::manager().load<Shader>("shaders/blur.glsl");
-    m_shadowShader = Asset::manager().load<Shader>("shaders/shadow.glsl");
-
-    for (int i = 0; i < 2; ++i) {
-        m_blurTarget[i].addTexture(
-            createTexture(width, height, 1, TextureFormat::RGBA,
-                          TextureFormatType::UBYTE, true));
-        m_lightTarget[i].addTexture(
-            createTexture(width, height, 1, TextureFormat::RGBA,
-                          TextureFormatType::FLOAT, true));
-        m_lightTarget[i].addTexture(
-            createTexture(width, height, 1, TextureFormat::DEPTH,
-                          TextureFormatType::FLOAT, true));
-        m_blurTarget[i].createFramebuffer();
-        m_lightTarget[i].createFramebuffer();
-    }
-
+    : m_blurResult(nullptr) {
+    initShaders();
     initQuad();
-    initGBuffer(width, height, samples);
     initSkybox();
+    initBloom(width, height);
+    initLighting(width, height);
+    initGBuffer(width, height, samples);
 }
 
-void RenderSystem::onInit() {
-    registerEvent(this, &RenderSystem::onSizeEvent);
-    registerEvent(this, &RenderSystem::onSceneEvent);
-}
+void RenderSystem::onInit() { registerEvent(this, &RenderSystem::onSizeEvent); }
 
 void RenderSystem::onDestroy() {
     unregisterEvent<SizeEvent>(this);
     unregisterEvent<SceneEvent>(this);
 }
 
+void RenderSystem::initShaders() {
+    m_mainShader = Asset::manager().load<Shader>("shaders/main.glsl");
+    m_emssiveShader = Asset::manager().load<Shader>("shaders/emissive.glsl");
+    m_lightShader = Asset::manager().load<Shader>("shaders/lighting.glsl");
+    m_blurShader = Asset::manager().load<Shader>("shaders/blur.glsl");
+    m_gBufferShader = Asset::manager().load<Shader>("shaders/gbuffer.glsl");
+}
+
+void RenderSystem::initLighting(int width, int height) {
+    for (int i = 0; i < 2; ++i) {
+        m_lightTarget[i].addTexture(Texture::create(
+            width, height, 1, TextureType::TEX_2D, TextureFormat::RGBA,
+            TextureFormatType::FLOAT, TextureWrap::BORDER,
+            TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
+        m_lightTarget[i].addTexture(Texture::create(
+            width, height, 1, TextureType::TEX_2D, TextureFormat::DEPTH,
+            TextureFormatType::FLOAT, TextureWrap::BORDER,
+            TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
+        m_lightTarget[i].createFramebuffer();
+    }
+}
+
+void RenderSystem::initBloom(int width, int height) {
+    for (int i = 0; i < 2; ++i) {
+        m_blurTarget[i].addTexture(Texture::create(
+            width, height, 1, TextureType::TEX_2D, TextureFormat::RGBA,
+            TextureFormatType::UBYTE, TextureWrap::BORDER,
+            TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
+        m_blurTarget[i].createFramebuffer();
+    }
+}
+
 void RenderSystem::initQuad() {
-    float quadVertices[] = {
+    const float quadVertices[] = {
         -1.0f, -1.0f, 0.f, 0.f,  0.f,   // bottom left
         1.0f,  -1.0f, 0.f, 1.0f, 0.f,   // bottom right
         1.0f,  1.0f,  0.f, 1.0f, 1.0f,  // top right
         -1.0f, 1.0f,  0.f, 0.f,  1.0f,  // top left
     };
-    uint32_t indices[] = {0, 1, 2, 2, 3, 0};
-    Ref<VertexBuffer> buffer = VertexBuffer::create(
-        quadVertices, 20, sizeof(float), BufferIOType::STATIC);
-    Ref<IndexBuffer> indexBuffer =
+    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
+    auto buffer = VertexBuffer::create(quadVertices, 20, sizeof(float),
+                                       BufferIOType::STATIC);
+    auto indexBuffer =
         IndexBuffer::create(indices, 6, sizeof(uint32_t), BufferIOType::STATIC);
     m_quad = VertexArray::create();
     VertexBufferLayout layout;
@@ -120,8 +122,40 @@ void RenderSystem::initQuad() {
     m_quad->setIndexBuffer(indexBuffer);
 }
 
+void RenderSystem::initSkybox() {
+    const float skyboxVertices[] = {
+        // front
+        -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
+        // back
+        -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0};
+
+    const uint32_t skyboxIndices[] = {// front
+                                      0, 1, 2, 2, 3, 0,
+                                      // right
+                                      1, 5, 6, 6, 2, 1,
+                                      // back
+                                      7, 6, 5, 5, 4, 7,
+                                      // left
+                                      4, 0, 3, 3, 7, 4,
+                                      // bottom
+                                      4, 5, 1, 1, 0, 4,
+                                      // top
+                                      3, 2, 6, 6, 7, 3};
+    m_skybox = VertexArray::create();
+    VertexBufferLayout layout;
+    layout.push(BufferDataType::FLOAT, 3);
+    auto vbo = VertexBuffer::create(skyboxVertices, 24, sizeof(float),
+                                    BufferIOType::STATIC);
+    auto ibo = IndexBuffer::create(skyboxIndices, 36, sizeof(uint32_t),
+                                   BufferIOType::STATIC);
+    m_skybox->addVertexBuffer(vbo, layout);
+    m_skybox->setIndexBuffer(ibo);
+
+    m_skyboxShader = Asset::manager().load<Shader>("shaders/skybox.glsl");
+}
+
 void RenderSystem::initGBuffer(int width, int height, int samples) {
-    m_gBufferShader = Asset::manager().load<Shader>("shaders/gbuffer.glsl");
+    m_gBuffer = Framebuffer::create();
     m_gBuffer->clear();
     m_gBufferTarget.clear();
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
@@ -143,86 +177,49 @@ void RenderSystem::initGBuffer(int width, int height, int samples) {
     m_gBufferTarget.createFramebuffer();
 }
 
-void RenderSystem::initSkybox() {
-    float skyboxVertices[] = {
-        // front
-        -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
-        // back
-        -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0};
-
-    uint32_t skyboxIndices[] = {// front
-                                0, 1, 2, 2, 3, 0,
-                                // right
-                                1, 5, 6, 6, 2, 1,
-                                // back
-                                7, 6, 5, 5, 4, 7,
-                                // left
-                                4, 0, 3, 3, 7, 4,
-                                // bottom
-                                4, 5, 1, 1, 0, 4,
-                                // top
-                                3, 2, 6, 6, 7, 3};
-    m_skybox = VertexArray::create();
-    VertexBufferLayout layout;
-    layout.push(BufferDataType::FLOAT, 3);
-    auto vbo = VertexBuffer::create(skyboxVertices, 24, sizeof(float),
-                                    BufferIOType::STATIC);
-    auto ibo = IndexBuffer::create(skyboxIndices, 36, sizeof(uint32_t),
-                                   BufferIOType::STATIC);
-    m_skybox->addVertexBuffer(vbo, layout);
-    m_skybox->setIndexBuffer(ibo);
-
-    m_skyboxShader = Asset::manager().load<Shader>("shaders/skybox.glsl");
-}
-
 void RenderSystem::onSizeEvent(const SizeEvent &event) {
-    m_camera->resize(event.width, event.height);
     for (int i = 0; i < 2; ++i) {
         m_lightTarget[i].resize(event.width, event.height);
         m_blurTarget[i].resize(event.width, event.height);
     }
-    m_gBufferTarget.resize(event.width, event.height);
     m_gBuffer->resize(event.width, event.height);
-}
-
-void RenderSystem::onSceneEvent(const SceneEvent &event) {
-    m_scene = event.scene;
+    m_gBufferTarget.resize(event.width, event.height);
 }
 
 void RenderSystem::onTick(float) {}
 
 void RenderSystem::onRender() {
-    SD_CORE_ASSERT(m_scene, "No active scene.");
-    SD_CORE_ASSERT(m_camera, "No camera is set!");
+    SD_CORE_ASSERT(Application::getRenderEngine().getScene(),
+                   "No active scene.");
+    SD_CORE_ASSERT(Application::getRenderEngine().getCamera(),
+                   "No camera is set!");
 
     renderGBuffer();
-    renderShadow();
     renderLight();
     renderEmissive();
     renderSkybox();
     renderText();
-    if (m_isBloom) {
+    if (Application::getRenderEngine().getBloom()) {
         renderBlur();
     }
     renderMain();
 }
 
 void RenderSystem::renderSkybox() {
-    glm::vec3 pos = m_camera->getWorldPosition();
-    m_camera->setWorldPosition(glm::vec3(0));
+    glm::vec3 pos =
+        Application::getRenderEngine().getCamera()->getWorldPosition();
+    m_skyboxShader->setMat4("u_model", glm::translate(glm::mat4(1.0f), pos));
 
     m_skyboxShader->bind();
     glDepthFunc(GL_LEQUAL);
-    Device::instance().disable(Operation::CULL_FACE);
     Device::instance().setCullFace(Face::FRONT);
 
     Renderer::setRenderTarget(getLightResult());
-    Renderer::beginScene(*m_camera);
-    Renderer::submit(*m_skybox, MeshTopology::TRIANGLES, 36, 0);
+    Renderer::beginScene(*Application::getRenderEngine().getCamera());
+    Renderer::submit(*m_skybox, MeshTopology::TRIANGLES,
+                     m_skybox->getIndexBuffer()->getCount(), 0);
     Renderer::endScene();
     Device::instance().setCullFace(Face::BACK);
-    Device::instance().enable(Operation::CULL_FACE);
-    m_camera->setWorldPosition(pos);
     glDepthFunc(GL_LESS);
 }
 
@@ -230,15 +227,18 @@ void RenderSystem::renderMain() {
     Renderer::setRenderTarget(Application::getRenderEngine().getRenderTarget());
     Device::instance().clear();
 
-    m_mainShader->bind();
-    m_mainShader->setBool("u_bloom", m_isBloom);
-    if (m_isBloom) {
-        m_mainShader->setFloat("u_bloomFactor", m_bloom);
+    m_mainShader->setBool("u_bloom", Application::getRenderEngine().getBloom());
+    if (Application::getRenderEngine().getBloom()) {
+        m_mainShader->setFloat("u_bloomFactor",
+                               Application::getRenderEngine().getBloomFactor());
         m_mainShader->setTexture("u_blur", m_blurResult);
     }
     m_mainShader->setTexture("u_lighting", getLightResult().getTexture());
-    m_mainShader->setFloat("u_exposure", m_exposure);
-    Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
+    m_mainShader->setFloat("u_exposure",
+                           Application::getRenderEngine().getExposure());
+    m_mainShader->bind();
+    Renderer::submit(*m_quad, MeshTopology::TRIANGLES,
+                     m_quad->getIndexBuffer()->getCount(), 0);
 
     getLightResult().getFramebuffer()->copyTo(
         Application::getRenderEngine().getRenderTarget().getFramebuffer(), 0,
@@ -258,15 +258,18 @@ void RenderSystem::renderBlur() {
         m_blurShader->setTexture("u_image",
                                  i == 0 ? getLightResult().getTexture()
                                         : m_blurTarget[inputId].getTexture());
-        Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
+        Renderer::submit(*m_quad, MeshTopology::TRIANGLES,
+                         m_quad->getIndexBuffer()->getCount(), 0);
         horizontal = !horizontal;
     }
 }
 
 void RenderSystem::renderText() {
+    auto scene = Application::getRenderEngine().getScene();
+    auto textView = scene->view<TransformComponent, TextComponent>();
+
     Renderer::setRenderTarget(getLightResult());
-    Renderer::beginScene(*m_camera);
-    auto textView = m_scene->view<TransformComponent, TextComponent>();
+    Renderer::beginScene(*Application::getRenderEngine().getCamera());
     textView.each([](const TransformComponent &transformComp,
                      const TextComponent &textComp) {
         if (textComp.fontPath.size()) {
@@ -285,53 +288,27 @@ void RenderSystem::renderEmissive() {
     m_emssiveShader->bind();
     m_emssiveShader->setTexture("u_lighting", getLightResult().getTexture());
     m_emssiveShader->setTexture(
-        "u_gEmissive",
-        getGBuffer()->getTexture(GeometryBufferType::G_EMISSIVE));
+        "u_gEmissive", m_gBuffer->getTexture(GeometryBufferType::G_EMISSIVE));
     Device::instance().setDepthMask(false);
-    Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
+    Renderer::submit(*m_quad, MeshTopology::TRIANGLES,
+                     m_quad->getIndexBuffer()->getCount(), 0);
     Device::instance().setDepthMask(true);
 }
 
-void RenderSystem::renderShadow() {
-    auto lightView = m_scene->view<TransformComponent, LightComponent>();
-    auto modelView = m_scene->view<TransformComponent, ModelComponent>();
-    m_shadowShader->bind();
-
-    Device::instance().setCullFace(Face::FRONT);
-    lightView.each([this, &modelView](const TransformComponent &transformComp,
-                                      LightComponent &lightComp) {
-        Light &light = lightComp.light;
-        if (!light.isCastShadow()) return;
-
-        Renderer::setRenderTarget(light.getRenderTarget());
-        Device::instance().clear(BufferBitMask::DEPTH_BUFFER_BIT);
-        light.computeLightSpaceMatrix(transformComp.transform, m_camera);
-        m_shadowShader->setMat4("u_projectionView", light.getProjectionView());
-
-        modelView.each([this](const TransformComponent &transformComp,
-                              const ModelComponent &modelComp) {
-            m_shadowShader->setMat4(
-                "u_model", transformComp.transform.getWorldTransform());
-            for (const auto &mesh : modelComp.model->getMeshes()) {
-                Renderer::drawMesh(mesh);
-            }
-        });
-    });
-    Device::instance().setCullFace(Face::BACK);
-}
-
 void RenderSystem::renderLight() {
+    auto scene = Application::getRenderEngine().getScene();
+    auto lightView = scene->view<TransformComponent, LightComponent>();
+
     Device::instance().setDepthMask(false);
     Renderer::setShader(*m_lightShader);
-    Framebuffer *gBuffer = getGBuffer();
     m_lightShader->setTexture(
-        "u_gPosition", gBuffer->getTexture(GeometryBufferType::G_POSITION));
+        "u_gPosition", m_gBuffer->getTexture(GeometryBufferType::G_POSITION));
     m_lightShader->setTexture(
-        "u_gNormal", gBuffer->getTexture(GeometryBufferType::G_NORMAL));
+        "u_gNormal", m_gBuffer->getTexture(GeometryBufferType::G_NORMAL));
     m_lightShader->setTexture(
-        "u_gAlbedo", gBuffer->getTexture(GeometryBufferType::G_ALBEDO));
+        "u_gAlbedo", m_gBuffer->getTexture(GeometryBufferType::G_ALBEDO));
     m_lightShader->setTexture(
-        "u_gAmbient", gBuffer->getTexture(GeometryBufferType::G_AMBIENT));
+        "u_gAmbient", m_gBuffer->getTexture(GeometryBufferType::G_AMBIENT));
     const uint8_t inputIndex = 0;
     const uint8_t outputIndex = 1;
 
@@ -339,7 +316,7 @@ void RenderSystem::renderLight() {
     const float color[] = {0, 0, 0, 1.0};
     getLightResult().getFramebuffer()->clearAttachment(0, color);
 
-    auto lightView = m_scene->view<TransformComponent, LightComponent>();
+    m_lightShader->bind();
     lightView.each([this](const TransformComponent &transformComp,
                           const LightComponent &lightComp) {
         Renderer::setRenderTarget(m_lightTarget[outputIndex]);
@@ -365,29 +342,32 @@ void RenderSystem::renderLight() {
         m_lightShader->setTexture("u_light.shadowMap", light.getShadowMap());
         m_lightShader->setMat4("u_light.projectionView",
                                light.getProjectionView());
-        Renderer::submit(*m_quad, MeshTopology::TRIANGLES, 6, 0);
+        Renderer::submit(*m_quad, MeshTopology::TRIANGLES,
+                         m_quad->getIndexBuffer()->getCount(), 0);
         std::swap(m_lightTarget[outputIndex], m_lightTarget[inputIndex]);
     });
     Device::instance().setDepthMask(true);
 
-    getGBuffer()->copyTo(getLightResult().getFramebuffer(), 0,
-                         BufferBitMask::DEPTH_BUFFER_BIT,
-                         TextureFilter::NEAREST);
+    m_gBuffer->copyTo(getLightResult().getFramebuffer(), 0,
+                      BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
 }
 
 void RenderSystem::renderGBuffer() {
+    auto scene = Application::getRenderEngine().getScene();
+    auto terrainView = scene->view<TransformComponent, TerrainComponent>();
+    auto modelView = scene->view<TransformComponent, ModelComponent>();
+
     Device::instance().disable(Operation::BLEND);
     Renderer::setRenderTarget(m_gBufferTarget);
     Device::instance().setClearColor(0.f, 0.f, 0.f, 1.0);
     Device::instance().clear();
 
-    Renderer::beginScene(*m_camera);
-    Renderer::setShader(*m_gBufferShader);
+    Renderer::beginScene(*Application::getRenderEngine().getCamera());
     m_gBufferTarget.getFramebuffer()->clearAttachment(
         GeometryBufferType::G_ENTITY_ID, &Entity::INVALID_ID);
+    Renderer::setShader(*m_gBufferShader);
 
     m_gBufferShader->bind();
-    auto terrainView = m_scene->view<TransformComponent, TerrainComponent>();
     terrainView.each([this](const entt::entity &entity,
                             const TransformComponent &transformComp,
                             const TerrainComponent &terrainComp) {
@@ -407,7 +387,6 @@ void RenderSystem::renderGBuffer() {
         Renderer::drawMesh(terrain.getMesh());
     });
 
-    auto modelView = m_scene->view<TransformComponent, ModelComponent>();
     modelView.each([this](const entt::entity &entity,
                           const TransformComponent &transformComp,
                           const ModelComponent &modelComp) {
@@ -436,7 +415,7 @@ void RenderSystem::renderGBuffer() {
 
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
         m_gBufferTarget.getFramebuffer()->copyTo(
-            getGBuffer(), i,
+            m_gBuffer.get(), i,
             BufferBitMask::COLOR_BUFFER_BIT | BufferBitMask::DEPTH_BUFFER_BIT,
             TextureFilter::NEAREST);
     }
@@ -444,21 +423,5 @@ void RenderSystem::renderGBuffer() {
 
     Device::instance().enable(Operation::BLEND);
 }
-
-void RenderSystem::setCamera(Camera *camera) { m_camera = camera; }
-
-Camera *RenderSystem::getCamera() { return m_camera; }
-
-void RenderSystem::setExposure(float exposure) { m_exposure = exposure; }
-
-float RenderSystem::getExposure() const { return m_exposure; }
-
-void RenderSystem::setBloom(bool isBloom) { m_isBloom = isBloom; }
-
-bool RenderSystem::getBloom() const { return m_isBloom; }
-
-void RenderSystem::setBloomFactor(float bloom) { m_bloom = bloom; }
-
-float RenderSystem::getBloomFactor() const { return m_bloom; }
 
 }  // namespace sd

@@ -1,18 +1,36 @@
 #include "Core/RenderEngine.hpp"
 #include "Graphics/Renderer.hpp"
 #include "System/ProfileSystem.hpp"
+#include "System/ShadowSystem.hpp"
 
 namespace sd {
 
 RenderEngine::RenderEngine(int width, int height, int samples)
     : Layer("Render Engine"),
+      m_width(width),
+      m_height(height),
+      m_samples(samples),
       m_target(createRef<RenderTarget>(0, 0, width, height)),
       m_renderSystem(nullptr),
-      m_terrainSystem(nullptr) {
-    m_renderSystem = addSystem<RenderSystem>(width, height, samples);
-    addSystem<ProfileSystem>(width, height);
+      m_terrainSystem(nullptr),
+      m_scene(nullptr),
+      m_camera(nullptr),
+      m_exposure(1.5f),
+      m_bloom(1.0f),
+      m_isBloom(true) {
+}
+
+void RenderEngine::onAttach() {
+    if (m_samples > 1) {
+        Device::instance().enable(Operation::MULTISAMPLE);
+    }
+    addSystem<ShadowSystem>();
+    m_renderSystem = addSystem<RenderSystem>(m_width, m_height, m_samples);
+    addSystem<ProfileSystem>(m_width, m_height);
     m_terrainSystem = addSystem<TerrainSystem>();
 }
+
+void RenderEngine::onDetech() {}
 
 void RenderEngine::onTick(float dt) {
     for (auto &system : getSystems()) {
@@ -50,10 +68,11 @@ const RenderTarget &RenderEngine::getRenderTarget() const { return *m_target; }
 RenderTarget &RenderEngine::getRenderTarget() { return *m_target; }
 
 void RenderEngine::resize(int width, int height) {
+    if (m_camera) {
+        m_camera->resize(width, height);
+    }
     getRenderTarget().resize(width, height);
     dispatchEvent(SizeEvent(width, height));
 }
-
-void RenderEngine::setScene(Scene *scene) { dispatchEvent(SceneEvent(scene)); }
 
 }  // namespace sd

@@ -65,7 +65,7 @@ enum class BufferIOType { STATIC, DYNAMIC };
 
 enum class API { None, OpenGL };
 
-enum class BufferBitMask : uint32_t {
+enum class BufferBitMask {
     COLOR_BUFFER_BIT = 1,
     DEPTH_BUFFER_BIT = 1 << 1,
     STENCIL_BUFFER_BIT = 1 << 2

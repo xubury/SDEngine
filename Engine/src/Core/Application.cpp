@@ -53,12 +53,24 @@ Application::Application() {
     Device::init();
     Renderer::init();
 
-    m_imguiLayer = pushOverlay<ImGuiLayer>();
-    m_inputEngine = pushOverlay<InputEngine>();
-    m_renderEngine = pushLayer<RenderEngine>(width, height, samples);
+    m_imguiLayer = createRef<ImGuiLayer>();
+    m_inputEngine = createRef<InputEngine>();
+    m_renderEngine = createRef<RenderEngine>(width, height, samples);
+
+    pushOverlay(m_imguiLayer);
+    pushOverlay(m_inputEngine);
+    pushLayer(m_renderEngine);
 }
 
 Application::~Application() { SDL_Quit(); }
+
+void Application::pushLayer(const Ref<Layer> &layer) {
+    m_layers.pushLayer(layer);
+}
+
+void Application::pushOverlay(const Ref<Layer> &layer) {
+    m_layers.pushOverlay(layer);
+}
 
 void Application::popLayer(const Ref<Layer> &layer) {
     m_layers.popLayer(layer);

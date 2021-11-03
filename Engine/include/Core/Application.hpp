@@ -21,19 +21,9 @@ class SD_API Application {
     Application &operator=(const Application &application) = delete;
 
    protected:
-    template <typename LAYER, typename... ARGS>
-    Ref<LAYER> pushLayer(ARGS &&...args) {
-        auto layer =
-            m_layers.pushLayer(createRef<LAYER>(std::forward<ARGS>(args)...));
-        return std::static_pointer_cast<LAYER>(layer);
-    }
+   void pushLayer(const Ref<Layer> &layer);
 
-    template <typename LAYER, typename... ARGS>
-    Ref<LAYER> pushOverlay(ARGS &&...args) {
-        auto layer =
-            m_layers.pushOverlay(createRef<LAYER>(std::forward<ARGS>(args)...));
-        return std::static_pointer_cast<LAYER>(layer);
-    }
+    void pushOverlay(const Ref<Layer> &layer);
 
     void popLayer(const Ref<Layer> &layer);
 

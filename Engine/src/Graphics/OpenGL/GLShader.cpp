@@ -105,36 +105,39 @@ void GLShader::checkCompileErrors(uint32_t shader, const std::string& type) {
 }
 
 void GLShader::setBool(const std::string& name, bool value) {
-    glUniform1i(glGetUniformLocation(m_id, name.c_str()), value);
+    glProgramUniform1i(m_id, glGetUniformLocation(m_id, name.c_str()), value);
 }
 
 void GLShader::setInt(const std::string& name, int value) {
-    glUniform1i(glGetUniformLocation(m_id, name.c_str()), value);
+    glProgramUniform1i(m_id, glGetUniformLocation(m_id, name.c_str()), value);
 }
 
 void GLShader::setUint(const std::string& name, uint32_t value) {
-    glUniform1ui(glGetUniformLocation(m_id, name.c_str()), value);
+    glProgramUniform1ui(m_id, glGetUniformLocation(m_id, name.c_str()), value);
 }
 
 void GLShader::setFloat(const std::string& name, float value) {
-    glUniform1f(glGetUniformLocation(m_id, name.c_str()), value);
+    glProgramUniform1f(m_id, glGetUniformLocation(m_id, name.c_str()), value);
 }
 
 void GLShader::setVec2(const std::string& name, const glm::vec2& value) {
-    glUniform2fv(glGetUniformLocation(m_id, name.c_str()), 1, &value[0]);
+    glProgramUniform2fv(m_id, glGetUniformLocation(m_id, name.c_str()), 1,
+                        &value[0]);
 }
 
 void GLShader::setVec3(const std::string& name, const glm::vec3& value) {
-    glUniform3fv(glGetUniformLocation(m_id, name.c_str()), 1, &value[0]);
+    glProgramUniform3fv(m_id, glGetUniformLocation(m_id, name.c_str()), 1,
+                        &value[0]);
 }
 
 void GLShader::setVec4(const std::string& name, const glm::vec4& value) {
-    glUniform4fv(glGetUniformLocation(m_id, name.c_str()), 1, &value[0]);
+    glProgramUniform4fv(m_id, glGetUniformLocation(m_id, name.c_str()), 1,
+                        &value[0]);
 }
 
 void GLShader::setMat4(const std::string& name, const glm::mat4& value) {
-    glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE,
-                       glm::value_ptr(value));
+    glProgramUniformMatrix4fv(m_id, glGetUniformLocation(m_id, name.c_str()), 1,
+                              GL_FALSE, glm::value_ptr(value));
 }
 
 void GLShader::setTexture(const std::string& name, const Texture* texture) {

@@ -10,15 +10,6 @@
 
 namespace sd {
 
-enum GeometryBufferType {
-    G_POSITION = 0,
-    G_NORMAL,
-    G_ALBEDO,
-    G_AMBIENT,
-    G_EMISSIVE,
-    G_ENTITY_ID,
-    GBUFFER_COUNT
-};
 
 class SD_API RenderSystem : public System {
    public:
@@ -35,26 +26,19 @@ class SD_API RenderSystem : public System {
     void onSizeEvent(const SizeEvent &event);
     void onSceneEvent(const SceneEvent &event);
 
-    Framebuffer *getGBuffer() const { return m_gBuffer.get(); }
-
-    void setCamera(Camera *camera);
-    Camera *getCamera();
-
-    float getExposure() const;
-    void setExposure(float exposure);
-
-    bool getBloom() const;
-    void setBloom(bool isBloom);
-
-    float getBloomFactor() const;
-    void setBloomFactor(float Bloom);
-
     const RenderTarget &getLightResult() const { return m_lightTarget[0]; };
 
+    Framebuffer &getGBuffer() { return *m_gBuffer; }
+
+    RenderTarget &getGBufferTarget() { return m_gBufferTarget; }
+
    private:
+    void initShaders();
+    void initLighting(int width, int height);
+    void initBloom(int width, int height);
     void initQuad();
-    void initGBuffer(int width, int height, int samples);
     void initSkybox();
+    void initGBuffer(int width, int height, int samples);
 
     void renderGBuffer();
     void renderShadow();
@@ -80,24 +64,14 @@ class SD_API RenderSystem : public System {
     Ref<Shader> m_lightShader;
     RenderTarget m_lightTarget[2];
 
-    Ref<Shader> m_gBufferShader;
     RenderTarget m_gBufferTarget;
     Ref<Framebuffer> m_gBuffer;
-
-    Ref<Shader> m_shadowShader;
+    Ref<Shader> m_gBufferShader;
 
     Ref<VertexArray> m_quad;
 
     Ref<Shader> m_skyboxShader;
     Ref<VertexArray> m_skybox;
-
-    Scene *m_scene;
-    Camera *m_camera;
-
-    float m_exposure;
-
-    float m_bloom;
-    bool m_isBloom;
 };
 
 }  // namespace sd

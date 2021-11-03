@@ -85,8 +85,8 @@ void EditorLayer::onTick(float dt) {
         sd::Application::getRenderEngine()
             .getRenderSystem()
             ->getGBuffer()
-            ->readPixels(sd::GeometryBufferType::G_ENTITY_ID, 0, mouseX,
-                         viewportSize.y - mouseY, 0, 1, 1, 1, sizeof(id), &id);
+            .readPixels(sd::GeometryBufferType::G_ENTITY_ID, 0, mouseX,
+                        viewportSize.y - mouseY, 0, 1, 1, 1, sizeof(id), &id);
         if (id != sd::Entity::INVALID_ID) {
             m_scenePanel.setSelectedEntity(id);
         }
@@ -190,26 +190,18 @@ void EditorLayer::onImGui() {
 
     ImGui::Begin("Render Settings");
     {
-        float exposure =
-            sd::Application::getRenderEngine().getRenderSystem()->getExposure();
+        float exposure = sd::Application::getRenderEngine().getExposure();
         if (ImGui::SliderFloat("Exposure", &exposure, 0, 10)) {
-            sd::Application::getRenderEngine().getRenderSystem()->setExposure(
-                exposure);
+            sd::Application::getRenderEngine().setExposure(exposure);
         }
 
-        bool isBloom =
-            sd::Application::getRenderEngine().getRenderSystem()->getBloom();
+        bool isBloom = sd::Application::getRenderEngine().getBloom();
         if (ImGui::Checkbox("Bloom", &isBloom)) {
-            sd::Application::getRenderEngine().getRenderSystem()->setBloom(
-                isBloom);
+            sd::Application::getRenderEngine().setBloom(isBloom);
         }
-        float bloom = sd::Application::getRenderEngine()
-                          .getRenderSystem()
-                          ->getBloomFactor();
+        float bloom = sd::Application::getRenderEngine().getBloomFactor();
         if (ImGui::SliderFloat("Bloom Factor", &bloom, 0.1, 1)) {
-            sd::Application::getRenderEngine()
-                .getRenderSystem()
-                ->setBloomFactor(bloom);
+            sd::Application::getRenderEngine().setBloomFactor(bloom);
         }
     }
     ImGui::End();
@@ -222,7 +214,7 @@ void EditorLayer::onImGui() {
             ImGui::DrawTexture(*sd::Application::getRenderEngine()
                                     .getRenderSystem()
                                     ->getGBuffer()
-                                    ->getTexture(i),
+                                    .getTexture(i),
                                wsize);
         }
     }
@@ -293,8 +285,7 @@ void EditorLayer::hide() {
 void EditorLayer::show() {
     m_hide = false;
     setBlockEvent(true);
-    sd::Application::getRenderEngine().getRenderSystem()->setCamera(
-        &m_editorCamera);
+    sd::Application::getRenderEngine().setCamera(&m_editorCamera);
     sd::Application::getRenderEngine().setRenderTarget(m_target);
     sd::Application::getRenderEngine().resize(m_width, m_height);
 }

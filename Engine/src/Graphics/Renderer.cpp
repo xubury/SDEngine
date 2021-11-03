@@ -126,7 +126,6 @@ void Renderer::setRenderTarget(const RenderTarget& target) {
 }
 
 void Renderer::setShader(Shader& shader) {
-    shader.bind();
     shader.setUniformBuffer("Camera", *s_data.cameraUBO);
 }
 

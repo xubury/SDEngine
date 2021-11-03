@@ -7,9 +7,11 @@ layout (location = 0) in vec3 a_pos;
 
 out vec3 out_texCoord;
 
+uniform mat4 u_model;
+
 void main() {
     out_texCoord = a_pos;
-    vec4 pos = u_projectionView * vec4(a_pos, 1.0f);
+    vec4 pos = u_projectionView * u_model * vec4(a_pos, 1.0f);
     gl_Position = pos.xyww;
 }
 
