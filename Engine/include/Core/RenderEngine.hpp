@@ -15,6 +15,7 @@ enum GeometryBufferType {
     G_AMBIENT,
     G_EMISSIVE,
     G_ENTITY_ID,
+    G_DEPTH,
     GBUFFER_COUNT
 };
 

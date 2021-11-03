@@ -19,6 +19,8 @@ inline TextureFormat getTextureFormat(GeometryBufferType type) {
             return TextureFormat::RGB;
         case GeometryBufferType::G_ENTITY_ID:
             return TextureFormat::RED;
+        case GeometryBufferType::G_DEPTH:
+            return TextureFormat::DEPTH;
         default:
             SD_CORE_WARN("Unknown GBuffer!");
             return TextureFormat::RGBA;
@@ -29,6 +31,7 @@ inline TextureFormatType getTextureFormatType(GeometryBufferType type) {
     switch (type) {
         case GeometryBufferType::G_POSITION:
         case GeometryBufferType::G_NORMAL:
+        case GeometryBufferType::G_DEPTH:
             return TextureFormatType::FLOAT;
         case GeometryBufferType::G_ALBEDO:
         case GeometryBufferType::G_AMBIENT:
@@ -40,16 +43,6 @@ inline TextureFormatType getTextureFormatType(GeometryBufferType type) {
             SD_CORE_WARN("Unknown GBuffer!");
             return TextureFormatType::UBYTE;
     }
-}
-inline Ref<Texture> createTexture(int width, int height, int samples,
-                                  TextureFormat format, TextureFormatType type,
-                                  bool linear) {
-    return Texture::create(
-        width, height, samples,
-        samples > 1 ? TextureType::TEX_2D_MULTISAMPLE : TextureType::TEX_2D,
-        format, type, TextureWrap::BORDER,
-        linear ? TextureFilter::LINEAR : TextureFilter::NEAREST,
-        linear ? TextureMipmapFilter::LINEAR : TextureMipmapFilter::NEAREST);
 }
 
 RenderSystem::RenderSystem(int width, int height, int samples)
@@ -95,7 +88,7 @@ void RenderSystem::initBloom(int width, int height) {
     for (int i = 0; i < 2; ++i) {
         m_blurTarget[i].addTexture(Texture::create(
             width, height, 1, TextureType::TEX_2D, TextureFormat::RGBA,
-            TextureFormatType::UBYTE, TextureWrap::BORDER,
+            TextureFormatType::FLOAT, TextureWrap::BORDER,
             TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
         m_blurTarget[i].createFramebuffer();
     }
@@ -160,19 +153,15 @@ void RenderSystem::initGBuffer(int width, int height, int samples) {
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
         TextureFormat format = getTextureFormat(GeometryBufferType(i));
         TextureFormatType type = getTextureFormatType(GeometryBufferType(i));
-        bool linear = i != GeometryBufferType::G_ENTITY_ID;
-        m_gBufferTarget.addTexture(
-            createTexture(width, height, samples, format, type, linear));
+        m_gBufferTarget.addTexture(Texture::create(
+            width, height, samples, TextureType::TEX_2D_MULTISAMPLE, format,
+            type, TextureWrap::EDGE, TextureFilter::NEAREST,
+            TextureMipmapFilter::NEAREST));
         m_gBuffer->attachTexture(
-            createTexture(width, height, 1, format, type, linear));
+            Texture::create(width, height, 1, TextureType::TEX_2D, format, type,
+                            TextureWrap::EDGE, TextureFilter::NEAREST,
+                            TextureMipmapFilter::NEAREST));
     }
-    // depth
-    m_gBuffer->attachTexture(createTexture(width, height, 1,
-                                           TextureFormat::DEPTH,
-                                           TextureFormatType::FLOAT, true));
-    m_gBufferTarget.addTexture(createTexture(width, height, samples,
-                                             TextureFormat::DEPTH,
-                                             TextureFormatType::FLOAT, true));
     m_gBufferTarget.createFramebuffer();
 }
 
@@ -428,7 +417,7 @@ void RenderSystem::renderGBuffer() {
     for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
         Device::instance().blitFramebuffer(
             m_gBufferTarget.getFramebuffer(), m_gBuffer.get(), i,
-            BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::LINEAR);
+            BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
     }
     Renderer::endScene();
     Device::instance().enable(Operation::BLEND);
