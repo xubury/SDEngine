@@ -194,6 +194,7 @@ void RenderSystem::onRender() {
     SD_CORE_ASSERT(Application::getRenderEngine().getCamera(),
                    "No camera is set!");
 
+    clear();
     renderGBuffer();
     renderLight();
     renderEmissive();
@@ -203,6 +204,23 @@ void RenderSystem::onRender() {
         renderBlur();
     }
     renderMain();
+}
+
+void RenderSystem::clear() {
+    glUseProgram(0);
+    // clear the last lighting pass' result
+    RGBA color(0, 0, 0, 1);
+    getLightResult().getFramebuffer()->clearAttachment(0, color.data());
+
+    Device::instance().setFramebuffer(m_gBufferTarget.getFramebuffer());
+    Device::instance().clear(BufferBitMask::COLOR_BUFFER_BIT |
+                             BufferBitMask::DEPTH_BUFFER_BIT);
+    m_gBufferTarget.getFramebuffer()->clearAttachment(
+        GeometryBufferType::G_ENTITY_ID, &Entity::INVALID_ID);
+
+    Device::instance().setFramebuffer(
+        Application::getRenderEngine().getRenderTarget().getFramebuffer());
+    Device::instance().clear();
 }
 
 void RenderSystem::renderSkybox() {
@@ -225,7 +243,6 @@ void RenderSystem::renderSkybox() {
 
 void RenderSystem::renderMain() {
     Renderer::setRenderTarget(Application::getRenderEngine().getRenderTarget());
-    Device::instance().clear();
 
     m_mainShader->setBool("u_bloom", Application::getRenderEngine().getBloom());
     if (Application::getRenderEngine().getBloom()) {
@@ -299,6 +316,7 @@ void RenderSystem::renderLight() {
     auto scene = Application::getRenderEngine().getScene();
     auto lightView = scene->view<TransformComponent, LightComponent>();
 
+    m_lightShader->bind();
     Device::instance().setDepthMask(false);
     Renderer::setShader(*m_lightShader);
     m_lightShader->setTexture(
@@ -312,11 +330,6 @@ void RenderSystem::renderLight() {
     const uint8_t inputIndex = 0;
     const uint8_t outputIndex = 1;
 
-    // clear the last lighting pass' result
-    const float color[] = {0, 0, 0, 1.0};
-    getLightResult().getFramebuffer()->clearAttachment(0, color);
-
-    m_lightShader->bind();
     lightView.each([this](const TransformComponent &transformComp,
                           const LightComponent &lightComp) {
         Renderer::setRenderTarget(m_lightTarget[outputIndex]);
@@ -357,17 +370,12 @@ void RenderSystem::renderGBuffer() {
     auto terrainView = scene->view<TransformComponent, TerrainComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
-    Device::instance().disable(Operation::BLEND);
     Renderer::setRenderTarget(m_gBufferTarget);
-    Device::instance().setClearColor(0.f, 0.f, 0.f, 1.0);
-    Device::instance().clear();
-
-    Renderer::beginScene(*Application::getRenderEngine().getCamera());
-    m_gBufferTarget.getFramebuffer()->clearAttachment(
-        GeometryBufferType::G_ENTITY_ID, &Entity::INVALID_ID);
-    Renderer::setShader(*m_gBufferShader);
 
     m_gBufferShader->bind();
+    Device::instance().disable(Operation::BLEND);
+    Renderer::beginScene(*Application::getRenderEngine().getCamera());
+    Renderer::setShader(*m_gBufferShader);
     terrainView.each([this](const entt::entity &entity,
                             const TransformComponent &transformComp,
                             const TerrainComponent &terrainComp) {
@@ -420,7 +428,6 @@ void RenderSystem::renderGBuffer() {
             TextureFilter::NEAREST);
     }
     Renderer::endScene();
-
     Device::instance().enable(Operation::BLEND);
 }
 

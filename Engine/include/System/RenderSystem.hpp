@@ -40,6 +40,8 @@ class SD_API RenderSystem : public System {
     void initSkybox();
     void initGBuffer(int width, int height, int samples);
 
+    void clear();
+
     void renderGBuffer();
     void renderShadow();
     void renderLight();

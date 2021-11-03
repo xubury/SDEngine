@@ -25,7 +25,7 @@ void ShadowSystem::onRender() {
         if (!light.isCastShadow()) return;
 
         Renderer::setRenderTarget(light.getRenderTarget());
-        Device::instance().clear(BufferBitMask::DEPTH_BUFFER_BIT);
+        light.getRenderTarget().getFramebuffer()->clearDepth();
         light.computeLightSpaceMatrix(
             transformComp.transform,
             Application::getRenderEngine().getCamera());

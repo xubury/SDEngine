@@ -30,7 +30,11 @@ class GLFramebuffer : public Framebuffer {
     void copyTo(Framebuffer *other, uint32_t index, BufferBitMask mask,
                 TextureFilter filter) const override;
 
-    void clearAttachment(uint32_t attachmentId, const void *value) override;
+    void clearDepth(const float depth) override;
+
+    void clearAttachment(uint32_t attachmentId, const int *value) override;
+    void clearAttachment(uint32_t attachmentId, const uint32_t *value) override;
+    void clearAttachment(uint32_t attachmentId, const float *value) override;
 
     Texture *getTexture(uint32_t attachmentId) override;
 

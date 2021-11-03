@@ -84,6 +84,22 @@ enum class Operation {
     CULL_FACE
 };
 
+struct RGBA {
+   public:
+    RGBA(float r, float g, float b, float a) : m_color{r, g, b, a} {}
+
+    float red() { return m_color[0]; }
+    float green() { return m_color[1]; }
+    float blue() { return m_color[2]; }
+    float alpha() { return m_color[3]; }
+
+    float *data() { return m_color.data(); }
+    const float *data() const { return m_color.data(); }
+
+   private:
+    std::array<float, 4> m_color;
+};
+
 class SD_API Graphics {
    public:
     static void setAPI(API api);

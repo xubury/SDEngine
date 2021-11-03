@@ -28,7 +28,12 @@ class SD_API Framebuffer {
                             int z, int w, int h, int d, size_t size,
                             void *data) const = 0;
 
-    virtual void clearAttachment(uint32_t attachmentId, const void *value) = 0;
+    virtual void clearDepth(const float value = 1) = 0;
+
+    virtual void clearAttachment(uint32_t attachmentId, const int *value) = 0;
+    virtual void clearAttachment(uint32_t attachmentId,
+                                 const uint32_t *value) = 0;
+    virtual void clearAttachment(uint32_t attachmentId, const float *value) = 0;
 
     virtual Texture *getTexture(uint32_t attachmentId = 0) = 0;
 

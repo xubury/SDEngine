@@ -75,10 +75,21 @@ void GLFramebuffer::readPixels(uint32_t attachmentId, int level, int x, int y,
     glTexture->readPixels(level, x, y, z, w, h, d, size, data);
 }
 
-void GLFramebuffer::clearAttachment(uint32_t attachmentId, const void *value) {
-    GLTexture *texture = m_attachments[attachmentId].second.get();
-    glClearTexImage(texture->getId(), 0, texture->getGLFormat(),
-                    texture->getGLFormatType(), value);
+void GLFramebuffer::clearDepth(const float depth) {
+    glClearNamedFramebufferfv(m_id, GL_DEPTH, 0, &depth);
+}
+
+void GLFramebuffer::clearAttachment(uint32_t attachmentId, const int *value) {
+    glClearNamedFramebufferiv(m_id, GL_COLOR, attachmentId, value);
+}
+
+void GLFramebuffer::clearAttachment(uint32_t attachmentId,
+                                    const uint32_t *value) {
+    glClearNamedFramebufferuiv(m_id, GL_COLOR, attachmentId, value);
+}
+
+void GLFramebuffer::clearAttachment(uint32_t attachmentId, const float *value) {
+    glClearNamedFramebufferfv(m_id, GL_COLOR, attachmentId, value);
 }
 
 Texture *GLFramebuffer::getTexture(uint32_t attachmentId) {
