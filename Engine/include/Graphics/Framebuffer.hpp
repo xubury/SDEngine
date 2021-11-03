@@ -18,6 +18,8 @@ class SD_API Framebuffer {
     Framebuffer(const Framebuffer &) = delete;
     Framebuffer &operator=(const Framebuffer &) = delete;
 
+    virtual uint32_t getId() const = 0;
+
     virtual bool attachTexture(const Ref<Texture> &texture) = 0;
 
     virtual void clear() = 0;
@@ -40,8 +42,6 @@ class SD_API Framebuffer {
     virtual void bind() const = 0;
     virtual void unbind() const = 0;
 
-    virtual void copyTo(Framebuffer *other, uint32_t index, BufferBitMask mask,
-                        TextureFilter filter) const = 0;
     virtual void resize(int width, int height) = 0;
 
    protected:

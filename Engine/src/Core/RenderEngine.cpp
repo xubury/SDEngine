@@ -10,7 +10,7 @@ RenderEngine::RenderEngine(int width, int height, int samples)
       m_width(width),
       m_height(height),
       m_samples(samples),
-      m_target(createRef<RenderTarget>(0, 0, width, height)),
+      m_target(0, 0, width, height),
       m_renderSystem(nullptr),
       m_terrainSystem(nullptr),
       m_scene(nullptr),
@@ -59,19 +59,14 @@ TerrainSystem *RenderEngine::getTerrainSystem() {
     return m_terrainSystem.get();
 }
 
-void RenderEngine::setRenderTarget(const Ref<RenderTarget> &target) {
-    m_target = target;
-}
 
-const RenderTarget &RenderEngine::getRenderTarget() const { return *m_target; }
-
-RenderTarget &RenderEngine::getRenderTarget() { return *m_target; }
+const RenderTarget &RenderEngine::getRenderTarget() const { return m_target; }
 
 void RenderEngine::resize(int width, int height) {
     if (m_camera) {
         m_camera->resize(width, height);
     }
-    getRenderTarget().resize(width, height);
+    m_target.resize(width, height);
     dispatchEvent(SizeEvent(width, height));
 }
 

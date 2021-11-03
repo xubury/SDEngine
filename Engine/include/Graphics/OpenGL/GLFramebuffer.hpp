@@ -14,6 +14,8 @@ class GLFramebuffer : public Framebuffer {
     GLFramebuffer();
     virtual ~GLFramebuffer();
 
+    uint32_t getId() const override { return m_id; }
+
     bool attachTexture(const Ref<Texture> &texture) override;
 
     void clear() override;
@@ -26,9 +28,6 @@ class GLFramebuffer : public Framebuffer {
 
     void bind() const override;
     void unbind() const override;
-
-    void copyTo(Framebuffer *other, uint32_t index, BufferBitMask mask,
-                TextureFilter filter) const override;
 
     void clearDepth(const float depth) override;
 

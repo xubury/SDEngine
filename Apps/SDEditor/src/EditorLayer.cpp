@@ -32,28 +32,16 @@ EditorLayer::EditorLayer(int width, int height)
         image->data());
 
     newScene();
-}
-
-void EditorLayer::onAttach() {
-    m_target = sd::createRef<sd::RenderTarget>(0, 0, m_width, m_height);
-    m_target->addTexture(sd::Texture::create(
+    m_target = sd::Framebuffer::create();
+    m_target->attachTexture(sd::Texture::create(
         m_width, m_height, 1, sd::TextureType::TEX_2D, sd::TextureFormat::RGBA,
         sd::TextureFormatType::UBYTE, sd::TextureWrap::BORDER,
         sd::TextureFilter::LINEAR, sd::TextureMipmapFilter::LINEAR));
-    m_target->addTexture(sd::Texture::create(
-        m_width, m_height, 1, sd::TextureType::TEX_2D,
-        sd::TextureFormat::DEPTH_STENCIL, sd::TextureFormatType::UINT24_8,
-        sd::TextureWrap::BORDER, sd::TextureFilter::LINEAR,
-        sd::TextureMipmapFilter::LINEAR));
-    m_target->createFramebuffer();
-
-    show();
 }
 
-void EditorLayer::onDetech() {
-    m_target.reset();
-    hide();
-}
+void EditorLayer::onAttach() { show(); }
+
+void EditorLayer::onDetech() { hide(); }
 
 void EditorLayer::onRender() {
     if (m_hide) return;
@@ -104,7 +92,6 @@ void EditorLayer::onImGui() {
     if (m_hide) {
         return;
     }
-    m_target->getFramebuffer()->unbind();
 
     static bool dockspaceOpen = true;
     static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
@@ -232,6 +219,7 @@ void EditorLayer::onImGui() {
         if (m_width != wsize.x || m_height != wsize.y) {
             if (wsize.x > 0 && wsize.y > 0) {
                 sd::Application::getRenderEngine().resize(wsize.x, wsize.y);
+                m_target->resize(wsize.x, wsize.y);
             }
 
             m_width = wsize.x;
@@ -239,6 +227,9 @@ void EditorLayer::onImGui() {
         }
         m_isViewportFocused = ImGui::IsWindowFocused();
         m_isViewportHovered = ImGui::IsWindowHovered();
+        sd::Device::instance().blitFramebuffer(
+            nullptr, m_target.get(), 0, sd::BufferBitMask::COLOR_BUFFER_BIT,
+            sd::TextureFilter::LINEAR);
         ImGui::DrawTexture(*m_target->getTexture(), wsize);
 
         sd::Entity selectedEntity = m_scenePanel.getSelectedEntity();
@@ -277,8 +268,6 @@ void EditorLayer::hide() {
     setBlockEvent(false);
     int w = sd::Window::getWidth();
     int h = sd::Window::getHeight();
-    sd::Application::getRenderEngine().setRenderTarget(
-        sd::createRef<sd::RenderTarget>(0, 0, w, h));
     sd::Application::getRenderEngine().resize(w, h);
 }
 
@@ -286,7 +275,6 @@ void EditorLayer::show() {
     m_hide = false;
     setBlockEvent(true);
     sd::Application::getRenderEngine().setCamera(&m_editorCamera);
-    sd::Application::getRenderEngine().setRenderTarget(m_target);
     sd::Application::getRenderEngine().resize(m_width, m_height);
 }
 

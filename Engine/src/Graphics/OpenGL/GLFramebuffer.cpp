@@ -96,22 +96,6 @@ Texture *GLFramebuffer::getTexture(uint32_t attachmentId) {
     return m_attachments[attachmentId].second.get();
 }
 
-void GLFramebuffer::copyTo(Framebuffer *other, uint32_t index,
-                           BufferBitMask mask, TextureFilter filter) const {
-    const GLFramebuffer *glFb = dynamic_cast<const GLFramebuffer *>(other);
-    int targetId = glFb ? glFb->m_id : 0;
-    GLenum glMask = translate(mask & BufferBitMask::COLOR_BUFFER_BIT) |
-                    translate(mask & BufferBitMask::DEPTH_BUFFER_BIT) |
-                    translate(mask & BufferBitMask::STENCIL_BUFFER_BIT);
-    GLenum glFilter = translate(filter);
-    const auto &[attachment, texture] = m_attachments[index];
-    glNamedFramebufferReadBuffer(m_id, attachment);
-    glNamedFramebufferDrawBuffer(targetId, glFb ? attachment : GL_BACK);
-    glBlitNamedFramebuffer(m_id, targetId, 0, 0, texture->getWidth(),
-                           texture->getHeight(), 0, 0, texture->getWidth(),
-                           texture->getHeight(), glMask, glFilter);
-}
-
 void GLFramebuffer::resize(int width, int height) {
     for (auto &[attachment, texture] : m_attachments) {
         texture->setPixels(width, height, nullptr);

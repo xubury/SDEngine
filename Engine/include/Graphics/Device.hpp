@@ -48,6 +48,10 @@ class SD_API Device {
 
     virtual void resetShaderState() = 0;
 
+    virtual void blitFramebuffer(Framebuffer *src, Framebuffer *dst,
+                                 uint32_t index, BufferBitMask mask,
+                                 TextureFilter filter) = 0;
+
    protected:
     Device() = default;
 };

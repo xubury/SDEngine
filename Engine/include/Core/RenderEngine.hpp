@@ -36,7 +36,6 @@ class RenderEngine : public Layer, public SystemManager {
 
     void setRenderTarget(const Ref<RenderTarget> &target);
     const RenderTarget &getRenderTarget() const;
-    RenderTarget &getRenderTarget();
 
     void setScene(Scene *scene) { m_scene = scene; }
     Scene *getScene() const { return m_scene; };
@@ -58,7 +57,7 @@ class RenderEngine : public Layer, public SystemManager {
     int m_height;
     int m_samples;
 
-    Ref<RenderTarget> m_target;
+    RenderTarget m_target;
 
     Ref<RenderSystem> m_renderSystem;
     Ref<TerrainSystem> m_terrainSystem;

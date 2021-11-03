@@ -1,6 +1,7 @@
 #include "Graphics/OpenGL/GLDevice.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
 #include "Graphics/OpenGL/GLFramebuffer.hpp"
+#include "Graphics/OpenGL/GLTexture.hpp"
 #include "Utility/Assert.hpp"
 #include <GL/glew.h>
 
@@ -93,5 +94,24 @@ void GLDevice::setDepthfunc(DepthFunc depthFunc) {
 }
 
 void GLDevice::resetShaderState() { glUseProgram(0); }
+
+void GLDevice::blitFramebuffer(Framebuffer *src, Framebuffer *dst,
+                               uint32_t index, BufferBitMask mask,
+                               TextureFilter filter) {
+    int srcId = src ? src->getId() : 0;
+    int dstId = dst ? dst->getId() : 0;
+    GLenum glMask = translate(mask & BufferBitMask::COLOR_BUFFER_BIT) |
+                    translate(mask & BufferBitMask::DEPTH_BUFFER_BIT) |
+                    translate(mask & BufferBitMask::STENCIL_BUFFER_BIT);
+    GLenum glFilter = translate(filter);
+    GLenum mode = GL_COLOR_ATTACHMENT0 + index;
+    Texture *texture = src ? src->getTexture(index) : dst->getTexture(index);
+    SD_CORE_ASSERT(texture != nullptr, "Invalid framebuffer");
+    glNamedFramebufferReadBuffer(srcId, src ? mode : GL_BACK);
+    glNamedFramebufferDrawBuffer(dstId, dst ? mode : GL_BACK);
+    glBlitNamedFramebuffer(srcId, dstId, 0, 0, texture->getWidth(),
+                           texture->getHeight(), 0, 0, texture->getWidth(),
+                           texture->getHeight(), glMask, glFilter);
+}
 
 }  // namespace sd

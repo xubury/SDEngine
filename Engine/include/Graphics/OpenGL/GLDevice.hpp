@@ -33,6 +33,9 @@ class GLDevice : public Device {
     void setDepthfunc(DepthFunc depthFunc) override;
 
     void resetShaderState() override;
+
+    void blitFramebuffer(Framebuffer *src, Framebuffer *dst, uint32_t index,
+                         BufferBitMask mask, TextureFilter filter) override;
 };
 
 }  // namespace sd

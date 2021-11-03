@@ -36,7 +36,7 @@ class EditorLayer : public sd::Layer {
 
     void show();
 
-    sd::Ref<sd::RenderTarget> m_target;
+    sd::Ref<sd::Framebuffer> m_target;
 
     int m_width;
     int m_height;

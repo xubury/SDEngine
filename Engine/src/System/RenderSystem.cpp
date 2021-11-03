@@ -256,8 +256,8 @@ void RenderSystem::renderMain() {
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES,
                      m_quad->getIndexBuffer()->getCount(), 0);
 
-    getLightResult().getFramebuffer()->copyTo(
-        Application::getRenderEngine().getRenderTarget().getFramebuffer(), 0,
+    Device::instance().blitFramebuffer(
+        getLightResult().getFramebuffer(), nullptr, 0,
         BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
 }
 
@@ -360,8 +360,9 @@ void RenderSystem::renderLight() {
     });
     Device::instance().setDepthMask(true);
 
-    m_gBuffer->copyTo(getLightResult().getFramebuffer(), 0,
-                      BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
+    Device::instance().blitFramebuffer(
+        m_gBuffer.get(), getLightResult().getFramebuffer(), 0,
+        BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
 }
 
 void RenderSystem::renderGBuffer() {
@@ -420,11 +421,14 @@ void RenderSystem::renderGBuffer() {
         }
     });
 
-    for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-        m_gBufferTarget.getFramebuffer()->copyTo(
-            m_gBuffer.get(), i,
-            BufferBitMask::COLOR_BUFFER_BIT | BufferBitMask::DEPTH_BUFFER_BIT,
-            TextureFilter::NEAREST);
+    Device::instance().blitFramebuffer(
+        m_gBufferTarget.getFramebuffer(), m_gBuffer.get(), G_ENTITY_ID,
+        BufferBitMask::COLOR_BUFFER_BIT | BufferBitMask::DEPTH_BUFFER_BIT,
+        TextureFilter::NEAREST);
+    for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
+        Device::instance().blitFramebuffer(
+            m_gBufferTarget.getFramebuffer(), m_gBuffer.get(), i,
+            BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::LINEAR);
     }
     Renderer::endScene();
     Device::instance().enable(Operation::BLEND);
