@@ -5,7 +5,6 @@
 #include "Utility/Log.hpp"
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
-#include <GL/glew.h>
 
 namespace sd {
 
@@ -207,7 +206,7 @@ void RenderSystem::onRender() {
 }
 
 void RenderSystem::clear() {
-    glUseProgram(0);
+    Device::instance().resetShaderState();
     // clear the last lighting pass' result
     RGBA color(0, 0, 0, 1);
     getLightResult().getFramebuffer()->clearAttachment(0, color.data());
@@ -229,7 +228,7 @@ void RenderSystem::renderSkybox() {
     m_skyboxShader->setMat4("u_model", glm::translate(glm::mat4(1.0f), pos));
 
     m_skyboxShader->bind();
-    glDepthFunc(GL_LEQUAL);
+    Device::instance().setDepthfunc(DepthFunc::LESS_EQUAL);
     Device::instance().setCullFace(Face::FRONT);
 
     Renderer::setRenderTarget(getLightResult());
@@ -238,7 +237,7 @@ void RenderSystem::renderSkybox() {
                      m_skybox->getIndexBuffer()->getCount(), 0);
     Renderer::endScene();
     Device::instance().setCullFace(Face::BACK);
-    glDepthFunc(GL_LESS);
+    Device::instance().setDepthfunc(DepthFunc::LESS);
 }
 
 void RenderSystem::renderMain() {

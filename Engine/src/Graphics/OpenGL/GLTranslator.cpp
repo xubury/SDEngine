@@ -262,4 +262,22 @@ GLenum translate(BufferBitMask bit) {
     return 0;
 }
 
+GLenum translate(DepthFunc depthFunc) {
+    switch (depthFunc) {
+        case DepthFunc::EQUAL:
+            return GL_EQUAL;
+        case DepthFunc::NOT_EQUAL:
+            return GL_NOTEQUAL;
+        case DepthFunc::GREATER:
+            return GL_GREATER;
+        case DepthFunc::GREATER_EQUAL:
+            return GL_GEQUAL;
+        case DepthFunc::LESS:
+            return GL_LESS;
+        case DepthFunc::LESS_EQUAL:
+            return GL_LEQUAL;
+    }
+    return GL_INVALID_ENUM;
+}
+
 }  // namespace sd

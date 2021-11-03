@@ -84,6 +84,15 @@ enum class Operation {
     CULL_FACE
 };
 
+enum class DepthFunc {
+    LESS,
+    LESS_EQUAL,
+    EQUAL,
+    GREATER,
+    GREATER_EQUAL,
+    NOT_EQUAL
+};
+
 struct RGBA {
    public:
     RGBA(float r, float g, float b, float a) : m_color{r, g, b, a} {}

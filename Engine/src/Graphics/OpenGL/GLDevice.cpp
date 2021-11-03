@@ -88,4 +88,10 @@ void GLDevice::enable(Operation operation) { glEnable(translate(operation)); }
 
 void GLDevice::setCullFace(Face cullFace) { glCullFace(translate(cullFace)); }
 
+void GLDevice::setDepthfunc(DepthFunc depthFunc) {
+    glDepthFunc(translate(depthFunc));
+}
+
+void GLDevice::resetShaderState() { glUseProgram(0); }
+
 }  // namespace sd

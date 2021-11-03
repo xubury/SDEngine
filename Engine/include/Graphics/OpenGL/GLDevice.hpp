@@ -29,6 +29,10 @@ class GLDevice : public Device {
     void disable(Operation operation) override;
 
     void setCullFace(Face cullface) override;
+
+    void setDepthfunc(DepthFunc depthFunc) override;
+
+    void resetShaderState() override;
 };
 
 }  // namespace sd

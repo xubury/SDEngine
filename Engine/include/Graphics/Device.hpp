@@ -44,6 +44,10 @@ class SD_API Device {
 
     virtual void setCullFace(Face cullFace) = 0;
 
+    virtual void setDepthfunc(DepthFunc depthFunc) = 0;
+
+    virtual void resetShaderState() = 0;
+
    protected:
     Device() = default;
 };

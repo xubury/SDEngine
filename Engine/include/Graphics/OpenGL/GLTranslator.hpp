@@ -36,6 +36,8 @@ GLenum SD_API translate(Face face);
 
 GLenum SD_API translate(BufferBitMask bit);
 
+GLenum SD_API translate(DepthFunc depthFunc);
+
 }  // namespace sd
 
 #endif /* SD_GL_TRANSLATOR_HPP */
