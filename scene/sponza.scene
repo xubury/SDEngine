@@ -1,62 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <cereal>
-	<value0>6</value0>
-	<value1>4294967295</value1>
-	<value2>0</value2>
-	<value3>1</value3>
-	<value4>2</value4>
-	<value5>3</value5>
-	<value6>4</value6>
-	<value7>5</value7>
-	<value8>0</value8>
-	<value9>
+	<value1>6</value1>
+	<value2>4294967295</value2>
+	<value3>0</value3>
+	<value4>1</value4>
+	<value5>2</value5>
+	<value6>3</value6>
+	<value7>4</value7>
+	<value8>5</value8>
+	<value9>0</value9>
+	<value10>
 		<value0>4294967295</value0>
 		<value1 size="dynamic"/>
-	</value9>
-	<value10>1</value10>
-	<value11>
+	</value10>
+	<value11>1</value11>
+	<value12>
 		<value0>4294967295</value0>
 		<value1 size="dynamic"/>
-	</value11>
-	<value12>2</value12>
-	<value13>
+	</value12>
+	<value13>2</value13>
+	<value14>
 		<value0>4294967295</value0>
 		<value1 size="dynamic"/>
-	</value13>
-	<value14>3</value14>
-	<value15>
+	</value14>
+	<value15>3</value15>
+	<value16>
 		<value0>4294967295</value0>
 		<value1 size="dynamic"/>
-	</value15>
-	<value16>4</value16>
-	<value17>
+	</value16>
+	<value17>4</value17>
+	<value18>
 		<value0>4294967295</value0>
 		<value1 size="dynamic"/>
-	</value17>
-	<value18>5</value18>
-	<value19>0</value19>
-	<value20>
+	</value18>
+	<value19>5</value19>
+	<value20>0</value20>
+	<value21>
 		<value0>Sponza</value0>
-	</value20>
-	<value21>1</value21>
-	<value22>
+	</value21>
+	<value22>1</value22>
+	<value23>
 		<value0>Light</value0>
-	</value22>
-	<value23>2</value23>
-	<value24>
+	</value23>
+	<value24>2</value24>
+	<value25>
 		<value0>Point Light</value0>
-	</value24>
-	<value25>3</value25>
-	<value26>
+	</value25>
+	<value26>3</value26>
+	<value27>
 		<value0>WelcomeText</value0>
-	</value26>
-	<value27>4</value27>
-	<value28>
+	</value27>
+	<value28>4</value28>
+	<value29>
 		<value0>Vampire</value0>
-	</value28>
-	<value29>5</value29>
-	<value30>0</value30>
-	<value31>
+	</value29>
+	<value30>5</value30>
+	<value31>0</value31>
+	<value32>
 		<value0>
 			<value0>
 				<value0>0</value0>
@@ -91,9 +91,9 @@
 				<value2>0.23999997973442078</value2>
 			</value5>
 		</value0>
-	</value31>
-	<value32>1</value32>
-	<value33>
+	</value32>
+	<value33>1</value33>
+	<value34>
 		<value0>
 			<value0>
 				<value0>0</value0>
@@ -128,9 +128,9 @@
 				<value2>1.0000004768371582</value2>
 			</value5>
 		</value0>
-	</value33>
-	<value34>2</value34>
-	<value35>
+	</value34>
+	<value35>2</value35>
+	<value36>
 		<value0>
 			<value0>
 				<value0>291.37356567382812</value0>
@@ -165,9 +165,9 @@
 				<value2>1.0000483989715576</value2>
 			</value5>
 		</value0>
-	</value35>
-	<value36>3</value36>
-	<value37>
+	</value36>
+	<value37>3</value37>
+	<value38>
 		<value0>
 			<value0>
 				<value0>0</value0>
@@ -202,9 +202,9 @@
 				<value2>0.061879914253950119</value2>
 			</value5>
 		</value0>
-	</value37>
-	<value38>4</value38>
-	<value39>
+	</value38>
+	<value39>4</value39>
+	<value40>
 		<value0>
 			<value0>
 				<value0>75.242538452148438</value0>
@@ -239,29 +239,29 @@
 				<value2>0.2699999213218689</value2>
 			</value5>
 		</value0>
-	</value39>
-	<value40>2</value40>
-	<value41>0</value41>
-	<value42>
-        <value0>models/Sponza/sponza.obj</value0>
+	</value40>
+	<value41>2</value41>
+	<value42>0</value42>
+	<value43>
+		<value0>models/Sponza/sponza.obj</value0>
 		<value1>
 			<value0>0</value0>
 			<value1>0</value1>
 			<value2>0</value2>
 		</value1>
-	</value42>
-	<value43>4</value43>
-	<value44>
-        <value0>models/vampire/dancing_vampire.dae</value0>
+	</value43>
+	<value44>4</value44>
+	<value45>
+		<value0>models/vampire/dancing_vampire.dae</value0>
 		<value1>
 			<value0>0</value0>
 			<value1>0</value1>
 			<value2>0</value2>
 		</value1>
-	</value44>
-	<value45>2</value45>
-	<value46>1</value46>
-	<value47>
+	</value45>
+	<value46>2</value46>
+	<value47>1</value47>
+	<value48>
 		<value0>
 			<value0>
 				<value0>0.15830117464065552</value0>
@@ -286,9 +286,9 @@
 			<value8>true</value8>
 			<value9>true</value9>
 		</value0>
-	</value47>
-	<value48>2</value48>
-	<value49>
+	</value48>
+	<value49>2</value49>
+	<value50>
 		<value0>
 			<value0>
 				<value0>0.28571426868438721</value0>
@@ -313,11 +313,11 @@
 			<value8>false</value8>
 			<value9>true</value9>
 		</value0>
-	</value49>
-	<value50>1</value50>
-	<value51>3</value51>
-	<value52>
-        <value0>fonts/msyh_0.ttc</value0>
+	</value50>
+	<value51>1</value51>
+	<value52>3</value52>
+	<value53>
+		<value0>fonts/msyh_0.ttc</value0>
 		<value1>50</value1>
 		<value2>
 			<value0>1</value0>
@@ -326,6 +326,6 @@
 			<value3>1</value3>
 		</value2>
 		<value3>Welcome to my engine!</value3>
-	</value52>
+	</value53>
 </cereal>
 

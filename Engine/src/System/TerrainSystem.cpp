@@ -32,9 +32,8 @@ void TerrainSystem::updateAllTerrains() {
         const auto &terrain = terrainComp.terrain;
         const auto &vertices = terrain.getVertices();
         const uint32_t vertexCount = terrain.getVertexCount();
-        const uint32_t id = static_cast<uint32_t>(entity);
-        m_terrainGrids[id].assign(vertexCount - 1,
-                                  std::vector<Collidable>(vertexCount - 1));
+        m_terrainGrids[entity].assign(vertexCount - 1,
+                                      std::vector<Collidable>(vertexCount - 1));
         const Transform &transform = transformComp.transform;
         for (uint32_t z = 0; z < vertexCount - 1; ++z) {
             for (uint32_t x = 0; x < vertexCount - 1; ++x) {
@@ -52,7 +51,7 @@ void TerrainSystem::updateAllTerrains() {
                 float maxHeight = std::max({f00.y, f01.y, f10.y, f11.y});
                 m_min = glm::min(f00, f01, f10, f11);
                 m_max = glm::max(f00, f01, f10, f11);
-                m_terrainGrids[id][x][z] =
+                m_terrainGrids[entity][x][z] =
                     Collidable(Rect(center.x, center.z, size.x, size.z),
                                std::pair<float, float>(minHeight, maxHeight));
             }
@@ -68,7 +67,7 @@ void TerrainSystem::updateAllTerrains() {
     }
 }
 
-void TerrainSystem::updateTerrain(uint32_t id) {
+void TerrainSystem::updateTerrain(entt::entity id) {
     Entity entity(id, m_scene);
     const auto &transformComp = entity.getComponent<TransformComponent>();
     const auto &terrainComp = entity.getComponent<TerrainComponent>();

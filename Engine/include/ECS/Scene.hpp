@@ -12,7 +12,7 @@ class Entity;
 
 class SD_API Scene : public entt::registry {
    public:
-    Scene() = default;
+    Scene();
     ~Scene() = default;
 
     Entity createEntity(const std::string &name = "Entity");

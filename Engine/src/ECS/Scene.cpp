@@ -6,6 +6,8 @@
 
 namespace sd {
 
+Scene::Scene() {}
+
 Entity Scene::createEntity(const std::string &name) {
     Entity entity(create(), this);
     entity.addComponent<TagComponent>(name);

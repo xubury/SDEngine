@@ -8,15 +8,12 @@
 
 namespace sd {
 
-using EntityId = entt::id_type;
-
 class SD_API Entity {
    public:
-    static const EntityId INVALID_ID;
+    static const entt::entity INVALID_ID;
 
    public:
     Entity();
-    Entity(EntityId handle, Scene *scene);
     Entity(entt::entity handle, Scene *scene);
 
     template <typename T, typename... Args>
@@ -36,7 +33,6 @@ class SD_API Entity {
 
     operator bool() const;
     operator entt::entity() const;
-    operator EntityId() const;
 
     bool operator==(const Entity &other) const;
     bool operator!=(const Entity &other) const;

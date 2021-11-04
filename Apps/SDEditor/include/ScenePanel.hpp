@@ -14,7 +14,7 @@ class ScenePanel {
 
     void setScene(sd::Scene *scene);
 
-    void setSelectedEntity(sd::EntityId entityId);
+    void setSelectedEntity(sd::Entity entity);
 
     sd::Entity getSelectedEntity() const;
 

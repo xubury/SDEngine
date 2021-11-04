@@ -62,13 +62,13 @@ class SD_API RenderSystem : public System {
 
     void renderText();
 
-    RenderTarget &getBlurReuslt() { return m_blurTarget[0]; };
-    RenderTarget &getLightResult() { return m_lightTarget[0]; };
-
     void renderBlur();
     void renderMain();
 
     void renderSkybox();
+
+    RenderTarget &getBlurReuslt() { return m_blurTarget[0]; };
+    RenderTarget &getLightResult() { return m_lightTarget[0]; };
 
     Ref<Shader> m_mainShader;
 
@@ -83,6 +83,8 @@ class SD_API RenderSystem : public System {
 
     RenderTarget m_gBufferTarget;
     Ref<Shader> m_gBufferShader;
+
+    Ref<Shader> m_forwardShader;
 
     Ref<VertexArray> m_quad;
 

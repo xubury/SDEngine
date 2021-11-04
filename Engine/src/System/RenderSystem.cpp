@@ -68,6 +68,7 @@ void RenderSystem::initShaders() {
     m_deferredShader = Asset::manager().load<Shader>("shaders/deferred.glsl");
     m_blurShader = Asset::manager().load<Shader>("shaders/blur.glsl");
     m_gBufferShader = Asset::manager().load<Shader>("shaders/gbuffer.glsl");
+    m_forwardShader = Asset::manager().load<Shader>("shaders/forward.glsl");
 }
 
 void RenderSystem::initLighting(int width, int height, int samples) {
@@ -189,14 +190,17 @@ void RenderSystem::onRender() {
 void RenderSystem::clear() {
     Device::instance().resetShaderState();
     // clear the last lighting pass' result
-    RGBA color(0, 0, 0, 1);
-    getLightResult().getFramebuffer()->clearAttachment(0, color.data());
+    for (int i = 0; i < 2; ++i) {
+        Device::instance().setFramebuffer(m_lightTarget[i].getFramebuffer());
+        Device::instance().clear();
+    }
 
     Device::instance().setFramebuffer(m_gBufferTarget.getFramebuffer());
     Device::instance().clear(BufferBitMask::COLOR_BUFFER_BIT |
                              BufferBitMask::DEPTH_BUFFER_BIT);
+    uint32_t id = static_cast<uint32_t>(Entity::INVALID_ID);
     m_gBufferTarget.getFramebuffer()->clearAttachment(
-        GeometryBufferType::G_ENTITY_ID, &Entity::INVALID_ID);
+        GeometryBufferType::G_ENTITY_ID, &id);
 
     Device::instance().setFramebuffer(
         Application::getRenderEngine().getRenderTarget().getFramebuffer());
@@ -248,9 +252,10 @@ void RenderSystem::renderBlur() {
     m_blurShader->bind();
     const int inputId = 0;
     const int outputId = 1;
-    Device::instance().blitFramebuffer(
-        getLightResult().getFramebuffer(), 0, getBlurReuslt().getFramebuffer(),
-        0, BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
+    Device::instance().blitFramebuffer(getLightResult().getFramebuffer(), 0,
+                                       m_blurTarget[inputId].getFramebuffer(),
+                                       0, BufferBitMask::COLOR_BUFFER_BIT,
+                                       TextureFilter::NEAREST);
     for (int i = 0; i < amount; ++i) {
         Renderer::setRenderTarget(m_blurTarget[outputId]);
         m_blurResult = m_blurTarget[outputId].getTexture();

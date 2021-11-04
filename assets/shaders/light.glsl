@@ -38,7 +38,7 @@ float shadowCalculation(Light light, vec3 fragPos, vec3 normal) {
     float currentDepth = projCoords.z;
     // check whether current frag pos is in shadow
     vec3 lightDir = normalize(light.position - fragPos);
-    float bias = max(0.0001 * (1.0 - dot(normal, lightDir)), 0);
+    float bias = max(0.0005 * (1.0 - dot(normal, lightDir)), 0);
     float shadow = 0.0f;
     vec2 texelSize = 1.0f / textureSize(light.shadowMap, 0);
     const int halfKernelWidth = 1;

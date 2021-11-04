@@ -18,12 +18,14 @@ RenderEngine::RenderEngine(int width, int height, int samples)
       m_exposure(1.5f),
       m_bloom(1.0f),
       m_isBloom(true) {
+    if (m_samples > 1) {
+        Device::instance().enable(Operation::MULTISAMPLE);
+    } else {
+        Device::instance().disable(Operation::MULTISAMPLE);
+    }
 }
 
 void RenderEngine::onAttach() {
-    if (m_samples > 1) {
-        Device::instance().enable(Operation::MULTISAMPLE);
-    }
     addSystem<ShadowSystem>();
     m_renderSystem = addSystem<RenderSystem>(m_width, m_height, m_samples);
     addSystem<ProfileSystem>(m_width, m_height);
@@ -58,7 +60,6 @@ RenderSystem *RenderEngine::getRenderSystem() { return m_renderSystem.get(); }
 TerrainSystem *RenderEngine::getTerrainSystem() {
     return m_terrainSystem.get();
 }
-
 
 const RenderTarget &RenderEngine::getRenderTarget() const { return m_target; }
 

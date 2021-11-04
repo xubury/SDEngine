@@ -2,12 +2,9 @@
 
 namespace sd {
 
-const EntityId Entity::INVALID_ID = -1;
+const entt::entity Entity::INVALID_ID = entt::entity(-1);
 
 Entity::Entity() : m_entityHandle(entt::null), m_scene(nullptr) {}
-
-Entity::Entity(EntityId handle, Scene *scene)
-    : m_entityHandle(static_cast<entt::entity>(handle)), m_scene(scene) {}
 
 Entity::Entity(entt::entity handle, Scene *scene)
     : m_entityHandle(handle), m_scene(scene) {}
@@ -15,10 +12,6 @@ Entity::Entity(entt::entity handle, Scene *scene)
 Entity::operator bool() const { return m_entityHandle != entt::null; }
 
 Entity::operator entt::entity() const { return m_entityHandle; }
-
-Entity::operator unsigned int() const {
-    return static_cast<uint32_t>(m_entityHandle);
-}
 
 bool Entity::operator!=(const Entity &other) const { return !(*this == other); }
 

@@ -15,8 +15,8 @@ ScenePanel::ScenePanel(sd::Scene *scene) : m_scene(scene) {}
 
 void ScenePanel::setScene(sd::Scene *scene) { m_scene = scene; }
 
-void ScenePanel::setSelectedEntity(sd::EntityId entityId) {
-    m_selectedEntity = sd::Entity(entityId, m_scene);
+void ScenePanel::setSelectedEntity(sd::Entity entity) {
+    m_selectedEntity = entity;
 }
 
 sd::Entity ScenePanel::getSelectedEntity() const { return m_selectedEntity; }
@@ -86,8 +86,8 @@ void ScenePanel::drawEntityNode(sd::Entity &entity) {
         data.m_children.empty() ? leaf_flags : base_flags;
     flags |= ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) |
              ImGuiTreeNodeFlags_OpenOnArrow;
-    bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(sd::EntityId)entity,
-                                    flags, tag.c_str());
+    bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(entt::entity)entity,
+                                    flags, "%s", tag.c_str());
     if (ImGui::IsItemClicked(0)) {
         m_selectedEntity = entity;
     }
@@ -130,7 +130,7 @@ static void drawComponent(const std::string &name, sd::Entity entity,
             GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
         ImGui::Separator();
         bool open = ImGui::TreeNodeEx((void *)typeid(T).hash_code(),
-                                      treeNodeFlags, name.c_str());
+                                      treeNodeFlags, "%s", name.c_str());
         ImGui::PopStyleVar();
         bool removeComponent = false;
         if (removeable) {

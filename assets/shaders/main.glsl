@@ -28,8 +28,8 @@ layout(binding = 0) uniform sampler2DMS u_lighting;
 layout(binding = 1) uniform sampler2D u_blur;
 
 void main() {
-    // bloom
     vec3 result = textureMS(u_lighting, texCoord).rgb;
+    // bloom
     if (u_bloom) {
         result += texture(u_blur, texCoord).rgb * u_bloomFactor;
     }
