@@ -128,7 +128,7 @@ GLint translateInternalFormat(TextureFormat textureFormat,
                 case TextureFormatType::UINT:
                     return GL_R32UI;
                 case TextureFormatType::FLOAT:
-                    return GL_R32F;
+                    return GL_R16F;
             }
             break;
         }
@@ -140,7 +140,7 @@ GLint translateInternalFormat(TextureFormat textureFormat,
                 case TextureFormatType::UINT:
                     return GL_RG32UI;
                 case TextureFormatType::FLOAT:
-                    return GL_RG32F;
+                    return GL_RG16F;
             }
             break;
         }
