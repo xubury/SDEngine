@@ -84,27 +84,27 @@ Texture *Light::getShadowMap() const {
 
 void Light::computeLightSpaceMatrix(const Transform &transform,
                                     const Camera *camera) {
-    glm::vec3 min;
-    glm::vec3 max;
+    glm::vec3 pos(0);
+    glm::mat4 lightProjection(1.f);
     if (m_isDirectional) {
+        glm::vec3 min;
+        glm::vec3 max;
         computeBoundingBox(transform, *camera, min, max);
         // Add a offset for shadow behind the camera frustum
         min.z -= camera->getFarZ();
+        glm::vec3 size = max - min;
+        glm::vec3 center = (max + min) / 2.f;
+        center.z -= size.z / 2.f;
+        pos = transform.getWorldRotation() * center;
+        lightProjection = glm::ortho(-size.x / 2.f, size.x / 2.f, -size.y / 2.f,
+                                     size.y / 2.f, 0.f, size.z);
     } else {
-        min = glm::vec3(-50);
-        max = glm::vec3(50);
+        pos = transform.getWorldPosition();
+        lightProjection = glm::perspective(m_outerCutOff * 2, 1.f, 1.f, 1000.f);
     }
-    glm::vec3 size = max - min;
-    glm::vec3 center = (max + min) / 2.f;
-    center.z -= size.z / 2.f;
-    const glm::vec3 pos = m_isDirectional
-                              ? transform.getWorldRotation() * center
-                              : transform.getWorldPosition();
     const glm::vec3 &up = transform.getWorldUp();
     const glm::vec3 &front = transform.getWorldFront();
     const glm::mat4 lightView = glm::lookAt(pos, pos + front, up);
-    const glm::mat4 lightProjection = glm::ortho(
-        -size.x / 2.f, size.x / 2.f, -size.y / 2.f, size.y / 2.f, 0.f, size.z);
     m_projectionView = lightProjection * lightView;
 }
 

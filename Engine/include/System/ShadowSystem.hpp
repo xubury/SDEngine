@@ -10,8 +10,6 @@ class SD_API ShadowSystem : public System {
    public:
     ShadowSystem();
 
-    void onTick(float dt) override;
-
     void onRender() override;
    private:
     Ref<Shader> m_shadowShader;

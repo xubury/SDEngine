@@ -10,8 +10,6 @@ ShadowSystem::ShadowSystem() {
     m_shadowShader = Asset::manager().load<Shader>("shaders/shadow.glsl");
 }
 
-void ShadowSystem::onTick(float) {}
-
 void ShadowSystem::onRender() {
     auto scene = Application::getRenderEngine().getScene();
     auto lightView = scene->view<TransformComponent, LightComponent>();
