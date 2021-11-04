@@ -10,6 +10,20 @@
 
 namespace sd {
 
+enum GeometryBufferType {
+    G_POSITION = 0,
+    G_NORMAL,
+    G_ALBEDO,
+    G_AMBIENT,
+    G_EMISSIVE,
+    G_ENTITY_ID,
+    G_DEPTH,
+    GBUFFER_COUNT
+};
+
+TextureFormat SD_API getTextureFormat(GeometryBufferType type);
+
+TextureFormatType SD_API getTextureFormatType(GeometryBufferType type);
 
 class SD_API RenderSystem : public System {
    public:
@@ -26,15 +40,13 @@ class SD_API RenderSystem : public System {
     void onSizeEvent(const SizeEvent &event);
     void onSceneEvent(const SceneEvent &event);
 
-    const RenderTarget &getLightResult() const { return m_lightTarget[0]; };
-
-    Framebuffer &getGBuffer() { return *m_gBuffer; }
+    Framebuffer &getGBuffer() { return *m_gBufferTarget.getFramebuffer(); }
 
     RenderTarget &getGBufferTarget() { return m_gBufferTarget; }
 
    private:
     void initShaders();
-    void initLighting(int width, int height);
+    void initLighting(int width, int height, int samples);
     void initBloom(int width, int height);
     void initQuad();
     void initSkybox();
@@ -44,11 +56,14 @@ class SD_API RenderSystem : public System {
 
     void renderGBuffer();
     void renderShadow();
-    void renderLight();
+    void renderDeferred();
 
     void renderEmissive();
 
     void renderText();
+
+    RenderTarget &getBlurReuslt() { return m_blurTarget[0]; };
+    RenderTarget &getLightResult() { return m_lightTarget[0]; };
 
     void renderBlur();
     void renderMain();
@@ -63,11 +78,10 @@ class SD_API RenderSystem : public System {
 
     Ref<Shader> m_emssiveShader;
 
-    Ref<Shader> m_lightShader;
+    Ref<Shader> m_deferredShader;
     RenderTarget m_lightTarget[2];
 
     RenderTarget m_gBufferTarget;
-    Ref<Framebuffer> m_gBuffer;
     Ref<Shader> m_gBufferShader;
 
     Ref<VertexArray> m_quad;

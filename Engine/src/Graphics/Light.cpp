@@ -72,14 +72,14 @@ void Light::createShadowMap() {
         TextureFilter::NEAREST, TextureMipmapFilter::NEAREST);
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
     shadowMap->setBorderColor(&color);
-    m_target.addTexture(shadowMap);
-    m_target.createFramebuffer();
+    m_shadowTarget.addTexture(shadowMap);
+    m_shadowTarget.createFramebuffer();
 }
 
-void Light::destroyShadowMap() { m_target.clear(); }
+void Light::destroyShadowMap() { m_shadowTarget.clear(); }
 
 Texture *Light::getShadowMap() const {
-    return m_isCastShadow ? m_target.getTexture() : nullptr;
+    return m_isCastShadow ? m_shadowTarget.getTexture() : nullptr;
 }
 
 void Light::computeLightSpaceMatrix(const Transform &transform,

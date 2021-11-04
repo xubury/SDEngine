@@ -8,16 +8,6 @@
 
 namespace sd {
 
-enum GeometryBufferType {
-    G_POSITION = 0,
-    G_NORMAL,
-    G_ALBEDO,
-    G_AMBIENT,
-    G_EMISSIVE,
-    G_ENTITY_ID,
-    G_DEPTH,
-    GBUFFER_COUNT
-};
 
 class RenderEngine : public Layer, public SystemManager {
    public:

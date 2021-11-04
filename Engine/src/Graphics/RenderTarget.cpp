@@ -73,9 +73,11 @@ glm::vec2 RenderTarget::mapClipToScreen(const glm::vec2 &pos) {
     return screen;
 }
 
-Framebuffer *RenderTarget::getFramebuffer() const {
+const Framebuffer *RenderTarget::getFramebuffer() const {
     return m_framebuffer.get();
 }
+
+Framebuffer *RenderTarget::getFramebuffer() { return m_framebuffer.get(); }
 
 Texture *RenderTarget::getTexture(uint32_t attachmentId) const {
     return m_framebuffer->getTexture(attachmentId);

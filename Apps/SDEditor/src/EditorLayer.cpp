@@ -32,11 +32,21 @@ EditorLayer::EditorLayer(int width, int height)
         image->data());
 
     newScene();
-    m_target = sd::Framebuffer::create();
-    m_target->attachTexture(sd::Texture::create(
+    m_screenBuffer = sd::Framebuffer::create();
+    m_screenBuffer->attachTexture(sd::Texture::create(
         m_width, m_height, 1, sd::TextureType::TEX_2D, sd::TextureFormat::RGBA,
         sd::TextureFormatType::UBYTE, sd::TextureWrap::BORDER,
-        sd::TextureFilter::LINEAR, sd::TextureMipmapFilter::LINEAR));
+        sd::TextureFilter::NEAREST, sd::TextureMipmapFilter::NEAREST));
+
+    m_debugGBuffer = sd::Framebuffer::create();
+    for (int i = 0; i < sd::GeometryBufferType::GBUFFER_COUNT; ++i) {
+        m_debugGBuffer->attachTexture(sd::Texture::create(
+            width, height, 1, sd::TextureType::TEX_2D,
+            getTextureFormat(sd::GeometryBufferType(i)),
+            getTextureFormatType(sd::GeometryBufferType(i)),
+            sd::TextureWrap::EDGE, sd::TextureFilter::NEAREST,
+            sd::TextureMipmapFilter::NEAREST));
+    }
 }
 
 void EditorLayer::onAttach() { show(); }
@@ -60,6 +70,16 @@ void EditorLayer::onRender() {
         sd::Renderer::drawBillboard(m_lightIcon, pos, glm::vec2(scale));
     });
     sd::Renderer::endScene();
+
+    sd::Device::instance().blitFramebuffer(nullptr, 0, m_screenBuffer.get(), 0,
+                                           sd::BufferBitMask::COLOR_BUFFER_BIT,
+                                           sd::TextureFilter::NEAREST);
+    for (int i = 0; i < sd::GeometryBufferType::GBUFFER_COUNT; ++i) {
+        sd::Device::instance().blitFramebuffer(
+            &sd::Application::getRenderEngine().getRenderSystem()->getGBuffer(),
+            i, m_debugGBuffer.get(), i, sd::BufferBitMask::COLOR_BUFFER_BIT,
+            sd::TextureFilter::NEAREST);
+    }
 }
 
 void EditorLayer::onTick(float dt) {
@@ -70,11 +90,9 @@ void EditorLayer::onTick(float dt) {
     if (!ImGuizmo::IsUsing() && !m_hide && ImGui::IsMouseDown(0) &&
         m_isViewportHovered) {
         sd::EntityId id = sd::Entity::INVALID_ID;
-        sd::Application::getRenderEngine()
-            .getRenderSystem()
-            ->getGBuffer()
-            .readPixels(sd::GeometryBufferType::G_ENTITY_ID, 0, mouseX,
-                        viewportSize.y - mouseY, 0, 1, 1, 1, sizeof(id), &id);
+        m_debugGBuffer->readPixels(sd::GeometryBufferType::G_ENTITY_ID, 0,
+                                   mouseX, viewportSize.y - mouseY, 0, 1, 1, 1,
+                                   sizeof(id), &id);
         if (id != sd::Entity::INVALID_ID) {
             m_scenePanel.setSelectedEntity(id);
         }
@@ -198,11 +216,7 @@ void EditorLayer::onImGui() {
     {
         ImVec2 wsize = ImGui::GetContentRegionAvail();
         for (int i = 0; i < sd::GeometryBufferType::G_ENTITY_ID; ++i) {
-            ImGui::DrawTexture(*sd::Application::getRenderEngine()
-                                    .getRenderSystem()
-                                    ->getGBuffer()
-                                    .getTexture(i),
-                               wsize);
+            ImGui::DrawTexture(*m_debugGBuffer->getTexture(i), wsize);
         }
     }
     ImGui::End();
@@ -219,7 +233,8 @@ void EditorLayer::onImGui() {
         if (m_width != wsize.x || m_height != wsize.y) {
             if (wsize.x > 0 && wsize.y > 0) {
                 sd::Application::getRenderEngine().resize(wsize.x, wsize.y);
-                m_target->resize(wsize.x, wsize.y);
+                m_screenBuffer->resize(wsize.x, wsize.y);
+                m_debugGBuffer->resize(wsize.x, wsize.y);
             }
 
             m_width = wsize.x;
@@ -227,10 +242,7 @@ void EditorLayer::onImGui() {
         }
         m_isViewportFocused = ImGui::IsWindowFocused();
         m_isViewportHovered = ImGui::IsWindowHovered();
-        sd::Device::instance().blitFramebuffer(
-            nullptr, m_target.get(), 0, sd::BufferBitMask::COLOR_BUFFER_BIT,
-            sd::TextureFilter::LINEAR);
-        ImGui::DrawTexture(*m_target->getTexture(), wsize);
+        ImGui::DrawTexture(*m_screenBuffer->getTexture(), wsize);
 
         sd::Entity selectedEntity = m_scenePanel.getSelectedEntity();
         if (selectedEntity) {

@@ -34,7 +34,8 @@ class GLDevice : public Device {
 
     void resetShaderState() override;
 
-    void blitFramebuffer(Framebuffer *src, Framebuffer *dst, uint32_t index,
+    void blitFramebuffer(Framebuffer *src, uint32_t srcAttachment,
+                         Framebuffer *dst, uint32_t dstAttachment,
                          BufferBitMask mask, TextureFilter filter) override;
 };
 

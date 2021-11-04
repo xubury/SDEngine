@@ -51,9 +51,9 @@ class SD_API Light {
     void computeLightSpaceMatrix(const Transform &transform,
                                  const Camera *camera);
 
-    const RenderTarget &getRenderTarget() const { return m_target; };
-
     Texture *getShadowMap() const;
+
+    RenderTarget &getRenderTarget() { return m_shadowTarget; };
 
     template <typename Archive>
     void serialize(Archive &archive) {
@@ -66,7 +66,7 @@ class SD_API Light {
     static void computeBoundingBox(const Transform &transform,
                                    const Camera &camera, glm::vec3 &min,
                                    glm::vec3 &max);
-    RenderTarget m_target;
+    RenderTarget m_shadowTarget;
     glm::mat4 m_projectionView;
 
     bool m_isCastShadow;
