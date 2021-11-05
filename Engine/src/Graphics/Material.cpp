@@ -1,7 +1,23 @@
 #include "Graphics/Material.hpp"
 #include "Utility/Log.hpp"
+#include <map>
 
 namespace sd {
+
+const std::unordered_map<MaterialType, std::string> stringByMaterialType = {
+    {MaterialType::AMBIENT, "Ambient"},
+    {MaterialType::DIFFUSE, "Diffuse"},
+    {MaterialType::SPECULAR, "Specular"},
+    {MaterialType::EMISSIVE, "Emissive"},
+    {MaterialType::HEIGHT, "Height"},
+    {MaterialType::NORMALS, "Normals"},
+    {MaterialType::SHININESS, "Shininess"},
+
+};
+
+std::string getMaterialName(MaterialType type) {
+    return stringByMaterialType.at(type);
+}
 
 void Material::setTexture(MaterialType type, const Ref<Texture> &texture) {
     m_textures[type] = texture;

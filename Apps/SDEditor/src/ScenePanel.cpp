@@ -365,42 +365,12 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
         });
 }
 
-static const char *getTextureName(sd::MaterialType type) {
-    const char *ret = nullptr;
-    switch (type) {
-        case sd::MaterialType::AMBIENT:
-            ret = "Ambient";
-            break;
-        case sd::MaterialType::DIFFUSE:
-            ret = "Diffuse";
-            break;
-        case sd::MaterialType::SPECULAR:
-            ret = "Specular";
-            break;
-        case sd::MaterialType::EMISSIVE:
-            ret = "Emissive";
-            break;
-        case sd::MaterialType::HEIGHT:
-            ret = "Height";
-            break;
-        case sd::MaterialType::NORMALS:
-            ret = "Normals";
-            break;
-        case sd::MaterialType::SHININESS:
-            ret = "Shininess";
-            break;
-        default:
-            break;
-    }
-    return ret;
-}
-
 void ScenePanel::drawMaterials(const std::vector<sd::Material> &materials,
                                const ImVec2 &size) {
     float width = ImGui::GetWindowWidth();
     for (const auto &material : materials) {
         for (const auto &[type, texture] : material.getTextures()) {
-            ImGui::TextUnformatted(getTextureName(type));
+            ImGui::TextUnformatted(getMaterialName(type).c_str());
             ImGui::SameLine(width / 2);
             ImGui::DrawTexture(*texture, size);
         }

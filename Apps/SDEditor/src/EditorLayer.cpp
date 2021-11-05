@@ -178,21 +178,6 @@ void EditorLayer::onImGui() {
 
     m_scenePanel.onImGui();
 
-    ImGui::Begin("Camera");
-    {
-        glm::vec3 position = m_editorCamera.getWorldPosition();
-        if (ImGui::DrawVec3Control("Translation", position)) {
-            m_editorCamera.setWorldPosition(position);
-        }
-
-        glm::vec3 rotation =
-            glm::degrees(glm::eulerAngles(m_editorCamera.getWorldRotation()));
-        if (ImGui::DrawVec3Control("Rotation", rotation)) {
-            m_editorCamera.setWorldRotation(glm::radians(rotation));
-        }
-    }
-    ImGui::End();
-
     ImGui::Begin("Render Settings");
     {
         float exposure = sd::Application::getRenderEngine().getExposure();

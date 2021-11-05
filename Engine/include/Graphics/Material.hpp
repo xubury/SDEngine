@@ -18,6 +18,8 @@ enum class MaterialType {
     SHININESS
 };
 
+std::string SD_API getMaterialName(MaterialType type);
+
 class SD_API Material {
    public:
     void init();

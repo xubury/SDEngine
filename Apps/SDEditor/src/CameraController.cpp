@@ -3,7 +3,6 @@
 #include "Utility/Log.hpp"
 
 const float ROTATION_SPEED = 0.1;
-const float TRANSLATION_SPEED = 0.01;
 const float SMOOTHNESS = 10;
 
 CameraController::CameraController()
@@ -46,18 +45,8 @@ CameraController::CameraController()
 void CameraController::tick(float dt) {
     m_mouseSmoothMovement =
         glm::mix(m_mouseSmoothMovement, m_mouseMovement, dt * SMOOTHNESS);
-    if (sd::Input::isKeyDown(SDLK_LALT)) {
-        rotate(-m_mouseSmoothMovement.x * ROTATION_SPEED,
-               -m_mouseSmoothMovement.y * ROTATION_SPEED);
-    } else if (sd::Input::isKeyDown(SDLK_LSHIFT)) {
-        move(m_camera->getWorldRight() * -m_mouseSmoothMovement.x *
-             TRANSLATION_SPEED);
-        move(m_camera->getWorldUp() * m_mouseSmoothMovement.y *
-             TRANSLATION_SPEED);
-    } else {
-        rotateAround(-m_mouseSmoothMovement.x * ROTATION_SPEED,
-                     -m_mouseSmoothMovement.y * ROTATION_SPEED);
-    }
+    rotate(-m_mouseSmoothMovement.x * ROTATION_SPEED,
+           -m_mouseSmoothMovement.y * ROTATION_SPEED);
     m_mouseMovement.x = 0;
     m_mouseMovement.y = 0;
 }

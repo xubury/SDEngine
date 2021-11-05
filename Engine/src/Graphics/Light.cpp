@@ -91,7 +91,7 @@ void Light::computeLightSpaceMatrix(const Transform &transform,
         glm::vec3 max;
         computeBoundingBox(transform, *camera, min, max);
         // Add a offset for shadow behind the camera frustum
-        min.z -= camera->getFarZ();
+        min.z -= 300;
         glm::vec3 size = max - min;
         glm::vec3 center = (max + min) / 2.f;
         center.z -= size.z / 2.f;
