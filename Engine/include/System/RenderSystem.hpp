@@ -83,8 +83,6 @@ class SD_API RenderSystem : public System {
     RenderTarget m_gBufferTarget;
     Ref<Shader> m_gBufferShader;
 
-    Ref<Shader> m_forwardShader;
-
     Ref<VertexArray> m_quad;
 
     Ref<Shader> m_skyboxShader;

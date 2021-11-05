@@ -32,7 +32,7 @@ layout(binding = 4) uniform sampler2DMS u_gAmbient;
 
 void main() {
     vec3 cur = vec3(0);
-    ivec2 uv = ivec2(in_texCoord * textureSize(u_gPosition));
+    const ivec2 uv = ivec2(in_texCoord * textureSize(u_gPosition));
     const int samples = textureSamples(u_gPosition);
     for (int i = 0; i < samples; ++i) {
         vec3 fragPos = texelFetch(u_gPosition, uv, i).rgb;
@@ -46,8 +46,9 @@ void main() {
         cur += calculateLight(u_light, fragPos, normal, viewDir, ambient,
                               diffuse, specular);
     }
+    cur = cur / samples;
 
     vec3 last = texture(u_lighting, in_texCoord).rgb;
-    vec3 result = last + cur / samples;
+    vec3 result = last + cur;
     fragColor = vec4(result, 1.0f);
 }

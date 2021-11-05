@@ -68,7 +68,6 @@ void RenderSystem::initShaders() {
     m_deferredShader = Asset::manager().load<Shader>("shaders/deferred.glsl");
     m_blurShader = Asset::manager().load<Shader>("shaders/blur.glsl");
     m_gBufferShader = Asset::manager().load<Shader>("shaders/gbuffer.glsl");
-    m_forwardShader = Asset::manager().load<Shader>("shaders/forward.glsl");
 }
 
 void RenderSystem::initLighting(int width, int height, int samples) {
