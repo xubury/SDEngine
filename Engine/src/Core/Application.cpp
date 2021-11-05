@@ -29,7 +29,7 @@ Application::Application() {
     Log::init(debugPath);
     int width = 1280;
     int height = 720;
-    int samples = 8;
+    int samples = 4;
 
     Random::init();
     SD_CORE_INFO("Debug info is output to: {}", debugPath);

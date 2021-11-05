@@ -16,7 +16,6 @@ void main() {
 
 #include shaders/camera.glsl
 #include shaders/light.glsl
-#include shaders/textureMS.glsl
 
 layout(location = 0) out vec4 fragColor;
 
@@ -24,7 +23,7 @@ layout(location = 0) in vec2 in_texCoord;
 
 uniform Light u_light;
 
-layout(binding = 0) uniform sampler2DMS u_lighting;
+layout(binding = 0) uniform sampler2D u_lighting;
 layout(binding = 1) uniform sampler2DMS u_gPosition;
 layout(binding = 2) uniform sampler2DMS u_gNormal;
 layout(binding = 3) uniform sampler2DMS u_gAlbedo;
@@ -32,18 +31,23 @@ layout(binding = 4) uniform sampler2DMS u_gAmbient;
 
 
 void main() {
-    vec3 fragPos = textureMS(u_gPosition, in_texCoord).rgb;
-    vec3 normal = textureMS(u_gNormal, in_texCoord).rgb;
-    vec4 albedo = textureMS(u_gAlbedo, in_texCoord);
-    vec3 diffuse = albedo.rgb;
-    vec3 specular = vec3(albedo.a);
-    vec3 ambient = textureMS(u_gAmbient, in_texCoord).rgb;
+    vec3 cur = vec3(0);
+    ivec2 uv = ivec2(in_texCoord * textureSize(u_gPosition));
+    const int samples = textureSamples(u_gPosition);
+    for (int i = 0; i < samples; ++i) {
+        vec3 fragPos = texelFetch(u_gPosition, uv, i).rgb;
+        vec3 normal = texelFetch(u_gNormal, uv, i).rgb;
+        vec4 albedo = texelFetch(u_gAlbedo, uv, i);
+        vec3 diffuse = albedo.rgb;
+        vec3 specular = vec3(albedo.a);
+        vec3 ambient = texelFetch(u_gAmbient, uv, i).rgb;
 
-    vec3 viewDir = normalize(u_viewPos - fragPos);
-
-    vec3 last = textureMS(u_lighting, in_texCoord).rgb;
-    vec3 cur = calculateLight(u_light, fragPos, normal, viewDir, ambient,
+        vec3 viewDir = normalize(u_viewPos - fragPos);
+        cur += calculateLight(u_light, fragPos, normal, viewDir, ambient,
                               diffuse, specular);
-    vec3 result = last + cur;
+    }
+
+    vec3 last = texture(u_lighting, in_texCoord).rgb;
+    vec3 result = last + cur / samples;
     fragColor = vec4(result, 1.0f);
 }

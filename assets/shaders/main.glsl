@@ -14,8 +14,6 @@ void main() {
 #shader fragment
 #version 450 core
 
-#include shaders/textureMS.glsl
-
 out vec4 fragColor;
 
 in vec2 texCoord;
@@ -24,11 +22,11 @@ uniform float u_exposure;
 uniform bool u_bloom;
 uniform float u_bloomFactor;
 
-layout(binding = 0) uniform sampler2DMS u_lighting;
+layout(binding = 0) uniform sampler2D u_lighting;
 layout(binding = 1) uniform sampler2D u_blur;
 
 void main() {
-    vec3 result = textureMS(u_lighting, texCoord).rgb;
+    vec3 result = texture(u_lighting, texCoord).rgb;
     // bloom
     if (u_bloom) {
         result += texture(u_blur, texCoord).rgb * u_bloomFactor;

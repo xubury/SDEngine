@@ -67,7 +67,6 @@ class SD_API RenderSystem : public System {
 
     void renderSkybox();
 
-    RenderTarget &getBlurReuslt() { return m_blurTarget[0]; };
     RenderTarget &getLightResult() { return m_lightTarget[0]; };
 
     Ref<Shader> m_mainShader;

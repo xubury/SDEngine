@@ -72,14 +72,15 @@ void RenderSystem::initShaders() {
 }
 
 void RenderSystem::initLighting(int width, int height, int samples) {
+    samples = 1;
     for (int i = 0; i < 2; ++i) {
         m_lightTarget[i].addTexture(Texture::create(
-            width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
-            TextureFormat::RGBA, TextureFormatType::FLOAT, TextureWrap::BORDER,
+            width, height, samples, TextureType::TEX_2D, TextureFormat::RGBA,
+            TextureFormatType::FLOAT, TextureWrap::BORDER,
             TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
         m_lightTarget[i].addTexture(Texture::create(
-            width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
-            TextureFormat::DEPTH, TextureFormatType::FLOAT, TextureWrap::BORDER,
+            width, height, samples, TextureType::TEX_2D, TextureFormat::DEPTH,
+            TextureFormatType::FLOAT, TextureWrap::BORDER,
             TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
         m_lightTarget[i].createFramebuffer();
     }
@@ -250,21 +251,18 @@ void RenderSystem::renderBlur() {
     const int amount = 10;
     bool horizontal = true;
     m_blurShader->bind();
-    const int inputId = 0;
-    const int outputId = 1;
-    Device::instance().blitFramebuffer(getLightResult().getFramebuffer(), 0,
-                                       m_blurTarget[inputId].getFramebuffer(),
-                                       0, BufferBitMask::COLOR_BUFFER_BIT,
-                                       TextureFilter::NEAREST);
     for (int i = 0; i < amount; ++i) {
+        const int inputId = horizontal;
+        const int outputId = !horizontal;
         Renderer::setRenderTarget(m_blurTarget[outputId]);
         m_blurResult = m_blurTarget[outputId].getTexture();
         m_blurShader->setBool("u_horizontal", horizontal);
-        m_blurShader->setTexture("u_image", m_blurTarget[inputId].getTexture());
+        m_blurShader->setTexture("u_image",
+                                 i == 0 ? getLightResult().getTexture()
+                                        : m_blurTarget[inputId].getTexture());
         Renderer::submit(*m_quad, MeshTopology::TRIANGLES,
                          m_quad->getIndexBuffer()->getCount(), 0);
         horizontal = !horizontal;
-        std::swap(m_blurTarget[0], m_blurTarget[1]);
     }
 }
 
