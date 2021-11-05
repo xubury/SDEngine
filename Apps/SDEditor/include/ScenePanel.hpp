@@ -28,12 +28,15 @@ class ScenePanel {
 
     void drawComponents(sd::Entity &entity);
 
-    void drawMaterials(const std::vector<sd::Material> &material,
-                       const ImVec2 &size);
+    void drawMaterialsList(const std::vector<sd::Material> &materials,
+                           const ImVec2 &size, int *selected);
+
+    void reset();
 
     sd::Scene *m_scene;
     sd::Entity m_selectedEntity;
     sd::Entity m_destroyEntity;
+    std::unordered_map<entt::entity, int> m_selectedMaterialIdMap;
 
     int m_gizmoMode;
     int m_gizmoType;

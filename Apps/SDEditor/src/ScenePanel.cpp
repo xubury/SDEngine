@@ -13,7 +13,17 @@ ScenePanel::ScenePanel()
 
 ScenePanel::ScenePanel(sd::Scene *scene) : m_scene(scene) {}
 
-void ScenePanel::setScene(sd::Scene *scene) { m_scene = scene; }
+void ScenePanel::reset() {
+    m_selectedEntity = {};
+    m_selectedMaterialIdMap.clear();
+}
+
+void ScenePanel::setScene(sd::Scene *scene) {
+    if (m_scene != scene) {
+        reset();
+    }
+    m_scene = scene;
+}
 
 void ScenePanel::setSelectedEntity(sd::Entity entity) {
     m_selectedEntity = entity;
@@ -257,7 +267,8 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
 
             ImGui::ColorEdit3("Color", &mc.color[0]);
             ImVec2 size(64, 64);
-            drawMaterials(mc.model->getMaterials(), size);
+            drawMaterialsList(mc.model->getMaterials(), size,
+                              &m_selectedMaterialIdMap[entity]);
         });
     drawComponent<sd::TerrainComponent>(
         "Terrain", entity, [&](sd::TerrainComponent &terrain) {
@@ -365,14 +376,31 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
         });
 }
 
-void ScenePanel::drawMaterials(const std::vector<sd::Material> &materials,
-                               const ImVec2 &size) {
-    float width = ImGui::GetWindowWidth();
-    for (const auto &material : materials) {
-        for (const auto &[type, texture] : material.getTextures()) {
-            ImGui::TextUnformatted(getMaterialName(type).c_str());
-            ImGui::SameLine(width / 2);
-            ImGui::DrawTexture(*texture, size);
+void ScenePanel::drawMaterialsList(const std::vector<sd::Material> &materials,
+                                   const ImVec2 &size, int *selected) {
+    int itemSize = materials.size();
+    if (!itemSize) return;
+
+    std::string item;
+    item = "Material " + std::to_string(*selected);
+    if (ImGui::BeginCombo("##Materials", item.c_str())) {
+        for (int i = 0; i < itemSize; i++) {
+            item = "Material " + std::to_string(i);
+            const bool is_selected = (*selected == i);
+            if (ImGui::Selectable(item.c_str(), is_selected)) *selected = i;
+
+            // Set the initial focus when opening the combo (scrolling +
+            // keyboard navigation focus)
+            if (is_selected) ImGui::SetItemDefaultFocus();
         }
+        ImGui::EndCombo();
+    }
+
+    float width = ImGui::GetWindowWidth();
+    const auto &material = materials[*selected];
+    for (const auto &[type, texture] : material.getTextures()) {
+        ImGui::TextUnformatted(getMaterialName(type).c_str());
+        ImGui::SameLine(width / 2);
+        ImGui::DrawTexture(*texture, size);
     }
 }
