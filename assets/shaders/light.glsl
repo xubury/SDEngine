@@ -56,7 +56,7 @@ float shadowCalculation(Light light, vec3 fragPos, vec3 normal) {
 }
 
 vec3 dirLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
-              vec3 ambient, vec3 diffuse, vec3 specular) {
+              vec3 ambient, vec4 albedo) {
     vec3 lightDir = normalize(-light.direction);
 
     // ambient
@@ -64,20 +64,20 @@ vec3 dirLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
 
     // diffuse
     float diff = max(dot(lightDir, normal), 0.0f);
-    diffuse = light.diffuse * diff * diffuse;
+    vec3 diffuse = light.diffuse * diff * albedo.rgb;
 
     // specular
     // blinn-phong
     vec3 halfwayDir = normalize(viewDir + lightDir);
     float spec = pow(max(dot(normal, halfwayDir), 0.0f), 64.0f);
-    specular = light.specular * spec * specular;
+    vec3 specular = light.specular * spec * albedo.a;
 
     float shadow = shadowCalculation(light, fragPos, normal);
     return ambient + (1.0f - shadow) * (diffuse + specular);
 }
 
 vec3 pointLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
-                vec3 ambient, vec3 diffuse, vec3 specular) {
+                vec3 ambient, vec4 albedo) {
     vec3 lightDir = normalize(light.position - fragPos);
 
     // ambient
@@ -85,13 +85,13 @@ vec3 pointLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
 
     // diffuse
     float diff = max(dot(normal, lightDir), 0.0f);
-    diffuse = light.diffuse * diff * diffuse;
+    vec3 diffuse = light.diffuse * diff * albedo.rgb;
 
     // specular
     // blinn-phong
     vec3 halfwayDir = normalize(viewDir + lightDir);
     float spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0f);
-    specular = light.specular * spec * specular;
+    vec3 specular = light.specular * spec * albedo.a;
 
     float distance = length(light.position - fragPos);
     float attenuation = 1.0 / (light.constant + light.linear * distance +
@@ -112,9 +112,9 @@ vec3 pointLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
 }
 
 vec3 calculateLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
-                    vec3 ambient, vec3 diffuse, vec3 specular) {
+                    vec3 ambient, vec4 albedo) {
     return light.isDirectional ? dirLight(light, fragPos, normal, viewDir,
-                                          ambient, diffuse, specular)
+                                          ambient, albedo)
                                : pointLight(light, fragPos, normal, viewDir,
-                                            ambient, diffuse, specular);
+                                            ambient, albedo);
 }

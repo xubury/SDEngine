@@ -38,13 +38,10 @@ void main() {
         vec3 fragPos = texelFetch(u_gPosition, uv, i).rgb;
         vec3 normal = texelFetch(u_gNormal, uv, i).rgb;
         vec4 albedo = texelFetch(u_gAlbedo, uv, i);
-        vec3 diffuse = albedo.rgb;
-        vec3 specular = vec3(albedo.a);
         vec3 ambient = texelFetch(u_gAmbient, uv, i).rgb;
 
         vec3 viewDir = normalize(u_viewPos - fragPos);
-        cur += calculateLight(u_light, fragPos, normal, viewDir, ambient,
-                              diffuse, specular);
+        cur += calculateLight(u_light, fragPos, normal, viewDir, ambient, albedo);
     }
     cur = cur / samples;
 
