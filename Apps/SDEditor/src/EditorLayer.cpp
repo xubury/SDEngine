@@ -56,7 +56,7 @@ void EditorLayer::onDetech() { hide(); }
 void EditorLayer::onRender() {
     if (m_hide) return;
 
-    sd::Renderer::setRenderTarget(
+    sd::Device::instance().setRenderTarget(
         sd::Application::getRenderEngine().getRenderTarget());
     sd::Device::instance().clear(sd::BufferBitMask::DEPTH_BUFFER_BIT);
     sd::Renderer::beginScene(m_editorCamera);

@@ -76,13 +76,13 @@ void Renderer::init() {
 
         offset += 4;
     }
-    s_data.quadEBO =
-        IndexBuffer::create(quadIndices.data(), quadIndices.size(),
-                            sizeof(uint32_t), BufferIOType::STATIC);
+    s_data.quadEBO = IndexBuffer::create(quadIndices.data(), quadIndices.size(),
+                                         BufferIOType::STATIC);
 
-    s_data.quadVBO = VertexBuffer::create(s_data.quadVertexBufferBase.data(),
-                                          s_data.quadVertexBufferBase.size(),
-                                          sizeof(Quad), BufferIOType::DYNAMIC);
+    s_data.quadVBO =
+        VertexBuffer::create(s_data.quadVertexBufferBase.data(),
+                             s_data.quadVertexBufferBase.size() * sizeof(Quad),
+                             BufferIOType::DYNAMIC);
 
     VertexBufferLayout layout;
     layout.push(BufferDataType::FLOAT, 3);  // position
@@ -119,12 +119,6 @@ void Renderer::submit(const VertexArray& vao, MeshTopology topology,
     Device::instance().drawElements(topology, count, offset);
 }
 
-void Renderer::setRenderTarget(const RenderTarget& target) {
-    Device::instance().setFramebuffer(target.getFramebuffer());
-    Device::instance().setViewport(target.getX(), target.getY(),
-                                   target.getWidth(), target.getHeight());
-}
-
 void Renderer::setShader(Shader& shader) {
     shader.setUniformBuffer("Camera", *s_data.cameraUBO);
 }
@@ -133,7 +127,7 @@ void Renderer::beginScene(Camera& camera) {
     s_data.cameraData.viewProjection = camera.getViewPorjection();
     s_data.cameraData.viewPos = camera.getWorldPosition();
     s_data.camera = &camera;
-    s_data.cameraUBO->updateData(&s_data.cameraData, 1, sizeof(CameraData));
+    s_data.cameraUBO->updateData(&s_data.cameraData, sizeof(CameraData));
     startBatch();
 }
 
@@ -158,8 +152,8 @@ void Renderer::flush() {
                          glm::distance2(rhs.getCenter(), viewPos);
               });
 
-    s_data.quadVBO->updateData(s_data.quadVertexBufferBase.data(), offset,
-                               sizeof(Quad));
+    s_data.quadVBO->updateData(s_data.quadVertexBufferBase.data(),
+                               offset * sizeof(Quad));
 
     s_data.shader->bind();
     for (uint32_t i = 0; i < s_data.textureSlotIndex; ++i) {

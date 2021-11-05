@@ -35,8 +35,6 @@ class TerrainSystem : public System {
     QuadTree m_qtRoot;
     glm::vec3 m_min;
     glm::vec3 m_max;
-
-    Scene *m_scene;
 };
 
 }  // namespace sd

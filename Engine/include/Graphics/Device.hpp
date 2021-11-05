@@ -3,10 +3,9 @@
 
 #include "Utility/Base.hpp"
 #include "Graphics/Graphics.hpp"
+#include "Graphics/RenderTarget.hpp"
 
 namespace sd {
-
-class Framebuffer;
 
 class SD_API Device {
    public:
@@ -31,6 +30,8 @@ class SD_API Device {
                             BufferBitMask::STENCIL_BUFFER_BIT) = 0;
 
     virtual void setViewport(int x, int y, int width, int height) = 0;
+
+    virtual void setRenderTarget(const RenderTarget &target) = 0;
 
     virtual void setFramebuffer(const Framebuffer *framebuffer) = 0;
 

@@ -22,7 +22,7 @@ void ShadowSystem::onRender() {
         Light &light = lightComp.light;
         if (!light.isCastShadow()) return;
 
-        Renderer::setRenderTarget(light.getRenderTarget());
+        Device::instance().setRenderTarget(light.getRenderTarget());
         light.getRenderTarget().getFramebuffer()->clearDepth();
         light.computeLightSpaceMatrix(
             transformComp.transform,

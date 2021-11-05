@@ -19,7 +19,8 @@ void ProfileSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
 void ProfileSystem::onTick(float) {}
 
 void ProfileSystem::onRender() {
-    Renderer::setRenderTarget(Application::getRenderEngine().getRenderTarget());
+    Device::instance().setRenderTarget(
+        Application::getRenderEngine().getRenderTarget());
     Renderer::beginScene(m_camera);
 
     std::wstring fpsStr =

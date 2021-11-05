@@ -103,10 +103,9 @@ void RenderSystem::initQuad() {
         -1.0f, 1.0f,  0.f, 0.f,  1.0f,  // top left
     };
     const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
-    auto buffer = VertexBuffer::create(quadVertices, 20, sizeof(float),
+    auto buffer = VertexBuffer::create(quadVertices, sizeof(quadVertices),
                                        BufferIOType::STATIC);
-    auto indexBuffer =
-        IndexBuffer::create(indices, 6, sizeof(uint32_t), BufferIOType::STATIC);
+    auto indexBuffer = IndexBuffer::create(indices, 6, BufferIOType::STATIC);
     m_quad = VertexArray::create();
     VertexBufferLayout layout;
     layout.push(BufferDataType::FLOAT, 3);
@@ -137,10 +136,9 @@ void RenderSystem::initSkybox() {
     m_skybox = VertexArray::create();
     VertexBufferLayout layout;
     layout.push(BufferDataType::FLOAT, 3);
-    auto vbo = VertexBuffer::create(skyboxVertices, 24, sizeof(float),
+    auto vbo = VertexBuffer::create(skyboxVertices, sizeof(skyboxVertices),
                                     BufferIOType::STATIC);
-    auto ibo = IndexBuffer::create(skyboxIndices, 36, sizeof(uint32_t),
-                                   BufferIOType::STATIC);
+    auto ibo = IndexBuffer::create(skyboxIndices, 36, BufferIOType::STATIC);
     m_skybox->addVertexBuffer(vbo, layout);
     m_skybox->setIndexBuffer(ibo);
 
@@ -216,7 +214,7 @@ void RenderSystem::renderSkybox() {
     Device::instance().setDepthfunc(DepthFunc::LESS_EQUAL);
     Device::instance().setCullFace(Face::FRONT);
 
-    Renderer::setRenderTarget(getLightResult());
+    Device::instance().setRenderTarget(getLightResult());
     Renderer::beginScene(*Application::getRenderEngine().getCamera());
     Renderer::submit(*m_skybox, MeshTopology::TRIANGLES,
                      m_skybox->getIndexBuffer()->getCount(), 0);
@@ -226,7 +224,8 @@ void RenderSystem::renderSkybox() {
 }
 
 void RenderSystem::renderMain() {
-    Renderer::setRenderTarget(Application::getRenderEngine().getRenderTarget());
+    Device::instance().setRenderTarget(
+        Application::getRenderEngine().getRenderTarget());
 
     m_mainShader->setBool("u_bloom", Application::getRenderEngine().getBloom());
     if (Application::getRenderEngine().getBloom()) {
@@ -253,7 +252,7 @@ void RenderSystem::renderBlur() {
     for (int i = 0; i < amount; ++i) {
         const int inputId = horizontal;
         const int outputId = !horizontal;
-        Renderer::setRenderTarget(m_blurTarget[outputId]);
+        Device::instance().setRenderTarget(m_blurTarget[outputId]);
         m_blurResult = m_blurTarget[outputId].getTexture();
         m_blurShader->setBool("u_horizontal", horizontal);
         m_blurShader->setTexture("u_image",
@@ -269,7 +268,7 @@ void RenderSystem::renderText() {
     auto scene = Application::getRenderEngine().getScene();
     auto textView = scene->view<TransformComponent, TextComponent>();
 
-    Renderer::setRenderTarget(getLightResult());
+    Device::instance().setRenderTarget(getLightResult());
     Renderer::beginScene(*Application::getRenderEngine().getCamera());
     textView.each([](const TransformComponent &transformComp,
                      const TextComponent &textComp) {
@@ -285,7 +284,7 @@ void RenderSystem::renderText() {
 }
 
 void RenderSystem::renderEmissive() {
-    Renderer::setRenderTarget(getLightResult());
+    Device::instance().setRenderTarget(getLightResult());
     m_emssiveShader->bind();
     m_emssiveShader->setTexture("u_lighting", getLightResult().getTexture());
     m_emssiveShader->setTexture(
@@ -319,7 +318,7 @@ void RenderSystem::renderDeferred() {
 
     lightView.each([this](const TransformComponent &transformComp,
                           const LightComponent &lightComp) {
-        Renderer::setRenderTarget(m_lightTarget[outputIndex]);
+        Device::instance().setRenderTarget(m_lightTarget[outputIndex]);
         const Light &light = lightComp.light;
         m_deferredShader->setTexture("u_lighting",
                                      m_lightTarget[inputIndex].getTexture());
@@ -361,12 +360,13 @@ void RenderSystem::renderGBuffer() {
     auto terrainView = scene->view<TransformComponent, TerrainComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
-    Renderer::setRenderTarget(m_gBufferTarget);
-
-    m_gBufferShader->bind();
+    Device::instance().setRenderTarget(m_gBufferTarget);
     Device::instance().disable(Operation::BLEND);
+
     Renderer::beginScene(*Application::getRenderEngine().getCamera());
     Renderer::setShader(*m_gBufferShader);
+
+    m_gBufferShader->bind();
     terrainView.each([this](const entt::entity &entity,
                             const TransformComponent &transformComp,
                             const TerrainComponent &terrainComp) {

@@ -19,8 +19,6 @@ class SD_API Renderer {
     static void submit(const VertexArray &vao, MeshTopology topology,
                        size_t count, size_t offset);
 
-    static void setRenderTarget(const RenderTarget &target);
-
     static void startBatch();
     static void flush();
     static void nextBatch();

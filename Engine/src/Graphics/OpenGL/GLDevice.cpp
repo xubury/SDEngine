@@ -1,7 +1,5 @@
 #include "Graphics/OpenGL/GLDevice.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
-#include "Graphics/OpenGL/GLFramebuffer.hpp"
-#include "Graphics/OpenGL/GLTexture.hpp"
 #include "Utility/Assert.hpp"
 #include <GL/glew.h>
 
@@ -67,6 +65,12 @@ void GLDevice::clear(BufferBitMask bit) {
 void GLDevice::setViewport(int x, int y, int width, int height) {
     // opengl define viewport origin at bottom-left
     glViewport(x, -y, width, height);
+}
+
+void GLDevice::setRenderTarget(const RenderTarget &target) {
+    setFramebuffer(target.getFramebuffer());
+    setViewport(target.getX(), target.getY(), target.getWidth(),
+                target.getHeight());
 }
 
 void GLDevice::setFramebuffer(const Framebuffer *framebuffer) {
