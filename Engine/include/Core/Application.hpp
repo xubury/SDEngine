@@ -17,9 +17,9 @@ class SD_API Application {
     Application &operator=(const Application &application) = delete;
 
    protected:
-   void pushLayer(const Ref<Layer> &layer);
+    Ref<Layer> pushLayer(const Ref<Layer> &layer);
 
-    void pushOverlay(const Ref<Layer> &layer);
+    Ref<Layer> pushOverlay(const Ref<Layer> &layer);
 
     void popLayer(const Ref<Layer> &layer);
 

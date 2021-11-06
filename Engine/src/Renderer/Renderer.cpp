@@ -103,20 +103,12 @@ void Renderer::init() {
     s_data.shader = Asset::manager().load<Shader>("shaders/2d.glsl");
 }
 
-void Renderer::submit(const VertexArray& vao, MeshTopology topology,
-                      size_t count, size_t offset) {
-    vao.bind();
-    Device::instance().drawElements(topology, count, offset);
-}
-
-void Renderer::beginScene(Camera &camera) {
+void Renderer::beginScene(Camera& camera) {
     RenderEngine::updateShader(*s_data.shader, camera);
     startBatch();
 }
 
-void Renderer::endScene() {
-    flush();
-}
+void Renderer::endScene() { flush(); }
 
 void Renderer::flush() {
     if (s_data.quadIndexCnt == 0) {
@@ -142,8 +134,8 @@ void Renderer::flush() {
     }
 
     s_data.shader->bind();
-    Renderer::submit(*s_data.quadVAO, MeshTopology::TRIANGLES,
-                     s_data.quadIndexCnt, 0);
+    Device::instance().submit(*s_data.quadVAO, MeshTopology::TRIANGLES,
+                              s_data.quadIndexCnt, 0);
 
     setTextOrigin(0, 0);
 }
@@ -256,8 +248,8 @@ void Renderer::drawMesh(const Mesh& mesh) {
         mesh.isWireframe() ? PolygonMode::LINE : PolygonMode::FILL, Face::BOTH);
     VertexArray* vao = mesh.getVertexArray();
     SD_CORE_ASSERT(vao, "Invalid mesh!");
-    Renderer::submit(*vao, mesh.getTopology(),
-                     vao->getIndexBuffer()->getCount(), 0);
+    Device::instance().submit(*vao, mesh.getTopology(),
+                              vao->getIndexBuffer()->getCount(), 0);
 }
 
 }  // namespace sd

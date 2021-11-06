@@ -10,8 +10,6 @@ GLVertexArray::~GLVertexArray() { glDeleteVertexArrays(1, &m_id); }
 
 void GLVertexArray::bind() const { glBindVertexArray(m_id); }
 
-void GLVertexArray::unbind() const { glBindVertexArray(0); }
-
 void GLVertexArray::addVertexBuffer(const Ref<VertexBuffer> &buffer,
                                     const VertexBufferLayout &layout,
                                     int index) {

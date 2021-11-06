@@ -16,6 +16,7 @@ void main() {
 
 #include shaders/camera.glsl
 #include shaders/light.glsl
+#include shaders/textureMS.glsl
 
 layout(location = 0) out vec4 fragColor;
 
@@ -23,7 +24,7 @@ layout(location = 0) in vec2 in_texCoord;
 
 uniform Light u_light;
 
-layout(binding = 0) uniform sampler2D u_lighting;
+layout(binding = 0) uniform sampler2DMS u_lighting;
 layout(binding = 1) uniform sampler2DMS u_gPosition;
 layout(binding = 2) uniform sampler2DMS u_gNormal;
 layout(binding = 3) uniform sampler2DMS u_gAlbedo;
@@ -45,7 +46,7 @@ void main() {
     }
     cur = cur / samples;
 
-    vec3 last = texture(u_lighting, in_texCoord).rgb;
+    vec3 last = textureMS(u_lighting, in_texCoord).rgb;
     vec3 result = last + cur;
     fragColor = vec4(result, 1.0f);
 }

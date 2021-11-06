@@ -27,7 +27,7 @@ TextureFormatType SD_API getTextureFormatType(GeometryBufferType type);
 
 class SD_API RenderSystem : public System {
    public:
-    RenderSystem(int width, int height);
+    RenderSystem(int width, int height, int samples);
 
     void onInit() override;
 
@@ -42,7 +42,7 @@ class SD_API RenderSystem : public System {
 
    private:
     void initShaders();
-    void initLighting(int width, int height);
+    void initLighting(int width, int height, int samples);
     void initBloom(int width, int height);
     void initQuad();
     void initSkybox();
@@ -62,7 +62,7 @@ class SD_API RenderSystem : public System {
 
     void renderSkybox();
 
-    RenderTarget &getLightResult() { return m_lightTarget[0]; };
+    RenderTarget &getLightingTarget() { return m_lightTarget[0]; };
 
     Ref<Shader> m_mainShader;
 

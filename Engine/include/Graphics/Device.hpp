@@ -3,6 +3,7 @@
 
 #include "Utility/Base.hpp"
 #include "Graphics/Graphics.hpp"
+#include "Graphics/VertexArray.hpp"
 #include "Graphics/RenderTarget.hpp"
 
 namespace sd {
@@ -18,6 +19,9 @@ class SD_API Device {
     Device(const Device &) = delete;
 
     Device &operator=(const Device &) = delete;
+
+    void submit(const VertexArray &vao, MeshTopology topology, size_t count,
+                size_t offset);
 
     virtual void drawElements(MeshTopology topology, size_t count,
                               size_t offset) = 0;

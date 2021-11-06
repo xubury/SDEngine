@@ -46,27 +46,26 @@ Application::Application() {
 
     // Intialize graphics device
     Device::init();
-
-    RenderEngine::init(width, height, samples);
-
     if (samples > 1) {
         Device::instance().enable(Operation::MULTISAMPLE);
     } else {
         Device::instance().disable(Operation::MULTISAMPLE);
     }
-    m_imguiLayer = createRef<ImGuiLayer>();
 
-    pushOverlay(m_imguiLayer);
+    RenderEngine::init(width, height, samples);
+
+    m_imguiLayer = std::static_pointer_cast<ImGuiLayer>(
+        pushOverlay(createRef<ImGuiLayer>()));
 }
 
 Application::~Application() { SDL_Quit(); }
 
-void Application::pushLayer(const Ref<Layer> &layer) {
-    m_layers.pushLayer(layer);
+Ref<Layer> Application::pushLayer(const Ref<Layer> &layer) {
+    return m_layers.pushLayer(layer);
 }
 
-void Application::pushOverlay(const Ref<Layer> &layer) {
-    m_layers.pushOverlay(layer);
+Ref<Layer> Application::pushOverlay(const Ref<Layer> &layer) {
+    return m_layers.pushOverlay(layer);
 }
 
 void Application::popLayer(const Ref<Layer> &layer) {

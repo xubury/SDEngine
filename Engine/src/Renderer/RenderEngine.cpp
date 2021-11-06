@@ -21,7 +21,7 @@ struct RenderData {
     int height;
     int samples;
 
-    RenderTarget target;
+    RenderTarget defaultTarget;
 
     Scene *scene;
 
@@ -48,9 +48,6 @@ void RenderEngine::init(int width, int height, int samples) {
     s_data.width = width;
     s_data.height = height;
     s_data.samples = samples;
-    if (samples > 1) {
-        Device::instance().enable(Operation::MULTISAMPLE);
-    }
 
     s_data.cameraUBO = UniformBuffer::create(nullptr, sizeof(CameraData),
                                              BufferIOType::DYNAMIC);
@@ -59,7 +56,6 @@ void RenderEngine::init(int width, int height, int samples) {
     s_data.isBloom = true;
     s_data.bloom = 1.0f;
 
-    s_data.gBufferTarget.clear();
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
         s_data.gBufferTarget.addTexture(Texture::create(
             width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
@@ -70,8 +66,8 @@ void RenderEngine::init(int width, int height, int samples) {
     s_data.gBufferTarget.createFramebuffer();
 
     s_data.systems.addSystem<ShadowSystem>();
-    s_data.renderSystem =
-        s_data.systems.addSystem<RenderSystem>(s_data.width, s_data.height);
+    s_data.renderSystem = s_data.systems.addSystem<RenderSystem>(
+        s_data.width, s_data.height, s_data.samples);
     s_data.systems.addSystem<ProfileSystem>(s_data.width, s_data.height);
     s_data.terrainSystem = s_data.systems.addSystem<TerrainSystem>();
 }
@@ -82,8 +78,7 @@ void RenderEngine::resize(int width, int height) {
     if (s_data.camera) {
         s_data.camera->resize(width, height);
     }
-    s_data.camera->resize(width, height);
-    s_data.target.resize(width, height);
+    s_data.defaultTarget.resize(width, height);
     s_data.gBufferTarget.resize(width, height);
     s_data.systems.dispatchEvent(SizeEvent(width, height));
 }
@@ -105,7 +100,7 @@ TerrainSystem *RenderEngine::getTerrainSystem() {
     return s_data.terrainSystem.get();
 }
 
-RenderTarget &RenderEngine::getRenderTarget() { return s_data.target; }
+RenderTarget &RenderEngine::getRenderTarget() { return s_data.defaultTarget; }
 
 RenderTarget &RenderEngine::getGBufferTarget() { return s_data.gBufferTarget; }
 

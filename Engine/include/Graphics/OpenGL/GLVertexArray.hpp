@@ -16,8 +16,6 @@ class SD_API GLVertexArray : public VertexArray {
 
     void bind() const override;
 
-    void unbind() const override;
-
     void addVertexBuffer(const Ref<VertexBuffer> &buffer,
                          const VertexBufferLayout &layout,
                          int index = -1) override;
@@ -28,6 +26,7 @@ class SD_API GLVertexArray : public VertexArray {
     void setIndexBuffer(const Ref<IndexBuffer> &buffer) override;
 
     Ref<IndexBuffer> getIndexBuffer() override;
+
    private:
     GLuint m_id;
     std::vector<Ref<VertexBuffer>> m_vertexBuffers;
