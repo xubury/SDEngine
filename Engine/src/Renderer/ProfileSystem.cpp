@@ -21,7 +21,6 @@ void ProfileSystem::onTick(float) {}
 void ProfileSystem::onRender() {
     Device::instance().setRenderTarget(RenderEngine::getRenderTarget());
     Renderer::beginScene(m_camera);
-
     std::wstring fpsStr =
         L"FPS:" + std::to_wstring(static_cast<uint32_t>(m_fps.getFps()));
 

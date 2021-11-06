@@ -3,8 +3,8 @@
 
 #include <string>
 #include <list>
+#include <SDL.h>
 
-#include "Core/SDL.hpp"
 #include "Utility/Export.hpp"
 #include "Utility/Base.hpp"
 #include "Utility/EventDispatcher.hpp"

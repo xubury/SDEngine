@@ -1,7 +1,7 @@
 #ifndef SD_ACTION_HPP
 #define SD_ACTION_HPP
 
-#include "Core/SDL.hpp"
+#include <SDL.h>
 #include "Utility/Export.hpp"
 
 namespace sd {

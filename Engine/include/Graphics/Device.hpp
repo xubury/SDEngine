@@ -31,9 +31,9 @@ class SD_API Device {
 
     virtual void setViewport(int x, int y, int width, int height) = 0;
 
-    virtual void setRenderTarget(const RenderTarget &target) = 0;
+    virtual void setRenderTarget(RenderTarget &target) = 0;
 
-    virtual void setFramebuffer(const Framebuffer *framebuffer) = 0;
+    virtual void setFramebuffer(Framebuffer *framebuffer) = 0;
 
     virtual void setPolygonMode(PolygonMode mode, Face face) = 0;
 

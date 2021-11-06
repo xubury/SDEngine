@@ -30,8 +30,6 @@ class SD_API Shader {
 
     virtual void bind() = 0;
 
-    virtual void unbind() = 0;
-
     virtual void setBool(const std::string& name, bool value) = 0;
 
     virtual void setInt(const std::string& name, int value) = 0;

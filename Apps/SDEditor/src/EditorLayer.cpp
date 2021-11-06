@@ -76,7 +76,7 @@ void EditorLayer::onRender() {
                                            sd::TextureFilter::NEAREST);
     for (int i = 0; i < sd::GeometryBufferType::GBUFFER_COUNT; ++i) {
         sd::Device::instance().blitFramebuffer(
-            &sd::RenderEngine::getRenderSystem()->getGBuffer(), i,
+            sd::RenderEngine::getGBufferTarget().getFramebuffer(), i,
             m_debugGBuffer.get(), i, sd::BufferBitMask::COLOR_BUFFER_BIT,
             sd::TextureFilter::NEAREST);
     }

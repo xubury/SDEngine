@@ -78,8 +78,6 @@ void GLShader::linkShaders() {
 
 void GLShader::bind() { glUseProgram(m_id); }
 
-void GLShader::unbind() { glUseProgram(0); }
-
 void GLShader::checkCompileErrors(uint32_t shader, const std::string& type) {
     int success;
     int logSize = 0;

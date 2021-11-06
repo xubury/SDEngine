@@ -27,7 +27,7 @@ TextureFormatType SD_API getTextureFormatType(GeometryBufferType type);
 
 class SD_API RenderSystem : public System {
    public:
-    RenderSystem(int width, int height, int samples);
+    RenderSystem(int width, int height);
 
     void onInit() override;
 
@@ -40,17 +40,12 @@ class SD_API RenderSystem : public System {
     void onSizeEvent(const SizeEvent &event);
     void onSceneEvent(const SceneEvent &event);
 
-    Framebuffer &getGBuffer() { return *m_gBufferTarget.getFramebuffer(); }
-
-    RenderTarget &getGBufferTarget() { return m_gBufferTarget; }
-
    private:
     void initShaders();
-    void initLighting(int width, int height, int samples);
+    void initLighting(int width, int height);
     void initBloom(int width, int height);
     void initQuad();
     void initSkybox();
-    void initGBuffer(int width, int height, int samples);
 
     void clear();
 
@@ -80,7 +75,6 @@ class SD_API RenderSystem : public System {
     Ref<Shader> m_deferredShader;
     RenderTarget m_lightTarget[2];
 
-    RenderTarget m_gBufferTarget;
     Ref<Shader> m_gBufferShader;
 
     Ref<VertexArray> m_quad;

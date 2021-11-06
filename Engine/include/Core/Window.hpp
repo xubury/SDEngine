@@ -2,11 +2,17 @@
 #define SD_WINDOW_HPP
 
 #include <string>
-#include "Core/SDL.hpp"
+#include <SDL.h>
 #include "Utility/Export.hpp"
 #include "Utility/Base.hpp"
 
 namespace sd {
+
+#ifdef DEBUG_BUILD
+#define SDL(stmt) SD_CORE_ASSERT(stmt == 0, SDL_GetError())
+#else
+#define SDL(stmt) stmt
+#endif
 
 struct WindowProp {
     std::string title;

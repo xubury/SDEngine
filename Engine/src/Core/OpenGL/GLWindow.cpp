@@ -1,5 +1,4 @@
 #include "Core/OpenGL/GLWindow.hpp"
-#include "Core/SDL.hpp"
 #include "Utility/Assert.hpp"
 #include <GL/glew.h>
 

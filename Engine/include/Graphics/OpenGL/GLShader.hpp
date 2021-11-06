@@ -25,8 +25,6 @@ class SD_API GLShader : public Shader {
 
     void bind() override;
 
-    void unbind() override;
-
     void setBool(const std::string& name, bool value) override;
 
     void setInt(const std::string& name, int value) override;

@@ -39,8 +39,7 @@ class SD_API Framebuffer {
 
     virtual Texture *getTexture(uint32_t attachmentId = 0) = 0;
 
-    virtual void bind() const = 0;
-    virtual void unbind() const = 0;
+    virtual void bind() = 0;
 
     virtual void resize(int width, int height) = 0;
 

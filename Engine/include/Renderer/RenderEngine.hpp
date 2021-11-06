@@ -17,10 +17,13 @@ class RenderEngine {
 
     static API getAPI();
 
-    static RenderSystem *getRenderSystem();
     static TerrainSystem *getTerrainSystem();
 
-    static const RenderTarget &getRenderTarget();
+    static RenderTarget &getRenderTarget();
+
+    static RenderTarget &getGBufferTarget();
+
+    static void updateShader(Shader &shader, Camera &camera);
 
     static void setScene(Scene *scene);
     static Scene *getScene();

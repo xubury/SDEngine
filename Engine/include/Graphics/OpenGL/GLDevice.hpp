@@ -18,9 +18,9 @@ class GLDevice : public Device {
 
     void setViewport(int x, int y, int width, int height) override;
 
-    void setRenderTarget(const RenderTarget &target) override;
+    void setRenderTarget(RenderTarget &target) override;
 
-    void setFramebuffer(const Framebuffer *framebuffer) override;
+    void setFramebuffer(Framebuffer *framebuffer) override;
 
     void setPolygonMode(PolygonMode mode, Face face) override;
 

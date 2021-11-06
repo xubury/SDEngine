@@ -33,8 +33,10 @@ Application::Application() {
     Asset::manager().setLoader<ModelLoader>();
     Asset::manager().setLoader<FontLoader>();
 
+    // Setting up which api to use
     Graphics::setAPI(API::OpenGL);
 
+    // Initialize context
     WindowProp prop;
     prop.width = width;
     prop.height = height;
@@ -42,6 +44,7 @@ Application::Application() {
     prop.flag = SDL_WINDOW_MAXIMIZED;
     Window::init(prop);
 
+    // Intialize graphics device
     Device::init();
 
     RenderEngine::init(width, height, samples);

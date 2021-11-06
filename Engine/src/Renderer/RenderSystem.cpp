@@ -45,14 +45,12 @@ TextureFormatType getTextureFormatType(GeometryBufferType type) {
     }
 }
 
-RenderSystem::RenderSystem(int width, int height, int samples)
-    : m_blurResult(nullptr) {
+RenderSystem::RenderSystem(int width, int height) : m_blurResult(nullptr) {
     initShaders();
     initQuad();
     initSkybox();
     initBloom(width, height);
-    initLighting(width, height, samples);
-    initGBuffer(width, height, samples);
+    initLighting(width, height);
 }
 
 void RenderSystem::onInit() { registerEvent(this, &RenderSystem::onSizeEvent); }
@@ -70,15 +68,14 @@ void RenderSystem::initShaders() {
     m_gBufferShader = Asset::manager().load<Shader>("shaders/gbuffer.glsl");
 }
 
-void RenderSystem::initLighting(int width, int height, int samples) {
-    samples = 1;
+void RenderSystem::initLighting(int width, int height) {
     for (int i = 0; i < 2; ++i) {
         m_lightTarget[i].addTexture(Texture::create(
-            width, height, samples, TextureType::TEX_2D, TextureFormat::RGBA,
+            width, height, 1, TextureType::TEX_2D, TextureFormat::RGBA,
             TextureFormatType::FLOAT, TextureWrap::BORDER,
             TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
         m_lightTarget[i].addTexture(Texture::create(
-            width, height, samples, TextureType::TEX_2D, TextureFormat::DEPTH,
+            width, height, 1, TextureType::TEX_2D, TextureFormat::DEPTH,
             TextureFormatType::FLOAT, TextureWrap::BORDER,
             TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
         m_lightTarget[i].createFramebuffer();
@@ -145,24 +142,11 @@ void RenderSystem::initSkybox() {
     m_skyboxShader = Asset::manager().load<Shader>("shaders/skybox.glsl");
 }
 
-void RenderSystem::initGBuffer(int width, int height, int samples) {
-    m_gBufferTarget.clear();
-    for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-        m_gBufferTarget.addTexture(Texture::create(
-            width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
-            getTextureFormat(GeometryBufferType(i)),
-            getTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
-            TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
-    }
-    m_gBufferTarget.createFramebuffer();
-}
-
 void RenderSystem::onSizeEvent(const SizeEvent &event) {
     for (int i = 0; i < 2; ++i) {
         m_lightTarget[i].resize(event.width, event.height);
         m_blurTarget[i].resize(event.width, event.height);
     }
-    m_gBufferTarget.resize(event.width, event.height);
 }
 
 void RenderSystem::onTick(float) {}
@@ -191,11 +175,12 @@ void RenderSystem::clear() {
         Device::instance().clear();
     }
 
-    Device::instance().setFramebuffer(m_gBufferTarget.getFramebuffer());
+    Device::instance().setFramebuffer(
+        RenderEngine::getGBufferTarget().getFramebuffer());
     Device::instance().clear(BufferBitMask::COLOR_BUFFER_BIT |
                              BufferBitMask::DEPTH_BUFFER_BIT);
     uint32_t id = static_cast<uint32_t>(Entity::INVALID_ID);
-    m_gBufferTarget.getFramebuffer()->clearAttachment(
+    RenderEngine::getGBufferTarget().getFramebuffer()->clearAttachment(
         GeometryBufferType::G_ENTITY_ID, &id);
 
     Device::instance().setFramebuffer(
@@ -212,10 +197,8 @@ void RenderSystem::renderSkybox() {
     Device::instance().setCullFace(Face::FRONT);
 
     Device::instance().setRenderTarget(getLightResult());
-    Renderer::beginScene(*RenderEngine::getCamera());
     Renderer::submit(*m_skybox, MeshTopology::TRIANGLES,
                      m_skybox->getIndexBuffer()->getCount(), 0);
-    Renderer::endScene();
     Device::instance().setCullFace(Face::BACK);
     Device::instance().setDepthfunc(DepthFunc::LESS);
 }
@@ -273,7 +256,6 @@ void RenderSystem::renderText() {
                                textComp.color);
         }
     });
-
     Renderer::endScene();
 }
 
@@ -281,9 +263,9 @@ void RenderSystem::renderEmissive() {
     Device::instance().setRenderTarget(getLightResult());
     m_emssiveShader->bind();
     m_emssiveShader->setTexture("u_lighting", getLightResult().getTexture());
-    m_emssiveShader->setTexture(
-        "u_gEmissive",
-        m_gBufferTarget.getTexture(GeometryBufferType::G_EMISSIVE));
+    m_emssiveShader->setTexture("u_gEmissive",
+                                RenderEngine::getGBufferTarget().getTexture(
+                                    GeometryBufferType::G_EMISSIVE));
     Device::instance().setDepthMask(false);
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES,
                      m_quad->getIndexBuffer()->getCount(), 0);
@@ -296,17 +278,19 @@ void RenderSystem::renderDeferred() {
 
     m_deferredShader->bind();
     Device::instance().setDepthMask(false);
-    Renderer::setShader(*m_deferredShader);
-    m_deferredShader->setTexture(
-        "u_gPosition",
-        m_gBufferTarget.getTexture(GeometryBufferType::G_POSITION));
-    m_deferredShader->setTexture(
-        "u_gNormal", m_gBufferTarget.getTexture(GeometryBufferType::G_NORMAL));
-    m_deferredShader->setTexture(
-        "u_gAlbedo", m_gBufferTarget.getTexture(GeometryBufferType::G_ALBEDO));
-    m_deferredShader->setTexture(
-        "u_gAmbient",
-        m_gBufferTarget.getTexture(GeometryBufferType::G_AMBIENT));
+    RenderEngine::updateShader(*m_deferredShader, *RenderEngine::getCamera());
+    m_deferredShader->setTexture("u_gPosition",
+                                 RenderEngine::getGBufferTarget().getTexture(
+                                     GeometryBufferType::G_POSITION));
+    m_deferredShader->setTexture("u_gNormal",
+                                 RenderEngine::getGBufferTarget().getTexture(
+                                     GeometryBufferType::G_NORMAL));
+    m_deferredShader->setTexture("u_gAlbedo",
+                                 RenderEngine::getGBufferTarget().getTexture(
+                                     GeometryBufferType::G_ALBEDO));
+    m_deferredShader->setTexture("u_gAmbient",
+                                 RenderEngine::getGBufferTarget().getTexture(
+                                     GeometryBufferType::G_AMBIENT));
     const uint8_t inputIndex = 0;
     const uint8_t outputIndex = 1;
 
@@ -345,8 +329,9 @@ void RenderSystem::renderDeferred() {
     Device::instance().setDepthMask(true);
 
     Device::instance().blitFramebuffer(
-        m_gBufferTarget.getFramebuffer(), 0, getLightResult().getFramebuffer(),
-        0, BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
+        RenderEngine::getGBufferTarget().getFramebuffer(), 0,
+        getLightResult().getFramebuffer(), 0, BufferBitMask::DEPTH_BUFFER_BIT,
+        TextureFilter::NEAREST);
 }
 
 void RenderSystem::renderGBuffer() {
@@ -354,11 +339,10 @@ void RenderSystem::renderGBuffer() {
     auto terrainView = scene->view<TransformComponent, TerrainComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
-    Device::instance().setRenderTarget(m_gBufferTarget);
+    Device::instance().setRenderTarget(RenderEngine::getGBufferTarget());
     Device::instance().disable(Operation::BLEND);
 
-    Renderer::beginScene(*RenderEngine::getCamera());
-    Renderer::setShader(*m_gBufferShader);
+    RenderEngine::updateShader(*m_gBufferShader, *RenderEngine::getCamera());
 
     m_gBufferShader->bind();
     terrainView.each([this](const entt::entity &entity,
@@ -405,7 +389,6 @@ void RenderSystem::renderGBuffer() {
             Renderer::drawMesh(mesh);
         }
     });
-    Renderer::endScene();
     Device::instance().enable(Operation::BLEND);
 }
 

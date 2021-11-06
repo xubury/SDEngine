@@ -26,8 +26,7 @@ class GLFramebuffer : public Framebuffer {
                     int w, int h, int d, size_t size,
                     void *data) const override;
 
-    void bind() const override;
-    void unbind() const override;
+    void bind() override;
 
     void clearDepth(const float depth) override;
 

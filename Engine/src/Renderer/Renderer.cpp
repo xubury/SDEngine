@@ -1,4 +1,5 @@
 #include "Renderer/Renderer.hpp"
+#include "Renderer/RenderEngine.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Device.hpp"
 #include "Utility/Log.hpp"
@@ -22,16 +23,7 @@ struct Quad {
     }
 };
 
-struct CameraData {
-    glm::mat4 viewProjection;
-    glm::vec3 viewPos;
-};
-
 struct RendererData {
-    CameraData cameraData;
-    Camera* camera;
-    Ref<UniformBuffer> cameraUBO;
-
     static const uint32_t MAX_QUADS = 20000;
     static const uint32_t MAX_VERTICES = MAX_QUADS * 4;
     static const uint32_t MAX_INDICES = MAX_QUADS * 6;
@@ -60,8 +52,6 @@ static RendererData s_data;
 
 void Renderer::init() {
     SD_CORE_TRACE("Initializing Renderer...");
-    s_data.cameraUBO = UniformBuffer::create(
-        &s_data.cameraData, sizeof(CameraData), BufferIOType::DYNAMIC);
 
     std::array<uint32_t, s_data.MAX_INDICES> quadIndices;
     uint32_t offset = 0;
@@ -119,21 +109,13 @@ void Renderer::submit(const VertexArray& vao, MeshTopology topology,
     Device::instance().drawElements(topology, count, offset);
 }
 
-void Renderer::setShader(Shader& shader) {
-    shader.setUniformBuffer("Camera", *s_data.cameraUBO);
-}
-
-void Renderer::beginScene(Camera& camera) {
-    s_data.cameraData.viewProjection = camera.getViewPorjection();
-    s_data.cameraData.viewPos = camera.getWorldPosition();
-    s_data.camera = &camera;
-    s_data.cameraUBO->updateData(&s_data.cameraData, sizeof(CameraData));
+void Renderer::beginScene(Camera &camera) {
+    RenderEngine::updateShader(*s_data.shader, camera);
     startBatch();
 }
 
 void Renderer::endScene() {
     flush();
-    Device::instance().setPolygonMode(PolygonMode::FILL, Face::BOTH);
 }
 
 void Renderer::flush() {
@@ -142,12 +124,12 @@ void Renderer::flush() {
     }
     size_t offset =
         s_data.quadVertexBufferPtr - s_data.quadVertexBufferBase.data();
+    glm::vec3 viewPos = RenderEngine::getCamera()->getWorldPosition();
 
     // sort the drawing order to render transparent texture properly.
     std::sort(s_data.quadVertexBufferBase.begin(),
               s_data.quadVertexBufferBase.begin() + offset,
-              [&viewPos = s_data.cameraData.viewPos](const Quad& lhs,
-                                                     const Quad& rhs) {
+              [&viewPos](const Quad& lhs, const Quad& rhs) {
                   return glm::distance2(lhs.getCenter(), viewPos) >
                          glm::distance2(rhs.getCenter(), viewPos);
               });
@@ -155,14 +137,13 @@ void Renderer::flush() {
     s_data.quadVBO->updateData(s_data.quadVertexBufferBase.data(),
                                offset * sizeof(Quad));
 
-    s_data.shader->bind();
     for (uint32_t i = 0; i < s_data.textureSlotIndex; ++i) {
         s_data.shader->setTexture(i, s_data.textureSlots[i].get());
     }
 
+    s_data.shader->bind();
     Renderer::submit(*s_data.quadVAO, MeshTopology::TRIANGLES,
                      s_data.quadIndexCnt, 0);
-    s_data.shader->unbind();
 
     setTextOrigin(0, 0);
 }
@@ -240,7 +221,7 @@ void Renderer::drawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
     drawTexture(
         texture,
         glm::translate(glm::mat4(1.0f), pos) *
-            glm::toMat4(s_data.camera->getWorldRotation()) *
+            glm::toMat4(RenderEngine::getCamera()->getWorldRotation()) *
             glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
         color);
 }

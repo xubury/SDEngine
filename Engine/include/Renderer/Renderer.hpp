@@ -43,8 +43,6 @@ class SD_API Renderer {
                          const glm::vec4 &color = glm::vec4(1.0f));
 
     static void drawMesh(const Mesh &mesh);
-
-    static void setShader(Shader &shader);
 };
 
 }  // namespace sd

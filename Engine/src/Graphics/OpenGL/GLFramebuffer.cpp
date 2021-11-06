@@ -64,9 +64,7 @@ void GLFramebuffer::setDrawable(const std::vector<uint32_t> &colorAttachments) {
     }
 }
 
-void GLFramebuffer::bind() const { glBindFramebuffer(GL_FRAMEBUFFER, m_id); }
-
-void GLFramebuffer::unbind() const { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+void GLFramebuffer::bind() { glBindFramebuffer(GL_FRAMEBUFFER, m_id); }
 
 void GLFramebuffer::readPixels(uint32_t attachmentId, int level, int x, int y,
                                int z, int w, int h, int d, size_t size,

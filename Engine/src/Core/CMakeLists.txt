@@ -15,8 +15,7 @@ set(Core_Include
     ${Include_Root}/Window.hpp
     ${Include_Root}/EntryPoint.hpp
     ${Include_Root}/Layer.hpp
-    ${Include_Root}/LayerStack.hpp
-    ${Include_Root}/SDL.hpp)
+    ${Include_Root}/LayerStack.hpp)
 
 set(Core_Src
     ${OpenGL_Src}
