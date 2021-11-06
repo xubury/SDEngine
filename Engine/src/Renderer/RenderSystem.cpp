@@ -1,7 +1,7 @@
-#include "System/RenderSystem.hpp"
-#include "Core/Application.hpp"
-#include "Graphics/Device.hpp"
-#include "Graphics/Renderer.hpp"
+#include "Renderer/RenderSystem.hpp"
+#include "Renderer/RenderEngine.hpp"
+#include "Renderer/Renderer.hpp"
+#include "Graphics//Device.hpp"
 #include "Utility/Log.hpp"
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
@@ -168,10 +168,8 @@ void RenderSystem::onSizeEvent(const SizeEvent &event) {
 void RenderSystem::onTick(float) {}
 
 void RenderSystem::onRender() {
-    SD_CORE_ASSERT(Application::getRenderEngine().getScene(),
-                   "No active scene.");
-    SD_CORE_ASSERT(Application::getRenderEngine().getCamera(),
-                   "No camera is set!");
+    SD_CORE_ASSERT(RenderEngine::getScene(), "No active scene.");
+    SD_CORE_ASSERT(RenderEngine::getCamera(), "No camera is set!");
 
     clear();
     renderGBuffer();
@@ -179,7 +177,7 @@ void RenderSystem::onRender() {
     renderEmissive();
     renderSkybox();
     renderText();
-    if (Application::getRenderEngine().getBloom()) {
+    if (RenderEngine::getBloom()) {
         renderBlur();
     }
     renderMain();
@@ -201,13 +199,12 @@ void RenderSystem::clear() {
         GeometryBufferType::G_ENTITY_ID, &id);
 
     Device::instance().setFramebuffer(
-        Application::getRenderEngine().getRenderTarget().getFramebuffer());
+        RenderEngine::getRenderTarget().getFramebuffer());
     Device::instance().clear();
 }
 
 void RenderSystem::renderSkybox() {
-    glm::vec3 pos =
-        Application::getRenderEngine().getCamera()->getWorldPosition();
+    glm::vec3 pos = RenderEngine::getCamera()->getWorldPosition();
     m_skyboxShader->setMat4("u_model", glm::translate(glm::mat4(1.0f), pos));
 
     m_skyboxShader->bind();
@@ -215,7 +212,7 @@ void RenderSystem::renderSkybox() {
     Device::instance().setCullFace(Face::FRONT);
 
     Device::instance().setRenderTarget(getLightResult());
-    Renderer::beginScene(*Application::getRenderEngine().getCamera());
+    Renderer::beginScene(*RenderEngine::getCamera());
     Renderer::submit(*m_skybox, MeshTopology::TRIANGLES,
                      m_skybox->getIndexBuffer()->getCount(), 0);
     Renderer::endScene();
@@ -224,18 +221,15 @@ void RenderSystem::renderSkybox() {
 }
 
 void RenderSystem::renderMain() {
-    Device::instance().setRenderTarget(
-        Application::getRenderEngine().getRenderTarget());
+    Device::instance().setRenderTarget(RenderEngine::getRenderTarget());
 
-    m_mainShader->setBool("u_bloom", Application::getRenderEngine().getBloom());
-    if (Application::getRenderEngine().getBloom()) {
-        m_mainShader->setFloat("u_bloomFactor",
-                               Application::getRenderEngine().getBloomFactor());
+    m_mainShader->setBool("u_bloom", RenderEngine::getBloom());
+    if (RenderEngine::getBloom()) {
+        m_mainShader->setFloat("u_bloomFactor", RenderEngine::getBloomFactor());
         m_mainShader->setTexture("u_blur", m_blurResult);
     }
     m_mainShader->setTexture("u_lighting", getLightResult().getTexture());
-    m_mainShader->setFloat("u_exposure",
-                           Application::getRenderEngine().getExposure());
+    m_mainShader->setFloat("u_exposure", RenderEngine::getExposure());
     m_mainShader->bind();
     Renderer::submit(*m_quad, MeshTopology::TRIANGLES,
                      m_quad->getIndexBuffer()->getCount(), 0);
@@ -265,11 +259,11 @@ void RenderSystem::renderBlur() {
 }
 
 void RenderSystem::renderText() {
-    auto scene = Application::getRenderEngine().getScene();
+    auto scene = RenderEngine::getScene();
     auto textView = scene->view<TransformComponent, TextComponent>();
 
     Device::instance().setRenderTarget(getLightResult());
-    Renderer::beginScene(*Application::getRenderEngine().getCamera());
+    Renderer::beginScene(*RenderEngine::getCamera());
     textView.each([](const TransformComponent &transformComp,
                      const TextComponent &textComp) {
         if (textComp.fontPath.size()) {
@@ -297,7 +291,7 @@ void RenderSystem::renderEmissive() {
 }
 
 void RenderSystem::renderDeferred() {
-    auto scene = Application::getRenderEngine().getScene();
+    auto scene = RenderEngine::getScene();
     auto lightView = scene->view<TransformComponent, LightComponent>();
 
     m_deferredShader->bind();
@@ -356,14 +350,14 @@ void RenderSystem::renderDeferred() {
 }
 
 void RenderSystem::renderGBuffer() {
-    auto scene = Application::getRenderEngine().getScene();
+    auto scene = RenderEngine::getScene();
     auto terrainView = scene->view<TransformComponent, TerrainComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
     Device::instance().setRenderTarget(m_gBufferTarget);
     Device::instance().disable(Operation::BLEND);
 
-    Renderer::beginScene(*Application::getRenderEngine().getCamera());
+    Renderer::beginScene(*RenderEngine::getCamera());
     Renderer::setShader(*m_gBufferShader);
 
     m_gBufferShader->bind();

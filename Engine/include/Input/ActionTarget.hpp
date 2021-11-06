@@ -4,7 +4,7 @@
 #include <list>
 #include <functional>
 #include <utility>
-#include "Core/ActionMap.hpp"
+#include "Input/ActionMap.hpp"
 
 namespace sd {
 

@@ -1,8 +1,9 @@
-#include "System/ShadowSystem.hpp"
+#include "Renderer/ShadowSystem.hpp"
+#include "Renderer/RenderEngine.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Graphics/Device.hpp"
-#include "Graphics/Renderer.hpp"
-#include "Core/Application.hpp"
 #include "ECS/Component.hpp"
+#include "ECS/Scene.hpp"
 
 namespace sd {
 
@@ -11,7 +12,7 @@ ShadowSystem::ShadowSystem() {
 }
 
 void ShadowSystem::onRender() {
-    auto scene = Application::getRenderEngine().getScene();
+    auto scene = RenderEngine::getScene();
     auto lightView = scene->view<TransformComponent, LightComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
@@ -24,9 +25,8 @@ void ShadowSystem::onRender() {
 
         Device::instance().setRenderTarget(light.getRenderTarget());
         light.getRenderTarget().getFramebuffer()->clearDepth();
-        light.computeLightSpaceMatrix(
-            transformComp.transform,
-            Application::getRenderEngine().getCamera());
+        light.computeLightSpaceMatrix(transformComp.transform,
+                                      RenderEngine::getCamera());
         m_shadowShader->setMat4("u_projectionView", light.getProjectionView());
 
         modelView.each([this](const TransformComponent &transformComp,

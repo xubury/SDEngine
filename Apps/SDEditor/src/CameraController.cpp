@@ -1,5 +1,5 @@
 #include "CameraController.hpp"
-#include "Core/Input.hpp"
+#include "Input/InputEngine.hpp"
 #include "Utility/Log.hpp"
 
 const float ROTATION_SPEED = 0.1;
@@ -35,7 +35,7 @@ CameraController::CameraController()
          [this](const SDL_Event &) { move(m_camera->getWorldRight()); });
     bind(sd::Action(SDL_EventType::SDL_MOUSEMOTION),
          [this](const SDL_Event &event) {
-             if (sd::Input::isMouseDown(SDL_BUTTON_RIGHT)) {
+             if (sd::InputEngine::isMouseDown(SDL_BUTTON_RIGHT)) {
                  m_mouseMovement.x += event.motion.xrel;
                  m_mouseMovement.y += event.motion.yrel;
              }

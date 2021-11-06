@@ -35,7 +35,6 @@ set(Graphics_Include
     ${Include_Root}/Material.hpp
     ${Include_Root}/Mesh.hpp
     ${Include_Root}/Model.hpp
-    ${Include_Root}/Renderer.hpp
     ${Include_Root}/RenderTarget.hpp
     ${Include_Root}/Shader.hpp
     ${Include_Root}/Terrain.hpp
@@ -56,7 +55,6 @@ set(Graphics_Src
     ${Src_Root}/Material.cpp
     ${Src_Root}/Mesh.cpp
     ${Src_Root}/Model.cpp
-    ${Src_Root}/Renderer.cpp
     ${Src_Root}/RenderTarget.cpp
     ${Src_Root}/Shader.cpp
     ${Src_Root}/Terrain.cpp

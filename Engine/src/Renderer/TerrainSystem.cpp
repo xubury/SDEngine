@@ -1,5 +1,5 @@
-#include "System/TerrainSystem.hpp"
-#include "Core/Application.hpp"
+#include "Renderer/TerrainSystem.hpp"
+#include "Renderer/RenderEngine.hpp"
 #include "ECS/Component.hpp"
 #include <glm/gtx/extended_min_max.hpp>
 
@@ -16,9 +16,8 @@ void TerrainSystem::onTick(float) {}
 void TerrainSystem::onRender() {}
 
 void TerrainSystem::updateAllTerrains() {
-    auto terrainView = Application::getRenderEngine()
-                           .getScene()
-                           ->view<TransformComponent, TerrainComponent>();
+    auto terrainView =
+        RenderEngine::getScene()->view<TransformComponent, TerrainComponent>();
     m_terrainGrids.clear();
 
     terrainView.each([this](const entt::entity &entity,
@@ -63,7 +62,7 @@ void TerrainSystem::updateAllTerrains() {
 }
 
 void TerrainSystem::updateTerrain(entt::entity id) {
-    Entity entity(id, Application::getRenderEngine().getScene());
+    Entity entity(id, RenderEngine::getScene());
     const auto &transformComp = entity.getComponent<TransformComponent>();
     const auto &terrainComp = entity.getComponent<TerrainComponent>();
     const auto &terrain = terrainComp.terrain;

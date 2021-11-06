@@ -1,5 +1,4 @@
 #include "Graphics/Texture.hpp"
-#include "Graphics/Renderer.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
 #include "Graphics/OpenGL/GLTexture.hpp"
 #include "Utility/Log.hpp"

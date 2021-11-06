@@ -3,21 +3,9 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/System)
 
 set(System_Include
     ${Include_Root}/Event.hpp
-    ${Include_Root}/ParticleSystem.hpp
-    ${Include_Root}/ProfileSystem.hpp
-    ${Include_Root}/RenderSystem.hpp
-    ${Include_Root}/ShadowSystem.hpp
-    ${Include_Root}/System.hpp
-    ${Include_Root}/TerrainSystem.hpp)
+    ${Include_Root}/System.hpp)
 
-set(System_Src
-    ${Src_Root}/ParticleSystem.cpp
-    ${Src_Root}/ProfileSystem.cpp
-    ${Src_Root}/RenderSystem.cpp
-    ${Src_Root}/ShadowSystem.cpp
-    ${Src_Root}/System.cpp
-    ${Src_Root}/TerrainSystem.cpp)
-
+set(System_Src ${Src_Root}/System.cpp)
 
 add_library(sd-system ${System_Src})
 
@@ -35,7 +23,7 @@ target_include_directories(sd-system
     PUBLIC
     ${SD_ENGINE_SOURCE_DIR}/include)
 
-target_link_libraries(sd-system PUBLIC sd-core sd-ecs sd-graphics)
+target_link_libraries(sd-system PUBLIC sd-ecs)
 
 install(TARGETS sd-system LIBRARY DESTINATION lib)
 

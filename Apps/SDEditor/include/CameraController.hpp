@@ -2,7 +2,7 @@
 #define CAMERA_CONTROLLER_HPP
 
 #include "Utility/Base.hpp"
-#include "Core/ActionTarget.hpp"
+#include "Input/ActionTarget.hpp"
 #include "Graphics/Camera.hpp"
 
 enum class CameraMovement { FORWARD, BACKWARD, LEFT, RIGHT };

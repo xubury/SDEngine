@@ -2,7 +2,7 @@
 #define SD_ACTION_MAP_HPP
 
 #include <unordered_map>
-#include "Core/Action.hpp"
+#include "Input/Action.hpp"
 
 namespace sd {
 

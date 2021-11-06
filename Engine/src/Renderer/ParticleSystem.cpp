@@ -1,5 +1,5 @@
-#include "System/ParticleSystem.hpp"
-#include "Graphics/Renderer.hpp"
+#include "Renderer/ParticleSystem.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Utility/Random.hpp"
 
 #include <glm/gtc/constants.hpp>

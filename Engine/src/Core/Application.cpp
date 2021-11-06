@@ -1,5 +1,4 @@
 #include "Core/Application.hpp"
-#include "Core/Input.hpp"
 #include "Utility/Timing.hpp"
 #include "Utility/Log.hpp"
 #include "Utility/Random.hpp"
@@ -8,19 +7,12 @@
 #include "Utility/Loader/ModelLoader.hpp"
 #include "Utility/Loader/FontLoader.hpp"
 #include "Graphics/Device.hpp"
-#include "Graphics/Renderer.hpp"
+#include "Renderer/RenderEngine.hpp"
+#include "Input/InputEngine.hpp"
 
 namespace sd {
 
 Application *Application::s_instance = nullptr;
-
-RenderEngine &Application::getRenderEngine() {
-    return *s_instance->m_renderEngine;
-}
-
-InputEngine &Application::getInputEngine() {
-    return *s_instance->m_inputEngine;
-}
 
 Application::Application() {
     s_instance = this;
@@ -51,15 +43,17 @@ Application::Application() {
     Window::init(prop);
 
     Device::init();
-    Renderer::init();
 
+    RenderEngine::init(width, height, samples);
+
+    if (samples > 1) {
+        Device::instance().enable(Operation::MULTISAMPLE);
+    } else {
+        Device::instance().disable(Operation::MULTISAMPLE);
+    }
     m_imguiLayer = createRef<ImGuiLayer>();
-    m_inputEngine = createRef<InputEngine>();
-    m_renderEngine = createRef<RenderEngine>(width, height, samples);
 
     pushOverlay(m_imguiLayer);
-    pushOverlay(m_inputEngine);
-    pushLayer(m_renderEngine);
 }
 
 Application::~Application() { SDL_Quit(); }
@@ -105,6 +99,7 @@ void Application::run() {
     uint32_t msElapsed = 0;
     while (!Window::shouldClose()) {
         while (Window::pollEvent(event)) {
+            InputEngine::processEvent(event);
             processEvent(event);
         }
         processEvents();
@@ -123,12 +118,17 @@ void Application::run() {
 void Application::quit() { Window::setShouldClose(true); }
 
 void Application::tick(float dt) {
+    InputEngine::tick();
+    RenderEngine::tick(dt);
+
     for (auto iter = m_layers.rbegin(); iter != m_layers.rend(); ++iter) {
         (*iter)->onTick(dt);
     }
 }
 
 void Application::render() {
+    RenderEngine::render();
+
     for (auto &layer : m_layers) {
         layer->onRender();
     }

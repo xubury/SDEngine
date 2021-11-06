@@ -1,14 +1,15 @@
 #include "EditorLayer.hpp"
-#include "Graphics/Renderer.hpp"
 #include "Core/Application.hpp"
-#include "Core/Input.hpp"
-#include "Utility/Image.hpp"
+#include "Input/InputEngine.hpp"
+#include "Renderer/Renderer.hpp"
+#include "Renderer/RenderEngine.hpp"
 #include "ECS/Component.hpp"
-#include "ImGui/ImGuiWidget.hpp"
+#include "Utility/Image.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "ImGuizmo.h"
+#include "ImGui/ImGuiWidget.hpp"
 
 EditorLayer::EditorLayer(int width, int height)
     : sd::Layer("Editor Layer"),
@@ -56,8 +57,7 @@ void EditorLayer::onDetech() { hide(); }
 void EditorLayer::onRender() {
     if (m_hide) return;
 
-    sd::Device::instance().setRenderTarget(
-        sd::Application::getRenderEngine().getRenderTarget());
+    sd::Device::instance().setRenderTarget(sd::RenderEngine::getRenderTarget());
     sd::Device::instance().clear(sd::BufferBitMask::DEPTH_BUFFER_BIT);
     sd::Renderer::beginScene(m_editorCamera);
     auto lightView =
@@ -76,8 +76,8 @@ void EditorLayer::onRender() {
                                            sd::TextureFilter::NEAREST);
     for (int i = 0; i < sd::GeometryBufferType::GBUFFER_COUNT; ++i) {
         sd::Device::instance().blitFramebuffer(
-            &sd::Application::getRenderEngine().getRenderSystem()->getGBuffer(),
-            i, m_debugGBuffer.get(), i, sd::BufferBitMask::COLOR_BUFFER_BIT,
+            &sd::RenderEngine::getRenderSystem()->getGBuffer(), i,
+            m_debugGBuffer.get(), i, sd::BufferBitMask::COLOR_BUFFER_BIT,
             sd::TextureFilter::NEAREST);
     }
 }
@@ -180,18 +180,18 @@ void EditorLayer::onImGui() {
 
     ImGui::Begin("Render Settings");
     {
-        float exposure = sd::Application::getRenderEngine().getExposure();
+        float exposure = sd::RenderEngine::getExposure();
         if (ImGui::SliderFloat("Exposure", &exposure, 0, 10)) {
-            sd::Application::getRenderEngine().setExposure(exposure);
+            sd::RenderEngine::setExposure(exposure);
         }
 
-        bool isBloom = sd::Application::getRenderEngine().getBloom();
+        bool isBloom = sd::RenderEngine::getBloom();
         if (ImGui::Checkbox("Bloom", &isBloom)) {
-            sd::Application::getRenderEngine().setBloom(isBloom);
+            sd::RenderEngine::setBloom(isBloom);
         }
-        float bloom = sd::Application::getRenderEngine().getBloomFactor();
+        float bloom = sd::RenderEngine::getBloomFactor();
         if (ImGui::SliderFloat("Bloom Factor", &bloom, 0.1, 1)) {
-            sd::Application::getRenderEngine().setBloomFactor(bloom);
+            sd::RenderEngine::setBloomFactor(bloom);
         }
     }
     ImGui::End();
@@ -217,7 +217,7 @@ void EditorLayer::onImGui() {
                                viewportMaxRegion.y + viewportOffset.y};
         if (m_width != wsize.x || m_height != wsize.y) {
             if (wsize.x > 0 && wsize.y > 0) {
-                sd::Application::getRenderEngine().resize(wsize.x, wsize.y);
+                sd::RenderEngine::resize(wsize.x, wsize.y);
                 m_screenBuffer->resize(wsize.x, wsize.y);
                 m_debugGBuffer->resize(wsize.x, wsize.y);
             }
@@ -265,22 +265,22 @@ void EditorLayer::hide() {
     setBlockEvent(false);
     int w = sd::Window::getWidth();
     int h = sd::Window::getHeight();
-    sd::Application::getRenderEngine().resize(w, h);
+    sd::RenderEngine::resize(w, h);
 }
 
 void EditorLayer::show() {
     m_hide = false;
     setBlockEvent(true);
-    sd::Application::getRenderEngine().setCamera(&m_editorCamera);
-    sd::Application::getRenderEngine().resize(m_width, m_height);
+    sd::RenderEngine::setCamera(&m_editorCamera);
+    sd::RenderEngine::resize(m_width, m_height);
 }
 
 void EditorLayer::onEventProcess(const SDL_Event &event) {
     if (m_isViewportHovered) {
         m_cameraController.processEvent(event);
     }
-    bool lshift = sd::Input::isKeyDown(SDLK_LSHIFT);
-    bool lctrl = sd::Input::isKeyDown(SDLK_LCTRL);
+    bool lshift = sd::InputEngine::isKeyDown(SDLK_LSHIFT);
+    bool lctrl = sd::InputEngine::isKeyDown(SDLK_LCTRL);
     if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
             case SDLK_z: {
@@ -323,7 +323,7 @@ void EditorLayer::onEventsProcess() {
 void EditorLayer::newScene() {
     m_scene = sd::createRef<sd::Scene>();
     m_scenePanel.setScene(m_scene.get());
-    sd::Application::getRenderEngine().setScene(m_scene.get());
+    sd::RenderEngine::setScene(m_scene.get());
 }
 
 void EditorLayer::loadScene() {

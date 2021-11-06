@@ -3,8 +3,6 @@
 
 #include "Core/Window.hpp"
 #include "Core/LayerStack.hpp"
-#include "Core/RenderEngine.hpp"
-#include "Core/InputEngine.hpp"
 #include "ImGui/ImGuiLayer.hpp"
 
 int main(int argc, char **argv);
@@ -13,8 +11,6 @@ namespace sd {
 
 class SD_API Application {
    public:
-    static RenderEngine &getRenderEngine();
-    static InputEngine &getInputEngine();
     static void quit();
 
     Application(const Application &application) = delete;
@@ -52,8 +48,6 @@ class SD_API Application {
 
     LayerStack m_layers;
     Ref<ImGuiLayer> m_imguiLayer;
-    Ref<RenderEngine> m_renderEngine;
-    Ref<InputEngine> m_inputEngine;
 };
 
 }  // namespace sd

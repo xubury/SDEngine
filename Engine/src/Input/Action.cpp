@@ -1,5 +1,5 @@
-#include "Core/Action.hpp"
-#include "Core/Input.hpp"
+#include "Input/Action.hpp"
+#include "Input/InputEngine.hpp"
 
 namespace sd {
 
@@ -49,17 +49,17 @@ bool Action::test() const {
     // TODO:other detect (joystick) need to be implemented
     if (m_event.type == SDL_KEYDOWN) {
         if (m_type & Type::PRESSED) {
-            res = Input::isKeyPressed(m_event.key.keysym.sym);
+            res = InputEngine::isKeyPressed(m_event.key.keysym.sym);
         }
         if (m_type & Type::DOWN) {
-            res = Input::isKeyDown(m_event.key.keysym.sym);
+            res = InputEngine::isKeyDown(m_event.key.keysym.sym);
         }
     } else if (m_event.type == SDL_MOUSEBUTTONDOWN) {
         if (m_type & Type::PRESSED) {
-            res = Input::isMousePressed(m_event.button.button);
+            res = InputEngine::isMousePressed(m_event.button.button);
         }
         if (m_type & Type::DOWN) {
-            res = Input::isMouseDown(m_event.key.keysym.sym);
+            res = InputEngine::isMouseDown(m_event.key.keysym.sym);
         }
     }
     return res;
