@@ -180,7 +180,8 @@ void EditorLayer::onImGui() {
     ImGui::Begin("Render Settings");
     {
         float exposure = sd::RenderEngine::getExposure();
-        if (ImGui::SliderFloat("Exposure", &exposure, 0, 10)) {
+        ImGui::TextUnformatted("Exposure");
+        if (ImGui::SliderFloat("##Exposure", &exposure, 0, 10)) {
             sd::RenderEngine::setExposure(exposure);
         }
 
@@ -189,8 +190,15 @@ void EditorLayer::onImGui() {
             sd::RenderEngine::setBloom(isBloom);
         }
         float bloom = sd::RenderEngine::getBloomFactor();
-        if (ImGui::SliderFloat("Bloom Factor", &bloom, 0.1, 1)) {
+        ImGui::TextUnformatted("Bloom Factor");
+        if (ImGui::SliderFloat("##Bloom Factor", &bloom, 0.1, 1)) {
             sd::RenderEngine::setBloomFactor(bloom);
+        }
+
+        float gamma = sd::RenderEngine::getGammaCorrection();
+        ImGui::TextUnformatted("Gamma Correction");
+        if (ImGui::SliderFloat("##Gamma Correction", &gamma, 0.1, 3)) {
+            sd::RenderEngine::setGammaCorrection(gamma);
         }
     }
     ImGui::End();

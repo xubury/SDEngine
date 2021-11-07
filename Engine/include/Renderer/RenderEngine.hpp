@@ -41,6 +41,9 @@ class RenderEngine {
     static void setBloomFactor(float bloom);
     static float getBloomFactor();
 
+    static float getGammaCorrection();
+    static void setGammaCorrection(float gamma);
+
     static void renderQuad();
 
    private:

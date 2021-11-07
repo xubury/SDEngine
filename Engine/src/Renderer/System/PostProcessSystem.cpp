@@ -72,6 +72,9 @@ void PostProcessSystem::renderPost() {
     m_postShader->setTexture("u_lighting",
                              RenderEngine::getRenderTarget().getTexture());
     m_postShader->setFloat("u_exposure", RenderEngine::getExposure());
+
+    m_postShader->setFloat("u_gamma", RenderEngine::getGammaCorrection());
+
     m_postShader->bind();
     RenderEngine::renderQuad();
 }

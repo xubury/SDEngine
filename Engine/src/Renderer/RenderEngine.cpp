@@ -32,6 +32,8 @@ struct RenderData {
     float bloom;
     bool isBloom;
 
+    float gammaCorrection;
+
     SystemManager systems;
     Ref<LightingSystem> lightingSystem;
     Ref<TerrainSystem> terrainSystem;
@@ -50,6 +52,7 @@ void RenderEngine::init(int width, int height, int samples) {
     s_data.exposure = 1.5;
     s_data.isBloom = true;
     s_data.bloom = 1.0f;
+    s_data.gammaCorrection = 1.2f;
 
     s_data.cameraUBO = UniformBuffer::create(nullptr, sizeof(CameraData),
                                              BufferIOType::DYNAMIC);
@@ -145,19 +148,30 @@ void RenderEngine::updateShader(Shader &shader, Camera &camera) {
 }
 
 void RenderEngine::setScene(Scene *scene) { s_data.scene = scene; }
+
 Scene *RenderEngine::getScene() { return s_data.scene; }
 
 void RenderEngine::setCamera(Camera *camera) { s_data.camera = camera; }
+
 Camera *RenderEngine::getCamera() { return s_data.camera; }
 
 void RenderEngine::setExposure(float exposure) { s_data.exposure = exposure; }
+
 float RenderEngine::getExposure() { return s_data.exposure; }
 
 void RenderEngine::setBloom(bool isBloom) { s_data.isBloom = isBloom; }
+
 bool RenderEngine::getBloom() { return s_data.isBloom; }
 
 void RenderEngine::setBloomFactor(float bloom) { s_data.bloom = bloom; }
+
 float RenderEngine::getBloomFactor() { return s_data.bloom; }
+
+void RenderEngine::setGammaCorrection(float gamma) {
+    s_data.gammaCorrection = gamma;
+}
+
+float RenderEngine::getGammaCorrection() { return s_data.gammaCorrection; }
 
 void RenderEngine::renderQuad() {
     Device::instance().submit(*s_data.quad, MeshTopology::TRIANGLES,
