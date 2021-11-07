@@ -1,5 +1,5 @@
-#ifndef SD_RENDER_SYSTEM_HPP
-#define SD_RENDER_SYSTEM_HPP
+#ifndef SD_LIGHTING_SYSTEM_HPP
+#define SD_LIGHTING_SYSTEM_HPP
 
 #include "System/System.hpp"
 #include "System/Event.hpp"
@@ -25,27 +25,23 @@ TextureFormat SD_API getTextureFormat(GeometryBufferType type);
 
 TextureFormatType SD_API getTextureFormatType(GeometryBufferType type);
 
-class SD_API RenderSystem : public System {
+class SD_API LightingSystem : public System {
    public:
-    RenderSystem(int width, int height, int samples);
+    LightingSystem(int width, int height, int samples);
 
     void onInit() override;
 
     void onDestroy() override;
 
-    void onTick(float dt) override;
-
     void onRender() override;
 
     void onSizeEvent(const SizeEvent &event);
-    void onSceneEvent(const SceneEvent &event);
+
+    Framebuffer *getGBuffer() { return m_gBufferTarget.getFramebuffer(); }
 
    private:
     void initShaders();
     void initLighting(int width, int height, int samples);
-    void initBloom(int width, int height);
-    void initQuad();
-    void initSkybox();
 
     void clear();
 
@@ -55,20 +51,7 @@ class SD_API RenderSystem : public System {
 
     void renderEmissive();
 
-    void renderText();
-
-    void renderBlur();
-    void renderMain();
-
-    void renderSkybox();
-
     RenderTarget &getLightingTarget() { return m_lightTarget[0]; };
-
-    Ref<Shader> m_mainShader;
-
-    Ref<Shader> m_blurShader;
-    RenderTarget m_blurTarget[2];
-    Texture *m_blurResult;
 
     Ref<Shader> m_emssiveShader;
 
@@ -76,13 +59,9 @@ class SD_API RenderSystem : public System {
     RenderTarget m_lightTarget[2];
 
     Ref<Shader> m_gBufferShader;
-
-    Ref<VertexArray> m_quad;
-
-    Ref<Shader> m_skyboxShader;
-    Ref<VertexArray> m_skybox;
+    RenderTarget m_gBufferTarget;
 };
 
 }  // namespace sd
 
-#endif /* SD_RENDER_SYSTEM_HPP */
+#endif /* SD_LIGHTING_SYSTEM_HPP */

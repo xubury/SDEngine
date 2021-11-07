@@ -1,8 +1,8 @@
 #ifndef SD_RENDER_ENGINE_HPP
 #define SD_RENDER_ENGINE_HPP
 
-#include "Renderer/RenderSystem.hpp"
-#include "Renderer/TerrainSystem.hpp"
+#include "Renderer/System/LightingSystem.hpp"
+#include "Renderer/System/TerrainSystem.hpp"
 #include "Graphics/Camera.hpp"
 
 namespace sd {
@@ -13,15 +13,16 @@ class RenderEngine {
     static void resize(int width, int height);
 
     static void render();
+    static void postRender();
     static void tick(float dt);
 
     static API getAPI();
 
     static TerrainSystem *getTerrainSystem();
 
-    static RenderTarget &getRenderTarget();
+    static LightingSystem *getLightingSystem();
 
-    static RenderTarget &getGBufferTarget();
+    static RenderTarget &getRenderTarget();
 
     static void updateShader(Shader &shader, Camera &camera);
 
@@ -39,6 +40,8 @@ class RenderEngine {
 
     static void setBloomFactor(float bloom);
     static float getBloomFactor();
+
+    static void renderQuad();
 };
 
 }  // namespace sd

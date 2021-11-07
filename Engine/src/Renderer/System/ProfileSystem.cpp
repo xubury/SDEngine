@@ -1,4 +1,4 @@
-#include "Renderer/ProfileSystem.hpp"
+#include "Renderer/System/ProfileSystem.hpp"
 #include "Renderer/RenderEngine.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Graphics/Device.hpp"

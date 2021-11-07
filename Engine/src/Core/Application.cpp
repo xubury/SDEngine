@@ -134,6 +134,8 @@ void Application::render() {
     for (auto &layer : m_layers) {
         layer->onRender();
     }
+    RenderEngine::postRender();
+
     m_imguiLayer->begin();
     for (auto &layer : m_layers) {
         layer->onImGui();

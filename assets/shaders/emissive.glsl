@@ -24,6 +24,7 @@ layout(binding = 0) uniform sampler2DMS u_lighting;
 layout(binding = 1) uniform sampler2DMS u_gEmissive;
 
 void main() {
-    fragColor = textureMS(u_lighting, in_texCoord) 
-                + vec4(textureMS(u_gEmissive, in_texCoord).rgb, 1.0f);
+    vec3 result = textureMS(u_lighting, in_texCoord).rgb +
+                  textureMS(u_gEmissive, in_texCoord).rgb;
+    fragColor = vec4(result, 1.0f);
 }

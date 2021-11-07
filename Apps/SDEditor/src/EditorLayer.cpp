@@ -70,16 +70,6 @@ void EditorLayer::onRender() {
         sd::Renderer::drawBillboard(m_lightIcon, pos, glm::vec2(scale));
     });
     sd::Renderer::endScene();
-
-    sd::Device::instance().blitFramebuffer(nullptr, 0, m_screenBuffer.get(), 0,
-                                           sd::BufferBitMask::COLOR_BUFFER_BIT,
-                                           sd::TextureFilter::NEAREST);
-    for (int i = 0; i < sd::GeometryBufferType::GBUFFER_COUNT; ++i) {
-        sd::Device::instance().blitFramebuffer(
-            sd::RenderEngine::getGBufferTarget().getFramebuffer(), i,
-            m_debugGBuffer.get(), i, sd::BufferBitMask::COLOR_BUFFER_BIT,
-            sd::TextureFilter::NEAREST);
-    }
 }
 
 void EditorLayer::onTick(float dt) {
@@ -109,6 +99,15 @@ void EditorLayer::onTick(float dt) {
 void EditorLayer::onImGui() {
     if (m_hide) {
         return;
+    }
+    sd::Device::instance().blitFramebuffer(nullptr, 0, m_screenBuffer.get(), 0,
+                                           sd::BufferBitMask::COLOR_BUFFER_BIT,
+                                           sd::TextureFilter::NEAREST);
+    for (int i = 0; i < sd::GeometryBufferType::GBUFFER_COUNT; ++i) {
+        sd::Device::instance().blitFramebuffer(
+            sd::RenderEngine::getLightingSystem()->getGBuffer(), i,
+            m_debugGBuffer.get(), i, sd::BufferBitMask::COLOR_BUFFER_BIT,
+            sd::TextureFilter::NEAREST);
     }
 
     static bool dockspaceOpen = true;

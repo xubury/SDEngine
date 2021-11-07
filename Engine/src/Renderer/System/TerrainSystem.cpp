@@ -1,4 +1,4 @@
-#include "Renderer/TerrainSystem.hpp"
+#include "Renderer/System/TerrainSystem.hpp"
 #include "Renderer/RenderEngine.hpp"
 #include "ECS/Component.hpp"
 #include <glm/gtx/extended_min_max.hpp>

@@ -1,4 +1,4 @@
-#include "Renderer/ShadowSystem.hpp"
+#include "Renderer/System/ShadowSystem.hpp"
 #include "Renderer/RenderEngine.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Graphics/Device.hpp"
