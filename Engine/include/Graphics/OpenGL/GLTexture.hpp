@@ -11,7 +11,7 @@ class GLTexture : public Texture {
     GLTexture(int width, int height, int samples, TextureType type,
               TextureFormat format, TextureFormatType formatType,
               TextureWrap wrap, TextureFilter filter,
-              TextureMipmapFilter mipmapFilter, void *data);
+              TextureMipmapFilter mipmapFilter, const void *data);
 
     ~GLTexture();
 
@@ -22,7 +22,7 @@ class GLTexture : public Texture {
 
     void setSlot(uint32_t slot) const override;
 
-    void setPixels(int width, int height, void *data) override;
+    void setPixels(int width, int height, const void *data) override;
     void setBorderColor(const void *color) override;
     void setWrap(TextureWrap wrap) override;
     void setFilter(TextureFilter filter) override;

@@ -1,8 +1,8 @@
 #ifndef SD_LIGHTING_SYSTEM_HPP
 #define SD_LIGHTING_SYSTEM_HPP
 
-#include "System/System.hpp"
-#include "System/Event.hpp"
+#include "Renderer/System/System.hpp"
+#include "Renderer/System/Event.hpp"
 #include "ECS/Scene.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"

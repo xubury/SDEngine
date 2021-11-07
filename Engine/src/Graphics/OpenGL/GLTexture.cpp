@@ -7,9 +7,9 @@ namespace sd {
 GLTexture::GLTexture(int width, int height, int samples, TextureType type,
                      TextureFormat format, TextureFormatType formatType,
                      TextureWrap wrap, TextureFilter filter,
-                     TextureMipmapFilter mipmapFilter, void *data)
+                     TextureMipmapFilter mipmapFilter, const void *data)
     : Texture(width, height, samples, type, format, formatType, wrap, filter,
-              mipmapFilter, data),
+              mipmapFilter),
       gl_id(0),
       gl_type(0),
       gl_iFormat(0),
@@ -27,7 +27,7 @@ GLTexture::GLTexture(int width, int height, int samples, TextureType type,
         glTextureParameteriv(gl_id, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
     }
 
-    setPixels(m_width, m_height, m_data);
+    setPixels(m_width, m_height, data);
     if (m_type != TextureType::TEX_2D_MULTISAMPLE) {
         setWrap(m_wrap);
         setFilter(m_filter);
@@ -46,10 +46,9 @@ void GLTexture::unbind() const { glBindTexture(gl_type, 0); }
 
 void GLTexture::setSlot(uint32_t slot) const { glBindTextureUnit(slot, gl_id); }
 
-void GLTexture::setPixels(int width, int height, void *data) {
+void GLTexture::setPixels(int width, int height, const void *data) {
     m_width = width;
     m_height = height;
-    m_data = data;
 
     bind();
     if (m_format == TextureFormat::RED || m_format == TextureFormat::ALPHA) {

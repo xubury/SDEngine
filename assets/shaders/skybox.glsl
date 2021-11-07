@@ -22,8 +22,6 @@ out vec4 fragColor;
 
 in vec3 out_texCoord;
 
-uniform samplerCube skybox;
-
 void main() {
     fragColor = vec4(out_texCoord.y, out_texCoord.y, out_texCoord.y , 1.0);
 }

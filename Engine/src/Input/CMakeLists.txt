@@ -25,7 +25,7 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-input PUBLIC SD_SHARED)
 endif()
 
-target_link_libraries(sd-input PUBLIC sd-graphics sd-system SDL2::Main)
+target_link_libraries(sd-input PUBLIC SDL2::Main)
 
 target_include_directories(sd-input
     PUBLIC

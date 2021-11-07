@@ -14,7 +14,7 @@ class SD_API Texture {
                                TextureFormatType formatType, TextureWrap wrap,
                                TextureFilter filter,
                                TextureMipmapFilter mipmapFilter,
-                               void *data = nullptr);
+                               const void *data = nullptr);
 
     virtual ~Texture() = default;
 
@@ -23,7 +23,7 @@ class SD_API Texture {
 
     virtual void setSlot(uint32_t slot) const = 0;
 
-    virtual void setPixels(int width, int height, void *data) = 0;
+    virtual void setPixels(int width, int height, const void *data) = 0;
     virtual void setBorderColor(const void *color) = 0;
     virtual void setWrap(TextureWrap wrap) = 0;
     virtual void setFilter(TextureFilter filter) = 0;
@@ -41,9 +41,6 @@ class SD_API Texture {
     int getHeight() const;
     int getSamples() const;
 
-    const void *getData() const;
-    void *getData();
-
     TextureType getType() const;
     TextureFormat getFormat() const;
     TextureFormatType getFormatType() const;
@@ -52,7 +49,7 @@ class SD_API Texture {
     Texture(int width, int height, int samples, TextureType type,
             TextureFormat format, TextureFormatType formatType,
             TextureWrap wrap, TextureFilter filter,
-            TextureMipmapFilter mipmapFilter, void *data);
+            TextureMipmapFilter mipmapFilter);
 
     int m_width;
     int m_height;
@@ -64,7 +61,6 @@ class SD_API Texture {
     TextureWrap m_wrap;
     TextureFilter m_filter;
     TextureMipmapFilter m_mipmapFilter;
-    void *m_data;
 };
 
 }  // namespace sd

@@ -9,13 +9,6 @@ struct SizeEvent {
     int height;
 };
 
-class Scene;
-
-struct SceneEvent {
-    SceneEvent(Scene *scene) : scene(scene) {}
-    Scene *scene;
-};
-
 }  // namespace sd
 
 #endif /* SD_EVENT_HPP */

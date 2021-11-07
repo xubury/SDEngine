@@ -57,7 +57,7 @@ void EditorLayer::onDetech() { hide(); }
 void EditorLayer::onRender() {
     if (m_hide) return;
 
-    sd::Device::instance().setRenderTarget(sd::RenderEngine::getRenderTarget());
+    sd::RenderEngine::getRenderTarget().bind();
     sd::Device::instance().clear(sd::BufferBitMask::DEPTH_BUFFER_BIT);
     sd::Renderer::beginScene(m_editorCamera);
     auto lightView =

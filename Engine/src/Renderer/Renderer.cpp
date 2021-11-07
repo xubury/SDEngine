@@ -94,10 +94,10 @@ void Renderer::init() {
     s_data.quadTexCoords[2] = {1.0f, 0.0f};
     s_data.quadTexCoords[3] = {0.0f, 0.0f};
 
-    uint32_t color = 0xffffffff;
+    const float color[4] = {1, 1, 1, 1};
     s_data.textureSlots[0] = Texture::create(
         1, 1, 1, TextureType::TEX_2D, TextureFormat::RGBA,
-        TextureFormatType::UBYTE, TextureWrap::REPEAT, TextureFilter::LINEAR,
+        TextureFormatType::FLOAT, TextureWrap::REPEAT, TextureFilter::LINEAR,
         TextureMipmapFilter::LINEAR, &color);
 
     s_data.shader = Asset::manager().load<Shader>("shaders/2d.glsl");
@@ -105,6 +105,7 @@ void Renderer::init() {
 
 void Renderer::beginScene(Camera& camera) {
     RenderEngine::updateShader(*s_data.shader, camera);
+    s_data.shader->bind();
     startBatch();
 }
 
@@ -133,7 +134,6 @@ void Renderer::flush() {
         s_data.shader->setTexture(i, s_data.textureSlots[i].get());
     }
 
-    s_data.shader->bind();
     Device::instance().submit(*s_data.quadVAO, MeshTopology::TRIANGLES,
                               s_data.quadIndexCnt, 0);
 

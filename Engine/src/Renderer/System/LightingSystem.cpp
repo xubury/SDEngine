@@ -76,7 +76,7 @@ void LightingSystem::initLighting(int width, int height, int samples) {
             width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
             getTextureFormat(GeometryBufferType(i)),
             getTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
-            TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
+            TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
     }
     m_gBufferTarget.createFramebuffer();
 }
@@ -94,14 +94,15 @@ void LightingSystem::onRender() {
 
     clear();
     renderGBuffer();
-    Device::instance().blitFramebuffer(
-        m_gBufferTarget.getFramebuffer(), 0,
-        RenderEngine::getRenderTarget().getFramebuffer(), 0,
-        BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
     Device::instance().setDepthMask(false);
     renderDeferred();
     renderEmissive();
     Device::instance().setDepthMask(true);
+
+    Device::instance().blitFramebuffer(
+        m_gBufferTarget.getFramebuffer(), 0,
+        RenderEngine::getRenderTarget().getFramebuffer(), 0,
+        BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
 }
 
 void LightingSystem::clear() {
@@ -121,7 +122,7 @@ void LightingSystem::clear() {
 }
 
 void LightingSystem::renderEmissive() {
-    Device::instance().setRenderTarget(RenderEngine::getRenderTarget());
+    RenderEngine::getRenderTarget().bind();
     m_emssiveShader->bind();
     m_emssiveShader->setTexture("u_lighting", getLightingTarget().getTexture());
     m_emssiveShader->setTexture(
@@ -150,7 +151,7 @@ void LightingSystem::renderDeferred() {
     const uint8_t outputId = 1;
     lightView.each([this](const TransformComponent &transformComp,
                           const LightComponent &lightComp) {
-        Device::instance().setRenderTarget(m_lightTarget[outputId]);
+        m_lightTarget[outputId].bind();
         const Light &light = lightComp.light;
         m_deferredShader->setTexture("u_lighting",
                                      m_lightTarget[inputId].getTexture());
@@ -186,7 +187,7 @@ void LightingSystem::renderGBuffer() {
     auto terrainView = scene->view<TransformComponent, TerrainComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
-    Device::instance().setRenderTarget(m_gBufferTarget);
+    m_gBufferTarget.bind();
     Device::instance().disable(Operation::BLEND);
 
     RenderEngine::updateShader(*m_gBufferShader, *RenderEngine::getCamera());

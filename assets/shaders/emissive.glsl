@@ -14,8 +14,6 @@ void main() {
 #shader fragment
 #version 450 core
 
-#include shaders/textureMS.glsl
-
 layout(location = 0) out vec4 fragColor;
 
 layout(location = 0) in vec2 in_texCoord;
@@ -24,7 +22,12 @@ layout(binding = 0) uniform sampler2DMS u_lighting;
 layout(binding = 1) uniform sampler2DMS u_gEmissive;
 
 void main() {
-    vec3 result = textureMS(u_lighting, in_texCoord).rgb +
-                  textureMS(u_gEmissive, in_texCoord).rgb;
-    fragColor = vec4(result, 1.0f);
+    vec4 color = vec4(0); 
+
+    const int samples = textureSamples(u_lighting);
+    const ivec2 uv = ivec2(in_texCoord * textureSize(u_lighting));
+    for (int i = 0; i < samples; ++i) {
+        color += texelFetch(u_lighting, uv, i) + texelFetch(u_gEmissive, uv, i);
+    }
+    fragColor = color / samples;
 }

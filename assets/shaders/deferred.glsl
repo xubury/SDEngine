@@ -16,7 +16,6 @@ void main() {
 
 #include shaders/camera.glsl
 #include shaders/light.glsl
-#include shaders/textureMS.glsl
 
 layout(location = 0) out vec4 fragColor;
 
@@ -32,7 +31,7 @@ layout(binding = 4) uniform sampler2DMS u_gAmbient;
 
 
 void main() {
-    vec3 cur = vec3(0);
+    vec3 color = vec3(0);
     const ivec2 uv = ivec2(in_texCoord * textureSize(u_gPosition));
     const int samples = textureSamples(u_gPosition);
     for (int i = 0; i < samples; ++i) {
@@ -40,13 +39,11 @@ void main() {
         vec3 normal = texelFetch(u_gNormal, uv, i).rgb;
         vec4 albedo = texelFetch(u_gAlbedo, uv, i);
         vec3 ambient = texelFetch(u_gAmbient, uv, i).rgb;
+        vec3 last = texelFetch(u_lighting, uv, i).rgb;
 
         vec3 viewDir = normalize(u_viewPos - fragPos);
-        cur += calculateLight(u_light, fragPos, normal, viewDir, ambient, albedo);
+        color += last + 
+            calculateLight(u_light, fragPos, normal, viewDir, ambient, albedo);
     }
-    cur = cur / samples;
-
-    vec3 last = textureMS(u_lighting, in_texCoord).rgb;
-    vec3 result = last + cur;
-    fragColor = vec4(result, 1.0f);
+    fragColor = vec4(color / samples, 1.0f);
 }

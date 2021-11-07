@@ -11,6 +11,14 @@ ShadowSystem::ShadowSystem() {
     m_shadowShader = Asset::manager().load<Shader>("shaders/shadow.glsl");
 }
 
+void ShadowSystem::onInit() {
+
+}
+
+void ShadowSystem::onDestroy() {
+
+}
+
 void ShadowSystem::onRender() {
     auto scene = RenderEngine::getScene();
     auto lightView = scene->view<TransformComponent, LightComponent>();
@@ -23,7 +31,7 @@ void ShadowSystem::onRender() {
         Light &light = lightComp.light;
         if (!light.isCastShadow()) return;
 
-        Device::instance().setRenderTarget(light.getRenderTarget());
+        light.getRenderTarget().bind();
         light.getRenderTarget().getFramebuffer()->clearDepth();
         light.computeLightSpaceMatrix(transformComp.transform,
                                       RenderEngine::getCamera());

@@ -14,6 +14,8 @@ class SD_API RenderTarget {
     RenderTarget();
     RenderTarget(int x, int y, int width, int height);
 
+    void bind();
+
     RenderTarget(const RenderTarget &) = delete;
     RenderTarget &operator=(const RenderTarget &) = delete;
     RenderTarget(RenderTarget &&) = default;

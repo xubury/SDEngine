@@ -1,10 +1,9 @@
 #ifndef SD_POST_PROCESS_SYSTEM_HPP
 #define SD_POST_PROCESS_SYSTEM_HPP
 
-#include "System/System.hpp"
-#include "System/Event.hpp"
+#include "Renderer/System/System.hpp"
+#include "Renderer/System/Event.hpp"
 #include "Graphics/Shader.hpp"
-#include "Graphics/VertexArray.hpp"
 #include "Graphics/RenderTarget.hpp"
 
 namespace sd {
@@ -23,13 +22,10 @@ class SD_API PostProcessSystem : public System {
 
    private:
     void renderBlur();
-    void renderMain();
+    void renderPost();
     void renderSkybox();
 
-    Ref<Shader> m_skyboxShader;
-    Ref<VertexArray> m_skybox;
-
-    Ref<Shader> m_mainShader;
+    Ref<Shader> m_postShader;
 
     Ref<Shader> m_blurShader;
     RenderTarget m_blurTarget[2];

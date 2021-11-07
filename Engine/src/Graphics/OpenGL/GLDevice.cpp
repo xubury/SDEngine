@@ -67,12 +67,6 @@ void GLDevice::setViewport(int x, int y, int width, int height) {
     glViewport(x, -y, width, height);
 }
 
-void GLDevice::setRenderTarget(RenderTarget &target) {
-    setFramebuffer(target.getFramebuffer());
-    setViewport(target.getX(), target.getY(), target.getWidth(),
-                target.getHeight());
-}
-
 void GLDevice::setFramebuffer(Framebuffer *framebuffer) {
     if (framebuffer) {
         framebuffer->bind();

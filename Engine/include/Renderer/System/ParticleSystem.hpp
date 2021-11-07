@@ -6,7 +6,7 @@
 #include "Utility/Export.hpp"
 #include "Graphics/RenderTarget.hpp"
 #include "Graphics/Camera.hpp"
-#include "System/System.hpp"
+#include "Renderer/System/System.hpp"
 
 namespace sd {
 
@@ -39,6 +39,8 @@ class SD_API ParticleSystem : public System {
     void emit(const ParticleProp &particle);
 
     void onInit() override;
+
+    void onDestroy() override;
 
     void onRender() override;
 

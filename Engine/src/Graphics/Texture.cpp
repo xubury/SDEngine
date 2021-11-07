@@ -9,7 +9,8 @@ Ref<Texture> Texture::create(int width, int height, int samples,
                              TextureType type, TextureFormat format,
                              TextureFormatType formatType, TextureWrap wrap,
                              TextureFilter filter,
-                             TextureMipmapFilter mipmapFilter, void *data) {
+                             TextureMipmapFilter mipmapFilter,
+                             const void *data) {
     Ref<Texture> texture;
     switch (Graphics::getAPI()) {
         case API::OpenGL:
@@ -27,7 +28,7 @@ Ref<Texture> Texture::create(int width, int height, int samples,
 Texture::Texture(int width, int height, int samples, TextureType type,
                  TextureFormat format, TextureFormatType formatType,
                  TextureWrap wrap, TextureFilter filter,
-                 TextureMipmapFilter mipmapFilter, void *data)
+                 TextureMipmapFilter mipmapFilter)
     : m_width(width),
       m_height(height),
       m_samples(samples),
@@ -36,8 +37,7 @@ Texture::Texture(int width, int height, int samples, TextureType type,
       m_formatType(formatType),
       m_wrap(wrap),
       m_filter(filter),
-      m_mipmapFilter(mipmapFilter),
-      m_data(data) {}
+      m_mipmapFilter(mipmapFilter) {}
 
 bool Texture::operator==(const Texture &other) const {
     return getId() == other.getId();
@@ -52,10 +52,6 @@ int Texture::getWidth() const { return m_width; }
 int Texture::getHeight() const { return m_height; }
 
 int Texture::getSamples() const { return m_samples; }
-
-void *Texture::getData() { return m_data; }
-
-const void *Texture::getData() const { return m_data; }
 
 TextureType Texture::getType() const { return m_type; }
 

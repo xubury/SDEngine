@@ -5,6 +5,7 @@
 #include <list>
 #include "Utility/EventDispatcher.hpp"
 #include "Utility/Base.hpp"
+#include "Renderer/System/Event.hpp"
 
 namespace sd {
 
@@ -28,13 +29,13 @@ class System {
     System() = default;
     virtual ~System() = default;
 
-    virtual void onInit(){};
+    virtual void onInit() = 0;
 
-    virtual void onDestroy(){};
+    virtual void onDestroy() = 0;
 
-    virtual void onTick(float){};
+    virtual void onRender() = 0;
 
-    virtual void onRender(){};
+    virtual void onTick(float) {}
 
     template <typename F, typename Event>
     void registerEvent(F *key, void (F::*listenerMethod)(const Event &)) {

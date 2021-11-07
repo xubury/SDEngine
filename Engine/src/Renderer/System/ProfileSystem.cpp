@@ -19,7 +19,7 @@ void ProfileSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
 void ProfileSystem::onTick(float) {}
 
 void ProfileSystem::onRender() {
-    Device::instance().setRenderTarget(RenderEngine::getRenderTarget());
+    RenderEngine::getRenderTarget().bind();
     Renderer::beginScene(m_camera);
     std::wstring fpsStr =
         L"FPS:" + std::to_wstring(static_cast<uint32_t>(m_fps.getFps()));

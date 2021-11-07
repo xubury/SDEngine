@@ -1,8 +1,8 @@
 #ifndef SD_SPRITE_RENDER_SYSTEM_HPP
 #define SD_SPRITE_RENDER_SYSTEM_HPP
 
-#include "System/System.hpp"
-#include "System/Event.hpp"
+#include "Renderer/System/System.hpp"
+#include "Renderer/System/Event.hpp"
 
 namespace sd {
 

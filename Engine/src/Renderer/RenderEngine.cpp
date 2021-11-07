@@ -1,11 +1,11 @@
 #include "Renderer/RenderEngine.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Renderer/System/ShadowSystem.hpp"
+#include "Renderer/System/SkyboxSystem.hpp"
 #include "Renderer/System/ProfileSystem.hpp"
 #include "Renderer/System/PostProcessSystem.hpp"
 #include "Renderer/System/SpriteRenderSystem.hpp"
 #include "Graphics/Device.hpp"
-#include "System/Event.hpp"
 #include "ECS/Scene.hpp"
 
 namespace sd {
@@ -47,30 +47,21 @@ void RenderEngine::init(int width, int height, int samples) {
     s_data.width = width;
     s_data.height = height;
     s_data.samples = samples;
-
-    s_data.cameraUBO = UniformBuffer::create(nullptr, sizeof(CameraData),
-                                             BufferIOType::DYNAMIC);
-    s_data.defaultTarget.addTexture(Texture::create(
-        width, height, 1, TextureType::TEX_2D, TextureFormat::RGBA,
-        TextureFormatType::FLOAT, TextureWrap::EDGE, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR));
-    s_data.defaultTarget.addTexture(Texture::create(
-        width, height, 1, TextureType::TEX_2D, TextureFormat::DEPTH,
-        TextureFormatType::FLOAT, TextureWrap::EDGE, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR));
-    s_data.defaultTarget.createFramebuffer();
-
     s_data.exposure = 1.5;
     s_data.isBloom = true;
     s_data.bloom = 1.0f;
 
-    s_data.systems.addSystem<ShadowSystem>();
-    s_data.lightingSystem = s_data.systems.addSystem<LightingSystem>(
-        s_data.width, s_data.height, s_data.samples);
-    s_data.systems.addSystem<SpriteRenderSystem>();
-    s_data.terrainSystem = s_data.systems.addSystem<TerrainSystem>();
-    s_data.systems.addSystem<PostProcessSystem>(s_data.width, s_data.height);
-    s_data.systems.addSystem<ProfileSystem>(s_data.width, s_data.height);
+    s_data.cameraUBO = UniformBuffer::create(nullptr, sizeof(CameraData),
+                                             BufferIOType::DYNAMIC);
+    s_data.defaultTarget.addTexture(Texture::create(
+        width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
+        TextureFormat::RGBA, TextureFormatType::FLOAT, TextureWrap::EDGE,
+        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
+    s_data.defaultTarget.addTexture(Texture::create(
+        width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
+        TextureFormat::DEPTH, TextureFormatType::FLOAT, TextureWrap::EDGE,
+        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
+    s_data.defaultTarget.createFramebuffer();
 
     const float quadVertices[] = {
         -1.0f, -1.0f, 0.f, 0.f,  0.f,   // bottom left
@@ -88,6 +79,19 @@ void RenderEngine::init(int width, int height, int samples) {
     layout.push(BufferDataType::FLOAT, 2);
     s_data.quad->addVertexBuffer(buffer, layout);
     s_data.quad->setIndexBuffer(indexBuffer);
+
+    initSystems();
+}
+
+void RenderEngine::initSystems() {
+    s_data.systems.addSystem<ShadowSystem>();
+    s_data.lightingSystem = s_data.systems.addSystem<LightingSystem>(
+        s_data.width, s_data.height, s_data.samples);
+    s_data.systems.addSystem<SkyboxSystem>();
+    s_data.systems.addSystem<SpriteRenderSystem>();
+    s_data.systems.addSystem<PostProcessSystem>(s_data.width, s_data.height);
+    s_data.systems.addSystem<ProfileSystem>(s_data.width, s_data.height);
+    s_data.terrainSystem = s_data.systems.addSystem<TerrainSystem>();
 }
 
 void RenderEngine::resize(int width, int height) {
@@ -101,7 +105,7 @@ void RenderEngine::resize(int width, int height) {
 }
 
 void RenderEngine::render() {
-    Device::instance().setRenderTarget(s_data.defaultTarget);
+    s_data.defaultTarget.bind();
     Device::instance().clear();
     for (auto &system : s_data.systems.getSystems()) {
         system->onRender();
@@ -112,7 +116,7 @@ void RenderEngine::postRender() {
     Device::instance().setPolygonMode(PolygonMode::FILL, Face::BOTH);
     Device::instance().blitFramebuffer(
         RenderEngine::getRenderTarget().getFramebuffer(), 0, nullptr, 0,
-        BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::LINEAR);
+        BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
     Device::instance().setFramebuffer(nullptr);
 }
 

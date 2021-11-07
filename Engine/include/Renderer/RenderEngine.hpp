@@ -42,6 +42,9 @@ class RenderEngine {
     static float getBloomFactor();
 
     static void renderQuad();
+
+   private:
+    static void initSystems();
 };
 
 }  // namespace sd

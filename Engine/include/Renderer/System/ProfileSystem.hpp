@@ -1,8 +1,8 @@
 #ifndef SD_PROFILE_SYSTEM_HPP
 #define SD_PROFILE_SYSTEM_HPP
 
-#include "System/System.hpp"
-#include "System/Event.hpp"
+#include "Renderer/System/System.hpp"
+#include "Renderer/System/Event.hpp"
 #include "Utility/Timing.hpp"
 #include "Graphics/Font.hpp"
 #include "Graphics/Camera.hpp"

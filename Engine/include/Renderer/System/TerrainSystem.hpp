@@ -1,8 +1,8 @@
 #ifndef SD_TERRAIN_SYSTEM_HPP
 #define SD_TERRAIN_SYSTEM_HPP
 
-#include "System/System.hpp"
-#include "System/Event.hpp"
+#include "Renderer/System/System.hpp"
+#include "Renderer/System/Event.hpp"
 #include "ECS/Entity.hpp"
 #include "Graphics/Terrain.hpp"
 #include "Utility/QuadTree.hpp"
@@ -23,8 +23,6 @@ class TerrainSystem : public System {
     void onTick(float dt) override;
 
     void onRender() override;
-
-    void onSceneEvent(const SceneEvent &event);
 
     void updateAllTerrains();
 
