@@ -100,7 +100,7 @@ void Renderer::init() {
         TextureFormatType::FLOAT, TextureWrap::REPEAT, TextureFilter::LINEAR,
         TextureMipmapFilter::LINEAR, &color);
 
-    s_data.shader = Asset::manager().load<Shader>("shaders/2d.glsl");
+    s_data.shader = Asset::manager().load<Shader>("shaders/sprite.glsl");
 }
 
 void Renderer::beginScene(Camera& camera) {
