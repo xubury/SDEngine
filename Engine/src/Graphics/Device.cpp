@@ -17,10 +17,4 @@ Ref<Device> Device::create() {
     return device;
 }
 
-void Device::submit(const VertexArray &vao, MeshTopology topology, size_t count,
-                    size_t offset) {
-    vao.bind();
-    drawElements(topology, count, offset);
-}
-
 }  // namespace sd

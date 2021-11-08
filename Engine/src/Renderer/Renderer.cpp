@@ -177,6 +177,22 @@ void Renderer::setGammaCorrection(float gamma) { m_gammaCorrection = gamma; }
 
 float Renderer::getGammaCorrection() { return m_gammaCorrection; }
 
+void Renderer::submit(const VertexArray& vao, MeshTopology topology,
+                      size_t count, size_t offset) {
+    vao.bind();
+    m_device->drawElements(topology, count, offset);
+}
+
+void Renderer3D::drawMesh(const Mesh& mesh) {
+    Renderer::device().setPolygonMode(
+        mesh.isWireframe() ? PolygonMode::LINE : PolygonMode::FILL, Face::BOTH);
+    VertexArray* vao = mesh.getVertexArray();
+    SD_CORE_ASSERT(vao, "Invalid mesh!");
+    Renderer::engine().submit(*vao, mesh.getTopology(),
+                              vao->getIndexBuffer()->getCount(), 0);
+}
+
+
 void Renderer2D::init() {
     std::array<uint32_t, s_data.MAX_INDICES> quadIndices;
     uint32_t offset = 0;
@@ -228,15 +244,6 @@ void Renderer2D::init() {
     s_data.spriteShader = Asset::manager().load<Shader>("shaders/sprite.glsl");
 }
 
-void Renderer3D::drawMesh(const Mesh& mesh) {
-    Renderer::device().setPolygonMode(
-        mesh.isWireframe() ? PolygonMode::LINE : PolygonMode::FILL, Face::BOTH);
-    VertexArray* vao = mesh.getVertexArray();
-    SD_CORE_ASSERT(vao, "Invalid mesh!");
-    Renderer::device().submit(*vao, mesh.getTopology(),
-                              vao->getIndexBuffer()->getCount(), 0);
-}
-
 void Renderer2D::beginScene(Camera& camera) {
     Renderer::engine().updateShader(*s_data.spriteShader, camera);
     s_data.spriteShader->bind();
@@ -268,7 +275,7 @@ void Renderer2D::flush() {
         s_data.spriteShader->setTexture(i, s_data.textureSlots[i].get());
     }
 
-    Renderer::device().submit(*s_data.quadVAO, MeshTopology::TRIANGLES,
+    Renderer::engine().submit(*s_data.quadVAO, MeshTopology::TRIANGLES,
                               s_data.quadIndexCnt, 0);
 
     setTextOrigin(0, 0);

@@ -52,6 +52,9 @@ class SD_API Renderer {
     float getGammaCorrection();
     void setGammaCorrection(float gamma);
 
+    void submit(const VertexArray &vao, MeshTopology topology, size_t count,
+                size_t offset);
+
    private:
     void initSystems();
 

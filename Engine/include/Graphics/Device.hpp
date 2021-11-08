@@ -18,9 +18,6 @@ class SD_API Device {
 
     Device &operator=(const Device &) = delete;
 
-    void submit(const VertexArray &vao, MeshTopology topology, size_t count,
-                size_t offset);
-
     virtual void drawElements(MeshTopology topology, size_t count,
                               size_t offset) = 0;
 

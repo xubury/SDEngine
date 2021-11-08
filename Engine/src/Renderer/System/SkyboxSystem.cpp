@@ -48,7 +48,7 @@ void SkyboxSystem::onRender() {
     Renderer::device().setCullFace(Face::FRONT);
 
     Renderer::engine().getRenderTarget().bind();
-    Renderer::device().submit(*m_skybox, MeshTopology::TRIANGLES,
+    Renderer::engine().submit(*m_skybox, MeshTopology::TRIANGLES,
                               m_skybox->getIndexBuffer()->getCount(), 0);
     Renderer::device().setCullFace(Face::BACK);
     Renderer::device().setDepthfunc(DepthFunc::LESS);
