@@ -14,17 +14,11 @@
 
 namespace sd {
 
-class SD_API Renderer {
+namespace Renderer {
+
+class SD_API Engine : public SystemManager {
    public:
-    static Renderer &engine();
-    static Device &device();
-
     void init(int width, int height, int samples);
-    void resize(int width, int height);
-
-    void render();
-    void postRender();
-    void tick(float dt);
 
     TerrainSystem *getTerrainSystem();
 
@@ -52,11 +46,15 @@ class SD_API Renderer {
     float getGammaCorrection();
     void setGammaCorrection(float gamma);
 
-    void submit(const VertexArray &vao, MeshTopology topology, size_t count,
-                size_t offset);
+    void resize(int width, int height);
+
+    void render();
+    void postRender();
+    void tick(float dt);
 
    private:
     void initSystems();
+    void initRenderer2D();
 
     int m_width;
     int m_height;
@@ -73,47 +71,49 @@ class SD_API Renderer {
 
     Ref<UniformBuffer> m_cameraUBO;
 
-    Ref<Device> m_device;
-    SystemManager m_systems;
     Ref<LightingSystem> m_lightingSystem;
     Ref<TerrainSystem> m_terrainSystem;
 };
 
-class SD_API Renderer3D {
-   public:
-    static void drawMesh(const Mesh &mesh);
+Engine &engine();
+Device &device();
+
+void submit(const VertexArray &vao, MeshTopology topology, size_t count,
+            size_t offset);
+
+};  // namespace Renderer
+
+namespace Renderer3D {
+
+void drawMesh(const Mesh &mesh);
+
 };
 
-class SD_API Renderer2D {
-    friend class Renderer;
+namespace Renderer2D {
 
-   private:
-    static void init();
+void startBatch();
+void flush();
+void nextBatch();
 
-   public:
-    static void startBatch();
-    static void flush();
-    static void nextBatch();
+void beginScene(Camera &camera);
+void endScene();
 
-    static void beginScene(Camera &camera);
-    static void endScene();
+void setTextOrigin(float x, float y);
 
-    static void setTextOrigin(float x, float y);
+void drawQuad(const glm::mat4 &transform, const glm::vec4 &color);
 
-    static void drawQuad(const glm::mat4 &transform, const glm::vec4 &color);
+void drawTexture(const Ref<Texture> &texture, const glm::mat4 &transform,
+                 const glm::vec4 &color = glm::vec4(1.0f));
 
-    static void drawTexture(const Ref<Texture> &texture,
-                            const glm::mat4 &transform,
-                            const glm::vec4 &color = glm::vec4(1.0f));
+void drawBillboard(const Ref<Texture> &texture, const glm::vec3 &pos,
+                   const glm::vec2 &scale,
+                   const glm::vec4 &color = glm::vec4(1.0f));
 
-    static void drawBillboard(const Ref<Texture> &texture, const glm::vec3 &pos,
-                              const glm::vec2 &scale,
-                              const glm::vec4 &color = glm::vec4(1.0f));
+void drawText(Font &font, const std::wstring &text, int pixleSize,
+              const glm::mat4 &transform,
+              const glm::vec4 &color = glm::vec4(1.0f));
 
-    static void drawText(Font &font, const std::wstring &text, int pixleSize,
-                         const glm::mat4 &transform,
-                         const glm::vec4 &color = glm::vec4(1.0f));
-};
+};  // namespace Renderer2D
 
 }  // namespace sd
 

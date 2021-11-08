@@ -144,8 +144,8 @@ void LightingSystem::renderEmissive() {
     m_emssiveShader->setTexture(
         "u_gEmissive",
         m_gBufferTarget.getTexture(GeometryBufferType::G_EMISSIVE));
-    Renderer::engine().submit(*m_quad, MeshTopology::TRIANGLES,
-                              m_quad->getIndexBuffer()->getCount(), 0);
+    Renderer::submit(*m_quad, MeshTopology::TRIANGLES,
+                     m_quad->getIndexBuffer()->getCount(), 0);
 }
 
 void LightingSystem::renderDeferred() {
@@ -195,8 +195,8 @@ void LightingSystem::renderDeferred() {
         m_deferredShader->setTexture("u_light.shadowMap", light.getShadowMap());
         m_deferredShader->setMat4("u_light.projectionView",
                                   light.getProjectionView());
-        Renderer::engine().submit(*m_quad, MeshTopology::TRIANGLES,
-                                  m_quad->getIndexBuffer()->getCount(), 0);
+        Renderer::submit(*m_quad, MeshTopology::TRIANGLES,
+                         m_quad->getIndexBuffer()->getCount(), 0);
         std::swap(m_lightTarget[inputId], m_lightTarget[outputId]);
     });
 }
