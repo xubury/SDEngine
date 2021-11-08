@@ -1,6 +1,5 @@
 #include "Utility/Loader/FontLoader.hpp"
 #include "Utility/SDLHelper.hpp"
-#include "Graphics/Font.hpp"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 

@@ -26,18 +26,10 @@ set(Graphics_Include
     ${OpenGL_Include}
     ${Include_Root}/Buffer.hpp
     ${Include_Root}/BufferLayout.hpp
-    ${Include_Root}/Camera.hpp
     ${Include_Root}/Device.hpp
-    ${Include_Root}/Font.hpp
     ${Include_Root}/Framebuffer.hpp
     ${Include_Root}/Graphics.hpp
-    ${Include_Root}/Light.hpp
-    ${Include_Root}/Material.hpp
-    ${Include_Root}/Mesh.hpp
-    ${Include_Root}/Model.hpp
-    ${Include_Root}/RenderTarget.hpp
     ${Include_Root}/Shader.hpp
-    ${Include_Root}/Terrain.hpp
     ${Include_Root}/Texture.hpp
     ${Include_Root}/Translator.hpp
     ${Include_Root}/VertexArray.hpp)
@@ -46,18 +38,10 @@ set(Graphics_Src
     ${OpenGL_Src}
     ${Src_Root}/Buffer.cpp
     ${Src_Root}/BufferLayout.cpp
-    ${Src_Root}/Camera.cpp
     ${Src_Root}/Device.cpp
-    ${Src_Root}/Font.cpp
     ${Src_Root}/Framebuffer.cpp
     ${Src_Root}/Graphics.cpp
-    ${Src_Root}/Light.cpp
-    ${Src_Root}/Material.cpp
-    ${Src_Root}/Mesh.cpp
-    ${Src_Root}/Model.cpp
-    ${Src_Root}/RenderTarget.cpp
     ${Src_Root}/Shader.cpp
-    ${Src_Root}/Terrain.cpp
     ${Src_Root}/Texture.cpp
     ${Src_Root}/VertexArray.cpp)
 

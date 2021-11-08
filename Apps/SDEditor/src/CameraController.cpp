@@ -2,28 +2,30 @@
 #include "Input/InputEngine.hpp"
 #include "Utility/Log.hpp"
 
+namespace sd {
+
 const float ROTATION_SPEED = 0.1;
 const float SMOOTHNESS = 10;
 
 CameraController::CameraController()
-    : sd::ActionTarget<CameraMovement>(m_controllerMap),
+    : ActionTarget<CameraMovement>(m_controllerMap),
       m_camera(nullptr),
       m_focus(0.f),
       m_mouseMovement(0),
       m_mouseSmoothMovement(0),
       m_pitch(0.f) {
-    m_controllerMap.map(CameraMovement::FORWARD,
-                        sd::Action(SDLK_w, sd::Action::Type::REAL_TIME |
-                                               sd::Action::Type::DOWN));
-    m_controllerMap.map(CameraMovement::BACKWARD,
-                        sd::Action(SDLK_s, sd::Action::Type::REAL_TIME |
-                                               sd::Action::Type::DOWN));
-    m_controllerMap.map(CameraMovement::LEFT,
-                        sd::Action(SDLK_a, sd::Action::Type::REAL_TIME |
-                                               sd::Action::Type::DOWN));
-    m_controllerMap.map(CameraMovement::RIGHT,
-                        sd::Action(SDLK_d, sd::Action::Type::REAL_TIME |
-                                               sd::Action::Type::DOWN));
+    m_controllerMap.map(
+        CameraMovement::FORWARD,
+        Action(SDLK_w, Action::Type::REAL_TIME | Action::Type::DOWN));
+    m_controllerMap.map(
+        CameraMovement::BACKWARD,
+        Action(SDLK_s, Action::Type::REAL_TIME | Action::Type::DOWN));
+    m_controllerMap.map(
+        CameraMovement::LEFT,
+        Action(SDLK_a, Action::Type::REAL_TIME | Action::Type::DOWN));
+    m_controllerMap.map(
+        CameraMovement::RIGHT,
+        Action(SDLK_d, Action::Type::REAL_TIME | Action::Type::DOWN));
 
     bind(CameraMovement::FORWARD,
          [this](const SDL_Event &) { move(-m_camera->getWorldFront()); });
@@ -33,9 +35,9 @@ CameraController::CameraController()
          [this](const SDL_Event &) { move(-m_camera->getWorldRight()); });
     bind(CameraMovement::RIGHT,
          [this](const SDL_Event &) { move(m_camera->getWorldRight()); });
-    bind(sd::Action(SDL_EventType::SDL_MOUSEMOTION),
+    bind(Action(SDL_EventType::SDL_MOUSEMOTION),
          [this](const SDL_Event &event) {
-             if (sd::InputEngine::isMouseDown(SDL_BUTTON_RIGHT)) {
+             if (InputEngine::isMouseDown(SDL_BUTTON_RIGHT)) {
                  m_mouseMovement.x += event.motion.xrel;
                  m_mouseMovement.y += event.motion.yrel;
              }
@@ -85,9 +87,11 @@ void CameraController::rotateAround(float yaw, float pitch) {
     m_camera->setWorldTransform(transform * m_camera->getWorldTransform());
 }
 
-void CameraController::setCamera(sd::Camera *camera) {
+void CameraController::setCamera(Camera *camera) {
     m_camera = camera;
     m_pitch = glm::pitch(m_camera->getWorldRotation());
 }
 
 void CameraController::setFocus(const glm::vec3 &focus) { m_focus = focus; }
+
+}  // namespace sd

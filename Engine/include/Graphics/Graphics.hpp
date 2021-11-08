@@ -63,8 +63,6 @@ enum class BufferDataType { UCHAR, UINT, FLOAT, FLOAT2, FLOAT3, FLOAT4 };
 
 enum class BufferIOType { STATIC, DYNAMIC };
 
-enum class API { None, OpenGL };
-
 enum class BufferBitMask {
     COLOR_BUFFER_BIT = 1,
     DEPTH_BUFFER_BIT = 1 << 1,
@@ -109,12 +107,11 @@ struct RGBA {
     std::array<float, 4> m_color;
 };
 
-class SD_API Graphics {
-   public:
-    static void setAPI(API api);
+enum class GraphicsAPI { None, OpenGL };
 
-    static API getAPI();
-};
+void setGraphicsAPI(GraphicsAPI api);
+
+GraphicsAPI getGraphicsAPI();
 
 }  // namespace sd
 

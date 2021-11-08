@@ -4,21 +4,18 @@
 
 namespace sd {
 
-static Device *s_device;
-
-void Device::init() {
-    SD_CORE_TRACE("Initializing Graphics Device...");
-    switch (Graphics::getAPI()) {
-        case API::OpenGL:
-            s_device = new GLDevice();
+Ref<Device> Device::create() {
+    Ref<Device> device;
+    switch (getGraphicsAPI()) {
+        case GraphicsAPI::OpenGL:
+            device = createRef<GLDevice>();
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
+    return device;
 }
-
-Device &Device::instance() { return *s_device; }
 
 void Device::submit(const VertexArray &vao, MeshTopology topology, size_t count,
                     size_t offset) {

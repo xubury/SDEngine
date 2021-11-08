@@ -4,15 +4,13 @@
 #include "Utility/Base.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/VertexArray.hpp"
-#include "Graphics/RenderTarget.hpp"
+#include "Graphics/Framebuffer.hpp"
 
 namespace sd {
 
 class SD_API Device {
    public:
-    static void init();
-
-    static Device &instance();
+    static Ref<Device> create();
 
     virtual ~Device() = default;
 

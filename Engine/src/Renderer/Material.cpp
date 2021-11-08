@@ -1,4 +1,4 @@
-#include "Graphics/Material.hpp"
+#include "Renderer/Material.hpp"
 #include "Utility/Log.hpp"
 #include <map>
 

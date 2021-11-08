@@ -7,8 +7,8 @@ namespace sd {
 
 Ref<Shader> Shader::create() {
     Ref<Shader> shader;
-    switch (Graphics::getAPI()) {
-        case API::OpenGL:
+    switch (getGraphicsAPI()) {
+        case GraphicsAPI::OpenGL:
             shader = createRef<GLShader>();
             break;
         default:

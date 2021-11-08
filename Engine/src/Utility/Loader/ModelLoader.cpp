@@ -1,6 +1,6 @@
 #include "Utility/Loader/ModelLoader.hpp"
 #include "Utility/Image.hpp"
-#include "Graphics/Material.hpp"
+#include "Renderer/Material.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>

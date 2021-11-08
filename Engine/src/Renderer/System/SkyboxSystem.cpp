@@ -1,6 +1,5 @@
 #include "Renderer/System/SkyboxSystem.hpp"
-#include "Renderer/RenderEngine.hpp"
-#include "Graphics/Device.hpp"
+#include "Renderer/Renderer.hpp"
 
 namespace sd {
 
@@ -40,18 +39,18 @@ void SkyboxSystem::onInit() {}
 void SkyboxSystem::onDestroy() {}
 
 void SkyboxSystem::onRender() {
-    glm::vec3 pos = RenderEngine::getCamera()->getWorldPosition();
+    glm::vec3 pos = Renderer::engine().getCamera()->getWorldPosition();
     m_skyboxShader->setMat4("u_model", glm::translate(glm::mat4(1.0f), pos));
 
     m_skyboxShader->bind();
-    Device::instance().setDepthfunc(DepthFunc::LESS_EQUAL);
-    Device::instance().setCullFace(Face::FRONT);
+    Renderer::device().setDepthfunc(DepthFunc::LESS_EQUAL);
+    Renderer::device().setCullFace(Face::FRONT);
 
-    RenderEngine::getRenderTarget().bind();
-    Device::instance().submit(*m_skybox, MeshTopology::TRIANGLES,
+    Renderer::engine().getRenderTarget().bind();
+    Renderer::device().submit(*m_skybox, MeshTopology::TRIANGLES,
                               m_skybox->getIndexBuffer()->getCount(), 0);
-    Device::instance().setCullFace(Face::BACK);
-    Device::instance().setDepthfunc(DepthFunc::LESS);
+    Renderer::device().setCullFace(Face::BACK);
+    Renderer::device().setDepthfunc(DepthFunc::LESS);
 }
 
 }  // namespace sd

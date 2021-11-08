@@ -1,4 +1,4 @@
-#include "Graphics/Light.hpp"
+#include "Renderer/Light.hpp"
 #include "Utility/Log.hpp"
 #include "Utility/Assert.hpp"
 

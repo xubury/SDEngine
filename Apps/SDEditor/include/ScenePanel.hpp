@@ -1,5 +1,5 @@
-#ifndef SCENE_PANEL_HPP
-#define SCENE_PANEL_HPP
+#ifndef SD_SCENE_PANEL_HPP
+#define SD_SCENE_PANEL_HPP
 
 #include "ECS/Scene.hpp"
 #include "ECS/Entity.hpp"
@@ -7,16 +7,18 @@
 #include "ImGui/FileDialog.hpp"
 #include "ECS/Component.hpp"
 
+namespace sd {
+
 class ScenePanel {
    public:
     ScenePanel();
-    ScenePanel(sd::Scene *scene);
+    ScenePanel(Scene *scene);
 
-    void setScene(sd::Scene *scene);
+    void setScene(Scene *scene);
 
-    void setSelectedEntity(sd::Entity entity);
+    void setSelectedEntity(Entity entity);
 
-    sd::Entity getSelectedEntity() const;
+    Entity getSelectedEntity() const;
 
     void onImGui();
 
@@ -24,22 +26,24 @@ class ScenePanel {
     int getGizmoType() const;
 
    private:
-    void drawEntityNode(sd::Entity &entity);
+    void drawEntityNode(Entity &entity);
 
-    void drawComponents(sd::Entity &entity);
+    void drawComponents(Entity &entity);
 
-    void drawMaterialsList(const std::vector<sd::Material> &materials,
+    void drawMaterialsList(const std::vector<Material> &materials,
                            const ImVec2 &size, int *selected);
 
     void reset();
 
-    sd::Scene *m_scene;
-    sd::Entity m_selectedEntity;
-    sd::Entity m_destroyEntity;
+    Scene *m_scene;
+    Entity m_selectedEntity;
+    Entity m_destroyEntity;
     std::unordered_map<entt::entity, int> m_selectedMaterialIdMap;
 
     int m_gizmoMode;
     int m_gizmoType;
 };
+
+}  // namespace sd
 
 #endif /* SCENE_PANEL_HPP */

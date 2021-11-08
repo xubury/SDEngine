@@ -3,8 +3,8 @@
 
 #include "Utility/Export.hpp"
 #include "Utility/Transform.hpp"
-#include "Graphics/RenderTarget.hpp"
-#include "Graphics/Camera.hpp"
+#include "Renderer/RenderTarget.hpp"
+#include "Renderer/Camera.hpp"
 #include <glm/glm.hpp>
 
 namespace sd {

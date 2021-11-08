@@ -1,4 +1,4 @@
-#include "Graphics/Mesh.hpp"
+#include "Renderer/Mesh.hpp"
 
 namespace sd {
 

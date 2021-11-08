@@ -2,19 +2,57 @@
 #define SD_RENDERER_HPP
 
 #include <cstdint>
+#include "Renderer/RenderTarget.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Device.hpp"
-#include "Graphics/Camera.hpp"
 #include "Graphics/Shader.hpp"
-#include "Graphics/RenderTarget.hpp"
-#include "Graphics/Font.hpp"
-#include "Graphics/Mesh.hpp"
+#include "Renderer/Camera.hpp"
+#include "Renderer/Font.hpp"
+#include "Renderer/Mesh.hpp"
+#include "Renderer/System/LightingSystem.hpp"
+#include "Renderer/System/TerrainSystem.hpp"
 
 namespace sd {
 
 class SD_API Renderer {
    public:
-    static void init();
+    static Renderer &engine();
+    static Device &device();
+
+    void init(int width, int height, int samples);
+    void resize(int width, int height);
+
+    void render();
+    void postRender();
+    void tick(float dt);
+
+    TerrainSystem *getTerrainSystem();
+
+    LightingSystem *getLightingSystem();
+
+    RenderTarget &getRenderTarget();
+
+    void updateShader(Shader &shader, Camera &camera);
+
+    void setScene(Scene *scene);
+    Scene *getScene();
+
+    void setCamera(Camera *camera);
+    Camera *getCamera();
+
+    void setExposure(float exposure);
+    float getExposure();
+
+    void setBloom(bool isBloom);
+    bool getBloom();
+
+    void setBloomFactor(float bloom);
+    float getBloomFactor();
+
+    float getGammaCorrection();
+    void setGammaCorrection(float gamma);
+
+    static void drawMesh(const Mesh &mesh);
 
     static void startBatch();
     static void flush();
@@ -39,7 +77,29 @@ class SD_API Renderer {
                          const glm::mat4 &transform,
                          const glm::vec4 &color = glm::vec4(1.0f));
 
-    static void drawMesh(const Mesh &mesh);
+   private:
+    void initSystems();
+    void init2DData();
+
+    int m_width;
+    int m_height;
+    int m_samples;
+
+    RenderTarget m_defaultTarget;
+    Scene *m_scene;
+
+    Camera *m_camera;
+    float m_exposure;
+    float m_bloom;
+    bool m_isBloom;
+    float m_gammaCorrection;
+
+    Ref<UniformBuffer> m_cameraUBO;
+
+    Ref<Device> m_device;
+    SystemManager m_systems;
+    Ref<LightingSystem> m_lightingSystem;
+    Ref<TerrainSystem> m_terrainSystem;
 };
 
 }  // namespace sd

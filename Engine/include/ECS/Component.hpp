@@ -5,11 +5,11 @@
 #include "Utility/Export.hpp"
 #include "Utility/Transform.hpp"
 #include "Utility/Math.hpp"
-#include "Graphics/Model.hpp"
-#include "Graphics/Mesh.hpp"
-#include "Graphics/Terrain.hpp"
-#include "Graphics/Light.hpp"
-#include "Graphics/Font.hpp"
+#include "Renderer/Model.hpp"
+#include "Renderer/Mesh.hpp"
+#include "Renderer/Terrain.hpp"
+#include "Renderer/Light.hpp"
+#include "Renderer/Font.hpp"
 
 namespace sd {
 

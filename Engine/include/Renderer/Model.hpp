@@ -1,8 +1,8 @@
 #ifndef SD_MODEL_HPP
 #define SD_MODEL_HPP
 
-#include "Graphics/Mesh.hpp"
-#include "Graphics/Material.hpp"
+#include "Renderer/Mesh.hpp"
+#include "Renderer/Material.hpp"
 
 namespace sd {
 

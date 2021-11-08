@@ -1,13 +1,14 @@
-#ifndef EDITOR_LAYER_HPP
-#define EDITOR_LAYER_HPP
+#ifndef SD_EDITOR_LAYER_HPP
+#define SD_EDITOR_LAYER_HPP
 
 #include "Core/Layer.hpp"
-#include "Graphics/Camera.hpp"
-#include "Graphics/RenderTarget.hpp"
+#include "Renderer/Camera.hpp"
 #include "ScenePanel.hpp"
 #include "CameraController.hpp"
 
-class EditorLayer : public sd::Layer {
+namespace sd {
+
+class EditorLayer : public Layer {
    public:
     EditorLayer(int width, int height);
 
@@ -36,8 +37,8 @@ class EditorLayer : public sd::Layer {
 
     void show();
 
-    sd::Ref<sd::Framebuffer> m_screenBuffer;
-    sd::Ref<sd::Framebuffer> m_debugGBuffer;
+    Ref<Framebuffer> m_screenBuffer;
+    Ref<Framebuffer> m_debugGBuffer;
 
     int m_width;
     int m_height;
@@ -48,17 +49,19 @@ class EditorLayer : public sd::Layer {
 
     bool m_hide;
 
-    sd::PerspectiveCamera m_editorCamera;
+    PerspectiveCamera m_editorCamera;
     CameraController m_cameraController;
 
-    sd::Ref<sd::Scene> m_scene;
+    Ref<Scene> m_scene;
     ScenePanel m_scenePanel;
 
     bool m_loadSceneOpen;
     bool m_saveSceneOpen;
     ImFileDialogInfo m_fileDialogInfo;
 
-    sd::Ref<sd::Texture> m_lightIcon;
+    Ref<Texture> m_lightIcon;
 };
+
+}  // namespace sd
 
 #endif /* EDITOR_LAYER_HPP */

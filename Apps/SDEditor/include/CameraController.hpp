@@ -1,13 +1,15 @@
-#ifndef CAMERA_CONTROLLER_HPP
-#define CAMERA_CONTROLLER_HPP
+#ifndef SD_CAMERA_CONTROLLER_HPP
+#define SD_CAMERA_CONTROLLER_HPP
 
 #include "Utility/Base.hpp"
 #include "Input/ActionTarget.hpp"
-#include "Graphics/Camera.hpp"
+#include "Renderer/Camera.hpp"
+
+namespace sd {
 
 enum class CameraMovement { FORWARD, BACKWARD, LEFT, RIGHT };
 
-class CameraController : public sd::ActionTarget<CameraMovement> {
+class CameraController : public ActionTarget<CameraMovement> {
    public:
     CameraController();
 
@@ -15,7 +17,7 @@ class CameraController : public sd::ActionTarget<CameraMovement> {
 
     void move(const glm::vec3 &t);
 
-    void setCamera(sd::Camera *camera);
+    void setCamera(Camera *camera);
 
     void setFocus(const glm::vec3 &focus);
 
@@ -24,8 +26,8 @@ class CameraController : public sd::ActionTarget<CameraMovement> {
     void rotateAround(float yaw, float pitch);
 
    private:
-    sd::ActionMap<CameraMovement> m_controllerMap;
-    sd::Camera *m_camera;
+    ActionMap<CameraMovement> m_controllerMap;
+    Camera *m_camera;
     glm::vec3 m_focus;
 
     glm::vec2 m_mouseMovement;
@@ -34,4 +36,6 @@ class CameraController : public sd::ActionTarget<CameraMovement> {
     float m_pitch;
 };
 
-#endif /* CAMERA_CONTROLLER_HPP */
+}  // namespace sd
+
+#endif /* SD_CAMERA_CONTROLLER_HPP */

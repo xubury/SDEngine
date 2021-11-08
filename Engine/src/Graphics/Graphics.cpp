@@ -2,11 +2,11 @@
 
 namespace sd {
 
-static API s_api;
+static GraphicsAPI s_api;
 
-void Graphics::setAPI(API api) {
+void setGraphicsAPI(GraphicsAPI api) {
     switch (api) {
-        case API::OpenGL:
+        case GraphicsAPI::OpenGL:
             SD_CORE_INFO("Using OpenGL as backend..");
             break;
         default:
@@ -16,6 +16,6 @@ void Graphics::setAPI(API api) {
     s_api = api;
 }
 
-API Graphics::getAPI() { return s_api; }
+GraphicsAPI getGraphicsAPI() { return s_api; }
 
 }  // namespace sd

@@ -3,10 +3,14 @@
 
 #include "Core/Application.hpp"
 
-class SDEditor : public sd::Application {
+namespace sd {
+
+class SDEditor : public Application {
    public:
     void init() override;
     void destroy() override;
 };
+
+}  // namespace sd
 
 #endif /* SD_EDITOR_HPP */

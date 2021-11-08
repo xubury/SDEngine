@@ -6,8 +6,8 @@ namespace sd {
 
 Ref<Framebuffer> Framebuffer::create() {
     Ref<Framebuffer> frameBuffer;
-    switch (Graphics::getAPI()) {
-        case API::OpenGL:
+    switch (getGraphicsAPI()) {
+        case GraphicsAPI::OpenGL:
             frameBuffer = createRef<GLFramebuffer>();
             break;
         default:

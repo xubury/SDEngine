@@ -1,7 +1,5 @@
 #include "Renderer/System/ShadowSystem.hpp"
-#include "Renderer/RenderEngine.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Graphics/Device.hpp"
 #include "ECS/Component.hpp"
 #include "ECS/Scene.hpp"
 
@@ -11,20 +9,16 @@ ShadowSystem::ShadowSystem() {
     m_shadowShader = Asset::manager().load<Shader>("shaders/shadow.glsl");
 }
 
-void ShadowSystem::onInit() {
+void ShadowSystem::onInit() {}
 
-}
-
-void ShadowSystem::onDestroy() {
-
-}
+void ShadowSystem::onDestroy() {}
 
 void ShadowSystem::onRender() {
-    auto scene = RenderEngine::getScene();
+    auto scene = Renderer::engine().getScene();
     auto lightView = scene->view<TransformComponent, LightComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
-    Device::instance().setCullFace(Face::FRONT);
+    Renderer::device().setCullFace(Face::FRONT);
     m_shadowShader->bind();
     lightView.each([this, &modelView](const TransformComponent &transformComp,
                                       LightComponent &lightComp) {
@@ -34,7 +28,7 @@ void ShadowSystem::onRender() {
         light.getRenderTarget().bind();
         light.getRenderTarget().getFramebuffer()->clearDepth();
         light.computeLightSpaceMatrix(transformComp.transform,
-                                      RenderEngine::getCamera());
+                                      Renderer::engine().getCamera());
         m_shadowShader->setMat4("u_projectionView", light.getProjectionView());
 
         modelView.each([this](const TransformComponent &transformComp,
@@ -46,7 +40,7 @@ void ShadowSystem::onRender() {
             }
         });
     });
-    Device::instance().setCullFace(Face::BACK);
+    Renderer::device().setCullFace(Face::BACK);
 }
 
 }  // namespace sd

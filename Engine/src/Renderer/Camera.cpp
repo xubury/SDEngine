@@ -1,4 +1,4 @@
-#include "Graphics/Camera.hpp"
+#include "Renderer/Camera.hpp"
 #include <glm/gtx/matrix_decompose.hpp>
 #include "Utility/Log.hpp"
 #include "Utility/Assert.hpp"

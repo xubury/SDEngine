@@ -26,13 +26,27 @@ set(System_Src
 
 set(Renderer_Include
     ${System_Include}
-    ${Include_Root}/RenderEngine.hpp
-    ${Include_Root}/Renderer.hpp)
+    ${Include_Root}/Camera.hpp
+    ${Include_Root}/Font.hpp
+    ${Include_Root}/Light.hpp
+    ${Include_Root}/Mateiral.hpp
+    ${Include_Root}/Mesh.hpp
+    ${Include_Root}/Model.hpp
+    ${Include_Root}/Renderer.hpp
+    ${Include_Root}/RenderTarget.hpp
+    ${Include_Root}/Terrain.hpp)
 
 set(Renderer_Src
     ${System_Src}
-    ${Src_Root}/RenderEngine.cpp
-    ${Src_Root}/Renderer.cpp)
+    ${Src_Root}/Camera.cpp
+    ${Src_Root}/Font.cpp
+    ${Src_Root}/Light.cpp
+    ${Src_Root}/Material.cpp
+    ${Src_Root}/Mesh.cpp
+    ${Src_Root}/Model.cpp
+    ${Src_Root}/Renderer.cpp
+    ${Src_Root}/RenderTarget.cpp
+    ${Src_Root}/Terrain.cpp)
 
 add_library(sd-renderer ${Renderer_Src})
 

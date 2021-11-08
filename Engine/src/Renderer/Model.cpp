@@ -1,4 +1,4 @@
-#include "Graphics/Model.hpp"
+#include "Renderer/Model.hpp"
 
 namespace sd {
 

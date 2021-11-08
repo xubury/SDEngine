@@ -3,10 +3,10 @@
 
 #include "Renderer/System/System.hpp"
 #include "Renderer/System/Event.hpp"
+#include "Renderer/RenderTarget.hpp"
 #include "ECS/Scene.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"
-#include "Graphics/RenderTarget.hpp"
 
 namespace sd {
 
@@ -60,6 +60,8 @@ class SD_API LightingSystem : public System {
 
     Ref<Shader> m_gBufferShader;
     RenderTarget m_gBufferTarget;
+
+    Ref<VertexArray> m_quad;
 };
 
 }  // namespace sd

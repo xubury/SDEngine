@@ -1,7 +1,5 @@
 #include "Renderer/System/ProfileSystem.hpp"
-#include "Renderer/RenderEngine.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Graphics/Device.hpp"
 
 namespace sd {
 
@@ -19,7 +17,7 @@ void ProfileSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
 void ProfileSystem::onTick(float) {}
 
 void ProfileSystem::onRender() {
-    RenderEngine::getRenderTarget().bind();
+    Renderer::engine().getRenderTarget().bind();
     Renderer::beginScene(m_camera);
     std::wstring fpsStr =
         L"FPS:" + std::to_wstring(static_cast<uint32_t>(m_fps.getFps()));

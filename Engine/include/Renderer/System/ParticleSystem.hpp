@@ -4,9 +4,9 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include "Utility/Export.hpp"
-#include "Graphics/RenderTarget.hpp"
-#include "Graphics/Camera.hpp"
 #include "Renderer/System/System.hpp"
+#include "Renderer/RenderTarget.hpp"
+#include "Renderer/Camera.hpp"
 
 namespace sd {
 

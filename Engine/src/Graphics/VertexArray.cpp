@@ -7,8 +7,8 @@ namespace sd {
 
 Ref<VertexArray> VertexArray::create() {
     Ref<VertexArray> va;
-    switch (Graphics::getAPI()) {
-        case API::OpenGL:
+    switch (getGraphicsAPI()) {
+        case GraphicsAPI::OpenGL:
             va = createRef<GLVertexArray>();
             break;
         default:

@@ -1,5 +1,5 @@
-#include "Graphics/RenderTarget.hpp"
-#include "Graphics/Device.hpp"
+#include "Renderer/RenderTarget.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Utility/Log.hpp"
 
 namespace sd {
@@ -10,8 +10,8 @@ RenderTarget::RenderTarget(int x, int y, int width, int height)
     : m_x(x), m_y(y), m_width(width), m_height(height) {}
 
 void RenderTarget::bind() {
-    Device::instance().setFramebuffer(getFramebuffer());
-    Device::instance().setViewport(m_x, m_y, m_width, m_height);
+    Renderer::device().setFramebuffer(getFramebuffer());
+    Renderer::device().setViewport(m_x, m_y, m_width, m_height);
 }
 
 void RenderTarget::createFramebuffer() {

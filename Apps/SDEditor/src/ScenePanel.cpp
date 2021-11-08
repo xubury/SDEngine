@@ -1,35 +1,35 @@
 #include "ScenePanel.hpp"
-#include "Renderer/RenderEngine.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGuizmo.h"
+#include "Renderer/Renderer.hpp"
 #include "Utility/String.hpp"
+
+namespace sd {
 
 ScenePanel::ScenePanel()
     : m_scene(nullptr),
       m_gizmoMode(ImGuizmo::WORLD),
       m_gizmoType(ImGuizmo::TRANSLATE) {}
 
-ScenePanel::ScenePanel(sd::Scene *scene) : m_scene(scene) {}
+ScenePanel::ScenePanel(Scene *scene) : m_scene(scene) {}
 
 void ScenePanel::reset() {
     m_selectedEntity = {};
     m_selectedMaterialIdMap.clear();
 }
 
-void ScenePanel::setScene(sd::Scene *scene) {
+void ScenePanel::setScene(Scene *scene) {
     if (m_scene != scene) {
         reset();
     }
     m_scene = scene;
 }
 
-void ScenePanel::setSelectedEntity(sd::Entity entity) {
-    m_selectedEntity = entity;
-}
+void ScenePanel::setSelectedEntity(Entity entity) { m_selectedEntity = entity; }
 
-sd::Entity ScenePanel::getSelectedEntity() const { return m_selectedEntity; }
+Entity ScenePanel::getSelectedEntity() const { return m_selectedEntity; }
 
 int ScenePanel::getGizmoMode() const { return m_gizmoMode; }
 
@@ -43,11 +43,10 @@ void ScenePanel::onImGui() {
     ImGui::Begin("Scene Hierarchy");
 
     m_scene->each([&](auto entityID) {
-        sd::Entity entity{entityID, m_scene};
+        Entity entity{entityID, m_scene};
 
-        sd::EntityDataComponent &data =
-            entity.getComponent<sd::EntityDataComponent>();
-        sd::Entity parent(data.m_parent, m_scene);
+        EntityDataComponent &data = entity.getComponent<EntityDataComponent>();
+        Entity parent(data.m_parent, m_scene);
         if (!parent) {
             drawEntityNode(entity);
         }
@@ -80,11 +79,10 @@ void ScenePanel::onImGui() {
     ImGui::End();
 }
 
-void ScenePanel::drawEntityNode(sd::Entity &entity) {
-    sd::EntityDataComponent &data =
-        entity.getComponent<sd::EntityDataComponent>();
+void ScenePanel::drawEntityNode(Entity &entity) {
+    EntityDataComponent &data = entity.getComponent<EntityDataComponent>();
 
-    auto &tag = entity.getComponent<sd::TagComponent>().tag;
+    auto &tag = entity.getComponent<TagComponent>().tag;
 
     static ImGuiTreeNodeFlags base_flags =
         ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |
@@ -108,7 +106,7 @@ void ScenePanel::drawEntityNode(sd::Entity &entity) {
             m_destroyEntity = entity;
         };
         if (ImGui::MenuItem("Create Empty Entity")) {
-            sd::Entity newEntity = m_scene->createEntity("Empty Entity");
+            Entity newEntity = m_scene->createEntity("Empty Entity");
             m_scene->addChildToEntity(entity, newEntity);
         }
 
@@ -117,7 +115,7 @@ void ScenePanel::drawEntityNode(sd::Entity &entity) {
 
     if (opened) {
         for (entt::entity childId : data.m_children) {
-            sd::Entity child(childId, m_scene);
+            Entity child(childId, m_scene);
             drawEntityNode(child);
         }
         ImGui::TreePop();
@@ -125,7 +123,7 @@ void ScenePanel::drawEntityNode(sd::Entity &entity) {
 }
 
 template <typename T, typename UIFunction>
-static void drawComponent(const std::string &name, sd::Entity entity,
+static void drawComponent(const std::string &name, Entity entity,
                           UIFunction uiFunction, bool removeable = true) {
     const ImGuiTreeNodeFlags treeNodeFlags =
         ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed |
@@ -166,9 +164,9 @@ static void drawComponent(const std::string &name, sd::Entity entity,
     }
 }
 
-void ScenePanel::drawComponents(sd::Entity &entity) {
-    if (entity.hasComponent<sd::TagComponent>()) {
-        auto &tag = entity.getComponent<sd::TagComponent>().tag;
+void ScenePanel::drawComponents(Entity &entity) {
+    if (entity.hasComponent<TagComponent>()) {
+        auto &tag = entity.getComponent<TagComponent>().tag;
 
         char buffer[256];
         memset(buffer, 0, sizeof(buffer));
@@ -183,29 +181,29 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
 
     if (ImGui::BeginPopup("AddComponent")) {
         if (ImGui::MenuItem("Model")) {
-            if (!m_selectedEntity.hasComponent<sd::ModelComponent>())
-                m_selectedEntity.addComponent<sd::ModelComponent>();
+            if (!m_selectedEntity.hasComponent<ModelComponent>())
+                m_selectedEntity.addComponent<ModelComponent>();
             else
                 SD_CORE_WARN("This entity already has the Model Component!");
             ImGui::CloseCurrentPopup();
         }
         if (ImGui::MenuItem("Terrain")) {
-            if (!m_selectedEntity.hasComponent<sd::TerrainComponent>())
-                m_selectedEntity.addComponent<sd::TerrainComponent>();
+            if (!m_selectedEntity.hasComponent<TerrainComponent>())
+                m_selectedEntity.addComponent<TerrainComponent>();
             else
                 SD_CORE_WARN("This entity already has the Terrain Component!");
             ImGui::CloseCurrentPopup();
         }
         if (ImGui::MenuItem("Light")) {
-            if (!m_selectedEntity.hasComponent<sd::LightComponent>())
-                m_selectedEntity.addComponent<sd::LightComponent>();
+            if (!m_selectedEntity.hasComponent<LightComponent>())
+                m_selectedEntity.addComponent<LightComponent>();
             else
                 SD_CORE_WARN("This entity already has the Light Component!");
             ImGui::CloseCurrentPopup();
         }
         if (ImGui::MenuItem("Text")) {
-            if (!m_selectedEntity.hasComponent<sd::TextComponent>())
-                m_selectedEntity.addComponent<sd::TextComponent>();
+            if (!m_selectedEntity.hasComponent<TextComponent>())
+                m_selectedEntity.addComponent<TextComponent>();
             else
                 SD_CORE_WARN("This entity already has the Text Component!");
             ImGui::CloseCurrentPopup();
@@ -215,9 +213,9 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
     }
     ImGui::PopItemWidth();
 
-    drawComponent<sd::TransformComponent>(
+    drawComponent<TransformComponent>(
         "Transform", entity,
-        [&](sd::TransformComponent &component) {
+        [&](TransformComponent &component) {
             ImGui::RadioButton("World", &m_gizmoMode, ImGuizmo::WORLD);
             ImGui::SameLine();
             ImGui::RadioButton("Local", &m_gizmoMode, ImGuizmo::LOCAL);
@@ -244,50 +242,49 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
             }
         },
         false);
-    drawComponent<sd::ModelComponent>(
-        "Model", entity, [&](sd::ModelComponent &mc) {
-            static bool fileDialogOpen = false;
-            static ImFileDialogInfo fileDialogInfo;
-            ImGui::InputText("##Path", mc.path.data(), mc.path.size(),
-                             ImGuiInputTextFlags_ReadOnly);
-            ImGui::SameLine();
-            if (ImGui::Button("Open")) {
-                fileDialogOpen = true;
-                fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
-                fileDialogInfo.title = "Open File";
-                fileDialogInfo.fileName = "";
-                fileDialogInfo.directoryPath = std::filesystem::current_path();
-            }
-            if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
-                mc.path = sd::Asset::manager()
-                              .getRelativePath(fileDialogInfo.resultPath)
-                              .string();
-                mc.model = sd::Asset::manager().load<sd::Model>(mc.path);
-            }
+    drawComponent<ModelComponent>("Model", entity, [&](ModelComponent &mc) {
+        static bool fileDialogOpen = false;
+        static ImFileDialogInfo fileDialogInfo;
+        ImGui::InputText("##Path", mc.path.data(), mc.path.size(),
+                         ImGuiInputTextFlags_ReadOnly);
+        ImGui::SameLine();
+        if (ImGui::Button("Open")) {
+            fileDialogOpen = true;
+            fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
+            fileDialogInfo.title = "Open File";
+            fileDialogInfo.fileName = "";
+            fileDialogInfo.directoryPath = std::filesystem::current_path();
+        }
+        if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
+            mc.path = Asset::manager()
+                          .getRelativePath(fileDialogInfo.resultPath)
+                          .string();
+            mc.model = Asset::manager().load<Model>(mc.path);
+        }
 
-            ImGui::ColorEdit3("Color", &mc.color[0]);
-            ImVec2 size(64, 64);
-            drawMaterialsList(mc.model->getMaterials(), size,
-                              &m_selectedMaterialIdMap[entity]);
-        });
-    drawComponent<sd::TerrainComponent>(
-        "Terrain", entity, [&](sd::TerrainComponent &terrain) {
+        ImGui::ColorEdit3("Color", &mc.color[0]);
+        ImVec2 size(64, 64);
+        drawMaterialsList(mc.model->getMaterials(), size,
+                          &m_selectedMaterialIdMap[entity]);
+    });
+    drawComponent<TerrainComponent>(
+        "Terrain", entity, [&](TerrainComponent &terrain) {
             int gridSize = terrain.terrain.getGridSize();
             int vertexCount = terrain.terrain.getVertexCount();
             if (ImGui::InputInt("Grid size:", &gridSize)) {
                 terrain.terrain.setGridSize(std::max(gridSize, 1));
                 terrain.terrain.generateMesh();
-                sd::RenderEngine::getTerrainSystem()->updateTerrain(entity);
+                Renderer::engine().getTerrainSystem()->updateTerrain(entity);
             }
             if (ImGui::InputInt("Vertex count:", &vertexCount)) {
                 terrain.terrain.setVertexCount(std::max(vertexCount, 2));
                 terrain.terrain.generateMesh();
-                sd::RenderEngine::getTerrainSystem()->updateTerrain(entity);
+                Renderer::engine().getTerrainSystem()->updateTerrain(entity);
             }
         });
-    drawComponent<sd::LightComponent>(
-        "Light", entity, [&](sd::LightComponent &lightComp) {
-            sd::Light &light = lightComp.light;
+    drawComponent<LightComponent>(
+        "Light", entity, [&](LightComponent &lightComp) {
+            Light &light = lightComp.light;
             glm::vec3 diffuse = light.getDiffuse();
             if (ImGui::ColorEdit3("Diffuse", &diffuse[0])) {
                 light.setDiffuse(diffuse);
@@ -334,45 +331,43 @@ void ScenePanel::drawComponents(sd::Entity &entity) {
                 }
             }
         });
-    drawComponent<sd::TextComponent>(
-        "Text", entity, [&](sd::TextComponent &textComp) {
-            // TODO: Can ImGui support UTF-16?
-            static bool fileDialogOpen = false;
-            static ImFileDialogInfo fileDialogInfo;
-            char buffer[256];
-            std::string utf8Str = sd::wstringToString(textComp.text);
-            memset(buffer, 0, sizeof(buffer));
-            std::strncpy(buffer, utf8Str.c_str(), utf8Str.size());
-            ImGui::Text("Font File:");
-            ImGui::InputText("##Path", textComp.fontPath.data(),
-                             textComp.fontPath.size(),
-                             ImGuiInputTextFlags_ReadOnly);
-            ImGui::SameLine();
-            if (ImGui::Button("Open")) {
-                fileDialogOpen = true;
-                fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
-                fileDialogInfo.title = "Open File";
-                fileDialogInfo.fileName = "";
-                fileDialogInfo.directoryPath = std::filesystem::current_path();
-            }
-            if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
-                textComp.fontPath =
-                    sd::Asset::manager()
-                        .getRelativePath(fileDialogInfo.resultPath)
-                        .string();
-            }
-            ImGui::Text("Text Content:");
-            if (ImGui::InputText("##TextEdit", buffer, sizeof(buffer))) {
-                textComp.text = sd::stringToWstring(buffer);
-            }
-            ImGui::Text("Pixel Size");
-            ImGui::InputInt("##PixelSize", &textComp.pixelSize);
-            ImGui::Text("Color");
-            ImGui::ColorEdit4("##TextColor", &textComp.color[0]);
-        });
+    drawComponent<TextComponent>("Text", entity, [&](TextComponent &textComp) {
+        // TODO: Can ImGui support UTF-16?
+        static bool fileDialogOpen = false;
+        static ImFileDialogInfo fileDialogInfo;
+        char buffer[256];
+        std::string utf8Str = wstringToString(textComp.text);
+        memset(buffer, 0, sizeof(buffer));
+        std::strncpy(buffer, utf8Str.c_str(), utf8Str.size());
+        ImGui::Text("Font File:");
+        ImGui::InputText("##Path", textComp.fontPath.data(),
+                         textComp.fontPath.size(),
+                         ImGuiInputTextFlags_ReadOnly);
+        ImGui::SameLine();
+        if (ImGui::Button("Open")) {
+            fileDialogOpen = true;
+            fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
+            fileDialogInfo.title = "Open File";
+            fileDialogInfo.fileName = "";
+            fileDialogInfo.directoryPath = std::filesystem::current_path();
+        }
+        if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
+            textComp.fontPath = Asset::manager()
+                                    .getRelativePath(fileDialogInfo.resultPath)
+                                    .string();
+        }
+        ImGui::Text("Text Content:");
+        if (ImGui::InputText("##TextEdit", buffer, sizeof(buffer))) {
+            textComp.text = stringToWstring(buffer);
+        }
+        ImGui::Text("Pixel Size");
+        ImGui::InputInt("##PixelSize", &textComp.pixelSize);
+        ImGui::Text("Color");
+        ImGui::ColorEdit4("##TextColor", &textComp.color[0]);
+    });
 }
 
-void ScenePanel::drawMaterialsList(const std::vector<sd::Material> &materials,
+void ScenePanel::drawMaterialsList(const std::vector<Material> &materials,
                                    const ImVec2 &size, int *selected) {
     int itemSize = materials.size();
     if (!itemSize) return;
@@ -400,3 +395,5 @@ void ScenePanel::drawMaterialsList(const std::vector<sd::Material> &materials,
         ImGui::DrawTexture(*texture, size);
     }
 }
+
+}  // namespace sd

@@ -3,8 +3,8 @@
 
 #include "Renderer/System/System.hpp"
 #include "Renderer/System/Event.hpp"
+#include "Renderer/Terrain.hpp"
 #include "ECS/Entity.hpp"
-#include "Graphics/Terrain.hpp"
 #include "Utility/QuadTree.hpp"
 
 namespace sd {

@@ -1,8 +1,8 @@
 #ifndef SD_TERRAIN_HPP
 #define SD_TERRAIN_HPP
 
-#include "Graphics/Mesh.hpp"
-#include "Graphics/Material.hpp"
+#include "Renderer/Mesh.hpp"
+#include "Renderer/Material.hpp"
 
 namespace sd {
 

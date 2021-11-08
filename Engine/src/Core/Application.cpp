@@ -6,13 +6,16 @@
 #include "Utility/Loader/ImageLoader.hpp"
 #include "Utility/Loader/ModelLoader.hpp"
 #include "Utility/Loader/FontLoader.hpp"
-#include "Graphics/Device.hpp"
-#include "Renderer/RenderEngine.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Input/InputEngine.hpp"
 
 namespace sd {
 
-Application *Application::s_instance = nullptr;
+static Application *s_instance = nullptr;
+
+Application &getApp() { return *s_instance; }
+
+Window &Application::getWindow() { return *m_window; }
 
 Application::Application() {
     s_instance = this;
@@ -34,7 +37,7 @@ Application::Application() {
     Asset::manager().setLoader<FontLoader>();
 
     // Setting up which api to use
-    Graphics::setAPI(API::OpenGL);
+    setGraphicsAPI(GraphicsAPI::OpenGL);
 
     // Initialize context
     WindowProp prop;
@@ -42,17 +45,15 @@ Application::Application() {
     prop.height = height;
     prop.samples = samples;
     prop.flag = SDL_WINDOW_MAXIMIZED;
-    Window::init(prop);
+    m_window = Window::create(prop);
 
     // Intialize graphics device
-    Device::init();
+    Renderer::engine().init(width, height, samples);
     if (samples > 1) {
-        Device::instance().enable(Operation::MULTISAMPLE);
+        Renderer::device().enable(Operation::MULTISAMPLE);
     } else {
-        Device::instance().disable(Operation::MULTISAMPLE);
+        Renderer::device().disable(Operation::MULTISAMPLE);
     }
-
-    RenderEngine::init(width, height, samples);
 
     m_imguiLayer = std::static_pointer_cast<ImGuiLayer>(
         pushOverlay(createRef<ImGuiLayer>()));
@@ -99,8 +100,8 @@ void Application::run() {
     SDL_Event event;
     float msPerFrame = 1000.f / minFps;
     uint32_t msElapsed = 0;
-    while (!Window::shouldClose()) {
-        while (Window::pollEvent(event)) {
+    while (!m_window->shouldClose()) {
+        while (m_window->pollEvent(event)) {
             InputEngine::processEvent(event);
             processEvent(event);
         }
@@ -117,11 +118,11 @@ void Application::run() {
     }
 }
 
-void Application::quit() { Window::setShouldClose(true); }
+void Application::quit() { m_window->setShouldClose(true); }
 
 void Application::tick(float dt) {
     InputEngine::tick();
-    RenderEngine::tick(dt);
+    Renderer::engine().tick(dt);
 
     for (auto iter = m_layers.rbegin(); iter != m_layers.rend(); ++iter) {
         (*iter)->onTick(dt);
@@ -129,12 +130,12 @@ void Application::tick(float dt) {
 }
 
 void Application::render() {
-    RenderEngine::render();
+    Renderer::engine().render();
 
     for (auto &layer : m_layers) {
         layer->onRender();
     }
-    RenderEngine::postRender();
+    Renderer::engine().postRender();
 
     m_imguiLayer->begin();
     for (auto &layer : m_layers) {
@@ -142,7 +143,7 @@ void Application::render() {
     }
     m_imguiLayer->end();
 
-    Window::swapBuffer();
+    m_window->swapBuffer();
 }
 
 }  // namespace sd

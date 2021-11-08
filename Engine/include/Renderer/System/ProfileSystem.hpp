@@ -3,9 +3,9 @@
 
 #include "Renderer/System/System.hpp"
 #include "Renderer/System/Event.hpp"
+#include "Renderer/Font.hpp"
+#include "Renderer/Camera.hpp"
 #include "Utility/Timing.hpp"
-#include "Graphics/Font.hpp"
-#include "Graphics/Camera.hpp"
 
 namespace sd {
 

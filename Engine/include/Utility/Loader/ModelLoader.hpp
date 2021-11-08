@@ -2,7 +2,7 @@
 #define SD_MODEL_LOADER_HPP
 
 #include "Utility/Loader/AssetLoader.hpp"
-#include "Graphics/Model.hpp"
+#include "Renderer/Model.hpp"
 
 namespace sd {
 

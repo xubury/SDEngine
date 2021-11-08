@@ -6,6 +6,10 @@
 
 IMPLEMENT_APP(SDEditor);
 
-void SDEditor::init() { pushLayer(sd::createRef<EditorLayer>(800, 600)); }
+namespace sd {
+
+void SDEditor::init() { pushLayer(createRef<EditorLayer>(800, 600)); }
 
 void SDEditor::destroy() {}
+
+}  // namespace sd

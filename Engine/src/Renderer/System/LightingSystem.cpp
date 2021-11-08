@@ -1,7 +1,5 @@
 #include "Renderer/System/LightingSystem.hpp"
-#include "Renderer/RenderEngine.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Graphics/Device.hpp"
 #include "Utility/Log.hpp"
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
@@ -48,6 +46,23 @@ TextureFormatType getTextureFormatType(GeometryBufferType type) {
 LightingSystem::LightingSystem(int width, int height, int samples) {
     initShaders();
     initLighting(width, height, samples);
+
+    const float quadVertices[] = {
+        -1.0f, -1.0f, 0.f, 0.f,  0.f,   // bottom left
+        1.0f,  -1.0f, 0.f, 1.0f, 0.f,   // bottom right
+        1.0f,  1.0f,  0.f, 1.0f, 1.0f,  // top right
+        -1.0f, 1.0f,  0.f, 0.f,  1.0f,  // top left
+    };
+    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
+    auto buffer = VertexBuffer::create(quadVertices, sizeof(quadVertices),
+                                       BufferIOType::STATIC);
+    auto indexBuffer = IndexBuffer::create(indices, 6, BufferIOType::STATIC);
+    m_quad = VertexArray::create();
+    VertexBufferLayout layout;
+    layout.push(BufferDataType::FLOAT, 3);
+    layout.push(BufferDataType::FLOAT, 2);
+    m_quad->addVertexBuffer(buffer, layout);
+    m_quad->setIndexBuffer(indexBuffer);
 }
 
 void LightingSystem::onInit() {
@@ -89,32 +104,32 @@ void LightingSystem::onSizeEvent(const SizeEvent &event) {
 }
 
 void LightingSystem::onRender() {
-    SD_CORE_ASSERT(RenderEngine::getScene(), "No active scene.");
-    SD_CORE_ASSERT(RenderEngine::getCamera(), "No camera is set!");
+    SD_CORE_ASSERT(Renderer::engine().getScene(), "No active scene.");
+    SD_CORE_ASSERT(Renderer::engine().getCamera(), "No camera is set!");
 
     clear();
     renderGBuffer();
-    Device::instance().setDepthMask(false);
+    Renderer::device().setDepthMask(false);
     renderDeferred();
     renderEmissive();
-    Device::instance().setDepthMask(true);
+    Renderer::device().setDepthMask(true);
 
-    Device::instance().blitFramebuffer(
+    Renderer::device().blitFramebuffer(
         m_gBufferTarget.getFramebuffer(), 0,
-        RenderEngine::getRenderTarget().getFramebuffer(), 0,
+        Renderer::engine().getRenderTarget().getFramebuffer(), 0,
         BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
 }
 
 void LightingSystem::clear() {
-    Device::instance().resetShaderState();
+    Renderer::device().resetShaderState();
     // clear the last lighting pass' result
     for (int i = 0; i < 2; ++i) {
-        Device::instance().setFramebuffer(m_lightTarget[i].getFramebuffer());
-        Device::instance().clear(BufferBitMask::COLOR_BUFFER_BIT);
+        Renderer::device().setFramebuffer(m_lightTarget[i].getFramebuffer());
+        Renderer::device().clear(BufferBitMask::COLOR_BUFFER_BIT);
     }
 
-    Device::instance().setFramebuffer(m_gBufferTarget.getFramebuffer());
-    Device::instance().clear(BufferBitMask::COLOR_BUFFER_BIT |
+    Renderer::device().setFramebuffer(m_gBufferTarget.getFramebuffer());
+    Renderer::device().clear(BufferBitMask::COLOR_BUFFER_BIT |
                              BufferBitMask::DEPTH_BUFFER_BIT);
     uint32_t id = static_cast<uint32_t>(Entity::INVALID_ID);
     m_gBufferTarget.getFramebuffer()->clearAttachment(
@@ -122,21 +137,23 @@ void LightingSystem::clear() {
 }
 
 void LightingSystem::renderEmissive() {
-    RenderEngine::getRenderTarget().bind();
+    Renderer::engine().getRenderTarget().bind();
     m_emssiveShader->bind();
     m_emssiveShader->setTexture("u_lighting", getLightingTarget().getTexture());
     m_emssiveShader->setTexture(
         "u_gEmissive",
         m_gBufferTarget.getTexture(GeometryBufferType::G_EMISSIVE));
-    RenderEngine::renderQuad();
+    Renderer::device().submit(*m_quad, MeshTopology::TRIANGLES,
+                              m_quad->getIndexBuffer()->getCount(), 0);
 }
 
 void LightingSystem::renderDeferred() {
-    auto scene = RenderEngine::getScene();
+    auto scene = Renderer::engine().getScene();
     auto lightView = scene->view<TransformComponent, LightComponent>();
 
     m_deferredShader->bind();
-    RenderEngine::updateShader(*m_deferredShader, *RenderEngine::getCamera());
+    Renderer::engine().updateShader(*m_deferredShader,
+                                    *Renderer::engine().getCamera());
     m_deferredShader->setTexture(
         "u_gPosition",
         m_gBufferTarget.getTexture(GeometryBufferType::G_POSITION));
@@ -177,20 +194,22 @@ void LightingSystem::renderDeferred() {
         m_deferredShader->setTexture("u_light.shadowMap", light.getShadowMap());
         m_deferredShader->setMat4("u_light.projectionView",
                                   light.getProjectionView());
-        RenderEngine::renderQuad();
+        Renderer::device().submit(*m_quad, MeshTopology::TRIANGLES,
+                                  m_quad->getIndexBuffer()->getCount(), 0);
         std::swap(m_lightTarget[inputId], m_lightTarget[outputId]);
     });
 }
 
 void LightingSystem::renderGBuffer() {
-    auto scene = RenderEngine::getScene();
+    auto scene = Renderer::engine().getScene();
     auto terrainView = scene->view<TransformComponent, TerrainComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
     m_gBufferTarget.bind();
-    Device::instance().disable(Operation::BLEND);
+    Renderer::device().disable(Operation::BLEND);
 
-    RenderEngine::updateShader(*m_gBufferShader, *RenderEngine::getCamera());
+    Renderer::engine().updateShader(*m_gBufferShader,
+                                    *Renderer::engine().getCamera());
 
     m_gBufferShader->bind();
     terrainView.each([this](const entt::entity &entity,
@@ -237,7 +256,7 @@ void LightingSystem::renderGBuffer() {
             Renderer::drawMesh(mesh);
         }
     });
-    Device::instance().enable(Operation::BLEND);
+    Renderer::device().enable(Operation::BLEND);
 }
 
 }  // namespace sd

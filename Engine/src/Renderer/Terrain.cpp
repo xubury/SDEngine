@@ -1,4 +1,4 @@
-#include "Graphics/Terrain.hpp"
+#include "Renderer/Terrain.hpp"
 #include "Utility/Math.hpp"
 
 namespace sd {

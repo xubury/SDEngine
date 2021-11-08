@@ -2,7 +2,7 @@
 #define SD_FONT_LOADER_HPP
 
 #include "Utility/Loader/AssetLoader.hpp"
-#include "Graphics/Font.hpp"
+#include "Renderer/Font.hpp"
 
 typedef struct FT_LibraryRec_ *FT_Library;
 

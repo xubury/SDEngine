@@ -1,10 +1,11 @@
 #ifndef SD_POST_PROCESS_SYSTEM_HPP
 #define SD_POST_PROCESS_SYSTEM_HPP
 
+#include "Graphics/VertexArray.hpp"
 #include "Renderer/System/System.hpp"
 #include "Renderer/System/Event.hpp"
+#include "Renderer/RenderTarget.hpp"
 #include "Graphics/Shader.hpp"
-#include "Graphics/RenderTarget.hpp"
 
 namespace sd {
 
@@ -30,6 +31,8 @@ class SD_API PostProcessSystem : public System {
     Ref<Shader> m_blurShader;
     RenderTarget m_blurTarget[2];
     Texture *m_blurResult;
+
+    Ref<VertexArray> m_quad;
 };
 
 }  // namespace sd

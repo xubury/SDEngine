@@ -11,8 +11,8 @@ namespace sd {
 ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}
 
 void ImGuiLayer::begin() {
-    switch (Graphics::getAPI()) {
-        case API::OpenGL:
+    switch (getGraphicsAPI()) {
+        case GraphicsAPI::OpenGL:
             ImGui_ImplOpenGL3_NewFrame();
             break;
         default:
@@ -25,11 +25,11 @@ void ImGuiLayer::begin() {
 
 void ImGuiLayer::end() {
     ImGuiIO& io = ImGui::GetIO();
-    io.DisplaySize =
-        ImVec2((float)Window::getWidth(), (float)Window::getHeight());
+    io.DisplaySize = ImVec2((float)getApp().getWindow().getWidth(),
+                            (float)getApp().getWindow().getHeight());
     ImGui::Render();
-    switch (Graphics::getAPI()) {
-        case API::OpenGL:
+    switch (getGraphicsAPI()) {
+        case GraphicsAPI::OpenGL:
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
             break;
         default:
@@ -57,10 +57,11 @@ void ImGuiLayer::onAttach() {
     setDarkThemeColor();
 
     // Setup Platform/Renderer backends
-    switch (Graphics::getAPI()) {
-        case API::OpenGL:
-            ImGui_ImplSDL2_InitForOpenGL(Window::getHandle(),
-                                         Window::getGraphicsContext());
+    switch (getGraphicsAPI()) {
+        case GraphicsAPI::OpenGL:
+            ImGui_ImplSDL2_InitForOpenGL(
+                getApp().getWindow().getHandle(),
+                getApp().getWindow().getGraphicsContext());
             ImGui_ImplOpenGL3_Init("#version 450");
             break;
         default:

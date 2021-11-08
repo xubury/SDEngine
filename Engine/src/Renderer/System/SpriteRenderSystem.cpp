@@ -1,7 +1,5 @@
 #include "Renderer/System/SpriteRenderSystem.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Renderer/RenderEngine.hpp"
-#include "Graphics/Device.hpp"
 
 namespace sd {
 
@@ -12,11 +10,11 @@ void SpriteRenderSystem::onInit() {}
 void SpriteRenderSystem::onDestroy() {}
 
 void SpriteRenderSystem::onRender() {
-    auto scene = RenderEngine::getScene();
+    auto scene = Renderer::engine().getScene();
     auto textView = scene->view<TransformComponent, TextComponent>();
 
-    RenderEngine::getRenderTarget().bind();
-    Renderer::beginScene(*RenderEngine::getCamera());
+    Renderer::engine().getRenderTarget().bind();
+    Renderer::beginScene(*Renderer::engine().getCamera());
     textView.each([](const TransformComponent &transformComp,
                      const TextComponent &textComp) {
         Renderer::setTextOrigin(0, 0);

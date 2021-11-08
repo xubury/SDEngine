@@ -11,10 +11,12 @@ namespace sd {
 
 class SD_API Application {
    public:
-    static void quit();
+    void quit();
 
     Application(const Application &application) = delete;
     Application &operator=(const Application &application) = delete;
+
+    Window &getWindow();
 
    protected:
     Ref<Layer> pushLayer(const Ref<Layer> &layer);
@@ -37,8 +39,6 @@ class SD_API Application {
 
     virtual void destroy() = 0;
 
-    static Application *s_instance;
-
     void processEvent(const SDL_Event &event);
 
     void processEvents();
@@ -46,9 +46,13 @@ class SD_API Application {
     void tick(float dt);
     void render();
 
+    Ref<Window> m_window;
+
     LayerStack m_layers;
     Ref<ImGuiLayer> m_imguiLayer;
 };
+
+Application &getApp();
 
 }  // namespace sd
 

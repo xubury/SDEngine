@@ -1,4 +1,4 @@
-#include "Graphics/Font.hpp"
+#include "Renderer/Font.hpp"
 #include "Utility/Loader/FontLoader.hpp"
 #include <ft2build.h>
 #include FT_FREETYPE_H
