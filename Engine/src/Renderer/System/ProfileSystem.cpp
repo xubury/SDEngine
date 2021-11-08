@@ -1,5 +1,6 @@
 #include "Renderer/System/ProfileSystem.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Utility/Loader/AssetLoader.hpp"
 
 namespace sd {
 
@@ -18,15 +19,15 @@ void ProfileSystem::onTick(float) {}
 
 void ProfileSystem::onRender() {
     Renderer::engine().getRenderTarget().bind();
-    Renderer::beginScene(m_camera);
+    Renderer2D::beginScene(m_camera);
     std::wstring fpsStr =
         L"FPS:" + std::to_wstring(static_cast<uint32_t>(m_fps.getFps()));
 
     float size = 20;
-    Renderer::setTextOrigin(-m_camera.getNearWidth() / 2.f,
+    Renderer2D::setTextOrigin(-m_camera.getNearWidth() / 2.f,
                             m_camera.getNearHeight() / 2.f - size);
-    Renderer::drawText(*m_font, fpsStr, size, glm::mat4(1.0f));
-    Renderer::endScene();
+    Renderer2D::drawText(*m_font, fpsStr, size, glm::mat4(1.0f));
+    Renderer2D::endScene();
 }
 
 void ProfileSystem::onSizeEvent(const SizeEvent &event) {

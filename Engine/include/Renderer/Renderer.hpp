@@ -52,8 +52,42 @@ class SD_API Renderer {
     float getGammaCorrection();
     void setGammaCorrection(float gamma);
 
-    static void drawMesh(const Mesh &mesh);
+   private:
+    void initSystems();
 
+    int m_width;
+    int m_height;
+    int m_samples;
+
+    RenderTarget m_defaultTarget;
+    Scene *m_scene;
+
+    Camera *m_camera;
+    float m_exposure;
+    float m_bloom;
+    bool m_isBloom;
+    float m_gammaCorrection;
+
+    Ref<UniformBuffer> m_cameraUBO;
+
+    Ref<Device> m_device;
+    SystemManager m_systems;
+    Ref<LightingSystem> m_lightingSystem;
+    Ref<TerrainSystem> m_terrainSystem;
+};
+
+class SD_API Renderer3D {
+   public:
+    static void drawMesh(const Mesh &mesh);
+};
+
+class SD_API Renderer2D {
+    friend class Renderer;
+
+   private:
+    static void init();
+
+   public:
     static void startBatch();
     static void flush();
     static void nextBatch();
@@ -76,30 +110,6 @@ class SD_API Renderer {
     static void drawText(Font &font, const std::wstring &text, int pixleSize,
                          const glm::mat4 &transform,
                          const glm::vec4 &color = glm::vec4(1.0f));
-
-   private:
-    void initSystems();
-    void init2DData();
-
-    int m_width;
-    int m_height;
-    int m_samples;
-
-    RenderTarget m_defaultTarget;
-    Scene *m_scene;
-
-    Camera *m_camera;
-    float m_exposure;
-    float m_bloom;
-    bool m_isBloom;
-    float m_gammaCorrection;
-
-    Ref<UniformBuffer> m_cameraUBO;
-
-    Ref<Device> m_device;
-    SystemManager m_systems;
-    Ref<LightingSystem> m_lightingSystem;
-    Ref<TerrainSystem> m_terrainSystem;
 };
 
 }  // namespace sd

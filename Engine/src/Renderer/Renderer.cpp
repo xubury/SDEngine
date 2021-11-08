@@ -6,6 +6,7 @@
 #include "Renderer/System/ProfileSystem.hpp"
 #include "Renderer/System/PostProcessSystem.hpp"
 #include "Renderer/System/SpriteRenderSystem.hpp"
+#include "Utility/Loader/AssetLoader.hpp"
 #include "Utility/Log.hpp"
 
 namespace sd {
@@ -91,7 +92,8 @@ void Renderer::init(int width, int height, int samples) {
     m_defaultTarget.createFramebuffer();
 
     initSystems();
-    init2DData();
+
+    Renderer2D::init();
 }
 
 void Renderer::initSystems() {
@@ -116,6 +118,8 @@ void Renderer::resize(int width, int height) {
 }
 
 void Renderer::render() {
+    m_defaultTarget.bind();
+    m_device->clear();
     for (auto& system : m_systems.getSystems()) {
         system->onRender();
     }
@@ -173,16 +177,7 @@ void Renderer::setGammaCorrection(float gamma) { m_gammaCorrection = gamma; }
 
 float Renderer::getGammaCorrection() { return m_gammaCorrection; }
 
-void Renderer::drawMesh(const Mesh& mesh) {
-    Renderer::device().setPolygonMode(
-        mesh.isWireframe() ? PolygonMode::LINE : PolygonMode::FILL, Face::BOTH);
-    VertexArray* vao = mesh.getVertexArray();
-    SD_CORE_ASSERT(vao, "Invalid mesh!");
-    Renderer::device().submit(*vao, mesh.getTopology(),
-                              vao->getIndexBuffer()->getCount(), 0);
-}
-
-void Renderer::init2DData() {
+void Renderer2D::init() {
     std::array<uint32_t, s_data.MAX_INDICES> quadIndices;
     uint32_t offset = 0;
     for (uint32_t i = 0; i < s_data.MAX_INDICES; i += 6) {
@@ -233,15 +228,24 @@ void Renderer::init2DData() {
     s_data.spriteShader = Asset::manager().load<Shader>("shaders/sprite.glsl");
 }
 
-void Renderer::beginScene(Camera& camera) {
+void Renderer3D::drawMesh(const Mesh& mesh) {
+    Renderer::device().setPolygonMode(
+        mesh.isWireframe() ? PolygonMode::LINE : PolygonMode::FILL, Face::BOTH);
+    VertexArray* vao = mesh.getVertexArray();
+    SD_CORE_ASSERT(vao, "Invalid mesh!");
+    Renderer::device().submit(*vao, mesh.getTopology(),
+                              vao->getIndexBuffer()->getCount(), 0);
+}
+
+void Renderer2D::beginScene(Camera& camera) {
     Renderer::engine().updateShader(*s_data.spriteShader, camera);
     s_data.spriteShader->bind();
     startBatch();
 }
 
-void Renderer::endScene() { flush(); }
+void Renderer2D::endScene() { flush(); }
 
-void Renderer::flush() {
+void Renderer2D::flush() {
     if (s_data.quadIndexCnt == 0) {
         return;
     }
@@ -270,25 +274,25 @@ void Renderer::flush() {
     setTextOrigin(0, 0);
 }
 
-void Renderer::startBatch() {
+void Renderer2D::startBatch() {
     s_data.quadIndexCnt = 0;
     s_data.textureSlotIndex = 1;
     s_data.quadVertexBufferPtr = s_data.quadVertexBufferBase.data();
 }
 
-void Renderer::nextBatch() {
+void Renderer2D::nextBatch() {
     flush();
     startBatch();
 }
 
-void Renderer::setTextOrigin(float x, float y) {
+void Renderer2D::setTextOrigin(float x, float y) {
     s_data.textOrigin.x = x;
     s_data.textOrigin.y = y;
     s_data.textCursor.x = 0;
     s_data.textCursor.y = 0;
 }
 
-void Renderer::drawQuad(const glm::mat4& transform, const glm::vec4& color) {
+void Renderer2D::drawQuad(const glm::mat4& transform, const glm::vec4& color) {
     if (s_data.quadIndexCnt >= Renderer2DData::MAX_INDICES) {
         nextBatch();
     }
@@ -304,8 +308,9 @@ void Renderer::drawQuad(const glm::mat4& transform, const glm::vec4& color) {
     s_data.quadIndexCnt += 6;
 }
 
-void Renderer::drawTexture(const Ref<Texture>& texture,
-                           const glm::mat4& transform, const glm::vec4& color) {
+void Renderer2D::drawTexture(const Ref<Texture>& texture,
+                             const glm::mat4& transform,
+                             const glm::vec4& color) {
     if (s_data.quadIndexCnt >= Renderer2DData::MAX_INDICES) {
         nextBatch();
     }
@@ -338,8 +343,9 @@ void Renderer::drawTexture(const Ref<Texture>& texture,
     s_data.quadIndexCnt += 6;
 }
 
-void Renderer::drawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
-                             const glm::vec2& scale, const glm::vec4& color) {
+void Renderer2D::drawBillboard(const Ref<Texture>& texture,
+                               const glm::vec3& pos, const glm::vec2& scale,
+                               const glm::vec4& color) {
     drawTexture(
         texture,
         glm::translate(glm::mat4(1.0f), pos) *
@@ -348,8 +354,8 @@ void Renderer::drawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
         color);
 }
 
-void Renderer::drawText(Font& font, const std::wstring& text, int pixelSize,
-                        const glm::mat4& transform, const glm::vec4& color) {
+void Renderer2D::drawText(Font& font, const std::wstring& text, int pixelSize,
+                          const glm::mat4& transform, const glm::vec4& color) {
     glm::mat4 t =
         glm::translate(glm::mat4(1.0f),
                        glm::vec3(s_data.textOrigin.x, s_data.textOrigin.y, 0)) *

@@ -5,6 +5,7 @@
 #include "ImGuizmo.h"
 #include "Renderer/Renderer.hpp"
 #include "Utility/String.hpp"
+#include "Utility/Loader/AssetLoader.hpp"
 
 namespace sd {
 

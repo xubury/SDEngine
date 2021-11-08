@@ -1,4 +1,4 @@
-#include "Input/InputEngine.hpp"
+#include "Input/Input.hpp"
 #include <unordered_map>
 
 namespace sd {
@@ -11,7 +11,7 @@ static std::unordered_map<uint8_t, bool> s_lastMouseBtnMap;
 
 static glm::vec2 m_mouseCoord;
 
-bool InputEngine::isKeyDown(SDL_Keycode keycode) {
+bool Input::isKeyDown(SDL_Keycode keycode) {
     auto it = s_keyMap.find(keycode);
     if (it != s_keyMap.end()) {
         return it->second;
@@ -20,7 +20,7 @@ bool InputEngine::isKeyDown(SDL_Keycode keycode) {
     }
 }
 
-bool InputEngine::wasKeyDown(SDL_Keycode keycode) {
+bool Input::wasKeyDown(SDL_Keycode keycode) {
     auto it = s_lastKeyMap.find(keycode);
     if (it != s_lastKeyMap.end()) {
         return it->second;
@@ -29,11 +29,11 @@ bool InputEngine::wasKeyDown(SDL_Keycode keycode) {
     }
 }
 
-bool InputEngine::isKeyPressed(SDL_Keycode keycode) {
+bool Input::isKeyPressed(SDL_Keycode keycode) {
     return isKeyDown(keycode) && !wasKeyDown(keycode);
 }
 
-bool InputEngine::isMouseDown(uint8_t button) {
+bool Input::isMouseDown(uint8_t button) {
     auto it = s_mouseBtnMap.find(button);
     if (it != s_mouseBtnMap.end()) {
         return it->second;
@@ -42,7 +42,7 @@ bool InputEngine::isMouseDown(uint8_t button) {
     }
 }
 
-bool InputEngine::wasMouseDown(uint8_t button) {
+bool Input::wasMouseDown(uint8_t button) {
     auto it = s_lastMouseBtnMap.find(button);
     if (it != s_lastMouseBtnMap.end()) {
         return it->second;
@@ -51,13 +51,13 @@ bool InputEngine::wasMouseDown(uint8_t button) {
     }
 }
 
-bool InputEngine::isMousePressed(uint8_t button) {
+bool Input::isMousePressed(uint8_t button) {
     return isMouseDown(button) && !wasMouseDown(button);
 }
 
-glm::vec2 InputEngine::getMouseCoord() { return m_mouseCoord; }
+glm::vec2 Input::getMouseCoord() { return m_mouseCoord; }
 
-void InputEngine::tick() {
+void Input::tick() {
     for (auto &[key, press] : s_keyMap) {
         s_lastKeyMap[key] = press;
     }
@@ -66,7 +66,7 @@ void InputEngine::tick() {
     }
 }
 
-void InputEngine::processEvent(const SDL_Event &event) {
+void Input::processEvent(const SDL_Event &event) {
     switch (event.type) {
         case SDL_KEYDOWN:
             pressKey(event.key.keysym.sym);
@@ -86,19 +86,19 @@ void InputEngine::processEvent(const SDL_Event &event) {
     }
 }
 
-void InputEngine::pressKey(SDL_Keycode keycode) { s_keyMap[keycode] = true; }
+void Input::pressKey(SDL_Keycode keycode) { s_keyMap[keycode] = true; }
 
-void InputEngine::releaseKey(SDL_Keycode keycode) { s_keyMap[keycode] = false; }
+void Input::releaseKey(SDL_Keycode keycode) { s_keyMap[keycode] = false; }
 
-void InputEngine::pressMouseButton(uint8_t button) {
+void Input::pressMouseButton(uint8_t button) {
     s_mouseBtnMap[button] = true;
 }
 
-void InputEngine::releaseMouseButton(uint8_t button) {
+void Input::releaseMouseButton(uint8_t button) {
     s_mouseBtnMap[button] = false;
 }
 
-void InputEngine::setMouseCoord(float x, float y) {
+void Input::setMouseCoord(float x, float y) {
     m_mouseCoord.x = x;
     m_mouseCoord.y = y;
 }

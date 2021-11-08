@@ -2,6 +2,7 @@
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
 #include "Utility/Serialize.hpp"
+#include "Utility/Loader/AssetLoader.hpp"
 #include <stack>
 
 namespace sd {

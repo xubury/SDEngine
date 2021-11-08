@@ -1,7 +1,8 @@
 #ifndef SD_GRAPHICS_HPP
 #define SD_GRAPHICS_HPP
 
-#include "Utility/Loader/AssetLoader.hpp"
+#include <type_traits>
+#include <array>
 
 namespace sd {
 

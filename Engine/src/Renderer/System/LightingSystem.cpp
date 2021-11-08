@@ -1,5 +1,6 @@
 #include "Renderer/System/LightingSystem.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Utility/Loader/AssetLoader.hpp"
 #include "Utility/Log.hpp"
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
@@ -228,7 +229,7 @@ void LightingSystem::renderGBuffer() {
                                     material.getTexture(MaterialType::AMBIENT));
         m_gBufferShader->setTexture(
             "u_material.emissive", material.getTexture(MaterialType::EMISSIVE));
-        Renderer::drawMesh(terrain.getMesh());
+        Renderer3D::drawMesh(terrain.getMesh());
     });
 
     modelView.each([this](const entt::entity &entity,
@@ -253,7 +254,7 @@ void LightingSystem::renderGBuffer() {
             m_gBufferShader->setTexture(
                 "u_material.emissive",
                 material.getTexture(MaterialType::EMISSIVE));
-            Renderer::drawMesh(mesh);
+            Renderer3D::drawMesh(mesh);
         }
     });
     Renderer::device().enable(Operation::BLEND);

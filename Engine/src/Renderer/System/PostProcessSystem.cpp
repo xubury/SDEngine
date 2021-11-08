@@ -1,5 +1,6 @@
 #include "Renderer/System/PostProcessSystem.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Utility/Loader/AssetLoader.hpp"
 
 namespace sd {
 

@@ -1,5 +1,6 @@
 #include "Renderer/System/SkyboxSystem.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Utility/Loader/AssetLoader.hpp"
 
 namespace sd {
 

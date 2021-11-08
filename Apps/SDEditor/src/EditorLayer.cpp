@@ -1,9 +1,10 @@
 #include "EditorLayer.hpp"
 #include "Core/Application.hpp"
-#include "Input/InputEngine.hpp"
+#include "Input/Input.hpp"
 #include "Renderer/Renderer.hpp"
 #include "ECS/Component.hpp"
 #include "Utility/Image.hpp"
+#include "Utility/Loader/AssetLoader.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -58,16 +59,16 @@ void EditorLayer::onRender() {
 
     Renderer::engine().getRenderTarget().bind();
     Renderer::device().clear(BufferBitMask::DEPTH_BUFFER_BIT);
-    Renderer::beginScene(m_editorCamera);
+    Renderer2D::beginScene(m_editorCamera);
     auto lightView = m_scene->view<LightComponent, TransformComponent>();
     lightView.each(
         [this](const LightComponent &, const TransformComponent &transComp) {
             glm::vec3 pos = transComp.transform.getWorldPosition();
             float dist = glm::distance(pos, m_editorCamera.getWorldPosition());
             float scale = (dist - m_editorCamera.getNearZ()) / 20;
-            Renderer::drawBillboard(m_lightIcon, pos, glm::vec2(scale));
+            Renderer2D::drawBillboard(m_lightIcon, pos, glm::vec2(scale));
         });
-    Renderer::endScene();
+    Renderer2D::endScene();
 }
 
 void EditorLayer::onTick(float dt) {
@@ -284,8 +285,8 @@ void EditorLayer::onEventProcess(const SDL_Event &event) {
     if (m_isViewportHovered) {
         m_cameraController.processEvent(event);
     }
-    bool lshift = InputEngine::isKeyDown(SDLK_LSHIFT);
-    bool lctrl = InputEngine::isKeyDown(SDLK_LCTRL);
+    bool lshift = Input::isKeyDown(SDLK_LSHIFT);
+    bool lctrl = Input::isKeyDown(SDLK_LCTRL);
     if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
             case SDLK_z: {

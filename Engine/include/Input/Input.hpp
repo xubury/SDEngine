@@ -7,7 +7,7 @@
 
 namespace sd {
 
-class SD_API InputEngine {
+class SD_API Input {
    public:
     static bool isKeyDown(SDL_Keycode keycode);
     static bool wasKeyDown(SDL_Keycode keycode);

@@ -7,7 +7,7 @@
 #include "Utility/Loader/ModelLoader.hpp"
 #include "Utility/Loader/FontLoader.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Input/InputEngine.hpp"
+#include "Input/Input.hpp"
 
 namespace sd {
 
@@ -102,7 +102,7 @@ void Application::run() {
     uint32_t msElapsed = 0;
     while (!m_window->shouldClose()) {
         while (m_window->pollEvent(event)) {
-            InputEngine::processEvent(event);
+            Input::processEvent(event);
             processEvent(event);
         }
         processEvents();
@@ -121,7 +121,7 @@ void Application::run() {
 void Application::quit() { m_window->setShouldClose(true); }
 
 void Application::tick(float dt) {
-    InputEngine::tick();
+    Input::tick();
     Renderer::engine().tick(dt);
 
     for (auto iter = m_layers.rbegin(); iter != m_layers.rend(); ++iter) {

@@ -7,11 +7,11 @@ set(Input_Include
     ${Include_Root}/Action.hpp
     ${Include_Root}/ActionMap.hpp
     ${Include_Root}/ActionTarget.hpp
-    ${Include_Root}/InputEngine.hpp)
+    ${Include_Root}/Input.hpp)
 
 set(Input_Src
     ${Src_Root}/Action.cpp
-    ${Src_Root}/InputEngine.cpp)
+    ${Src_Root}/Input.cpp)
 
 add_library(sd-input ${Input_Src})
 

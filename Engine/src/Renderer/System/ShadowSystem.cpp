@@ -1,4 +1,5 @@
 #include "Renderer/System/ShadowSystem.hpp"
+#include "Utility/Loader/AssetLoader.hpp"
 #include "Renderer/Renderer.hpp"
 #include "ECS/Component.hpp"
 #include "ECS/Scene.hpp"
@@ -36,7 +37,7 @@ void ShadowSystem::onRender() {
             m_shadowShader->setMat4(
                 "u_model", transformComp.transform.getWorldTransform());
             for (const auto &mesh : modelComp.model->getMeshes()) {
-                Renderer::drawMesh(mesh);
+                Renderer3D::drawMesh(mesh);
             }
         });
     });

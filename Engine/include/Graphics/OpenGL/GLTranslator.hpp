@@ -2,6 +2,7 @@
 #define SD_GL_TRANSLATOR_HPP
 
 #include <GL/glew.h>
+#include "Utility/Export.hpp"
 #include "Graphics/Graphics.hpp"
 
 namespace sd {

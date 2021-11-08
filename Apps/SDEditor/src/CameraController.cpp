@@ -1,5 +1,5 @@
 #include "CameraController.hpp"
-#include "Input/InputEngine.hpp"
+#include "Input/Input.hpp"
 #include "Utility/Log.hpp"
 
 namespace sd {
@@ -37,7 +37,7 @@ CameraController::CameraController()
          [this](const SDL_Event &) { move(m_camera->getWorldRight()); });
     bind(Action(SDL_EventType::SDL_MOUSEMOTION),
          [this](const SDL_Event &event) {
-             if (InputEngine::isMouseDown(SDL_BUTTON_RIGHT)) {
+             if (Input::isMouseDown(SDL_BUTTON_RIGHT)) {
                  m_mouseMovement.x += event.motion.xrel;
                  m_mouseMovement.y += event.motion.yrel;
              }

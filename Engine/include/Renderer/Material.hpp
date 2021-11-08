@@ -5,6 +5,7 @@
 #include "Graphics/Texture.hpp"
 #include "Graphics/Shader.hpp"
 #include <string>
+#include <unordered_map>
 
 namespace sd {
 

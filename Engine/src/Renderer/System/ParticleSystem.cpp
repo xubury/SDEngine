@@ -31,7 +31,7 @@ void ParticleSystem::onRender() {
             glm::rotate(glm::mat4(1.0f), particle.rotation,
                         glm::vec3(0.0f, 0.0f, 1.0f)) *
             glm::scale(glm::mat4(1.0f), glm::vec3(size, size, 1.0f));
-        Renderer::drawQuad(transform, color);
+        Renderer2D::drawQuad(transform, color);
     }
 }
 
