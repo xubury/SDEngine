@@ -24,7 +24,6 @@ class SD_API PostProcessSystem : public System {
    private:
     void renderBlur();
     void renderPost();
-    void renderSkybox();
 
     Ref<Shader> m_postShader;
 

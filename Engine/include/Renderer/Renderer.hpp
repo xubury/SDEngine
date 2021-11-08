@@ -87,7 +87,7 @@ namespace Renderer3D {
 
 void drawMesh(const Mesh &mesh);
 
-};
+};  // namespace Renderer3D
 
 namespace Renderer2D {
 
