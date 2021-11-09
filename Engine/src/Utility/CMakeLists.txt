@@ -96,4 +96,4 @@ target_link_libraries(sd-utils
 
 install(TARGETS sd-utils LIBRARY DESTINATION lib)
 
-install(FILES ${Graphics_Include} DESTINATION include/Utility)
+install(FILES ${Utility_Include} DESTINATION include/Utility)
