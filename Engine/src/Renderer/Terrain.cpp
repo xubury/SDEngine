@@ -5,7 +5,7 @@ namespace sd {
 
 Terrain::Terrain(int gridSize, int vertexCount)
     : m_gridSize(gridSize), m_vertexCount(vertexCount) {
-    m_mesh.setWireframe(true);
+    m_mesh.setPolygonMode(PolygonMode::LINE);
     generateMesh();
 }
 

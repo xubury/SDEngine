@@ -53,6 +53,12 @@ class SD_API Engine : public SystemManager {
     void tick(float dt);
 
    private:
+    friend Engine &engine();
+    friend Device &device();
+    Engine() = default;
+    Engine(const Engine &) = delete;
+    Engine &operator=(const Engine &) = delete;
+
     void initSystems();
     void initRenderer2D();
 
@@ -73,6 +79,8 @@ class SD_API Engine : public SystemManager {
 
     Ref<LightingSystem> m_lightingSystem;
     Ref<TerrainSystem> m_terrainSystem;
+
+    Ref<Device> m_device;
 };
 
 Engine &engine();

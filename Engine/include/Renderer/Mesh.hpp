@@ -33,8 +33,8 @@ class SD_API Mesh {
     void setTopology(MeshTopology topology);
     MeshTopology getTopology() const { return m_topology; }
 
-    void setWireframe(bool wireframe);
-    bool isWireframe() const;
+    void setPolygonMode(PolygonMode wireframe);
+    PolygonMode getPolygonMode() const;
 
     void setMaterialIndex(int index) { m_materialId = index; }
     uint32_t getMaterialIndex() const { return m_materialId; };
@@ -50,7 +50,7 @@ class SD_API Mesh {
     Ref<VertexArray> m_vertexArray;
     MeshTopology m_topology;
     uint32_t m_materialId;
-    bool m_wireframe;
+    PolygonMode m_polygonMode;
 };
 
 }  // namespace sd

@@ -7,7 +7,7 @@ Mesh::Mesh()
       m_indices(0),
       m_topology(MeshTopology::TRIANGLES),
       m_materialId(0),
-      m_wireframe(false) {
+      m_polygonMode(PolygonMode::FILL) {
     m_vertexBuffer = VertexBuffer::create(m_vertices.data(),
                                           m_vertices.size() * sizeof(Vertex),
                                           BufferIOType::DYNAMIC);
@@ -32,7 +32,7 @@ Mesh::Mesh(const std::vector<Vertex> &vertices,
       m_indices(indices),
       m_topology(MeshTopology::TRIANGLES),
       m_materialId(0),
-      m_wireframe(false) {
+      m_polygonMode(PolygonMode::FILL) {
     m_vertexBuffer = VertexBuffer::create(m_vertices.data(),
                                           m_vertices.size() * sizeof(Vertex),
                                           BufferIOType::DYNAMIC);
@@ -75,9 +75,11 @@ VertexArray *Mesh::getVertexArray() const { return m_vertexArray.get(); }
 
 void Mesh::setTopology(MeshTopology topology) { m_topology = topology; }
 
-void Mesh::setWireframe(bool wireframe) { m_wireframe = wireframe; }
+void Mesh::setPolygonMode(PolygonMode polygonMode) {
+    m_polygonMode = polygonMode;
+}
 
-bool Mesh::isWireframe() const { return m_wireframe; }
+PolygonMode Mesh::getPolygonMode() const { return m_polygonMode; }
 
 const std::vector<Vertex> &Mesh::getVertices() const { return m_vertices; }
 

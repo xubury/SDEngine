@@ -60,8 +60,6 @@ struct Renderer2DData {
 
 static Renderer2DData s_data;
 
-static Ref<Device> s_device;
-
 namespace Renderer {
 
 void Engine::init(int width, int height, int samples) {
@@ -87,7 +85,7 @@ void Engine::init(int width, int height, int samples) {
         TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
     m_defaultTarget.createFramebuffer();
 
-    s_device = Device::create();
+    m_device = Device::create();
 
     initSystems();
     initRenderer2D();
@@ -224,16 +222,17 @@ void Engine::setGammaCorrection(float gamma) { m_gammaCorrection = gamma; }
 
 float Engine::getGammaCorrection() { return m_gammaCorrection; }
 
-static Engine s_engine;
+Engine& engine() {
+    static Engine s_engine;
+    return s_engine;
+}
 
-Engine& engine() { return s_engine; }
-
-Device& device() { return *s_device; }
+Device& device() { return *engine().m_device; }
 
 void submit(const VertexArray& vao, MeshTopology topology, size_t count,
             size_t offset) {
     vao.bind();
-    s_device->drawElements(topology, count, offset);
+    device().drawElements(topology, count, offset);
 }
 
 }  // namespace Renderer
@@ -241,8 +240,7 @@ void submit(const VertexArray& vao, MeshTopology topology, size_t count,
 namespace Renderer3D {
 
 void drawMesh(const Mesh& mesh) {
-    Renderer::device().setPolygonMode(
-        mesh.isWireframe() ? PolygonMode::LINE : PolygonMode::FILL, Face::BOTH);
+    Renderer::device().setPolygonMode(mesh.getPolygonMode(), Face::BOTH);
     VertexArray* vao = mesh.getVertexArray();
     SD_CORE_ASSERT(vao, "Invalid mesh!");
     Renderer::submit(*vao, mesh.getTopology(),
