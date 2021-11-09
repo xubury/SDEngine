@@ -25,7 +25,7 @@ Ref<Shader> ShaderLoader::loadAsset(const std::string &filePath) {
     Ref<Shader> shader = Shader::create();
     std::string source;
     SD_CORE_TRACE("Building shader code from {}", filePath);
-    readFile(filePath, source);
+    File::read(filePath, source);
 
     size_t i = source.find("#shader");
     bool success = true;
@@ -64,7 +64,8 @@ Ref<Shader> ShaderLoader::loadAsset(const std::string &filePath) {
 
             code.erase(j, start - j);
             std::string includeCode;
-            readFile(m_manager.getAbsolutePath(include).string(), includeCode);
+            File::read(m_manager.getAbsolutePath(include).string(),
+                       includeCode);
             code.insert(j, includeCode);
 
             j = code.find("#include", start);

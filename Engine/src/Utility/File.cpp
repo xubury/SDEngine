@@ -5,7 +5,9 @@
 
 namespace sd {
 
-void readFile(const std::string &filePath, std::string &content) {
+namespace File {
+
+void read(const std::string &filePath, std::string &content) {
     std::ifstream file;
     file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     try {
@@ -19,5 +21,7 @@ void readFile(const std::string &filePath, std::string &content) {
                       filePath, e.what());
     }
 }
+
+}  // namespace File
 
 }  // namespace sd
