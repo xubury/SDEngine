@@ -47,7 +47,7 @@ void ScenePanel::onImGui() {
         Entity entity{entityID, m_scene};
 
         EntityDataComponent &data = entity.getComponent<EntityDataComponent>();
-        Entity parent(data.m_parent, m_scene);
+        Entity parent(data.parent, m_scene);
         if (!parent) {
             drawEntityNode(entity);
         }
@@ -91,8 +91,7 @@ void ScenePanel::drawEntityNode(Entity &entity) {
     static ImGuiTreeNodeFlags leaf_flags =
         ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_SpanAvailWidth;
 
-    ImGuiTreeNodeFlags flags =
-        data.m_children.empty() ? leaf_flags : base_flags;
+    ImGuiTreeNodeFlags flags = data.children.empty() ? leaf_flags : base_flags;
     flags |= ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) |
              ImGuiTreeNodeFlags_OpenOnArrow;
     bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(entt::entity)entity,
@@ -115,7 +114,7 @@ void ScenePanel::drawEntityNode(Entity &entity) {
     }
 
     if (opened) {
-        for (entt::entity childId : data.m_children) {
+        for (entt::entity childId : data.children) {
             Entity child(childId, m_scene);
             drawEntityNode(child);
         }
@@ -166,6 +165,11 @@ static void drawComponent(const std::string &name, Entity entity,
 }
 
 void ScenePanel::drawComponents(Entity &entity) {
+    if (entity.hasComponent<TagComponent>()) {
+        auto &id = entity.getComponent<IDComponent>().id;
+        std::string idString = "Resouce Id: "  + std::to_string(id);
+        ImGui::TextUnformatted(idString.c_str());
+    }
     if (entity.hasComponent<TagComponent>()) {
         auto &tag = entity.getComponent<TagComponent>().tag;
 

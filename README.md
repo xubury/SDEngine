@@ -2,8 +2,8 @@
 Simple and Direct Engine
 
 ## TODO 
-1. UUID
-2. Asset System based on UUID
+1. ResourceId
+2. Asset System based on ResourceId
 3. Ini parser 
 4. Profile System
 5. Script System

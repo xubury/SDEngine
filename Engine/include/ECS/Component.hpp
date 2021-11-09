@@ -5,6 +5,7 @@
 #include "Utility/Export.hpp"
 #include "Utility/Transform.hpp"
 #include "Utility/Math.hpp"
+#include "Utility/ResourceId.hpp"
 #include "Renderer/Model.hpp"
 #include "Renderer/Mesh.hpp"
 #include "Renderer/Terrain.hpp"
@@ -13,14 +14,24 @@
 
 namespace sd {
 
-struct SD_API EntityDataComponent {
-    std::set<entt::entity> m_children;
-    entt::entity m_parent;
-    EntityDataComponent() : m_parent(entt::null) {}
+struct SD_API IDComponent {
+    ResourceId id;
+    IDComponent() = default;
 
     template <class Archive>
     void serialize(Archive& archive) {
-        archive(m_parent, m_children);
+        archive(id);
+    }
+};
+
+struct SD_API EntityDataComponent {
+    std::set<entt::entity> children;
+    entt::entity parent;
+    EntityDataComponent() : parent(entt::null) {}
+
+    template <class Archive>
+    void serialize(Archive& archive) {
+        archive(parent, children);
     }
 };
 
@@ -63,6 +74,9 @@ struct SD_API TerrainComponent {
 
 struct SD_API LightComponent {
     Light light;
+
+    LightComponent() = default;
+
     template <typename Archive>
     void serialize(Archive& archive) {
         archive(light);

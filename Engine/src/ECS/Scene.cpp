@@ -11,6 +11,7 @@ Scene::Scene() {}
 
 Entity Scene::createEntity(const std::string &name) {
     Entity entity(create(), this);
+    entity.addComponent<IDComponent>();
     entity.addComponent<TagComponent>(name);
     entity.addComponent<TransformComponent>();
     entity.addComponent<EntityDataComponent>();
@@ -19,11 +20,11 @@ Entity Scene::createEntity(const std::string &name) {
 
 void Scene::destroyEntity(Entity &entity, bool isRoot) {
     auto &data = entity.getComponent<EntityDataComponent>();
-    for (entt::entity entityId : data.m_children) {
+    for (entt::entity entityId : data.children) {
         Entity child(entityId, this);
         destroyEntity(child, false);
     }
-    Entity parent(data.m_parent, this);
+    Entity parent(data.parent, this);
     if (isRoot && parent) {
         removeChildFromEntity(parent, entity);
     }
@@ -34,25 +35,25 @@ void Scene::addChildToEntity(Entity &parent, Entity &child) {
     if (parent == child) return;
     auto &parentData = parent.getComponent<EntityDataComponent>();
     auto &childData = child.getComponent<EntityDataComponent>();
-    if (parentData.m_parent == child || childData.m_parent == parent) return;
+    if (parentData.parent == child || childData.parent == parent) return;
 
     Transform *childTransform =
         &child.getComponent<TransformComponent>().transform;
     Transform *parentTransform =
         &parent.getComponent<TransformComponent>().transform;
 
-    Entity oldParent(childData.m_parent, this);
+    Entity oldParent(childData.parent, this);
     if (oldParent) {
         removeChildFromEntity(oldParent, child);
         childTransform->getParent()->removeChild(childTransform);
     }
     parentTransform->addChild(childTransform);
-    parentData.m_children.emplace(child);
-    childData.m_parent = parent;
+    parentData.children.emplace(child);
+    childData.parent = parent;
 }
 
 void Scene::removeChildFromEntity(Entity &parent, Entity &child) {
-    auto &children = parent.getComponent<EntityDataComponent>().m_children;
+    auto &children = parent.getComponent<EntityDataComponent>().children;
     if (children.find(child) != children.end()) {
         children.erase(child);
         Transform *childTransform =
@@ -60,7 +61,7 @@ void Scene::removeChildFromEntity(Entity &parent, Entity &child) {
         parent.getComponent<TransformComponent>().transform.removeChild(
             childTransform);
     }
-    child.getComponent<EntityDataComponent>().m_parent = Entity();
+    child.getComponent<EntityDataComponent>().parent = Entity();
 }
 
 void Scene::refresh() {
@@ -80,8 +81,9 @@ void Scene::load(const std::string &filePath) {
     cereal::XMLInputArchive archive(is);
     entt::snapshot_loader{*this}
         .entities(archive)
-        .component<EntityDataComponent, TagComponent, TransformComponent,
-                   ModelComponent, LightComponent, TextComponent>(archive);
+        .component<IDComponent, EntityDataComponent, TagComponent,
+                   TransformComponent, ModelComponent, LightComponent,
+                   TextComponent>(archive);
     refresh();
 }
 
@@ -90,8 +92,9 @@ void Scene::save(const std::string &filePath) {
     cereal::XMLOutputArchive archive(os);
     entt::snapshot{*this}
         .entities(archive)
-        .component<EntityDataComponent, TagComponent, TransformComponent,
-                   ModelComponent, LightComponent, TextComponent>(archive);
+        .component<IDComponent, EntityDataComponent, TagComponent,
+                   TransformComponent, ModelComponent, LightComponent,
+                   TextComponent>(archive);
 }
 
 void Scene::refreshLight(Entity &entity) {
@@ -114,13 +117,13 @@ void Scene::refreshEntityChildTranforms(Entity &entity) {
     EntityDataComponent &data = entity.getComponent<EntityDataComponent>();
     Transform &transform = entity.getComponent<TransformComponent>().transform;
     transform.getChildren().clear();
-    Entity parent(data.m_parent, this);
+    Entity parent(data.parent, this);
     if (parent) {
         parent.getComponent<TransformComponent>().transform.addChild(
             &transform);
     }
 
-    for (entt::entity childId : data.m_children) {
+    for (entt::entity childId : data.children) {
         Entity child(childId, this);
         entity.getComponent<TransformComponent>().transform.addChild(
             &child.getComponent<TransformComponent>().transform);
