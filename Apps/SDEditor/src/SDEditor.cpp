@@ -8,8 +8,10 @@ IMPLEMENT_APP(SDEditor);
 
 namespace sd {
 
-void SDEditor::init() { pushLayer(createRef<EditorLayer>(800, 600)); }
+void SDEditor::init() {
+    m_layer = dynamic_cast<EditorLayer *>(pushLayer(new EditorLayer(800, 600)));
+}
 
-void SDEditor::destroy() {}
+void SDEditor::destroy() { delete m_layer; }
 
 }  // namespace sd

@@ -31,6 +31,8 @@ class SD_API PostProcessSystem : public System {
     RenderTarget m_blurTarget[2];
     Texture *m_blurResult;
 
+    RenderTarget m_target;
+
     Ref<VertexArray> m_quad;
 };
 

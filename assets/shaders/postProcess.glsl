@@ -25,18 +25,11 @@ uniform float u_exposure;
 
 uniform float u_gamma;
 
-layout(binding = 0) uniform sampler2DMS u_lighting;
+layout(binding = 0) uniform sampler2D u_lighting;
 layout(binding = 1) uniform sampler2D u_blur;
 
 void main() {
-    vec3 result = vec3(0.0);
-
-    const int samples = textureSamples(u_lighting);
-    const ivec2 uv = ivec2(texCoord * textureSize(u_lighting));
-    for (int i = 0; i < samples; ++i) {
-        result += texelFetch(u_lighting, uv, i).rgb;
-    }
-    result /= samples;
+    vec3 result = texture(u_lighting, texCoord).rgb;
 
     // bloom
     if (u_bloom) {

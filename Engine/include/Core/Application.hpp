@@ -19,13 +19,13 @@ class SD_API Application {
     Window &getWindow();
 
    protected:
-    Ref<Layer> pushLayer(const Ref<Layer> &layer);
+    Layer *pushLayer(Layer *layer);
 
-    Ref<Layer> pushOverlay(const Ref<Layer> &layer);
+    Layer *pushOverlay(Layer *layer);
 
-    void popLayer(const Ref<Layer> &layer);
+    void popLayer(Layer *layer);
 
-    void popOverlay(const Ref<Layer> &layer);
+    void popOverlay(Layer *layer);
 
     Application();
     ~Application();
@@ -49,7 +49,7 @@ class SD_API Application {
     Ref<Window> m_window;
 
     LayerStack m_layers;
-    Ref<ImGuiLayer> m_imguiLayer;
+    ImGuiLayer *m_imguiLayer;
 };
 
 Application &getApp();

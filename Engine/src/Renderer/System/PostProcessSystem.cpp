@@ -12,6 +12,11 @@ PostProcessSystem::PostProcessSystem(int width, int height) {
             TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
         m_blurTarget[i].createFramebuffer();
     }
+    m_target.addTexture(Texture::create(
+        width, height, 1, TextureType::TEX_2D, TextureFormat::RGBA,
+        TextureFormatType::FLOAT, TextureWrap::EDGE, TextureFilter::LINEAR,
+        TextureMipmapFilter::LINEAR));
+    m_target.createFramebuffer();
     m_blurShader = Asset::manager().load<Shader>("shaders/blur.glsl");
     m_postShader = Asset::manager().load<Shader>("shaders/postProcess.glsl");
     const float quadVertices[] = {
@@ -40,12 +45,13 @@ void PostProcessSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
 
 void PostProcessSystem::onRender() {
     Renderer::device().setDepthMask(false);
+    Renderer::device().blitFramebuffer(
+        Renderer::engine().getRenderTarget().getFramebuffer(), 0,
+        m_target.getFramebuffer(), 0, BufferBitMask::COLOR_BUFFER_BIT,
+        TextureFilter::LINEAR);
     if (Renderer::engine().getBloom()) {
         renderBlur();
     }
-    // Graphics::device().blitFramebuffer(
-    //     Graphics::engine().getRenderTarget().getFramebuffer(), 0, nullptr, 0,
-    //     BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::LINEAR);
     renderPost();
     Renderer::device().setDepthMask(true);
 }
@@ -54,25 +60,22 @@ void PostProcessSystem::onSizeEvent(const SizeEvent &event) {
     for (int i = 0; i < 2; ++i) {
         m_blurTarget[i].resize(event.width, event.height);
     }
+    m_target.resize(event.width, event.height);
 }
 
 void PostProcessSystem::renderBlur() {
     const int amount = 10;
     bool horizontal = true;
-    int inputId = horizontal;
-    int outputId = !horizontal;
     m_blurShader->bind();
-    Renderer::device().blitFramebuffer(
-        Renderer::engine().getRenderTarget().getFramebuffer(), 0,
-        m_blurTarget[inputId].getFramebuffer(), 0,
-        BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::LINEAR);
     for (int i = 0; i < amount; ++i) {
-        inputId = horizontal;
-        outputId = !horizontal;
+        const int inputId = horizontal;
+        const int outputId = !horizontal;
         m_blurTarget[outputId].bind();
         m_blurResult = m_blurTarget[outputId].getTexture();
         m_blurShader->setBool("u_horizontal", horizontal);
-        m_blurShader->setTexture("u_image", m_blurTarget[inputId].getTexture());
+        m_blurShader->setTexture("u_image",
+                                 i == 0 ? m_target.getTexture()
+                                        : m_blurTarget[inputId].getTexture());
         Renderer::submit(*m_quad, MeshTopology::TRIANGLES,
                          m_quad->getIndexBuffer()->getCount(), 0);
         horizontal = !horizontal;
@@ -87,8 +90,7 @@ void PostProcessSystem::renderPost() {
                            Renderer::engine().getBloomFactor());
     m_postShader->setTexture("u_blur", m_blurResult);
 
-    m_postShader->setTexture("u_lighting",
-                             Renderer::engine().getRenderTarget().getTexture());
+    m_postShader->setTexture("u_lighting", m_target.getTexture());
     m_postShader->setFloat("u_exposure", Renderer::engine().getExposure());
 
     m_postShader->setFloat("u_gamma", Renderer::engine().getGammaCorrection());

@@ -62,6 +62,8 @@ static Renderer2DData s_data;
 
 namespace Renderer {
 
+Engine::Engine() : Layer("Render Engine") {}
+
 void Engine::init(int width, int height, int samples) {
     SD_CORE_TRACE("Initializing Engine...");
 
@@ -75,15 +77,6 @@ void Engine::init(int width, int height, int samples) {
 
     m_cameraUBO = UniformBuffer::create(nullptr, sizeof(CameraData),
                                         BufferIOType::DYNAMIC);
-    m_defaultTarget.addTexture(Texture::create(
-        width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
-        TextureFormat::RGBA, TextureFormatType::FLOAT, TextureWrap::EDGE,
-        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
-    m_defaultTarget.addTexture(Texture::create(
-        width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
-        TextureFormat::DEPTH, TextureFormatType::FLOAT, TextureWrap::EDGE,
-        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
-    m_defaultTarget.createFramebuffer();
 
     m_device = Device::create();
 
@@ -152,6 +145,30 @@ void Engine::initRenderer2D() {
     s_data.spriteShader = Asset::manager().load<Shader>("shaders/sprite.glsl");
 }
 
+void Engine::onRender() {
+    m_defaultTarget.bind();
+    Renderer::device().clear();
+    for (auto& system : getSystems()) {
+        system->onRender();
+    }
+    Renderer::device().setPolygonMode(PolygonMode::FILL, Face::BOTH);
+}
+
+void Engine::onTick(float dt) {
+    for (auto& system : getSystems()) {
+        system->onTick(dt);
+    }
+}
+
+void Engine::onEventProcess(const SDL_Event& event) {
+    if (event.type == SDL_WINDOWEVENT) {
+        if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+            resize(event.window.data1, event.window.data2);
+    }
+}
+
+void Engine::onEventsProcess() {}
+
 void Engine::resize(int width, int height) {
     m_width = width;
     m_height = height;
@@ -160,28 +177,6 @@ void Engine::resize(int width, int height) {
     }
     m_defaultTarget.resize(width, height);
     dispatchEvent(SizeEvent(width, height));
-}
-
-void Engine::render() {
-    m_defaultTarget.bind();
-    Renderer::device().clear();
-    for (auto& system : getSystems()) {
-        system->onRender();
-    }
-}
-
-void Engine::postRender() {
-    Renderer::device().setPolygonMode(PolygonMode::FILL, Face::BOTH);
-    Renderer::device().blitFramebuffer(
-        Engine::getRenderTarget().getFramebuffer(), 0, nullptr, 0,
-        BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
-    Renderer::device().setFramebuffer(nullptr);
-}
-
-void Engine::tick(float dt) {
-    for (auto& system : getSystems()) {
-        system->onTick(dt);
-    }
 }
 
 TerrainSystem* Engine::getTerrainSystem() { return m_terrainSystem.get(); }

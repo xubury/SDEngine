@@ -2,6 +2,7 @@
 #define SD_RENDERER_HPP
 
 #include <cstdint>
+#include "Core/Layer.hpp"
 #include "Renderer/RenderTarget.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Device.hpp"
@@ -16,9 +17,16 @@ namespace sd {
 
 namespace Renderer {
 
-class SD_API Engine : public SystemManager {
+class SD_API Engine : public SystemManager, public Layer {
    public:
     void init(int width, int height, int samples);
+
+    void onRender() override;
+    void onTick(float dt) override;
+    void onEventProcess(const SDL_Event &event) override;
+    void onEventsProcess() override;
+
+    void resize(int width, int height);
 
     TerrainSystem *getTerrainSystem();
 
@@ -46,16 +54,10 @@ class SD_API Engine : public SystemManager {
     float getGammaCorrection();
     void setGammaCorrection(float gamma);
 
-    void resize(int width, int height);
-
-    void render();
-    void postRender();
-    void tick(float dt);
-
    private:
     friend Engine &engine();
     friend Device &device();
-    Engine() = default;
+    Engine();
     Engine(const Engine &) = delete;
     Engine &operator=(const Engine &) = delete;
 

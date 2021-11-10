@@ -99,9 +99,10 @@ void EditorLayer::onImGui() {
     if (m_hide) {
         return;
     }
-    Renderer::device().blitFramebuffer(nullptr, 0, m_screenBuffer.get(), 0,
-                                       BufferBitMask::COLOR_BUFFER_BIT,
-                                       TextureFilter::NEAREST);
+    Renderer::device().blitFramebuffer(
+        Renderer::engine().getRenderTarget().getFramebuffer(), 0,
+        m_screenBuffer.get(), 0, BufferBitMask::COLOR_BUFFER_BIT,
+        TextureFilter::NEAREST);
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
         Renderer::device().blitFramebuffer(
             Renderer::engine().getLightingSystem()->getGBuffer(), i,

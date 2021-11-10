@@ -55,27 +55,26 @@ Application::Application() {
         Renderer::device().disable(Operation::MULTISAMPLE);
     }
 
-    m_imguiLayer = std::static_pointer_cast<ImGuiLayer>(
-        pushOverlay(createRef<ImGuiLayer>()));
+    pushLayer(&Renderer::engine());
+    m_imguiLayer = dynamic_cast<ImGuiLayer *>(pushOverlay(new ImGuiLayer()));
 }
 
-Application::~Application() { SDL_Quit(); }
+Application::~Application() {
+    delete m_imguiLayer;
+    SDL_Quit();
+}
 
-Ref<Layer> Application::pushLayer(const Ref<Layer> &layer) {
+Layer *Application::pushLayer(Layer *layer) {
     return m_layers.pushLayer(layer);
 }
 
-Ref<Layer> Application::pushOverlay(const Ref<Layer> &layer) {
+Layer *Application::pushOverlay(Layer *layer) {
     return m_layers.pushOverlay(layer);
 }
 
-void Application::popLayer(const Ref<Layer> &layer) {
-    m_layers.popLayer(layer);
-}
+void Application::popLayer(Layer *layer) { m_layers.popLayer(layer); }
 
-void Application::popOverlay(const Ref<Layer> &layer) {
-    m_layers.popOverlay(layer);
-}
+void Application::popOverlay(Layer *layer) { m_layers.popOverlay(layer); }
 
 void Application::processEvent(const SDL_Event &event) {
     if (event.type == SDL_QUIT) {
@@ -122,7 +121,6 @@ void Application::quit() { m_window->setShouldClose(true); }
 
 void Application::tick(float dt) {
     Input::tick();
-    Renderer::engine().tick(dt);
 
     for (auto iter = m_layers.rbegin(); iter != m_layers.rend(); ++iter) {
         (*iter)->onTick(dt);
@@ -130,12 +128,9 @@ void Application::tick(float dt) {
 }
 
 void Application::render() {
-    Renderer::engine().render();
-
     for (auto &layer : m_layers) {
         layer->onRender();
     }
-    Renderer::engine().postRender();
 
     m_imguiLayer->begin();
     for (auto &layer : m_layers) {

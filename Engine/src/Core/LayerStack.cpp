@@ -13,20 +13,20 @@ LayerStack::~LayerStack() {
     m_layers.clear();
 }
 
-Ref<Layer> LayerStack::pushLayer(const Ref<Layer> &layer) {
+Layer *LayerStack::pushLayer(Layer *layer) {
     m_layers.emplace(m_layers.begin() + m_layerInsertId, layer);
     ++m_layerInsertId;
     layer->onAttach();
     return layer;
 }
 
-Ref<Layer> LayerStack::pushOverlay(const Ref<Layer> &overlay) {
+Layer *LayerStack::pushOverlay(Layer *overlay) {
     m_layers.emplace_back(overlay);
     overlay->onAttach();
     return overlay;
 }
 
-void LayerStack::popLayer(const Ref<Layer> &layer) {
+void LayerStack::popLayer(Layer *layer) {
     auto iter =
         std::find(m_layers.begin(), m_layers.begin() + m_layerInsertId, layer);
     if (iter != m_layers.begin() + m_layerInsertId) {
@@ -38,7 +38,7 @@ void LayerStack::popLayer(const Ref<Layer> &layer) {
     }
 }
 
-void LayerStack::popOverlay(const Ref<Layer> &overlay) {
+void LayerStack::popOverlay(Layer *overlay) {
     auto iter =
         std::find(m_layers.begin() + m_layerInsertId, m_layers.end(), overlay);
     if (iter != m_layers.end()) {
@@ -49,7 +49,7 @@ void LayerStack::popOverlay(const Ref<Layer> &overlay) {
     }
 }
 
-bool LayerStack::hasLayer(const Ref<Layer> &layer) const {
+bool LayerStack::hasLayer(Layer *layer) const {
     auto iter = std::find(m_layers.begin(), m_layers.end(), layer);
     return iter != m_layers.end();
 }
