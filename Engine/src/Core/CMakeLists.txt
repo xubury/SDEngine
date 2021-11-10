@@ -36,7 +36,14 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-core PUBLIC SD_SHARED)
 endif()
 
-target_link_libraries(sd-core PUBLIC sd-renderer sd-utils sd-imgui sd-input SDL2::Main)
+target_link_libraries(sd-core 
+    PUBLIC 
+    sd-renderer 
+    sd-utils 
+    sd-asset 
+    sd-imgui 
+    sd-input 
+    SDL2::Main)
 
 target_include_directories(sd-core 
     PUBLIC

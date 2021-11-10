@@ -1,6 +1,5 @@
 #include "Renderer/System/LightingSystem.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Utility/Loader/AssetLoader.hpp"
 #include "Utility/Log.hpp"
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
@@ -73,9 +72,9 @@ void LightingSystem::onInit() {
 void LightingSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
 
 void LightingSystem::initShaders() {
-    m_emssiveShader = Asset::manager().load<Shader>("shaders/emissive.glsl");
-    m_deferredShader = Asset::manager().load<Shader>("shaders/deferred.glsl");
-    m_gBufferShader = Asset::manager().load<Shader>("shaders/gbuffer.glsl");
+    m_emssiveShader = ShaderLibrary::instance().load("shaders/emissive.glsl");
+    m_deferredShader = ShaderLibrary::instance().load("shaders/deferred.glsl");
+    m_gBufferShader = ShaderLibrary::instance().load("shaders/gbuffer.glsl");
 }
 
 void LightingSystem::initLighting(int width, int height, int samples) {
@@ -239,9 +238,9 @@ void LightingSystem::renderGBuffer() {
                                  transformComp.transform.getWorldTransform());
         m_gBufferShader->setUint("u_entityId", static_cast<uint32_t>(entity));
         m_gBufferShader->setVec3("u_color", modelComp.color);
-        for (const auto &mesh : modelComp.model->getMeshes()) {
-            auto &material =
-                modelComp.model->getMaterials()[mesh.getMaterialIndex()];
+        auto model = AssetManager::instance().get<Model>(modelComp.id);
+        for (const auto &mesh : model->getMeshes()) {
+            auto &material = model->getMaterials()[mesh.getMaterialIndex()];
             m_gBufferShader->setTexture(
                 "u_material.diffuse",
                 material.getTexture(MaterialType::DIFFUSE));

@@ -1,5 +1,5 @@
-#include "Utility/Loader/ModelLoader.hpp"
-#include "Utility/Image.hpp"
+#include "Asset/ModelLoader.hpp"
+#include "Asset/Image.hpp"
 #include "Renderer/Material.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -115,7 +115,8 @@ static void processAiMaterial(const std::filesystem::path &directory,
         return;
     }
     std::string path = (directory / texturePath.C_Str()).string();
-    auto image = Asset::manager().load<Image>(path);
+    Asset asset = AssetManager::instance().loadAsset<Image>(path);
+    auto image = asset.getResource<Image>();
     auto texture = Texture::create(
         image->width(), image->height(), 1, TextureType::TEX_2D,
         image->hasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
@@ -138,9 +139,7 @@ static void processNode(const aiScene *scene, const aiNode *node,
     }
 }
 
-ModelLoader::ModelLoader(AssetManager &manager) : AssetLoader<Model>(manager) {}
-
-Ref<Model> ModelLoader::loadAsset(const std::string &filePath) {
+Ref<void> ModelLoader::loadAsset(const std::string &filePath) {
     Ref<Model> model = createRef<Model>();
     SD_CORE_TRACE("Loading model form: {}...", filePath);
 

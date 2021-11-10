@@ -1,7 +1,7 @@
 #ifndef SD_FONT_LOADER_HPP
 #define SD_FONT_LOADER_HPP
 
-#include "Utility/Loader/AssetLoader.hpp"
+#include "Asset/Asset.hpp"
 #include "Renderer/Font.hpp"
 
 typedef struct FT_LibraryRec_ *FT_Library;
@@ -10,12 +10,15 @@ namespace sd {
 
 class FontLoader : public AssetLoader<Font> {
    public:
-    FontLoader(AssetManager &manager);
+    Ref<void> loadAsset(const std::string &filePath) override;
+
     ~FontLoader();
 
-    Ref<Font> loadAsset(const std::string &filePath) override;
-
    private:
+    friend class AssetManager;
+
+    FontLoader();
+
     FT_Library m_ft;
 };
 

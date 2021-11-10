@@ -8,6 +8,8 @@ namespace sd {
 
 class SD_API Model {
    public:
+    Model() = default;
+
     const std::vector<Mesh> &getMeshes() const { return m_meshes; };
     std::vector<Mesh> &getMeshes() { return m_meshes; };
 

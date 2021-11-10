@@ -14,4 +14,4 @@ set_property(TARGET SDEditor PROPERTY CXX_STANDARD 17)
 
 target_compile_options(SDEditor PUBLIC  -Wall -Wextra -Wundef -pedantic)
 
-target_link_libraries(SDEditor PUBLIC sd-core sd-utils sd-renderer)
+target_link_libraries(SDEditor PUBLIC sd-core sd-utils sd-renderer sd-asset)

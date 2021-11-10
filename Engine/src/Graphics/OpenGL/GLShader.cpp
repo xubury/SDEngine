@@ -3,15 +3,80 @@
 #include "Graphics/OpenGL/GLTexture.hpp"
 #include "Utility/Log.hpp"
 #include "Utility/Assert.hpp"
+#include "Utility/File.hpp"
 #include <glm/gtc/type_ptr.hpp>
-#include <fstream>
-#include <sstream>
 
 namespace sd {
 
-GLShader::GLShader()
+static ShaderType shaderTypeFromName(const std::string& name) {
+    if (name == "vertex") {
+        return ShaderType::VERTEX;
+    } else if (name == "fragment") {
+        return ShaderType::FRAGMENT;
+    } else if (name == "geometry") {
+        return ShaderType::GEOMETRY;
+    } else if (name == "compute") {
+        return ShaderType::COMPUTE;
+    }
+
+    return ShaderType::INVALID;
+}
+
+GLShader::GLShader(const std::string& filePath)
     : m_id(0), m_vertexId(0), m_fragmentId(0), m_geometryId(0), m_computeId(0) {
     m_id = glCreateProgram();
+    std::string source;
+    SD_CORE_TRACE("Building shader code from {}", filePath);
+    File::read(filePath, source);
+
+    size_t i = source.find("#shader");
+    bool success = true;
+    while (i < source.size()) {
+        size_t start = source.find('\n', i) + 1;
+        if (i != 0 && start == 0) {
+            start = source.find('\0', i) + 1;
+        }
+
+        size_t offset = i + 8;
+        std::string name = source.substr(offset, start - offset - 1);
+
+        size_t end = source.find("#shader", start);
+        i = end;
+
+        ShaderType type = shaderTypeFromName(name);
+
+        std::string code;
+        if (type == ShaderType::INVALID) {
+            SD_CORE_ERROR("Invalid shader type: {}", name);
+            success = false;
+            break;
+        } else {
+            code = source.substr(start, end - start);
+        }
+        // insert include code
+        size_t j = code.find("#include");
+        while (j < code.size()) {
+            size_t start = code.find('\n', j) + 1;
+            if (j != 0 && start == 0) {
+                start = code.find('\0', j) + 1;
+            }
+
+            size_t offset = j + 9;
+            std::filesystem::path include =
+                code.substr(offset, start - offset - 1);
+
+            code.erase(j, start - j);
+            std::string includeCode;
+            File::read(("assets" / include).string(), includeCode);
+            code.insert(j, includeCode);
+
+            j = code.find("#include", start);
+        }
+
+        compileShader(type, code.c_str());
+    }
+    SD_CORE_ASSERT(success, "Error building shader code");
+    linkShaders();
 }
 
 GLShader::~GLShader() {

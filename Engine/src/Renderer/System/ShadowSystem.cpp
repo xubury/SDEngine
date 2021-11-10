@@ -1,5 +1,4 @@
 #include "Renderer/System/ShadowSystem.hpp"
-#include "Utility/Loader/AssetLoader.hpp"
 #include "Renderer/Renderer.hpp"
 #include "ECS/Component.hpp"
 #include "ECS/Scene.hpp"
@@ -7,7 +6,7 @@
 namespace sd {
 
 ShadowSystem::ShadowSystem() {
-    m_shadowShader = Asset::manager().load<Shader>("shaders/shadow.glsl");
+    m_shadowShader = ShaderLibrary::instance().load("shaders/shadow.glsl");
 }
 
 void ShadowSystem::onInit() {}
@@ -34,9 +33,10 @@ void ShadowSystem::onRender() {
 
         modelView.each([this](const TransformComponent &transformComp,
                               const ModelComponent &modelComp) {
+            auto model = AssetManager::instance().get<Model>(modelComp.id);
             m_shadowShader->setMat4(
                 "u_model", transformComp.transform.getWorldTransform());
-            for (const auto &mesh : modelComp.model->getMeshes()) {
+            for (const auto &mesh : model->getMeshes()) {
                 Renderer3D::drawMesh(mesh);
             }
         });

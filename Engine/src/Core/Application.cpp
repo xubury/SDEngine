@@ -2,10 +2,6 @@
 #include "Utility/Timing.hpp"
 #include "Utility/Log.hpp"
 #include "Utility/Random.hpp"
-#include "Utility/Loader/ShaderLoader.hpp"
-#include "Utility/Loader/ImageLoader.hpp"
-#include "Utility/Loader/ModelLoader.hpp"
-#include "Utility/Loader/FontLoader.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Input/Input.hpp"
 
@@ -30,12 +26,6 @@ Application::Application() {
     SD_CORE_INFO("Debug info is output to: {}", debugPath);
     SDL(SDL_Init(SDL_INIT_EVERYTHING));
 
-    Asset::manager().setRootPath("assets/");
-    Asset::manager().setLoader<ShaderLoader>();
-    Asset::manager().setLoader<ImageLoader>();
-    Asset::manager().setLoader<ModelLoader>();
-    Asset::manager().setLoader<FontLoader>();
-
     // Setting up which api to use
     setGraphicsAPI(GraphicsAPI::OpenGL);
 
@@ -48,6 +38,7 @@ Application::Application() {
     m_window = Window::create(prop);
 
     // Intialize graphics device
+    ShaderLibrary::instance().setRootPath("assets");
     Renderer::engine().init(width, height, samples);
     if (samples > 1) {
         Renderer::device().enable(Operation::MULTISAMPLE);

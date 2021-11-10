@@ -1,5 +1,6 @@
 #include "Renderer/Font.hpp"
-#include "Utility/Loader/FontLoader.hpp"
+#include "Asset/FontLoader.hpp"
+#include "Utility/Log.hpp"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 

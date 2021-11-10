@@ -1,4 +1,4 @@
-#include "Utility/Image.hpp"
+#include "Asset/Image.hpp"
 #include <SDL_image.h>
 
 namespace sd {
@@ -23,7 +23,7 @@ Image::Image(const std::string &filePath) : m_surface(nullptr) {
 
 Image::~Image() { SDL_FreeSurface(m_surface); }
 
-bool Image::valid() const { return m_surface == nullptr; }
+bool Image::valid() const { return m_surface != nullptr; }
 
 const void *Image::data() const { return m_surface->pixels; }
 

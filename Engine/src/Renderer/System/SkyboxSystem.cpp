@@ -1,6 +1,5 @@
 #include "Renderer/System/SkyboxSystem.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Utility/Loader/AssetLoader.hpp"
 
 namespace sd {
 
@@ -32,7 +31,7 @@ SkyboxSystem::SkyboxSystem() {
     m_skybox->addVertexBuffer(vbo, layout);
     m_skybox->setIndexBuffer(ibo);
 
-    m_skyboxShader = Asset::manager().load<Shader>("shaders/skybox.glsl");
+    m_skyboxShader = ShaderLibrary::instance().load("shaders/skybox.glsl");
 }
 
 void SkyboxSystem::onInit() {}

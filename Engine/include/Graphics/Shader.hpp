@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 #include <glm/glm.hpp>
+#include <unordered_map>
+#include <filesystem>
 
 namespace sd {
 
@@ -16,7 +18,7 @@ enum class ShaderType { INVALID, VERTEX, FRAGMENT, GEOMETRY, COMPUTE };
 
 class SD_API Shader {
    public:
-    static Ref<Shader> create();
+    static Ref<Shader> create(const std::string& filePath);
 
     virtual ~Shader() = default;
 
@@ -55,6 +57,35 @@ class SD_API Shader {
 
    protected:
     Shader() = default;
+};
+
+class ShaderLibrary {
+   public:
+    static ShaderLibrary& instance() {
+        static ShaderLibrary s_instance;
+        return s_instance;
+    }
+    void add(const std::string& name, const Ref<Shader>& shader);
+    Ref<Shader> load(const std::string& filepath);
+    Ref<Shader> load(const std::string& name, const std::string& filepath);
+
+    Ref<Shader> get(const std::string& name);
+
+    bool exists(const std::string& name) const;
+
+    void setRootPath(const std::filesystem::path& path) {
+        m_rootPath =
+            path.is_relative() ? std::filesystem::current_path() / path : path;
+    }
+
+    std::filesystem::path getAbsolutePath(
+        const std::filesystem::path &filePath) {
+        return filePath.is_relative() ? m_rootPath / filePath : filePath;
+    }
+
+   private:
+    std::unordered_map<std::string, Ref<Shader>> m_Shaders;
+    std::filesystem::path m_rootPath;
 };
 
 }  // namespace sd

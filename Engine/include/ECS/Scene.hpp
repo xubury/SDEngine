@@ -33,7 +33,6 @@ class SD_API Scene : public entt::registry {
 
    private:
     void refreshEntityChildTranforms(Entity &entity);
-    void refreshEntityModel(Entity &entity);
     void refreshLight(Entity &entity);
 };
 

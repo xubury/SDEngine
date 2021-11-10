@@ -56,14 +56,13 @@ struct SD_API TransformComponent {
 };
 
 struct SD_API ModelComponent {
-    std::string path;
-    Ref<Model> model;
+    ResourceId id;
     glm::vec3 color;
-    ModelComponent() : model(createRef<Model>()), color(0.f) {}
+    ModelComponent() : color(0.f) {}
 
     template <typename Archive>
     void serialize(Archive& archive) {
-        archive(path, color);
+        archive(id, color);
     }
 };
 
@@ -84,14 +83,14 @@ struct SD_API LightComponent {
 };
 
 struct SD_API TextComponent {
-    std::string fontPath;
+    ResourceId id;
     int pixelSize = 10;
     glm::vec4 color = glm::vec4(1);
     std::wstring text;
 
     template <typename Archive>
     void serialize(Archive& archive) {
-        archive(fontPath, pixelSize, color, text);
+        archive(id, pixelSize, color, text);
     }
 };
 

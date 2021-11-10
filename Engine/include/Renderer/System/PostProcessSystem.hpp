@@ -28,6 +28,7 @@ class SD_API PostProcessSystem : public System {
     Ref<Shader> m_postShader;
 
     Ref<Shader> m_blurShader;
+
     RenderTarget m_blurTarget[2];
     Texture *m_blurResult;
 

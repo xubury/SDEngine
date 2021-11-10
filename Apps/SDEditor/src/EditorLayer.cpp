@@ -3,8 +3,7 @@
 #include "Input/Input.hpp"
 #include "Renderer/Renderer.hpp"
 #include "ECS/Component.hpp"
-#include "Utility/Image.hpp"
-#include "Utility/Loader/AssetLoader.hpp"
+#include "Asset/Image.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -25,7 +24,8 @@ EditorLayer::EditorLayer(int width, int height)
       m_saveSceneOpen(false) {
     m_cameraController.setCamera(&m_editorCamera);
     m_editorCamera.setWorldPosition(glm::vec3(0, 0, 10));
-    auto image = Asset::manager().load<Image>("icons/light.png");
+    auto asset = AssetManager::instance().loadAsset<Image>("icons/light.png");
+    auto image = asset.getResource<Image>();
 
     m_lightIcon = Texture::create(
         image->width(), image->height(), 1, TextureType::TEX_2D,

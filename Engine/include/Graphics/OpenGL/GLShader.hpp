@@ -15,7 +15,7 @@ class UniformBuffer;
 
 class SD_API GLShader : public Shader {
    public:
-    GLShader();
+    GLShader(const std::string &filePath);
 
     ~GLShader();
 

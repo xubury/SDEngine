@@ -2,7 +2,7 @@
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
 #include "Utility/Serialize.hpp"
-#include "Utility/Loader/AssetLoader.hpp"
+#include "Asset/Asset.hpp"
 #include <stack>
 
 namespace sd {
@@ -70,7 +70,6 @@ void Scene::refresh() {
     for (auto entityId : ecsData) {
         Entity entity(entityId, this);
         refreshEntityChildTranforms(entity);
-        refreshEntityModel(entity);
         refreshLight(entity);
     }
 }
@@ -103,13 +102,6 @@ void Scene::refreshLight(Entity &entity) {
         if (lightComp.light.isCastShadow()) {
             lightComp.light.createShadowMap();
         }
-    }
-}
-
-void Scene::refreshEntityModel(Entity &entity) {
-    if (entity.hasComponent<ModelComponent>()) {
-        auto &modelComp = entity.getComponent<ModelComponent>();
-        modelComp.model = Asset::manager().load<Model>(modelComp.path);
     }
 }
 

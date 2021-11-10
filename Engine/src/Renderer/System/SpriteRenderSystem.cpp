@@ -1,6 +1,5 @@
 #include "Renderer/System/SpriteRenderSystem.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Utility/Loader/AssetLoader.hpp"
 
 namespace sd {
 
@@ -19,8 +18,8 @@ void SpriteRenderSystem::onRender() {
     textView.each([](const TransformComponent &transformComp,
                      const TextComponent &textComp) {
         Renderer2D::setTextOrigin(0, 0);
-        if (textComp.fontPath.size()) {
-            auto font = Asset::manager().load<Font>(textComp.fontPath);
+        auto font = AssetManager::instance().get<Font>(textComp.id);
+        if (font) {
             Renderer2D::drawText(*font, textComp.text, textComp.pixelSize,
                                  transformComp.transform.getWorldTransform(),
                                  textComp.color);

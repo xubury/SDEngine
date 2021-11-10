@@ -6,7 +6,6 @@
 #include "Renderer/System/ProfileSystem.hpp"
 #include "Renderer/System/PostProcessSystem.hpp"
 #include "Renderer/System/SpriteRenderSystem.hpp"
-#include "Utility/Loader/AssetLoader.hpp"
 #include "Utility/Log.hpp"
 
 namespace sd {
@@ -142,7 +141,7 @@ void Engine::initRenderer2D() {
         TextureFormatType::FLOAT, TextureWrap::REPEAT, TextureFilter::LINEAR,
         TextureMipmapFilter::LINEAR, &color);
 
-    s_data.spriteShader = Asset::manager().load<Shader>("shaders/sprite.glsl");
+    s_data.spriteShader = ShaderLibrary::instance().load("shaders/sprite.glsl");
 }
 
 void Engine::onRender() {

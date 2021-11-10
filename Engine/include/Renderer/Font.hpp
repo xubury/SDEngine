@@ -3,8 +3,8 @@
 
 #include "Utility/Export.hpp"
 #include "Graphics/Texture.hpp"
+#include "Asset/Asset.hpp"
 #include <glm/glm.hpp>
-#include <unordered_map>
 
 typedef struct FT_FaceRec_ *FT_Face;
 

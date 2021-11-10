@@ -1,6 +1,5 @@
 #include "Renderer/System/PostProcessSystem.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Utility/Loader/AssetLoader.hpp"
 
 namespace sd {
 
@@ -17,8 +16,8 @@ PostProcessSystem::PostProcessSystem(int width, int height) {
         TextureFormatType::FLOAT, TextureWrap::EDGE, TextureFilter::LINEAR,
         TextureMipmapFilter::LINEAR));
     m_target.createFramebuffer();
-    m_blurShader = Asset::manager().load<Shader>("shaders/blur.glsl");
-    m_postShader = Asset::manager().load<Shader>("shaders/postProcess.glsl");
+    m_blurShader = ShaderLibrary::instance().load("shaders/blur.glsl");
+    m_postShader = ShaderLibrary::instance().load("shaders/postProcess.glsl");
     const float quadVertices[] = {
         -1.0f, -1.0f, 0.f, 0.f,  0.f,   // bottom left
         1.0f,  -1.0f, 0.f, 1.0f, 0.f,   // bottom right

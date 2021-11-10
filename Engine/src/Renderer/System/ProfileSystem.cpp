@@ -1,12 +1,13 @@
 #include "Renderer/System/ProfileSystem.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Utility/Loader/AssetLoader.hpp"
+#include "Asset/Asset.hpp"
+#include "Asset/FontLoader.hpp"
 
 namespace sd {
 
 ProfileSystem::ProfileSystem(int width, int height)
     : m_camera(width, height, 0.f, 1000.f), m_fps(20) {
-    m_font = Asset::manager().load<Font>("fonts/opensans/OpenSans-Regular.ttf");
+    // m_font = loader->loadAsset("fonts/opensans/OpenSans-Regular.ttf");
 }
 
 void ProfileSystem::onInit() {
@@ -25,7 +26,7 @@ void ProfileSystem::onRender() {
 
     float size = 20;
     Renderer2D::setTextOrigin(-m_camera.getNearWidth() / 2.f,
-                            m_camera.getNearHeight() / 2.f - size);
+                              m_camera.getNearHeight() / 2.f - size);
     Renderer2D::drawText(*m_font, fpsStr, size, glm::mat4(1.0f));
     Renderer2D::endScene();
 }
