@@ -4,7 +4,7 @@
 #include <SDL.h>
 #include "Utility/Export.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API Action {
    public:
@@ -35,5 +35,5 @@ class SD_API Action {
     int m_type;
 };
 
-}  // namespace sd
+}  // namespace SD
 #endif /* SD_ACTION_HPP */

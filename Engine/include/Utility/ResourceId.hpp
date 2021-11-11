@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <unordered_map>
 
-namespace sd {
+namespace SD {
 
 class ResourceId {
    public:
@@ -24,12 +24,12 @@ class ResourceId {
     uint64_t m_resourceID;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 namespace std {
 template <>
-struct hash<sd::ResourceId> {
-    std::size_t operator()(const sd::ResourceId &resourceID) const {
+struct hash<SD::ResourceId> {
+    std::size_t operator()(const SD::ResourceId &resourceID) const {
         return hash<uint64_t>()(static_cast<uint64_t>(resourceID));
     }
 };

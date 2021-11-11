@@ -6,7 +6,7 @@
 #include "entt/entt.hpp"
 #include "ECS/Scene.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API Entity {
    public:
@@ -76,6 +76,6 @@ const T &Entity::getComponent() const {
     return m_scene->get<T>(m_entityHandle);
 }
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_ENTTY_HPP */

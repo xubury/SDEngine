@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include "Utility/Export.hpp"
 
-namespace sd {
+namespace SD {
 
 template <typename Event>
 using EventListener = std::function<void(const Event&)>;
@@ -59,6 +59,6 @@ class SD_API EventDispatcher {
     }
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_EVENT_DISPATCHER_HPP */

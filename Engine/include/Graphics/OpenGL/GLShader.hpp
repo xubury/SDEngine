@@ -9,7 +9,7 @@
 #include <glm/glm.hpp>
 #include <unordered_map>
 
-namespace sd {
+namespace SD {
 
 class UniformBuffer;
 
@@ -56,6 +56,6 @@ class SD_API GLShader : public Shader {
     GLuint m_computeId;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_GL_SHADER_HPP */

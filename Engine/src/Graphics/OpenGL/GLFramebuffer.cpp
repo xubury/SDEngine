@@ -4,7 +4,7 @@
 #include "Utility/Log.hpp"
 #include "Utility/Assert.hpp"
 
-namespace sd {
+namespace SD {
 
 GLFramebuffer::GLFramebuffer() : m_id(0), m_textureCnt(0) {
     glCreateFramebuffers(1, &m_id);
@@ -100,4 +100,4 @@ void GLFramebuffer::resize(int width, int height) {
     }
 }
 
-}  // namespace sd
+}  // namespace SD

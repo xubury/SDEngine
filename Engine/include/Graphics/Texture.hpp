@@ -5,7 +5,7 @@
 #include "Utility/Base.hpp"
 #include "Graphics/Graphics.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API Texture {
    public:
@@ -63,6 +63,6 @@ class SD_API Texture {
     TextureMipmapFilter m_mipmapFilter;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_TEXTURE_HPP */

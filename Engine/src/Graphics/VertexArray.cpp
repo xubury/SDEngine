@@ -3,7 +3,7 @@
 #include "Graphics/OpenGL/GLVertexArray.hpp"
 #include "Utility/Log.hpp"
 
-namespace sd {
+namespace SD {
 
 Ref<VertexArray> VertexArray::create() {
     Ref<VertexArray> va;
@@ -18,4 +18,4 @@ Ref<VertexArray> VertexArray::create() {
     return va;
 }
 
-}  // namespace sd
+}  // namespace SD

@@ -1,7 +1,7 @@
 #include "Asset/Image.hpp"
 #include <SDL_image.h>
 
-namespace sd {
+namespace SD {
 
 Image::Image(const std::string &filePath) : m_surface(nullptr) {
     SDL_Surface *loaded = IMG_Load(filePath.c_str());
@@ -37,4 +37,4 @@ bool Image::hasAlpha() const {
     return SDL_ISPIXELFORMAT_ALPHA(m_surface->format->format);
 }
 
-}  // namespace sd
+}  // namespace SD

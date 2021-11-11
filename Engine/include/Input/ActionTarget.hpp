@@ -6,7 +6,7 @@
 #include <utility>
 #include "Input/ActionMap.hpp"
 
-namespace sd {
+namespace SD {
 
 template <typename T>
 class ActionTarget {
@@ -121,6 +121,6 @@ void ActionTarget<T>::unbind(const T &key) {
     }
 }
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_ACTION_TARGET_HPP */

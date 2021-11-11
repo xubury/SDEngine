@@ -6,7 +6,7 @@
 #include "Utility/Export.hpp"
 #include "Utility/Base.hpp"
 
-namespace sd {
+namespace SD {
 
 #ifdef DEBUG_BUILD
 #define SDL(stmt) SD_CORE_ASSERT(stmt == 0, SDL_GetError())
@@ -64,5 +64,5 @@ class SD_API Window {
     bool m_shouldClose;
 };
 
-}  // namespace sd
+}  // namespace SD
 #endif /* SD_WINDOW_HPP */

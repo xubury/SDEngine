@@ -7,7 +7,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-namespace sd {
+namespace SD {
 
 class SD_API RenderTarget {
    public:
@@ -52,6 +52,6 @@ class SD_API RenderTarget {
     Ref<Framebuffer> m_framebuffer;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_RENDER_TARGET_HPP */

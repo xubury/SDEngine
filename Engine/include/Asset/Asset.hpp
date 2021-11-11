@@ -11,7 +11,7 @@
 #include <typeinfo>
 #include <filesystem>
 
-namespace sd {
+namespace SD {
 
 template <typename ASSET>
 inline size_t getAssetType() {
@@ -154,6 +154,6 @@ class SD_API AssetManager {
     std::filesystem::path m_rootPath;
 };
 
-};  // namespace sd
+};  // namespace SD
 
 #endif

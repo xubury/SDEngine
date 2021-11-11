@@ -1,7 +1,7 @@
 #include "Utility/Timing.hpp"
 #include <numeric>
 
-namespace sd {
+namespace SD {
 
 Clock::Clock() : m_lastTicks(ClockType::now()) {}
 
@@ -35,4 +35,4 @@ float FpsCounter::getFps() {
     return std::accumulate(m_queue.begin(), m_queue.end(), 0.f) / m_capacity;
 }
 
-}  // namespace sd
+}  // namespace SD

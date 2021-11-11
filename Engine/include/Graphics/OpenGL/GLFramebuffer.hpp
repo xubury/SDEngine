@@ -5,7 +5,7 @@
 #include <vector>
 #include <GL/glew.h>
 
-namespace sd {
+namespace SD {
 
 class GLTexture;
 
@@ -44,6 +44,6 @@ class GLFramebuffer : public Framebuffer {
     std::vector<std::pair<GLenum, Ref<GLTexture>>> m_attachments;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_GL_FRAME_BUFFER_HPP */

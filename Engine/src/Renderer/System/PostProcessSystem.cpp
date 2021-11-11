@@ -1,7 +1,7 @@
 #include "Renderer/System/PostProcessSystem.hpp"
 #include "Renderer/Renderer.hpp"
 
-namespace sd {
+namespace SD {
 
 PostProcessSystem::PostProcessSystem(int width, int height) {
     for (int i = 0; i < 2; ++i) {
@@ -99,4 +99,4 @@ void PostProcessSystem::renderPost() {
                      m_quad->getIndexBuffer()->getCount(), 0);
 }
 
-}  // namespace sd
+}  // namespace SD

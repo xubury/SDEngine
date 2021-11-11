@@ -3,7 +3,7 @@
 #include "Asset/Asset.hpp"
 #include "Asset/FontLoader.hpp"
 
-namespace sd {
+namespace SD {
 
 ProfileSystem::ProfileSystem(int width, int height)
     : m_camera(width, height, 0.f, 1000.f), m_fps(20) {
@@ -36,4 +36,4 @@ void ProfileSystem::onSizeEvent(const SizeEvent &event) {
     m_camera.resize(event.width, event.height);
 }
 
-}  // namespace sd
+}  // namespace SD

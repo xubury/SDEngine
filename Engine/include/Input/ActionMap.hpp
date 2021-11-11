@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include "Input/Action.hpp"
 
-namespace sd {
+namespace SD {
 
 template <typename T = int>
 class ActionMap {
@@ -33,6 +33,6 @@ const Action &ActionMap<T>::get(const T &key) const {
     return m_map.at(key);
 }
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_ACTION_MAP_HPP */

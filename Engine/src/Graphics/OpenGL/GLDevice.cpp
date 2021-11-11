@@ -4,7 +4,7 @@
 #include "Utility/Assert.hpp"
 #include <GL/glew.h>
 
-namespace sd {
+namespace SD {
 
 #ifdef DEBUG_BUILD
 static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
@@ -115,4 +115,4 @@ void GLDevice::blitFramebuffer(Framebuffer *src, uint32_t srcAttachment,
                            texture->getHeight(), glMask, glFilter);
 }
 
-}  // namespace sd
+}  // namespace SD

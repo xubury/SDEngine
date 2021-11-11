@@ -3,7 +3,7 @@
 #include "Graphics/OpenGL/GLBuffer.hpp"
 #include "Utility/Log.hpp"
 
-namespace sd {
+namespace SD {
 
 Ref<VertexBuffer> VertexBuffer::create(const void *data, size_t size,
                                        BufferIOType io) {
@@ -51,4 +51,4 @@ IndexBuffer::IndexBuffer(uint32_t count) : m_count(count) {}
 
 uint32_t IndexBuffer::getCount() const { return m_count; }
 
-}  // namespace sd
+}  // namespace SD

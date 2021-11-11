@@ -17,13 +17,13 @@ namespace cereal {
 template <class A>
 std::string CEREAL_SAVE_MINIMAL_FUNCTION_NAME(A const&,
                                               const std::wstring& in) {
-    return sd::wstringToString(in);
+    return SD::wstringToString(in);
 }
 
 template <class A>
 void CEREAL_LOAD_MINIMAL_FUNCTION_NAME(A const&, std::wstring& out,
                                        const std::string& in) {
-    out = sd::stringToWstring(in);
+    out = SD::stringToWstring(in);
 }
 }  // namespace cereal
 

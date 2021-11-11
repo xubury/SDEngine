@@ -6,7 +6,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include <set>
 
-namespace sd {
+namespace SD {
 
 bool SD_API decompose(const glm::mat4& transform, glm::vec3& translation,
                       glm::quat& rotation, glm::vec3& scale);
@@ -91,6 +91,6 @@ class SD_API Transform {
     Transform* m_parent;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_TRANSFORM_HPP */

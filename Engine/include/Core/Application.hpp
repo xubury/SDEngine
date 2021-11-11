@@ -7,7 +7,7 @@
 
 int main(int argc, char **argv);
 
-namespace sd {
+namespace SD {
 
 class SD_API Application {
    public:
@@ -54,6 +54,6 @@ class SD_API Application {
 
 Application &getApp();
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_ENGINE_HPP */

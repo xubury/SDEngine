@@ -6,7 +6,7 @@
 #include "Graphics/Graphics.hpp"
 #include <vector>
 
-namespace sd {
+namespace SD {
 
 class Texture;
 
@@ -48,6 +48,6 @@ class SD_API Framebuffer {
     Framebuffer() = default;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_FRAME_BUFFER_HPP */

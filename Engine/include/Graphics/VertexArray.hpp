@@ -5,7 +5,7 @@
 #include "Graphics/BufferLayout.hpp"
 #include "Graphics/Buffer.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API VertexArray {
    public:
@@ -33,6 +33,6 @@ class SD_API VertexArray {
     VertexArray() = default;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_VERTEX_ARRAY_HPP */

@@ -3,7 +3,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-namespace sd {
+namespace SD {
 
 FontLoader::FontLoader() {
     if (FT_Init_FreeType(&m_ft)) {
@@ -27,4 +27,4 @@ Ref<void> FontLoader::loadAsset(const std::string &filePath) {
     return font;
 }
 
-}  // namespace sd
+}  // namespace SD

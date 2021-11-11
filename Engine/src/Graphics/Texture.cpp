@@ -3,7 +3,7 @@
 #include "Graphics/OpenGL/GLTexture.hpp"
 #include "Utility/Log.hpp"
 
-namespace sd {
+namespace SD {
 
 Ref<Texture> Texture::create(int width, int height, int samples,
                              TextureType type, TextureFormat format,
@@ -59,4 +59,4 @@ TextureFormat Texture::getFormat() const { return m_format; }
 
 TextureFormatType Texture::getFormatType() const { return m_formatType; }
 
-}  // namespace sd
+}  // namespace SD

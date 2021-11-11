@@ -5,7 +5,7 @@
 #include "Utility/Base.hpp"
 #include "Graphics/Graphics.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API Buffer {
    public:
@@ -67,6 +67,6 @@ class SD_API UniformBuffer : virtual public Buffer {
     UniformBuffer() = default;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_BUFFER_HPP */

@@ -4,7 +4,7 @@
 #include "Renderer/System/System.hpp"
 #include "Renderer/System/Event.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API SpriteRenderSystem : public System {
    public:
@@ -19,6 +19,6 @@ class SD_API SpriteRenderSystem : public System {
    private:
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif

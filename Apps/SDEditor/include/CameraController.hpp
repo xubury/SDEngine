@@ -5,7 +5,7 @@
 #include "Input/ActionTarget.hpp"
 #include "Renderer/Camera.hpp"
 
-namespace sd {
+namespace SD {
 
 enum class CameraMovement { FORWARD, BACKWARD, LEFT, RIGHT };
 
@@ -36,6 +36,6 @@ class CameraController : public ActionTarget<CameraMovement> {
     float m_pitch;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_CAMERA_CONTROLLER_HPP */

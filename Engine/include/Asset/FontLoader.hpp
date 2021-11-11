@@ -6,7 +6,7 @@
 
 typedef struct FT_LibraryRec_ *FT_Library;
 
-namespace sd {
+namespace SD {
 
 class FontLoader : public AssetLoader<Font> {
    public:
@@ -22,6 +22,6 @@ class FontLoader : public AssetLoader<Font> {
     FT_Library m_ft;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_FONT_LOADER_HPP */

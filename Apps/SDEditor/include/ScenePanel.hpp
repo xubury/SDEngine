@@ -7,7 +7,7 @@
 #include "ImGui/FileDialog.hpp"
 #include "ECS/Component.hpp"
 
-namespace sd {
+namespace SD {
 
 class ScenePanel {
    public:
@@ -44,6 +44,6 @@ class ScenePanel {
     int m_gizmoType;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SCENE_PANEL_HPP */

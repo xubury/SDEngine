@@ -2,7 +2,7 @@
 #include "Graphics/OpenGL/GLTranslator.hpp"
 #include "Utility/Assert.hpp"
 
-namespace sd {
+namespace SD {
 
 GLVertexArray::GLVertexArray() : m_id(0) { glCreateVertexArrays(1, &m_id); }
 
@@ -58,4 +58,4 @@ void GLVertexArray::setIndexBuffer(const Ref<IndexBuffer> &buffer) {
 
 Ref<IndexBuffer> GLVertexArray::getIndexBuffer() { return m_indexBuffer; }
 
-}  // namespace sd
+}  // namespace SD

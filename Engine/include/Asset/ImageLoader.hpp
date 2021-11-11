@@ -4,7 +4,7 @@
 #include "Asset/Asset.hpp"
 #include "Asset/Image.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API ImageLoader : public AssetLoader<Image> {
    private:
@@ -18,6 +18,6 @@ class SD_API ImageLoader : public AssetLoader<Image> {
     ~ImageLoader();
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif

@@ -6,7 +6,7 @@
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/Framebuffer.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API Device {
    public:
@@ -54,6 +54,6 @@ class SD_API Device {
     Device() = default;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_DEVICE_HPP */

@@ -6,7 +6,7 @@
 #include "Renderer/Renderer.hpp"
 #include "Utility/String.hpp"
 
-namespace sd {
+namespace SD {
 
 ScenePanel::ScenePanel()
     : m_scene(nullptr),
@@ -401,4 +401,4 @@ void ScenePanel::drawMaterialsList(const std::vector<Material> &materials,
     }
 }
 
-}  // namespace sd
+}  // namespace SD

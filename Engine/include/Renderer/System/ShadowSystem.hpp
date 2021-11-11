@@ -4,7 +4,7 @@
 #include "Renderer/System/System.hpp"
 #include "Graphics/Shader.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API ShadowSystem : public System {
    public:
@@ -20,6 +20,6 @@ class SD_API ShadowSystem : public System {
     Ref<Shader> m_shadowShader;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif

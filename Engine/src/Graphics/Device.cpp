@@ -2,7 +2,7 @@
 #include "Graphics/OpenGL/GLDevice.hpp"
 #include "Utility/Log.hpp"
 
-namespace sd {
+namespace SD {
 
 Ref<Device> Device::create() {
     Ref<Device> device;
@@ -17,4 +17,4 @@ Ref<Device> Device::create() {
     return device;
 }
 
-}  // namespace sd
+}  // namespace SD

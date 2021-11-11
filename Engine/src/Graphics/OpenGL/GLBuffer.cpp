@@ -2,7 +2,7 @@
 #include "Graphics/OpenGL/GLTranslator.hpp"
 #include "Utility/Assert.hpp"
 
-namespace sd {
+namespace SD {
 
 GLBuffer::GLBuffer(GLenum type, GLenum io, const void *data, size_t size)
     : m_id(0), m_type(type), m_io(io), m_size(size) {
@@ -60,4 +60,4 @@ void GLUniformBuffer::bind() const {
     GLBuffer::bindBase(m_base);
 }
 
-}  // namespace sd
+}  // namespace SD

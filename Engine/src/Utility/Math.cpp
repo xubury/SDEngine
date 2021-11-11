@@ -1,6 +1,6 @@
 #include "Utility/Math.hpp"
 
-namespace sd {
+namespace SD {
 
 Rect::Rect(float x, float y, float width, float height)
     : x(x), y(y), width(width), height(height) {}
@@ -20,4 +20,4 @@ float Rect::getTop() const { return y + height * 0.5; }
 float Rect::getRight() const { return x + width * 0.5; }
 float Rect::getBottom() const { return y - height * 0.5; }
 
-}  // namespace sd
+}  // namespace SD

@@ -2,7 +2,7 @@
 #include <random>
 #include <unordered_map>
 
-namespace sd {
+namespace SD {
 
 static std::random_device s_randomDevice;
 static std::mt19937_64 s_randomEngine(s_randomDevice());
@@ -15,4 +15,4 @@ ResourceId::ResourceId()
 
 ResourceId::ResourceId(uint64_t resourceID) : m_resourceID(resourceID) {}
 
-}  // namespace sd
+}  // namespace SD

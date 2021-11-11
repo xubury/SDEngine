@@ -2,7 +2,7 @@
 #include "Utility/Log.hpp"
 #include <algorithm>
 
-namespace sd {
+namespace SD {
 
 LayerStack::LayerStack() : m_layerInsertId(0) {}
 
@@ -54,4 +54,4 @@ bool LayerStack::hasLayer(Layer *layer) const {
     return iter != m_layers.end();
 }
 
-}  // namespace sd
+}  // namespace SD

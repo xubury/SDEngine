@@ -3,7 +3,7 @@
 
 #include "Core/Layer.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API ImGuiLayer : public Layer {
    public:
@@ -23,6 +23,6 @@ class SD_API ImGuiLayer : public Layer {
     void setDarkThemeColor();
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_IMGUI_LAYER_HPP */

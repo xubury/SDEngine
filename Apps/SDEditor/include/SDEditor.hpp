@@ -4,7 +4,7 @@
 #include "Core/Application.hpp"
 #include "EditorLayer.hpp"
 
-namespace sd {
+namespace SD {
 
 class SDEditor : public Application {
    public:
@@ -15,6 +15,6 @@ class SDEditor : public Application {
     EditorLayer *m_layer;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_EDITOR_HPP */

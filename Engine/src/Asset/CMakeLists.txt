@@ -42,7 +42,7 @@ target_link_directories(sd-asset PRIVATE ${ASSIMP_LIBRARY_DIRS})
 
 target_link_libraries(sd-asset
     PUBLIC
-    sd-utils
+    sd-utility
     Freetype::Freetype
     PRIVATE
     ${ASSIMP_LIBRARIES} SDL2::Image)

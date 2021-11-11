@@ -5,7 +5,7 @@
 #include "Asset/Asset.hpp"
 #include <stack>
 
-namespace sd {
+namespace SD {
 
 Scene::Scene() {}
 
@@ -123,4 +123,4 @@ void Scene::refreshEntityChildTranforms(Entity &entity) {
     }
 }
 
-}  // namespace sd
+}  // namespace SD

@@ -5,7 +5,7 @@
 #include <cstdint>
 #include "Utility/PlatformDetection.hpp"
 
-namespace sd {
+namespace SD {
 
 template <typename T>
 using Scope = std::unique_ptr<T>;
@@ -21,6 +21,6 @@ constexpr Ref<T> createRef(Args&&... args) {
     return std::make_shared<T>(std::forward<Args>(args)...);
 }
 
-}  // namespace sd
+}  // namespace SD
 
 #endif

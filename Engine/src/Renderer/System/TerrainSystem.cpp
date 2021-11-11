@@ -3,7 +3,7 @@
 #include "ECS/Component.hpp"
 #include <glm/gtx/extended_min_max.hpp>
 
-namespace sd {
+namespace SD {
 
 TerrainSystem::TerrainSystem() : m_min(FLT_MAX), m_max(-FLT_MAX) {}
 
@@ -95,4 +95,4 @@ void TerrainSystem::updateTerrain(entt::entity id) {
     }
 }
 
-}  // namespace sd
+}  // namespace SD

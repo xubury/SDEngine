@@ -7,7 +7,7 @@
 #include "Renderer/Camera.hpp"
 #include <glm/glm.hpp>
 
-namespace sd {
+namespace SD {
 
 class SD_API Light {
    public:
@@ -83,6 +83,6 @@ class SD_API Light {
     float m_quadratic = 0.032f;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_LIGHT_HPP */

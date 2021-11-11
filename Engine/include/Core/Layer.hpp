@@ -9,7 +9,7 @@
 #include "Utility/Base.hpp"
 #include "Utility/EventDispatcher.hpp"
 
-namespace sd {
+namespace SD {
 
 class System;
 
@@ -47,6 +47,6 @@ class SD_API Layer {
     bool m_blockEvent;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_LAYER_HPP */

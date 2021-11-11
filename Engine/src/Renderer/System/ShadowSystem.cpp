@@ -3,7 +3,7 @@
 #include "ECS/Component.hpp"
 #include "ECS/Scene.hpp"
 
-namespace sd {
+namespace SD {
 
 ShadowSystem::ShadowSystem() {
     m_shadowShader = ShaderLibrary::instance().load("shaders/shadow.glsl");
@@ -46,4 +46,4 @@ void ShadowSystem::onRender() {
     Renderer::device().setCullFace(Face::BACK);
 }
 
-}  // namespace sd
+}  // namespace SD

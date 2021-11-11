@@ -5,7 +5,7 @@
 #include <vector>
 #include "Graphics/VertexArray.hpp"
 
-namespace sd {
+namespace SD {
 
 struct SD_API Vertex {
     glm::vec3 position;
@@ -53,6 +53,6 @@ class SD_API Mesh {
     PolygonMode m_polygonMode;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_MESH_HPP */

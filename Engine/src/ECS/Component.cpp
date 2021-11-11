@@ -1,7 +1,7 @@
 #include "ECS/Component.hpp"
 
-namespace sd {
+namespace SD {
 
 TerrainComponent::TerrainComponent() : terrain(1, 10) {}
 
-}  // namespace sd
+}  // namespace SD

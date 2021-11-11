@@ -5,7 +5,7 @@
 #include "Utility/Export.hpp"
 #include <SDL.h>
 
-namespace sd {
+namespace SD {
 
 class SD_API Input {
    public:
@@ -34,6 +34,6 @@ class SD_API Input {
     static void setMouseCoord(float x, float y);
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_INPUT_ENGINE_HPP */

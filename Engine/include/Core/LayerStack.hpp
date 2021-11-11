@@ -5,7 +5,7 @@
 #include "Core/Layer.hpp"
 #include <vector>
 
-namespace sd {
+namespace SD {
 
 class SD_API LayerStack {
    public:
@@ -52,6 +52,6 @@ class SD_API LayerStack {
     size_t m_layerInsertId;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_LAYER_STACK_HPP */

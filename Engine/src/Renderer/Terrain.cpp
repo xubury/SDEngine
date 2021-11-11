@@ -1,7 +1,7 @@
 #include "Renderer/Terrain.hpp"
 #include "Utility/Math.hpp"
 
-namespace sd {
+namespace SD {
 
 Terrain::Terrain(int gridSize, int vertexCount)
     : m_gridSize(gridSize), m_vertexCount(vertexCount) {
@@ -118,4 +118,4 @@ void Terrain::computeNormal() {
     }
 }
 
-}  // namespace sd
+}  // namespace SD

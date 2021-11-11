@@ -2,7 +2,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
-namespace sd {
+namespace SD {
 
 Ref<spdlog::logger> Log::s_coreLogger;
 Ref<spdlog::logger> Log::s_clientLogger;
@@ -34,4 +34,4 @@ Ref<spdlog::logger> &Log::getCoreLogger() { return s_coreLogger; }
 
 Ref<spdlog::logger> &Log::getClientLogger() { return s_clientLogger; }
 
-}  // namespace sd
+}  // namespace SD

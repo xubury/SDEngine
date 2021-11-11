@@ -3,13 +3,13 @@
 
 #include "Core/Application.hpp"
 
-namespace sd {
+namespace SD {
 
 #define IMPLEMENT_APP(x) \
-    ::sd::Application * ::sd::createApp() { return new x; }
+    ::SD::Application * ::SD::createApp() { return new x; }
 
 extern SD_API Application *createApp();
 
-};  // namespace sd
+};  // namespace SD
 
 #endif /* SD_ENTRY_POINT_HPP */

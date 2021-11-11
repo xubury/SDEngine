@@ -3,7 +3,7 @@
 
 #include <glm/glm.hpp>
 
-namespace sd {
+namespace SD {
 
 struct Ray {
     glm::vec3 origin;
@@ -44,6 +44,6 @@ inline void baryCentric(const glm::vec<L, T, Q> &a, const glm::vec<L, T, Q> &b,
     u = 1.0f - v - w;
 }
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_MATH_HPP */

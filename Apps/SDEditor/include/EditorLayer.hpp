@@ -6,7 +6,7 @@
 #include "ScenePanel.hpp"
 #include "CameraController.hpp"
 
-namespace sd {
+namespace SD {
 
 class EditorLayer : public Layer {
    public:
@@ -62,6 +62,6 @@ class EditorLayer : public Layer {
     Ref<Texture> m_lightIcon;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* EDITOR_LAYER_HPP */

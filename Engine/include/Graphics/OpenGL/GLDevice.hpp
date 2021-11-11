@@ -3,7 +3,7 @@
 
 #include "Graphics/Device.hpp"
 
-namespace sd {
+namespace SD {
 
 class GLDevice : public Device {
    public:
@@ -39,6 +39,6 @@ class GLDevice : public Device {
                          BufferBitMask mask, TextureFilter filter) override;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_GL_DEVICE_HPP */

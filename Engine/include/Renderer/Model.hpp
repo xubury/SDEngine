@@ -4,7 +4,7 @@
 #include "Renderer/Mesh.hpp"
 #include "Renderer/Material.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API Model {
    public:
@@ -29,6 +29,6 @@ class SD_API Model {
     std::vector<Material> m_materials;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_MODEL_HPP */

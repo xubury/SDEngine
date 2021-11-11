@@ -4,7 +4,7 @@
 #include <string>
 #include "Utility/Export.hpp"
 
-namespace sd {
+namespace SD {
 
 namespace File {
 
@@ -14,6 +14,6 @@ void SD_API write(const std::string &filePath, const std::string &content);
 
 }  // namespace File
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_FILE_HPP */

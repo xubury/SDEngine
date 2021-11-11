@@ -7,7 +7,7 @@
 #include "Renderer/Camera.hpp"
 #include "Utility/Timing.hpp"
 
-namespace sd {
+namespace SD {
 
 class ProfileSystem : public System {
    public:
@@ -25,6 +25,6 @@ class ProfileSystem : public System {
     Ref<Font> m_font;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_PROFILE_SYSTEM_HPP */

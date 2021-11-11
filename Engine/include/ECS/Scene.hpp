@@ -6,7 +6,7 @@
 #include "entt/entt.hpp"
 #include "ECS/Component.hpp"
 
-namespace sd {
+namespace SD {
 
 class Entity;
 
@@ -39,6 +39,6 @@ class SD_API Scene : public entt::registry {
 template <typename T>
 void Scene::onComponentAdded(Entity &, T &) {}
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_SCENE_HPP */

@@ -6,7 +6,7 @@
 #include "Graphics/BufferLayout.hpp"
 #include "Graphics/OpenGL/GLBuffer.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API GLVertexArray : public VertexArray {
    public:
@@ -34,6 +34,6 @@ class SD_API GLVertexArray : public VertexArray {
     std::vector<VertexBufferLayout> m_layouts;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_VERTEX_ARRAY_HPP */

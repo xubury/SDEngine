@@ -1,7 +1,7 @@
 #include "Input/Action.hpp"
 #include "Input/Input.hpp"
 
-namespace sd {
+namespace SD {
 
 Action::Action(const SDL_EventType &event) : m_type(Type::PRESSED) {
     m_event.type = event;
@@ -65,4 +65,4 @@ bool Action::test() const {
     return res;
 }
 
-}  // namespace sd
+}  // namespace SD

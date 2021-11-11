@@ -7,7 +7,7 @@
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API SkyboxSystem : public System {
    public:
@@ -24,6 +24,6 @@ class SD_API SkyboxSystem : public System {
     Ref<VertexArray> m_skybox;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif

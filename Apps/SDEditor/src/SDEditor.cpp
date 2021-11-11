@@ -6,7 +6,7 @@
 
 IMPLEMENT_APP(SDEditor);
 
-namespace sd {
+namespace SD {
 
 void SDEditor::init() {
     m_layer = dynamic_cast<EditorLayer *>(pushLayer(new EditorLayer(800, 600)));
@@ -14,4 +14,4 @@ void SDEditor::init() {
 
 void SDEditor::destroy() { delete m_layer; }
 
-}  // namespace sd
+}  // namespace SD

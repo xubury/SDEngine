@@ -3,7 +3,7 @@
 #include "Graphics/Graphics.hpp"
 #include "Utility/Log.hpp"
 
-namespace sd {
+namespace SD {
 
 Ref<Window> Window::create(const WindowProp &property) {
     SD_CORE_TRACE("Initializing Window...");
@@ -43,4 +43,4 @@ SDL_Window *Window::getHandle() { return m_window; }
 
 void Window::swapBuffer() { SDL_GL_SwapWindow(m_window); }
 
-}  // namespace sd
+}  // namespace SD

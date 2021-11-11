@@ -5,7 +5,7 @@
 
 struct SDL_Surface;
 
-namespace sd {
+namespace SD {
 
 class Image {
    public:
@@ -29,6 +29,6 @@ class Image {
     SDL_Surface *m_surface;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif  // SD_IMAGE_HPP

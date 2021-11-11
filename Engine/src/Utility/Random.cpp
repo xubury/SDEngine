@@ -1,6 +1,6 @@
 #include "Utility/Random.hpp"
 
-namespace sd {
+namespace SD {
 
 std::mt19937 Random::s_randomEngine;
 std::uniform_int_distribution<std::mt19937::result_type> Random::s_distribution;
@@ -27,4 +27,4 @@ double Random::rnd(double min, double max) {
 
 int Random::rnd(int min, int max) { return uniform() * (max - min) + min; }
 
-}  // namespace sd
+}  // namespace SD

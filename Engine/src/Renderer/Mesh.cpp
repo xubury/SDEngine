@@ -1,6 +1,6 @@
 #include "Renderer/Mesh.hpp"
 
-namespace sd {
+namespace SD {
 
 Mesh::Mesh()
     : m_vertices(0),
@@ -85,4 +85,4 @@ const std::vector<Vertex> &Mesh::getVertices() const { return m_vertices; }
 
 std::vector<Vertex> &Mesh::getVertices() { return m_vertices; }
 
-}  // namespace sd
+}  // namespace SD

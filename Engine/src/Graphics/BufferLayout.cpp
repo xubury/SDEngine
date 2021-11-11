@@ -1,6 +1,6 @@
 #include "Graphics/BufferLayout.hpp"
 
-namespace sd {
+namespace SD {
 
 uint32_t getSizeOfType(BufferDataType type) {
     switch (type) {
@@ -44,4 +44,4 @@ uint32_t VertexBufferLayout::getInstanceStride() const {
     return m_instanceStride;
 }
 
-}  // namespace sd
+}  // namespace SD

@@ -12,7 +12,7 @@
 #include "Renderer/Light.hpp"
 #include "Renderer/Font.hpp"
 
-namespace sd {
+namespace SD {
 
 struct SD_API IDComponent {
     ResourceId id;
@@ -94,6 +94,6 @@ struct SD_API TextComponent {
     }
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_COMPONENT_HPP */

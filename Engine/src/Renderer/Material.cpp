@@ -2,7 +2,7 @@
 #include "Utility/Log.hpp"
 #include <map>
 
-namespace sd {
+namespace SD {
 
 const std::unordered_map<MaterialType, std::string> stringByMaterialType = {
     {MaterialType::AMBIENT, "Ambient"},
@@ -41,4 +41,4 @@ Texture *Material::getTexture(MaterialType type) const {
     return hasTexture(type) ? m_textures.at(type).get() : nullptr;
 }
 
-}  // namespace sd
+}  // namespace SD

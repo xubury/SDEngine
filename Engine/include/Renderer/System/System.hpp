@@ -7,7 +7,7 @@
 #include "Utility/Base.hpp"
 #include "Renderer/System/Event.hpp"
 
-namespace sd {
+namespace SD {
 
 class System;
 
@@ -61,6 +61,6 @@ Ref<SYSTEM> SystemManager::addSystem(ARGS &&...args) {
     return system;
 }
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_SYSTEM_HPP */

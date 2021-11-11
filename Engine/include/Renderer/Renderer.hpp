@@ -13,7 +13,7 @@
 #include "Renderer/System/LightingSystem.hpp"
 #include "Renderer/System/TerrainSystem.hpp"
 
-namespace sd {
+namespace SD {
 
 namespace Renderer {
 
@@ -125,6 +125,6 @@ void drawText(Font &font, const std::wstring &text, int pixleSize,
 
 };  // namespace Renderer2D
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_RENDERER_HPP */

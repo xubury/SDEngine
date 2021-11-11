@@ -36,38 +36,38 @@ set(Utility_Src
     ${Src_Root}/Transform.cpp)
 
 
-add_library(sd-utils ${Utility_Src})
+add_library(sd-utility ${Utility_Src})
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        target_link_options(sd-utils PUBLIC -mconsole)
+        target_link_options(sd-utility PUBLIC -mconsole)
     else()
-        target_link_options(sd-utils PUBLIC -mwindows)
+        target_link_options(sd-utility PUBLIC -mwindows)
     endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    target_link_libraries(sd-utils PUBLIC ${CMAKE_DL_LIBS} pthread)
+    target_link_libraries(sd-utility PUBLIC ${CMAKE_DL_LIBS} pthread)
 endif()
 
-set_property(TARGET sd-utils PROPERTY CXX_STANDARD 17)
+set_property(TARGET sd-utility PROPERTY CXX_STANDARD 17)
 
-target_compile_options(sd-utils PUBLIC -Wall -Wextra -Wundef -pedantic)
+target_compile_options(sd-utility PUBLIC -Wall -Wextra -Wundef -pedantic)
 
-target_compile_definitions(sd-utils PUBLIC SD_EXPORT)
+target_compile_definitions(sd-utility PUBLIC SD_EXPORT)
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(sd-utils PUBLIC SD_SHARED)
+    target_compile_definitions(sd-utility PUBLIC SD_SHARED)
 endif()
 
-target_include_directories(sd-utils
+target_include_directories(sd-utility
     PUBLIC
     ${SD_ENGINE_SOURCE_DIR}/include
     PRIVATE
     ${ASSIMP_INCLUDE_DIRS})
 
-target_link_libraries(sd-utils
+target_link_libraries(sd-utility
     PUBLIC
     spdlog::spdlog glm)
 
-install(TARGETS sd-utils LIBRARY DESTINATION lib)
+install(TARGETS sd-utility LIBRARY DESTINATION lib)
 
 install(FILES ${Utility_Include} DESTINATION include/Utility)

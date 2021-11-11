@@ -1,7 +1,7 @@
 #ifndef SD_EVENT_HPP
 #define SD_EVENT_HPP
 
-namespace sd {
+namespace SD {
 
 struct SizeEvent {
     SizeEvent(int width, int height) : width(width), height(height) {}
@@ -9,6 +9,6 @@ struct SizeEvent {
     int height;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_EVENT_HPP */

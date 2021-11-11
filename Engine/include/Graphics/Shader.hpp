@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <filesystem>
 
-namespace sd {
+namespace SD {
 
 class Texture;
 class UniformBuffer;
@@ -88,6 +88,6 @@ class ShaderLibrary {
     std::filesystem::path m_rootPath;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_SHADER_HPP */

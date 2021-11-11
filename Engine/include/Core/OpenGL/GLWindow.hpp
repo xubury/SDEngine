@@ -4,7 +4,7 @@
 #include "Utility/Export.hpp"
 #include "Core/Window.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API GLWindow : public Window {
    public:
@@ -18,6 +18,6 @@ class SD_API GLWindow : public Window {
     SDL_GLContext m_context;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_GL_WINDOW_HPP */

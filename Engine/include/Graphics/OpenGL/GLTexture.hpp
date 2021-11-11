@@ -4,7 +4,7 @@
 #include "Graphics/Texture.hpp"
 #include <GL/glew.h>
 
-namespace sd {
+namespace SD {
 
 class GLTexture : public Texture {
    public:
@@ -43,6 +43,6 @@ class GLTexture : public Texture {
     GLenum gl_formatType;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_GL_TEXTURE_HPP */

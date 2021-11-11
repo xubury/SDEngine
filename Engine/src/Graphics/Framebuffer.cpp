@@ -2,7 +2,7 @@
 #include "Graphics/OpenGL/GLFramebuffer.hpp"
 #include "Utility/Log.hpp"
 
-namespace sd {
+namespace SD {
 
 Ref<Framebuffer> Framebuffer::create() {
     Ref<Framebuffer> frameBuffer;
@@ -17,4 +17,4 @@ Ref<Framebuffer> Framebuffer::create() {
     return frameBuffer;
 }
 
-}  // namespace sd
+}  // namespace SD

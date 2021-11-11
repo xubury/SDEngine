@@ -1,6 +1,6 @@
 #include "ECS/Entity.hpp"
 
-namespace sd {
+namespace SD {
 
 const entt::entity Entity::INVALID_ID = entt::entity(-1);
 
@@ -23,4 +23,4 @@ bool Entity::operator<(const Entity &other) const {
     return m_entityHandle < other.m_entityHandle;
 }
 
-}  // namespace sd
+}  // namespace SD

@@ -8,7 +8,7 @@
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"
 
-namespace sd {
+namespace SD {
 
 enum GeometryBufferType {
     G_POSITION = 0,
@@ -64,6 +64,6 @@ class SD_API LightingSystem : public System {
     Ref<VertexArray> m_quad;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_LIGHTING_SYSTEM_HPP */

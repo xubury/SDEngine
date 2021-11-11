@@ -5,7 +5,7 @@
 #include <codecvt>
 #include <locale>
 
-namespace sd {
+namespace SD {
 
 inline std::wstring stringToWstring(const std::string &t_str) {
     // setup converter
@@ -25,6 +25,6 @@ inline std::string wstringToString(const std::wstring &wstr) {
     return converter.to_bytes(wstr);
 }
 
-}  // namespace sd
+}  // namespace SD
 
 #endif

@@ -3,7 +3,7 @@
 #include "Asset/ModelLoader.hpp"
 #include "Asset/FontLoader.hpp"
 
-namespace sd {
+namespace SD {
 
 Asset::Asset(size_t loaderType) : m_loaderType(loaderType) {}
 
@@ -47,4 +47,4 @@ void AssetManager::reload() {
     }
 }
 
-}  // namespace sd
+}  // namespace SD

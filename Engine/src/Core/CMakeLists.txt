@@ -39,7 +39,7 @@ endif()
 target_link_libraries(sd-core 
     PUBLIC 
     sd-renderer 
-    sd-utils 
+    sd-utility 
     sd-asset 
     sd-imgui 
     sd-input 

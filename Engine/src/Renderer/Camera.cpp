@@ -3,7 +3,7 @@
 #include "Utility/Log.hpp"
 #include "Utility/Assert.hpp"
 
-namespace sd {
+namespace SD {
 
 Camera::Camera(float zNear, float zFar)
     : m_zNear(zNear),
@@ -304,4 +304,4 @@ void PerspectiveCamera::resize(float width, float height) {
     setProjection(glm::perspective(m_fov, m_aspect, m_zNear, m_zFar));
 }
 
-}  // namespace sd
+}  // namespace SD

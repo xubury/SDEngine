@@ -2,7 +2,7 @@
 #include "Graphics/OpenGL/GLTranslator.hpp"
 #include "Utility/Assert.hpp"
 
-namespace sd {
+namespace SD {
 
 GLTexture::GLTexture(int width, int height, int samples, TextureType type,
                      TextureFormat format, TextureFormatType formatType,
@@ -129,4 +129,4 @@ GLenum GLTexture::getGLFormat() const { return gl_format; }
 
 GLenum GLTexture::getGLFormatType() const { return gl_formatType; }
 
-}  // namespace sd
+}  // namespace SD

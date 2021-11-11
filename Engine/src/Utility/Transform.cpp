@@ -5,7 +5,7 @@
 #include <glm/gtc/quaternion.hpp>
 #include <algorithm>
 
-namespace sd {
+namespace SD {
 
 bool decompose(const glm::mat4 &transform, glm::vec3 &translation,
                glm::quat &rotation, glm::vec3 &scale) {
@@ -370,4 +370,4 @@ void Transform::updateLocalScale() {
     }
 }
 
-}  // namespace sd
+}  // namespace SD

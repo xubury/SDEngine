@@ -5,7 +5,7 @@
 #include "Utility/Export.hpp"
 #include "Graphics/Graphics.hpp"
 
-namespace sd {
+namespace SD {
 
 GLenum SD_API translate(BufferDataType dataType);
 
@@ -39,6 +39,6 @@ GLenum SD_API translate(BufferBitMask bit);
 
 GLenum SD_API translate(DepthFunc depthFunc);
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_GL_TRANSLATOR_HPP */

@@ -1,7 +1,7 @@
 #include "Graphics/OpenGL/GLTranslator.hpp"
 #include "Utility/Assert.hpp"
 
-namespace sd {
+namespace SD {
 
 GLenum translate(BufferDataType dataType) {
     switch (dataType) {
@@ -280,4 +280,4 @@ GLenum translate(DepthFunc depthFunc) {
     return GL_INVALID_ENUM;
 }
 
-}  // namespace sd
+}  // namespace SD

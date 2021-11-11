@@ -5,7 +5,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-namespace sd {
+namespace SD {
 
 static Vertex constructVertex(const aiVector3D &pos, const aiVector3D &texCoord,
                               const aiVector3D &normal,
@@ -176,4 +176,4 @@ Ref<void> ModelLoader::loadAsset(const std::string &filePath) {
     return model;
 }
 
-}  // namespace sd
+}  // namespace SD

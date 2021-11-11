@@ -2,7 +2,7 @@
 #include "Utility/Log.hpp"
 #include "Utility/Assert.hpp"
 
-namespace sd {
+namespace SD {
 
 const int SHADOW_MAP_WIDTH = 8192;
 const int SHADOW_MAP_HEIGHT = 8192;
@@ -142,4 +142,4 @@ void Light::computeBoundingBox(const Transform &transform, const Camera &camera,
     }
 }
 
-}  // namespace sd
+}  // namespace SD

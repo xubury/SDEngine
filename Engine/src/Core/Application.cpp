@@ -5,7 +5,7 @@
 #include "Renderer/Renderer.hpp"
 #include "Input/Input.hpp"
 
-namespace sd {
+namespace SD {
 
 static Application *s_instance = nullptr;
 
@@ -132,4 +132,4 @@ void Application::render() {
     m_window->swapBuffer();
 }
 
-}  // namespace sd
+}  // namespace SD

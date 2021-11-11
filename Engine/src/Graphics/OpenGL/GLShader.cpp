@@ -6,7 +6,7 @@
 #include "Utility/File.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
-namespace sd {
+namespace SD {
 
 static ShaderType shaderTypeFromName(const std::string& name) {
     if (name == "vertex") {
@@ -226,4 +226,4 @@ void GLShader::setUniformBuffer(const std::string& name,
         glUniformBlockBinding(m_id, index, buffer.getBindingPoint());
 }
 
-}  // namespace sd
+}  // namespace SD

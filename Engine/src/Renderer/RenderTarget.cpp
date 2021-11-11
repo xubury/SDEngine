@@ -2,7 +2,7 @@
 #include "Renderer/Renderer.hpp"
 #include "Utility/Log.hpp"
 
-namespace sd {
+namespace SD {
 
 RenderTarget::RenderTarget() : m_x(0), m_y(0), m_width(0), m_height(0) {}
 
@@ -88,4 +88,4 @@ Texture *RenderTarget::getTexture(uint32_t attachmentId) const {
     return m_framebuffer->getTexture(attachmentId);
 }
 
-}  // namespace sd
+}  // namespace SD

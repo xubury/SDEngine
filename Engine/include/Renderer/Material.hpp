@@ -7,7 +7,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace sd {
+namespace SD {
 
 enum class MaterialType {
     DIFFUSE,
@@ -45,6 +45,6 @@ class SD_API Material {
     std::unordered_map<MaterialType, Ref<Texture>> m_textures;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_MATERIAL_HPP */

@@ -4,7 +4,7 @@
 #include "Utility/Log.hpp"
 #include "Utility/Assert.hpp"
 
-namespace sd {
+namespace SD {
 
 Ref<Shader> Shader::create(const std::string& filePath) {
     Ref<Shader> shader;
@@ -45,4 +45,4 @@ Ref<Shader> ShaderLibrary::get(const std::string& name) {
 bool ShaderLibrary::exists(const std::string& name) const {
     return m_Shaders.find(name) != m_Shaders.end();
 }
-}  // namespace sd
+}  // namespace SD

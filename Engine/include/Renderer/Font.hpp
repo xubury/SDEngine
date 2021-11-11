@@ -8,7 +8,7 @@
 
 typedef struct FT_FaceRec_ *FT_Face;
 
-namespace sd {
+namespace SD {
 
 struct SD_API Character {
     Character() = default;
@@ -58,6 +58,6 @@ class SD_API Font {
     int m_size;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_FONT_HPP */

@@ -4,7 +4,7 @@
 #include <type_traits>
 #include <array>
 
-namespace sd {
+namespace SD {
 
 template <typename E>
 struct enable_bitmask_operators {
@@ -114,6 +114,6 @@ void setGraphicsAPI(GraphicsAPI api);
 
 GraphicsAPI getGraphicsAPI();
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_GRAPHICS_MANAGER_HPP */

@@ -6,7 +6,7 @@
 #include "Graphics/Buffer.hpp"
 #include <GL/glew.h>
 
-namespace sd {
+namespace SD {
 
 class SD_API GLBuffer : virtual public Buffer {
    public:
@@ -65,6 +65,6 @@ class SD_API GLUniformBuffer : public UniformBuffer, public GLBuffer {
     static uint32_t s_count;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_GL_BUFFER_HPP */

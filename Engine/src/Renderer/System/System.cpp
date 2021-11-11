@@ -1,7 +1,7 @@
 #include "Renderer/System/System.hpp"
 #include "Utility/Log.hpp"
 
-namespace sd {
+namespace SD {
 
 void SystemManager::removeSystem(const Ref<System> &system) {
     auto iter = std::find(m_systems.begin(), m_systems.end(), system);
@@ -13,4 +13,4 @@ void SystemManager::removeSystem(const Ref<System> &system) {
     }
 }
 
-}  // namespace sd
+}  // namespace SD

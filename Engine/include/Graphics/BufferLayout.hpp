@@ -7,7 +7,7 @@
 #include "Utility/Assert.hpp"
 #include "Graphics/Graphics.hpp"
 
-namespace sd {
+namespace SD {
 
 struct SD_API VertexBufferLayoutElement {
     BufferDataType type;
@@ -44,6 +44,6 @@ inline VertexBufferLayout makeLayout(BufferDataType type, uint32_t count,
     return layout;
 }
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_BUFFER_LAYEROUT_HPP */

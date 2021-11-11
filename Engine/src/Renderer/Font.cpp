@@ -4,7 +4,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-namespace sd {
+namespace SD {
 
 Font::Font(FT_Face face) : m_face(face) {}
 
@@ -38,4 +38,4 @@ void Font::loadFont(const CharacterId &id) {
     m_characters[id] = c;
 }
 
-}  // namespace sd
+}  // namespace SD

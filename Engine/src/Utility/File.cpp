@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 
-namespace sd {
+namespace SD {
 
 namespace File {
 
@@ -24,4 +24,4 @@ void read(const std::string &filePath, std::string &content) {
 
 }  // namespace File
 
-}  // namespace sd
+}  // namespace SD

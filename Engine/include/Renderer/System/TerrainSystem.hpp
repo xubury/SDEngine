@@ -7,7 +7,7 @@
 #include "ECS/Entity.hpp"
 #include "Utility/QuadTree.hpp"
 
-namespace sd {
+namespace SD {
 
 class TerrainSystem : public System {
    public:
@@ -35,6 +35,6 @@ class TerrainSystem : public System {
     glm::vec3 m_max;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_TERRAIN_SYSTEM_HPP */

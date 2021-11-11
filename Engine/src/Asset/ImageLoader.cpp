@@ -2,7 +2,7 @@
 #include "Utility/Log.hpp"
 #include <SDL_image.h>
 
-namespace sd {
+namespace SD {
 
 ImageLoader::ImageLoader() : AssetLoader<Image>() {
     int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
@@ -24,4 +24,4 @@ Ref<void> ImageLoader::loadAsset(const std::string &filePath) {
     return image;
 }
 
-}  // namespace sd
+}  // namespace SD

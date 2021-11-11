@@ -7,7 +7,7 @@
 #include "Renderer/RenderTarget.hpp"
 #include "Graphics/Shader.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API PostProcessSystem : public System {
    public:
@@ -37,5 +37,5 @@ class SD_API PostProcessSystem : public System {
     Ref<VertexArray> m_quad;
 };
 
-}  // namespace sd
+}  // namespace SD
 #endif

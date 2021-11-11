@@ -1,6 +1,6 @@
 #include "Renderer/Model.hpp"
 
-namespace sd {
+namespace SD {
 
 void Model::addMesh(const Mesh &mesh) { m_meshes.emplace_back(mesh); }
 
@@ -16,4 +16,4 @@ void Model::addMaterial(Material &&material) {
 
 void Model::clear() { m_meshes.clear(); }
 
-}  // namespace sd
+}  // namespace SD

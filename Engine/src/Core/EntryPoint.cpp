@@ -3,7 +3,7 @@
 #include "Core/EntryPoint.hpp"
 
 int main(int, char **) {
-    auto app = sd::createApp();
+    auto app = SD::createApp();
     app->init();
     app->run();
     app->destroy();

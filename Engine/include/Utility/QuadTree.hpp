@@ -7,7 +7,7 @@
 #include <array>
 #include "Utility/Math.hpp"
 
-namespace sd {
+namespace SD {
 
 class QuadTree;
 
@@ -55,6 +55,6 @@ class QuadTree {
     std::vector<Collidable *> m_foundObjects;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_QUAD_TREE_HPP */

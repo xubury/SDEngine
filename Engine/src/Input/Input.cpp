@@ -1,7 +1,7 @@
 #include "Input/Input.hpp"
 #include <unordered_map>
 
-namespace sd {
+namespace SD {
 
 static std::unordered_map<SDL_Keycode, bool> s_keyMap;
 static std::unordered_map<SDL_Keycode, bool> s_lastKeyMap;
@@ -103,4 +103,4 @@ void Input::setMouseCoord(float x, float y) {
     m_mouseCoord.y = y;
 }
 
-}  // namespace sd
+}  // namespace SD

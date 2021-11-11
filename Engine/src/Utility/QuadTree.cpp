@@ -1,7 +1,7 @@
 #include "Utility/QuadTree.hpp"
 #include <algorithm>
 
-namespace sd {
+namespace SD {
 
 Collidable::Collidable() : qt(nullptr) {}
 
@@ -159,4 +159,4 @@ const std::array<QuadTree *, 4> &QuadTree::getChildren() const {
     return m_children;
 }
 
-}  // namespace sd
+}  // namespace SD

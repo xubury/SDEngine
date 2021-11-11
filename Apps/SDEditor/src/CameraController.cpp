@@ -2,7 +2,7 @@
 #include "Input/Input.hpp"
 #include "Utility/Log.hpp"
 
-namespace sd {
+namespace SD {
 
 const float ROTATION_SPEED = 0.1;
 const float SMOOTHNESS = 10;
@@ -94,4 +94,4 @@ void CameraController::setCamera(Camera *camera) {
 
 void CameraController::setFocus(const glm::vec3 &focus) { m_focus = focus; }
 
-}  // namespace sd
+}  // namespace SD

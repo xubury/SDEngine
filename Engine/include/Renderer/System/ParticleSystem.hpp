@@ -8,7 +8,7 @@
 #include "Renderer/RenderTarget.hpp"
 #include "Renderer/Camera.hpp"
 
-namespace sd {
+namespace SD {
 
 struct SD_API ParticleProp {
     glm::vec3 position;
@@ -69,6 +69,6 @@ class SD_API ParticleSystem : public System {
     std::vector<Particle> m_particles;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_PARTICLE_SYSTEM_HPP */

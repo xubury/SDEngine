@@ -4,7 +4,7 @@
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
 
-namespace sd {
+namespace SD {
 
 TextureFormat getTextureFormat(GeometryBufferType type) {
     switch (type) {
@@ -261,4 +261,4 @@ void LightingSystem::renderGBuffer() {
     Renderer::device().enable(Operation::BLEND);
 }
 
-}  // namespace sd
+}  // namespace SD

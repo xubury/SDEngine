@@ -1,7 +1,7 @@
 #include "Renderer/System/SkyboxSystem.hpp"
 #include "Renderer/Renderer.hpp"
 
-namespace sd {
+namespace SD {
 
 SkyboxSystem::SkyboxSystem() {
     const float skyboxVertices[] = {
@@ -53,4 +53,4 @@ void SkyboxSystem::onRender() {
     Renderer::device().setDepthfunc(DepthFunc::LESS);
 }
 
-}  // namespace sd
+}  // namespace SD

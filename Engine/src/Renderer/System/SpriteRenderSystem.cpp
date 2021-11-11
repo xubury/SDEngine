@@ -1,7 +1,7 @@
 #include "Renderer/System/SpriteRenderSystem.hpp"
 #include "Renderer/Renderer.hpp"
 
-namespace sd {
+namespace SD {
 
 SpriteRenderSystem::SpriteRenderSystem() {}
 
@@ -28,4 +28,4 @@ void SpriteRenderSystem::onRender() {
     Renderer2D::endScene();
 }
 
-}  // namespace sd
+}  // namespace SD

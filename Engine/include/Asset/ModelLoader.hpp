@@ -4,7 +4,7 @@
 #include "Asset/Asset.hpp"
 #include "Renderer/Model.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API ModelLoader : public AssetLoader<Model> {
    private:
@@ -16,6 +16,6 @@ class SD_API ModelLoader : public AssetLoader<Model> {
     Ref<void> loadAsset(const std::string &filePath) override;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_MODEL_LOADER_HPP */

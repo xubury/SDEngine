@@ -6,7 +6,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/compatibility.hpp>
 
-namespace sd {
+namespace SD {
 
 ParticleSystem::ParticleSystem(int poolSize) : m_poolIndex(poolSize - 1) {
     m_particles.resize(poolSize);
@@ -78,4 +78,4 @@ void ParticleSystem::emit(const ParticleProp &particleProps) {
     m_poolIndex = (m_poolIndex - 1) % m_particles.size();
 }
 
-}  // namespace sd
+}  // namespace SD

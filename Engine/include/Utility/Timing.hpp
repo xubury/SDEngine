@@ -6,7 +6,7 @@
 #include <chrono>
 #include "Utility/Export.hpp"
 
-namespace sd {
+namespace SD {
 
 using ClockType = std::chrono::high_resolution_clock;
 
@@ -40,6 +40,6 @@ class SD_API FpsCounter {
     uint8_t m_capacity;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_TIMING_HPP */

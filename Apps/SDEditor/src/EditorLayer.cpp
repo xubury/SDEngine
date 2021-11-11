@@ -10,7 +10,7 @@
 #include "ImGuizmo.h"
 #include "ImGui/ImGuiWidget.hpp"
 
-namespace sd {
+namespace SD {
 
 EditorLayer::EditorLayer(int width, int height)
     : Layer("Editor Layer"),
@@ -359,4 +359,4 @@ void EditorLayer::processDialog() {
     }
 }
 
-}  // namespace sd
+}  // namespace SD

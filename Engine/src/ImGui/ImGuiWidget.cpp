@@ -86,7 +86,7 @@ bool DrawVec3Control(const std::string &label, glm::vec3 &values,
     return ret;
 }
 
-void DrawTexture(const sd::Texture &texture, const ImVec2 &size) {
+void DrawTexture(const SD::Texture &texture, const ImVec2 &size) {
     ImGui::Image((void *)(intptr_t)texture.getId(), size, ImVec2(0, 1),
                  ImVec2(1, 0));
 }

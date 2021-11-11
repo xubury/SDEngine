@@ -1,7 +1,7 @@
 #include "Graphics/Graphics.hpp"
 #include "Utility/Log.hpp"
 
-namespace sd {
+namespace SD {
 
 static GraphicsAPI s_api;
 
@@ -19,4 +19,4 @@ void setGraphicsAPI(GraphicsAPI api) {
 
 GraphicsAPI getGraphicsAPI() { return s_api; }
 
-}  // namespace sd
+}  // namespace SD

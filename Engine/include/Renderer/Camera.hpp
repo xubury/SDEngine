@@ -4,7 +4,7 @@
 #include "Utility/Export.hpp"
 #include "Utility/Transform.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API Camera {
    public:
@@ -143,6 +143,6 @@ class SD_API PerspectiveCamera : public Camera {
     float m_aspect;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_CAMERA_HPP */

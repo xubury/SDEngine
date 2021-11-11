@@ -5,7 +5,7 @@
 #include <random>
 #include "Utility/Export.hpp"
 
-namespace sd {
+namespace SD {
 
 class SD_API Random {
    public:
@@ -24,6 +24,6 @@ class SD_API Random {
         s_distribution;
 };
 
-}  // namespace sd
+}  // namespace SD
 
 #endif /* SD_RANDOM_HPP */

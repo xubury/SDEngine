@@ -8,7 +8,7 @@
 #include "Renderer/System/SpriteRenderSystem.hpp"
 #include "Utility/Log.hpp"
 
-namespace sd {
+namespace SD {
 
 struct QuadVertex {
     glm::vec3 position;
@@ -387,4 +387,4 @@ void drawText(Font& font, const std::wstring& text, int pixelSize,
 
 }  // namespace Renderer2D
 
-}  // namespace sd
+}  // namespace SD

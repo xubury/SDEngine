@@ -2,7 +2,7 @@
 #include "Utility/Assert.hpp"
 #include <GL/glew.h>
 
-namespace sd {
+namespace SD {
 
 GLWindow::GLWindow(const WindowProp &property) {
     uint32_t sdlFlags =
@@ -37,4 +37,4 @@ GLWindow::~GLWindow() { SDL_GL_DeleteContext(m_context); }
 
 void *GLWindow::getGraphicsContext() { return m_context; }
 
-}  // namespace sd
+}  // namespace SD
