@@ -5,18 +5,19 @@
 
 namespace sd {
 
-Asset::Asset(void *resource, size_t loaderType)
-    : m_resource(resource), m_loaderType(loaderType) {}
+Asset::Asset(size_t loaderType) : m_loaderType(loaderType) {}
 
 AssetManager::AssetManager() {
     setRootPath("assets/");
     setLoader<ImageLoader>();
     setLoader<ModelLoader>();
     setLoader<FontLoader>();
+
+    load(m_rootPath / "test.asset");
 }
 
 AssetManager::~AssetManager() {
-    save("test.asset");
+    save(m_rootPath / "test.asset");
 
     for (const auto &[id, loader] : m_loaders) {
         delete loader;
@@ -24,6 +25,8 @@ AssetManager::~AssetManager() {
 }
 
 void AssetManager::load(const std::string &filePath) {
+    m_assets.clear();
+
     std::ifstream is(filePath, std::ios::binary);
     cereal::XMLInputArchive archive(is);
     archive(m_assets);
@@ -39,8 +42,8 @@ void AssetManager::save(const std::string &filePath) {
 void AssetManager::reload() {
     m_memory.clear();
     for (const auto &[path, asset] : m_assets) {
-        m_memory.at(asset.getId()) =
-            m_loaders.at(asset.getLoaderType())->loadAsset(path);
+        m_memory[(asset.getId())] = m_loaders.at(asset.getLoaderType())
+                                        ->loadAsset(getAbsolutePath(path));
     }
 }
 

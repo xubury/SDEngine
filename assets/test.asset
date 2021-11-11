@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cereal>
+	<value0 size="dynamic">
+		<value0>
+			<key>fonts/opensans/OpenSans-Regular.ttf</key>
+			<value>
+				<value0>
+					<value0>13129644087432790929</value0>
+				</value0>
+				<value1>15835752170446219121</value1>
+			</value>
+		</value0>
+		<value1>
+			<key>icons/light.png</key>
+			<value>
+				<value0>
+					<value0>16950274688569002250</value0>
+				</value0>
+				<value1>6300730318464668484</value1>
+			</value>
+		</value1>
+	</value0>
+</cereal>
+

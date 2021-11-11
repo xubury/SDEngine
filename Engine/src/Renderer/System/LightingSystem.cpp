@@ -239,21 +239,23 @@ void LightingSystem::renderGBuffer() {
         m_gBufferShader->setUint("u_entityId", static_cast<uint32_t>(entity));
         m_gBufferShader->setVec3("u_color", modelComp.color);
         auto model = AssetManager::instance().get<Model>(modelComp.id);
-        for (const auto &mesh : model->getMeshes()) {
-            auto &material = model->getMaterials()[mesh.getMaterialIndex()];
-            m_gBufferShader->setTexture(
-                "u_material.diffuse",
-                material.getTexture(MaterialType::DIFFUSE));
-            m_gBufferShader->setTexture(
-                "u_material.specular",
-                material.getTexture(MaterialType::SPECULAR));
-            m_gBufferShader->setTexture(
-                "u_material.ambient",
-                material.getTexture(MaterialType::AMBIENT));
-            m_gBufferShader->setTexture(
-                "u_material.emissive",
-                material.getTexture(MaterialType::EMISSIVE));
-            Renderer3D::drawMesh(mesh);
+        if (model) {
+            for (const auto &mesh : model->getMeshes()) {
+                auto &material = model->getMaterials()[mesh.getMaterialIndex()];
+                m_gBufferShader->setTexture(
+                    "u_material.diffuse",
+                    material.getTexture(MaterialType::DIFFUSE));
+                m_gBufferShader->setTexture(
+                    "u_material.specular",
+                    material.getTexture(MaterialType::SPECULAR));
+                m_gBufferShader->setTexture(
+                    "u_material.ambient",
+                    material.getTexture(MaterialType::AMBIENT));
+                m_gBufferShader->setTexture(
+                    "u_material.emissive",
+                    material.getTexture(MaterialType::EMISSIVE));
+                Renderer3D::drawMesh(mesh);
+            }
         }
     });
     Renderer::device().enable(Operation::BLEND);

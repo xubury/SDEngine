@@ -36,8 +36,10 @@ void ShadowSystem::onRender() {
             auto model = AssetManager::instance().get<Model>(modelComp.id);
             m_shadowShader->setMat4(
                 "u_model", transformComp.transform.getWorldTransform());
-            for (const auto &mesh : model->getMeshes()) {
-                Renderer3D::drawMesh(mesh);
+            if (model) {
+                for (const auto &mesh : model->getMeshes()) {
+                    Renderer3D::drawMesh(mesh);
+                }
             }
         });
     });

@@ -249,8 +249,9 @@ void ScenePanel::drawComponents(Entity &entity) {
     drawComponent<ModelComponent>("Model", entity, [&](ModelComponent &mc) {
         static bool fileDialogOpen = false;
         static ImFileDialogInfo fileDialogInfo;
-        // ImGui::InputText("##Path", mc.path.data(), mc.path.size(),
-        //                  ImGuiInputTextFlags_ReadOnly);
+        std::string path = fileDialogInfo.resultPath.string();
+        ImGui::InputText("##Path", path.data(), path.size(),
+                         ImGuiInputTextFlags_ReadOnly);
         ImGui::SameLine();
         if (ImGui::Button("Open")) {
             fileDialogOpen = true;
@@ -260,16 +261,17 @@ void ScenePanel::drawComponents(Entity &entity) {
             fileDialogInfo.directoryPath = std::filesystem::current_path();
         }
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
-            mc.id = AssetManager::instance()
-                        .loadAsset<Model>(fileDialogInfo.resultPath)
-                        .getId();
+            mc.id = AssetManager::instance().loadAsset<Model>(
+                fileDialogInfo.resultPath);
         }
 
         ImGui::ColorEdit3("Color", &mc.color[0]);
         ImVec2 size(64, 64);
         auto model = AssetManager::instance().get<Model>(mc.id);
-        drawMaterialsList(model->getMaterials(), size,
-                          &m_selectedMaterialIdMap[entity]);
+        if (model) {
+            drawMaterialsList(model->getMaterials(), size,
+                              &m_selectedMaterialIdMap[entity]);
+        }
     });
     drawComponent<TerrainComponent>(
         "Terrain", entity, [&](TerrainComponent &terrain) {
@@ -343,6 +345,10 @@ void ScenePanel::drawComponents(Entity &entity) {
         std::string utf8Str = wstringToString(textComp.text);
         memset(buffer, 0, sizeof(buffer));
         std::strncpy(buffer, utf8Str.c_str(), utf8Str.size());
+        std::string path = fileDialogInfo.resultPath.string();
+        ImGui::Text("Font File:");
+        ImGui::InputText("##Path", path.data(), path.size(),
+                         ImGuiInputTextFlags_ReadOnly);
         ImGui::SameLine();
         if (ImGui::Button("Open")) {
             fileDialogOpen = true;
@@ -352,6 +358,8 @@ void ScenePanel::drawComponents(Entity &entity) {
             fileDialogInfo.directoryPath = std::filesystem::current_path();
         }
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
+            textComp.id = AssetManager::instance().loadAsset<Font>(
+                fileDialogInfo.resultPath);
         }
         ImGui::Text("Text Content:");
         if (ImGui::InputText("##TextEdit", buffer, sizeof(buffer))) {

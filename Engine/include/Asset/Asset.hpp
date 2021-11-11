@@ -14,19 +14,14 @@
 namespace sd {
 
 template <typename ASSET>
-inline size_t getLoaderType() {
+inline size_t getAssetType() {
     return typeid(ASSET).hash_code();
 }
 
 class SD_API Asset {
    public:
     Asset() = default;
-    Asset(void *resource, size_t loaderType);
-
-    template <typename RESOURCE>
-    RESOURCE *getResource() {
-        return static_cast<RESOURCE *>(m_resource);
-    }
+    Asset(size_t loaderType);
 
     ResourceId getId() const { return m_id; }
 
@@ -38,8 +33,6 @@ class SD_API Asset {
     }
 
    private:
-    void *m_resource;
-
     ResourceId m_id;
     size_t m_loaderType;
 };
@@ -62,7 +55,7 @@ class SD_API AssetLoader : public AssetLoaderBase {
     virtual ~AssetLoader() = default;
 
    public:
-    static size_t getType() { return getLoaderType<ASSET>(); }
+    static size_t getType() { return getAssetType<ASSET>(); }
 };
 
 class SD_API AssetManager {
@@ -72,6 +65,7 @@ class SD_API AssetManager {
 
     void load(const std::string &filePath);
     void save(const std::string &filePath);
+
     void reload();
 
    public:
@@ -87,36 +81,53 @@ class SD_API AssetManager {
     }
 
     template <typename ASSET>
-    Asset loadAsset(const std::string &filePath) {
-        size_t type = getLoaderType<ASSET>();
-        if (hasLoaded(filePath)) {
-            return m_assets[filePath];
+    ResourceId loadAsset(const std::string &filePath) {
+        size_t type = getAssetType<ASSET>();
+        std::filesystem::path fullPath = getAbsolutePath(filePath);
+        std::string relPath = getRelativePath(fullPath).string();
+        if (hasLoaded(relPath)) {
+            return m_assets[relPath].getId();
         } else {
-            std::string fullPath = getAbsolutePath(filePath).string();
             Ref<void> resource =
                 dynamic_cast<AssetLoader<ASSET> *>(m_loaders.at(type))
                     ->loadAsset(fullPath);
-            Asset asset(resource.get(), type);
+            Asset asset(type);
 
             m_memory[asset.getId()] = resource;
 
-            m_assets[fullPath] = asset;
-            return asset;
+            m_assets[relPath] = asset;
+            return asset.getId();
         }
     }
 
     bool hasLoaded(const std::string &filePath) const {
-        return m_assets.count(getAbsolutePath(filePath).string());
+        return m_assets.count(filePath);
     }
 
     template <typename ASSET>
     Ref<ASSET> get(ResourceId id) {
-        return std::static_pointer_cast<ASSET>(m_memory.at(id));
+        auto iter = m_memory.find(id);
+        if (iter != m_memory.end()) {
+            return std::static_pointer_cast<ASSET>(m_memory[id]);
+        } else {
+            return nullptr;
+        }
     }
 
     template <typename ASSET>
     const Ref<ASSET> get(ResourceId id) const {
-        return std::static_pointer_cast<ASSET>(m_memory.at(id));
+        auto iter = m_memory.find(id);
+        if (iter != m_memory.end()) {
+            return std::static_pointer_cast<ASSET>(m_memory.at(id));
+        } else {
+            return nullptr;
+        }
+    }
+
+    template <typename ASSET>
+    Ref<ASSET> get(const std::string &path) {
+        auto id = loadAsset<ASSET>(path);
+        return get<ASSET>(id);
     }
 
     void setRootPath(const std::filesystem::path &path) {
@@ -126,7 +137,7 @@ class SD_API AssetManager {
 
     std::filesystem::path getRelativePath(
         const std::filesystem::path &path) const {
-        return path.lexically_relative(m_rootPath);
+        return std::filesystem::relative(path, m_rootPath);
     }
 
     std::filesystem::path getRootPath() const { return m_rootPath; };
