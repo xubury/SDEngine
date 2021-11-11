@@ -20,7 +20,7 @@ Ref<void> FontLoader::loadAsset(const std::string &filePath) {
     Ref<Font> font;
     SD_CORE_TRACE("Loading font form: {}...", filePath);
     if (FT_New_Face(m_ft, filePath.c_str(), 0, &face)) {
-        SD_CORE_ERROR("Failed to load font!");
+        SD_CORE_ERROR("Failed to load font {}!", filePath);
     } else {
         font = createRef<Font>(face);
     }

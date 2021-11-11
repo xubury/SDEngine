@@ -115,7 +115,8 @@ static void processAiMaterial(const std::filesystem::path &directory,
         return;
     }
     std::string path = (directory / texturePath.C_Str()).string();
-    auto image = AssetManager::instance().get<Image>(path);
+    auto resourceId = AssetManager::instance().loadAsset<Image>(path);
+    auto image = AssetManager::instance().get<Image>(resourceId);
     auto texture = Texture::create(
         image->width(), image->height(), 1, TextureType::TEX_2D,
         image->hasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,

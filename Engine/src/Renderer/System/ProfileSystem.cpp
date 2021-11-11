@@ -7,8 +7,9 @@ namespace SD {
 
 ProfileSystem::ProfileSystem(int width, int height)
     : m_camera(width, height, 0.f, 1000.f), m_fps(20) {
-    m_font = AssetManager::instance().get<Font>(
+    auto resourceId = AssetManager::instance().loadAsset<Font>(
         "fonts/opensans/OpenSans-Regular.ttf");
+    m_font = AssetManager::instance().get<Font>(resourceId);
 }
 
 void ProfileSystem::onInit() {

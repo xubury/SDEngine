@@ -6,7 +6,7 @@
 
 namespace SD {
 
-class SD_API ImageLoader : public AssetLoader<Image> {
+class SD_API ImageLoader : public AssetLoaderBase {
    private:
     friend class AssetManager;
 

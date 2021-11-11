@@ -4,7 +4,7 @@
 
 namespace SD {
 
-ImageLoader::ImageLoader() : AssetLoader<Image>() {
+ImageLoader::ImageLoader() {
     int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
     if ((IMG_Init(imgFlags) & imgFlags) != imgFlags) {
         SD_CORE_ERROR("IMG_Init Failed: {}", IMG_GetError());

@@ -3,6 +3,7 @@
 
 #include <filesystem>
 #include "Utility/Log.hpp"
+#include "Utility/PlatformDetection.hpp"
 
 #define SD_ENABLE_ASSERTS
 
@@ -36,7 +37,7 @@
     }
 #define SD_INTERNAL_ASSERT_WITH_MSG(type, check, ...)                  \
     SD_INTERNAL_ASSERT_IMPL(                                           \
-        type, check, "Assertion '{0}' failed at {1}:{2}. {3}",          \
+        type, check, "Assertion '{0}' failed at {1}:{2}. {3}",         \
         SD_STRINGIFY_MACRO(check),                                     \
         std::filesystem::path(__FILE__).filename().string(), __LINE__, \
         __VA_ARGS__)

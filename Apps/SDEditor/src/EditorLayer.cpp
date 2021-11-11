@@ -24,7 +24,9 @@ EditorLayer::EditorLayer(int width, int height)
       m_saveSceneOpen(false) {
     m_cameraController.setCamera(&m_editorCamera);
     m_editorCamera.setWorldPosition(glm::vec3(0, 0, 10));
-    auto image = AssetManager::instance().get<Image>("icons/light.png");
+    auto resourceId =
+        AssetManager::instance().loadAsset<Image>("icons/light.png");
+    auto image = AssetManager::instance().get<Image>(resourceId);
 
     m_lightIcon = Texture::create(
         image->width(), image->height(), 1, TextureType::TEX_2D,
