@@ -1,5 +1,4 @@
 #include "Renderer/System/System.hpp"
-#include "Utility/Log.hpp"
 
 namespace SD {
 

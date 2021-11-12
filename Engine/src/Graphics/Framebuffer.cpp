@@ -1,6 +1,5 @@
 #include "Graphics/Framebuffer.hpp"
 #include "Graphics/OpenGL/GLFramebuffer.hpp"
-#include "Utility/Log.hpp"
 
 namespace SD {
 

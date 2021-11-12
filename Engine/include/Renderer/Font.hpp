@@ -1,9 +1,9 @@
 #ifndef SD_FONT_HPP
 #define SD_FONT_HPP
 
-#include "Utility/Export.hpp"
+#include "Utility/Base.hpp"
 #include "Graphics/Texture.hpp"
-#include "Asset/Asset.hpp"
+
 #include <glm/glm.hpp>
 
 typedef struct FT_FaceRec_ *FT_Face;

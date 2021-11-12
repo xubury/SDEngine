@@ -1,6 +1,5 @@
 #include "Graphics/OpenGL/GLBuffer.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
-#include "Utility/Assert.hpp"
 
 namespace SD {
 

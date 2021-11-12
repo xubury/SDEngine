@@ -1,13 +1,12 @@
 #ifndef SD_LAYER_HPP
 #define SD_LAYER_HPP
 
+#include "Utility/Base.hpp"
+#include "Utility/EventDispatcher.hpp"
+
 #include <string>
 #include <list>
 #include <SDL.h>
-
-#include "Utility/Export.hpp"
-#include "Utility/Base.hpp"
-#include "Utility/EventDispatcher.hpp"
 
 namespace SD {
 

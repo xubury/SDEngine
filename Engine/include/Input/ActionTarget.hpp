@@ -1,10 +1,11 @@
 #ifndef SD_ACTION_TARGET_HPP
 #define SD_ACTION_TARGET_HPP
 
+#include "Input/ActionMap.hpp"
+
 #include <list>
 #include <functional>
 #include <utility>
-#include "Input/ActionMap.hpp"
 
 namespace SD {
 

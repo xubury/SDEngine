@@ -4,8 +4,8 @@
 
 namespace SD {
 
-Ref<spdlog::logger> Log::s_coreLogger;
-Ref<spdlog::logger> Log::s_clientLogger;
+std::shared_ptr<spdlog::logger> Log::s_coreLogger;
+std::shared_ptr<spdlog::logger> Log::s_clientLogger;
 
 void Log::init(const std::string &logFileName) {
     std::vector<spdlog::sink_ptr> logSinks;
@@ -30,8 +30,8 @@ void Log::init(const std::string &logFileName) {
     s_clientLogger->flush_on(spdlog::level::trace);
 }
 
-Ref<spdlog::logger> &Log::getCoreLogger() { return s_coreLogger; }
+std::shared_ptr<spdlog::logger> &Log::getCoreLogger() { return s_coreLogger; }
 
-Ref<spdlog::logger> &Log::getClientLogger() { return s_clientLogger; }
+std::shared_ptr<spdlog::logger> &Log::getClientLogger() { return s_clientLogger; }
 
 }  // namespace SD

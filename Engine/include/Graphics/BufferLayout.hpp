@@ -1,11 +1,11 @@
 #ifndef SD_BUFFER_LAYEROUT_HPP
 #define SD_BUFFER_LAYEROUT_HPP
 
+#include "Utility/Base.hpp"
+#include "Graphics/Graphics.hpp"
+
 #include <string>
 #include <vector>
-#include "Utility/Export.hpp"
-#include "Utility/Assert.hpp"
-#include "Graphics/Graphics.hpp"
 
 namespace SD {
 

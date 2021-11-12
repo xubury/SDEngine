@@ -3,7 +3,6 @@
 
 #include <string>
 #include <SDL.h>
-#include "Utility/Export.hpp"
 #include "Utility/Base.hpp"
 
 namespace SD {

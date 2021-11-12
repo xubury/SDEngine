@@ -2,7 +2,7 @@
 #define SD_SHADER_HPP
 
 #include "Utility/Base.hpp"
-#include "Utility/Export.hpp"
+
 #include <string>
 #include <vector>
 #include <glm/glm.hpp>

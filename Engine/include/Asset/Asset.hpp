@@ -2,10 +2,9 @@
 #define SD_ASSET_HPP
 
 #include "Utility/Base.hpp"
-#include "Utility/Export.hpp"
-#include "Utility/Assert.hpp"
 #include "Utility/ResourceId.hpp"
 #include "Utility/Serialize.hpp"
+
 #include <string>
 #include <unordered_map>
 #include <typeinfo>

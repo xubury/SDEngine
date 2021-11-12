@@ -1,7 +1,7 @@
 #ifndef SD_GL_WINDOW_HPP
 #define SD_GL_WINDOW_HPP
 
-#include "Utility/Export.hpp"
+#include "Utility/Base.hpp"
 #include "Core/Window.hpp"
 
 namespace SD {

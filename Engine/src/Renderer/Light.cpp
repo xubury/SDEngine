@@ -1,6 +1,4 @@
 #include "Renderer/Light.hpp"
-#include "Utility/Log.hpp"
-#include "Utility/Assert.hpp"
 
 namespace SD {
 

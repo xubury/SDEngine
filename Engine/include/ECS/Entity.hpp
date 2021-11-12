@@ -1,8 +1,7 @@
 #ifndef SD_ENTTY_HPP
 #define SD_ENTTY_HPP
 
-#include "Utility/Export.hpp"
-#include "Utility/Assert.hpp"
+#include "Utility/Base.hpp"
 #include "entt/entt.hpp"
 #include "ECS/Scene.hpp"
 

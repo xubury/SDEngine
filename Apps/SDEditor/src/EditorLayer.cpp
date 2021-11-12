@@ -1,14 +1,14 @@
 #include "EditorLayer.hpp"
-#include "Core/Application.hpp"
 #include "Input/Input.hpp"
-#include "Renderer/Renderer.hpp"
+#include "Core/Application.hpp"
 #include "ECS/Component.hpp"
+#include "Renderer/Renderer.hpp"
+#include "Asset/Asset.hpp"
 #include "Asset/Image.hpp"
-#include <glm/gtc/type_ptr.hpp>
-#include "imgui.h"
-#include "imgui_internal.h"
-#include "ImGuizmo.h"
 #include "ImGui/ImGuiWidget.hpp"
+#include "ImGuizmo.h"
+
+#include <glm/gtc/type_ptr.hpp>
 
 namespace SD {
 

@@ -1,9 +1,10 @@
 #ifndef SD_MATERIAL_HPP
 #define SD_MATERIAL_HPP
 
-#include "Utility/Export.hpp"
+#include "Utility/Base.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/Shader.hpp"
+
 #include <string>
 #include <unordered_map>
 

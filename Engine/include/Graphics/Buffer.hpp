@@ -1,7 +1,6 @@
 #ifndef SD_BUFFER_HPP
 #define SD_BUFFER_HPP
 
-#include "Utility/Export.hpp"
 #include "Utility/Base.hpp"
 #include "Graphics/Graphics.hpp"
 

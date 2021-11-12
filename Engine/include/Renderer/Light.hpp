@@ -1,11 +1,10 @@
 #ifndef SD_LIGHT_HPP
 #define SD_LIGHT_HPP
 
-#include "Utility/Export.hpp"
+#include "Utility/Base.hpp"
 #include "Utility/Transform.hpp"
 #include "Renderer/RenderTarget.hpp"
 #include "Renderer/Camera.hpp"
-#include <glm/glm.hpp>
 
 namespace SD {
 

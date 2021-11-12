@@ -9,7 +9,7 @@ static std::unordered_map<SDL_Keycode, bool> s_lastKeyMap;
 static std::unordered_map<uint8_t, bool> s_mouseBtnMap;
 static std::unordered_map<uint8_t, bool> s_lastMouseBtnMap;
 
-static glm::vec2 m_mouseCoord;
+static glm::vec2 s_mouseCoord;
 
 bool Input::isKeyDown(SDL_Keycode keycode) {
     auto it = s_keyMap.find(keycode);
@@ -55,7 +55,7 @@ bool Input::isMousePressed(uint8_t button) {
     return isMouseDown(button) && !wasMouseDown(button);
 }
 
-glm::vec2 Input::getMouseCoord() { return m_mouseCoord; }
+glm::vec2 Input::getMouseCoord() { return s_mouseCoord; }
 
 void Input::tick() {
     for (auto &[key, press] : s_keyMap) {
@@ -99,8 +99,8 @@ void Input::releaseMouseButton(uint8_t button) {
 }
 
 void Input::setMouseCoord(float x, float y) {
-    m_mouseCoord.x = x;
-    m_mouseCoord.y = y;
+    s_mouseCoord.x = x;
+    s_mouseCoord.y = y;
 }
 
 }  // namespace SD

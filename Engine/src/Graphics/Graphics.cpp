@@ -1,5 +1,4 @@
 #include "Graphics/Graphics.hpp"
-#include "Utility/Log.hpp"
 
 namespace SD {
 

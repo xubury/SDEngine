@@ -6,7 +6,6 @@
 #include "Renderer/System/ProfileSystem.hpp"
 #include "Renderer/System/PostProcessSystem.hpp"
 #include "Renderer/System/SpriteRenderSystem.hpp"
-#include "Utility/Log.hpp"
 
 namespace SD {
 

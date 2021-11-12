@@ -1,5 +1,4 @@
 #include "Core/LayerStack.hpp"
-#include "Utility/Log.hpp"
 #include <algorithm>
 
 namespace SD {

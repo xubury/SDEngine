@@ -1,6 +1,6 @@
 #include "Renderer/System/LightingSystem.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Utility/Log.hpp"
+#include "Asset/Asset.hpp"
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
 

@@ -1,8 +1,8 @@
 #ifndef SD_LOG_HPP
 #define SD_LOG_HPP
 
-#include "Utility/Base.hpp"
 #include "Utility/Export.hpp"
+
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
 
@@ -12,13 +12,13 @@ class SD_API Log {
    public:
     static void init(const std::string &logFileName);
 
-    static Ref<spdlog::logger> &getCoreLogger();
+    static std::shared_ptr<spdlog::logger> &getCoreLogger();
 
-    static Ref<spdlog::logger> &getClientLogger();
+    static std::shared_ptr<spdlog::logger> &getClientLogger();
 
    private:
-    static Ref<spdlog::logger> s_coreLogger;
-    static Ref<spdlog::logger> s_clientLogger;
+    static std::shared_ptr<spdlog::logger> s_coreLogger;
+    static std::shared_ptr<spdlog::logger> s_clientLogger;
 };
 
 }  // namespace SD

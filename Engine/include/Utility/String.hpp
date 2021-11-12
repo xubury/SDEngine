@@ -1,13 +1,15 @@
 #ifndef SD_STRING_HPP
 #define SD_STRING_HPP
 
+#include "Utility/Base.hpp"
+
 #include <string>
 #include <codecvt>
 #include <locale>
 
 namespace SD {
 
-inline std::wstring stringToWstring(const std::string &t_str) {
+inline SD_API std::wstring stringToWstring(const std::string &t_str) {
     // setup converter
     typedef std::codecvt_utf8<wchar_t> convert_type;
     std::wstring_convert<convert_type, wchar_t> converter;
@@ -16,7 +18,7 @@ inline std::wstring stringToWstring(const std::string &t_str) {
     return converter.from_bytes(t_str);
 }
 
-inline std::string wstringToString(const std::wstring &wstr) {
+inline SD_API std::string wstringToString(const std::wstring &wstr) {
     // setup converter
     typedef std::codecvt_utf8<wchar_t> convert_type;
     std::wstring_convert<convert_type, wchar_t> converter;

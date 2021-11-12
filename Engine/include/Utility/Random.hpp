@@ -1,9 +1,10 @@
 #ifndef SD_RANDOM_HPP
 #define SD_RANDOM_HPP
 
+#include "Utility/Base.hpp"
+
 #include <cstdint>
 #include <random>
-#include "Utility/Export.hpp"
 
 namespace SD {
 

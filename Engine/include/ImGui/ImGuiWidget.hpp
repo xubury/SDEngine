@@ -1,11 +1,15 @@
 #ifndef SD_IMGUI_WIDGET_HPP
 #define SD_IMGUI_WIDGET_HPP
 
+
+#include "Utility/Base.hpp"
+#include "Graphics/Texture.hpp"
+
+#include "imgui.h"
+#include "imgui_internal.h"
+
 #include <glm/glm.hpp>
 #include <string>
-#include "imgui.h"
-#include "Utility/Export.hpp"
-#include "Graphics/Texture.hpp"
 
 namespace ImGui {
 

@@ -1,6 +1,5 @@
 #include "Renderer/RenderTarget.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Utility/Log.hpp"
 
 namespace SD {
 

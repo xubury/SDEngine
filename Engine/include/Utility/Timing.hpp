@@ -1,10 +1,11 @@
 #ifndef SD_TIMING_HPP
 #define SD_TIMING_HPP
 
+#include "Utility/Base.hpp"
+
 #include <cstdint>
 #include <queue>
 #include <chrono>
-#include "Utility/Export.hpp"
 
 namespace SD {
 

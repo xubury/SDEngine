@@ -1,5 +1,4 @@
 #include "ImGui/ImGuiLayer.hpp"
-#include "Utility/Log.hpp"
 #include "Core/Application.hpp"
 #include "Graphics/Graphics.hpp"
 #include "imgui_impl_opengl3.h"

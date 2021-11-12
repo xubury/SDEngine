@@ -1,9 +1,10 @@
 #ifndef SD_INPUT_ENGINE_HPP
 #define SD_INPUT_ENGINE_HPP
 
-#include <glm/glm.hpp>
-#include "Utility/Export.hpp"
+#include "Utility/Base.hpp"
+
 #include <SDL.h>
+#include <glm/glm.hpp>
 
 namespace SD {
 

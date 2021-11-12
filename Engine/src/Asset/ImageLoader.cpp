@@ -1,5 +1,4 @@
 #include "Asset/ImageLoader.hpp"
-#include "Utility/Log.hpp"
 #include <SDL_image.h>
 
 namespace SD {

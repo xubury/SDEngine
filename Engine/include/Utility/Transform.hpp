@@ -1,7 +1,8 @@
 #ifndef SD_TRANSFORM_HPP
 #define SD_TRANSFORM_HPP
 
-#include "Utility/Export.hpp"
+#include "Utility/Base.hpp"
+
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <set>

@@ -3,7 +3,6 @@
 
 #include <memory>
 #include <cstdint>
-#include "Utility/PlatformDetection.hpp"
 
 namespace SD {
 
@@ -22,5 +21,9 @@ constexpr Ref<T> createRef(Args&&... args) {
 }
 
 }  // namespace SD
+
+#include "Utility/Export.hpp"
+#include "Utility/Log.hpp"
+#include "Utility/Assert.hpp"
 
 #endif

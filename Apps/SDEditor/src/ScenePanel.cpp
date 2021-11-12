@@ -1,10 +1,9 @@
 #include "ScenePanel.hpp"
-#include "imgui.h"
-#include "imgui_internal.h"
-#include "ImGui/ImGuiWidget.hpp"
-#include "ImGuizmo.h"
 #include "Renderer/Renderer.hpp"
 #include "Utility/String.hpp"
+#include "Asset/Asset.hpp"
+#include "ImGui/ImGuiWidget.hpp"
+#include "ImGuizmo.h"
 
 namespace SD {
 

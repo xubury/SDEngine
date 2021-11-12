@@ -1,6 +1,4 @@
 #include "ImGui/FileDialog.hpp"
-#include "Utility/PlatformDetection.hpp"
-#include "imgui.h"
 
 #include <chrono>
 #include <string>

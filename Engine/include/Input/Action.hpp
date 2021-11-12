@@ -2,7 +2,7 @@
 #define SD_ACTION_HPP
 
 #include <SDL.h>
-#include "Utility/Export.hpp"
+#include "Utility/Base.hpp"
 
 namespace SD {
 

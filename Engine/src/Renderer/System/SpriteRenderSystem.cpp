@@ -1,5 +1,6 @@
 #include "Renderer/System/SpriteRenderSystem.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Asset/Asset.hpp"
 
 namespace SD {
 

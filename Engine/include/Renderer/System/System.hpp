@@ -1,11 +1,12 @@
 #ifndef SD_SYSTEM_HPP
 #define SD_SYSTEM_HPP
 
-#include <set>
-#include <list>
 #include "Utility/EventDispatcher.hpp"
 #include "Utility/Base.hpp"
 #include "Renderer/System/Event.hpp"
+
+#include <set>
+#include <list>
 
 namespace SD {
 

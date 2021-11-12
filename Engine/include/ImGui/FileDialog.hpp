@@ -1,7 +1,10 @@
 #ifndef IMGUI_FILE_DIALOG_HPP
 #define IMGUI_FILE_DIALOG_HPP
+
+#include "Utility/Base.hpp"
+#include "imgui.h"
+
 #include <filesystem>
-#include <imgui.h>
 #include <vector>
 #include <algorithm>
 
@@ -14,7 +17,7 @@ enum ImGuiFileDialogType_ {
     ImGuiFileDialogType_COUNT
 };
 
-struct ImFileDialogInfo {
+struct SD_API ImFileDialogInfo {
     std::string title;
     std::filesystem::path fileExtension;
     ImGuiFileDialogType type;
@@ -30,7 +33,7 @@ struct ImFileDialogInfo {
 };
 
 namespace ImGui {
-IMGUI_API bool FileDialog(bool* open, ImFileDialogInfo* dialogInfo);
+bool SD_API FileDialog(bool* open, ImFileDialogInfo* dialogInfo);
 }
 
 #endif

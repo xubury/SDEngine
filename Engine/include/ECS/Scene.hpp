@@ -1,7 +1,6 @@
 #ifndef SD_SCENE_HPP
 #define SD_SCENE_HPP
 
-#include "Utility/Export.hpp"
 #include "Utility/Base.hpp"
 #include "entt/entt.hpp"
 #include "ECS/Component.hpp"

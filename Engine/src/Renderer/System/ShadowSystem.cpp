@@ -1,5 +1,6 @@
 #include "Renderer/System/ShadowSystem.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Asset/Asset.hpp"
 #include "ECS/Component.hpp"
 #include "ECS/Scene.hpp"
 

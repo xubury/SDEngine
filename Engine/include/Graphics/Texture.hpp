@@ -1,7 +1,6 @@
 #ifndef SD_TEXTURE_HPP
 #define SD_TEXTURE_HPP
 
-#include "Utility/Export.hpp"
 #include "Utility/Base.hpp"
 #include "Graphics/Graphics.hpp"
 

@@ -1,9 +1,10 @@
 #ifndef SD_MESH_HPP
 #define SD_MESH_HPP
 
+#include "Graphics/VertexArray.hpp"
+
 #include <glm/glm.hpp>
 #include <vector>
-#include "Graphics/VertexArray.hpp"
 
 namespace SD {
 

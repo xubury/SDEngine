@@ -1,8 +1,6 @@
 #include "Graphics/OpenGL/GLFramebuffer.hpp"
 #include "Graphics/OpenGL/GLTexture.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
-#include "Utility/Log.hpp"
-#include "Utility/Assert.hpp"
 
 namespace SD {
 

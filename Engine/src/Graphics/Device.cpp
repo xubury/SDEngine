@@ -1,6 +1,5 @@
 #include "Graphics/Device.hpp"
 #include "Graphics/OpenGL/GLDevice.hpp"
-#include "Utility/Log.hpp"
 
 namespace SD {
 

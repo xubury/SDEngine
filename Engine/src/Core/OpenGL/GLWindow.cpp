@@ -1,5 +1,4 @@
 #include "Core/OpenGL/GLWindow.hpp"
-#include "Utility/Assert.hpp"
 #include <GL/glew.h>
 
 namespace SD {

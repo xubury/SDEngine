@@ -1,12 +1,14 @@
 #ifndef SD_UUID_HPP
 #define SD_UUID_HPP
 
+#include "Utility/Base.hpp"
+
 #include <cstdint>
 #include <unordered_map>
 
 namespace SD {
 
-class ResourceId {
+class SD_API ResourceId {
    public:
     ResourceId();
     ResourceId(uint64_t resourceID);

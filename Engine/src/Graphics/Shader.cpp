@@ -1,8 +1,6 @@
 #include "Graphics/Shader.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/OpenGL/GLShader.hpp"
-#include "Utility/Log.hpp"
-#include "Utility/Assert.hpp"
 
 namespace SD {
 

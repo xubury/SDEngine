@@ -1,5 +1,4 @@
 #include "Renderer/Material.hpp"
-#include "Utility/Log.hpp"
 #include <map>
 
 namespace SD {

@@ -2,7 +2,7 @@
 #define SD_COMPONENT_HPP
 
 #include "entt/entt.hpp"
-#include "Utility/Export.hpp"
+#include "Utility/Base.hpp"
 #include "Utility/Transform.hpp"
 #include "Utility/Math.hpp"
 #include "Utility/ResourceId.hpp"

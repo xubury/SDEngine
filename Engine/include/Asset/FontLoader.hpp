@@ -8,7 +8,7 @@ typedef struct FT_LibraryRec_ *FT_Library;
 
 namespace SD {
 
-class FontLoader : public AssetLoaderBase {
+class SD_API FontLoader : public AssetLoaderBase {
    public:
     Ref<void> loadAsset(const std::string &filePath) override;
 

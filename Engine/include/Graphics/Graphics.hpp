@@ -1,6 +1,8 @@
 #ifndef SD_GRAPHICS_HPP
 #define SD_GRAPHICS_HPP
 
+#include "Utility/Base.hpp"
+
 #include <type_traits>
 #include <array>
 
@@ -92,7 +94,7 @@ enum class DepthFunc {
     NOT_EQUAL
 };
 
-struct RGBA {
+struct SD_API RGBA {
    public:
     RGBA(float r, float g, float b, float a) : m_color{r, g, b, a} {}
 
@@ -110,10 +112,10 @@ struct RGBA {
 
 enum class GraphicsAPI { None, OpenGL };
 
-void setGraphicsAPI(GraphicsAPI api);
+void SD_API setGraphicsAPI(GraphicsAPI api);
 
-GraphicsAPI getGraphicsAPI();
+GraphicsAPI SD_API getGraphicsAPI();
 
 }  // namespace SD
 
-#endif /* SD_GRAPHICS_MANAGER_HPP */
+#endif /* SD_GRAPHICS_HPP */

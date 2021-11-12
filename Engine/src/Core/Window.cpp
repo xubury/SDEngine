@@ -1,7 +1,6 @@
 #include "Core/Window.hpp"
 #include "Core/OpenGL/GLWindow.hpp"
 #include "Graphics/Graphics.hpp"
-#include "Utility/Log.hpp"
 
 namespace SD {
 
