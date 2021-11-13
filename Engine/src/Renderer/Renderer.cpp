@@ -137,7 +137,7 @@ Camera* Renderer::getCamera() { return m_camera; }
 void Renderer::submit(const VertexArray& vao, MeshTopology topology,
                       size_t count, size_t offset) {
     vao.bind();
-    device().drawElements(topology, count, offset);
+    m_device->drawElements(topology, count, offset);
 }
 
 void Renderer::drawMesh(const Mesh& mesh) {
