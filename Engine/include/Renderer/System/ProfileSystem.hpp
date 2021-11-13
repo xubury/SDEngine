@@ -2,7 +2,6 @@
 #define SD_PROFILE_SYSTEM_HPP
 
 #include "Core/System.hpp"
-#include "Renderer/System/Event.hpp"
 #include "Renderer/Font.hpp"
 #include "Renderer/Camera.hpp"
 #include "Utility/Timing.hpp"

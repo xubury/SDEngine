@@ -2,8 +2,6 @@
 #define SD_LIGHTING_SYSTEM_HPP
 
 #include "Core/System.hpp"
-#include "Renderer/System/Event.hpp"
-#include "Renderer/RenderTarget.hpp"
 #include "ECS/Scene.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"

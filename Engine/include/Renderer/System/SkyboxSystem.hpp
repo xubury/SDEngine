@@ -3,7 +3,6 @@
 #define SD_SKYBOX_SYSTEM_HPP
 
 #include "Core/System.hpp"
-#include "Renderer/System/Event.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"
 

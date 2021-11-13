@@ -2,7 +2,6 @@
 #define SD_SPRITE_RENDER_SYSTEM_HPP
 
 #include "Core/System.hpp"
-#include "Renderer/System/Event.hpp"
 
 namespace SD {
 

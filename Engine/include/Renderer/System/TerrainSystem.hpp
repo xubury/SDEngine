@@ -2,7 +2,6 @@
 #define SD_TERRAIN_SYSTEM_HPP
 
 #include "Core/System.hpp"
-#include "Renderer/System/Event.hpp"
 #include "Renderer/Terrain.hpp"
 #include "ECS/Entity.hpp"
 #include "Utility/QuadTree.hpp"

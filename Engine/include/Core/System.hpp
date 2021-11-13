@@ -2,9 +2,9 @@
 #define SD_SYSTEM_HPP
 
 #include "Core/Vars.hpp"
+#include "Core/Event.hpp"
 #include "Utility/EventDispatcher.hpp"
 #include "Utility/Base.hpp"
-#include "Renderer/System/Event.hpp"
 
 namespace SD {
 

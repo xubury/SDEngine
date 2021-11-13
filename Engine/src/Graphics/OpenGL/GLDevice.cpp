@@ -64,7 +64,7 @@ void GLDevice::clear(BufferBitMask bit) {
 
 void GLDevice::setViewport(int x, int y, int width, int height) {
     // opengl define viewport origin at bottom-left
-    glViewport(x, -y, width, height);
+    glViewport(x, y, width, height);
 }
 
 void GLDevice::setFramebuffer(Framebuffer *framebuffer) {

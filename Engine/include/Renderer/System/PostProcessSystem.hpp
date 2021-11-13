@@ -3,7 +3,6 @@
 
 #include "Graphics/VertexArray.hpp"
 #include "Core/System.hpp"
-#include "Renderer/System/Event.hpp"
 #include "Renderer/RenderTarget.hpp"
 #include "Graphics/Shader.hpp"
 
