@@ -8,13 +8,6 @@
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGuizmo.h"
 
-#include "Renderer/System/ShadowSystem.hpp"
-#include "Renderer/System/LightingSystem.hpp"
-#include "Renderer/System/SkyboxSystem.hpp"
-#include "Renderer/System/ProfileSystem.hpp"
-#include "Renderer/System/PostProcessSystem.hpp"
-#include "Renderer/System/SpriteRenderSystem.hpp"
-
 #include <glm/gtc/type_ptr.hpp>
 
 namespace SD {
@@ -54,21 +47,35 @@ EditorLayer::EditorLayer(int width, int height)
             getTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
             TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
     }
+    m_shadowSystem = new ShadowSystem();
+    m_lightingSystem = new LightingSystem(&m_target, m_width, m_height, 4);
+    m_skyboxSystem = new SkyboxSystem(&m_target);
+    m_spriteSystem = new SpriteRenderSystem(&m_target);
+    m_postProcessSystem = new PostProcessSystem(&m_target, m_width, m_height);
+    m_profileSystem = new ProfileSystem(&m_target, m_width, m_height);
 }
 
-void EditorLayer::onAttach() {
+void EditorLayer::onPush() {
     newScene();
-    pushSystem<ShadowSystem>();
-    pushSystem<LightingSystem>(&m_target, m_width, m_height, 4);
-    pushSystem<SkyboxSystem>(&m_target);
-    pushSystem<SpriteRenderSystem>(&m_target);
-    pushSystem<PostProcessSystem>(&m_target, m_width, m_height);
-    pushSystem<ProfileSystem>(&m_target, m_width, m_height);
+
+    pushSystem(m_shadowSystem);
+    pushSystem(m_lightingSystem);
+    pushSystem(m_skyboxSystem);
+    pushSystem(m_spriteSystem);
+    pushSystem(m_postProcessSystem);
+    pushSystem(m_profileSystem);
 
     show();
 }
 
-void EditorLayer::onDetech() { hide(); }
+void EditorLayer::onPop() {
+    popSystem(m_shadowSystem);
+    popSystem(m_lightingSystem);
+    popSystem(m_skyboxSystem);
+    popSystem(m_spriteSystem);
+    popSystem(m_postProcessSystem);
+    popSystem(m_profileSystem);
+}
 
 void EditorLayer::onRender() {
     renderer->setRenderTarget(m_target);
@@ -122,10 +129,9 @@ void EditorLayer::onImGui() {
     renderer->device().blitFramebuffer(
         m_target.getFramebuffer(), 0, m_screenBuffer.get(), 0,
         BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
-    auto lightSystem = getSystem<LightingSystem>("Lighting");
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
         renderer->device().blitFramebuffer(
-            lightSystem->getGBuffer(), i, m_debugGBuffer.get(), i,
+            m_lightingSystem->getGBuffer(), i, m_debugGBuffer.get(), i,
             BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
     }
 
@@ -198,27 +204,26 @@ void EditorLayer::onImGui() {
 
     ImGui::Begin("Render Settings");
     {
-        auto postProcessSystem = getSystem<PostProcessSystem>("PostProcess");
-        float exposure = postProcessSystem->getExposure();
+        float exposure = m_postProcessSystem->getExposure();
         ImGui::TextUnformatted("Exposure");
         if (ImGui::SliderFloat("##Exposure", &exposure, 0, 10)) {
-            postProcessSystem->setExposure(exposure);
+            m_postProcessSystem->setExposure(exposure);
         }
 
-        bool isBloom = postProcessSystem->getBloom();
+        bool isBloom = m_postProcessSystem->getBloom();
         if (ImGui::Checkbox("Bloom", &isBloom)) {
-            postProcessSystem->setBloom(isBloom);
+            m_postProcessSystem->setBloom(isBloom);
         }
-        float bloom = postProcessSystem->getBloomFactor();
+        float bloom = m_postProcessSystem->getBloomFactor();
         ImGui::TextUnformatted("Bloom Factor");
         if (ImGui::SliderFloat("##Bloom Factor", &bloom, 0.1, 1)) {
-            postProcessSystem->setBloomFactor(bloom);
+            m_postProcessSystem->setBloomFactor(bloom);
         }
 
-        float gamma = postProcessSystem->getGammaCorrection();
+        float gamma = m_postProcessSystem->getGammaCorrection();
         ImGui::TextUnformatted("Gamma Correction");
         if (ImGui::SliderFloat("##Gamma Correction", &gamma, 0.1, 3)) {
-            postProcessSystem->setGammaCorrection(gamma);
+            m_postProcessSystem->setGammaCorrection(gamma);
         }
     }
     ImGui::End();

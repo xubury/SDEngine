@@ -47,28 +47,34 @@ Application::Application() {
         renderer->device().disable(Operation::MULTISAMPLE);
     }
 
-    // pushLayer(new RenderLayer(width, height, samples));
-    m_imguiLayer = dynamic_cast<ImGuiLayer *>(pushOverlay(new ImGuiLayer()));
+    m_imguiLayer = new ImGuiLayer();
+    pushOverlay(m_imguiLayer);
 }
 
-Application::~Application() {
-    delete m_imguiLayer;
+void Application::destroy() {
+    for (auto layer = m_layers.begin(); layer != m_layers.end(); ++layer) {
+        destroyLayer(*layer);
+    }
     SDL_Quit();
 }
 
-Layer *Application::pushLayer(Layer *layer) {
+void Application::pushLayer(Layer *layer) {
     layer->setAppVars(makeAppVars());
-    return m_layers.pushLayer(layer);
+    m_layers.pushLayer(layer);
 }
 
-Layer *Application::pushOverlay(Layer *layer) {
+void Application::pushOverlay(Layer *layer) {
     layer->setAppVars(makeAppVars());
-    return m_layers.pushOverlay(layer);
+    m_layers.pushOverlay(layer);
 }
 
 void Application::popLayer(Layer *layer) { m_layers.popLayer(layer); }
 
-void Application::popOverlay(Layer *layer) { m_layers.popOverlay(layer); }
+void Application::destroyLayer(Layer *layer) {
+    popLayer(layer);
+    layer->onDestroy();
+    delete layer;
+}
 
 void Application::processEvent(const SDL_Event &event) {
     if (event.type == SDL_QUIT) {

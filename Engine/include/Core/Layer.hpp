@@ -12,12 +12,9 @@
 
 namespace SD {
 
-class Renderer;
-class System;
-
 class SD_API Layer {
    public:
-    using SystemContainer = std::list<Ref<System>>;
+    using SystemContainer = std::vector<System *>;
 
    public:
     Layer(const std::string &name) : m_name(name), m_blockEvent(false) {}
@@ -28,9 +25,15 @@ class SD_API Layer {
 
     Layer &operator=(const Layer &) = delete;
 
-    virtual void onAttach() {}
+    virtual void onPush() {}
 
-    virtual void onDetech() {}
+    virtual void onPop() {}
+
+    void onDestroy() {
+        while (m_systems.size() > 0) {
+            destroySystem(m_systems.front());
+        }
+    }
 
     virtual void onTick(float) {}
 
@@ -47,8 +50,13 @@ class SD_API Layer {
 
     template <typename SYSTEM, typename... ARGS>
     void pushSystem(ARGS &&...args) {
-        Ref<SYSTEM> system = createRef<SYSTEM>(std::forward<ARGS>(args)...);
+        SYSTEM *system = new SYSTEM(std::forward<ARGS>(args)...);
+        pushSystem(system);
+    }
+
+    void pushSystem(System *system) {
         system->setAppVars(makeAppVars());
+        system->onPush();
         system->onInit();
         m_systems.push_back(system);
     }
@@ -57,10 +65,32 @@ class SD_API Layer {
     SYSTEM *getSystem(const std::string &name) {
         for (auto iter = m_systems.begin(); iter != m_systems.end(); ++iter) {
             if ((*iter)->getName() == name) {
-                return dynamic_cast<SYSTEM *>((*iter).get());
+                return dynamic_cast<SYSTEM *>(*iter);
             }
         }
         return nullptr;
+    }
+
+    void popSystem(System *system) {
+        auto itr = m_systems.begin();
+        for (; itr != m_systems.end(); itr++) {
+            if (*itr == system) {
+                break;
+            }
+        }
+
+        if (itr != m_systems.end()) {
+            m_systems.erase(itr);
+        } else {
+            SD_CORE_ERROR("Layer::popSystem Failed! No system found!");
+        }
+        system->onPop();
+    }
+
+    void destroySystem(System *system) {
+        popSystem(system);
+        system->onDestroy();
+        delete system;
     }
 
     const SystemContainer &getSystems() const { return m_systems; }

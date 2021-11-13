@@ -13,9 +13,9 @@ class SD_API ImGuiLayer : public Layer {
 
     void end();
 
-    void onAttach() override;
+    void onPush() override;
 
-    void onDetech() override;
+    void onPop() override;
 
     void onEventProcess(const SDL_Event &) override;
 

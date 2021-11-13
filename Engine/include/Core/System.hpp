@@ -16,11 +16,15 @@ class System {
 
     virtual ~System() = default;
 
-    virtual void onInit() = 0;
+    virtual void onPush() {}
 
-    virtual void onDestroy() = 0;
+    virtual void onPop() {}
 
-    virtual void onRender() = 0;
+    virtual void onInit(){};
+
+    virtual void onDestroy(){};
+
+    virtual void onRender(){};
 
     virtual void onTick(float) {}
 

@@ -6,15 +6,22 @@
 #include "ScenePanel.hpp"
 #include "CameraController.hpp"
 
+#include "Renderer/System/ShadowSystem.hpp"
+#include "Renderer/System/LightingSystem.hpp"
+#include "Renderer/System/SkyboxSystem.hpp"
+#include "Renderer/System/ProfileSystem.hpp"
+#include "Renderer/System/PostProcessSystem.hpp"
+#include "Renderer/System/SpriteRenderSystem.hpp"
+
 namespace SD {
 
 class EditorLayer : public Layer {
    public:
     EditorLayer(int width, int height);
 
-    void onAttach() override;
+    void onPush() override;
 
-    void onDetech() override;
+    void onPop() override;
 
     void onTick(float dt) override;
 
@@ -36,6 +43,13 @@ class EditorLayer : public Layer {
     void hide();
 
     void show();
+
+    ShadowSystem *m_shadowSystem;
+    LightingSystem *m_lightingSystem;
+    SkyboxSystem *m_skyboxSystem;
+    SpriteRenderSystem *m_spriteSystem;
+    PostProcessSystem *m_postProcessSystem;
+    ProfileSystem *m_profileSystem;
 
     int m_width;
     int m_height;

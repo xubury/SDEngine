@@ -36,7 +36,7 @@ void ImGuiLayer::end() {
     }
 }
 
-void ImGuiLayer::onAttach() {
+void ImGuiLayer::onPush() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -68,7 +68,7 @@ void ImGuiLayer::onAttach() {
     }
 }
 
-void ImGuiLayer::onDetech() {
+void ImGuiLayer::onPop() {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
 }

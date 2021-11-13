@@ -8,11 +8,7 @@ namespace SD {
 
 class SDEditor : public Application {
    public:
-    void init() override;
-    void destroy() override;
-
-   private:
-    EditorLayer *m_layer;
+    void onInit() override;
 };
 
 }  // namespace SD

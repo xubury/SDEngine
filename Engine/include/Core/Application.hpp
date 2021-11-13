@@ -20,16 +20,16 @@ class SD_API Application {
     Window &getWindow();
 
    protected:
-    Layer *pushLayer(Layer *layer);
+    void pushLayer(Layer *layer);
 
-    Layer *pushOverlay(Layer *layer);
+    void pushOverlay(Layer *layer);
 
     void popLayer(Layer *layer);
 
-    void popOverlay(Layer *layer);
+    void destroyLayer(Layer *layer);
 
     Application();
-    ~Application();
+    virtual ~Application() = default;
 
     APP_VARS
    private:
@@ -38,11 +38,11 @@ class SD_API Application {
 
     friend int ::main(int argc, char **argv);
 
-    virtual void init() = 0;
+    virtual void onInit() = 0;
 
     void run();
 
-    virtual void destroy() = 0;
+    void destroy();
 
     void processEvent(const SDL_Event &event);
 

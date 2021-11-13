@@ -13,13 +13,11 @@ class SD_API LayerStack {
 
     ~LayerStack();
 
-    Layer *pushLayer(Layer *layer);
+    void pushLayer(Layer *layer);
 
-    Layer *pushOverlay(Layer *layer);
+    void pushOverlay(Layer *layer);
 
     void popLayer(Layer *layer);
-
-    void popOverlay(Layer *layer);
 
     bool hasLayer(Layer *layer) const;
 
