@@ -1,14 +1,14 @@
 #ifndef SD_SPRITE_RENDER_SYSTEM_HPP
 #define SD_SPRITE_RENDER_SYSTEM_HPP
 
-#include "Renderer/System/System.hpp"
+#include "Core/System.hpp"
 #include "Renderer/System/Event.hpp"
 
 namespace SD {
 
 class SD_API SpriteRenderSystem : public System {
    public:
-    SpriteRenderSystem();
+    SpriteRenderSystem(RenderTarget *target);
 
     void onInit() override;
 
@@ -17,6 +17,7 @@ class SD_API SpriteRenderSystem : public System {
     void onRender() override;
 
    private:
+    RenderTarget *m_target;
 };
 
 }  // namespace SD

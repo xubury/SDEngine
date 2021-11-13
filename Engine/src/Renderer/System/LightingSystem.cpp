@@ -43,7 +43,9 @@ TextureFormatType getTextureFormatType(GeometryBufferType type) {
     }
 }
 
-LightingSystem::LightingSystem(int width, int height, int samples) {
+LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
+                               int samples)
+    : System("Lighting"), m_target(target) {
     initShaders();
     initLighting(width, height, samples);
 
@@ -104,32 +106,31 @@ void LightingSystem::onSizeEvent(const SizeEvent &event) {
 }
 
 void LightingSystem::onRender() {
-    SD_CORE_ASSERT(Renderer::engine().getScene(), "No active scene.");
-    SD_CORE_ASSERT(Renderer::engine().getCamera(), "No camera is set!");
+    SD_CORE_ASSERT(renderer->getScene(), "No active scene.");
+    SD_CORE_ASSERT(renderer->getCamera(), "No camera is set!");
 
     clear();
     renderGBuffer();
-    Renderer::device().setDepthMask(false);
+    renderer->device().setDepthMask(false);
     renderDeferred();
     renderEmissive();
-    Renderer::device().setDepthMask(true);
+    renderer->device().setDepthMask(true);
 
-    Renderer::device().blitFramebuffer(
-        m_gBufferTarget.getFramebuffer(), 0,
-        Renderer::engine().getRenderTarget().getFramebuffer(), 0,
+    renderer->device().blitFramebuffer(
+        m_gBufferTarget.getFramebuffer(), 0, m_target->getFramebuffer(), 0,
         BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
 }
 
 void LightingSystem::clear() {
-    Renderer::device().resetShaderState();
+    renderer->device().resetShaderState();
     // clear the last lighting pass' result
     for (int i = 0; i < 2; ++i) {
-        Renderer::device().setFramebuffer(m_lightTarget[i].getFramebuffer());
-        Renderer::device().clear(BufferBitMask::COLOR_BUFFER_BIT);
+        renderer->device().setFramebuffer(m_lightTarget[i].getFramebuffer());
+        renderer->device().clear(BufferBitMask::COLOR_BUFFER_BIT);
     }
 
-    Renderer::device().setFramebuffer(m_gBufferTarget.getFramebuffer());
-    Renderer::device().clear(BufferBitMask::COLOR_BUFFER_BIT |
+    renderer->device().setFramebuffer(m_gBufferTarget.getFramebuffer());
+    renderer->device().clear(BufferBitMask::COLOR_BUFFER_BIT |
                              BufferBitMask::DEPTH_BUFFER_BIT);
     uint32_t id = static_cast<uint32_t>(Entity::INVALID_ID);
     m_gBufferTarget.getFramebuffer()->clearAttachment(
@@ -137,23 +138,22 @@ void LightingSystem::clear() {
 }
 
 void LightingSystem::renderEmissive() {
-    Renderer::engine().getRenderTarget().bind();
+    renderer->setRenderTarget(*m_target);
     m_emssiveShader->bind();
     m_emssiveShader->setTexture("u_lighting", getLightingTarget().getTexture());
     m_emssiveShader->setTexture(
         "u_gEmissive",
         m_gBufferTarget.getTexture(GeometryBufferType::G_EMISSIVE));
-    Renderer::submit(*m_quad, MeshTopology::TRIANGLES,
+    renderer->submit(*m_quad, MeshTopology::TRIANGLES,
                      m_quad->getIndexBuffer()->getCount(), 0);
 }
 
 void LightingSystem::renderDeferred() {
-    auto scene = Renderer::engine().getScene();
+    auto scene = renderer->getScene();
     auto lightView = scene->view<TransformComponent, LightComponent>();
 
     m_deferredShader->bind();
-    Renderer::engine().updateShader(*m_deferredShader,
-                                    *Renderer::engine().getCamera());
+    renderer->updateShader(*m_deferredShader, *renderer->getCamera());
     m_deferredShader->setTexture(
         "u_gPosition",
         m_gBufferTarget.getTexture(GeometryBufferType::G_POSITION));
@@ -168,7 +168,7 @@ void LightingSystem::renderDeferred() {
     const uint8_t outputId = 1;
     lightView.each([this](const TransformComponent &transformComp,
                           const LightComponent &lightComp) {
-        m_lightTarget[outputId].bind();
+        renderer->setRenderTarget(m_lightTarget[outputId]);
         const Light &light = lightComp.light;
         m_deferredShader->setTexture("u_lighting",
                                      m_lightTarget[inputId].getTexture());
@@ -194,22 +194,21 @@ void LightingSystem::renderDeferred() {
         m_deferredShader->setTexture("u_light.shadowMap", light.getShadowMap());
         m_deferredShader->setMat4("u_light.projectionView",
                                   light.getProjectionView());
-        Renderer::submit(*m_quad, MeshTopology::TRIANGLES,
+        renderer->submit(*m_quad, MeshTopology::TRIANGLES,
                          m_quad->getIndexBuffer()->getCount(), 0);
         std::swap(m_lightTarget[inputId], m_lightTarget[outputId]);
     });
 }
 
 void LightingSystem::renderGBuffer() {
-    auto scene = Renderer::engine().getScene();
+    auto scene = renderer->getScene();
     auto terrainView = scene->view<TransformComponent, TerrainComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
-    m_gBufferTarget.bind();
-    Renderer::device().disable(Operation::BLEND);
+    renderer->setRenderTarget(m_gBufferTarget);
+    renderer->device().disable(Operation::BLEND);
 
-    Renderer::engine().updateShader(*m_gBufferShader,
-                                    *Renderer::engine().getCamera());
+    renderer->updateShader(*m_gBufferShader, *renderer->getCamera());
 
     m_gBufferShader->bind();
     terrainView.each([this](const entt::entity &entity,
@@ -228,7 +227,7 @@ void LightingSystem::renderGBuffer() {
                                     material.getTexture(MaterialType::AMBIENT));
         m_gBufferShader->setTexture(
             "u_material.emissive", material.getTexture(MaterialType::EMISSIVE));
-        Renderer3D::drawMesh(terrain.getMesh());
+        renderer->drawMesh(terrain.getMesh());
     });
 
     modelView.each([this](const entt::entity &entity,
@@ -254,11 +253,11 @@ void LightingSystem::renderGBuffer() {
                 m_gBufferShader->setTexture(
                     "u_material.emissive",
                     material.getTexture(MaterialType::EMISSIVE));
-                Renderer3D::drawMesh(mesh);
+                renderer->drawMesh(mesh);
             }
         }
     });
-    Renderer::device().enable(Operation::BLEND);
+    renderer->device().enable(Operation::BLEND);
 }
 
 }  // namespace SD

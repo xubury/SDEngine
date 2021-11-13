@@ -1,7 +1,7 @@
 #ifndef SD_PROFILE_SYSTEM_HPP
 #define SD_PROFILE_SYSTEM_HPP
 
-#include "Renderer/System/System.hpp"
+#include "Core/System.hpp"
 #include "Renderer/System/Event.hpp"
 #include "Renderer/Font.hpp"
 #include "Renderer/Camera.hpp"
@@ -11,7 +11,7 @@ namespace SD {
 
 class ProfileSystem : public System {
    public:
-    ProfileSystem(int width, int height);
+    ProfileSystem(RenderTarget *target, int width, int height);
 
     void onInit() override;
     void onDestroy() override;
@@ -20,6 +20,7 @@ class ProfileSystem : public System {
     void onSizeEvent(const SizeEvent &event);
 
    private:
+    RenderTarget *m_target;
     OrthographicCamera m_camera;
     FpsCounter m_fps;
     Ref<Font> m_font;

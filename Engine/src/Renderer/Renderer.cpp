@@ -1,11 +1,6 @@
 #include "Renderer/Renderer.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Device.hpp"
-#include "Renderer/System/ShadowSystem.hpp"
-#include "Renderer/System/SkyboxSystem.hpp"
-#include "Renderer/System/ProfileSystem.hpp"
-#include "Renderer/System/PostProcessSystem.hpp"
-#include "Renderer/System/SpriteRenderSystem.hpp"
 
 namespace SD {
 
@@ -58,41 +53,15 @@ struct Renderer2DData {
 
 static Renderer2DData s_data;
 
-namespace Renderer {
-
-Engine::Engine() : Layer("Render Engine") {}
-
-void Engine::init(int width, int height, int samples) {
-    SD_CORE_TRACE("Initializing Engine...");
-
-    m_width = width;
-    m_height = height;
-    m_samples = samples;
-    m_exposure = 1.5;
-    m_isBloom = true;
-    m_bloom = 1.0f;
-    m_gammaCorrection = 1.2f;
-
+Renderer::Renderer() {
     m_cameraUBO = UniformBuffer::create(nullptr, sizeof(CameraData),
                                         BufferIOType::DYNAMIC);
 
     m_device = Device::create();
-
-    initSystems();
     initRenderer2D();
 }
 
-void Engine::initSystems() {
-    addSystem<ShadowSystem>();
-    m_lightingSystem = addSystem<LightingSystem>(m_width, m_height, m_samples);
-    addSystem<SkyboxSystem>();
-    addSystem<SpriteRenderSystem>();
-    addSystem<PostProcessSystem>(m_width, m_height);
-    addSystem<ProfileSystem>(m_width, m_height);
-    m_terrainSystem = addSystem<TerrainSystem>();
-}
-
-void Engine::initRenderer2D() {
+void Renderer::initRenderer2D() {
     std::array<uint32_t, s_data.MAX_INDICES> quadIndices;
     uint32_t offset = 0;
     for (uint32_t i = 0; i < s_data.MAX_INDICES; i += 6) {
@@ -143,47 +112,13 @@ void Engine::initRenderer2D() {
     s_data.spriteShader = ShaderLibrary::instance().load("shaders/sprite.glsl");
 }
 
-void Engine::onRender() {
-    m_defaultTarget.bind();
-    Renderer::device().clear();
-    for (auto& system : getSystems()) {
-        system->onRender();
-    }
-    Renderer::device().setPolygonMode(PolygonMode::FILL, Face::BOTH);
+void Renderer::setRenderTarget(RenderTarget& target) {
+    m_device->setFramebuffer(target.getFramebuffer());
+    m_device->setViewport(target.getX(), target.getY(), target.getWidth(),
+                          target.getHeight());
 }
 
-void Engine::onTick(float dt) {
-    for (auto& system : getSystems()) {
-        system->onTick(dt);
-    }
-}
-
-void Engine::onEventProcess(const SDL_Event& event) {
-    if (event.type == SDL_WINDOWEVENT) {
-        if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
-            resize(event.window.data1, event.window.data2);
-    }
-}
-
-void Engine::onEventsProcess() {}
-
-void Engine::resize(int width, int height) {
-    m_width = width;
-    m_height = height;
-    if (m_camera) {
-        m_camera->resize(width, height);
-    }
-    m_defaultTarget.resize(width, height);
-    dispatchEvent(SizeEvent(width, height));
-}
-
-TerrainSystem* Engine::getTerrainSystem() { return m_terrainSystem.get(); }
-
-LightingSystem* Engine::getLightingSystem() { return m_lightingSystem.get(); }
-
-RenderTarget& Engine::getRenderTarget() { return m_defaultTarget; }
-
-void Engine::updateShader(Shader& shader, Camera& camera) {
+void Renderer::updateShader(Shader& shader, Camera& camera) {
     CameraData cameraData;
     cameraData.viewPos = camera.getWorldPosition();
     cameraData.viewProjection = camera.getViewPorjection();
@@ -191,74 +126,43 @@ void Engine::updateShader(Shader& shader, Camera& camera) {
     shader.setUniformBuffer("Camera", *m_cameraUBO);
 }
 
-void Engine::setScene(Scene* scene) { m_scene = scene; }
+void Renderer::setScene(Scene* scene) { m_scene = scene; }
 
-Scene* Engine::getScene() { return m_scene; }
+Scene* Renderer::getScene() { return m_scene; }
 
-void Engine::setCamera(Camera* camera) { m_camera = camera; }
+void Renderer::setCamera(Camera* camera) { m_camera = camera; }
 
-Camera* Engine::getCamera() { return m_camera; }
+Camera* Renderer::getCamera() { return m_camera; }
 
-void Engine::setExposure(float exposure) { m_exposure = exposure; }
-
-float Engine::getExposure() { return m_exposure; }
-
-void Engine::setBloom(bool isBloom) { m_isBloom = isBloom; }
-
-bool Engine::getBloom() { return m_isBloom; }
-
-void Engine::setBloomFactor(float bloom) { m_bloom = bloom; }
-
-float Engine::getBloomFactor() { return m_bloom; }
-
-void Engine::setGammaCorrection(float gamma) { m_gammaCorrection = gamma; }
-
-float Engine::getGammaCorrection() { return m_gammaCorrection; }
-
-Engine& engine() {
-    static Engine s_engine;
-    return s_engine;
-}
-
-Device& device() { return *engine().m_device; }
-
-void submit(const VertexArray& vao, MeshTopology topology, size_t count,
-            size_t offset) {
+void Renderer::submit(const VertexArray& vao, MeshTopology topology,
+                      size_t count, size_t offset) {
     vao.bind();
     device().drawElements(topology, count, offset);
 }
 
-}  // namespace Renderer
-
-namespace Renderer3D {
-
-void drawMesh(const Mesh& mesh) {
-    Renderer::device().setPolygonMode(mesh.getPolygonMode(), Face::BOTH);
+void Renderer::drawMesh(const Mesh& mesh) {
+    m_device->setPolygonMode(mesh.getPolygonMode(), Face::BOTH);
     VertexArray* vao = mesh.getVertexArray();
     SD_CORE_ASSERT(vao, "Invalid mesh!");
     Renderer::submit(*vao, mesh.getTopology(),
                      vao->getIndexBuffer()->getCount(), 0);
 }
 
-}  // namespace Renderer3D
-
-namespace Renderer2D {
-
-void beginScene(Camera& camera) {
-    Renderer::engine().updateShader(*s_data.spriteShader, camera);
+void Renderer::beginScene(Camera& camera) {
+    updateShader(*s_data.spriteShader, camera);
     s_data.spriteShader->bind();
     startBatch();
 }
 
-void endScene() { flush(); }
+void Renderer::endScene() { flush(); }
 
-void flush() {
+void Renderer::flush() {
     if (s_data.quadIndexCnt == 0) {
         return;
     }
     size_t offset =
         s_data.quadVertexBufferPtr - s_data.quadVertexBufferBase.data();
-    glm::vec3 viewPos = Renderer::engine().getCamera()->getWorldPosition();
+    glm::vec3 viewPos = m_camera->getWorldPosition();
 
     // sort the drawing order to render transparent texture properly.
     std::sort(s_data.quadVertexBufferBase.begin(),
@@ -281,25 +185,25 @@ void flush() {
     setTextOrigin(0, 0);
 }
 
-void startBatch() {
+void Renderer::startBatch() {
     s_data.quadIndexCnt = 0;
     s_data.textureSlotIndex = 1;
     s_data.quadVertexBufferPtr = s_data.quadVertexBufferBase.data();
 }
 
-void nextBatch() {
+void Renderer::nextBatch() {
     flush();
     startBatch();
 }
 
-void setTextOrigin(float x, float y) {
+void Renderer::setTextOrigin(float x, float y) {
     s_data.textOrigin.x = x;
     s_data.textOrigin.y = y;
     s_data.textCursor.x = 0;
     s_data.textCursor.y = 0;
 }
 
-void drawQuad(const glm::mat4& transform, const glm::vec4& color) {
+void Renderer::drawQuad(const glm::mat4& transform, const glm::vec4& color) {
     if (s_data.quadIndexCnt >= Renderer2DData::MAX_INDICES) {
         nextBatch();
     }
@@ -315,8 +219,8 @@ void drawQuad(const glm::mat4& transform, const glm::vec4& color) {
     s_data.quadIndexCnt += 6;
 }
 
-void drawTexture(const Ref<Texture>& texture, const glm::mat4& transform,
-                 const glm::vec4& color) {
+void Renderer::drawTexture(const Ref<Texture>& texture,
+                           const glm::mat4& transform, const glm::vec4& color) {
     if (s_data.quadIndexCnt >= Renderer2DData::MAX_INDICES) {
         nextBatch();
     }
@@ -349,18 +253,18 @@ void drawTexture(const Ref<Texture>& texture, const glm::mat4& transform,
     s_data.quadIndexCnt += 6;
 }
 
-void drawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
-                   const glm::vec2& scale, const glm::vec4& color) {
+void Renderer::drawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
+                             const glm::vec2& scale, const glm::vec4& color) {
     drawTexture(
         texture,
         glm::translate(glm::mat4(1.0f), pos) *
-            glm::toMat4(Renderer::engine().getCamera()->getWorldRotation()) *
+            glm::toMat4(m_camera->getWorldRotation()) *
             glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
         color);
 }
 
-void drawText(Font& font, const std::wstring& text, int pixelSize,
-              const glm::mat4& transform, const glm::vec4& color) {
+void Renderer::drawText(Font& font, const std::wstring& text, int pixelSize,
+                        const glm::mat4& transform, const glm::vec4& color) {
     glm::mat4 t =
         glm::translate(glm::mat4(1.0f),
                        glm::vec3(s_data.textOrigin.x, s_data.textOrigin.y, 0)) *
@@ -383,7 +287,5 @@ void drawText(Font& font, const std::wstring& text, int pixelSize,
         s_data.textCursor.x += ch.advance >> 6;
     }
 }
-
-}  // namespace Renderer2D
 
 }  // namespace SD

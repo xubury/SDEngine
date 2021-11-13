@@ -272,21 +272,21 @@ void ScenePanel::drawComponents(Entity &entity) {
                               &m_selectedMaterialIdMap[entity]);
         }
     });
-    drawComponent<TerrainComponent>(
-        "Terrain", entity, [&](TerrainComponent &terrain) {
-            int gridSize = terrain.terrain.getGridSize();
-            int vertexCount = terrain.terrain.getVertexCount();
-            if (ImGui::InputInt("Grid size:", &gridSize)) {
-                terrain.terrain.setGridSize(std::max(gridSize, 1));
-                terrain.terrain.generateMesh();
-                Renderer::engine().getTerrainSystem()->updateTerrain(entity);
-            }
-            if (ImGui::InputInt("Vertex count:", &vertexCount)) {
-                terrain.terrain.setVertexCount(std::max(vertexCount, 2));
-                terrain.terrain.generateMesh();
-                Renderer::engine().getTerrainSystem()->updateTerrain(entity);
-            }
-        });
+    // drawComponent<TerrainComponent>(
+    //     "Terrain", entity, [&](TerrainComponent &terrain) {
+    //         int gridSize = terrain.terrain.getGridSize();
+    //         int vertexCount = terrain.terrain.getVertexCount();
+    //         if (ImGui::InputInt("Grid size:", &gridSize)) {
+    //             terrain.terrain.setGridSize(std::max(gridSize, 1));
+    //             terrain.terrain.generateMesh();
+    //             renderer->getTerrainSystem()->updateTerrain(entity);
+    //         }
+    //         if (ImGui::InputInt("Vertex count:", &vertexCount)) {
+    //             terrain.terrain.setVertexCount(std::max(vertexCount, 2));
+    //             terrain.terrain.generateMesh();
+    //             renderer->getTerrainSystem()->updateTerrain(entity);
+    //         }
+    //     });
     drawComponent<LightComponent>(
         "Light", entity, [&](LightComponent &lightComp) {
             Light &light = lightComp.light;

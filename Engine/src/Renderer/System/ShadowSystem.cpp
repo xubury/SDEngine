@@ -6,7 +6,7 @@
 
 namespace SD {
 
-ShadowSystem::ShadowSystem() {
+ShadowSystem::ShadowSystem() : System("Shadow") {
     m_shadowShader = ShaderLibrary::instance().load("shaders/shadow.glsl");
 }
 
@@ -15,21 +15,21 @@ void ShadowSystem::onInit() {}
 void ShadowSystem::onDestroy() {}
 
 void ShadowSystem::onRender() {
-    auto scene = Renderer::engine().getScene();
+    auto scene = renderer->getScene();
     auto lightView = scene->view<TransformComponent, LightComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
-    Renderer::device().setCullFace(Face::FRONT);
+    renderer->device().setCullFace(Face::FRONT);
     m_shadowShader->bind();
     lightView.each([this, &modelView](const TransformComponent &transformComp,
                                       LightComponent &lightComp) {
         Light &light = lightComp.light;
         if (!light.isCastShadow()) return;
 
-        light.getRenderTarget().bind();
+        renderer->setRenderTarget(light.getRenderTarget());
         light.getRenderTarget().getFramebuffer()->clearDepth();
         light.computeLightSpaceMatrix(transformComp.transform,
-                                      Renderer::engine().getCamera());
+                                      renderer->getCamera());
         m_shadowShader->setMat4("u_projectionView", light.getProjectionView());
 
         modelView.each([this](const TransformComponent &transformComp,
@@ -39,12 +39,12 @@ void ShadowSystem::onRender() {
                 "u_model", transformComp.transform.getWorldTransform());
             if (model) {
                 for (const auto &mesh : model->getMeshes()) {
-                    Renderer3D::drawMesh(mesh);
+                    renderer->drawMesh(mesh);
                 }
             }
         });
     });
-    Renderer::device().setCullFace(Face::BACK);
+    renderer->device().setCullFace(Face::BACK);
 }
 
 }  // namespace SD

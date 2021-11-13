@@ -2,7 +2,7 @@
 #define SD_POST_PROCESS_SYSTEM_HPP
 
 #include "Graphics/VertexArray.hpp"
-#include "Renderer/System/System.hpp"
+#include "Core/System.hpp"
 #include "Renderer/System/Event.hpp"
 #include "Renderer/RenderTarget.hpp"
 #include "Graphics/Shader.hpp"
@@ -11,7 +11,7 @@ namespace SD {
 
 class SD_API PostProcessSystem : public System {
    public:
-    PostProcessSystem(int width, int height);
+    PostProcessSystem(RenderTarget *target, int width, int height);
 
     void onInit() override;
 
@@ -20,6 +20,18 @@ class SD_API PostProcessSystem : public System {
     void onRender() override;
 
     void onSizeEvent(const SizeEvent &event);
+
+    void setExposure(float exposure);
+    float getExposure();
+
+    void setBloom(bool isBloom);
+    bool getBloom();
+
+    void setBloomFactor(float bloom);
+    float getBloomFactor();
+
+    float getGammaCorrection();
+    void setGammaCorrection(float gamma);
 
    private:
     void renderBlur();
@@ -32,9 +44,16 @@ class SD_API PostProcessSystem : public System {
     RenderTarget m_blurTarget[2];
     Texture *m_blurResult;
 
-    RenderTarget m_target;
+    RenderTarget m_postTarget;
 
     Ref<VertexArray> m_quad;
+
+    RenderTarget *m_target;
+
+    bool m_isBloom;
+    float m_bloom;
+    float m_exposure;
+    float m_gammaCorrection;
 };
 
 }  // namespace SD

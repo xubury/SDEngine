@@ -1,7 +1,7 @@
 #ifndef SD_TERRAIN_SYSTEM_HPP
 #define SD_TERRAIN_SYSTEM_HPP
 
-#include "Renderer/System/System.hpp"
+#include "Core/System.hpp"
 #include "Renderer/System/Event.hpp"
 #include "Renderer/Terrain.hpp"
 #include "ECS/Entity.hpp"

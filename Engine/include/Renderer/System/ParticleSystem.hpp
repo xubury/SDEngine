@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include "Utility/Export.hpp"
-#include "Renderer/System/System.hpp"
+#include "Core/System.hpp"
 #include "Renderer/RenderTarget.hpp"
 #include "Renderer/Camera.hpp"
 

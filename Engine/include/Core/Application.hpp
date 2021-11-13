@@ -1,6 +1,7 @@
 #ifndef SD_ENGINE_HPP
 #define SD_ENGINE_HPP
 
+#include "Core/Vars.hpp"
 #include "Core/Window.hpp"
 #include "Core/LayerStack.hpp"
 #include "ImGui/ImGuiLayer.hpp"
@@ -30,7 +31,11 @@ class SD_API Application {
     Application();
     ~Application();
 
+    APP_VARS
    private:
+    SET_APP_VARS
+    MAKE_APP_VARS
+
     friend int ::main(int argc, char **argv);
 
     virtual void init() = 0;

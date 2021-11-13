@@ -10,7 +10,6 @@ set(System_Include
     ${Include_Root}/System/ShadowSystem.hpp
     ${Include_Root}/System/SkyboxSystem.hpp
     ${Include_Root}/System/SpriteRenderSystem.hpp
-    ${Include_Root}/System/System.hpp
     ${Include_Root}/System/TerrainSystem.hpp)
 
 set(System_Src
@@ -21,7 +20,6 @@ set(System_Src
     ${Src_Root}/System/ShadowSystem.cpp
     ${Src_Root}/System/SkyboxSystem.cpp
     ${Src_Root}/System/SpriteRenderSystem.cpp
-    ${Src_Root}/System/System.cpp
     ${Src_Root}/System/TerrainSystem.cpp)
 
 set(Renderer_Include

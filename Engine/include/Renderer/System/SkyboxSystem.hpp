@@ -2,7 +2,7 @@
 #ifndef SD_SKYBOX_SYSTEM_HPP
 #define SD_SKYBOX_SYSTEM_HPP
 
-#include "Renderer/System/System.hpp"
+#include "Core/System.hpp"
 #include "Renderer/System/Event.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"
@@ -11,7 +11,7 @@ namespace SD {
 
 class SD_API SkyboxSystem : public System {
    public:
-    SkyboxSystem();
+    SkyboxSystem(RenderTarget *target);
 
     void onInit() override;
 
@@ -22,6 +22,8 @@ class SD_API SkyboxSystem : public System {
    private:
     Ref<Shader> m_skyboxShader;
     Ref<VertexArray> m_skybox;
+
+    RenderTarget *m_target;
 };
 
 }  // namespace SD

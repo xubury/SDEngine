@@ -1,7 +1,7 @@
 #ifndef SD_LIGHTING_SYSTEM_HPP
 #define SD_LIGHTING_SYSTEM_HPP
 
-#include "Renderer/System/System.hpp"
+#include "Core/System.hpp"
 #include "Renderer/System/Event.hpp"
 #include "Renderer/RenderTarget.hpp"
 #include "ECS/Scene.hpp"
@@ -27,7 +27,7 @@ TextureFormatType SD_API getTextureFormatType(GeometryBufferType type);
 
 class SD_API LightingSystem : public System {
    public:
-    LightingSystem(int width, int height, int samples);
+    LightingSystem(RenderTarget *target, int width, int height, int samples);
 
     void onInit() override;
 
@@ -52,6 +52,8 @@ class SD_API LightingSystem : public System {
     void renderEmissive();
 
     RenderTarget &getLightingTarget() { return m_lightTarget[0]; };
+
+    RenderTarget *m_target;
 
     Ref<Shader> m_emssiveShader;
 

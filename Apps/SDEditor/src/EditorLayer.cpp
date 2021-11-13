@@ -8,6 +8,13 @@
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGuizmo.h"
 
+#include "Renderer/System/ShadowSystem.hpp"
+#include "Renderer/System/LightingSystem.hpp"
+#include "Renderer/System/SkyboxSystem.hpp"
+#include "Renderer/System/ProfileSystem.hpp"
+#include "Renderer/System/PostProcessSystem.hpp"
+#include "Renderer/System/SpriteRenderSystem.hpp"
+
 #include <glm/gtc/type_ptr.hpp>
 
 namespace SD {
@@ -16,6 +23,7 @@ EditorLayer::EditorLayer(int width, int height)
     : Layer("Editor Layer"),
       m_width(width),
       m_height(height),
+      m_target(0, 0, width, height),
       m_isViewportFocused(false),
       m_isViewportHovered(false),
       m_hide(false),
@@ -33,43 +41,54 @@ EditorLayer::EditorLayer(int width, int height)
         image->hasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
         TextureFormatType::UBYTE, TextureWrap::REPEAT, TextureFilter::LINEAR,
         TextureMipmapFilter::LINEAR_LINEAR, image->data());
-
-    newScene();
     m_screenBuffer = Framebuffer::create();
     m_screenBuffer->attachTexture(Texture::create(
         m_width, m_height, 1, TextureType::TEX_2D, TextureFormat::RGBA,
         TextureFormatType::UBYTE, TextureWrap::BORDER, TextureFilter::NEAREST,
         TextureMipmapFilter::NEAREST));
-
     m_debugGBuffer = Framebuffer::create();
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
         m_debugGBuffer->attachTexture(Texture::create(
-            width, height, 1, TextureType::TEX_2D,
+            m_width, m_height, 1, TextureType::TEX_2D,
             getTextureFormat(GeometryBufferType(i)),
             getTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
             TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
     }
 }
 
-void EditorLayer::onAttach() { show(); }
+void EditorLayer::onAttach() {
+    newScene();
+    pushSystem<ShadowSystem>();
+    pushSystem<LightingSystem>(&m_target, m_width, m_height, 4);
+    pushSystem<SkyboxSystem>(&m_target);
+    pushSystem<SpriteRenderSystem>(&m_target);
+    pushSystem<PostProcessSystem>(&m_target, m_width, m_height);
+    pushSystem<ProfileSystem>(&m_target, m_width, m_height);
+
+    show();
+}
 
 void EditorLayer::onDetech() { hide(); }
 
 void EditorLayer::onRender() {
+    renderer->setRenderTarget(m_target);
+    renderer->device().clear();
+    for (auto &system : getSystems()) {
+        system->onRender();
+    }
+
     if (m_hide) return;
 
-    Renderer::engine().getRenderTarget().bind();
-    Renderer::device().clear(BufferBitMask::DEPTH_BUFFER_BIT);
-    Renderer2D::beginScene(m_editorCamera);
+    renderer->beginScene(m_editorCamera);
     auto lightView = m_scene->view<LightComponent, TransformComponent>();
     lightView.each(
         [this](const LightComponent &, const TransformComponent &transComp) {
             glm::vec3 pos = transComp.transform.getWorldPosition();
             float dist = glm::distance(pos, m_editorCamera.getWorldPosition());
             float scale = (dist - m_editorCamera.getNearZ()) / 20;
-            Renderer2D::drawBillboard(m_lightIcon, pos, glm::vec2(scale));
+            renderer->drawBillboard(m_lightIcon, pos, glm::vec2(scale));
         });
-    Renderer2D::endScene();
+    renderer->endScene();
 }
 
 void EditorLayer::onTick(float dt) {
@@ -100,15 +119,14 @@ void EditorLayer::onImGui() {
     if (m_hide) {
         return;
     }
-    Renderer::device().blitFramebuffer(
-        Renderer::engine().getRenderTarget().getFramebuffer(), 0,
-        m_screenBuffer.get(), 0, BufferBitMask::COLOR_BUFFER_BIT,
-        TextureFilter::NEAREST);
+    renderer->device().blitFramebuffer(
+        m_target.getFramebuffer(), 0, m_screenBuffer.get(), 0,
+        BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
+    auto lightSystem = getSystem<LightingSystem>("Lighting");
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-        Renderer::device().blitFramebuffer(
-            Renderer::engine().getLightingSystem()->getGBuffer(), i,
-            m_debugGBuffer.get(), i, BufferBitMask::COLOR_BUFFER_BIT,
-            TextureFilter::NEAREST);
+        renderer->device().blitFramebuffer(
+            lightSystem->getGBuffer(), i, m_debugGBuffer.get(), i,
+            BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
     }
 
     static bool dockspaceOpen = true;
@@ -180,26 +198,27 @@ void EditorLayer::onImGui() {
 
     ImGui::Begin("Render Settings");
     {
-        float exposure = Renderer::engine().getExposure();
+        auto postProcessSystem = getSystem<PostProcessSystem>("PostProcess");
+        float exposure = postProcessSystem->getExposure();
         ImGui::TextUnformatted("Exposure");
         if (ImGui::SliderFloat("##Exposure", &exposure, 0, 10)) {
-            Renderer::engine().setExposure(exposure);
+            postProcessSystem->setExposure(exposure);
         }
 
-        bool isBloom = Renderer::engine().getBloom();
+        bool isBloom = postProcessSystem->getBloom();
         if (ImGui::Checkbox("Bloom", &isBloom)) {
-            Renderer::engine().setBloom(isBloom);
+            postProcessSystem->setBloom(isBloom);
         }
-        float bloom = Renderer::engine().getBloomFactor();
+        float bloom = postProcessSystem->getBloomFactor();
         ImGui::TextUnformatted("Bloom Factor");
         if (ImGui::SliderFloat("##Bloom Factor", &bloom, 0.1, 1)) {
-            Renderer::engine().setBloomFactor(bloom);
+            postProcessSystem->setBloomFactor(bloom);
         }
 
-        float gamma = Renderer::engine().getGammaCorrection();
+        float gamma = postProcessSystem->getGammaCorrection();
         ImGui::TextUnformatted("Gamma Correction");
         if (ImGui::SliderFloat("##Gamma Correction", &gamma, 0.1, 3)) {
-            Renderer::engine().setGammaCorrection(gamma);
+            postProcessSystem->setGammaCorrection(gamma);
         }
     }
     ImGui::End();
@@ -225,9 +244,11 @@ void EditorLayer::onImGui() {
                                viewportMaxRegion.y + viewportOffset.y};
         if (m_width != wsize.x || m_height != wsize.y) {
             if (wsize.x > 0 && wsize.y > 0) {
-                Renderer::engine().resize(wsize.x, wsize.y);
+                m_editorCamera.resize(wsize.x, wsize.y);
+                m_target.resize(wsize.x, wsize.y);
                 m_screenBuffer->resize(wsize.x, wsize.y);
                 m_debugGBuffer->resize(wsize.x, wsize.y);
+                dispatcher->dispatchEvent(SizeEvent(wsize.x, wsize.y));
             }
 
             m_width = wsize.x;
@@ -271,16 +292,12 @@ void EditorLayer::onImGui() {
 void EditorLayer::hide() {
     m_hide = true;
     setBlockEvent(false);
-    int w = getApp().getWindow().getWidth();
-    int h = getApp().getWindow().getHeight();
-    Renderer::engine().resize(w, h);
 }
 
 void EditorLayer::show() {
     m_hide = false;
     setBlockEvent(true);
-    Renderer::engine().setCamera(&m_editorCamera);
-    Renderer::engine().resize(m_width, m_height);
+    renderer->setCamera(&m_editorCamera);
 }
 
 void EditorLayer::onEventProcess(const SDL_Event &event) {
@@ -331,7 +348,7 @@ void EditorLayer::onEventsProcess() {
 void EditorLayer::newScene() {
     m_scene = createRef<Scene>();
     m_scenePanel.setScene(m_scene.get());
-    Renderer::engine().setScene(m_scene.get());
+    renderer->setScene(m_scene.get());
 }
 
 void EditorLayer::loadScene() {

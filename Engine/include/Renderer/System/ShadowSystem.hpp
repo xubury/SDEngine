@@ -1,7 +1,7 @@
 #ifndef SD_SHADOW_SYSTEM_HPP
 #define SD_SHADOW_SYSTEM_HPP
 
-#include "Renderer/System/System.hpp"
+#include "Core/System.hpp"
 #include "Graphics/Shader.hpp"
 
 namespace SD {

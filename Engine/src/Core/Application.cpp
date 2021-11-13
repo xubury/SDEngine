@@ -1,7 +1,6 @@
 #include "Core/Application.hpp"
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
-#include "Renderer/Renderer.hpp"
 #include "Input/Input.hpp"
 
 namespace SD {
@@ -38,14 +37,17 @@ Application::Application() {
 
     // Intialize graphics device
     ShaderLibrary::instance().setRootPath("assets");
-    Renderer::engine().init(width, height, samples);
+
+    renderer = createRef<Renderer>();
+    dispatcher = createRef<EventDispatcher>();
+
     if (samples > 1) {
-        Renderer::device().enable(Operation::MULTISAMPLE);
+        renderer->device().enable(Operation::MULTISAMPLE);
     } else {
-        Renderer::device().disable(Operation::MULTISAMPLE);
+        renderer->device().disable(Operation::MULTISAMPLE);
     }
 
-    pushLayer(&Renderer::engine());
+    // pushLayer(new RenderLayer(width, height, samples));
     m_imguiLayer = dynamic_cast<ImGuiLayer *>(pushOverlay(new ImGuiLayer()));
 }
 
@@ -55,10 +57,12 @@ Application::~Application() {
 }
 
 Layer *Application::pushLayer(Layer *layer) {
+    layer->setAppVars(makeAppVars());
     return m_layers.pushLayer(layer);
 }
 
 Layer *Application::pushOverlay(Layer *layer) {
+    layer->setAppVars(makeAppVars());
     return m_layers.pushOverlay(layer);
 }
 

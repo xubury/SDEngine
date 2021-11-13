@@ -4,29 +4,30 @@
 
 namespace SD {
 
-SpriteRenderSystem::SpriteRenderSystem() {}
+SpriteRenderSystem::SpriteRenderSystem(RenderTarget *target)
+    : System("SpriteRender"), m_target(target) {}
 
 void SpriteRenderSystem::onInit() {}
 
 void SpriteRenderSystem::onDestroy() {}
 
 void SpriteRenderSystem::onRender() {
-    auto scene = Renderer::engine().getScene();
+    auto scene = renderer->getScene();
     auto textView = scene->view<TransformComponent, TextComponent>();
 
-    Renderer::engine().getRenderTarget().bind();
-    Renderer2D::beginScene(*Renderer::engine().getCamera());
-    textView.each([](const TransformComponent &transformComp,
-                     const TextComponent &textComp) {
-        Renderer2D::setTextOrigin(0, 0);
+    renderer->setRenderTarget(*m_target);
+    renderer->beginScene(*renderer->getCamera());
+    textView.each([this](const TransformComponent &transformComp,
+                         const TextComponent &textComp) {
+        renderer->setTextOrigin(0, 0);
         auto font = AssetManager::instance().get<Font>(textComp.id);
         if (font) {
-            Renderer2D::drawText(*font, textComp.text, textComp.pixelSize,
-                                 transformComp.transform.getWorldTransform(),
-                                 textComp.color);
+            renderer->drawText(*font, textComp.text, textComp.pixelSize,
+                               transformComp.transform.getWorldTransform(),
+                               textComp.color);
         }
     });
-    Renderer2D::endScene();
+    renderer->endScene();
 }
 
 }  // namespace SD

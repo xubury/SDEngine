@@ -14,6 +14,7 @@ set(Core_Include
     ${Include_Root}/Application.hpp
     ${Include_Root}/Window.hpp
     ${Include_Root}/EntryPoint.hpp
+    ${Include_Root}/System.hpp
     ${Include_Root}/Layer.hpp
     ${Include_Root}/LayerStack.hpp)
 
@@ -22,6 +23,7 @@ set(Core_Src
     ${Src_Root}/Application.cpp
     ${Src_Root}/Window.cpp
     ${Src_Root}/EntryPoint.cpp
+    ${Src_Root}/System.cpp
     ${Src_Root}/LayerStack.cpp)
 
 add_library(sd-core ${Core_Src})
