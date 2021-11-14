@@ -26,7 +26,6 @@ class SD_API Input {
 
     static void tick();
 
-    static void processEvent(const Event &event);
     static void pressKey(Keycode keycode);
     static void releaseKey(Keycode keycode);
 

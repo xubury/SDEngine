@@ -35,10 +35,10 @@ CameraController::CameraController()
          [this](const Event &) { move(-m_camera->getWorldRight()); });
     bind(CameraMovement::RIGHT,
          [this](const Event &) { move(m_camera->getWorldRight()); });
-    bind(Action(Event::EventType::MOUSE_MOVED), [this](const Event &event) {
+    bind(Action(Event::EventType::MOUSE_MOTION), [this](const Event &event) {
         if (Input::isMouseDown(MouseButton::RIGHT)) {
-            m_mouseMovement.x += event.mouseMove.xrel;
-            m_mouseMovement.y += event.mouseMove.yrel;
+            m_mouseMovement.x += event.mouseMotion.xrel;
+            m_mouseMovement.y += event.mouseMotion.yrel;
         }
     });
 }

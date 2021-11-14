@@ -19,7 +19,7 @@ void ProfileSystem::onInit() {
     registerEvent(this, &ProfileSystem::onSizeEvent);
 }
 
-void ProfileSystem::onDestroy() { unregisterEvent<Event::SizeEvent>(this); }
+void ProfileSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
 
 void ProfileSystem::onTick(float) {}
 
@@ -36,7 +36,7 @@ void ProfileSystem::onRender() {
     renderer->endScene();
 }
 
-void ProfileSystem::onSizeEvent(const Event::SizeEvent &event) {
+void ProfileSystem::onSizeEvent(const SizeEvent &event) {
     m_camera.resize(event.width, event.height);
 }
 

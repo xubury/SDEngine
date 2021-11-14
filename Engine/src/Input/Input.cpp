@@ -66,31 +66,6 @@ void Input::tick() {
     }
 }
 
-void Input::processEvent(const Event &event) {
-    switch (event.type) {
-        case Event::EventType::KEY_PRESSED:
-            pressKey(event.key.keycode);
-            break;
-        case Event::EventType::KEY_RELEASED:
-            releaseKey(event.key.keycode);
-            break;
-        case Event::EventType::MOUSE_BUTTON_PRESSED:
-            pressMouseButton(event.mouseButton.button);
-            break;
-        case Event::EventType::MOUSE_BUTTON_RELEASED:
-            releaseMouseButton(event.mouseButton.button);
-            break;
-        case Event::EventType::MOUSE_MOVED:
-            setMouseCoord(event.mouseMove.xrel, event.mouseMove.yrel);
-            break;
-        case Event::EventType::MOUSE_WHEEL_SCROLLED:
-            SD_CORE_ERROR("no impl mouse scroll");
-            break;
-        default:
-            break;
-    }
-}
-
 void Input::pressKey(Keycode keycode) { s_keyMap[keycode] = true; }
 
 void Input::releaseKey(Keycode keycode) { s_keyMap[keycode] = false; }

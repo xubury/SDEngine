@@ -47,7 +47,7 @@ void PostProcessSystem::onInit() {
     registerEvent(this, &PostProcessSystem::onSizeEvent);
 }
 
-void PostProcessSystem::onDestroy() { unregisterEvent<Event::SizeEvent>(this); }
+void PostProcessSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
 
 void PostProcessSystem::onRender() {
     renderer->device().setDepthMask(false);
@@ -61,7 +61,7 @@ void PostProcessSystem::onRender() {
     renderer->device().setDepthMask(true);
 }
 
-void PostProcessSystem::onSizeEvent(const Event::SizeEvent &event) {
+void PostProcessSystem::onSizeEvent(const SizeEvent &event) {
     for (int i = 0; i < 2; ++i) {
         m_blurTarget[i].resize(event.width, event.height);
     }

@@ -71,7 +71,7 @@ void LightingSystem::onInit() {
     registerEvent(this, &LightingSystem::onSizeEvent);
 }
 
-void LightingSystem::onDestroy() { unregisterEvent<Event::SizeEvent>(this); }
+void LightingSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
 
 void LightingSystem::initShaders() {
     m_emssiveShader = ShaderLibrary::instance().load("shaders/emissive.glsl");
@@ -98,7 +98,7 @@ void LightingSystem::initLighting(int width, int height, int samples) {
     m_gBufferTarget.createFramebuffer();
 }
 
-void LightingSystem::onSizeEvent(const Event::SizeEvent &event) {
+void LightingSystem::onSizeEvent(const SizeEvent &event) {
     for (int i = 0; i < 2; ++i) {
         m_lightTarget[i].resize(event.width, event.height);
     }

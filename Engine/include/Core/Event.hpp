@@ -7,40 +7,41 @@
 
 namespace SD {
 
+struct SizeEvent {
+    uint32_t width;
+    uint32_t height;
+};
+
+struct KeyEvent {
+    Keycode keycode;
+    uint16_t mod;
+};
+
+struct MouseMotionEvent {
+    int32_t x;
+    int32_t y;
+    int32_t xrel;
+    int32_t yrel;
+};
+
+struct MouseButtonEvent {
+    MouseButton button;
+    int32_t x;
+    int32_t y;
+    uint8_t clicks;
+};
+
+struct MouseWheelEvent {
+    int32_t x;
+    int32_t y;
+};
+
 class SD_API Event {
    public:
-    struct SizeEvent {
-        uint32_t width;
-        uint32_t height;
-    };
-
-    struct KeyEvent {
-        Keycode keycode;
-        // Key scancode;
-        uint16_t mod;
-    };
-
-    struct MouseMoveEvent {
-        int32_t xrel;
-        int32_t yrel;
-    };
-
-    struct MouseButtonEvent {
-        MouseButton button;
-        int32_t x;
-        int32_t y;
-        uint8_t clicks;
-    };
-
-    struct MouseWheelEvent {
-        int32_t x;
-        int32_t y;
-    };
-
     union {
         SizeEvent size;
         KeyEvent key;
-        MouseMoveEvent mouseMove;
+        MouseMotionEvent mouseMotion;
         MouseButtonEvent mouseButton;
         MouseWheelEvent mouseWheel;
     };
@@ -50,7 +51,7 @@ class SD_API Event {
         RESIZED,
         KEY_PRESSED,
         KEY_RELEASED,
-        MOUSE_MOVED,
+        MOUSE_MOTION,
         MOUSE_BUTTON_PRESSED,
         MOUSE_BUTTON_RELEASED,
         MOUSE_WHEEL_SCROLLED
