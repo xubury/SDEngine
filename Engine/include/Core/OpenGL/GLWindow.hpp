@@ -15,7 +15,7 @@ class SD_API GLWindow : public Window {
     void *getGraphicsContext() override;
 
    private:
-    SDL_GLContext m_context;
+    void *m_context;
 };
 
 }  // namespace SD

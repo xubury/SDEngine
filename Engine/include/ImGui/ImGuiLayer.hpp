@@ -3,6 +3,8 @@
 
 #include "Core/Layer.hpp"
 
+union SDL_Event;
+
 namespace SD {
 
 class SD_API ImGuiLayer : public Layer {
@@ -17,7 +19,7 @@ class SD_API ImGuiLayer : public Layer {
 
     void onPop() override;
 
-    void onEventProcess(const SDL_Event &) override;
+    void onSDLEvent(const SDL_Event &);
 
    private:
     void setDarkThemeColor();

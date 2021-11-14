@@ -1,17 +1,14 @@
 #ifndef SD_WINDOW_HPP
 #define SD_WINDOW_HPP
 
-#include <string>
-#include <SDL.h>
 #include "Utility/Base.hpp"
 
-namespace SD {
+#include <string>
 
-#ifdef DEBUG_BUILD
-#define SDL(stmt) SD_CORE_ASSERT(stmt == 0, SDL_GetError())
-#else
-#define SDL(stmt) stmt
-#endif
+union SDL_Event;
+struct SDL_Window;
+
+namespace SD {
 
 struct WindowProp {
     std::string title;
@@ -24,8 +21,8 @@ struct WindowProp {
     uint32_t flag;
     WindowProp()
         : title("SD Engine"),
-          x(SDL_WINDOWPOS_CENTERED),
-          y(SDL_WINDOWPOS_CENTERED),
+          x(0),
+          y(0),
           width(1440),
           height(900),
           samples(8),

@@ -2,21 +2,22 @@
 #define SD_INPUT_ENGINE_HPP
 
 #include "Utility/Base.hpp"
+#include "Core/Keycode.hpp"
+#include "Core/Event.hpp"
 
-#include <SDL.h>
 #include <glm/glm.hpp>
 
 namespace SD {
 
 class SD_API Input {
    public:
-    static bool isKeyDown(SDL_Keycode keycode);
-    static bool wasKeyDown(SDL_Keycode keycode);
-    static bool isKeyPressed(SDL_Keycode keycode);
+    static bool isKeyDown(Key keycode);
+    static bool wasKeyDown(Key keycode);
+    static bool isKeyPressed(Key keycode);
 
-    static bool isMouseDown(uint8_t button);
-    static bool wasMouseDown(uint8_t button);
-    static bool isMousePressed(uint8_t button);
+    static bool isMouseDown(MouseButton mouse);
+    static bool wasMouseDown(MouseButton mouse);
+    static bool isMousePressed(MouseButton mouse);
 
     static glm::vec2 getMouseCoord();
 
@@ -25,12 +26,12 @@ class SD_API Input {
 
     static void tick();
 
-    static void processEvent(const SDL_Event &event);
-    static void pressKey(SDL_Keycode keycode);
-    static void releaseKey(SDL_Keycode keycode);
+    static void processEvent(const Event &event);
+    static void pressKey(Key keycode);
+    static void releaseKey(Key keycode);
 
-    static void pressMouseButton(uint8_t button);
-    static void releaseMouseButton(uint8_t button);
+    static void pressMouseButton(MouseButton mouse);
+    static void releaseMouseButton(MouseButton mouse);
 
     static void setMouseCoord(float x, float y);
 };

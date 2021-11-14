@@ -8,7 +8,6 @@
 
 #include <string>
 #include <list>
-#include <SDL.h>
 
 namespace SD {
 
@@ -41,7 +40,7 @@ class SD_API Layer {
 
     virtual void onImGui() {}
 
-    virtual void onEventProcess(const SDL_Event &) {}
+    virtual void onEventProcess(const Event &) {}
 
     virtual void onEventsProcess() {}
 

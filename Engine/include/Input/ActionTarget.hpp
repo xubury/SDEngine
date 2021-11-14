@@ -12,7 +12,7 @@ namespace SD {
 template <typename T>
 class ActionTarget {
    public:
-    using FuncType = std::function<void(const SDL_Event &)>;
+    using FuncType = std::function<void(const Event &)>;
 
     using KeyPair = std::pair<T, FuncType>;
 
@@ -25,7 +25,7 @@ class ActionTarget {
 
     ActionTarget(const ActionMap<T> &map);
 
-    bool processEvent(const SDL_Event &event) const;
+    bool processEvent(const Event &event) const;
 
     void processEvents() const;
 
@@ -50,7 +50,7 @@ template <typename T>
 ActionTarget<T>::ActionTarget(const ActionMap<T> &map) : m_actionMap(map) {}
 
 template <typename T>
-bool ActionTarget<T>::processEvent(const SDL_Event &event) const {
+bool ActionTarget<T>::processEvent(const Event &event) const {
     for (const auto &[action, func] : m_eventPollAction) {
         if (action == event) {
             func(event);

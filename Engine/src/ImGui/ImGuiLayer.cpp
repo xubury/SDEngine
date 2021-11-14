@@ -73,7 +73,7 @@ void ImGuiLayer::onPop() {
     ImGui_ImplSDL2_Shutdown();
 }
 
-void ImGuiLayer::onEventProcess(const SDL_Event& event) {
+void ImGuiLayer::onSDLEvent(const SDL_Event& event) {
     ImGui_ImplSDL2_ProcessEvent(&event);
 }
 

@@ -1,5 +1,12 @@
 #include "Core/OpenGL/GLWindow.hpp"
 #include <GL/glew.h>
+#include <SDL.h>
+
+#ifdef DEBUG_BUILD
+#define SDL(stmt) SD_CORE_ASSERT(stmt == 0, SDL_GetError())
+#else
+#define SDL(stmt) stmt
+#endif
 
 namespace SD {
 

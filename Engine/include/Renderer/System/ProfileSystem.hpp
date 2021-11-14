@@ -16,7 +16,7 @@ class ProfileSystem : public System {
     void onDestroy() override;
     void onTick(float dt) override;
     void onRender() override;
-    void onSizeEvent(const SizeEvent &event);
+    void onSizeEvent(const Event::SizeEvent &event);
 
    private:
     RenderTarget *m_target;

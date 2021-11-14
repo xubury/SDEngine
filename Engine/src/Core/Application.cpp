@@ -3,6 +3,8 @@
 #include "Utility/Random.hpp"
 #include "Input/Input.hpp"
 
+#include <SDL.h>
+
 namespace SD {
 
 static Application *s_instance = nullptr;
@@ -22,7 +24,6 @@ Application::Application() {
 
     Random::init();
     SD_CORE_INFO("Debug info is output to: {}", debugPath);
-    SDL(SDL_Init(SDL_INIT_EVERYTHING));
 
     // Setting up which api to use
     setGraphicsAPI(GraphicsAPI::OpenGL);
@@ -76,10 +77,57 @@ void Application::destroyLayer(Layer *layer) {
     delete layer;
 }
 
-void Application::processEvent(const SDL_Event &event) {
-    if (event.type == SDL_QUIT) {
+void Application::processEvent(const SDL_Event &sdlEvent) {
+    m_imguiLayer->onSDLEvent(sdlEvent);
+    if (sdlEvent.type == SDL_QUIT) {
         quit();
     }
+    Event event;
+    switch (sdlEvent.type) {
+        case SDL_MOUSEMOTION:
+            event.type = Event::EventType::MOUSE_MOVED;
+            event.mouseMove.xrel = sdlEvent.motion.xrel;
+            event.mouseMove.yrel = sdlEvent.motion.yrel;
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            event.type = Event::EventType::MOUSE_BUTTON_PRESSED;
+            event.mouseButton.button = sdlEvent.button.button;
+            SDL_BUTTON_LEFT;
+            event.mouseButton.x = sdlEvent.button.x;
+            event.mouseButton.y = sdlEvent.button.y;
+            break;
+        case SDL_MOUSEBUTTONUP:
+            event.type = Event::EventType::MOUSE_BUTTON_RELEASED;
+            event.mouseButton.button = sdlEvent.button.button;
+            event.mouseButton.x = sdlEvent.button.x;
+            event.mouseButton.y = sdlEvent.button.y;
+            event.mouseButton.clicks = sdlEvent.button.clicks;
+            break;
+        case SDL_MOUSEWHEEL:
+            event.type = Event::EventType::MOUSE_WHEEL_SCROLLED;
+            event.mouseWheel.x = sdlEvent.wheel.x;
+            event.mouseWheel.y = sdlEvent.wheel.y;
+            break;
+        case SDL_KEYDOWN:
+            event.type = Event::EventType::KEY_PRESSED;
+            event.key.keycode = sdlEvent.key.keysym.sym;
+            event.key.mod = sdlEvent.key.keysym.mod;
+            break;
+        case SDL_KEYUP:
+            event.type = Event::EventType::KEY_RELEASED;
+            event.key.keycode = sdlEvent.key.keysym.sym;
+            event.key.mod = sdlEvent.key.keysym.mod;
+            break;
+        case SDL_WINDOWEVENT:
+            switch (sdlEvent.window.type) {
+                case SDL_WINDOWEVENT_RESIZED:
+                case SDL_WINDOWEVENT_SIZE_CHANGED:
+                    event.type = Event::EventType::RESIZED;
+                    break;
+            }
+            break;
+    }
+    Input::processEvent(event);
     for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {
         (*layer)->onEventProcess(event);
         if ((*layer)->isBlockEvent()) break;
@@ -101,7 +149,6 @@ void Application::run() {
     uint32_t msElapsed = 0;
     while (!m_window->shouldClose()) {
         while (m_window->pollEvent(event)) {
-            Input::processEvent(event);
             processEvent(event);
         }
         processEvents();

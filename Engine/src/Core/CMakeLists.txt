@@ -15,6 +15,8 @@ set(Core_Include
     ${Include_Root}/Window.hpp
     ${Include_Root}/EntryPoint.hpp
     ${Include_Root}/System.hpp
+    ${Include_Root}/Keycode.hpp
+    ${Include_Root}/Scancode.hpp
     ${Include_Root}/Layer.hpp
     ${Include_Root}/LayerStack.hpp)
 
@@ -38,16 +40,17 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-core PUBLIC SD_SHARED)
 endif()
 
-target_link_libraries(sd-core 
-    PUBLIC 
-    sd-renderer 
-    sd-utility 
-    sd-asset 
-    sd-imgui 
-    sd-input 
+target_link_libraries(sd-core
+    PUBLIC
+    sd-renderer
+    sd-utility
+    sd-asset
+    sd-imgui
+    sd-input
+    PRIVATE
     SDL2::Main)
 
-target_include_directories(sd-core 
+target_include_directories(sd-core
     PUBLIC
     ${SD_ENGINE_SOURCE_DIR}/include)
 

@@ -253,7 +253,10 @@ void EditorLayer::onImGui() {
                 m_target.resize(wsize.x, wsize.y);
                 m_screenBuffer->resize(wsize.x, wsize.y);
                 m_debugGBuffer->resize(wsize.x, wsize.y);
-                dispatcher->dispatchEvent(SizeEvent(wsize.x, wsize.y));
+                Event::SizeEvent event;
+                event.width = wsize.x;
+                event.height = wsize.y;
+                dispatcher->dispatchEvent(event);
             }
 
             m_width = wsize.x;
@@ -305,16 +308,14 @@ void EditorLayer::show() {
     renderer->setCamera(&m_editorCamera);
 }
 
-void EditorLayer::onEventProcess(const SDL_Event &event) {
+void EditorLayer::onEventProcess(const Event &event) {
     if (m_isViewportHovered) {
         m_cameraController.processEvent(event);
     }
-    bool lshift = Input::isKeyDown(SDLK_LSHIFT);
-    bool lctrl = Input::isKeyDown(SDLK_LCTRL);
-    if (event.type == SDL_KEYDOWN) {
-        switch (event.key.keysym.sym) {
-            case SDLK_z: {
-                if (lctrl) {
+    if (event.type == Event::EventType::KEY_PRESSED) {
+        switch (event.key.keycode) {
+            case Keycode::z: {
+                if (event.key.mod == Keymod::LCTRL) {
                     if (m_hide) {
                         show();
                     } else {
@@ -322,22 +323,22 @@ void EditorLayer::onEventProcess(const SDL_Event &event) {
                     }
                 }
             } break;
-            case SDLK_s: {
-                if (lshift && lctrl) {
+            case Keycode::s: {
+                if (event.key.mod == Keymod::LCTRL) {
                     saveScene();
                 }
             } break;
-            case SDLK_n: {
-                if (lctrl) {
+            case Keycode::n: {
+                if (event.key.mod == Keymod::LCTRL) {
                     newScene();
                 }
             } break;
-            case SDLK_l: {
-                if (lctrl) {
+            case Keycode::l: {
+                if (event.key.mod == Keymod::LCTRL) {
                     loadScene();
                 }
             } break;
-            case SDLK_ESCAPE: {
+            case Keycode::ESCAPE: {
                 getApp().quit();
             } break;
         }

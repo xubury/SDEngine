@@ -3,15 +3,15 @@
 
 namespace SD {
 
-static std::unordered_map<SDL_Keycode, bool> s_keyMap;
-static std::unordered_map<SDL_Keycode, bool> s_lastKeyMap;
+static std::unordered_map<Key, bool> s_keyMap;
+static std::unordered_map<Key, bool> s_lastKeyMap;
 
-static std::unordered_map<uint8_t, bool> s_mouseBtnMap;
-static std::unordered_map<uint8_t, bool> s_lastMouseBtnMap;
+static std::unordered_map<MouseButton, bool> s_mouseBtnMap;
+static std::unordered_map<MouseButton, bool> s_lastMouseBtnMap;
 
 static glm::vec2 s_mouseCoord;
 
-bool Input::isKeyDown(SDL_Keycode keycode) {
+bool Input::isKeyDown(Key keycode) {
     auto it = s_keyMap.find(keycode);
     if (it != s_keyMap.end()) {
         return it->second;
@@ -20,7 +20,7 @@ bool Input::isKeyDown(SDL_Keycode keycode) {
     }
 }
 
-bool Input::wasKeyDown(SDL_Keycode keycode) {
+bool Input::wasKeyDown(Key keycode) {
     auto it = s_lastKeyMap.find(keycode);
     if (it != s_lastKeyMap.end()) {
         return it->second;
@@ -29,7 +29,7 @@ bool Input::wasKeyDown(SDL_Keycode keycode) {
     }
 }
 
-bool Input::isKeyPressed(SDL_Keycode keycode) {
+bool Input::isKeyPressed(Key keycode) {
     return isKeyDown(keycode) && !wasKeyDown(keycode);
 }
 
@@ -66,35 +66,40 @@ void Input::tick() {
     }
 }
 
-void Input::processEvent(const SDL_Event &event) {
+void Input::processEvent(const Event &event) {
     switch (event.type) {
-        case SDL_KEYDOWN:
-            pressKey(event.key.keysym.sym);
+        case Event::EventType::KEY_PRESSED:
+            pressKey(event.key.keycode);
             break;
-        case SDL_KEYUP:
-            releaseKey(event.key.keysym.sym);
+        case Event::EventType::KEY_RELEASED:
+            releaseKey(event.key.keycode);
             break;
-        case SDL_MOUSEBUTTONDOWN:
-            pressMouseButton(event.button.button);
+        case Event::EventType::MOUSE_BUTTON_PRESSED:
+            pressMouseButton(event.mouseButton.button);
             break;
-        case SDL_MOUSEBUTTONUP:
-            releaseMouseButton(event.button.button);
+        case Event::EventType::MOUSE_BUTTON_RELEASED:
+            releaseMouseButton(event.mouseButton.button);
             break;
-        case SDL_MOUSEMOTION:
-            setMouseCoord(event.motion.x, event.motion.y);
+        case Event::EventType::MOUSE_MOVED:
+            setMouseCoord(event.mouseMove.xrel, event.mouseMove.yrel);
+            break;
+        case Event::EventType::MOUSE_WHEEL_SCROLLED:
+            SD_CORE_ERROR("no impl mouse scroll");
+            break;
+        default:
             break;
     }
 }
 
-void Input::pressKey(SDL_Keycode keycode) { s_keyMap[keycode] = true; }
+void Input::pressKey(Key keycode) { s_keyMap[keycode] = true; }
 
-void Input::releaseKey(SDL_Keycode keycode) { s_keyMap[keycode] = false; }
+void Input::releaseKey(Key keycode) { s_keyMap[keycode] = false; }
 
-void Input::pressMouseButton(uint8_t button) {
+void Input::pressMouseButton(MouseButton button) {
     s_mouseBtnMap[button] = true;
 }
 
-void Input::releaseMouseButton(uint8_t button) {
+void Input::releaseMouseButton(MouseButton button) {
     s_mouseBtnMap[button] = false;
 }
 

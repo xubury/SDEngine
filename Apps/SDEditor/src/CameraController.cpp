@@ -16,32 +16,31 @@ CameraController::CameraController()
       m_pitch(0.f) {
     m_controllerMap.map(
         CameraMovement::FORWARD,
-        Action(SDLK_w, Action::Type::REAL_TIME | Action::Type::DOWN));
+        Action(Keycode::w, Action::Type::REAL_TIME | Action::Type::DOWN));
     m_controllerMap.map(
         CameraMovement::BACKWARD,
-        Action(SDLK_s, Action::Type::REAL_TIME | Action::Type::DOWN));
+        Action(Keycode::s, Action::Type::REAL_TIME | Action::Type::DOWN));
     m_controllerMap.map(
         CameraMovement::LEFT,
-        Action(SDLK_a, Action::Type::REAL_TIME | Action::Type::DOWN));
+        Action(Keycode::a, Action::Type::REAL_TIME | Action::Type::DOWN));
     m_controllerMap.map(
         CameraMovement::RIGHT,
-        Action(SDLK_d, Action::Type::REAL_TIME | Action::Type::DOWN));
+        Action(Keycode::d, Action::Type::REAL_TIME | Action::Type::DOWN));
 
     bind(CameraMovement::FORWARD,
-         [this](const SDL_Event &) { move(-m_camera->getWorldFront()); });
+         [this](const Event &) { move(-m_camera->getWorldFront()); });
     bind(CameraMovement::BACKWARD,
-         [this](const SDL_Event &) { move(m_camera->getWorldFront()); });
+         [this](const Event &) { move(m_camera->getWorldFront()); });
     bind(CameraMovement::LEFT,
-         [this](const SDL_Event &) { move(-m_camera->getWorldRight()); });
+         [this](const Event &) { move(-m_camera->getWorldRight()); });
     bind(CameraMovement::RIGHT,
-         [this](const SDL_Event &) { move(m_camera->getWorldRight()); });
-    bind(Action(SDL_EventType::SDL_MOUSEMOTION),
-         [this](const SDL_Event &event) {
-             if (Input::isMouseDown(SDL_BUTTON_RIGHT)) {
-                 m_mouseMovement.x += event.motion.xrel;
-                 m_mouseMovement.y += event.motion.yrel;
-             }
-         });
+         [this](const Event &) { move(m_camera->getWorldRight()); });
+    bind(Action(Event::EventType::MOUSE_MOVED), [this](const Event &event) {
+        if (Input::isMouseDown(Mouse::RIGHT)) {
+            m_mouseMovement.x += event.mouseMove.xrel;
+            m_mouseMovement.y += event.mouseMove.yrel;
+        }
+    });
 }
 
 void CameraController::tick(float dt) {

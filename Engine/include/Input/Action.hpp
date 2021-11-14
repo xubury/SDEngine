@@ -1,8 +1,9 @@
 #ifndef SD_ACTION_HPP
 #define SD_ACTION_HPP
 
-#include <SDL.h>
 #include "Utility/Base.hpp"
+#include "Core/Event.hpp"
+#include "Core/Keycode.hpp"
 
 namespace SD {
 
@@ -15,15 +16,15 @@ class SD_API Action {
         DOWN = 1 << 3
     };
 
-    Action(const SDL_EventType &event);
+    Action(const Event::EventType &event);
 
-    Action(SDL_Keycode key, int type = Type::REAL_TIME | Type::PRESSED);
+    Action(Key key, int type = Type::REAL_TIME | Type::PRESSED);
 
     Action(uint8_t button, int type = Type::REAL_TIME | Type::PRESSED);
 
     bool test() const;
 
-    bool operator==(const SDL_Event &event) const;
+    bool operator==(const Event &event) const;
 
     bool operator==(const Action &other) const;
 
@@ -31,7 +32,7 @@ class SD_API Action {
     template <typename>
     friend class ActionTarget;
 
-    SDL_Event m_event;
+    Event m_event;
     int m_type;
 };
 

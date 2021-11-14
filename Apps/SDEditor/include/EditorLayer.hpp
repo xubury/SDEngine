@@ -29,7 +29,7 @@ class EditorLayer : public Layer {
 
     void onImGui() override;
 
-    void onEventProcess(const SDL_Event &event) override;
+    void onEventProcess(const Event &event) override;
 
     void onEventsProcess() override;
 
