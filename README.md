@@ -13,10 +13,12 @@ Simple and Direct Engine
 
 ## TODO
 - [X] ResourceId
-- [ ] Asset System based on ResourceId
+- [X] Asset System based on ResourceId
+- [ ] Event bus
 - [ ] Ini parser
 - [ ] Profile System
 - [ ] Script System
+- [ ] Audio System
 - [ ] Physics
 - [ ] Animation
 - [ ] 2D game test?
