@@ -7,12 +7,12 @@ Action::Action(const Event::EventType &event) : m_type(Type::PRESSED) {
     m_event.type = event;
 }
 
-Action::Action(Key key, int type) : m_type(type) {
+Action::Action(Keycode key, int type) : m_type(type) {
     m_event.key.keycode = key;
     m_event.type = Event::EventType::KEY_PRESSED;
 }
 
-Action::Action(uint8_t button, int type) : m_type(type) {
+Action::Action(MouseButton button, int type) : m_type(type) {
     m_event.mouseButton.button = button;
     m_event.type = Event::EventType::MOUSE_BUTTON_PRESSED;
 }

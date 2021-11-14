@@ -91,14 +91,14 @@ void Application::processEvent(const SDL_Event &sdlEvent) {
             break;
         case SDL_MOUSEBUTTONDOWN:
             event.type = Event::EventType::MOUSE_BUTTON_PRESSED;
-            event.mouseButton.button = sdlEvent.button.button;
+            event.mouseButton.button = static_cast<MouseButton>(sdlEvent.button.button);
             SDL_BUTTON_LEFT;
             event.mouseButton.x = sdlEvent.button.x;
             event.mouseButton.y = sdlEvent.button.y;
             break;
         case SDL_MOUSEBUTTONUP:
             event.type = Event::EventType::MOUSE_BUTTON_RELEASED;
-            event.mouseButton.button = sdlEvent.button.button;
+            event.mouseButton.button = static_cast<MouseButton>(sdlEvent.button.button);
             event.mouseButton.x = sdlEvent.button.x;
             event.mouseButton.y = sdlEvent.button.y;
             event.mouseButton.clicks = sdlEvent.button.clicks;
@@ -110,12 +110,12 @@ void Application::processEvent(const SDL_Event &sdlEvent) {
             break;
         case SDL_KEYDOWN:
             event.type = Event::EventType::KEY_PRESSED;
-            event.key.keycode = sdlEvent.key.keysym.sym;
+            event.key.keycode = static_cast<Keycode>(sdlEvent.key.keysym.sym);
             event.key.mod = sdlEvent.key.keysym.mod;
             break;
         case SDL_KEYUP:
             event.type = Event::EventType::KEY_RELEASED;
-            event.key.keycode = sdlEvent.key.keysym.sym;
+            event.key.keycode = static_cast<Keycode>(sdlEvent.key.keysym.sym);
             event.key.mod = sdlEvent.key.keysym.mod;
             break;
         case SDL_WINDOWEVENT:

@@ -314,6 +314,8 @@ void EditorLayer::onEventProcess(const Event &event) {
     }
     if (event.type == Event::EventType::KEY_PRESSED) {
         switch (event.key.keycode) {
+            default:
+                break;
             case Keycode::z: {
                 if (event.key.mod == Keymod::LCTRL) {
                     if (m_hide) {
@@ -324,7 +326,7 @@ void EditorLayer::onEventProcess(const Event &event) {
                 }
             } break;
             case Keycode::s: {
-                if (event.key.mod == Keymod::LCTRL) {
+                if (event.key.mod == (Keymod::LCTRL | Keymod::LSHIFT)) {
                     saveScene();
                 }
             } break;

@@ -11,9 +11,9 @@ namespace SD {
 
 class SD_API Input {
    public:
-    static bool isKeyDown(Key keycode);
-    static bool wasKeyDown(Key keycode);
-    static bool isKeyPressed(Key keycode);
+    static bool isKeyDown(Keycode keycode);
+    static bool wasKeyDown(Keycode keycode);
+    static bool isKeyPressed(Keycode keycode);
 
     static bool isMouseDown(MouseButton mouse);
     static bool wasMouseDown(MouseButton mouse);
@@ -27,8 +27,8 @@ class SD_API Input {
     static void tick();
 
     static void processEvent(const Event &event);
-    static void pressKey(Key keycode);
-    static void releaseKey(Key keycode);
+    static void pressKey(Keycode keycode);
+    static void releaseKey(Keycode keycode);
 
     static void pressMouseButton(MouseButton mouse);
     static void releaseMouseButton(MouseButton mouse);

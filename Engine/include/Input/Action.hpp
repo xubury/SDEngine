@@ -18,9 +18,9 @@ class SD_API Action {
 
     Action(const Event::EventType &event);
 
-    Action(Key key, int type = Type::REAL_TIME | Type::PRESSED);
+    Action(Keycode key, int type = Type::REAL_TIME | Type::PRESSED);
 
-    Action(uint8_t button, int type = Type::REAL_TIME | Type::PRESSED);
+    Action(MouseButton button, int type = Type::REAL_TIME | Type::PRESSED);
 
     bool test() const;
 

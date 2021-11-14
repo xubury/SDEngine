@@ -3,6 +3,7 @@
 
 #include "Utility/Base.hpp"
 #include "Core/Keycode.hpp"
+#include "Core/Mouse.hpp"
 
 namespace SD {
 
@@ -14,7 +15,7 @@ class SD_API Event {
     };
 
     struct KeyEvent {
-        Key keycode;
+        Keycode keycode;
         // Key scancode;
         uint16_t mod;
     };

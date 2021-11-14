@@ -1,11 +1,12 @@
 #ifndef SD_EVENT_DISPATCHER_HPP
 #define SD_EVENT_DISPATCHER_HPP
 
+#include "Utility/Export.hpp"
+
 #include <cstdint>
 #include <functional>
 #include <vector>
 #include <unordered_map>
-#include "Utility/Export.hpp"
 
 namespace SD {
 

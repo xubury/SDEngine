@@ -3,15 +3,15 @@
 
 namespace SD {
 
-static std::unordered_map<Key, bool> s_keyMap;
-static std::unordered_map<Key, bool> s_lastKeyMap;
+static std::unordered_map<Keycode, bool> s_keyMap;
+static std::unordered_map<Keycode, bool> s_lastKeyMap;
 
 static std::unordered_map<MouseButton, bool> s_mouseBtnMap;
 static std::unordered_map<MouseButton, bool> s_lastMouseBtnMap;
 
 static glm::vec2 s_mouseCoord;
 
-bool Input::isKeyDown(Key keycode) {
+bool Input::isKeyDown(Keycode keycode) {
     auto it = s_keyMap.find(keycode);
     if (it != s_keyMap.end()) {
         return it->second;
@@ -20,7 +20,7 @@ bool Input::isKeyDown(Key keycode) {
     }
 }
 
-bool Input::wasKeyDown(Key keycode) {
+bool Input::wasKeyDown(Keycode keycode) {
     auto it = s_lastKeyMap.find(keycode);
     if (it != s_lastKeyMap.end()) {
         return it->second;
@@ -29,11 +29,11 @@ bool Input::wasKeyDown(Key keycode) {
     }
 }
 
-bool Input::isKeyPressed(Key keycode) {
+bool Input::isKeyPressed(Keycode keycode) {
     return isKeyDown(keycode) && !wasKeyDown(keycode);
 }
 
-bool Input::isMouseDown(uint8_t button) {
+bool Input::isMouseDown(MouseButton button) {
     auto it = s_mouseBtnMap.find(button);
     if (it != s_mouseBtnMap.end()) {
         return it->second;
@@ -42,7 +42,7 @@ bool Input::isMouseDown(uint8_t button) {
     }
 }
 
-bool Input::wasMouseDown(uint8_t button) {
+bool Input::wasMouseDown(MouseButton button) {
     auto it = s_lastMouseBtnMap.find(button);
     if (it != s_lastMouseBtnMap.end()) {
         return it->second;
@@ -51,7 +51,7 @@ bool Input::wasMouseDown(uint8_t button) {
     }
 }
 
-bool Input::isMousePressed(uint8_t button) {
+bool Input::isMousePressed(MouseButton button) {
     return isMouseDown(button) && !wasMouseDown(button);
 }
 
@@ -91,9 +91,9 @@ void Input::processEvent(const Event &event) {
     }
 }
 
-void Input::pressKey(Key keycode) { s_keyMap[keycode] = true; }
+void Input::pressKey(Keycode keycode) { s_keyMap[keycode] = true; }
 
-void Input::releaseKey(Key keycode) { s_keyMap[keycode] = false; }
+void Input::releaseKey(Keycode keycode) { s_keyMap[keycode] = false; }
 
 void Input::pressMouseButton(MouseButton button) {
     s_mouseBtnMap[button] = true;
