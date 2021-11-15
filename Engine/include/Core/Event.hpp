@@ -7,7 +7,7 @@
 
 namespace SD {
 
-struct SizeEvent {
+struct WindowSizeEvent {
     uint32_t width;
     uint32_t height;
 };
@@ -39,7 +39,7 @@ struct MouseWheelEvent {
 class SD_API Event {
    public:
     union {
-        SizeEvent size;
+        WindowSizeEvent size;
         KeyEvent key;
         MouseMotionEvent mouseMotion;
         MouseButtonEvent mouseButton;

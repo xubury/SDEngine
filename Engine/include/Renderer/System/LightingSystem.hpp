@@ -33,7 +33,7 @@ class SD_API LightingSystem : public System {
 
     void onRender() override;
 
-    void onSizeEvent(const SizeEvent &event);
+    void onSizeEvent(const WindowSizeEvent &event);
 
     Framebuffer *getGBuffer() { return m_gBufferTarget.getFramebuffer(); }
 

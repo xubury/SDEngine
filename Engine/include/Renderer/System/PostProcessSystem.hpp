@@ -18,7 +18,7 @@ class SD_API PostProcessSystem : public System {
 
     void onRender() override;
 
-    void onSizeEvent(const SizeEvent &event);
+    void onSizeEvent(const WindowSizeEvent &event);
 
     void setExposure(float exposure);
     float getExposure();

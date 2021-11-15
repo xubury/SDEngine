@@ -254,10 +254,10 @@ void EditorLayer::onImGui() {
                 m_target.resize(wsize.x, wsize.y);
                 m_screenBuffer->resize(wsize.x, wsize.y);
                 m_debugGBuffer->resize(wsize.x, wsize.y);
-                SizeEvent event;
+                WindowSizeEvent event;
                 event.width = wsize.x;
                 event.height = wsize.y;
-                dispatcher->dispatchEvent(event);
+                dispatcher->publishEvent(event);
             }
 
             m_width = wsize.x;

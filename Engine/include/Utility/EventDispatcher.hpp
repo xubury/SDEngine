@@ -10,26 +10,27 @@
 
 namespace SD {
 
-template <typename Event>
-using EventListener = std::function<void(const Event&)>;
+// WARNING:NOT Thread-safe
+template <typename EVENT>
+using Callback = std::function<void(const EVENT&)>;
 
 class SD_API EventDispatcher {
    public:
-    template <typename F, typename Event>
-    void addKeyedListener(F* key, void (F::*listenerMethod)(const Event&)) {
-        EventListener<Event> listener = [key, listenerMethod](const Event& e) {
-            (key->*listenerMethod)(e);
+    template <typename F, typename EVENT>
+    void subscribe(F* key, void (F::*METHOD)(const EVENT&)) {
+        Callback<EVENT> callback = [key, METHOD](const EVENT& e) {
+            (key->*METHOD)(e);
         };
-        auto& listeners = getListeners<Event>();
-        listeners.push_back(listener);
-        getKeys<Event>()[reinterpret_cast<intptr_t>(key)] =
-            listeners.size() - 1;
+        auto& callbacks = getCallbacks<EVENT>();
+        callbacks.push_back(callback);
+        getKeys<EVENT>()[reinterpret_cast<intptr_t>(key)] =
+            callbacks.size() - 1;
     }
 
-    template <typename Event, typename F>
-    void removeKeyedListener(F* object) {
-        auto& keys = getKeys<Event>();
-        auto& listeners = getListeners<Event>();
+    template <typename EVENT, typename F>
+    void unsubscribe(F* object) {
+        auto& keys = getKeys<EVENT>();
+        auto& listeners = getCallbacks<EVENT>();
 
         intptr_t key = reinterpret_cast<intptr_t>(object);
         int index = keys[key];
@@ -40,20 +41,19 @@ class SD_API EventDispatcher {
             if (value > index) value--;
     }
 
-    template <typename Event>
-    void dispatchEvent(const Event& e) {
-        for (EventListener<Event>& listener : getListeners<Event>())
-            listener(e);
+    template <typename EVENT>
+    void publishEvent(const EVENT& e) {
+        for (Callback<EVENT>& listener : getCallbacks<EVENT>()) listener(e);
     }
 
    private:
-    template <typename Event>
-    std::vector<EventListener<Event>>& getListeners() {
-        static std::vector<EventListener<Event>> listeners;
-        return listeners;
+    template <typename EVENT>
+    std::vector<Callback<EVENT>>& getCallbacks() {
+        static std::vector<Callback<EVENT>> callbacks;
+        return callbacks;
     }
 
-    template <typename Event>
+    template <typename EVENT>
     std::unordered_map<intptr_t, int>& getKeys() {
         static std::unordered_map<intptr_t, int> keys;
         return keys;

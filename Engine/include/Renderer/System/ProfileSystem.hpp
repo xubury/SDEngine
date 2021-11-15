@@ -16,7 +16,7 @@ class ProfileSystem : public System {
     void onPop() override;
     void onTick(float dt) override;
     void onRender() override;
-    void onSizeEvent(const SizeEvent &event);
+    void onSizeEvent(const WindowSizeEvent &event);
 
    private:
     RenderTarget *m_target;

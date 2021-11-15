@@ -44,10 +44,10 @@ PostProcessSystem::PostProcessSystem(RenderTarget *target, int width,
 }
 
 void PostProcessSystem::onPush() {
-    registerEvent(this, &PostProcessSystem::onSizeEvent);
+    dispatcher->subscribe(this, &PostProcessSystem::onSizeEvent);
 }
 
-void PostProcessSystem::onPop() { unregisterEvent<SizeEvent>(this); }
+void PostProcessSystem::onPop() { dispatcher->unsubscribe<WindowSizeEvent>(this); }
 
 void PostProcessSystem::onRender() {
     renderer->device().setDepthMask(false);
@@ -61,7 +61,7 @@ void PostProcessSystem::onRender() {
     renderer->device().setDepthMask(true);
 }
 
-void PostProcessSystem::onSizeEvent(const SizeEvent &event) {
+void PostProcessSystem::onSizeEvent(const WindowSizeEvent &event) {
     for (int i = 0; i < 2; ++i) {
         m_blurTarget[i].resize(event.width, event.height);
     }

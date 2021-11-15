@@ -24,16 +24,6 @@ class System {
 
     virtual void onTick(float) {}
 
-    template <typename F, typename Event>
-    void registerEvent(F *key, void (F::*listenerMethod)(const Event &)) {
-        dispatcher->addKeyedListener(key, listenerMethod);
-    }
-
-    template <typename Event, typename F>
-    void unregisterEvent(F *object) {
-        dispatcher->removeKeyedListener<Event>(object);
-    }
-
     const std::string &getName() const { return m_name; }
 
    protected:
