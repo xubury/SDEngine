@@ -14,8 +14,9 @@ Simple and Direct Engine
 ## TODO
 - [X] ResourceId
 - [X] Asset System based on ResourceId
-- [ ] Event bus
+- [ ] Blocking queue
 - [ ] code formatting (naming convension, GoogleStyle?)
+- [ ] Event bus
 - [ ] Ini parser
 - [ ] Profile System
 - [ ] Script System
