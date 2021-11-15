@@ -15,6 +15,7 @@ Simple and Direct Engine
 - [X] ResourceId
 - [X] Asset System based on ResourceId
 - [ ] Event bus
+- [ ] code formatting (naming convension, GoogleStyle?)
 - [ ] Ini parser
 - [ ] Profile System
 - [ ] Script System
