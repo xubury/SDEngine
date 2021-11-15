@@ -15,11 +15,11 @@ ProfileSystem::ProfileSystem(RenderTarget *target, int width, int height)
     m_font = AssetManager::instance().get<Font>(resourceId);
 }
 
-void ProfileSystem::onInit() {
+void ProfileSystem::onPush() {
     registerEvent(this, &ProfileSystem::onSizeEvent);
 }
 
-void ProfileSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
+void ProfileSystem::onPop() { unregisterEvent<SizeEvent>(this); }
 
 void ProfileSystem::onTick(float) {}
 

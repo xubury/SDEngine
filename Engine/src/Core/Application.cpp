@@ -73,7 +73,6 @@ void Application::popLayer(Layer *layer) { m_layers.popLayer(layer); }
 
 void Application::destroyLayer(Layer *layer) {
     popLayer(layer);
-    layer->onDestroy();
     delete layer;
 }
 

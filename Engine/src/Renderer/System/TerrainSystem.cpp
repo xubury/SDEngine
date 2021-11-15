@@ -8,9 +8,9 @@ namespace SD {
 TerrainSystem::TerrainSystem()
     : System("Terrain"), m_min(FLT_MAX), m_max(-FLT_MAX) {}
 
-void TerrainSystem::onInit() {}
+void TerrainSystem::onPush() {}
 
-void TerrainSystem::onDestroy() {}
+void TerrainSystem::onPop() {}
 
 void TerrainSystem::onTick(float) {}
 

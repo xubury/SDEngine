@@ -12,8 +12,8 @@ class ProfileSystem : public System {
    public:
     ProfileSystem(RenderTarget *target, int width, int height);
 
-    void onInit() override;
-    void onDestroy() override;
+    void onPush() override;
+    void onPop() override;
     void onTick(float dt) override;
     void onRender() override;
     void onSizeEvent(const SizeEvent &event);

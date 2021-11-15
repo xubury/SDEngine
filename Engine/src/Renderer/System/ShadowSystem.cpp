@@ -10,9 +10,9 @@ ShadowSystem::ShadowSystem() : System("Shadow") {
     m_shadowShader = ShaderLibrary::instance().load("shaders/shadow.glsl");
 }
 
-void ShadowSystem::onInit() {}
+void ShadowSystem::onPush() {}
 
-void ShadowSystem::onDestroy() {}
+void ShadowSystem::onPop() {}
 
 void ShadowSystem::onRender() {
     auto scene = renderer->getScene();

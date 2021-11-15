@@ -16,13 +16,9 @@ class System {
 
     virtual ~System() = default;
 
-    virtual void onPush() {}
+    virtual void onPush(){};
 
-    virtual void onPop() {}
-
-    virtual void onInit(){};
-
-    virtual void onDestroy(){};
+    virtual void onPop(){};
 
     virtual void onRender(){};
 

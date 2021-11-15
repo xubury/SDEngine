@@ -12,9 +12,9 @@ class SD_API SkyboxSystem : public System {
    public:
     SkyboxSystem(RenderTarget *target);
 
-    void onInit() override;
+    void onPush() override;
 
-    void onDestroy() override;
+    void onPop() override;
 
     void onRender() override;
 

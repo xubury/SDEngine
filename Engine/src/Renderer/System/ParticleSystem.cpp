@@ -13,9 +13,9 @@ ParticleSystem::ParticleSystem(int poolSize)
     m_particles.resize(poolSize);
 }
 
-void ParticleSystem::onInit() {}
+void ParticleSystem::onPush() {}
 
-void ParticleSystem::onDestroy() {}
+void ParticleSystem::onPop() {}
 
 void ParticleSystem::onRender() {
     for (const auto &particle : m_particles) {

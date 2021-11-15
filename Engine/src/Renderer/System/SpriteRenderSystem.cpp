@@ -7,9 +7,9 @@ namespace SD {
 SpriteRenderSystem::SpriteRenderSystem(RenderTarget *target)
     : System("SpriteRender"), m_target(target) {}
 
-void SpriteRenderSystem::onInit() {}
+void SpriteRenderSystem::onPush() {}
 
-void SpriteRenderSystem::onDestroy() {}
+void SpriteRenderSystem::onPop() {}
 
 void SpriteRenderSystem::onRender() {
     auto scene = renderer->getScene();

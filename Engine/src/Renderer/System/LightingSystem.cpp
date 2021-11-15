@@ -67,11 +67,11 @@ LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
     m_quad->setIndexBuffer(indexBuffer);
 }
 
-void LightingSystem::onInit() {
+void LightingSystem::onPush() {
     registerEvent(this, &LightingSystem::onSizeEvent);
 }
 
-void LightingSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
+void LightingSystem::onPop() { unregisterEvent<SizeEvent>(this); }
 
 void LightingSystem::initShaders() {
     m_emssiveShader = ShaderLibrary::instance().load("shaders/emissive.glsl");

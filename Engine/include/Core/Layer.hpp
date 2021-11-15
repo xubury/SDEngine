@@ -28,12 +28,6 @@ class SD_API Layer {
 
     virtual void onPop() {}
 
-    void onDestroy() {
-        while (m_systems.size() > 0) {
-            destroySystem(m_systems.front());
-        }
-    }
-
     virtual void onTick(float) {}
 
     virtual void onRender() {}
@@ -55,9 +49,8 @@ class SD_API Layer {
 
     void pushSystem(System *system) {
         system->setAppVars(makeAppVars());
-        system->onPush();
-        system->onInit();
         m_systems.push_back(system);
+        system->onPush();
     }
 
     template <typename SYSTEM>
@@ -79,16 +72,15 @@ class SD_API Layer {
         }
 
         if (itr != m_systems.end()) {
+            system->onPop();
             m_systems.erase(itr);
         } else {
             SD_CORE_ERROR("Layer::popSystem Failed! No system found!");
         }
-        system->onPop();
     }
 
     void destroySystem(System *system) {
         popSystem(system);
-        system->onDestroy();
         delete system;
     }
 

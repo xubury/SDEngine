@@ -35,9 +35,9 @@ SkyboxSystem::SkyboxSystem(RenderTarget *target)
     m_skyboxShader = ShaderLibrary::instance().load("shaders/skybox.glsl");
 }
 
-void SkyboxSystem::onInit() {}
+void SkyboxSystem::onPush() {}
 
-void SkyboxSystem::onDestroy() {}
+void SkyboxSystem::onPop() {}
 
 void SkyboxSystem::onRender() {
     glm::vec3 pos = renderer->getCamera()->getWorldPosition();

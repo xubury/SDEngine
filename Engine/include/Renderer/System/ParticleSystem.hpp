@@ -38,9 +38,9 @@ class SD_API ParticleSystem : public System {
 
     void emit(const ParticleProp &particle);
 
-    void onInit() override;
+    void onPush() override;
 
-    void onDestroy() override;
+    void onPop() override;
 
     void onRender() override;
 

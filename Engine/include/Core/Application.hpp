@@ -38,7 +38,7 @@ class SD_API Application {
 
     friend int ::main(int argc, char **argv);
 
-    virtual void onInit() = 0;
+    virtual void onPush() = 0;
 
     void run();
 

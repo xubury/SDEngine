@@ -47,6 +47,7 @@ EditorLayer::EditorLayer(int width, int height)
             getTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
             TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
     }
+    // FIXME:memory leak?
     m_shadowSystem = new ShadowSystem();
     m_lightingSystem = new LightingSystem(&m_target, m_width, m_height, 4);
     m_skyboxSystem = new SkyboxSystem(&m_target);

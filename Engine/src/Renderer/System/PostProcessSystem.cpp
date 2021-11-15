@@ -43,11 +43,11 @@ PostProcessSystem::PostProcessSystem(RenderTarget *target, int width,
     m_quad->setIndexBuffer(indexBuffer);
 }
 
-void PostProcessSystem::onInit() {
+void PostProcessSystem::onPush() {
     registerEvent(this, &PostProcessSystem::onSizeEvent);
 }
 
-void PostProcessSystem::onDestroy() { unregisterEvent<SizeEvent>(this); }
+void PostProcessSystem::onPop() { unregisterEvent<SizeEvent>(this); }
 
 void PostProcessSystem::onRender() {
     renderer->device().setDepthMask(false);

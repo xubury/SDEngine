@@ -15,9 +15,9 @@ class TerrainSystem : public System {
    public:
     TerrainSystem();
 
-    void onInit() override;
+    void onPush() override;
 
-    void onDestroy() override;
+    void onPop() override;
 
     void onTick(float dt) override;
 
