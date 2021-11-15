@@ -94,7 +94,8 @@ static TextureWrap convertAssimpMapMode(aiTextureMapMode mode) {
     }
 }
 
-static void processAiMaterial(const std::filesystem::path &directory,
+static void processAiMaterial(AssetManager &manager,
+                              const std::filesystem::path &directory,
                               Material &material, MaterialType materialType,
                               const aiMaterial *assimpMaterial,
                               aiTextureType assimpType) {
@@ -115,8 +116,8 @@ static void processAiMaterial(const std::filesystem::path &directory,
         return;
     }
     std::string path = (directory / texturePath.C_Str()).string();
-    auto resourceId = AssetManager::instance().loadAsset<Image>(path);
-    auto image = AssetManager::instance().get<Image>(resourceId);
+    auto resourceId = manager.loadAsset<Image>(path);
+    auto image = manager.get<Image>(resourceId);
     auto texture = Texture::create(
         image->width(), image->height(), 1, TextureType::TEX_2D,
         image->hasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
@@ -157,20 +158,23 @@ Ref<void> ModelLoader::loadAsset(const std::string &filePath) {
         std::filesystem::path(filePath).parent_path();
     for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
         Material material;
-        processAiMaterial(directory, material, MaterialType::DIFFUSE,
+        processAiMaterial(manager(), directory, material, MaterialType::DIFFUSE,
                           scene->mMaterials[i], aiTextureType_DIFFUSE);
-        processAiMaterial(directory, material, MaterialType::SPECULAR,
-                          scene->mMaterials[i], aiTextureType_SPECULAR);
-        processAiMaterial(directory, material, MaterialType::AMBIENT,
+        processAiMaterial(manager(), directory, material,
+                          MaterialType::SPECULAR, scene->mMaterials[i],
+                          aiTextureType_SPECULAR);
+        processAiMaterial(manager(), directory, material, MaterialType::AMBIENT,
                           scene->mMaterials[i], aiTextureType_AMBIENT);
-        processAiMaterial(directory, material, MaterialType::EMISSIVE,
-                          scene->mMaterials[i], aiTextureType_EMISSIVE);
-        processAiMaterial(directory, material, MaterialType::HEIGHT,
+        processAiMaterial(manager(), directory, material,
+                          MaterialType::EMISSIVE, scene->mMaterials[i],
+                          aiTextureType_EMISSIVE);
+        processAiMaterial(manager(), directory, material, MaterialType::HEIGHT,
                           scene->mMaterials[i], aiTextureType_HEIGHT);
-        processAiMaterial(directory, material, MaterialType::NORMALS,
+        processAiMaterial(manager(), directory, material, MaterialType::NORMALS,
                           scene->mMaterials[i], aiTextureType_NORMALS);
-        processAiMaterial(directory, material, MaterialType::SHININESS,
-                          scene->mMaterials[i], aiTextureType_SHININESS);
+        processAiMaterial(manager(), directory, material,
+                          MaterialType::SHININESS, scene->mMaterials[i],
+                          aiTextureType_SHININESS);
         model->addMaterial(std::move(material));
     }
 

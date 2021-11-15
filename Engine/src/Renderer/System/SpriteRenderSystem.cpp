@@ -20,7 +20,7 @@ void SpriteRenderSystem::onRender() {
     textView.each([this](const TransformComponent &transformComp,
                          const TextComponent &textComp) {
         renderer->setTextOrigin(0, 0);
-        auto font = AssetManager::instance().get<Font>(textComp.id);
+        auto font = asset->get<Font>(textComp.id);
         if (font) {
             renderer->drawText(*font, textComp.text, textComp.pixelSize,
                                transformComp.transform.getWorldTransform(),

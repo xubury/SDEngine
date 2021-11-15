@@ -45,6 +45,11 @@ class SD_API LayerStack {
         return m_layers.rend();
     }
 
+    size_t size() const { return m_layers.size(); }
+
+    Layer *front() { return m_layers.front(); }
+    const Layer *front() const { return m_layers.front(); }
+
    private:
     std::vector<Layer *> m_layers;
     size_t m_layerInsertId;

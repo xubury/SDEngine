@@ -41,6 +41,7 @@ Application::Application() {
 
     renderer = createRef<Renderer>();
     dispatcher = createRef<EventDispatcher>();
+    asset = createRef<AssetManager>();
 
     if (samples > 1) {
         renderer->device().enable(Operation::MULTISAMPLE);
@@ -52,9 +53,9 @@ Application::Application() {
     pushOverlay(m_imguiLayer);
 }
 
-void Application::destroy() {
-    for (auto layer = m_layers.begin(); layer != m_layers.end(); ++layer) {
-        destroyLayer(*layer);
+Application::~Application() {
+    while (m_layers.size()) {
+        destroyLayer(m_layers.front());
     }
     SDL_Quit();
 }

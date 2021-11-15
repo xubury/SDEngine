@@ -10,7 +10,7 @@ class SD_API ModelLoader : public AssetLoaderBase {
    private:
     friend class AssetManager;
 
-    ModelLoader() = default;
+    using AssetLoaderBase::AssetLoaderBase;
 
    public:
     Ref<void> loadAsset(const std::string &filePath) override;

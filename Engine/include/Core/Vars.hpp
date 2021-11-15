@@ -3,15 +3,18 @@
 
 #include "Renderer/Renderer.hpp"
 #include "Utility/EventDispatcher.hpp"
+#include "Asset/Asset.hpp"
 
 namespace SD {
-#define APP_VARS            \
-    Ref<Renderer> renderer; \
+#define APP_VARS             \
+    Ref<Renderer> renderer;  \
+    Ref<AssetManager> asset; \
     Ref<EventDispatcher> dispatcher;
 
 #define SET_APP_VARS                       \
     void setAppVars(const AppVars &vars) { \
         renderer = vars.renderer;          \
+        asset = vars.asset;                \
         dispatcher = vars.dispatcher;      \
     }
 
@@ -19,6 +22,7 @@ namespace SD {
     AppVars makeAppVars() {           \
         AppVars vars;                 \
         vars.renderer = renderer;     \
+        vars.asset = asset;           \
         vars.dispatcher = dispatcher; \
         return vars;                  \
     }

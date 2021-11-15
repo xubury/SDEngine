@@ -10,7 +10,7 @@ class SD_API ImageLoader : public AssetLoaderBase {
    private:
     friend class AssetManager;
 
-    ImageLoader();
+    ImageLoader(AssetManager &manager);
 
    public:
     Ref<void> loadAsset(const std::string &filePath) override;

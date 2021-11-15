@@ -1,9 +1,10 @@
 #ifndef SD_SCENE_PANEL_HPP
 #define SD_SCENE_PANEL_HPP
 
+#include "Utility/Base.hpp"
+#include "Core/Vars.hpp"
 #include "ECS/Scene.hpp"
 #include "ECS/Entity.hpp"
-#include "Utility/Base.hpp"
 #include "ImGui/FileDialog.hpp"
 #include "ECS/Component.hpp"
 
@@ -24,6 +25,12 @@ class ScenePanel {
 
     int getGizmoMode() const;
     int getGizmoType() const;
+
+    SET_APP_VARS;
+
+   protected:
+    APP_VARS
+    MAKE_APP_VARS;
 
    private:
     void drawEntityNode(Entity &entity);

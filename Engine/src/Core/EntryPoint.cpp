@@ -4,8 +4,8 @@
 
 int main(int, char **) {
     auto app = SD::createApp();
-    app->onPush();
+    app->onInit();
     app->run();
-    app->destroy();
+    delete app;
     return 0;
 }

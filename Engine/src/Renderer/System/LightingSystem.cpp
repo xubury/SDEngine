@@ -237,7 +237,7 @@ void LightingSystem::renderGBuffer() {
                                  transformComp.transform.getWorldTransform());
         m_gBufferShader->setUint("u_entityId", static_cast<uint32_t>(entity));
         m_gBufferShader->setVec3("u_color", modelComp.color);
-        auto model = AssetManager::instance().get<Model>(modelComp.id);
+        auto model = asset->get<Model>(modelComp.id);
         if (model) {
             for (const auto &mesh : model->getMeshes()) {
                 auto &material = model->getMaterials()[mesh.getMaterialIndex()];

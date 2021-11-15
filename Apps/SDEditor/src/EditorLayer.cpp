@@ -25,15 +25,6 @@ EditorLayer::EditorLayer(int width, int height)
       m_saveSceneOpen(false) {
     m_cameraController.setCamera(&m_editorCamera);
     m_editorCamera.setWorldPosition(glm::vec3(0, 0, 10));
-    auto resourceId =
-        AssetManager::instance().loadAsset<Image>("icons/light.png");
-    auto image = AssetManager::instance().get<Image>(resourceId);
-
-    m_lightIcon = Texture::create(
-        image->width(), image->height(), 1, TextureType::TEX_2D,
-        image->hasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
-        TextureFormatType::UBYTE, TextureWrap::REPEAT, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_LINEAR, image->data());
     m_screenBuffer = Framebuffer::create();
     m_screenBuffer->attachTexture(Texture::create(
         m_width, m_height, 1, TextureType::TEX_2D, TextureFormat::RGBA,
@@ -47,7 +38,6 @@ EditorLayer::EditorLayer(int width, int height)
             getTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
             TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
     }
-    // FIXME:memory leak?
     m_shadowSystem = new ShadowSystem();
     m_lightingSystem = new LightingSystem(&m_target, m_width, m_height, 4);
     m_skyboxSystem = new SkyboxSystem(&m_target);
@@ -56,8 +46,28 @@ EditorLayer::EditorLayer(int width, int height)
     m_profileSystem = new ProfileSystem(&m_target, m_width, m_height);
 }
 
+EditorLayer::~EditorLayer() {
+    delete m_shadowSystem;
+    delete m_lightingSystem;
+    delete m_skyboxSystem;
+    delete m_spriteSystem;
+    delete m_postProcessSystem;
+    delete m_profileSystem;
+}
+
 void EditorLayer::onPush() {
     newScene();
+
+    auto resourceId = asset->loadAsset<Image>("icons/light.png");
+    auto image = asset->get<Image>(resourceId);
+
+    m_lightIcon = Texture::create(
+        image->width(), image->height(), 1, TextureType::TEX_2D,
+        image->hasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
+        TextureFormatType::UBYTE, TextureWrap::REPEAT, TextureFilter::LINEAR,
+        TextureMipmapFilter::LINEAR_LINEAR, image->data());
+
+    m_scenePanel.setAppVars(makeAppVars());
 
     pushSystem(m_shadowSystem);
     pushSystem(m_lightingSystem);

@@ -87,14 +87,15 @@ class SD_API Layer {
     const SystemContainer &getSystems() const { return m_systems; }
     SystemContainer &getSystems() { return m_systems; }
 
+    const std::string &getName() const { return m_name; }
    protected:
     APP_VARS
+    MAKE_APP_VARS;
 
    private:
     friend class Application;
 
     SET_APP_VARS;
-    MAKE_APP_VARS;
     std::string m_name;
     bool m_blockEvent;
     EventDispatcher m_dispatcher;

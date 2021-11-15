@@ -34,7 +34,7 @@ void ShadowSystem::onRender() {
 
         modelView.each([this](const TransformComponent &transformComp,
                               const ModelComponent &modelComp) {
-            auto model = AssetManager::instance().get<Model>(modelComp.id);
+            auto model = asset->get<Model>(modelComp.id);
             m_shadowShader->setMat4(
                 "u_model", transformComp.transform.getWorldTransform());
             if (model) {

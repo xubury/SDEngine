@@ -9,13 +9,12 @@ ProfileSystem::ProfileSystem(RenderTarget *target, int width, int height)
     : System("Profile"),
       m_target(target),
       m_camera(width, height, 0.f, 1000.f),
-      m_fps(20) {
-    auto resourceId = AssetManager::instance().loadAsset<Font>(
-        "fonts/opensans/OpenSans-Regular.ttf");
-    m_font = AssetManager::instance().get<Font>(resourceId);
-}
+      m_fps(20) {}
 
 void ProfileSystem::onPush() {
+    auto resourceId =
+        asset->loadAsset<Font>("fonts/opensans/OpenSans-Regular.ttf");
+    m_font = asset->get<Font>(resourceId);
     dispatcher->subscribe(this, &ProfileSystem::onSizeEvent);
 }
 

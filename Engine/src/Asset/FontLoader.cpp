@@ -4,7 +4,7 @@
 
 namespace SD {
 
-FontLoader::FontLoader() {
+FontLoader::FontLoader(AssetManager &manager) : AssetLoaderBase(manager) {
     if (FT_Init_FreeType(&m_ft)) {
         SD_CORE_ERROR("Could not init Freetype library!");
     }

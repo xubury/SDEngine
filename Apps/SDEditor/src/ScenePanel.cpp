@@ -260,13 +260,12 @@ void ScenePanel::drawComponents(Entity &entity) {
             fileDialogInfo.directoryPath = std::filesystem::current_path();
         }
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
-            mc.id = AssetManager::instance().loadAsset<Model>(
-                fileDialogInfo.resultPath);
+            mc.id = asset->loadAsset<Model>(fileDialogInfo.resultPath);
         }
 
         ImGui::ColorEdit3("Color", &mc.color[0]);
         ImVec2 size(64, 64);
-        auto model = AssetManager::instance().get<Model>(mc.id);
+        auto model = asset->get<Model>(mc.id);
         if (model) {
             drawMaterialsList(model->getMaterials(), size,
                               &m_selectedMaterialIdMap[entity]);
@@ -357,8 +356,7 @@ void ScenePanel::drawComponents(Entity &entity) {
             fileDialogInfo.directoryPath = std::filesystem::current_path();
         }
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
-            textComp.id = AssetManager::instance().loadAsset<Font>(
-                fileDialogInfo.resultPath);
+            textComp.id = asset->loadAsset<Font>(fileDialogInfo.resultPath);
         }
         ImGui::Text("Text Content:");
         if (ImGui::InputText("##TextEdit", buffer, sizeof(buffer))) {

@@ -13,9 +13,9 @@ Asset::Asset(size_t loaderType, const std::string &path)
     : m_resource(nullptr), m_loaderType(loaderType), m_path(path) {}
 
 AssetManager::AssetManager() {
-    setLoader<Image>(new ImageLoader());
-    setLoader<Model>(new ModelLoader());
-    setLoader<Font>(new FontLoader());
+    setLoader<Image>(new ImageLoader(*this));
+    setLoader<Model>(new ModelLoader(*this));
+    setLoader<Font>(new FontLoader(*this));
     load("assets");
 }
 

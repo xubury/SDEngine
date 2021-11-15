@@ -8,7 +8,7 @@ namespace SD {
 
 class SDEditor : public Application {
    public:
-    void onPush() override;
+    void onInit() override;
 };
 
 }  // namespace SD

@@ -28,6 +28,7 @@ class System {
 
    protected:
     APP_VARS
+    MAKE_APP_VARS
 
    private:
     friend class Layer;
@@ -35,7 +36,6 @@ class System {
     std::string m_name;
 
     SET_APP_VARS
-    MAKE_APP_VARS
 };
 
 }  // namespace SD

@@ -17,7 +17,7 @@ class SD_API FontLoader : public AssetLoaderBase {
    private:
     friend class AssetManager;
 
-    FontLoader();
+    FontLoader(AssetManager &manager);
 
     FT_Library m_ft;
 };

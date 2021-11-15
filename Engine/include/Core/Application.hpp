@@ -29,7 +29,7 @@ class SD_API Application {
     void destroyLayer(Layer *layer);
 
     Application();
-    virtual ~Application() = default;
+    virtual ~Application();
 
     APP_VARS
    private:
@@ -38,11 +38,9 @@ class SD_API Application {
 
     friend int ::main(int argc, char **argv);
 
-    virtual void onPush() = 0;
+    virtual void onInit() = 0;
 
     void run();
-
-    void destroy();
 
     void processEvent(const SDL_Event &event);
 

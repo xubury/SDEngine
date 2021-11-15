@@ -43,26 +43,33 @@ class SD_API Asset {
     std::string m_path;
 };
 
+class AssetManager;
+
 class SD_API AssetLoaderBase {
    public:
-    AssetLoaderBase() = default;
+    AssetLoaderBase(AssetManager &manager) : m_manager(manager) {}
     AssetLoaderBase(const AssetLoaderBase &) = delete;
     AssetLoaderBase &operator=(const AssetLoaderBase &) = delete;
     virtual ~AssetLoaderBase() = default;
 
     virtual Ref<void> loadAsset(const std::string &path) = 0;
+
+    AssetManager &manager() { return m_manager; }
+
+   private:
+    AssetManager &m_manager;
 };
 
 class SD_API AssetManager {
    private:
-    AssetManager();
-    ~AssetManager();
-
     void clear();
 
     void cache(const ResourceId &id);
 
    public:
+    AssetManager();
+    ~AssetManager();
+
     void load(const std::filesystem::path &path);
     void save();
 
@@ -79,11 +86,6 @@ class SD_API AssetManager {
     bool hasCached(const ResourceId &id) const;
 
     bool valid() const { return std::filesystem::exists(m_directory); }
-
-    static AssetManager &instance() {
-        static AssetManager s_instance;
-        return s_instance;
-    }
 
     template <typename ASSET>
     void setLoader(AssetLoaderBase *loader) {

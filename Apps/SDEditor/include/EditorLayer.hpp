@@ -18,6 +18,7 @@ namespace SD {
 class EditorLayer : public Layer {
    public:
     EditorLayer(int width, int height);
+    ~EditorLayer();
 
     void onPush() override;
 
