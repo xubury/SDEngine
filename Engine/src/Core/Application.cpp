@@ -39,15 +39,9 @@ Application::Application() {
     // Intialize graphics device
     ShaderLibrary::instance().setRootPath("assets");
 
-    renderer = createRef<Renderer>();
+    renderer = createRef<Renderer>(samples);
+    asset = createRef<AssetManager>("assets");
     dispatcher = createRef<EventDispatcher>();
-    asset = createRef<AssetManager>();
-
-    if (samples > 1) {
-        renderer->device().enable(Operation::MULTISAMPLE);
-    } else {
-        renderer->device().disable(Operation::MULTISAMPLE);
-    }
 
     m_imguiLayer = new ImGuiLayer();
     pushOverlay(m_imguiLayer);

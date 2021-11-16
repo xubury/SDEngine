@@ -67,7 +67,7 @@ class SD_API AssetManager {
     void cache(const ResourceId &id);
 
    public:
-    AssetManager();
+    AssetManager(const std::filesystem::path &path);
     ~AssetManager();
 
     void load(const std::filesystem::path &path);

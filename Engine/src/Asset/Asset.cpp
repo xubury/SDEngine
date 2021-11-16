@@ -12,11 +12,11 @@ Asset::Asset() : m_resource(nullptr) {}
 Asset::Asset(size_t loaderType, const std::string &path)
     : m_resource(nullptr), m_loaderType(loaderType), m_path(path) {}
 
-AssetManager::AssetManager() {
+AssetManager::AssetManager(const std::filesystem::path &path) {
     setLoader<Image>(new ImageLoader(*this));
     setLoader<Model>(new ModelLoader(*this));
     setLoader<Font>(new FontLoader(*this));
-    load("assets");
+    load(path);
 }
 
 AssetManager::~AssetManager() {
@@ -62,7 +62,8 @@ void AssetManager::save() {
     cereal::XMLOutputArchive archive(os);
     // To have order in serialized data
     std::map<std::string, ResourceId> loaded(m_loaded.begin(), m_loaded.end());
-    std::map<ResourceId, Asset> resources(m_resources.begin(), m_resources.end());
+    std::map<ResourceId, Asset> resources(m_resources.begin(),
+                                          m_resources.end());
     archive(loaded, resources);
 }
 

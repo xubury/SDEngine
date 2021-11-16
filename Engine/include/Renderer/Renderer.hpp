@@ -15,7 +15,7 @@ namespace SD {
 
 class SD_API Renderer {
    public:
-    Renderer();
+    Renderer(int samples);
     Renderer(const Renderer &) = delete;
     Renderer &operator=(const Renderer &) = delete;
 
