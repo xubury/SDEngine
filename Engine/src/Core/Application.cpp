@@ -78,70 +78,72 @@ void Application::destroyLayer(Layer *layer) {
     delete layer;
 }
 
-void Application::processEvent(const SDL_Event &sdlEvent) {
-    if (sdlEvent.type == SDL_QUIT) {
+void Application::processEvent(const SDL_Event &sdl_event) {
+    if (sdl_event.type == SDL_QUIT) {
         quit();
     }
     Event event;
-    switch (sdlEvent.type) {
+    switch (sdl_event.type) {
         case SDL_MOUSEMOTION:
             event.type = Event::EventType::MOUSE_MOTION;
-            event.mouseMotion.x = sdlEvent.motion.x;
-            event.mouseMotion.y = sdlEvent.motion.y;
-            event.mouseMotion.xrel = sdlEvent.motion.xrel;
-            event.mouseMotion.yrel = sdlEvent.motion.yrel;
+            event.mouseMotion.x = sdl_event.motion.x;
+            event.mouseMotion.y = sdl_event.motion.y;
+            event.mouseMotion.xrel = sdl_event.motion.xrel;
+            event.mouseMotion.yrel = sdl_event.motion.yrel;
             Input::setMouseCoord(event.mouseMotion.x, event.mouseMotion.y);
             break;
         case SDL_MOUSEBUTTONDOWN:
             event.type = Event::EventType::MOUSE_BUTTON_PRESSED;
             event.mouseButton.button =
-                static_cast<MouseButton>(sdlEvent.button.button);
+                static_cast<MouseButton>(sdl_event.button.button);
             SDL_BUTTON_LEFT;
-            event.mouseButton.x = sdlEvent.button.x;
-            event.mouseButton.y = sdlEvent.button.y;
-            event.mouseButton.clicks = sdlEvent.button.clicks;
+            event.mouseButton.x = sdl_event.button.x;
+            event.mouseButton.y = sdl_event.button.y;
+            event.mouseButton.clicks = sdl_event.button.clicks;
             Input::pressMouseButton(event.mouseButton.button);
             break;
         case SDL_MOUSEBUTTONUP:
             event.type = Event::EventType::MOUSE_BUTTON_RELEASED;
             event.mouseButton.button =
-                static_cast<MouseButton>(sdlEvent.button.button);
-            event.mouseButton.x = sdlEvent.button.x;
-            event.mouseButton.y = sdlEvent.button.y;
-            event.mouseButton.clicks = sdlEvent.button.clicks;
+                static_cast<MouseButton>(sdl_event.button.button);
+            event.mouseButton.x = sdl_event.button.x;
+            event.mouseButton.y = sdl_event.button.y;
+            event.mouseButton.clicks = sdl_event.button.clicks;
             Input::releaseMouseButton(event.mouseButton.button);
             break;
         case SDL_MOUSEWHEEL:
             event.type = Event::EventType::MOUSE_WHEEL_SCROLLED;
-            event.mouseWheel.x = sdlEvent.wheel.x;
-            event.mouseWheel.y = sdlEvent.wheel.y;
+            event.mouseWheel.x = sdl_event.wheel.x;
+            event.mouseWheel.y = sdl_event.wheel.y;
             break;
         case SDL_KEYDOWN:
             event.type = Event::EventType::KEY_PRESSED;
-            event.key.keycode = static_cast<Keycode>(sdlEvent.key.keysym.sym);
-            event.key.scancode = sdlEvent.key.keysym.scancode;
-            event.key.mod = sdlEvent.key.keysym.mod;
+            event.key.keycode = static_cast<Keycode>(sdl_event.key.keysym.sym);
+            event.key.scancode = sdl_event.key.keysym.scancode;
+            event.key.mod = sdl_event.key.keysym.mod;
             Input::pressKey(event.key.keycode);
             break;
         case SDL_KEYUP:
             event.type = Event::EventType::KEY_RELEASED;
-            event.key.keycode = static_cast<Keycode>(sdlEvent.key.keysym.sym);
-            event.key.scancode = sdlEvent.key.keysym.scancode;
-            event.key.mod = sdlEvent.key.keysym.mod;
+            event.key.keycode = static_cast<Keycode>(sdl_event.key.keysym.sym);
+            event.key.scancode = sdl_event.key.keysym.scancode;
+            event.key.mod = sdl_event.key.keysym.mod;
             Input::releaseKey(event.key.keycode);
             break;
         case SDL_WINDOWEVENT:
-            switch (sdlEvent.window.type) {
+            switch (sdl_event.window.type) {
                 case SDL_WINDOWEVENT_RESIZED:
-                case SDL_WINDOWEVENT_SIZE_CHANGED:
+                case SDL_WINDOWEVENT_SIZE_CHANGED: {
                     event.type = Event::EventType::WINDOW_RESIZED;
-                    break;
+                    event.size.width = sdl_event.window.data1;
+                    event.size.height = sdl_event.window.data2;
+                } break;
             }
             break;
         case SDL_TEXTINPUT: {
             event.type = Event::EventType::TEXT_INPUT;
-            std::copy(std::begin(sdlEvent.text.text),
-                      std::end(sdlEvent.text.text), event.text.text);
+            std::copy(std::begin(sdl_event.text.text),
+                      std::end(sdl_event.text.text), event.text.text);
         } break;
     }
     for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {
