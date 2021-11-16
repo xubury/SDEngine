@@ -76,8 +76,8 @@ void ImGuiLayer::onEventProcess(const Event& event) {
         default:
             break;
         case Event::EventType::WINDOW_RESIZED:
-            io.DisplaySize.x = (float)event.size.width;
-            io.DisplaySize.y = (float)event.size.height;
+            io.DisplaySize.x = static_cast<float>(event.size.width);
+            io.DisplaySize.y = static_cast<float>(event.size.height);
             break;
         case Event::EventType::TEXT_INPUT: {
             // TODO: not sure if it is correct
@@ -100,19 +100,21 @@ void ImGuiLayer::onEventProcess(const Event& event) {
         case Event::EventType::MOUSE_MOTION: {
             glm::vec2 screenPos =
                 glm::vec2(event.mouseMotion.x, event.mouseMotion.y);
-            io.MousePos.x = (float)screenPos.x;
-            io.MousePos.y = (float)screenPos.y;
+            io.MousePos.x = static_cast<float>(screenPos.x);
+            io.MousePos.y = static_cast<float>(screenPos.y);
         } break;
         case Event::EventType::MOUSE_BUTTON_PRESSED: {
+            int button = static_cast<int>(event.mouseButton.button) -
+                         static_cast<int>(MouseButton::LEFT);
             if (io.WantCaptureMouse) {
-                io.MouseDown[int(event.mouseButton.button) -
-                             int(MouseButton::LEFT)] = true;
+                io.MouseDown[button] = true;
             }
         } break;
         case Event::EventType::MOUSE_BUTTON_RELEASED: {
+            int button = static_cast<int>(event.mouseButton.button) -
+                         static_cast<int>(MouseButton::LEFT);
             if (io.WantCaptureMouse) {
-                io.MouseDown[int(event.mouseButton.button) -
-                             int(MouseButton::LEFT)] = false;
+                io.MouseDown[button] = false;
             }
         } break;
         case Event::EventType::MOUSE_WHEEL_SCROLLED: {
