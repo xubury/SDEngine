@@ -14,6 +14,7 @@ struct WindowSizeEvent {
 
 struct KeyEvent {
     Keycode keycode;
+    uint16_t scancode;
     uint16_t mod;
 };
 
@@ -36,6 +37,10 @@ struct MouseWheelEvent {
     int32_t y;
 };
 
+struct TextInputEvent {
+    char text[32];  // std::string is not allowed in union
+};
+
 struct SD_API Event {
     union {
         WindowSizeEvent size;
@@ -43,6 +48,7 @@ struct SD_API Event {
         MouseMotionEvent mouseMotion;
         MouseButtonEvent mouseButton;
         MouseWheelEvent mouseWheel;
+        TextInputEvent text;
     };
 
     enum EventType {
@@ -53,7 +59,8 @@ struct SD_API Event {
         MOUSE_MOTION,
         MOUSE_BUTTON_PRESSED,
         MOUSE_BUTTON_RELEASED,
-        MOUSE_WHEEL_SCROLLED
+        MOUSE_WHEEL_SCROLLED,
+        TEXT_INPUT
     };
 
     EventType type = Event::UNKNOWN;

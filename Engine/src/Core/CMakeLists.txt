@@ -18,15 +18,14 @@ set(Core_Include
     ${Include_Root}/Keycode.hpp
     ${Include_Root}/Scancode.hpp
     ${Include_Root}/Layer.hpp
-    ${Include_Root}/LayerStack.hpp)
+    ${Include_Root}/EventStack.hpp)
 
 set(Core_Src
     ${OpenGL_Src}
     ${Src_Root}/Application.cpp
     ${Src_Root}/Window.cpp
     ${Src_Root}/EntryPoint.cpp
-    ${Src_Root}/System.cpp
-    ${Src_Root}/LayerStack.cpp)
+    ${Src_Root}/System.cpp)
 
 add_library(sd-core ${Core_Src})
 

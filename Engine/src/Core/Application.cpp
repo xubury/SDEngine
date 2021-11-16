@@ -62,15 +62,20 @@ Application::~Application() {
 
 void Application::pushLayer(Layer *layer) {
     layer->setAppVars(makeAppVars());
-    m_layers.pushLayer(layer);
+    layer->onPush();
+    m_layers.push(layer);
 }
 
 void Application::pushOverlay(Layer *layer) {
     layer->setAppVars(makeAppVars());
+    layer->onPush();
     m_layers.pushOverlay(layer);
 }
 
-void Application::popLayer(Layer *layer) { m_layers.popLayer(layer); }
+void Application::popLayer(Layer *layer) {
+    layer->onPop();
+    m_layers.pop(layer);
+}
 
 void Application::destroyLayer(Layer *layer) {
     popLayer(layer);
@@ -118,12 +123,14 @@ void Application::processEvent(const SDL_Event &sdlEvent) {
         case SDL_KEYDOWN:
             event.type = Event::EventType::KEY_PRESSED;
             event.key.keycode = static_cast<Keycode>(sdlEvent.key.keysym.sym);
+            event.key.scancode = sdlEvent.key.keysym.scancode;
             event.key.mod = sdlEvent.key.keysym.mod;
             Input::pressKey(event.key.keycode);
             break;
         case SDL_KEYUP:
             event.type = Event::EventType::KEY_RELEASED;
             event.key.keycode = static_cast<Keycode>(sdlEvent.key.keysym.sym);
+            event.key.scancode = sdlEvent.key.keysym.scancode;
             event.key.mod = sdlEvent.key.keysym.mod;
             Input::releaseKey(event.key.keycode);
             break;
@@ -135,6 +142,11 @@ void Application::processEvent(const SDL_Event &sdlEvent) {
                     break;
             }
             break;
+        case SDL_TEXTINPUT: {
+            event.type = Event::EventType::TEXT_INPUT;
+            std::copy(std::begin(sdlEvent.text.text),
+                      std::end(sdlEvent.text.text), event.text.text);
+        } break;
     }
     for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {
         (*layer)->onEventProcess(event);

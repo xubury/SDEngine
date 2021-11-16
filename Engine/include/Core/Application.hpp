@@ -3,7 +3,7 @@
 
 #include "Core/Vars.hpp"
 #include "Core/Window.hpp"
-#include "Core/LayerStack.hpp"
+#include "Core/EventStack.hpp"
 #include "ImGui/ImGuiLayer.hpp"
 
 int main(int argc, char **argv);
@@ -51,7 +51,7 @@ class SD_API Application {
 
     Ref<Window> m_window;
 
-    LayerStack m_layers;
+    EventStack<Layer *> m_layers;
     ImGuiLayer *m_imguiLayer;
 };
 

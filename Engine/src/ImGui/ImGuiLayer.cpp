@@ -82,16 +82,24 @@ void ImGuiLayer::onEventProcess(const Event& event) {
             io.DisplaySize.x = (float)event.size.width;
             io.DisplaySize.y = (float)event.size.height;
             break;
-        case Event::EventType::KEY_PRESSED:
-            if (io.WantCaptureKeyboard) {
-                io.KeysDown[int(event.key.keycode)] = true;
-            }
-            break;
-        case Event::EventType::KEY_RELEASED:
-            if (io.WantCaptureKeyboard) {
-                io.KeysDown[int(event.key.keycode)] = false;
-            }
-            break;
+        case Event::EventType::TEXT_INPUT: {
+            // TODO: not sure if it is correct
+            io.AddInputCharacterUTF16(*event.text.text);
+        } break;
+        case Event::EventType::KEY_PRESSED: {
+            io.KeysDown[event.key.scancode] = true;
+            io.KeyShift = event.key.mod == Keymod::SHIFT;
+            io.KeyCtrl = event.key.mod == Keymod::CTRL;
+            io.KeyAlt = event.key.mod == Keymod::ALT;
+            io.KeySuper = event.key.mod == Keymod::GUI;
+        } break;
+        case Event::EventType::KEY_RELEASED: {
+            io.KeysDown[event.key.scancode] = false;
+            io.KeyShift = event.key.mod == Keymod::SHIFT;
+            io.KeyCtrl = event.key.mod == Keymod::CTRL;
+            io.KeyAlt = event.key.mod == Keymod::ALT;
+            io.KeySuper = event.key.mod == Keymod::GUI;
+        } break;
         case Event::EventType::MOUSE_MOTION: {
             glm::vec2 screenPos =
                 glm::vec2(event.mouseMotion.x, event.mouseMotion.y);

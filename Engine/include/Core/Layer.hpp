@@ -2,6 +2,8 @@
 #define SD_LAYER_HPP
 
 #include "Core/Vars.hpp"
+#include "Core/Event.hpp"
+#include "Core/EventStack.hpp"
 #include "Core/System.hpp"
 #include "Utility/Base.hpp"
 #include "Utility/EventDispatcher.hpp"
@@ -13,8 +15,6 @@ namespace SD {
 
 class SD_API Layer {
    public:
-    using SystemContainer = std::vector<System *>;
-
    public:
     Layer(const std::string &name) : m_name(name), m_blockEvent(false) {}
 
@@ -49,8 +49,8 @@ class SD_API Layer {
 
     void pushSystem(System *system) {
         system->setAppVars(makeAppVars());
-        m_systems.push_back(system);
         system->onPush();
+        m_systems.push(system);
     }
 
     template <typename SYSTEM>
@@ -64,19 +64,8 @@ class SD_API Layer {
     }
 
     void popSystem(System *system) {
-        auto itr = m_systems.begin();
-        for (; itr != m_systems.end(); itr++) {
-            if (*itr == system) {
-                break;
-            }
-        }
-
-        if (itr != m_systems.end()) {
-            system->onPop();
-            m_systems.erase(itr);
-        } else {
-            SD_CORE_ERROR("Layer::popSystem Failed! No system found!");
-        }
+        system->onPop();
+        m_systems.pop(system);
     }
 
     void destroySystem(System *system) {
@@ -84,10 +73,11 @@ class SD_API Layer {
         delete system;
     }
 
-    const SystemContainer &getSystems() const { return m_systems; }
-    SystemContainer &getSystems() { return m_systems; }
+    const EventStack<System *> &getSystems() const { return m_systems; }
+    EventStack<System *> &getSystems() { return m_systems; }
 
     const std::string &getName() const { return m_name; }
+
    protected:
     APP_VARS
     MAKE_APP_VARS;
@@ -98,7 +88,7 @@ class SD_API Layer {
     SET_APP_VARS;
     std::string m_name;
     bool m_blockEvent;
-    SystemContainer m_systems;
+    EventStack<System *> m_systems;
 };
 
 }  // namespace SD
