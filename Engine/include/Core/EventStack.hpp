@@ -41,7 +41,9 @@ class SD_API EventStack {
         }
     }
 
-    bool has(T item) const;
+    bool has(T item) const {
+        return std::find(m_items.begin(), m_items.end(), item) != m_items.end();
+    }
 
     iterator begin() { return m_items.begin(); }
 

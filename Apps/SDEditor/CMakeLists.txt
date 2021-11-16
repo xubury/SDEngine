@@ -1,3 +1,7 @@
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_definitions(DEBUG_BUILD)
+endif()
+
 cmake_minimum_required(VERSION 3.1.0)
 
 project(SDEditor VERSION 0.1.0)
