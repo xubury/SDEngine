@@ -1,7 +1,7 @@
 #ifndef SD_EVENT_DISPATCHER_HPP
 #define SD_EVENT_DISPATCHER_HPP
 
-#include "Utility/Export.hpp"
+#include "Utility/Base.hpp"
 
 #include <cstdint>
 #include <functional>
@@ -17,14 +17,19 @@ using Callback = std::function<void(const EVENT&)>;
 class SD_API EventDispatcher {
    public:
     template <typename F, typename EVENT>
-    void subscribe(F* key, void (F::*METHOD)(const EVENT&)) {
-        Callback<EVENT> callback = [key, METHOD](const EVENT& e) {
-            (key->*METHOD)(e);
+    void subscribe(F* object, void (F::*METHOD)(const EVENT&)) {
+        Callback<EVENT> callback = [object, METHOD](const EVENT& e) {
+            (object->*METHOD)(e);
         };
         auto& callbacks = getCallbacks<EVENT>();
         callbacks.push_back(callback);
-        getKeys<EVENT>()[reinterpret_cast<intptr_t>(key)] =
-            callbacks.size() - 1;
+        intptr_t key = reinterpret_cast<intptr_t>(object);
+        auto& keys = getKeys<EVENT>();
+        if (keys.count(key) == 0) {
+            keys[key] = callbacks.size() - 1;
+        } else {
+            SD_CORE_ERROR("EventDispatcher::subscribe: Repeated subscrition!");
+        }
     }
 
     template <typename EVENT, typename F>
