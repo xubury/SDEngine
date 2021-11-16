@@ -1,9 +1,8 @@
 #include "Core/Application.hpp"
+#include "Core/SDL.hpp"
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
 #include "Input/Input.hpp"
-
-#include <SDL.h>
 
 namespace SD {
 
@@ -25,10 +24,13 @@ Application::Application() {
     Random::init();
     SD_CORE_INFO("Debug info is output to: {}", debugPath);
 
+    SDL(SDL_Init(SDL_INIT_EVERYTHING));
+    int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
+    SD_CORE_ASSERT((IMG_Init(imgFlags) & imgFlags) == imgFlags, IMG_GetError());
+
     // Setting up which api to use
     setGraphicsAPI(GraphicsAPI::OpenGL);
 
-    // Initialize context
     WindowProp prop;
     prop.width = width;
     prop.height = height;
@@ -36,7 +38,6 @@ Application::Application() {
     prop.flag = SDL_WINDOW_MAXIMIZED;
     m_window = Window::create(prop);
 
-    // Intialize graphics device
     ShaderLibrary::instance().setRootPath("assets");
 
     renderer = createRef<Renderer>(samples);
@@ -51,6 +52,7 @@ Application::~Application() {
     while (m_layers.size()) {
         destroyLayer(m_layers.front());
     }
+    IMG_Quit();
     SDL_Quit();
 }
 

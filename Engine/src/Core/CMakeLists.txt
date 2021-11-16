@@ -1,4 +1,5 @@
 find_package(SDL2 REQUIRED)
+find_package(SDL2_image REQUIRED)
 
 set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Core)
 set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Core)
@@ -47,7 +48,8 @@ target_link_libraries(sd-core
     sd-imgui
     sd-input
     PRIVATE
-    SDL2::Main)
+    SDL2::Main
+    SDL2::Image)
 
 target_include_directories(sd-core
     PUBLIC

@@ -1,18 +1,11 @@
 #include "Core/Window.hpp"
+#include "Core/SDL.hpp"
 #include "Core/OpenGL/GLWindow.hpp"
 #include "Graphics/Graphics.hpp"
-#include <SDL.h>
-
-#ifdef DEBUG_BUILD
-#define SDL(stmt) SD_CORE_ASSERT(stmt == 0, SDL_GetError())
-#else
-#define SDL(stmt) stmt
-#endif
 
 namespace SD {
 
 Ref<Window> Window::create(const WindowProp &property) {
-    SDL(SDL_Init(SDL_INIT_EVERYTHING));
     SD_CORE_TRACE("Initializing Window...");
     Ref<Window> window;
     switch (getGraphicsAPI()) {

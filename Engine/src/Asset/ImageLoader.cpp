@@ -3,16 +3,6 @@
 
 namespace SD {
 
-ImageLoader::ImageLoader(AssetManager &manager) : AssetLoaderBase(manager) {
-    int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
-    if ((IMG_Init(imgFlags) & imgFlags) != imgFlags) {
-        SD_CORE_ERROR("IMG_Init Failed: {}", IMG_GetError());
-        exit(-1);
-    }
-}
-
-ImageLoader::~ImageLoader() { IMG_Quit(); }
-
 Ref<void> ImageLoader::loadAsset(const std::string &filePath) {
     Ref<Image> image = createRef<Image>(filePath);
     SD_CORE_TRACE("Loading image form: {}...", filePath);
