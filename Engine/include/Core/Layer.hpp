@@ -98,7 +98,6 @@ class SD_API Layer {
     SET_APP_VARS;
     std::string m_name;
     bool m_blockEvent;
-    EventDispatcher m_dispatcher;
     SystemContainer m_systems;
 };
 

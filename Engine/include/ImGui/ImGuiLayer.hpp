@@ -19,8 +19,7 @@ class SD_API ImGuiLayer : public Layer {
 
     void onPop() override;
 
-    void onSDLEvent(const SDL_Event &);
-
+    void onEventProcess(const Event &event) override;
    private:
     void setDarkThemeColor();
 };

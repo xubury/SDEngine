@@ -78,7 +78,6 @@ void Application::destroyLayer(Layer *layer) {
 }
 
 void Application::processEvent(const SDL_Event &sdlEvent) {
-    m_imguiLayer->onSDLEvent(sdlEvent);
     if (sdlEvent.type == SDL_QUIT) {
         quit();
     }
@@ -132,7 +131,7 @@ void Application::processEvent(const SDL_Event &sdlEvent) {
             switch (sdlEvent.window.type) {
                 case SDL_WINDOWEVENT_RESIZED:
                 case SDL_WINDOWEVENT_SIZE_CHANGED:
-                    event.type = Event::EventType::RESIZED;
+                    event.type = Event::EventType::WINDOW_RESIZED;
                     break;
             }
             break;

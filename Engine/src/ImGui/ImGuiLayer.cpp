@@ -73,8 +73,49 @@ void ImGuiLayer::onPop() {
     ImGui_ImplSDL2_Shutdown();
 }
 
-void ImGuiLayer::onSDLEvent(const SDL_Event& event) {
-    ImGui_ImplSDL2_ProcessEvent(&event);
+void ImGuiLayer::onEventProcess(const Event& event) {
+    auto& io = ImGui::GetIO();
+    switch (event.type) {
+        default:
+            break;
+        case Event::EventType::WINDOW_RESIZED:
+            io.DisplaySize.x = (float)event.size.width;
+            io.DisplaySize.y = (float)event.size.height;
+            break;
+        case Event::EventType::KEY_PRESSED:
+            if (io.WantCaptureKeyboard) {
+                io.KeysDown[int(event.key.keycode)] = true;
+            }
+            break;
+        case Event::EventType::KEY_RELEASED:
+            if (io.WantCaptureKeyboard) {
+                io.KeysDown[int(event.key.keycode)] = false;
+            }
+            break;
+        case Event::EventType::MOUSE_MOTION: {
+            glm::vec2 screenPos =
+                glm::vec2(event.mouseMotion.x, event.mouseMotion.y);
+            io.MousePos.x = (float)screenPos.x;
+            io.MousePos.y = (float)screenPos.y;
+        } break;
+        case Event::EventType::MOUSE_BUTTON_PRESSED: {
+            if (io.WantCaptureMouse) {
+                io.MouseDown[int(event.mouseButton.button) -
+                             int(MouseButton::LEFT)] = true;
+            }
+        } break;
+        case Event::EventType::MOUSE_BUTTON_RELEASED: {
+            if (io.WantCaptureMouse) {
+                io.MouseDown[int(event.mouseButton.button) -
+                             int(MouseButton::LEFT)] = false;
+            }
+        } break;
+        case Event::EventType::MOUSE_WHEEL_SCROLLED: {
+            if (io.WantCaptureMouse) {
+                io.MouseWheel += event.mouseWheel.y;
+            }
+        } break;
+    }
 }
 
 void ImGuiLayer::setDarkThemeColor() {

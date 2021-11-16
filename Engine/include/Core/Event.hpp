@@ -36,8 +36,7 @@ struct MouseWheelEvent {
     int32_t y;
 };
 
-class SD_API Event {
-   public:
+struct SD_API Event {
     union {
         WindowSizeEvent size;
         KeyEvent key;
@@ -48,7 +47,7 @@ class SD_API Event {
 
     enum EventType {
         UNKNOWN = 0,
-        RESIZED,
+        WINDOW_RESIZED,
         KEY_PRESSED,
         KEY_RELEASED,
         MOUSE_MOTION,
@@ -58,6 +57,7 @@ class SD_API Event {
     };
 
     EventType type = Event::UNKNOWN;
+    bool handled = false;
 };
 
 }  // namespace SD
