@@ -26,6 +26,8 @@ Ref<Window> Window::create(const WindowProp &property) {
     return window;
 }
 
+Window::Window(const WindowProp &property) : m_samples(property.samples) {}
+
 Window::~Window() { SDL_DestroyWindow(m_window); }
 
 bool Window::pollEvent(SDL_Event &event) { return SDL_PollEvent(&event) == 1; }

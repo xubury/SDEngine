@@ -49,15 +49,20 @@ class SD_API Window {
 
     int getHeight();
 
+    uint8_t getSamples() const { return m_samples; }
+
     SDL_Window *getHandle();
 
     virtual void *getGraphicsContext() = 0;
 
    protected:
-    Window() = default;
+    Window(const WindowProp &property);
 
     SDL_Window *m_window;
+
+   private:
     bool m_shouldClose;
+    uint8_t m_samples;
 };
 
 }  // namespace SD

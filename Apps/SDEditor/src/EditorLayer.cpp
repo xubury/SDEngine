@@ -39,7 +39,8 @@ EditorLayer::EditorLayer(int width, int height)
             TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
     }
     m_shadowSystem = new ShadowSystem();
-    m_lightingSystem = new LightingSystem(&m_target, m_width, m_height, 4);
+    m_lightingSystem = new LightingSystem(&m_target, m_width, m_height,
+                                          getApp().getWindow().getSamples());
     m_skyboxSystem = new SkyboxSystem(&m_target);
     m_spriteSystem = new SpriteRenderSystem(&m_target);
     m_postProcessSystem = new PostProcessSystem(&m_target, m_width, m_height);

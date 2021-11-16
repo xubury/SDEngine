@@ -10,7 +10,7 @@
 
 namespace SD {
 
-GLWindow::GLWindow(const WindowProp &property) {
+GLWindow::GLWindow(const WindowProp &property) : Window(property) {
     uint32_t sdlFlags =
         property.flag | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
 
