@@ -23,9 +23,6 @@ void ImGuiLayer::begin() {
 }
 
 void ImGuiLayer::end() {
-    ImGuiIO& io = ImGui::GetIO();
-    io.DisplaySize = ImVec2((float)getApp().getWindow().getWidth(),
-                            (float)getApp().getWindow().getHeight());
     ImGui::Render();
     switch (getGraphicsAPI()) {
         case GraphicsAPI::OpenGL:

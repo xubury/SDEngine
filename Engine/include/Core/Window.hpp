@@ -3,6 +3,7 @@
 
 #include "Utility/Base.hpp"
 
+#include <glm/glm.hpp>
 #include <string>
 
 union SDL_Event;
@@ -45,9 +46,7 @@ class SD_API Window {
     bool shouldClose();
     void setShouldClose(bool shouldClose);
 
-    int getWidth();
-
-    int getHeight();
+    glm::ivec2 getSize();
 
     uint8_t getSamples() const { return m_samples; }
 

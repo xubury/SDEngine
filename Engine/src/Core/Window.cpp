@@ -29,16 +29,10 @@ bool Window::shouldClose() { return m_shouldClose; }
 
 void Window::setShouldClose(bool shouldClose) { m_shouldClose = shouldClose; }
 
-int Window::getWidth() {
-    int w = 0, _;
-    SDL_GetWindowSize(m_window, &w, &_);
-    return w;
-}
-
-int Window::getHeight() {
-    int h = 0, _;
-    SDL_GetWindowSize(m_window, &_, &h);
-    return h;
+glm::ivec2 Window::getSize() {
+    glm::ivec2 size;
+    SDL_GetWindowSize(m_window, &size.x, &size.y);
+    return size;
 }
 
 SDL_Window *Window::getHandle() { return m_window; }
