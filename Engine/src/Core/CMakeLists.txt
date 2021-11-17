@@ -19,6 +19,7 @@ set(Core_Include
     ${Include_Root}/Keyboard.hpp
     ${Include_Root}/Mouse.hpp
     ${Include_Root}/Layer.hpp
+    ${Include_Root}/EventDispatcher.hpp
     ${Include_Root}/EventStack.hpp)
 
 set(Core_Src

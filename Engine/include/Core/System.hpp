@@ -1,14 +1,11 @@
 #ifndef SD_SYSTEM_HPP
 #define SD_SYSTEM_HPP
 
+#include "Utility/Base.hpp"
 #include "Core/Vars.hpp"
 #include "Core/Event.hpp"
-#include "Utility/EventDispatcher.hpp"
-#include "Utility/Base.hpp"
 
 namespace SD {
-
-class Layer;
 
 class System {
    public:

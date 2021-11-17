@@ -6,7 +6,6 @@
 #include "Core/EventStack.hpp"
 #include "Core/System.hpp"
 #include "Utility/Base.hpp"
-#include "Utility/EventDispatcher.hpp"
 
 #include <string>
 #include <list>

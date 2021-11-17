@@ -21,21 +21,21 @@ class SD_API EventDispatcher {
         Callback<EVENT> callback = [object, METHOD](const EVENT& e) {
             (object->*METHOD)(e);
         };
-        auto& callbacks = getCallbacks<EVENT>();
+        auto& callbacks = GetCallbacks<EVENT>();
         callbacks.push_back(callback);
         intptr_t key = reinterpret_cast<intptr_t>(object);
-        auto& keys = getKeys<EVENT>();
+        auto& keys = GetKeys<EVENT>();
         if (keys.count(key) == 0) {
             keys[key] = callbacks.size() - 1;
         } else {
-            SD_CORE_ERROR("EventDispatcher::subscribe: Repeated subscrition!");
+            SD_CORE_ERROR("EventDispatcher::Subscribe: Repeated subscrition!");
         }
     }
 
     template <typename EVENT, typename F>
     void Unsubscribe(F* object) {
-        auto& keys = getKeys<EVENT>();
-        auto& listeners = getCallbacks<EVENT>();
+        auto& keys = GetKeys<EVENT>();
+        auto& listeners = GetCallbacks<EVENT>();
 
         intptr_t key = reinterpret_cast<intptr_t>(object);
         int index = keys[key];
@@ -48,18 +48,18 @@ class SD_API EventDispatcher {
 
     template <typename EVENT>
     void publishEvent(const EVENT& e) {
-        for (Callback<EVENT>& listener : getCallbacks<EVENT>()) listener(e);
+        for (Callback<EVENT>& listener : GetCallbacks<EVENT>()) listener(e);
     }
 
    private:
     template <typename EVENT>
-    std::vector<Callback<EVENT>>& getCallbacks() {
+    std::vector<Callback<EVENT>>& GetCallbacks() {
         static std::vector<Callback<EVENT>> callbacks;
         return callbacks;
     }
 
     template <typename EVENT>
-    std::unordered_map<intptr_t, int>& getKeys() {
+    std::unordered_map<intptr_t, int>& GetKeys() {
         static std::unordered_map<intptr_t, int> keys;
         return keys;
     }

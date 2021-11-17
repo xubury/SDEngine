@@ -10,7 +10,6 @@ set(Utility_Include
     ${Include_Root}/Assert.hpp
     ${Include_Root}/Base.hpp
     ${Include_Root}/Config.hpp
-    ${Include_Root}/EventDispatcher.hpp
     ${Include_Root}/Export.hpp
     ${Include_Root}/File.hpp
     ${Include_Root}/Log.hpp
