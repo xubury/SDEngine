@@ -3,7 +3,6 @@
 
 #include "Utility/Base.hpp"
 #include "Core/Event.hpp"
-#include "Core/Keycode.hpp"
 
 namespace SD {
 
@@ -19,6 +18,8 @@ class SD_API Action {
     Action(const Event::EventType &event);
 
     Action(Keycode key, int type = Type::REAL_TIME | Type::PRESSED);
+
+    Action(Scancode scancode, int type = Type::REAL_TIME | Type::PRESSED);
 
     Action(MouseButton button, int type = Type::REAL_TIME | Type::PRESSED);
 

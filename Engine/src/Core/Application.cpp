@@ -119,14 +119,12 @@ void Application::processEvent(const SDL_Event &sdl_event) {
         case SDL_KEYDOWN:
             event.type = Event::EventType::KEY_PRESSED;
             event.key.keycode = static_cast<Keycode>(sdl_event.key.keysym.sym);
-            event.key.scancode = sdl_event.key.keysym.scancode;
             event.key.mod = sdl_event.key.keysym.mod;
             Input::pressKey(event.key.keycode);
             break;
         case SDL_KEYUP:
             event.type = Event::EventType::KEY_RELEASED;
             event.key.keycode = static_cast<Keycode>(sdl_event.key.keysym.sym);
-            event.key.scancode = sdl_event.key.keysym.scancode;
             event.key.mod = sdl_event.key.keysym.mod;
             Input::releaseKey(event.key.keycode);
             break;

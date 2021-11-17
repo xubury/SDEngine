@@ -16,16 +16,16 @@ CameraController::CameraController()
       m_pitch(0.f) {
     m_controllerMap.map(
         CameraMovement::FORWARD,
-        Action(Keycode::w, Action::Type::REAL_TIME | Action::Type::DOWN));
+        Action(Keycode::W, Action::Type::REAL_TIME | Action::Type::DOWN));
     m_controllerMap.map(
         CameraMovement::BACKWARD,
-        Action(Keycode::s, Action::Type::REAL_TIME | Action::Type::DOWN));
+        Action(Keycode::S, Action::Type::REAL_TIME | Action::Type::DOWN));
     m_controllerMap.map(
         CameraMovement::LEFT,
-        Action(Keycode::a, Action::Type::REAL_TIME | Action::Type::DOWN));
+        Action(Keycode::A, Action::Type::REAL_TIME | Action::Type::DOWN));
     m_controllerMap.map(
         CameraMovement::RIGHT,
-        Action(Keycode::d, Action::Type::REAL_TIME | Action::Type::DOWN));
+        Action(Keycode::D, Action::Type::REAL_TIME | Action::Type::DOWN));
 
     bind(CameraMovement::FORWARD,
          [this](const Event &) { move(-m_camera->getWorldFront()); });

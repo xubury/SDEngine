@@ -12,6 +12,11 @@ Action::Action(Keycode key, int type) : m_type(type) {
     m_event.type = Event::EventType::KEY_PRESSED;
 }
 
+Action::Action(Scancode scancode, int type) : m_type(type) {
+    m_event.key.keycode = getKeycodeFromScancode(scancode);
+    m_event.type = Event::EventType::KEY_PRESSED;
+}
+
 Action::Action(MouseButton button, int type) : m_type(type) {
     m_event.mouseButton.button = button;
     m_event.type = Event::EventType::MOUSE_BUTTON_PRESSED;

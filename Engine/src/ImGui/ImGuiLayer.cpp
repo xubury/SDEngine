@@ -84,14 +84,16 @@ void ImGuiLayer::onEventProcess(const Event& event) {
             io.AddInputCharacterUTF16(*event.text.text);
         } break;
         case Event::EventType::KEY_PRESSED: {
-            io.KeysDown[event.key.scancode] = true;
+            io.KeysDown[static_cast<uint16_t>(
+                getScancodeFromKeycode(event.key.keycode))] = true;
             io.KeyShift = event.key.mod == Keymod::SHIFT;
             io.KeyCtrl = event.key.mod == Keymod::CTRL;
             io.KeyAlt = event.key.mod == Keymod::ALT;
             io.KeySuper = event.key.mod == Keymod::GUI;
         } break;
         case Event::EventType::KEY_RELEASED: {
-            io.KeysDown[event.key.scancode] = false;
+            io.KeysDown[static_cast<uint16_t>(
+                getScancodeFromKeycode(event.key.keycode))] = true;
             io.KeyShift = event.key.mod == Keymod::SHIFT;
             io.KeyCtrl = event.key.mod == Keymod::CTRL;
             io.KeyAlt = event.key.mod == Keymod::ALT;

@@ -328,7 +328,7 @@ void EditorLayer::onEventProcess(const Event &event) {
         switch (event.key.keycode) {
             default:
                 break;
-            case Keycode::z: {
+            case Keycode::Z: {
                 if (event.key.mod == Keymod::LCTRL) {
                     if (m_hide) {
                         show();
@@ -337,17 +337,17 @@ void EditorLayer::onEventProcess(const Event &event) {
                     }
                 }
             } break;
-            case Keycode::s: {
+            case Keycode::S: {
                 if (event.key.mod == (Keymod::LCTRL | Keymod::LSHIFT)) {
                     saveScene();
                 }
             } break;
-            case Keycode::n: {
+            case Keycode::N: {
                 if (event.key.mod == Keymod::LCTRL) {
                     newScene();
                 }
             } break;
-            case Keycode::l: {
+            case Keycode::L: {
                 if (event.key.mod == Keymod::LCTRL) {
                     loadScene();
                 }

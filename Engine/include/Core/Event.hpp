@@ -2,7 +2,7 @@
 #define SD_EVENT_HPP
 
 #include "Utility/Base.hpp"
-#include "Core/Keycode.hpp"
+#include "Core/Keyboard.hpp"
 #include "Core/Mouse.hpp"
 
 namespace SD {
@@ -14,7 +14,6 @@ struct WindowSizeEvent {
 
 struct KeyEvent {
     Keycode keycode;
-    uint16_t scancode;
     uint16_t mod;
 };
 

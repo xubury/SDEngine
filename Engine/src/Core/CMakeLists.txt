@@ -16,8 +16,8 @@ set(Core_Include
     ${Include_Root}/Window.hpp
     ${Include_Root}/EntryPoint.hpp
     ${Include_Root}/System.hpp
-    ${Include_Root}/Keycode.hpp
-    ${Include_Root}/Scancode.hpp
+    ${Include_Root}/Keyboard.hpp
+    ${Include_Root}/Mouse.hpp
     ${Include_Root}/Layer.hpp
     ${Include_Root}/EventStack.hpp)
 
@@ -26,7 +26,8 @@ set(Core_Src
     ${Src_Root}/Application.cpp
     ${Src_Root}/Window.cpp
     ${Src_Root}/EntryPoint.cpp
-    ${Src_Root}/System.cpp)
+    ${Src_Root}/System.cpp
+    ${Src_Root}/Keyboard.cpp)
 
 add_library(sd-core ${Core_Src})
 
@@ -47,7 +48,7 @@ target_link_libraries(sd-core
     sd-asset
     sd-imgui
     sd-input
-    PRIVATE
+    INTERFACE
     SDL2::Main
     SDL2::Image)
 

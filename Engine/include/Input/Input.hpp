@@ -2,7 +2,6 @@
 #define SD_INPUT_ENGINE_HPP
 
 #include "Utility/Base.hpp"
-#include "Core/Keycode.hpp"
 #include "Core/Event.hpp"
 
 #include <glm/glm.hpp>
