@@ -19,35 +19,35 @@ class SD_API GLShader : public Shader {
 
     ~GLShader();
 
-    void compileShader(ShaderType type, const char* code) override;
+    void CompileShader(ShaderType type, const char* code) override;
 
-    void linkShaders() override;
+    void LinkShaders() override;
 
-    void bind() override;
+    void Bind() override;
 
-    void setBool(const std::string& name, bool value) override;
+    void SetBool(const std::string& name, bool value) override;
 
-    void setInt(const std::string& name, int value) override;
+    void SetInt(const std::string& name, int value) override;
 
-    void setUint(const std::string& name, uint32_t value) override;
+    void SetUint(const std::string& name, uint32_t value) override;
 
-    void setFloat(const std::string& name, float value) override;
+    void SetFloat(const std::string& name, float value) override;
 
-    void setVec2(const std::string& name, const glm::vec2& value) override;
-    void setVec3(const std::string& name, const glm::vec3& value) override;
-    void setVec4(const std::string& name, const glm::vec4& value) override;
-    void setMat4(const std::string& name, const glm::mat4& value) override;
+    void SetVec2(const std::string& name, const glm::vec2& value) override;
+    void SetVec3(const std::string& name, const glm::vec3& value) override;
+    void SetVec4(const std::string& name, const glm::vec4& value) override;
+    void SetMat4(const std::string& name, const glm::mat4& value) override;
 
-    void setTexture(const std::string& name, const Texture* texture) override;
-    void setTexture(uint32_t id, const Texture* texture) override;
+    void SetTexture(const std::string& name, const Texture* texture) override;
+    void SetTexture(uint32_t id, const Texture* texture) override;
 
-    void setUniformBuffer(const std::string& name,
+    void SetUniformBuffer(const std::string& name,
                           const UniformBuffer& buffer) override;
 
    private:
-    static void checkCompileErrors(uint32_t shader, const std::string& type);
+    static void CheckCompileErrors(uint32_t shader, const std::string& type);
 
-    void destroyShaders();
+    void DestroyShaders();
 
     GLuint m_id;
     GLuint m_vertexId;

@@ -9,7 +9,7 @@ namespace SD {
 
 class SD_API VertexArray {
    public:
-    static Ref<VertexArray> create();
+    static Ref<VertexArray> Create();
 
     virtual ~VertexArray() = default;
 
@@ -17,17 +17,17 @@ class SD_API VertexArray {
 
     VertexArray &operator=(const VertexArray &) = delete;
 
-    virtual void bind() const = 0;
+    virtual void Bind() const = 0;
 
-    virtual void addVertexBuffer(const Ref<VertexBuffer> &buffer,
+    virtual void AddVertexBuffer(const Ref<VertexBuffer> &buffer,
                                  const VertexBufferLayout &layout,
                                  int index = -1) = 0;
 
-    virtual void updateBuffer(size_t index, const void *data, size_t size,
+    virtual void UpdateBuffer(size_t index, const void *data, size_t size,
                               size_t offset = 0) = 0;
 
-    virtual void setIndexBuffer(const Ref<IndexBuffer> &buffer) = 0;
-    virtual Ref<IndexBuffer> getIndexBuffer() = 0;
+    virtual void SetIndexBuffer(const Ref<IndexBuffer> &buffer) = 0;
+    virtual Ref<IndexBuffer> GetIndexBuffer() = 0;
 
    protected:
     VertexArray() = default;

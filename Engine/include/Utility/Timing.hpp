@@ -15,12 +15,12 @@ class SD_API Clock {
    public:
     Clock();
 
-    uint64_t getElapsedMS() const;
+    uint64_t GetElapsedMS() const;
 
-    uint64_t getElapsedSec() const;
+    uint64_t GetElapsedSec() const;
 
     // Restart the clock, and return elapsed millisecond.
-    uint64_t restart();
+    uint64_t Restart();
 
    private:
     std::chrono::time_point<ClockType> m_lastTicks;
@@ -33,7 +33,7 @@ class SD_API FpsCounter {
     FpsCounter(const FpsCounter &) = delete;
     FpsCounter &operator=(const FpsCounter &) = delete;
 
-    float getFps();
+    float GetFps();
 
    private:
     Clock m_clock;

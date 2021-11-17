@@ -7,7 +7,7 @@
 
 namespace SD {
 
-static Vertex constructVertex(const aiVector3D &pos, const aiVector3D &texCoord,
+static Vertex ConstructVertex(const aiVector3D &pos, const aiVector3D &texCoord,
                               const aiVector3D &normal,
                               const aiVector3D &tangent,
                               const aiVector3D &biTangent) {
@@ -29,7 +29,7 @@ static Vertex constructVertex(const aiVector3D &pos, const aiVector3D &texCoord,
     return vertex;
 }
 
-static MeshTopology convertAssimpPrimitive(aiPrimitiveType type) {
+static MeshTopology ConvertAssimpPrimitive(aiPrimitiveType type) {
     switch (type) {
         case aiPrimitiveType_LINE:
             return MeshTopology::LINES;
@@ -45,7 +45,7 @@ static MeshTopology convertAssimpPrimitive(aiPrimitiveType type) {
     };
 }
 
-static Mesh processAiMesh(const aiMesh *assimpMesh) {
+static Mesh ProcessAiMesh(const aiMesh *assimpMesh) {
     const aiVector3D aiZeroVector(0.0f, 0.0f, 0.0f);
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
@@ -63,7 +63,7 @@ static Mesh processAiMesh(const aiMesh *assimpMesh) {
                                          ? assimpMesh->mBitangents[i]
                                          : aiZeroVector;
         vertices.push_back(
-            constructVertex(pos, texCoord, normal, tangent, biTangent));
+            ConstructVertex(pos, texCoord, normal, tangent, biTangent));
     }
     for (uint32_t i = 0; i < assimpMesh->mNumFaces; ++i) {
         const aiFace &face = assimpMesh->mFaces[i];
@@ -72,13 +72,13 @@ static Mesh processAiMesh(const aiMesh *assimpMesh) {
         }
     }
     Mesh mesh(vertices, indices);
-    mesh.setTopology(convertAssimpPrimitive(
+    mesh.SetTopology(ConvertAssimpPrimitive(
         static_cast<aiPrimitiveType>(assimpMesh->mPrimitiveTypes)));
-    mesh.setMaterialIndex(assimpMesh->mMaterialIndex);
+    mesh.SetMaterialIndex(assimpMesh->mMaterialIndex);
     return mesh;
 }
 
-static TextureWrap convertAssimpMapMode(aiTextureMapMode mode) {
+static TextureWrap ConvertAssimpMapMode(aiTextureMapMode mode) {
     switch (mode) {
         case aiTextureMapMode_Clamp:
             return TextureWrap::EDGE;
@@ -117,14 +117,14 @@ static void processAiMaterial(AssetManager &manager,
     }
     std::string path = (directory / texturePath.C_Str()).string();
     auto resourceId = manager.loadAsset<Image>(path);
-    auto image = manager.get<Image>(resourceId);
-    auto texture = Texture::create(
+    auto image = manager.Get<Image>(resourceId);
+    auto texture = Texture::Create(
         image->width(), image->height(), 1, TextureType::TEX_2D,
         image->hasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
-        TextureFormatType::UBYTE, convertAssimpMapMode(wrapMode),
+        TextureFormatType::UBYTE, ConvertAssimpMapMode(wrapMode),
         TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_LINEAR,
         image->data());
-    material.setTexture(materialType, texture);
+    material.SetTexture(materialType, texture);
 }
 
 static void processNode(const aiScene *scene, const aiNode *node,
@@ -134,14 +134,14 @@ static void processNode(const aiScene *scene, const aiNode *node,
         const aiNode *child = node->mChildren[i];
         for (uint32_t j = 0; j < child->mNumMeshes; ++j) {
             uint32_t id = child->mMeshes[j];
-            model->addMesh(processAiMesh(scene->mMeshes[id]));
+            model->AddMesh(ProcessAiMesh(scene->mMeshes[id]));
         }
         processNode(scene, child, model);
     }
 }
 
-Ref<void> ModelLoader::loadAsset(const std::string &filePath) {
-    Ref<Model> model = createRef<Model>();
+Ref<void> ModelLoader::LoadAsset(const std::string &filePath) {
+    Ref<Model> model = CreateRef<Model>();
     SD_CORE_TRACE("Loading model form: {}...", filePath);
 
     Assimp::Importer importer;
@@ -158,24 +158,24 @@ Ref<void> ModelLoader::loadAsset(const std::string &filePath) {
         std::filesystem::path(filePath).parent_path();
     for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
         Material material;
-        processAiMaterial(manager(), directory, material, MaterialType::DIFFUSE,
+        processAiMaterial(Manager(), directory, material, MaterialType::DIFFUSE,
                           scene->mMaterials[i], aiTextureType_DIFFUSE);
-        processAiMaterial(manager(), directory, material,
+        processAiMaterial(Manager(), directory, material,
                           MaterialType::SPECULAR, scene->mMaterials[i],
                           aiTextureType_SPECULAR);
-        processAiMaterial(manager(), directory, material, MaterialType::AMBIENT,
+        processAiMaterial(Manager(), directory, material, MaterialType::AMBIENT,
                           scene->mMaterials[i], aiTextureType_AMBIENT);
-        processAiMaterial(manager(), directory, material,
+        processAiMaterial(Manager(), directory, material,
                           MaterialType::EMISSIVE, scene->mMaterials[i],
                           aiTextureType_EMISSIVE);
-        processAiMaterial(manager(), directory, material, MaterialType::HEIGHT,
+        processAiMaterial(Manager(), directory, material, MaterialType::HEIGHT,
                           scene->mMaterials[i], aiTextureType_HEIGHT);
-        processAiMaterial(manager(), directory, material, MaterialType::NORMALS,
+        processAiMaterial(Manager(), directory, material, MaterialType::NORMALS,
                           scene->mMaterials[i], aiTextureType_NORMALS);
-        processAiMaterial(manager(), directory, material,
+        processAiMaterial(Manager(), directory, material,
                           MaterialType::SHININESS, scene->mMaterials[i],
                           aiTextureType_SHININESS);
-        model->addMaterial(std::move(material));
+        model->AddMaterial(std::move(material));
     }
 
     return model;

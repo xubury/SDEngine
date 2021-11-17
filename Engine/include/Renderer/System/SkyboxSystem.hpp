@@ -12,11 +12,11 @@ class SD_API SkyboxSystem : public System {
    public:
     SkyboxSystem(RenderTarget *target);
 
-    void onPush() override;
+    void OnPush() override;
 
-    void onPop() override;
+    void OnPop() override;
 
-    void onRender() override;
+    void OnRender() override;
 
    private:
     Ref<Shader> m_skyboxShader;

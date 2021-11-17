@@ -10,29 +10,29 @@ class SD_API Terrain {
    public:
     Terrain(int gridSize, int vertexCount);
 
-    void generateMesh();
+    void GenerateMesh();
 
-    float height(float localX, float localZ) const;
+    float Height(float localX, float localZ) const;
 
-    const Mesh &getMesh() const;
+    const Mesh &GetMesh() const;
 
-    const Material &getMaterial() const;
+    const Material &GetMaterial() const;
 
-    int getGridSize() const;
-    int getVertexCount() const;
+    int GetGridSize() const;
+    int GetVertexCount() const;
 
-    void setGridSize(int gridSize);
-    void setVertexCount(int vertexCount);
+    void SetGridSize(int gridSize);
+    void SetVertexCount(int vertexCount);
 
-    const std::vector<Vertex> &getVertices() const;
-    std::vector<Vertex> &getVertices();
+    const std::vector<Vertex> &GetVertices() const;
+    std::vector<Vertex> &GetVertices();
 
    private:
     Mesh m_mesh;
     Material m_material;
     int m_gridSize;
     int m_vertexCount;
-    void computeNormal();
+    void ComputeNormal();
 };
 
 }  // namespace SD

@@ -12,29 +12,29 @@ class SD_API PostProcessSystem : public System {
    public:
     PostProcessSystem(RenderTarget *target, int width, int height);
 
-    void onPush() override;
+    void OnPush() override;
 
-    void onPop() override;
+    void OnPop() override;
 
-    void onRender() override;
+    void OnRender() override;
 
-    void onSizeEvent(const WindowSizeEvent &event);
+    void OnSizeEvent(const WindowSizeEvent &event);
 
-    void setExposure(float exposure);
-    float getExposure();
+    void SetExposure(float exposure);
+    float GetExposure();
 
-    void setBloom(bool isBloom);
-    bool getBloom();
+    void SetBloom(bool isBloom);
+    bool GetBloom();
 
-    void setBloomFactor(float bloom);
-    float getBloomFactor();
+    void SetBloomFactor(float bloom);
+    float GetBloomFactor();
 
-    float getGammaCorrection();
-    void setGammaCorrection(float gamma);
+    float GetGammaCorrection();
+    void SetGammaCorrection(float gamma);
 
    private:
-    void renderBlur();
-    void renderPost();
+    void RenderBlur();
+    void RenderPost();
 
     Ref<Shader> m_postShader;
 

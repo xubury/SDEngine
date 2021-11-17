@@ -23,7 +23,7 @@ class SD_API Action {
 
     Action(MouseButton button, int type = Type::REAL_TIME | Type::PRESSED);
 
-    bool test() const;
+    bool Test() const;
 
     bool operator==(const Event &event) const;
 

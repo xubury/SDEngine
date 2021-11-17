@@ -15,17 +15,17 @@ class TerrainSystem : public System {
    public:
     TerrainSystem();
 
-    void onPush() override;
+    void OnPush() override;
 
-    void onPop() override;
+    void OnPop() override;
 
-    void onTick(float dt) override;
+    void OnTick(float dt) override;
 
-    void onRender() override;
+    void OnRender() override;
 
-    void updateAllTerrains();
+    void UpdateAllTerrains();
 
-    void updateTerrain(entt::entity id);
+    void UpdateTerrain(entt::entity id);
 
    private:
     std::unordered_map<entt::entity, TerrainGrid> m_terrainGrids;

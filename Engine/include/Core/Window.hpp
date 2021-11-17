@@ -33,26 +33,26 @@ struct WindowProp {
 
 class SD_API Window {
    public:
-    static Ref<Window> create(const WindowProp &property);
+    static Ref<Window> Create(const WindowProp &property);
 
     virtual ~Window();
 
     Window(const Window &) = delete;
     Window &operator=(const Window &) = delete;
 
-    void swapBuffer();
-    bool pollEvent(SDL_Event &event);
+    void SwapBuffer();
+    bool PollEvent(SDL_Event &event);
 
-    bool shouldClose();
-    void setShouldClose(bool shouldClose);
+    bool ShouldClose();
+    void SetShouldClose(bool shouldClose);
 
-    glm::ivec2 getSize();
+    glm::ivec2 GetSize();
 
-    uint8_t getSamples() const { return m_samples; }
+    uint8_t GetSamples() const { return m_samples; }
 
-    SDL_Window *getHandle();
+    SDL_Window *GetHandle();
 
-    virtual void *getGraphicsContext() = 0;
+    virtual void *GetGraphicsContext() = 0;
 
    protected:
     Window(const WindowProp &property);

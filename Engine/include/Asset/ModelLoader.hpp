@@ -13,7 +13,7 @@ class SD_API ModelLoader : public AssetLoaderBase {
     using AssetLoaderBase::AssetLoaderBase;
 
    public:
-    Ref<void> loadAsset(const std::string &filePath) override;
+    Ref<void> LoadAsset(const std::string &filePath) override;
 };
 
 }  // namespace SD

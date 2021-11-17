@@ -2,7 +2,7 @@
 
 namespace SD {
 
-GLenum translate(BufferDataType dataType) {
+GLenum Translate(BufferDataType dataType) {
     switch (dataType) {
         case BufferDataType::FLOAT:
         case BufferDataType::FLOAT2:
@@ -17,7 +17,7 @@ GLenum translate(BufferDataType dataType) {
     return GL_INVALID_ENUM;
 }
 
-GLenum translate(MeshTopology meshType) {
+GLenum Translate(MeshTopology meshType) {
     switch (meshType) {
         case MeshTopology::TRIANGLES:
             return GL_TRIANGLES;
@@ -35,7 +35,7 @@ GLenum translate(MeshTopology meshType) {
     return GL_INVALID_ENUM;
 }
 
-GLenum translate(PolygonMode mode) {
+GLenum Translate(PolygonMode mode) {
     switch (mode) {
         case PolygonMode::POINT:
             return GL_POINT;
@@ -47,7 +47,7 @@ GLenum translate(PolygonMode mode) {
     return GL_INVALID_VALUE;
 }
 
-GLint translate(BufferIOType ioType) {
+GLint Translate(BufferIOType ioType) {
     switch (ioType) {
         case BufferIOType::STATIC:
             return GL_STATIC_DRAW;
@@ -57,7 +57,7 @@ GLint translate(BufferIOType ioType) {
     return GL_INVALID_VALUE;
 }
 
-GLenum translate(TextureType textureType) {
+GLenum Translate(TextureType textureType) {
     switch (textureType) {
         case TextureType::TEX_2D:
             return GL_TEXTURE_2D;
@@ -72,7 +72,7 @@ GLenum translate(TextureType textureType) {
     return GL_INVALID_ENUM;
 }
 
-GLenum translateFormat(TextureFormat textureFormat,
+GLenum TranslateFormat(TextureFormat textureFormat,
                        TextureFormatType textureFormatType) {
     switch (textureFormat) {
         case TextureFormat::ALPHA:
@@ -100,7 +100,7 @@ GLenum translateFormat(TextureFormat textureFormat,
     return GL_INVALID_ENUM;
 }
 
-GLenum translate(TextureFormatType textureFormatType) {
+GLenum Translate(TextureFormatType textureFormatType) {
     switch (textureFormatType) {
         case TextureFormatType::UBYTE:
             return GL_UNSIGNED_BYTE;
@@ -115,7 +115,7 @@ GLenum translate(TextureFormatType textureFormatType) {
     return GL_INVALID_VALUE;
 }
 
-GLint translateInternalFormat(TextureFormat textureFormat,
+GLint TranslateInternalFormat(TextureFormat textureFormat,
                               TextureFormatType textureFormatType) {
     switch (textureFormat) {
         case TextureFormat::ALPHA:
@@ -175,7 +175,7 @@ GLint translateInternalFormat(TextureFormat textureFormat,
     return GL_INVALID_VALUE;
 }
 
-GLint translate(TextureWrap textureWrap) {
+GLint Translate(TextureWrap textureWrap) {
     switch (textureWrap) {
         case TextureWrap::EDGE:
             return GL_CLAMP_TO_EDGE;
@@ -192,7 +192,7 @@ GLint translate(TextureWrap textureWrap) {
     return GL_INVALID_VALUE;
 }
 
-GLint translate(TextureFilter textureFilter) {
+GLint Translate(TextureFilter textureFilter) {
     switch (textureFilter) {
         case TextureFilter::NEAREST:
             return GL_NEAREST;
@@ -203,7 +203,7 @@ GLint translate(TextureFilter textureFilter) {
     return GL_INVALID_VALUE;
 }
 
-GLint translate(TextureMipmapFilter textureMipmapFilter) {
+GLint Translate(TextureMipmapFilter textureMipmapFilter) {
     switch (textureMipmapFilter) {
         case TextureMipmapFilter::LINEAR:
             return GL_LINEAR;
@@ -221,7 +221,7 @@ GLint translate(TextureMipmapFilter textureMipmapFilter) {
     return GL_INVALID_VALUE;
 }
 
-GLenum translate(Operation operation) {
+GLenum Translate(Operation operation) {
     switch (operation) {
         case Operation::DEPTH_TEST:
             return GL_DEPTH_TEST;
@@ -237,7 +237,7 @@ GLenum translate(Operation operation) {
     return GL_INVALID_ENUM;
 }
 
-GLenum translate(Face face) {
+GLenum Translate(Face face) {
     switch (face) {
         case Face::FRONT:
             return GL_FRONT;
@@ -249,7 +249,7 @@ GLenum translate(Face face) {
     return GL_INVALID_ENUM;
 }
 
-GLenum translate(BufferBitMask bit) {
+GLenum Translate(BufferBitMask bit) {
     switch (bit) {
         case BufferBitMask::COLOR_BUFFER_BIT:
             return GL_COLOR_BUFFER_BIT;
@@ -261,7 +261,7 @@ GLenum translate(BufferBitMask bit) {
     return 0;
 }
 
-GLenum translate(DepthFunc depthFunc) {
+GLenum Translate(DepthFunc depthFunc) {
     switch (depthFunc) {
         case DepthFunc::EQUAL:
             return GL_EQUAL;

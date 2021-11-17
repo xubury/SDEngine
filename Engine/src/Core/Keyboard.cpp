@@ -4,12 +4,12 @@
 
 namespace SD {
 
-Scancode getScancodeFromKeycode(Keycode keycode) {
+Scancode GetScancodeFromKeycode(Keycode keycode) {
     return static_cast<Scancode>(
         SDL_GetScancodeFromKey(static_cast<SDL_KeyCode>(keycode)));
 }
 
-Keycode getKeycodeFromScancode(Scancode scancode) {
+Keycode GetKeycodeFromScancode(Scancode scancode) {
     return static_cast<Keycode>(
         SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(scancode)));
 }

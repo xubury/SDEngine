@@ -9,7 +9,7 @@
 
 namespace SD {
 
-bool SD_API decompose(const glm::mat4& transform, glm::vec3& translation,
+bool SD_API Decompose(const glm::mat4& transform, glm::vec3& translation,
                       glm::quat& rotation, glm::vec3& scale);
 
 class SD_API Transform {
@@ -17,53 +17,53 @@ class SD_API Transform {
     Transform();
     virtual ~Transform() = default;
 
-    Transform* getParent();
-    const Transform* getParent() const;
+    Transform* GetParent();
+    const Transform* GetParent() const;
 
-    std::set<Transform*>& getChildren();
-    const std::set<Transform*>& getChildren() const;
+    std::set<Transform*>& GetChildren();
+    const std::set<Transform*>& GetChildren() const;
 
-    void addChild(Transform* child);
-    void removeChild(Transform* child);
+    void AddChild(Transform* child);
+    void RemoveChild(Transform* child);
 
-    void translateLocal(const glm::vec3& t);
-    void translateWorld(const glm::vec3& t);
+    void TranslateLocal(const glm::vec3& t);
+    void TranslateWorld(const glm::vec3& t);
 
-    void rotateLocal(const glm::quat& rotation);
-    void rotateWorld(const glm::quat& rotation);
+    void RotateLocal(const glm::quat& rotation);
+    void RotateWorld(const glm::quat& rotation);
 
-    void setLocalPosition(const glm::vec3& position);
-    void setLocalRotation(const glm::quat& rotation);
-    void setLocalScale(const glm::vec3& scale);
-    void setLocalTransform(const glm::mat4& transform);
+    void SetLocalPosition(const glm::vec3& position);
+    void SetLocalRotation(const glm::quat& rotation);
+    void SetLocalScale(const glm::vec3& scale);
+    void SetLocalTransform(const glm::mat4& transform);
 
-    glm::vec3 getLocalPosition() const;
-    glm::quat getLocalRotation() const;
-    glm::vec3 getLocalScale() const;
-    glm::mat4 getLocalTransform() const;
+    glm::vec3 GetLocalPosition() const;
+    glm::quat GetLocalRotation() const;
+    glm::vec3 GetLocalScale() const;
+    glm::mat4 GetLocalTransform() const;
 
-    void setWorldPosition(const glm::vec3& position);
-    void setWorldRotation(const glm::quat& rotation);
-    void setWorldScale(const glm::vec3& scale);
-    void setWorldTransform(const glm::mat4& transform);
+    void SetWorldPosition(const glm::vec3& position);
+    void SetWorldRotation(const glm::quat& rotation);
+    void SetWorldScale(const glm::vec3& scale);
+    void SetWorldTransform(const glm::mat4& transform);
 
-    glm::vec3 getWorldPosition() const;
-    glm::quat getWorldRotation() const;
-    glm::vec3 getWorldScale() const;
-    glm::mat4 getWorldTransform() const;
+    glm::vec3 GetWorldPosition() const;
+    glm::quat GetWorldRotation() const;
+    glm::vec3 GetWorldScale() const;
+    glm::mat4 GetWorldTransform() const;
 
-    glm::vec3 getLocalRight() const;
-    glm::vec3 getLocalUp() const;
-    glm::vec3 getLocalFront() const;
+    glm::vec3 GetLocalRight() const;
+    glm::vec3 GetLocalUp() const;
+    glm::vec3 GetLocalFront() const;
 
-    glm::vec3 getWorldRight() const;
-    glm::vec3 getWorldUp() const;
-    glm::vec3 getWorldFront() const;
+    glm::vec3 GetWorldRight() const;
+    glm::vec3 GetWorldUp() const;
+    glm::vec3 GetWorldFront() const;
 
-    glm::vec3 toLocalSpace(const glm::vec3& world) const;
-    glm::vec3 toWorldSpace(const glm::vec3& local) const;
-    glm::vec3 toLocalVector(const glm::vec3& worldVec) const;
-    glm::vec3 toWorldVector(const glm::vec3& localVec) const;
+    glm::vec3 ToLocalSpace(const glm::vec3& world) const;
+    glm::vec3 ToWorldSpace(const glm::vec3& local) const;
+    glm::vec3 ToLocalVector(const glm::vec3& worldVec) const;
+    glm::vec3 ToWorldVector(const glm::vec3& localVec) const;
 
     template <typename Archive>
     void serialize(Archive& archive) {
@@ -72,13 +72,13 @@ class SD_API Transform {
     }
 
    private:
-    void updateGlobalPosition();
-    void updateGlobalRotation();
-    void updateGlobalScale();
+    void UpdateGlobalPosition();
+    void UpdateGlobalRotation();
+    void UpdateGlobalScale();
 
-    void updateLocalPosition();
-    void updateLocalRotation();
-    void updateLocalScale();
+    void UpdateLocalPosition();
+    void UpdateLocalRotation();
+    void UpdateLocalScale();
 
     glm::vec3 m_position;
     glm::quat m_rotation;

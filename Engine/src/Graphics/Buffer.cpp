@@ -4,12 +4,12 @@
 
 namespace SD {
 
-Ref<VertexBuffer> VertexBuffer::create(const void *data, size_t size,
+Ref<VertexBuffer> VertexBuffer::Create(const void *data, size_t size,
                                        BufferIOType io) {
     Ref<VertexBuffer> vb;
-    switch (getGraphicsAPI()) {
+    switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
-            vb = createRef<GLVertexBuffer>(data, size, io);
+            vb = CreateRef<GLVertexBuffer>(data, size, io);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
@@ -18,12 +18,12 @@ Ref<VertexBuffer> VertexBuffer::create(const void *data, size_t size,
     return vb;
 }
 
-Ref<IndexBuffer> IndexBuffer::create(const uint32_t *data, uint32_t count,
+Ref<IndexBuffer> IndexBuffer::Create(const uint32_t *data, uint32_t count,
                                      BufferIOType io) {
     Ref<IndexBuffer> eb;
-    switch (getGraphicsAPI()) {
+    switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
-            eb = createRef<GLIndexBuffer>(data, count, io);
+            eb = CreateRef<GLIndexBuffer>(data, count, io);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
@@ -32,12 +32,12 @@ Ref<IndexBuffer> IndexBuffer::create(const uint32_t *data, uint32_t count,
     return eb;
 }
 
-Ref<UniformBuffer> UniformBuffer::create(const void *data, size_t size,
+Ref<UniformBuffer> UniformBuffer::Create(const void *data, size_t size,
                                          BufferIOType io) {
     Ref<UniformBuffer> ub;
-    switch (getGraphicsAPI()) {
+    switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
-            ub = createRef<GLUniformBuffer>(data, size, io);
+            ub = CreateRef<GLUniformBuffer>(data, size, io);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
@@ -48,6 +48,6 @@ Ref<UniformBuffer> UniformBuffer::create(const void *data, size_t size,
 
 IndexBuffer::IndexBuffer(uint32_t count) : m_count(count) {}
 
-uint32_t IndexBuffer::getCount() const { return m_count; }
+uint32_t IndexBuffer::GetCount() const { return m_count; }
 
 }  // namespace SD

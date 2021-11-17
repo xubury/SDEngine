@@ -5,12 +5,12 @@
 
 namespace SD {
 
-Ref<Window> Window::create(const WindowProp &property) {
+Ref<Window> Window::Create(const WindowProp &property) {
     SD_CORE_TRACE("Initializing Window...");
     Ref<Window> window;
-    switch (getGraphicsAPI()) {
+    switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
-            window = createRef<GLWindow>(property);
+            window = CreateRef<GLWindow>(property);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
@@ -23,20 +23,20 @@ Window::Window(const WindowProp &property) : m_samples(property.samples) {}
 
 Window::~Window() { SDL_DestroyWindow(m_window); }
 
-bool Window::pollEvent(SDL_Event &event) { return SDL_PollEvent(&event) == 1; }
+bool Window::PollEvent(SDL_Event &event) { return SDL_PollEvent(&event) == 1; }
 
-bool Window::shouldClose() { return m_shouldClose; }
+bool Window::ShouldClose() { return m_shouldClose; }
 
-void Window::setShouldClose(bool shouldClose) { m_shouldClose = shouldClose; }
+void Window::SetShouldClose(bool shouldClose) { m_shouldClose = shouldClose; }
 
-glm::ivec2 Window::getSize() {
+glm::ivec2 Window::GetSize() {
     glm::ivec2 size;
     SDL_GetWindowSize(m_window, &size.x, &size.y);
     return size;
 }
 
-SDL_Window *Window::getHandle() { return m_window; }
+SDL_Window *Window::GetHandle() { return m_window; }
 
-void Window::swapBuffer() { SDL_GL_SwapWindow(m_window); }
+void Window::SwapBuffer() { SDL_GL_SwapWindow(m_window); }
 
 }  // namespace SD

@@ -8,22 +8,22 @@ Mesh::Mesh()
       m_topology(MeshTopology::TRIANGLES),
       m_materialId(0),
       m_polygonMode(PolygonMode::FILL) {
-    m_vertexBuffer = VertexBuffer::create(m_vertices.data(),
+    m_vertexBuffer = VertexBuffer::Create(m_vertices.data(),
                                           m_vertices.size() * sizeof(Vertex),
                                           BufferIOType::DYNAMIC);
 
-    m_indexBuffer = IndexBuffer::create(m_indices.data(), m_indices.size(),
+    m_indexBuffer = IndexBuffer::Create(m_indices.data(), m_indices.size(),
                                         BufferIOType::DYNAMIC);
 
-    m_vertexArray = VertexArray::create();
+    m_vertexArray = VertexArray::Create();
     VertexBufferLayout layout;
-    layout.push(BufferDataType::FLOAT, 3);
-    layout.push(BufferDataType::FLOAT, 2);
-    layout.push(BufferDataType::FLOAT, 3);
-    layout.push(BufferDataType::FLOAT, 3);
-    layout.push(BufferDataType::FLOAT, 3);
-    m_vertexArray->addVertexBuffer(m_vertexBuffer, layout);
-    m_vertexArray->setIndexBuffer(m_indexBuffer);
+    layout.Push(BufferDataType::FLOAT, 3);
+    layout.Push(BufferDataType::FLOAT, 2);
+    layout.Push(BufferDataType::FLOAT, 3);
+    layout.Push(BufferDataType::FLOAT, 3);
+    layout.Push(BufferDataType::FLOAT, 3);
+    m_vertexArray->AddVertexBuffer(m_vertexBuffer, layout);
+    m_vertexArray->SetIndexBuffer(m_indexBuffer);
 }
 
 Mesh::Mesh(const std::vector<Vertex> &vertices,
@@ -33,56 +33,56 @@ Mesh::Mesh(const std::vector<Vertex> &vertices,
       m_topology(MeshTopology::TRIANGLES),
       m_materialId(0),
       m_polygonMode(PolygonMode::FILL) {
-    m_vertexBuffer = VertexBuffer::create(m_vertices.data(),
+    m_vertexBuffer = VertexBuffer::Create(m_vertices.data(),
                                           m_vertices.size() * sizeof(Vertex),
                                           BufferIOType::DYNAMIC);
 
-    m_indexBuffer = IndexBuffer::create(m_indices.data(), m_indices.size(),
+    m_indexBuffer = IndexBuffer::Create(m_indices.data(), m_indices.size(),
                                         BufferIOType::DYNAMIC);
 
-    m_vertexArray = VertexArray::create();
+    m_vertexArray = VertexArray::Create();
     VertexBufferLayout layout;
-    layout.push(BufferDataType::FLOAT, 3);
-    layout.push(BufferDataType::FLOAT, 2);
-    layout.push(BufferDataType::FLOAT, 3);
-    layout.push(BufferDataType::FLOAT, 3);
-    layout.push(BufferDataType::FLOAT, 3);
-    m_vertexArray->addVertexBuffer(m_vertexBuffer, layout);
-    m_vertexArray->setIndexBuffer(m_indexBuffer);
+    layout.Push(BufferDataType::FLOAT, 3);
+    layout.Push(BufferDataType::FLOAT, 2);
+    layout.Push(BufferDataType::FLOAT, 3);
+    layout.Push(BufferDataType::FLOAT, 3);
+    layout.Push(BufferDataType::FLOAT, 3);
+    m_vertexArray->AddVertexBuffer(m_vertexBuffer, layout);
+    m_vertexArray->SetIndexBuffer(m_indexBuffer);
 }
 
-void Mesh::setVerices(const std::vector<Vertex> &vertices) {
+void Mesh::SetVerices(const std::vector<Vertex> &vertices) {
     m_vertices = vertices;
 }
 
-void Mesh::setIndices(const std::vector<uint32_t> &indices) {
+void Mesh::SetIndices(const std::vector<uint32_t> &indices) {
     m_indices = indices;
 }
 
-void Mesh::update() {
-    m_indexBuffer->updateData(m_indices.data(),
+void Mesh::Update() {
+    m_indexBuffer->UpdateData(m_indices.data(),
                               m_indices.size() * sizeof(uint32_t));
-    m_vertexBuffer->updateData(m_vertices.data(),
+    m_vertexBuffer->UpdateData(m_vertices.data(),
                                m_vertices.size() * sizeof(Vertex));
 }
 
-void Mesh::clear() {
+void Mesh::Clear() {
     m_vertices.clear();
     m_indices.clear();
 }
 
-VertexArray *Mesh::getVertexArray() const { return m_vertexArray.get(); }
+VertexArray *Mesh::GetVertexArray() const { return m_vertexArray.get(); }
 
-void Mesh::setTopology(MeshTopology topology) { m_topology = topology; }
+void Mesh::SetTopology(MeshTopology topology) { m_topology = topology; }
 
-void Mesh::setPolygonMode(PolygonMode polygonMode) {
+void Mesh::SetPolygonMode(PolygonMode polygonMode) {
     m_polygonMode = polygonMode;
 }
 
-PolygonMode Mesh::getPolygonMode() const { return m_polygonMode; }
+PolygonMode Mesh::GetPolygonMode() const { return m_polygonMode; }
 
-const std::vector<Vertex> &Mesh::getVertices() const { return m_vertices; }
+const std::vector<Vertex> &Mesh::GetVertices() const { return m_vertices; }
 
-std::vector<Vertex> &Mesh::getVertices() { return m_vertices; }
+std::vector<Vertex> &Mesh::GetVertices() { return m_vertices; }
 
 }  // namespace SD

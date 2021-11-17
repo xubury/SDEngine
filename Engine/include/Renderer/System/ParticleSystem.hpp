@@ -36,15 +36,15 @@ class SD_API ParticleSystem : public System {
    public:
     ParticleSystem(int poolSize = 1000);
 
-    void emit(const ParticleProp &particle);
+    void Emit(const ParticleProp &particle);
 
-    void onPush() override;
+    void OnPush() override;
 
-    void onPop() override;
+    void OnPop() override;
 
-    void onRender() override;
+    void OnRender() override;
 
-    void onTick(float dt) override;
+    void OnTick(float dt) override;
 
    private:
     struct Particle {

@@ -6,9 +6,9 @@
 namespace SD {
 
 #define IMPLEMENT_APP(x) \
-    ::SD::Application * ::SD::createApp() { return new x; }
+    ::SD::Application * ::SD::CreateApp() { return new x; }
 
-extern SD_API Application *createApp();
+extern SD_API Application *CreateApp();
 
 };  // namespace SD
 

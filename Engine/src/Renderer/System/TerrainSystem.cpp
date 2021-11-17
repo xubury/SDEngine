@@ -8,37 +8,37 @@ namespace SD {
 TerrainSystem::TerrainSystem()
     : System("Terrain"), m_min(FLT_MAX), m_max(-FLT_MAX) {}
 
-void TerrainSystem::onPush() {}
+void TerrainSystem::OnPush() {}
 
-void TerrainSystem::onPop() {}
+void TerrainSystem::OnPop() {}
 
-void TerrainSystem::onTick(float) {}
+void TerrainSystem::OnTick(float) {}
 
-void TerrainSystem::onRender() {}
+void TerrainSystem::OnRender() {}
 
-void TerrainSystem::updateAllTerrains() {
+void TerrainSystem::UpdateAllTerrains() {
     auto terrainView =
-        renderer->getScene()->view<TransformComponent, TerrainComponent>();
+        renderer->GetScene()->view<TransformComponent, TerrainComponent>();
     m_terrainGrids.clear();
 
     terrainView.each([this](const entt::entity &entity,
                             const TransformComponent &transformComp,
                             const TerrainComponent &terrainComp) {
         const auto &terrain = terrainComp.terrain;
-        const auto &vertices = terrain.getVertices();
-        const uint32_t vertexCount = terrain.getVertexCount();
+        const auto &vertices = terrain.GetVertices();
+        const uint32_t vertexCount = terrain.GetVertexCount();
         m_terrainGrids[entity].assign(vertexCount - 1,
                                       std::vector<Collidable>(vertexCount - 1));
         const Transform &transform = transformComp.transform;
         for (uint32_t z = 0; z < vertexCount - 1; ++z) {
             for (uint32_t x = 0; x < vertexCount - 1; ++x) {
-                glm::vec3 f00 = transform.toWorldSpace(
+                glm::vec3 f00 = transform.ToWorldSpace(
                     vertices[x + z * vertexCount].position);
-                glm::vec3 f01 = transform.toWorldSpace(
+                glm::vec3 f01 = transform.ToWorldSpace(
                     vertices[x + 1 + z * vertexCount].position);
-                glm::vec3 f10 = transform.toWorldSpace(
+                glm::vec3 f10 = transform.ToWorldSpace(
                     vertices[x + (z + 1) * vertexCount].position);
-                glm::vec3 f11 = transform.toWorldSpace(
+                glm::vec3 f11 = transform.ToWorldSpace(
                     vertices[x + 1 + (z + 1) * vertexCount].position);
                 glm::vec3 center = (f00 + f11) * 0.5f;
                 glm::vec3 size = f11 - f00;
@@ -56,31 +56,31 @@ void TerrainSystem::updateAllTerrains() {
     for (auto &[id, grid] : m_terrainGrids) {
         for (auto &row : grid) {
             for (auto &obj : row) {
-                m_qtRoot.insert(&obj);
+                m_qtRoot.Insert(&obj);
             }
         }
     }
 }
 
-void TerrainSystem::updateTerrain(entt::entity id) {
-    Entity entity(id, renderer->getScene());
-    const auto &transformComp = entity.getComponent<TransformComponent>();
-    const auto &terrainComp = entity.getComponent<TerrainComponent>();
+void TerrainSystem::UpdateTerrain(entt::entity id) {
+    Entity entity(id, renderer->GetScene());
+    const auto &transformComp = entity.GetComponent<TransformComponent>();
+    const auto &terrainComp = entity.GetComponent<TerrainComponent>();
     const auto &terrain = terrainComp.terrain;
-    const auto &vertices = terrain.getVertices();
-    uint32_t vertexCount = terrain.getVertexCount();
+    const auto &vertices = terrain.GetVertices();
+    uint32_t vertexCount = terrain.GetVertexCount();
     m_terrainGrids[id].assign(vertexCount,
                               std::vector<Collidable>(vertexCount - 1));
     const Transform &transform = transformComp.transform;
     for (uint32_t z = 0; z < vertexCount - 1; ++z) {
         for (uint32_t x = 0; x < vertexCount - 1; ++x) {
             glm::vec3 f00 =
-                transform.toWorldSpace(vertices[x + z * vertexCount].position);
-            glm::vec3 f01 = transform.toWorldSpace(
+                transform.ToWorldSpace(vertices[x + z * vertexCount].position);
+            glm::vec3 f01 = transform.ToWorldSpace(
                 vertices[x + 1 + z * vertexCount].position);
-            glm::vec3 f10 = transform.toWorldSpace(
+            glm::vec3 f10 = transform.ToWorldSpace(
                 vertices[x + (z + 1) * vertexCount].position);
-            glm::vec3 f11 = transform.toWorldSpace(
+            glm::vec3 f11 = transform.ToWorldSpace(
                 vertices[x + 1 + (z + 1) * vertexCount].position);
             glm::vec3 center = (f00 + f11) * 0.5f;
             glm::vec3 size = f11 - f00;

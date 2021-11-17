@@ -2,18 +2,18 @@
 
 namespace SD {
 
-void Model::addMesh(const Mesh &mesh) { m_meshes.emplace_back(mesh); }
+void Model::AddMesh(const Mesh &mesh) { m_meshes.emplace_back(mesh); }
 
-void Model::addMesh(Mesh &&mesh) { m_meshes.emplace_back(std::move(mesh)); }
+void Model::AddMesh(Mesh &&mesh) { m_meshes.emplace_back(std::move(mesh)); }
 
-void Model::addMaterial(const Material &material) {
+void Model::AddMaterial(const Material &material) {
     m_materials.emplace_back(material);
 }
 
-void Model::addMaterial(Material &&material) {
+void Model::AddMaterial(Material &&material) {
     m_materials.emplace_back(std::move(material));
 }
 
-void Model::clear() { m_meshes.clear(); }
+void Model::Clear() { m_meshes.clear(); }
 
 }  // namespace SD

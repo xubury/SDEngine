@@ -10,11 +10,11 @@ class SD_API ShadowSystem : public System {
    public:
     ShadowSystem();
 
-    void onPush() override;
+    void OnPush() override;
 
-    void onPop() override;
+    void OnPop() override;
 
-    void onRender() override;
+    void OnRender() override;
 
    private:
     Ref<Shader> m_shadowShader;

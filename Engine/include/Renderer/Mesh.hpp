@@ -22,26 +22,26 @@ class SD_API Mesh {
     Mesh(const std::vector<Vertex> &vertices,
          const std::vector<uint32_t> &indices);
 
-    void update();
-    void clear();
+    void Update();
+    void Clear();
 
-    void setVerices(const std::vector<Vertex> &vertices);
+    void SetVerices(const std::vector<Vertex> &vertices);
 
-    void setIndices(const std::vector<uint32_t> &indices);
+    void SetIndices(const std::vector<uint32_t> &indices);
 
-    VertexArray *getVertexArray() const;
+    VertexArray *GetVertexArray() const;
 
-    void setTopology(MeshTopology topology);
-    MeshTopology getTopology() const { return m_topology; }
+    void SetTopology(MeshTopology topology);
+    MeshTopology GetTopology() const { return m_topology; }
 
-    void setPolygonMode(PolygonMode wireframe);
-    PolygonMode getPolygonMode() const;
+    void SetPolygonMode(PolygonMode wireframe);
+    PolygonMode GetPolygonMode() const;
 
-    void setMaterialIndex(int index) { m_materialId = index; }
-    uint32_t getMaterialIndex() const { return m_materialId; };
+    void SetMaterialIndex(int index) { m_materialId = index; }
+    uint32_t GetMaterialIndex() const { return m_materialId; };
 
-    const std::vector<Vertex> &getVertices() const;
-    std::vector<Vertex> &getVertices();
+    const std::vector<Vertex> &GetVertices() const;
+    std::vector<Vertex> &GetVertices();
 
    private:
     std::vector<Vertex> m_vertices;

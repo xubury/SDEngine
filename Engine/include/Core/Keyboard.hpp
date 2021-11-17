@@ -661,8 +661,8 @@ enum class Keycode : uint32_t {
     AUDIOFASTFORWARD = SCANCODE_TO_KEYCODE(Scancode::AUDIOFASTFORWARD)
 };
 
-Keycode getKeycodeFromScancode(Scancode scancode);
-Scancode getScancodeFromKeycode(Keycode keycode);
+Keycode GetKeycodeFromScancode(Scancode scancode);
+Scancode GetScancodeFromKeycode(Keycode keycode);
 
 }  // namespace SD
 

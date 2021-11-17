@@ -20,25 +20,23 @@ enum class MaterialType {
     SHININESS
 };
 
-std::string SD_API getMaterialName(MaterialType type);
+std::string SD_API GetMaterialName(MaterialType type);
 
 class SD_API Material {
    public:
-    void init();
+    void SetTexture(MaterialType type, const Ref<Texture> &texture);
 
-    void setTexture(MaterialType type, const Ref<Texture> &texture);
+    bool HasTexture(MaterialType type) const;
 
-    bool hasTexture(MaterialType type) const;
+    void RemoveTexture(MaterialType type);
 
-    void removeTexture(MaterialType type);
+    Texture *GetTexture(MaterialType type) const;
 
-    Texture *getTexture(MaterialType type) const;
-
-    std::unordered_map<MaterialType, Ref<Texture>> &getTextures() {
+    std::unordered_map<MaterialType, Ref<Texture>> &GetTextures() {
         return m_textures;
     }
 
-    const std::unordered_map<MaterialType, Ref<Texture>> &getTextures() const {
+    const std::unordered_map<MaterialType, Ref<Texture>> &GetTextures() const {
         return m_textures;
     };
 

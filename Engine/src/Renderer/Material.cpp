@@ -14,19 +14,19 @@ const std::unordered_map<MaterialType, std::string> stringByMaterialType = {
 
 };
 
-std::string getMaterialName(MaterialType type) {
+std::string GetMaterialName(MaterialType type) {
     return stringByMaterialType.at(type);
 }
 
-void Material::setTexture(MaterialType type, const Ref<Texture> &texture) {
+void Material::SetTexture(MaterialType type, const Ref<Texture> &texture) {
     m_textures[type] = texture;
 }
 
-bool Material::hasTexture(MaterialType type) const {
+bool Material::HasTexture(MaterialType type) const {
     return m_textures.count(type);
 }
 
-void Material::removeTexture(MaterialType type) {
+void Material::RemoveTexture(MaterialType type) {
     auto iter = m_textures.find(type);
     if (iter != m_textures.end()) {
         m_textures.erase(iter);
@@ -36,8 +36,8 @@ void Material::removeTexture(MaterialType type) {
     }
 }
 
-Texture *Material::getTexture(MaterialType type) const {
-    return hasTexture(type) ? m_textures.at(type).get() : nullptr;
+Texture *Material::GetTexture(MaterialType type) const {
+    return HasTexture(type) ? m_textures.at(type).get() : nullptr;
 }
 
 }  // namespace SD

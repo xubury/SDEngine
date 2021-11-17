@@ -19,37 +19,37 @@ enum GeometryBufferType {
     GBUFFER_COUNT
 };
 
-TextureFormat SD_API getTextureFormat(GeometryBufferType type);
+TextureFormat SD_API GetTextureFormat(GeometryBufferType type);
 
-TextureFormatType SD_API getTextureFormatType(GeometryBufferType type);
+TextureFormatType SD_API GetTextureFormatType(GeometryBufferType type);
 
 class SD_API LightingSystem : public System {
    public:
     LightingSystem(RenderTarget *target, int width, int height, int samples);
 
-    void onPush() override;
+    void OnPush() override;
 
-    void onPop() override;
+    void OnPop() override;
 
-    void onRender() override;
+    void OnRender() override;
 
-    void onSizeEvent(const WindowSizeEvent &event);
+    void OnSizeEvent(const WindowSizeEvent &event);
 
-    Framebuffer *getGBuffer() { return m_gBufferTarget.getFramebuffer(); }
+    Framebuffer *GetGBuffer() { return m_gBufferTarget.GetFramebuffer(); }
 
    private:
-    void initShaders();
-    void initLighting(int width, int height, int samples);
+    void InitShaders();
+    void InitLighting(int width, int height, int samples);
 
-    void clear();
+    void Clear();
 
-    void renderGBuffer();
-    void renderShadow();
-    void renderDeferred();
+    void RenderGBuffer();
+    void RenderShadow();
+    void RenderDeferred();
 
-    void renderEmissive();
+    void RenderEmissive();
 
-    RenderTarget &getLightingTarget() { return m_lightTarget[0]; };
+    RenderTarget &GetLightingTarget() { return m_lightTarget[0]; };
 
     RenderTarget *m_target;
 

@@ -17,7 +17,7 @@ using Callback = std::function<void(const EVENT&)>;
 class SD_API EventDispatcher {
    public:
     template <typename F, typename EVENT>
-    void subscribe(F* object, void (F::*METHOD)(const EVENT&)) {
+    void Subscribe(F* object, void (F::*METHOD)(const EVENT&)) {
         Callback<EVENT> callback = [object, METHOD](const EVENT& e) {
             (object->*METHOD)(e);
         };
@@ -33,7 +33,7 @@ class SD_API EventDispatcher {
     }
 
     template <typename EVENT, typename F>
-    void unsubscribe(F* object) {
+    void Unsubscribe(F* object) {
         auto& keys = getKeys<EVENT>();
         auto& listeners = getCallbacks<EVENT>();
 

@@ -11,17 +11,17 @@ class SD_API ImGuiLayer : public Layer {
    public:
     ImGuiLayer();
 
-    void begin();
+    void Begin();
 
-    void end();
+    void End();
 
-    void onPush() override;
+    void OnPush() override;
 
-    void onPop() override;
+    void OnPop() override;
 
-    void onEventProcess(const Event &event) override;
+    void OnEventProcess(const Event &event) override;
    private:
-    void setDarkThemeColor();
+    void SetDarkThemeColor();
 };
 
 }  // namespace SD

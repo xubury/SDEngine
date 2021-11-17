@@ -13,65 +13,65 @@ class SD_API Camera {
     Camera(const glm::vec3 &position, const glm::quat &rotation, float zNear,
            float zFar);
 
-    virtual void resize(float width, float height) = 0;
+    virtual void Resize(float width, float height) = 0;
 
-    void translateLocal(const glm::vec3 &t);
-    void translateWorld(const glm::vec3 &t);
-    void rotateLocal(const glm::quat &r);
-    void rotateWorld(const glm::quat &r);
+    void TranslateLocal(const glm::vec3 &t);
+    void TranslateWorld(const glm::vec3 &t);
+    void RotateLocal(const glm::quat &r);
+    void RotateWorld(const glm::quat &r);
 
-    glm::vec3 getLocalRight() const;
-    glm::vec3 getLocalUp() const;
-    glm::vec3 getLocalFront() const;
+    glm::vec3 GetLocalRight() const;
+    glm::vec3 GetLocalUp() const;
+    glm::vec3 GetLocalFront() const;
 
-    glm::vec3 getWorldRight() const;
-    glm::vec3 getWorldUp() const;
-    glm::vec3 getWorldFront() const;
+    glm::vec3 GetWorldRight() const;
+    glm::vec3 GetWorldUp() const;
+    glm::vec3 GetWorldFront() const;
 
-    void setTransform(Transform *transform);
-    void setLocalPosition(const glm::vec3 &position);
-    void setLocalRotation(const glm::quat &rotation);
+    void SetTransform(Transform *transform);
+    void SetLocalPosition(const glm::vec3 &position);
+    void SetLocalRotation(const glm::quat &rotation);
 
-    void setWorldPosition(const glm::vec3 &position);
-    void setWorldRotation(const glm::quat &rotation);
+    void SetWorldPosition(const glm::vec3 &position);
+    void SetWorldRotation(const glm::quat &rotation);
 
-    glm::vec3 getLocalPosition() const;
-    glm::vec3 getWorldPosition() const;
+    glm::vec3 GetLocalPosition() const;
+    glm::vec3 GetWorldPosition() const;
 
-    glm::quat getLocalRotation() const;
-    glm::quat getWorldRotation() const;
+    glm::quat GetLocalRotation() const;
+    glm::quat GetWorldRotation() const;
 
-    glm::mat4 getLocalTransform() const;
-    glm::mat4 getWorldTransform() const;
+    glm::mat4 GetLocalTransform() const;
+    glm::mat4 GetWorldTransform() const;
 
-    void setWorldTransform(const glm::mat4 &transform);
-    void setLocalTransform(const glm::mat4 &transform);
+    void SetWorldTransform(const glm::mat4 &transform);
+    void SetLocalTransform(const glm::mat4 &transform);
 
-    void setProjection(const glm::mat4 &projection);
+    void SetProjection(const glm::mat4 &projection);
 
-    glm::mat4 getView();
-    glm::mat4 getView() const;
+    glm::mat4 GetView();
+    glm::mat4 GetView() const;
 
-    glm::mat4 getProjection() const;
+    glm::mat4 GetProjection() const;
 
-    glm::mat4 getViewPorjection();
-    glm::mat4 getViewPorjection() const;
+    glm::mat4 GetViewPorjection();
+    glm::mat4 GetViewPorjection() const;
 
-    bool outdated() const;
+    bool Outdated() const;
 
-    glm::vec3 mapClipToWorld(const glm::vec2 &pos) const;
-    glm::vec3 mapWorldToClip(const glm::vec3 &pos) const;
+    glm::vec3 MapClipToWorld(const glm::vec2 &pos) const;
+    glm::vec3 MapWorldToClip(const glm::vec3 &pos) const;
 
-    void updateView();
+    void UpdateView();
 
-    virtual float getNearWidth() const = 0;
-    virtual float getNearHeight() const = 0;
+    virtual float GetNearWidth() const = 0;
+    virtual float GetNearHeight() const = 0;
 
-    virtual float getFarWidth() const = 0;
-    virtual float getFarHeight() const = 0;
+    virtual float GetFarWidth() const = 0;
+    virtual float GetFarHeight() const = 0;
 
-    float getNearZ() const { return m_zNear; }
-    float getFarZ() const { return m_zFar; }
+    float GetNearZ() const { return m_zNear; }
+    float GetFarZ() const { return m_zFar; }
 
    protected:
     float m_zNear;
@@ -98,13 +98,13 @@ class SD_API OrthographicCamera : public Camera {
                        float width, float height, float zNear, float zFar);
     ~OrthographicCamera() = default;
 
-    void resize(float width, float height) override;
+    void Resize(float width, float height) override;
 
-    float getNearWidth() const override { return m_width; };
-    float getNearHeight() const override { return m_height; };
+    float GetNearWidth() const override { return m_width; };
+    float GetNearHeight() const override { return m_height; };
 
-    float getFarWidth() const override { return m_width; };
-    float getFarHeight() const override { return m_height; };
+    float GetFarWidth() const override { return m_width; };
+    float GetFarHeight() const override { return m_height; };
 
    private:
     float m_width;
@@ -122,19 +122,19 @@ class SD_API PerspectiveCamera : public Camera {
                       const glm::quat &rotation);
     ~PerspectiveCamera() = default;
 
-    float getFOV() const { return m_fov; }
+    float GetFOV() const { return m_fov; }
 
-    float getAspect() const { return m_aspect; }
+    float GetAspect() const { return m_aspect; }
 
-    void resize(float width, float height) override;
+    void Resize(float width, float height) override;
 
-    float getNearWidth() const override { return getNearHeight() * m_aspect; };
-    float getNearHeight() const override {
+    float GetNearWidth() const override { return GetNearHeight() * m_aspect; };
+    float GetNearHeight() const override {
         return std::tan(m_fov / 2.f) * m_zNear * 2.f;
     };
 
-    float getFarWidth() const override { return getFarHeight() * m_aspect; };
-    float getFarHeight() const override {
+    float GetFarWidth() const override { return GetFarHeight() * m_aspect; };
+    float GetFarHeight() const override {
         return std::tan(m_fov / 2.f) * m_zFar * 2.f;
     };
 

@@ -2,7 +2,7 @@
 
 namespace SD {
 
-uint32_t getSizeOfType(BufferDataType type) {
+uint32_t GetSizeOfType(BufferDataType type) {
     switch (type) {
         case BufferDataType::UCHAR:
             return 1;
@@ -22,25 +22,25 @@ uint32_t getSizeOfType(BufferDataType type) {
 VertexBufferLayout::VertexBufferLayout(uint32_t instanceStride)
     : m_stride(0), m_instanceStride(instanceStride) {}
 
-void VertexBufferLayout::push(BufferDataType type, uint32_t count,
+void VertexBufferLayout::Push(BufferDataType type, uint32_t count,
                               bool normalized) {
     m_elements.push_back({type, count, normalized});
-    m_stride += count * getSizeOfType(type);
+    m_stride += count * GetSizeOfType(type);
 }
 
-void VertexBufferLayout::clear() {
+void VertexBufferLayout::Clear() {
     m_elements.clear();
     m_elements.shrink_to_fit();
 }
 
-const std::vector<VertexBufferLayoutElement> &VertexBufferLayout::getElements()
+const std::vector<VertexBufferLayoutElement> &VertexBufferLayout::GetElements()
     const {
     return m_elements;
 }
 
-uint32_t VertexBufferLayout::getStride() const { return m_stride; }
+uint32_t VertexBufferLayout::GetStride() const { return m_stride; }
 
-uint32_t VertexBufferLayout::getInstanceStride() const {
+uint32_t VertexBufferLayout::GetInstanceStride() const {
     return m_instanceStride;
 }
 

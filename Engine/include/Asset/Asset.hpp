@@ -13,7 +13,7 @@
 namespace SD {
 
 template <typename ASSET>
-inline size_t getAssetType() {
+inline size_t GetAssetType() {
     return typeid(ASSET).hash_code();
 }
 
@@ -22,15 +22,15 @@ class SD_API Asset {
     Asset();
     Asset(size_t loaderType, const std::string &path);
 
-    size_t getLoaderType() const { return m_loaderType; }
-    void setLoaderType(size_t type) { m_loaderType = type; }
+    size_t GetLoaderType() const { return m_loaderType; }
+    void SetLoaderType(size_t type) { m_loaderType = type; }
 
-    Ref<void> getResource() { return m_resource; }
-    const Ref<void> getResource() const { return m_resource; }
+    Ref<void> GetResource() { return m_resource; }
+    const Ref<void> GetResource() const { return m_resource; }
 
-    void setResource(const Ref<void> &resource) { m_resource = resource; }
+    void SetResource(const Ref<void> &resource) { m_resource = resource; }
 
-    const std::string &getPath() const { return m_path; }
+    const std::string &GetPath() const { return m_path; }
 
     template <typename Archive>
     void serialize(Archive &archive) {
@@ -52,9 +52,9 @@ class SD_API AssetLoaderBase {
     AssetLoaderBase &operator=(const AssetLoaderBase &) = delete;
     virtual ~AssetLoaderBase() = default;
 
-    virtual Ref<void> loadAsset(const std::string &path) = 0;
+    virtual Ref<void> LoadAsset(const std::string &path) = 0;
 
-    AssetManager &manager() { return m_manager; }
+    AssetManager &Manager() { return m_manager; }
 
    private:
     AssetManager &m_manager;
@@ -62,34 +62,34 @@ class SD_API AssetLoaderBase {
 
 class SD_API AssetManager {
    private:
-    void clear();
+    void Clear();
 
-    void cache(const ResourceId &id);
+    void Cache(const ResourceId &id);
 
    public:
     AssetManager(const std::filesystem::path &path);
     ~AssetManager();
 
-    void load(const std::filesystem::path &path);
-    void save();
+    void Load(const std::filesystem::path &path);
+    void Save();
 
-    void setDirectory(const std::filesystem::path &path);
-    std::filesystem::path getRootPath() const;
+    void SetDirectory(const std::filesystem::path &path);
+    std::filesystem::path GetRootPath() const;
 
-    std::filesystem::path getRelativePath(
+    std::filesystem::path GetRelativePath(
         const std::filesystem::path &path) const;
-    std::filesystem::path getAbsolutePath(
+    std::filesystem::path GetAbsolutePath(
         const std::filesystem::path &path) const;
 
-    bool hasLoaded(const std::string &path) const;
+    bool HasLoaded(const std::string &path) const;
 
-    bool hasCached(const ResourceId &id) const;
+    bool HasCached(const ResourceId &id) const;
 
     bool valid() const { return std::filesystem::exists(m_directory); }
 
     template <typename ASSET>
-    void setLoader(AssetLoaderBase *loader) {
-        size_t type = getAssetType<ASSET>();
+    void SetLoader(AssetLoaderBase *loader) {
+        size_t type = GetAssetType<ASSET>();
         m_loaders[type] = loader;
     }
 
@@ -100,30 +100,30 @@ class SD_API AssetManager {
         SD_CORE_ASSERT(valid(), "AssetManager's root path is invalid!");
         // generate a random id
         ResourceId id;
-        size_t type = getAssetType<ASSET>();
-        std::filesystem::path fullPath = getAbsolutePath(path);
-        std::string relPath = getRelativePath(fullPath).string();
+        size_t type = GetAssetType<ASSET>();
+        std::filesystem::path fullPath = GetAbsolutePath(path);
+        std::string relPath = GetRelativePath(fullPath).string();
         // check if loaded in asset
-        if (hasLoaded(relPath)) {
+        if (HasLoaded(relPath)) {
             id = m_loaded.at(relPath);
         } else {
             m_loaded.emplace(relPath, id);
             m_resources[id] = Asset(type, relPath);
-            cache(id);
+            Cache(id);
         }
         return id;
     }
 
     template <typename ASSET>
-    Ref<ASSET> get(ResourceId id) {
+    Ref<ASSET> Get(ResourceId id) {
         if (m_resources.count(id) == 0) {
             return nullptr;
         }
-        if (!hasCached(id)) {
-            cache(id);
+        if (!HasCached(id)) {
+            Cache(id);
         }
         return std::static_pointer_cast<ASSET>(
-            m_resources.at(id).getResource());
+            m_resources.at(id).GetResource());
     }
 
    private:

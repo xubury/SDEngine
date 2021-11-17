@@ -10,15 +10,15 @@ namespace SD {
 
 class SD_API Random {
    public:
-    static float rnd(float min, float max);
-    static double rnd(double min, double max);
-    static int rnd(int min, int max);
+    static float Rnd(float min, float max);
+    static double Rnd(double min, double max);
+    static int Rnd(int min, int max);
 
-    static void init();
+    static void Init();
     static void init(uint32_t seed);
 
    private:
-    static double uniform();
+    static double Uniform();
 
     static std::mt19937 s_randomEngine;
     static std::uniform_int_distribution<std::mt19937::result_type>

@@ -15,25 +15,25 @@ class GLTexture : public Texture {
 
     ~GLTexture();
 
-    uint32_t getId() const override;
+    uint32_t GetId() const override;
 
-    void bind() const override;
-    void unbind() const override;
+    void Bind() const override;
+    void Unbind() const override;
 
-    void setSlot(uint32_t slot) const override;
+    void SetSlot(uint32_t slot) const override;
 
-    void setPixels(int width, int height, const void *data) override;
-    void setBorderColor(const void *color) override;
-    void setWrap(TextureWrap wrap) override;
-    void setFilter(TextureFilter filter) override;
-    void setMipmapFilter(TextureMipmapFilter mipmapFilter) override;
+    void SetPixels(int width, int height, const void *data) override;
+    void SetBorderColor(const void *color) override;
+    void SetWrap(TextureWrap wrap) override;
+    void SetFilter(TextureFilter filter) override;
+    void SetMipmapFilter(TextureMipmapFilter mipmapFilter) override;
 
-    void readPixels(int level, int x, int y, int z, int w, int h, int d,
+    void ReadPixels(int level, int x, int y, int z, int w, int h, int d,
                     size_t size, void *data) const override;
 
-    GLenum getGLType() const;
-    GLenum getGLFormat() const;
-    GLenum getGLFormatType() const;
+    GLenum GetGLType() const;
+    GLenum GetGLFormat() const;
+    GLenum GetGLFormatType() const;
 
    private:
     GLuint gl_id;

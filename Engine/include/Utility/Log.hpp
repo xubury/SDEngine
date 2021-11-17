@@ -10,11 +10,11 @@ namespace SD {
 
 class SD_API Log {
    public:
-    static void init(const std::string &logFileName);
+    static void Init(const std::string &logFileName);
 
-    static std::shared_ptr<spdlog::logger> &getCoreLogger();
+    static std::shared_ptr<spdlog::logger> &GetCoreLogger();
 
-    static std::shared_ptr<spdlog::logger> &getClientLogger();
+    static std::shared_ptr<spdlog::logger> &GetClientLogger();
 
    private:
     static std::shared_ptr<spdlog::logger> s_coreLogger;
@@ -23,17 +23,17 @@ class SD_API Log {
 
 }  // namespace SD
 
-#define SD_CORE_TRACE(...) ::SD::Log::getCoreLogger()->trace(__VA_ARGS__)
-#define SD_CORE_INFO(...) ::SD::Log::getCoreLogger()->info(__VA_ARGS__)
-#define SD_CORE_WARN(...) ::SD::Log::getCoreLogger()->warn(__VA_ARGS__)
-#define SD_CORE_ERROR(...) ::SD::Log::getCoreLogger()->error(__VA_ARGS__)
-#define SD_CORE_CRITICAL(...) ::SD::Log::getCoreLogger()->critical(__VA_ARGS__)
+#define SD_CORE_TRACE(...) ::SD::Log::GetCoreLogger()->trace(__VA_ARGS__)
+#define SD_CORE_INFO(...) ::SD::Log::GetCoreLogger()->info(__VA_ARGS__)
+#define SD_CORE_WARN(...) ::SD::Log::GetCoreLogger()->warn(__VA_ARGS__)
+#define SD_CORE_ERROR(...) ::SD::Log::GetCoreLogger()->error(__VA_ARGS__)
+#define SD_CORE_CRITICAL(...) ::SD::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
 // Client log macros
-#define SD_TRACE(...) ::SD::Log::getClientLogger()->trace(__VA_ARGS__)
-#define SD_INFO(...) ::SD::Log::getClientLogger()->info(__VA_ARGS__)
-#define SD_WARN(...) ::SD::Log::getClientLogger()->warn(__VA_ARGS__)
-#define SD_ERROR(...) ::SD::Log::getClientLogger()->error(__VA_ARGS__)
-#define SD_CRITICAL(...) ::SD::Log::getClientLogger()->critical(__VA_ARGS__)
+#define SD_TRACE(...) ::SD::Log::GetClientLogger()->trace(__VA_ARGS__)
+#define SD_INFO(...) ::SD::Log::GetClientLogger()->info(__VA_ARGS__)
+#define SD_WARN(...) ::SD::Log::GetClientLogger()->warn(__VA_ARGS__)
+#define SD_ERROR(...) ::SD::Log::GetClientLogger()->error(__VA_ARGS__)
+#define SD_CRITICAL(...) ::SD::Log::GetClientLogger()->critical(__VA_ARGS__)
 
 #endif

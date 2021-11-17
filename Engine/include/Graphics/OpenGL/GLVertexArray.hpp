@@ -14,18 +14,18 @@ class SD_API GLVertexArray : public VertexArray {
 
     ~GLVertexArray();
 
-    void bind() const override;
+    void Bind() const override;
 
-    void addVertexBuffer(const Ref<VertexBuffer> &buffer,
+    void AddVertexBuffer(const Ref<VertexBuffer> &buffer,
                          const VertexBufferLayout &layout,
                          int index = -1) override;
 
-    void updateBuffer(size_t index, const void *data, size_t size,
+    void UpdateBuffer(size_t index, const void *data, size_t size,
                       size_t offset = 0) override;
 
-    void setIndexBuffer(const Ref<IndexBuffer> &buffer) override;
+    void SetIndexBuffer(const Ref<IndexBuffer> &buffer) override;
 
-    Ref<IndexBuffer> getIndexBuffer() override;
+    Ref<IndexBuffer> GetIndexBuffer() override;
 
    private:
     GLuint m_id;

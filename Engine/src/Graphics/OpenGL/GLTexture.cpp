@@ -14,10 +14,10 @@ GLTexture::GLTexture(int width, int height, int samples, TextureType type,
       gl_iFormat(0),
       gl_format(0),
       gl_formatType(0) {
-    gl_type = translate(m_type);
-    gl_iFormat = translateInternalFormat(m_format, m_formatType);
-    gl_format = translateFormat(m_format, m_formatType);
-    gl_formatType = translate(m_formatType);
+    gl_type = Translate(m_type);
+    gl_iFormat = TranslateInternalFormat(m_format, m_formatType);
+    gl_format = TranslateFormat(m_format, m_formatType);
+    gl_formatType = Translate(m_formatType);
 
     glCreateTextures(gl_type, 1, &gl_id);
 
@@ -26,30 +26,30 @@ GLTexture::GLTexture(int width, int height, int samples, TextureType type,
         glTextureParameteriv(gl_id, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
     }
 
-    setPixels(m_width, m_height, data);
+    SetPixels(m_width, m_height, data);
     if (m_type != TextureType::TEX_2D_MULTISAMPLE) {
-        setWrap(m_wrap);
-        setFilter(m_filter);
-        setMipmapFilter(m_mipmapFilter);
+        SetWrap(m_wrap);
+        SetFilter(m_filter);
+        SetMipmapFilter(m_mipmapFilter);
         glGenerateTextureMipmap(gl_id);
     }
 }
 
 GLTexture::~GLTexture() { glDeleteTextures(1, &gl_id); }
 
-uint32_t GLTexture::getId() const { return gl_id; }
+uint32_t GLTexture::GetId() const { return gl_id; }
 
-void GLTexture::bind() const { glBindTexture(gl_type, gl_id); }
+void GLTexture::Bind() const { glBindTexture(gl_type, gl_id); }
 
-void GLTexture::unbind() const { glBindTexture(gl_type, 0); }
+void GLTexture::Unbind() const { glBindTexture(gl_type, 0); }
 
-void GLTexture::setSlot(uint32_t slot) const { glBindTextureUnit(slot, gl_id); }
+void GLTexture::SetSlot(uint32_t slot) const { glBindTextureUnit(slot, gl_id); }
 
-void GLTexture::setPixels(int width, int height, const void *data) {
+void GLTexture::SetPixels(int width, int height, const void *data) {
     m_width = width;
     m_height = height;
 
-    bind();
+    Bind();
     if (m_format == TextureFormat::RED || m_format == TextureFormat::ALPHA) {
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     } else {
@@ -77,10 +77,10 @@ void GLTexture::setPixels(int width, int height, const void *data) {
             }
             break;
     }
-    unbind();
+    Unbind();
 }
 
-void GLTexture::setBorderColor(const void *color) {
+void GLTexture::SetBorderColor(const void *color) {
     switch (m_formatType) {
         case TextureFormatType::FLOAT:
             glTextureParameterfv(gl_id, GL_TEXTURE_BORDER_COLOR,
@@ -94,38 +94,38 @@ void GLTexture::setBorderColor(const void *color) {
     }
 }
 
-void GLTexture::setWrap(TextureWrap wrap) {
+void GLTexture::SetWrap(TextureWrap wrap) {
     m_wrap = wrap;
 
-    GLint glWrap = translate(m_wrap);
+    GLint glWrap = Translate(m_wrap);
     glTextureParameteri(gl_id, GL_TEXTURE_WRAP_R, glWrap);
     glTextureParameteri(gl_id, GL_TEXTURE_WRAP_S, glWrap);
     glTextureParameteri(gl_id, GL_TEXTURE_WRAP_T, glWrap);
 }
 
-void GLTexture::setFilter(TextureFilter filter) {
+void GLTexture::SetFilter(TextureFilter filter) {
     m_filter = filter;
 
-    GLint glFilter = translate(m_filter);
+    GLint glFilter = Translate(m_filter);
     glTextureParameteri(gl_id, GL_TEXTURE_MAG_FILTER, glFilter);
 }
 
-void GLTexture::setMipmapFilter(TextureMipmapFilter mipmapFilter) {
+void GLTexture::SetMipmapFilter(TextureMipmapFilter mipmapFilter) {
     m_mipmapFilter = mipmapFilter;
-    GLint glMipmapFilter = translate(m_mipmapFilter);
+    GLint glMipmapFilter = Translate(m_mipmapFilter);
     glTextureParameteri(gl_id, GL_TEXTURE_MIN_FILTER, glMipmapFilter);
 }
 
-void GLTexture::readPixels(int level, int x, int y, int z, int w, int h, int d,
+void GLTexture::ReadPixels(int level, int x, int y, int z, int w, int h, int d,
                            size_t size, void *data) const {
     glGetTextureSubImage(gl_id, level, x, y, z, w, h, d, gl_format,
                          gl_formatType, size, data);
 }
 
-GLenum GLTexture::getGLType() const { return gl_type; }
+GLenum GLTexture::GetGLType() const { return gl_type; }
 
-GLenum GLTexture::getGLFormat() const { return gl_format; }
+GLenum GLTexture::GetGLFormat() const { return gl_format; }
 
-GLenum GLTexture::getGLFormatType() const { return gl_formatType; }
+GLenum GLTexture::GetGLFormatType() const { return gl_formatType; }
 
 }  // namespace SD

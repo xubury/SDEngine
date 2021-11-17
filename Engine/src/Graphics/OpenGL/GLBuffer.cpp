@@ -11,7 +11,7 @@ GLBuffer::GLBuffer(GLenum type, GLenum io, const void *data, size_t size)
 
 GLBuffer::~GLBuffer() { glDeleteBuffers(1, &m_id); }
 
-void GLBuffer::updateData(const void *data, size_t size, size_t offset) {
+void GLBuffer::UpdateData(const void *data, size_t size, size_t offset) {
     if (size > m_size) {
         m_size = size;
         glNamedBufferData(m_id, size, data, m_io);
@@ -23,40 +23,40 @@ void GLBuffer::updateData(const void *data, size_t size, size_t offset) {
     }
 }
 
-void GLBuffer::bind() const { glBindBuffer(m_type, m_id); }
+void GLBuffer::Bind() const { glBindBuffer(m_type, m_id); }
 
-void GLBuffer::bindBase(uint32_t index) const {
+void GLBuffer::BindBase(uint32_t index) const {
     glBindBufferBase(m_type, index, m_id);
 }
 
-void GLBuffer::unbind() const { glBindBuffer(m_type, 0); }
+void GLBuffer::Unbind() const { glBindBuffer(m_type, 0); }
 
 GLVertexBuffer::GLVertexBuffer(const void *data, size_t size, BufferIOType io)
-    : GLBuffer(GL_ARRAY_BUFFER, translate(io), data, size) {}
+    : GLBuffer(GL_ARRAY_BUFFER, Translate(io), data, size) {}
 
 GLIndexBuffer::GLIndexBuffer(const uint32_t *data, uint32_t count,
                              BufferIOType io)
     : IndexBuffer(count),
-      GLBuffer(GL_ELEMENT_ARRAY_BUFFER, translate(io), data,
+      GLBuffer(GL_ELEMENT_ARRAY_BUFFER, Translate(io), data,
                count * sizeof(uint32_t)) {}
 
-void GLIndexBuffer::updateData(const void *data, size_t size, size_t offset) {
-    GLBuffer::updateData(data, size, offset);
+void GLIndexBuffer::UpdateData(const void *data, size_t size, size_t offset) {
+    GLBuffer::UpdateData(data, size, offset);
     m_count = size / sizeof(uint32_t);
 }
 
 uint32_t GLUniformBuffer::s_count = 0;
 
 GLUniformBuffer::GLUniformBuffer(const void *data, size_t size, BufferIOType io)
-    : GLBuffer(GL_UNIFORM_BUFFER, translate(io), data, size) {
+    : GLBuffer(GL_UNIFORM_BUFFER, Translate(io), data, size) {
     m_base = s_count++;
 }
 
-uint32_t GLUniformBuffer::getBindingPoint() const { return m_base; }
+uint32_t GLUniformBuffer::GetBindingPoint() const { return m_base; }
 
-void GLUniformBuffer::bind() const {
-    GLBuffer::bind();
-    GLBuffer::bindBase(m_base);
+void GLUniformBuffer::Bind() const {
+    GLBuffer::Bind();
+    GLBuffer::BindBase(m_base);
 }
 
 }  // namespace SD

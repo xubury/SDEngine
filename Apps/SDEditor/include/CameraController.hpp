@@ -13,17 +13,17 @@ class CameraController : public ActionTarget<CameraMovement> {
    public:
     CameraController();
 
-    void tick(float dt);
+    void Tick(float dt);
 
-    void move(const glm::vec3 &t);
+    void Move(const glm::vec3 &t);
 
-    void setCamera(Camera *camera);
+    void SetCamera(Camera *camera);
 
-    void setFocus(const glm::vec3 &focus);
+    void SetFocus(const glm::vec3 &focus);
 
-    void rotate(float yaw, float pitch);
+    void Rotate(float yaw, float pitch);
 
-    void rotateAround(float yaw, float pitch);
+    void RotateAround(float yaw, float pitch);
 
    private:
     ActionMap<CameraMovement> m_controllerMap;

@@ -31,18 +31,18 @@ class QuadTree {
     QuadTree(const Rect &bound, uint32_t capacity, uint32_t maxLevel);
     ~QuadTree();
 
-    bool insert(Collidable *obj);
-    bool remove(Collidable *obj);
-    bool update(Collidable *obj);
-    void clear();
+    bool Insert(Collidable *obj);
+    bool Remove(Collidable *obj);
+    bool Update(Collidable *obj);
+    void Clear();
 
-    bool isLeaf() const;
-    const std::array<QuadTree *, 4> &getChildren() const;
+    bool IsLeaf() const;
+    const std::array<QuadTree *, 4> &GetChildren() const;
 
    private:
-    void subdivide();
-    void discardEmptyBuckets();
-    QuadTree *getChild(const Rect &bound) const;
+    void Subdivide();
+    void DiscardEmptyBuckets();
+    QuadTree *GetChild(const Rect &bound) const;
 
     bool m_isLeaf;
     Rect m_bound;

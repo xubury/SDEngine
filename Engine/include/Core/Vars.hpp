@@ -12,14 +12,14 @@ namespace SD {
     Ref<EventDispatcher> dispatcher;
 
 #define SET_APP_VARS                       \
-    void setAppVars(const AppVars &vars) { \
+    void SetAppVars(const AppVars &vars) { \
         renderer = vars.renderer;          \
         asset = vars.asset;                \
         dispatcher = vars.dispatcher;      \
     }
 
 #define MAKE_APP_VARS                 \
-    AppVars makeAppVars() {           \
+    AppVars MakeAppVars() {           \
         AppVars vars;                 \
         vars.renderer = renderer;     \
         vars.asset = asset;           \

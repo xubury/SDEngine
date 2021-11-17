@@ -8,79 +8,80 @@ namespace SD {
 
 static Application *s_instance = nullptr;
 
-Application &getApp() { return *s_instance; }
+Application &GetApp() { return *s_instance; }
 
-Window &Application::getWindow() { return *m_window; }
+Window &Application::GetWindow() { return *m_window; }
 
 Application::Application() {
     s_instance = this;
 
-    std::string debugPath = "Debug.txt";
-    Log::init(debugPath);
+    std::string debug_path = "Debug.txt";
+    Log::Init(debug_path);
     int width = 1600;
     int height = 900;
     int samples = 4;
 
-    Random::init();
-    SD_CORE_INFO("Debug info is output to: {}", debugPath);
+    Random::Init();
+    SD_CORE_INFO("Debug info is output to: {}", debug_path);
 
     SDL(SDL_Init(SDL_INIT_EVERYTHING));
-    int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
-    SD_CORE_ASSERT((IMG_Init(imgFlags) & imgFlags) == imgFlags, IMG_GetError());
+    int img_flags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
+    SD_CORE_ASSERT((IMG_Init(img_flags) & img_flags) == img_flags,
+                   IMG_GetError());
 
     // Setting up which api to use
-    setGraphicsAPI(GraphicsAPI::OpenGL);
+    SetGraphicsAPI(GraphicsAPI::OpenGL);
 
     WindowProp prop;
     prop.width = width;
     prop.height = height;
     prop.samples = samples;
     prop.flag = SDL_WINDOW_MAXIMIZED;
-    m_window = Window::create(prop);
+    m_window = Window::Create(prop);
 
-    ShaderLibrary::instance().setRootPath("assets");
+    ShaderLibrary::Instance().SetRootPath("assets");
 
-    renderer = createRef<Renderer>(samples);
-    asset = createRef<AssetManager>("assets");
-    dispatcher = createRef<EventDispatcher>();
+    renderer = CreateRef<Renderer>(samples);
+    asset = CreateRef<AssetManager>("assets");
+    dispatcher = CreateRef<EventDispatcher>();
 
     m_imguiLayer = new ImGuiLayer();
-    pushOverlay(m_imguiLayer);
+    PushOverlay(m_imguiLayer);
 }
 
 Application::~Application() {
     while (m_layers.size()) {
-        destroyLayer(m_layers.front());
+        DestroyLayer(m_layers.front());
     }
     IMG_Quit();
     SDL_Quit();
 }
 
-void Application::pushLayer(Layer *layer) {
-    layer->setAppVars(makeAppVars());
-    layer->onPush();
-    m_layers.push(layer);
+void Application::PushLayer(Layer *layer) {
+    layer->SetAppVars(MakeAppVars());
+    layer->OnPush();
+    m_layers.Push(layer);
 }
 
-void Application::pushOverlay(Layer *layer) {
-    layer->setAppVars(makeAppVars());
-    layer->onPush();
-    m_layers.pushOverlay(layer);
+void Application::PushOverlay(Layer *layer) {
+    layer->SetAppVars(MakeAppVars());
+    layer->OnPush();
+    m_layers.PushOverlay(layer);
 }
 
-void Application::popLayer(Layer *layer) {
-    layer->onPop();
-    m_layers.pop(layer);
+void Application::PopLayer(Layer *layer) {
+    layer->OnPop();
+    m_layers.Pop(layer);
 }
 
-void Application::destroyLayer(Layer *layer) {
-    popLayer(layer);
+void Application::DestroyLayer(Layer *layer) {
+    PopLayer(layer);
     delete layer;
 }
 
-void Application::processEvent(const SDL_Event &sdl_event) {
+void Application::ProcessEvent(const SDL_Event &sdl_event) {
     if (sdl_event.type == SDL_QUIT) {
-        quit();
+        Quit();
     }
     Event event;
     switch (sdl_event.type) {
@@ -90,7 +91,7 @@ void Application::processEvent(const SDL_Event &sdl_event) {
             event.mouseMotion.y = sdl_event.motion.y;
             event.mouseMotion.xrel = sdl_event.motion.xrel;
             event.mouseMotion.yrel = sdl_event.motion.yrel;
-            Input::setMouseCoord(event.mouseMotion.x, event.mouseMotion.y);
+            Input::SetMouseCoord(event.mouseMotion.x, event.mouseMotion.y);
             break;
         case SDL_MOUSEBUTTONDOWN:
             event.type = Event::EventType::MOUSE_BUTTON_PRESSED;
@@ -100,7 +101,7 @@ void Application::processEvent(const SDL_Event &sdl_event) {
             event.mouseButton.x = sdl_event.button.x;
             event.mouseButton.y = sdl_event.button.y;
             event.mouseButton.clicks = sdl_event.button.clicks;
-            Input::pressMouseButton(event.mouseButton.button);
+            Input::PressMouseButton(event.mouseButton.button);
             break;
         case SDL_MOUSEBUTTONUP:
             event.type = Event::EventType::MOUSE_BUTTON_RELEASED;
@@ -109,7 +110,7 @@ void Application::processEvent(const SDL_Event &sdl_event) {
             event.mouseButton.x = sdl_event.button.x;
             event.mouseButton.y = sdl_event.button.y;
             event.mouseButton.clicks = sdl_event.button.clicks;
-            Input::releaseMouseButton(event.mouseButton.button);
+            Input::ReleaseMouseButton(event.mouseButton.button);
             break;
         case SDL_MOUSEWHEEL:
             event.type = Event::EventType::MOUSE_WHEEL_SCROLLED;
@@ -120,13 +121,13 @@ void Application::processEvent(const SDL_Event &sdl_event) {
             event.type = Event::EventType::KEY_PRESSED;
             event.key.keycode = static_cast<Keycode>(sdl_event.key.keysym.sym);
             event.key.mod = sdl_event.key.keysym.mod;
-            Input::pressKey(event.key.keycode);
+            Input::PressKey(event.key.keycode);
             break;
         case SDL_KEYUP:
             event.type = Event::EventType::KEY_RELEASED;
             event.key.keycode = static_cast<Keycode>(sdl_event.key.keysym.sym);
             event.key.mod = sdl_event.key.keysym.mod;
-            Input::releaseKey(event.key.keycode);
+            Input::ReleaseKey(event.key.keycode);
             break;
         case SDL_WINDOWEVENT:
             switch (sdl_event.window.type) {
@@ -145,63 +146,63 @@ void Application::processEvent(const SDL_Event &sdl_event) {
         } break;
     }
     for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {
-        (*layer)->onEventProcess(event);
-        if ((*layer)->isBlockEvent()) break;
+        (*layer)->OnEventProcess(event);
+        if ((*layer)->IsBlockEvent()) break;
     }
 }
 
-void Application::processEvents() {
+void Application::ProcessEvents() {
     for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {
-        (*layer)->onEventsProcess();
-        if ((*layer)->isBlockEvent()) break;
+        (*layer)->OnEventsProcess();
+        if ((*layer)->IsBlockEvent()) break;
     }
 }
 
-void Application::run() {
+void Application::Run() {
     Clock clock;
-    float minFps = 30;
+    float min_fps = 30;
     SDL_Event event;
-    float msPerFrame = 1000.f / minFps;
-    uint32_t msElapsed = 0;
-    while (!m_window->shouldClose()) {
-        while (m_window->pollEvent(event)) {
-            processEvent(event);
+    float ms_per_frame = 1000.f / min_fps;
+    uint32_t ms_elapsed = 0;
+    while (!m_window->ShouldClose()) {
+        while (m_window->PollEvent(event)) {
+            ProcessEvent(event);
         }
-        processEvents();
+        ProcessEvents();
 
-        msElapsed = clock.restart();
-        while (msElapsed > msPerFrame) {
-            msElapsed -= msPerFrame;
-            tick(msPerFrame * 1e-3);
+        ms_elapsed = clock.Restart();
+        while (ms_elapsed > ms_per_frame) {
+            ms_elapsed -= ms_per_frame;
+            Tick(ms_per_frame * 1e-3);
         }
-        tick(msElapsed * 1e-3);
+        Tick(ms_elapsed * 1e-3);
 
-        render();
+        Render();
     }
 }
 
-void Application::quit() { m_window->setShouldClose(true); }
+void Application::Quit() { m_window->SetShouldClose(true); }
 
-void Application::tick(float dt) {
-    Input::tick();
+void Application::Tick(float dt) {
+    Input::Tick();
 
     for (auto iter = m_layers.rbegin(); iter != m_layers.rend(); ++iter) {
-        (*iter)->onTick(dt);
+        (*iter)->OnTick(dt);
     }
 }
 
-void Application::render() {
+void Application::Render() {
     for (auto &layer : m_layers) {
-        layer->onRender();
+        layer->OnRender();
     }
 
-    m_imguiLayer->begin();
+    m_imguiLayer->Begin();
     for (auto &layer : m_layers) {
-        layer->onImGui();
+        layer->OnImGui();
     }
-    m_imguiLayer->end();
+    m_imguiLayer->End();
 
-    m_window->swapBuffer();
+    m_window->SwapBuffer();
 }
 
 }  // namespace SD

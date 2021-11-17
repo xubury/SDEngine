@@ -9,8 +9,8 @@ namespace SD {
 
 ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}
 
-void ImGuiLayer::begin() {
-    switch (getGraphicsAPI()) {
+void ImGuiLayer::Begin() {
+    switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
             ImGui_ImplOpenGL3_NewFrame();
             break;
@@ -22,9 +22,9 @@ void ImGuiLayer::begin() {
     ImGuizmo::BeginFrame();
 }
 
-void ImGuiLayer::end() {
+void ImGuiLayer::End() {
     ImGui::Render();
-    switch (getGraphicsAPI()) {
+    switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
             break;
@@ -33,7 +33,7 @@ void ImGuiLayer::end() {
     }
 }
 
-void ImGuiLayer::onPush() {
+void ImGuiLayer::OnPush() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -50,14 +50,14 @@ void ImGuiLayer::onPush() {
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    setDarkThemeColor();
+    SetDarkThemeColor();
 
     // Setup Platform/Renderer backends
-    switch (getGraphicsAPI()) {
+    switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
             ImGui_ImplSDL2_InitForOpenGL(
-                getApp().getWindow().getHandle(),
-                getApp().getWindow().getGraphicsContext());
+                GetApp().GetWindow().GetHandle(),
+                GetApp().GetWindow().GetGraphicsContext());
             ImGui_ImplOpenGL3_Init("#version 450");
             break;
         default:
@@ -65,12 +65,12 @@ void ImGuiLayer::onPush() {
     }
 }
 
-void ImGuiLayer::onPop() {
+void ImGuiLayer::OnPop() {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
 }
 
-void ImGuiLayer::onEventProcess(const Event& event) {
+void ImGuiLayer::OnEventProcess(const Event& event) {
     auto& io = ImGui::GetIO();
     switch (event.type) {
         default:
@@ -85,7 +85,7 @@ void ImGuiLayer::onEventProcess(const Event& event) {
         } break;
         case Event::EventType::KEY_PRESSED: {
             io.KeysDown[static_cast<uint16_t>(
-                getScancodeFromKeycode(event.key.keycode))] = true;
+                GetScancodeFromKeycode(event.key.keycode))] = true;
             io.KeyShift = event.key.mod == Keymod::SHIFT;
             io.KeyCtrl = event.key.mod == Keymod::CTRL;
             io.KeyAlt = event.key.mod == Keymod::ALT;
@@ -93,7 +93,7 @@ void ImGuiLayer::onEventProcess(const Event& event) {
         } break;
         case Event::EventType::KEY_RELEASED: {
             io.KeysDown[static_cast<uint16_t>(
-                getScancodeFromKeycode(event.key.keycode))] = true;
+                GetScancodeFromKeycode(event.key.keycode))] = true;
             io.KeyShift = event.key.mod == Keymod::SHIFT;
             io.KeyCtrl = event.key.mod == Keymod::CTRL;
             io.KeyAlt = event.key.mod == Keymod::ALT;
@@ -127,7 +127,7 @@ void ImGuiLayer::onEventProcess(const Event& event) {
     }
 }
 
-void ImGuiLayer::setDarkThemeColor() {
+void ImGuiLayer::SetDarkThemeColor() {
     auto& colors = ImGui::GetStyle().Colors;
     colors[ImGuiCol_WindowBg] = ImVec4{0.1f, 0.105f, 0.11f, 1.0f};
 

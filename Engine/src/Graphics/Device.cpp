@@ -3,11 +3,11 @@
 
 namespace SD {
 
-Ref<Device> Device::create() {
+Ref<Device> Device::Create() {
     Ref<Device> device;
-    switch (getGraphicsAPI()) {
+    switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
-            device = createRef<GLDevice>();
+            device = CreateRef<GLDevice>();
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");

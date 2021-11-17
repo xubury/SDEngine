@@ -13,31 +13,31 @@ Asset::Asset(size_t loaderType, const std::string &path)
     : m_resource(nullptr), m_loaderType(loaderType), m_path(path) {}
 
 AssetManager::AssetManager(const std::filesystem::path &path) {
-    setLoader<Image>(new ImageLoader(*this));
-    setLoader<Model>(new ModelLoader(*this));
-    setLoader<Font>(new FontLoader(*this));
-    load(path);
+    SetLoader<Image>(new ImageLoader(*this));
+    SetLoader<Model>(new ModelLoader(*this));
+    SetLoader<Font>(new FontLoader(*this));
+    Load(path);
 }
 
 AssetManager::~AssetManager() {
     for (const auto &[id, loader] : m_loaders) {
         delete loader;
     }
-    save();
+    Save();
 }
 
-void AssetManager::clear() { m_resources.clear(); }
+void AssetManager::Clear() { m_resources.clear(); }
 
-void AssetManager::cache(const ResourceId &id) {
-    std::string relPath = m_resources.at(id).getPath();
-    std::filesystem::path fullPath = getAbsolutePath(relPath);
-    size_t type = m_resources.at(id).getLoaderType();
-    Ref<void> resource = m_loaders.at(type)->loadAsset(fullPath);
+void AssetManager::Cache(const ResourceId &id) {
+    std::string relPath = m_resources.at(id).GetPath();
+    std::filesystem::path fullPath = GetAbsolutePath(relPath);
+    size_t type = m_resources.at(id).GetLoaderType();
+    Ref<void> resource = m_loaders.at(type)->LoadAsset(fullPath);
     SD_CORE_ASSERT(resource, "Invalid asset!");
-    m_resources.at(id).setResource(resource);
+    m_resources.at(id).SetResource(resource);
 }
 
-void AssetManager::load(const std::filesystem::path &path) {
+void AssetManager::Load(const std::filesystem::path &path) {
     std::string fileName;
     if (std::filesystem::is_directory(path)) {
         fileName = path / assetExt;
@@ -49,15 +49,15 @@ void AssetManager::load(const std::filesystem::path &path) {
         }
     }
     if (std::filesystem::exists(fileName)) {
-        clear();
+        Clear();
         std::ifstream is(fileName);
         cereal::XMLInputArchive archive(is);
         archive(m_loaded, m_resources);
     }
-    setDirectory(std::filesystem::path(fileName).parent_path());
+    SetDirectory(std::filesystem::path(fileName).parent_path());
 }
 
-void AssetManager::save() {
+void AssetManager::Save() {
     std::ofstream os(m_directory / assetExt);
     cereal::XMLOutputArchive archive(os);
     // To have order in serialized data
@@ -68,34 +68,34 @@ void AssetManager::save() {
 }
 
 // FIXME: should use exe path instead of current path
-void AssetManager::setDirectory(const std::filesystem::path &path) {
+void AssetManager::SetDirectory(const std::filesystem::path &path) {
     m_directory =
         path.is_relative()
             ? path
             : std::filesystem::relative(path, std::filesystem::current_path());
 }
 
-std::filesystem::path AssetManager::getRelativePath(
+std::filesystem::path AssetManager::GetRelativePath(
     const std::filesystem::path &path) const {
     return std::filesystem::relative(
         path, std::filesystem::current_path() / m_directory);
 }
 
-std::filesystem::path AssetManager::getRootPath() const { return m_directory; };
+std::filesystem::path AssetManager::GetRootPath() const { return m_directory; };
 
-std::filesystem::path AssetManager::getAbsolutePath(
+std::filesystem::path AssetManager::GetAbsolutePath(
     const std::filesystem::path &path) const {
     return path.is_relative()
                ? std::filesystem::current_path() / m_directory / path
                : path;
 }
 
-bool AssetManager::hasLoaded(const std::string &path) const {
+bool AssetManager::HasLoaded(const std::string &path) const {
     return m_loaded.count(path);
 }
 
-bool AssetManager::hasCached(const ResourceId &id) const {
-    return m_resources.at(id).getResource() != nullptr;
+bool AssetManager::HasCached(const ResourceId &id) const {
+    return m_resources.at(id).GetResource() != nullptr;
 }
 
 }  // namespace SD

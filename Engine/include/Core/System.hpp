@@ -16,15 +16,15 @@ class System {
 
     virtual ~System() = default;
 
-    virtual void onPush(){};
+    virtual void OnPush(){};
 
-    virtual void onPop(){};
+    virtual void OnPop(){};
 
-    virtual void onRender(){};
+    virtual void OnRender(){};
 
-    virtual void onTick(float) {}
+    virtual void OnTick(float) {}
 
-    const std::string &getName() const { return m_name; }
+    const std::string &GetName() const { return m_name; }
 
    protected:
     APP_VARS

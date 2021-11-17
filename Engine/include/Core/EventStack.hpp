@@ -16,14 +16,14 @@ class SD_API EventStack {
 
     ~EventStack() = default;
 
-    void push(T item) {
+    void Push(T item) {
         m_items.emplace(m_items.begin() + m_insertId, item);
         ++m_insertId;
     }
 
-    void pushOverlay(T item) { m_items.emplace_back(item); }
+    void PushOverlay(T item) { m_items.emplace_back(item); }
 
-    void pop(T item) {
+    void Pop(T item) {
         auto iter = m_items.begin();
         for (; iter != m_items.end(); iter++) {
             if (*iter == item) {
@@ -41,7 +41,7 @@ class SD_API EventStack {
         }
     }
 
-    bool has(T item) const {
+    bool Has(T item) const {
         return std::find(m_items.begin(), m_items.end(), item) != m_items.end();
     }
 

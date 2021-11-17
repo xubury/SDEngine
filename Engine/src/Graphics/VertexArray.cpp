@@ -4,11 +4,11 @@
 
 namespace SD {
 
-Ref<VertexArray> VertexArray::create() {
+Ref<VertexArray> VertexArray::Create() {
     Ref<VertexArray> va;
-    switch (getGraphicsAPI()) {
+    switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
-            va = createRef<GLVertexArray>();
+            va = CreateRef<GLVertexArray>();
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");

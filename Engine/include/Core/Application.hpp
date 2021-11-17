@@ -12,21 +12,21 @@ namespace SD {
 
 class SD_API Application {
    public:
-    void quit();
+    void Quit();
 
     Application(const Application &application) = delete;
     Application &operator=(const Application &application) = delete;
 
-    Window &getWindow();
+    Window &GetWindow();
 
    protected:
-    void pushLayer(Layer *layer);
+    void PushLayer(Layer *layer);
 
-    void pushOverlay(Layer *layer);
+    void PushOverlay(Layer *layer);
 
-    void popLayer(Layer *layer);
+    void PopLayer(Layer *layer);
 
-    void destroyLayer(Layer *layer);
+    void DestroyLayer(Layer *layer);
 
     Application();
     virtual ~Application();
@@ -38,16 +38,16 @@ class SD_API Application {
 
     friend int ::main(int argc, char **argv);
 
-    virtual void onInit() = 0;
+    virtual void OnInit() = 0;
 
-    void run();
+    void Run();
 
-    void processEvent(const SDL_Event &event);
+    void ProcessEvent(const SDL_Event &event);
 
-    void processEvents();
+    void ProcessEvents();
 
-    void tick(float dt);
-    void render();
+    void Tick(float dt);
+    void Render();
 
     Ref<Window> m_window;
 
@@ -55,7 +55,7 @@ class SD_API Application {
     ImGuiLayer *m_imguiLayer;
 };
 
-Application &getApp();
+Application &GetApp();
 
 }  // namespace SD
 

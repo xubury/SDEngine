@@ -9,15 +9,15 @@ Font::Font(FT_Face face) : m_face(face) {}
 
 Font::~Font() { FT_Done_Face(m_face); }
 
-const Character &Font::getCharacter(wchar_t ch, int size) {
+const Character &Font::GetCharacter(wchar_t ch, int size) {
     CharacterId id(ch, size);
     if (m_characters.count(id) == 0) {
-        loadFont(id);
+        LoadFont(id);
     }
     return m_characters.at(id);
 }
 
-void Font::loadFont(const CharacterId &id) {
+void Font::LoadFont(const CharacterId &id) {
     FT_Set_Pixel_Sizes(m_face, 0, id.size);
     if (FT_Load_Char(m_face, id.ch, FT_LOAD_RENDER)) {
         SD_CORE_WARN("Failed to load glyph!");
@@ -29,7 +29,7 @@ void Font::loadFont(const CharacterId &id) {
     c.bearing =
         glm::ivec2(m_face->glyph->bitmap_left, m_face->glyph->bitmap_top);
     c.advance = m_face->glyph->advance.x;
-    c.texture = Texture::create(
+    c.texture = Texture::Create(
         m_face->glyph->bitmap.width, m_face->glyph->bitmap.rows, 1,
         TextureType::TEX_2D, TextureFormat::ALPHA, TextureFormatType::UBYTE,
         TextureWrap::BORDER, TextureFilter::LINEAR,

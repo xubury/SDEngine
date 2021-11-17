@@ -37,81 +37,81 @@ GLDevice::GLDevice() {
                           GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 #endif
     // Depth Test
-    enable(Operation::DEPTH_TEST);
+    Enable(Operation::DEPTH_TEST);
 
     // Blend
-    enable(Operation::BLEND);
+    Enable(Operation::BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    enable(Operation::CULL_FACE);
+    Enable(Operation::CULL_FACE);
 }
 
-void GLDevice::drawElements(MeshTopology topology, size_t count,
+void GLDevice::DrawElements(MeshTopology topology, size_t count,
                             size_t offset) {
-    glDrawElements(translate(topology), count, GL_UNSIGNED_INT,
+    glDrawElements(Translate(topology), count, GL_UNSIGNED_INT,
                    (const void *)offset);
 }
 
-void GLDevice::setClearColor(float r, float g, float b, float a) {
+void GLDevice::SetClearColor(float r, float g, float b, float a) {
     glClearColor(r, g, b, a);
 }
 
-void GLDevice::clear(BufferBitMask bit) {
-    glClear(translate(bit & BufferBitMask::COLOR_BUFFER_BIT) |
-            translate(bit & BufferBitMask::DEPTH_BUFFER_BIT) |
-            translate(bit & BufferBitMask::STENCIL_BUFFER_BIT));
+void GLDevice::Clear(BufferBitMask bit) {
+    glClear(Translate(bit & BufferBitMask::COLOR_BUFFER_BIT) |
+            Translate(bit & BufferBitMask::DEPTH_BUFFER_BIT) |
+            Translate(bit & BufferBitMask::STENCIL_BUFFER_BIT));
 }
 
-void GLDevice::setViewport(int x, int y, int width, int height) {
+void GLDevice::SetViewport(int x, int y, int width, int height) {
     // opengl define viewport origin at bottom-left
     glViewport(x, y, width, height);
 }
 
-void GLDevice::setFramebuffer(Framebuffer *framebuffer) {
+void GLDevice::SetFramebuffer(Framebuffer *framebuffer) {
     if (framebuffer) {
-        framebuffer->bind();
+        framebuffer->Bind();
     } else {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 }
 
-void GLDevice::setPolygonMode(PolygonMode mode, Face face) {
-    glPolygonMode(translate(face), translate(mode));
+void GLDevice::SetPolygonMode(PolygonMode mode, Face face) {
+    glPolygonMode(Translate(face), Translate(mode));
 }
 
-void GLDevice::setDepthMask(bool depthMask) { glDepthMask(depthMask); }
+void GLDevice::SetDepthMask(bool depthMask) { glDepthMask(depthMask); }
 
-void GLDevice::disable(Operation operation) { glDisable(translate(operation)); }
+void GLDevice::Disable(Operation operation) { glDisable(Translate(operation)); }
 
-void GLDevice::enable(Operation operation) { glEnable(translate(operation)); }
+void GLDevice::Enable(Operation operation) { glEnable(Translate(operation)); }
 
-void GLDevice::setCullFace(Face cullFace) { glCullFace(translate(cullFace)); }
+void GLDevice::SetCullFace(Face cullFace) { glCullFace(Translate(cullFace)); }
 
-void GLDevice::setDepthfunc(DepthFunc depthFunc) {
-    glDepthFunc(translate(depthFunc));
+void GLDevice::SetDepthfunc(DepthFunc depthFunc) {
+    glDepthFunc(Translate(depthFunc));
 }
 
-void GLDevice::resetShaderState() { glUseProgram(0); }
+void GLDevice::ResetShaderState() { glUseProgram(0); }
 
-void GLDevice::blitFramebuffer(Framebuffer *src, uint32_t srcAttachment,
+void GLDevice::BlitFramebuffer(Framebuffer *src, uint32_t srcAttachment,
                                Framebuffer *dst, uint32_t dstAttachment,
                                BufferBitMask mask, TextureFilter filter) {
-    int srcId = src ? src->getId() : 0;
-    int dstId = dst ? dst->getId() : 0;
-    GLenum glMask = translate(mask & BufferBitMask::COLOR_BUFFER_BIT) |
-                    translate(mask & BufferBitMask::DEPTH_BUFFER_BIT) |
-                    translate(mask & BufferBitMask::STENCIL_BUFFER_BIT);
-    GLenum glFilter = translate(filter);
+    int srcId = src ? src->GetId() : 0;
+    int dstId = dst ? dst->GetId() : 0;
+    GLenum glMask = Translate(mask & BufferBitMask::COLOR_BUFFER_BIT) |
+                    Translate(mask & BufferBitMask::DEPTH_BUFFER_BIT) |
+                    Translate(mask & BufferBitMask::STENCIL_BUFFER_BIT);
+    GLenum glFilter = Translate(filter);
     GLenum srcMode = GL_COLOR_ATTACHMENT0 + srcAttachment;
     GLenum dstMode = GL_COLOR_ATTACHMENT0 + dstAttachment;
     Texture *texture =
-        src ? src->getTexture(srcAttachment) : dst->getTexture(dstAttachment);
+        src ? src->GetTexture(srcAttachment) : dst->GetTexture(dstAttachment);
     SD_CORE_ASSERT(texture != nullptr, "Invalid framebuffer");
     glNamedFramebufferReadBuffer(srcId, src ? srcMode : GL_BACK);
     glNamedFramebufferDrawBuffer(dstId, dst ? dstMode : GL_BACK);
-    glBlitNamedFramebuffer(srcId, dstId, 0, 0, texture->getWidth(),
-                           texture->getHeight(), 0, 0, texture->getWidth(),
-                           texture->getHeight(), glMask, glFilter);
+    glBlitNamedFramebuffer(srcId, dstId, 0, 0, texture->GetWidth(),
+                           texture->GetHeight(), 0, 0, texture->GetWidth(),
+                           texture->GetHeight(), glMask, glFilter);
 }
 
 }  // namespace SD

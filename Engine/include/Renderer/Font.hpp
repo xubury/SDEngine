@@ -47,10 +47,10 @@ class SD_API Font {
     Font(const Font &) = delete;
     Font operator=(const Font &) = delete;
 
-    const Character &getCharacter(wchar_t ch, int size);
+    const Character &GetCharacter(wchar_t ch, int size);
 
    private:
-    void loadFont(const CharacterId &id);
+    void LoadFont(const CharacterId &id);
 
     FT_Face m_face;
     std::unordered_map<CharacterId, Character, CharacterHash> m_characters;

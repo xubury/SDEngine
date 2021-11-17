@@ -13,11 +13,11 @@ ParticleSystem::ParticleSystem(int poolSize)
     m_particles.resize(poolSize);
 }
 
-void ParticleSystem::onPush() {}
+void ParticleSystem::OnPush() {}
 
-void ParticleSystem::onPop() {}
+void ParticleSystem::OnPop() {}
 
-void ParticleSystem::onRender() {
+void ParticleSystem::OnRender() {
     for (const auto &particle : m_particles) {
         if (!particle.active) continue;
 
@@ -32,11 +32,11 @@ void ParticleSystem::onRender() {
             glm::rotate(glm::mat4(1.0f), particle.rotation,
                         glm::vec3(0.0f, 0.0f, 1.0f)) *
             glm::scale(glm::mat4(1.0f), glm::vec3(size, size, 1.0f));
-        renderer->drawQuad(transform, color);
+        renderer->DrawQuad(transform, color);
     }
 }
 
-void ParticleSystem::onTick(float dt) {
+void ParticleSystem::OnTick(float dt) {
     for (auto &particle : m_particles) {
         if (!particle.active) continue;
 
@@ -51,18 +51,18 @@ void ParticleSystem::onTick(float dt) {
     }
 }
 
-void ParticleSystem::emit(const ParticleProp &particleProps) {
+void ParticleSystem::Emit(const ParticleProp &particleProps) {
     Particle &particle = m_particles[m_poolIndex];
 
     particle.active = true;
 
     particle.position = particleProps.position;
-    particle.rotation = Random::rnd(0.f, 1.0f) * M_PI * 2.0f;
+    particle.rotation = Random::Rnd(0.f, 1.0f) * M_PI * 2.0f;
     particle.velocity = particleProps.velocity;
     particle.velocity.x +=
-        particleProps.velocityVariation.x * Random::rnd(-1.0f, 1.0f);
+        particleProps.velocityVariation.x * Random::Rnd(-1.0f, 1.0f);
     particle.velocity.y +=
-        particleProps.velocityVariation.y * Random::rnd(-1.0f, 1.0f);
+        particleProps.velocityVariation.y * Random::Rnd(-1.0f, 1.0f);
 
     particle.colorBegin = particleProps.colorBegin;
     particle.colorEnd = particleProps.colorEnd;
@@ -73,8 +73,8 @@ void ParticleSystem::emit(const ParticleProp &particleProps) {
     particle.sizeBegin = particleProps.sizeBegin;
     particle.sizeEnd = particleProps.sizeEnd;
     particle.sizeBegin +=
-        particleProps.sizeVariation * Random::rnd(-1.0f, 1.0f);
-    particle.sizeEnd += particleProps.sizeVariation * Random::rnd(-1.0f, 1.0f);
+        particleProps.sizeVariation * Random::Rnd(-1.0f, 1.0f);
+    particle.sizeEnd += particleProps.sizeVariation * Random::Rnd(-1.0f, 1.0f);
 
     m_poolIndex = (m_poolIndex - 1) % m_particles.size();
 }

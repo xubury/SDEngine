@@ -16,19 +16,19 @@ class SD_API Entity {
     Entity(entt::entity handle, Scene *scene);
 
     template <typename T, typename... Args>
-    T &addComponent(Args &&...args);
+    T &AddComponent(Args &&...args);
 
     template <typename T>
-    bool hasComponent() const;
+    bool HasComponent() const;
 
     template <typename T>
-    void removeComponent();
+    void RemoveComponent();
 
     template <typename T>
-    T &getComponent();
+    T &GetComponent();
 
     template <typename T>
-    const T &getComponent() const;
+    const T &GetComponent() const;
 
     operator bool() const;
     operator entt::entity() const;
@@ -44,34 +44,34 @@ class SD_API Entity {
 };
 
 template <typename T, typename... Args>
-T &Entity::addComponent(Args &&...args) {
-    SD_CORE_ASSERT(!hasComponent<T>(), "Entity already has this component!");
+T &Entity::AddComponent(Args &&...args) {
+    SD_CORE_ASSERT(!HasComponent<T>(), "Entity already has this component!");
     T &component =
         m_scene->emplace<T>(m_entityHandle, std::forward<Args>(args)...);
-    m_scene->onComponentAdded(*this, component);
+    m_scene->OnComponentAdded(*this, component);
     return component;
 }
 
 template <typename T>
-bool Entity::hasComponent() const {
+bool Entity::HasComponent() const {
     return m_scene->all_of<T>(m_entityHandle);
 }
 
 template <typename T>
-void Entity::removeComponent() {
-    SD_CORE_ASSERT(hasComponent<T>(), "Entity does not have this component!");
+void Entity::RemoveComponent() {
+    SD_CORE_ASSERT(HasComponent<T>(), "Entity does not have this component!");
     m_scene->remove<T>(m_entityHandle);
 }
 
 template <typename T>
-T &Entity::getComponent() {
-    SD_CORE_ASSERT(hasComponent<T>(), "Entity does not have this component!");
+T &Entity::GetComponent() {
+    SD_CORE_ASSERT(HasComponent<T>(), "Entity does not have this component!");
     return m_scene->get<T>(m_entityHandle);
 }
 
 template <typename T>
-const T &Entity::getComponent() const {
-    SD_CORE_ASSERT(hasComponent<T>(), "Entity does not have this component!");
+const T &Entity::GetComponent() const {
+    SD_CORE_ASSERT(HasComponent<T>(), "Entity does not have this component!");
     return m_scene->get<T>(m_entityHandle);
 }
 

@@ -14,29 +14,29 @@ class SD_API Scene : public entt::registry {
     Scene();
     ~Scene() = default;
 
-    Entity createEntity(const std::string &name = "Entity");
-    void destroyEntity(Entity &entity, bool isRoot = true);
+    Entity CreateEntity(const std::string &name = "Entity");
+    void DestroyEntity(Entity &entity, bool isRoot = true);
 
-    void addChildToEntity(Entity &parent, Entity &child);
+    void AddChildToEntity(Entity &parent, Entity &child);
 
-    void removeChildFromEntity(Entity &parent, Entity &child);
+    void RemoveChildFromEntity(Entity &parent, Entity &child);
 
-    void refresh();
+    void Refresh();
 
-    void load(const std::string &filePath);
+    void Load(const std::string &filePath);
 
-    void save(const std::string &filePath);
+    void Save(const std::string &filePath);
 
     template <typename T>
-    void onComponentAdded(Entity &entity, T &component);
+    void OnComponentAdded(Entity &entity, T &component);
 
    private:
-    void refreshEntityChildTranforms(Entity &entity);
-    void refreshLight(Entity &entity);
+    void RefreshEntityChildTranforms(Entity &entity);
+    void RefreshLight(Entity &entity);
 };
 
 template <typename T>
-void Scene::onComponentAdded(Entity &, T &) {}
+void Scene::OnComponentAdded(Entity &, T &) {}
 
 }  // namespace SD
 

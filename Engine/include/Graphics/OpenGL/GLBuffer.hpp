@@ -10,15 +10,15 @@ namespace SD {
 
 class SD_API GLBuffer : virtual public Buffer {
    public:
-    void updateData(const void *data, size_t size, size_t offset) override;
+    void UpdateData(const void *data, size_t size, size_t offset) override;
 
-    void bind() const override;
+    void Bind() const override;
 
-    void bindBase(uint32_t index) const override;
+    void BindBase(uint32_t index) const override;
 
-    void unbind() const override;
+    void Unbind() const override;
 
-    GLuint getId() const { return m_id; }
+    GLuint GetId() const { return m_id; }
 
    protected:
     GLBuffer(GLenum type, GLenum io, const void *data, size_t size);
@@ -45,7 +45,7 @@ class SD_API GLIndexBuffer : public IndexBuffer, public GLBuffer {
    public:
     GLIndexBuffer(const uint32_t *data, uint32_t count, BufferIOType io);
 
-    void updateData(const void *data, size_t size, size_t offset) override;
+    void UpdateData(const void *data, size_t size, size_t offset) override;
 
     ~GLIndexBuffer() = default;
 };
@@ -56,9 +56,9 @@ class SD_API GLUniformBuffer : public UniformBuffer, public GLBuffer {
 
     ~GLUniformBuffer() = default;
 
-    uint32_t getBindingPoint() const override;
+    uint32_t GetBindingPoint() const override;
 
-    void bind() const override;
+    void Bind() const override;
 
    private:
     uint32_t m_base;

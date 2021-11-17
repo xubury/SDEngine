@@ -8,7 +8,7 @@ namespace SD {
 
 class SD_API Texture {
    public:
-    static Ref<Texture> create(int width, int height, int samples,
+    static Ref<Texture> Create(int width, int height, int samples,
                                TextureType type, TextureFormat format,
                                TextureFormatType formatType, TextureWrap wrap,
                                TextureFilter filter,
@@ -17,32 +17,32 @@ class SD_API Texture {
 
     virtual ~Texture() = default;
 
-    virtual void bind() const = 0;
-    virtual void unbind() const = 0;
+    virtual void Bind() const = 0;
+    virtual void Unbind() const = 0;
 
-    virtual void setSlot(uint32_t slot) const = 0;
+    virtual void SetSlot(uint32_t slot) const = 0;
 
-    virtual void setPixels(int width, int height, const void *data) = 0;
-    virtual void setBorderColor(const void *color) = 0;
-    virtual void setWrap(TextureWrap wrap) = 0;
-    virtual void setFilter(TextureFilter filter) = 0;
-    virtual void setMipmapFilter(TextureMipmapFilter filter) = 0;
+    virtual void SetPixels(int width, int height, const void *data) = 0;
+    virtual void SetBorderColor(const void *color) = 0;
+    virtual void SetWrap(TextureWrap wrap) = 0;
+    virtual void SetFilter(TextureFilter filter) = 0;
+    virtual void SetMipmapFilter(TextureMipmapFilter filter) = 0;
 
-    virtual void readPixels(int level, int x, int y, int z, int w, int h, int d,
+    virtual void ReadPixels(int level, int x, int y, int z, int w, int h, int d,
                             size_t size, void *data) const = 0;
 
     bool operator==(const Texture &other) const;
     bool operator!=(const Texture &other) const;
 
-    virtual uint32_t getId() const = 0;
+    virtual uint32_t GetId() const = 0;
 
-    int getWidth() const;
-    int getHeight() const;
-    int getSamples() const;
+    int GetWidth() const;
+    int GetHeight() const;
+    int GetSamples() const;
 
-    TextureType getType() const;
-    TextureFormat getFormat() const;
-    TextureFormatType getFormatType() const;
+    TextureType GetType() const;
+    TextureFormat GetFormat() const;
+    TextureFormatType GetFormatType() const;
 
    protected:
     Texture(int width, int height, int samples, TextureType type,

@@ -20,30 +20,30 @@ class EditorLayer : public Layer {
     EditorLayer(int width, int height);
     ~EditorLayer();
 
-    void onPush() override;
+    void OnPush() override;
 
-    void onPop() override;
+    void OnPop() override;
 
-    void onTick(float dt) override;
+    void OnTick(float dt) override;
 
-    void onRender() override;
+    void OnRender() override;
 
-    void onImGui() override;
+    void OnImGui() override;
 
-    void onEventProcess(const Event &event) override;
+    void OnEventProcess(const Event &event) override;
 
-    void onEventsProcess() override;
+    void OnEventsProcess() override;
 
-    void newScene();
-    void loadScene();
-    void saveScene();
+    void NewScene();
+    void LoadScene();
+    void SaveScene();
 
    private:
-    void processDialog();
+    void ProcessDialog();
 
-    void hide();
+    void Hide();
 
-    void show();
+    void Show();
 
     ShadowSystem *m_shadowSystem;
     LightingSystem *m_lightingSystem;

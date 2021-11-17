@@ -5,11 +5,11 @@ namespace SD {
 
 Terrain::Terrain(int gridSize, int vertexCount)
     : m_gridSize(gridSize), m_vertexCount(vertexCount) {
-    m_mesh.setPolygonMode(PolygonMode::LINE);
-    generateMesh();
+    m_mesh.SetPolygonMode(PolygonMode::LINE);
+    GenerateMesh();
 }
 
-void Terrain::generateMesh() {
+void Terrain::GenerateMesh() {
     std::vector<Vertex> vertices(m_vertexCount *m_vertexCount);
     std::vector<uint32_t> indices(6 * (m_vertexCount - 1) *
                                   (m_vertexCount - 1));
@@ -45,36 +45,36 @@ void Terrain::generateMesh() {
             indices[indexPointer++] = bottomRight;
         }
     }
-    m_mesh.setVerices(vertices);
-    m_mesh.setIndices(indices);
-    computeNormal();
-    m_mesh.update();
+    m_mesh.SetVerices(vertices);
+    m_mesh.SetIndices(indices);
+    ComputeNormal();
+    m_mesh.Update();
 }
 
-const Mesh &Terrain::getMesh() const { return m_mesh; }
+const Mesh &Terrain::GetMesh() const { return m_mesh; }
 
-const Material &Terrain::getMaterial() const { return m_material; }
+const Material &Terrain::GetMaterial() const { return m_material; }
 
-int Terrain::getGridSize() const { return m_gridSize; }
+int Terrain::GetGridSize() const { return m_gridSize; }
 
-int Terrain::getVertexCount() const { return m_vertexCount; }
+int Terrain::GetVertexCount() const { return m_vertexCount; }
 
-const std::vector<Vertex> &Terrain::getVertices() const {
-    return m_mesh.getVertices();
+const std::vector<Vertex> &Terrain::GetVertices() const {
+    return m_mesh.GetVertices();
 }
 
-std::vector<Vertex> &Terrain::getVertices() { return m_mesh.getVertices(); }
+std::vector<Vertex> &Terrain::GetVertices() { return m_mesh.GetVertices(); }
 
-void Terrain::setGridSize(int gridSize) { m_gridSize = gridSize; }
+void Terrain::SetGridSize(int gridSize) { m_gridSize = gridSize; }
 
-void Terrain::setVertexCount(int vertexCount) { m_vertexCount = vertexCount; }
+void Terrain::SetVertexCount(int vertexCount) { m_vertexCount = vertexCount; }
 
-float Terrain::height(float localX, float localZ) const {
+float Terrain::Height(float localX, float localZ) const {
     float x = localX / m_gridSize + (m_vertexCount - 1) * 0.5;
     float z = localZ / m_gridSize + (m_vertexCount - 1) * 0.5;
     int x0 = std::floor(x);
     int z0 = std::floor(z);
-    auto &vertices = getVertices();
+    auto &vertices = GetVertices();
     float f00 = vertices[z0 * m_vertexCount + x0].position.y;
     float f10 = vertices[z0 * m_vertexCount + (x0 + 1)].position.y;
     float f01 = vertices[(z0 + 1) * m_vertexCount + x0].position.y;
@@ -87,28 +87,28 @@ float Terrain::height(float localX, float localZ) const {
         glm::vec2 a(0, 0);
         glm::vec2 b(1, 0);
         glm::vec2 c(0, 1);
-        baryCentric(a, b, c, glm::vec2(xCoord, zCoord), u, v, w);
+        BaryCentric(a, b, c, glm::vec2(xCoord, zCoord), u, v, w);
         return f00 * u + f10 * v + f01 * w;
     } else {
         glm::vec2 a(1, 0);
         glm::vec2 b(1, 1);
         glm::vec2 c(0, 1);
-        baryCentric(a, b, c, glm::vec2(xCoord, zCoord), u, v, w);
+        BaryCentric(a, b, c, glm::vec2(xCoord, zCoord), u, v, w);
         return f10 * u + f11 * v + f01 * w;
     }
 }
 
-void Terrain::computeNormal() {
+void Terrain::ComputeNormal() {
     float offset = 0.3f;
-    auto &vertices = getVertices();
+    auto &vertices = GetVertices();
     for (int i = 1; i < m_vertexCount - 1; ++i) {
         float z = (i - (m_vertexCount - 1) / 2.f) * m_gridSize;
         for (int j = 1; j < m_vertexCount - 1; ++j) {
             float x = (j - (m_vertexCount - 1) / 2.f) * m_gridSize;
-            float hL = height(x - offset, z);
-            float hR = height(x + offset, z);
-            float hD = height(x, z - offset);
-            float hU = height(x, z + offset);
+            float hL = Height(x - offset, z);
+            float hR = Height(x + offset, z);
+            float hD = Height(x, z - offset);
+            float hU = Height(x, z + offset);
             glm::vec3 &normal = vertices[i * m_vertexCount + j].normal;
             normal.x = hL - hR;
             normal.y = 2.0 * offset;

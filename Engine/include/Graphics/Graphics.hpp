@@ -112,9 +112,9 @@ struct SD_API RGBA {
 
 enum class GraphicsAPI { None, OpenGL };
 
-void SD_API setGraphicsAPI(GraphicsAPI api);
+void SD_API SetGraphicsAPI(GraphicsAPI api);
 
-GraphicsAPI SD_API getGraphicsAPI();
+GraphicsAPI SD_API GetGraphicsAPI();
 
 }  // namespace SD
 

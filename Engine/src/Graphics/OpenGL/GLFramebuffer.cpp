@@ -10,12 +10,12 @@ GLFramebuffer::GLFramebuffer() : m_id(0), m_textureCnt(0) {
 
 GLFramebuffer::~GLFramebuffer() { glDeleteFramebuffers(1, &m_id); }
 
-bool GLFramebuffer::attachTexture(const Ref<Texture> &texture) {
+bool GLFramebuffer::AttachTexture(const Ref<Texture> &texture) {
     Ref<GLTexture> glTexture = std::static_pointer_cast<GLTexture>(texture);
     bool isColor = false;
     if (glTexture) {
         GLenum attachment = 0;
-        switch (glTexture->getFormat()) {
+        switch (glTexture->GetFormat()) {
             case TextureFormat::DEPTH:
                 attachment = GL_DEPTH_ATTACHMENT;
                 break;
@@ -32,7 +32,7 @@ bool GLFramebuffer::attachTexture(const Ref<Texture> &texture) {
                 break;
         }
         m_attachments.emplace_back(attachment, glTexture);
-        glNamedFramebufferTexture(m_id, attachment, glTexture->getId(), 0);
+        glNamedFramebufferTexture(m_id, attachment, glTexture->GetId(), 0);
 
     } else {
         SD_CORE_ERROR("Mismatched API!");
@@ -41,12 +41,12 @@ bool GLFramebuffer::attachTexture(const Ref<Texture> &texture) {
     return isColor;
 }
 
-void GLFramebuffer::clear() {
+void GLFramebuffer::Clear() {
     m_textureCnt = 0;
     m_attachments.clear();
 }
 
-void GLFramebuffer::setDrawable(const std::vector<uint32_t> &colorAttachments) {
+void GLFramebuffer::SetDrawable(const std::vector<uint32_t> &colorAttachments) {
     if (colorAttachments.empty()) {
         glNamedFramebufferDrawBuffer(m_id, GL_NONE);
     } else {
@@ -62,39 +62,39 @@ void GLFramebuffer::setDrawable(const std::vector<uint32_t> &colorAttachments) {
     }
 }
 
-void GLFramebuffer::bind() { glBindFramebuffer(GL_FRAMEBUFFER, m_id); }
+void GLFramebuffer::Bind() { glBindFramebuffer(GL_FRAMEBUFFER, m_id); }
 
-void GLFramebuffer::readPixels(uint32_t attachmentId, int level, int x, int y,
+void GLFramebuffer::ReadPixels(uint32_t attachmentId, int level, int x, int y,
                                int z, int w, int h, int d, size_t size,
                                void *data) const {
     auto glTexture = m_attachments.at(attachmentId).second;
-    glTexture->readPixels(level, x, y, z, w, h, d, size, data);
+    glTexture->ReadPixels(level, x, y, z, w, h, d, size, data);
 }
 
-void GLFramebuffer::clearDepth(const float depth) {
+void GLFramebuffer::ClearDepth(const float depth) {
     glClearNamedFramebufferfv(m_id, GL_DEPTH, 0, &depth);
 }
 
-void GLFramebuffer::clearAttachment(uint32_t attachmentId, const int *value) {
+void GLFramebuffer::ClearAttachment(uint32_t attachmentId, const int *value) {
     glClearNamedFramebufferiv(m_id, GL_COLOR, attachmentId, value);
 }
 
-void GLFramebuffer::clearAttachment(uint32_t attachmentId,
+void GLFramebuffer::ClearAttachment(uint32_t attachmentId,
                                     const uint32_t *value) {
     glClearNamedFramebufferuiv(m_id, GL_COLOR, attachmentId, value);
 }
 
-void GLFramebuffer::clearAttachment(uint32_t attachmentId, const float *value) {
+void GLFramebuffer::ClearAttachment(uint32_t attachmentId, const float *value) {
     glClearNamedFramebufferfv(m_id, GL_COLOR, attachmentId, value);
 }
 
-Texture *GLFramebuffer::getTexture(uint32_t attachmentId) {
+Texture *GLFramebuffer::GetTexture(uint32_t attachmentId) {
     return m_attachments[attachmentId].second.get();
 }
 
-void GLFramebuffer::resize(int width, int height) {
+void GLFramebuffer::Resize(int width, int height) {
     for (auto &[attachment, texture] : m_attachments) {
-        texture->setPixels(width, height, nullptr);
+        texture->SetPixels(width, height, nullptr);
     }
 }
 

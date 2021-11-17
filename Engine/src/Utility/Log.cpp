@@ -7,7 +7,7 @@ namespace SD {
 std::shared_ptr<spdlog::logger> Log::s_coreLogger;
 std::shared_ptr<spdlog::logger> Log::s_clientLogger;
 
-void Log::init(const std::string &logFileName) {
+void Log::Init(const std::string &logFileName) {
     std::vector<spdlog::sink_ptr> logSinks;
     logSinks.emplace_back(
         std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
@@ -30,8 +30,8 @@ void Log::init(const std::string &logFileName) {
     s_clientLogger->flush_on(spdlog::level::trace);
 }
 
-std::shared_ptr<spdlog::logger> &Log::getCoreLogger() { return s_coreLogger; }
+std::shared_ptr<spdlog::logger> &Log::GetCoreLogger() { return s_coreLogger; }
 
-std::shared_ptr<spdlog::logger> &Log::getClientLogger() { return s_clientLogger; }
+std::shared_ptr<spdlog::logger> &Log::GetClientLogger() { return s_clientLogger; }
 
 }  // namespace SD

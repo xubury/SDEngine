@@ -36,6 +36,6 @@ GLWindow::GLWindow(const WindowProp &property) : Window(property) {
 
 GLWindow::~GLWindow() { SDL_GL_DeleteContext(m_context); }
 
-void *GLWindow::getGraphicsContext() { return m_context; }
+void *GLWindow::GetGraphicsContext() { return m_context; }
 
 }  // namespace SD

@@ -10,28 +10,28 @@ namespace SD {
 
 class SD_API Input {
    public:
-    static bool isKeyDown(Keycode keycode);
-    static bool wasKeyDown(Keycode keycode);
-    static bool isKeyPressed(Keycode keycode);
+    static bool IsKeyDown(Keycode keycode);
+    static bool WasKeyDown(Keycode keycode);
+    static bool IsKeyPressed(Keycode keycode);
 
-    static bool isMouseDown(MouseButton mouse);
-    static bool wasMouseDown(MouseButton mouse);
-    static bool isMousePressed(MouseButton mouse);
+    static bool IsMouseDown(MouseButton mouse);
+    static bool WasMouseDown(MouseButton mouse);
+    static bool IsMousePressed(MouseButton mouse);
 
-    static glm::vec2 getMouseCoord();
+    static glm::vec2 GetMouseCoord();
 
    private:
     friend class Application;
 
-    static void tick();
+    static void Tick();
 
-    static void pressKey(Keycode keycode);
-    static void releaseKey(Keycode keycode);
+    static void PressKey(Keycode keycode);
+    static void ReleaseKey(Keycode keycode);
 
-    static void pressMouseButton(MouseButton mouse);
-    static void releaseMouseButton(MouseButton mouse);
+    static void PressMouseButton(MouseButton mouse);
+    static void ReleaseMouseButton(MouseButton mouse);
 
-    static void setMouseCoord(float x, float y);
+    static void SetMouseCoord(float x, float y);
 };
 
 }  // namespace SD

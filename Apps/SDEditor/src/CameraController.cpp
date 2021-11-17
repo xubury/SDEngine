@@ -14,62 +14,62 @@ CameraController::CameraController()
       m_mouseMovement(0),
       m_mouseSmoothMovement(0),
       m_pitch(0.f) {
-    m_controllerMap.map(
+    m_controllerMap.Map(
         CameraMovement::FORWARD,
         Action(Keycode::W, Action::Type::REAL_TIME | Action::Type::DOWN));
-    m_controllerMap.map(
+    m_controllerMap.Map(
         CameraMovement::BACKWARD,
         Action(Keycode::S, Action::Type::REAL_TIME | Action::Type::DOWN));
-    m_controllerMap.map(
+    m_controllerMap.Map(
         CameraMovement::LEFT,
         Action(Keycode::A, Action::Type::REAL_TIME | Action::Type::DOWN));
-    m_controllerMap.map(
+    m_controllerMap.Map(
         CameraMovement::RIGHT,
         Action(Keycode::D, Action::Type::REAL_TIME | Action::Type::DOWN));
 
-    bind(CameraMovement::FORWARD,
-         [this](const Event &) { move(-m_camera->getWorldFront()); });
-    bind(CameraMovement::BACKWARD,
-         [this](const Event &) { move(m_camera->getWorldFront()); });
-    bind(CameraMovement::LEFT,
-         [this](const Event &) { move(-m_camera->getWorldRight()); });
-    bind(CameraMovement::RIGHT,
-         [this](const Event &) { move(m_camera->getWorldRight()); });
-    bind(Action(Event::EventType::MOUSE_MOTION), [this](const Event &event) {
-        if (Input::isMouseDown(MouseButton::RIGHT)) {
+    Bind(CameraMovement::FORWARD,
+         [this](const Event &) { Move(-m_camera->GetWorldFront()); });
+    Bind(CameraMovement::BACKWARD,
+         [this](const Event &) { Move(m_camera->GetWorldFront()); });
+    Bind(CameraMovement::LEFT,
+         [this](const Event &) { Move(-m_camera->GetWorldRight()); });
+    Bind(CameraMovement::RIGHT,
+         [this](const Event &) { Move(m_camera->GetWorldRight()); });
+    Bind(Action(Event::EventType::MOUSE_MOTION), [this](const Event &event) {
+        if (Input::IsMouseDown(MouseButton::RIGHT)) {
             m_mouseMovement.x += event.mouseMotion.xrel;
             m_mouseMovement.y += event.mouseMotion.yrel;
         }
     });
 }
 
-void CameraController::tick(float dt) {
+void CameraController::Tick(float dt) {
     m_mouseSmoothMovement =
         glm::mix(m_mouseSmoothMovement, m_mouseMovement, dt * SMOOTHNESS);
-    rotate(-m_mouseSmoothMovement.x * ROTATION_SPEED,
+    Rotate(-m_mouseSmoothMovement.x * ROTATION_SPEED,
            -m_mouseSmoothMovement.y * ROTATION_SPEED);
     m_mouseMovement.x = 0;
     m_mouseMovement.y = 0;
 }
 
-void CameraController::move(const glm::vec3 &t) { m_camera->translateWorld(t); }
+void CameraController::Move(const glm::vec3 &t) { m_camera->TranslateWorld(t); }
 
-void CameraController::rotate(float yaw, float pitch) {
+void CameraController::Rotate(float yaw, float pitch) {
     yaw = glm::radians(yaw);
     pitch = glm::radians(pitch);
 
-    glm::quat rotation = m_camera->getWorldRotation();
+    glm::quat rotation = m_camera->GetWorldRotation();
     m_pitch += pitch;
     if (std::abs(m_pitch) < glm::radians(89.f)) {
-        rotation = glm::angleAxis(pitch, m_camera->getWorldRight()) * rotation;
+        rotation = glm::angleAxis(pitch, m_camera->GetWorldRight()) * rotation;
     } else {
         m_pitch -= pitch;
     }
     rotation = glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotation;
-    m_camera->setWorldRotation(rotation);
+    m_camera->SetWorldRotation(rotation);
 }
 
-void CameraController::rotateAround(float yaw, float pitch) {
+void CameraController::RotateAround(float yaw, float pitch) {
     yaw = glm::radians(yaw);
     pitch = glm::radians(pitch);
 
@@ -77,20 +77,20 @@ void CameraController::rotateAround(float yaw, float pitch) {
     transform = glm::translate(transform, m_focus);
     m_pitch += pitch;
     if (std::abs(m_pitch) < glm::radians(89.f)) {
-        transform = glm::rotate(transform, pitch, m_camera->getWorldRight());
+        transform = glm::rotate(transform, pitch, m_camera->GetWorldRight());
     } else {
         m_pitch -= pitch;
     }
     transform = glm::rotate(transform, yaw, glm::vec3(0.f, 1.f, 0.f));
     transform = glm::translate(transform, -m_focus);
-    m_camera->setWorldTransform(transform * m_camera->getWorldTransform());
+    m_camera->SetWorldTransform(transform * m_camera->GetWorldTransform());
 }
 
-void CameraController::setCamera(Camera *camera) {
+void CameraController::SetCamera(Camera *camera) {
     m_camera = camera;
-    m_pitch = glm::pitch(m_camera->getWorldRotation());
+    m_pitch = glm::pitch(m_camera->GetWorldRotation());
 }
 
-void CameraController::setFocus(const glm::vec3 &focus) { m_focus = focus; }
+void CameraController::SetFocus(const glm::vec3 &focus) { m_focus = focus; }
 
 }  // namespace SD

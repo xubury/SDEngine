@@ -19,47 +19,47 @@ class SD_API Renderer {
     Renderer(const Renderer &) = delete;
     Renderer &operator=(const Renderer &) = delete;
 
-    Device &device() { return *m_device; }
+    Device &GetDevice() { return *m_device; }
 
-    void setRenderTarget(RenderTarget &target);
+    void SetRenderTarget(RenderTarget &target);
 
-    void updateShader(Shader &shader, Camera &camera);
+    void UpdateShader(Shader &shader, Camera &camera);
 
-    void submit(const VertexArray &vao, MeshTopology topology, size_t count,
+    void Submit(const VertexArray &vao, MeshTopology topology, size_t count,
                 size_t offset);
 
-    void drawMesh(const Mesh &mesh);
+    void DrawMesh(const Mesh &mesh);
 
-    void startBatch();
-    void flush();
-    void nextBatch();
+    void StartBatch();
+    void Flush();
+    void NextBatch();
 
-    void beginScene(Camera &camera);
-    void endScene();
+    void BeginScene(Camera &camera);
+    void EndScene();
 
-    void setTextOrigin(float x, float y);
+    void SetTextOrigin(float x, float y);
 
-    void drawQuad(const glm::mat4 &transform, const glm::vec4 &color);
+    void DrawQuad(const glm::mat4 &transform, const glm::vec4 &color);
 
-    void drawTexture(const Ref<Texture> &texture, const glm::mat4 &transform,
+    void DrawTexture(const Ref<Texture> &texture, const glm::mat4 &transform,
                      const glm::vec4 &color = glm::vec4(1.0f));
 
-    void drawBillboard(const Ref<Texture> &texture, const glm::vec3 &pos,
+    void DrawBillboard(const Ref<Texture> &texture, const glm::vec3 &pos,
                        const glm::vec2 &scale,
                        const glm::vec4 &color = glm::vec4(1.0f));
 
-    void drawText(Font &font, const std::wstring &text, int pixleSize,
+    void DrawText(Font &font, const std::wstring &text, int pixleSize,
                   const glm::mat4 &transform,
                   const glm::vec4 &color = glm::vec4(1.0f));
 
-    void setScene(Scene *scene);
-    Scene *getScene();
+    void SetScene(Scene *scene);
+    Scene *GetScene();
 
-    void setCamera(Camera *camera);
-    Camera *getCamera();
+    void SetCamera(Camera *camera);
+    Camera *GetCamera();
 
    private:
-    void initRenderer2D();
+    void InitRenderer2D();
 
     Scene *m_scene;
     Camera *m_camera;

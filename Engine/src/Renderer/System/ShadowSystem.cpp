@@ -7,44 +7,44 @@
 namespace SD {
 
 ShadowSystem::ShadowSystem() : System("Shadow") {
-    m_shadowShader = ShaderLibrary::instance().load("shaders/shadow.glsl");
+    m_shadowShader = ShaderLibrary::Instance().Load("shaders/shadow.glsl");
 }
 
-void ShadowSystem::onPush() {}
+void ShadowSystem::OnPush() {}
 
-void ShadowSystem::onPop() {}
+void ShadowSystem::OnPop() {}
 
-void ShadowSystem::onRender() {
-    auto scene = renderer->getScene();
+void ShadowSystem::OnRender() {
+    auto scene = renderer->GetScene();
     auto lightView = scene->view<TransformComponent, LightComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
-    renderer->device().setCullFace(Face::FRONT);
-    m_shadowShader->bind();
+    renderer->GetDevice().SetCullFace(Face::FRONT);
+    m_shadowShader->Bind();
     lightView.each([this, &modelView](const TransformComponent &transformComp,
                                       LightComponent &lightComp) {
         Light &light = lightComp.light;
-        if (!light.isCastShadow()) return;
+        if (!light.IsCastShadow()) return;
 
-        renderer->setRenderTarget(light.getRenderTarget());
-        light.getRenderTarget().getFramebuffer()->clearDepth();
-        light.computeLightSpaceMatrix(transformComp.transform,
-                                      renderer->getCamera());
-        m_shadowShader->setMat4("u_projectionView", light.getProjectionView());
+        renderer->SetRenderTarget(light.GetRenderTarget());
+        light.GetRenderTarget().GetFramebuffer()->ClearDepth();
+        light.ComputeLightSpaceMatrix(transformComp.transform,
+                                      renderer->GetCamera());
+        m_shadowShader->SetMat4("u_projectionView", light.GetProjectionView());
 
         modelView.each([this](const TransformComponent &transformComp,
                               const ModelComponent &modelComp) {
-            auto model = asset->get<Model>(modelComp.id);
-            m_shadowShader->setMat4(
-                "u_model", transformComp.transform.getWorldTransform());
+            auto model = asset->Get<Model>(modelComp.id);
+            m_shadowShader->SetMat4(
+                "u_model", transformComp.transform.GetWorldTransform());
             if (model) {
-                for (const auto &mesh : model->getMeshes()) {
-                    renderer->drawMesh(mesh);
+                for (const auto &mesh : model->GetMeshes()) {
+                    renderer->DrawMesh(mesh);
                 }
             }
         });
     });
-    renderer->device().setCullFace(Face::BACK);
+    renderer->GetDevice().SetCullFace(Face::BACK);
 }
 
 }  // namespace SD

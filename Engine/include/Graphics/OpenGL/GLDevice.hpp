@@ -9,32 +9,32 @@ class GLDevice : public Device {
    public:
     GLDevice();
 
-    void drawElements(MeshTopology topology, size_t count,
+    void DrawElements(MeshTopology topology, size_t count,
                       size_t offset) override;
 
-    void setClearColor(float r, float g, float b, float a) override;
+    void SetClearColor(float r, float g, float b, float a) override;
 
-    void clear(BufferBitMask bit) override;
+    void Clear(BufferBitMask bit) override;
 
-    void setViewport(int x, int y, int width, int height) override;
+    void SetViewport(int x, int y, int width, int height) override;
 
-    void setFramebuffer(Framebuffer *framebuffer) override;
+    void SetFramebuffer(Framebuffer *framebuffer) override;
 
-    void setPolygonMode(PolygonMode mode, Face face) override;
+    void SetPolygonMode(PolygonMode mode, Face face) override;
 
-    void setDepthMask(bool depthMask) override;
+    void SetDepthMask(bool depthMask) override;
 
-    void enable(Operation operation) override;
+    void Enable(Operation operation) override;
 
-    void disable(Operation operation) override;
+    void Disable(Operation operation) override;
 
-    void setCullFace(Face cullface) override;
+    void SetCullFace(Face cullface) override;
 
-    void setDepthfunc(DepthFunc depthFunc) override;
+    void SetDepthfunc(DepthFunc depthFunc) override;
 
-    void resetShaderState() override;
+    void ResetShaderState() override;
 
-    void blitFramebuffer(Framebuffer *src, uint32_t srcAttachment,
+    void BlitFramebuffer(Framebuffer *src, uint32_t srcAttachment,
                          Framebuffer *dst, uint32_t dstAttachment,
                          BufferBitMask mask, TextureFilter filter) override;
 };

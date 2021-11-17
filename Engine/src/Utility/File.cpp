@@ -7,7 +7,7 @@ namespace SD {
 
 namespace File {
 
-void read(const std::string &filePath, std::string &content) {
+void Read(const std::string &filePath, std::string &content) {
     std::ifstream file;
     file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     try {

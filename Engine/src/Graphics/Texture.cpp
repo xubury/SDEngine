@@ -4,16 +4,16 @@
 
 namespace SD {
 
-Ref<Texture> Texture::create(int width, int height, int samples,
+Ref<Texture> Texture::Create(int width, int height, int samples,
                              TextureType type, TextureFormat format,
                              TextureFormatType formatType, TextureWrap wrap,
                              TextureFilter filter,
                              TextureMipmapFilter mipmapFilter,
                              const void *data) {
     Ref<Texture> texture;
-    switch (getGraphicsAPI()) {
+    switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
-            texture = createRef<GLTexture>(width, height, samples, type, format,
+            texture = CreateRef<GLTexture>(width, height, samples, type, format,
                                            formatType, wrap, filter,
                                            mipmapFilter, data);
             break;
@@ -39,23 +39,23 @@ Texture::Texture(int width, int height, int samples, TextureType type,
       m_mipmapFilter(mipmapFilter) {}
 
 bool Texture::operator==(const Texture &other) const {
-    return getId() == other.getId();
+    return GetId() == other.GetId();
 }
 
 bool Texture::operator!=(const Texture &other) const {
     return !(*this == other);
 }
 
-int Texture::getWidth() const { return m_width; }
+int Texture::GetWidth() const { return m_width; }
 
-int Texture::getHeight() const { return m_height; }
+int Texture::GetHeight() const { return m_height; }
 
-int Texture::getSamples() const { return m_samples; }
+int Texture::GetSamples() const { return m_samples; }
 
-TextureType Texture::getType() const { return m_type; }
+TextureType Texture::GetType() const { return m_type; }
 
-TextureFormat Texture::getFormat() const { return m_format; }
+TextureFormat Texture::GetFormat() const { return m_format; }
 
-TextureFormatType Texture::getFormatType() const { return m_formatType; }
+TextureFormatType Texture::GetFormatType() const { return m_formatType; }
 
 }  // namespace SD

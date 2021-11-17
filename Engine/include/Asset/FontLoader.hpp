@@ -10,7 +10,7 @@ namespace SD {
 
 class SD_API FontLoader : public AssetLoaderBase {
    public:
-    Ref<void> loadAsset(const std::string &filePath) override;
+    Ref<void> LoadAsset(const std::string &filePath) override;
 
     ~FontLoader();
 

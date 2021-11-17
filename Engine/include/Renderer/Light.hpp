@@ -12,47 +12,47 @@ class SD_API Light {
    public:
     Light();
 
-    void setCastShadow(bool cast);
-    bool isCastShadow() const;
+    void SetCastShadow(bool cast);
+    bool IsCastShadow() const;
 
-    void setDirectional(bool directional);
-    bool isDirectional() const;
+    void SetDirectional(bool directional);
+    bool IsDirectional() const;
 
-    void setAmbient(const glm::vec3 &ambient);
-    const glm::vec3 &getAmbient() const;
+    void SetAmbient(const glm::vec3 &ambient);
+    const glm::vec3 &GetAmbient() const;
 
-    void setDiffuse(const glm::vec3 &diffuse);
-    const glm::vec3 &getDiffuse() const;
+    void SetDiffuse(const glm::vec3 &diffuse);
+    const glm::vec3 &GetDiffuse() const;
 
-    void setSpecular(const glm::vec3 &specular);
-    const glm::vec3 &getSpecular() const;
+    void SetSpecular(const glm::vec3 &specular);
+    const glm::vec3 &GetSpecular() const;
 
-    void setCutOff(float cutOff);
-    float getCutOff() const;
+    void SetCutOff(float cutOff);
+    float GetCutOff() const;
 
-    void setOuterCutOff(float outerCutOff);
-    float getOuterCutOff() const;
+    void SetOuterCutOff(float outerCutOff);
+    float GetOuterCutOff() const;
 
-    void setConstant(float constant);
-    float getConstant() const;
+    void SetConstant(float constant);
+    float GetConstant() const;
 
-    void setLinear(float linear);
-    float getLinear() const;
+    void SetLinear(float linear);
+    float GetLinear() const;
 
-    void setQuadratic(float quadratic);
-    float getQuadratic() const;
+    void SetQuadratic(float quadratic);
+    float GetQuadratic() const;
 
-    void createShadowMap();
-    void destroyShadowMap();
+    void CreateShadowMap();
+    void DestroyShadowMap();
 
-    const glm::mat4 &getProjectionView() const { return m_projectionView; }
+    const glm::mat4 &GetProjectionView() const { return m_projectionView; }
 
-    void computeLightSpaceMatrix(const Transform &transform,
+    void ComputeLightSpaceMatrix(const Transform &transform,
                                  const Camera *camera);
 
-    Texture *getShadowMap() const;
+    Texture *GetShadowMap() const;
 
-    RenderTarget &getRenderTarget() { return m_shadowTarget; };
+    RenderTarget &GetRenderTarget() { return m_shadowTarget; };
 
     template <typename Archive>
     void serialize(Archive &archive) {
@@ -62,7 +62,7 @@ class SD_API Light {
     }
 
    private:
-    static void computeBoundingBox(const Transform &transform,
+    static void ComputeBoundingBox(const Transform &transform,
                                    const Camera &camera, glm::vec3 &min,
                                    glm::vec3 &max);
     RenderTarget m_shadowTarget;

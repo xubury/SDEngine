@@ -14,27 +14,27 @@ ScenePanel::ScenePanel()
 
 ScenePanel::ScenePanel(Scene *scene) : m_scene(scene) {}
 
-void ScenePanel::reset() {
+void ScenePanel::Reset() {
     m_selectedEntity = {};
     m_selectedMaterialIdMap.clear();
 }
 
-void ScenePanel::setScene(Scene *scene) {
+void ScenePanel::SetScene(Scene *scene) {
     if (m_scene != scene) {
-        reset();
+        Reset();
     }
     m_scene = scene;
 }
 
-void ScenePanel::setSelectedEntity(Entity entity) { m_selectedEntity = entity; }
+void ScenePanel::SetSelectedEntity(Entity entity) { m_selectedEntity = entity; }
 
-Entity ScenePanel::getSelectedEntity() const { return m_selectedEntity; }
+Entity ScenePanel::GetSelectedEntity() const { return m_selectedEntity; }
 
-int ScenePanel::getGizmoMode() const { return m_gizmoMode; }
+int ScenePanel::GetGizmoMode() const { return m_gizmoMode; }
 
-int ScenePanel::getGizmoType() const { return m_gizmoType; }
+int ScenePanel::GetGizmoType() const { return m_gizmoType; }
 
-void ScenePanel::onImGui() {
+void ScenePanel::OnImGui() {
     if (m_scene == nullptr) {
         return;
     }
@@ -44,15 +44,15 @@ void ScenePanel::onImGui() {
     m_scene->each([&](auto entityID) {
         Entity entity{entityID, m_scene};
 
-        EntityDataComponent &data = entity.getComponent<EntityDataComponent>();
+        EntityDataComponent &data = entity.GetComponent<EntityDataComponent>();
         Entity parent(data.parent, m_scene);
         if (!parent) {
-            drawEntityNode(entity);
+            DrawEntityNode(entity);
         }
     });
 
     if (m_destroyEntity) {
-        m_scene->destroyEntity(m_destroyEntity);
+        m_scene->DestroyEntity(m_destroyEntity);
         if (m_selectedEntity == m_destroyEntity) m_selectedEntity = {};
         m_destroyEntity = {};
     }
@@ -63,7 +63,7 @@ void ScenePanel::onImGui() {
     // Right-click on blank space
     if (ImGui::BeginPopupContextWindow(0, 1, false)) {
         if (ImGui::MenuItem("Create Empty Entity"))
-            m_scene->createEntity("Empty Entity");
+            m_scene->CreateEntity("Empty Entity");
 
         ImGui::EndPopup();
     }
@@ -72,16 +72,16 @@ void ScenePanel::onImGui() {
 
     ImGui::Begin("Properties");
     if (m_selectedEntity) {
-        drawComponents(m_selectedEntity);
+        DrawComponents(m_selectedEntity);
     }
 
     ImGui::End();
 }
 
-void ScenePanel::drawEntityNode(Entity &entity) {
-    EntityDataComponent &data = entity.getComponent<EntityDataComponent>();
+void ScenePanel::DrawEntityNode(Entity &entity) {
+    EntityDataComponent &data = entity.GetComponent<EntityDataComponent>();
 
-    auto &tag = entity.getComponent<TagComponent>().tag;
+    auto &tag = entity.GetComponent<TagComponent>().tag;
 
     static ImGuiTreeNodeFlags base_flags =
         ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |
@@ -104,8 +104,8 @@ void ScenePanel::drawEntityNode(Entity &entity) {
             m_destroyEntity = entity;
         };
         if (ImGui::MenuItem("Create Empty Entity")) {
-            Entity newEntity = m_scene->createEntity("Empty Entity");
-            m_scene->addChildToEntity(entity, newEntity);
+            Entity newEntity = m_scene->CreateEntity("Empty Entity");
+            m_scene->AddChildToEntity(entity, newEntity);
         }
 
         ImGui::EndPopup();
@@ -114,7 +114,7 @@ void ScenePanel::drawEntityNode(Entity &entity) {
     if (opened) {
         for (entt::entity childId : data.children) {
             Entity child(childId, m_scene);
-            drawEntityNode(child);
+            DrawEntityNode(child);
         }
         ImGui::TreePop();
     }
@@ -127,8 +127,8 @@ static void drawComponent(const std::string &name, Entity entity,
         ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed |
         ImGuiTreeNodeFlags_SpanAvailWidth |
         ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
-    if (entity.hasComponent<T>()) {
-        auto &component = entity.getComponent<T>();
+    if (entity.HasComponent<T>()) {
+        auto &component = entity.GetComponent<T>();
         ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
 
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4, 4});
@@ -158,18 +158,18 @@ static void drawComponent(const std::string &name, Entity entity,
             ImGui::TreePop();
         }
 
-        if (removeComponent) entity.removeComponent<T>();
+        if (removeComponent) entity.RemoveComponent<T>();
     }
 }
 
-void ScenePanel::drawComponents(Entity &entity) {
-    if (entity.hasComponent<TagComponent>()) {
-        auto &id = entity.getComponent<IDComponent>().id;
+void ScenePanel::DrawComponents(Entity &entity) {
+    if (entity.HasComponent<TagComponent>()) {
+        auto &id = entity.GetComponent<IDComponent>().id;
         std::string idString = "Resouce Id: " + std::to_string(id);
         ImGui::TextUnformatted(idString.c_str());
     }
-    if (entity.hasComponent<TagComponent>()) {
-        auto &tag = entity.getComponent<TagComponent>().tag;
+    if (entity.HasComponent<TagComponent>()) {
+        auto &tag = entity.GetComponent<TagComponent>().tag;
 
         char buffer[256];
         memset(buffer, 0, sizeof(buffer));
@@ -184,29 +184,29 @@ void ScenePanel::drawComponents(Entity &entity) {
 
     if (ImGui::BeginPopup("AddComponent")) {
         if (ImGui::MenuItem("Model")) {
-            if (!m_selectedEntity.hasComponent<ModelComponent>())
-                m_selectedEntity.addComponent<ModelComponent>();
+            if (!m_selectedEntity.HasComponent<ModelComponent>())
+                m_selectedEntity.AddComponent<ModelComponent>();
             else
                 SD_CORE_WARN("This entity already has the Model Component!");
             ImGui::CloseCurrentPopup();
         }
         if (ImGui::MenuItem("Terrain")) {
-            if (!m_selectedEntity.hasComponent<TerrainComponent>())
-                m_selectedEntity.addComponent<TerrainComponent>();
+            if (!m_selectedEntity.HasComponent<TerrainComponent>())
+                m_selectedEntity.AddComponent<TerrainComponent>();
             else
                 SD_CORE_WARN("This entity already has the Terrain Component!");
             ImGui::CloseCurrentPopup();
         }
         if (ImGui::MenuItem("Light")) {
-            if (!m_selectedEntity.hasComponent<LightComponent>())
-                m_selectedEntity.addComponent<LightComponent>();
+            if (!m_selectedEntity.HasComponent<LightComponent>())
+                m_selectedEntity.AddComponent<LightComponent>();
             else
                 SD_CORE_WARN("This entity already has the Light Component!");
             ImGui::CloseCurrentPopup();
         }
         if (ImGui::MenuItem("Text")) {
-            if (!m_selectedEntity.hasComponent<TextComponent>())
-                m_selectedEntity.addComponent<TextComponent>();
+            if (!m_selectedEntity.HasComponent<TextComponent>())
+                m_selectedEntity.AddComponent<TextComponent>();
             else
                 SD_CORE_WARN("This entity already has the Text Component!");
             ImGui::CloseCurrentPopup();
@@ -228,20 +228,20 @@ void ScenePanel::drawComponents(Entity &entity) {
             ImGui::RadioButton("Rotate", &m_gizmoType, ImGuizmo::ROTATE);
             ImGui::SameLine();
             ImGui::RadioButton("Scale", &m_gizmoType, ImGuizmo::SCALE);
-            glm::vec3 position = component.transform.getWorldPosition();
+            glm::vec3 position = component.transform.GetWorldPosition();
             if (ImGui::DrawVec3Control("Translation", position)) {
-                component.transform.setWorldPosition(position);
+                component.transform.SetWorldPosition(position);
             }
 
             glm::vec3 rotation = glm::degrees(
-                glm::eulerAngles(component.transform.getWorldRotation()));
+                glm::eulerAngles(component.transform.GetWorldRotation()));
             if (ImGui::DrawVec3Control("Rotation", rotation)) {
-                component.transform.setWorldRotation(glm::radians(rotation));
+                component.transform.SetWorldRotation(glm::radians(rotation));
             }
 
-            glm::vec3 scale = component.transform.getWorldScale();
+            glm::vec3 scale = component.transform.GetWorldScale();
             if (ImGui::DrawVec3Control("Scale", scale, 1.0f)) {
-                component.transform.setWorldScale(scale);
+                component.transform.SetWorldScale(scale);
             }
         },
         false);
@@ -265,9 +265,9 @@ void ScenePanel::drawComponents(Entity &entity) {
 
         ImGui::ColorEdit3("Color", &mc.color[0]);
         ImVec2 size(64, 64);
-        auto model = asset->get<Model>(mc.id);
+        auto model = asset->Get<Model>(mc.id);
         if (model) {
-            drawMaterialsList(model->getMaterials(), size,
+            DrawMaterialsList(model->GetMaterials(), size,
                               &m_selectedMaterialIdMap[entity]);
         }
     });
@@ -289,49 +289,49 @@ void ScenePanel::drawComponents(Entity &entity) {
     drawComponent<LightComponent>(
         "Light", entity, [&](LightComponent &lightComp) {
             Light &light = lightComp.light;
-            glm::vec3 diffuse = light.getDiffuse();
+            glm::vec3 diffuse = light.GetDiffuse();
             if (ImGui::ColorEdit3("Diffuse", &diffuse[0])) {
-                light.setDiffuse(diffuse);
+                light.SetDiffuse(diffuse);
             }
-            glm::vec3 ambient = light.getAmbient();
+            glm::vec3 ambient = light.GetAmbient();
             if (ImGui::ColorEdit3("Ambient", &ambient[0])) {
-                light.setAmbient(ambient);
+                light.SetAmbient(ambient);
             }
-            glm::vec3 specular = light.getSpecular();
+            glm::vec3 specular = light.GetSpecular();
             if (ImGui::ColorEdit3("Specular", &specular[0])) {
-                light.setSpecular(specular);
+                light.SetSpecular(specular);
             }
-            bool isDirectional = light.isDirectional();
+            bool isDirectional = light.IsDirectional();
             if (ImGui::Checkbox("Directional", &isDirectional)) {
-                light.setDirectional(isDirectional);
+                light.SetDirectional(isDirectional);
             }
             ImGui::SameLine();
-            bool isCastShadow = light.isCastShadow();
+            bool isCastShadow = light.IsCastShadow();
             if (ImGui::Checkbox("Cast Shadow", &isCastShadow)) {
-                light.setCastShadow(isCastShadow);
+                light.SetCastShadow(isCastShadow);
             }
-            if (!light.isDirectional()) {
-                float constant = light.getConstant();
+            if (!light.IsDirectional()) {
+                float constant = light.GetConstant();
                 if (ImGui::SliderFloat("Constant", &constant, 0.f, 1.0f)) {
-                    light.setConstant(constant);
+                    light.SetConstant(constant);
                 }
-                float linear = light.getLinear();
+                float linear = light.GetLinear();
                 if (ImGui::SliderFloat("Linear", &linear, 0.f, 1.0f)) {
-                    light.setLinear(linear);
+                    light.SetLinear(linear);
                 }
-                float quadratic = light.getQuadratic();
+                float quadratic = light.GetQuadratic();
                 if (ImGui::SliderFloat("Quadratic", &quadratic, 0.0002f,
                                        0.1f)) {
-                    light.setQuadratic(quadratic);
+                    light.SetQuadratic(quadratic);
                 }
-                float cutOff = glm::degrees(light.getCutOff());
+                float cutOff = glm::degrees(light.GetCutOff());
                 if (ImGui::SliderFloat("cutOff", &cutOff, 0.f, 89.f)) {
-                    light.setCutOff(glm::radians(cutOff));
+                    light.SetCutOff(glm::radians(cutOff));
                 }
-                float outerCutOff = glm::degrees(light.getOuterCutOff());
+                float outerCutOff = glm::degrees(light.GetOuterCutOff());
                 if (ImGui::SliderFloat("outerCutOff", &outerCutOff, 1.0f,
                                        90.0f)) {
-                    light.setOuterCutOff(glm::radians(outerCutOff));
+                    light.SetOuterCutOff(glm::radians(outerCutOff));
                 }
             }
         });
@@ -340,7 +340,7 @@ void ScenePanel::drawComponents(Entity &entity) {
         static bool fileDialogOpen = false;
         static ImFileDialogInfo fileDialogInfo;
         char buffer[256];
-        std::string utf8Str = wstringToString(textComp.text);
+        std::string utf8Str = WstringToString(textComp.text);
         memset(buffer, 0, sizeof(buffer));
         std::strncpy(buffer, utf8Str.c_str(), utf8Str.size());
         std::string path = fileDialogInfo.resultPath.string();
@@ -360,7 +360,7 @@ void ScenePanel::drawComponents(Entity &entity) {
         }
         ImGui::Text("Text Content:");
         if (ImGui::InputText("##TextEdit", buffer, sizeof(buffer))) {
-            textComp.text = stringToWstring(buffer);
+            textComp.text = StringToWstring(buffer);
         }
         ImGui::Text("Pixel Size");
         ImGui::InputInt("##PixelSize", &textComp.pixelSize);
@@ -369,7 +369,7 @@ void ScenePanel::drawComponents(Entity &entity) {
     });
 }
 
-void ScenePanel::drawMaterialsList(const std::vector<Material> &materials,
+void ScenePanel::DrawMaterialsList(const std::vector<Material> &materials,
                                    const ImVec2 &size, int *selected) {
     int itemSize = materials.size();
     if (!itemSize) return;
@@ -391,8 +391,8 @@ void ScenePanel::drawMaterialsList(const std::vector<Material> &materials,
 
     float width = ImGui::GetWindowWidth();
     const auto &material = materials[*selected];
-    for (const auto &[type, texture] : material.getTextures()) {
-        ImGui::TextUnformatted(getMaterialName(type).c_str());
+    for (const auto &[type, texture] : material.GetTextures()) {
+        ImGui::TextUnformatted(GetMaterialName(type).c_str());
         ImGui::SameLine(width / 2);
         ImGui::DrawTexture(*texture, size);
     }

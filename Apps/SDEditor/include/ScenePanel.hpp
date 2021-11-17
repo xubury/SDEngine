@@ -15,16 +15,16 @@ class ScenePanel {
     ScenePanel();
     ScenePanel(Scene *scene);
 
-    void setScene(Scene *scene);
+    void SetScene(Scene *scene);
 
-    void setSelectedEntity(Entity entity);
+    void SetSelectedEntity(Entity entity);
 
-    Entity getSelectedEntity() const;
+    Entity GetSelectedEntity() const;
 
-    void onImGui();
+    void OnImGui();
 
-    int getGizmoMode() const;
-    int getGizmoType() const;
+    int GetGizmoMode() const;
+    int GetGizmoType() const;
 
     SET_APP_VARS;
 
@@ -33,14 +33,14 @@ class ScenePanel {
     MAKE_APP_VARS;
 
    private:
-    void drawEntityNode(Entity &entity);
+    void DrawEntityNode(Entity &entity);
 
-    void drawComponents(Entity &entity);
+    void DrawComponents(Entity &entity);
 
-    void drawMaterialsList(const std::vector<Material> &materials,
+    void DrawMaterialsList(const std::vector<Material> &materials,
                            const ImVec2 &size, int *selected);
 
-    void reset();
+    void Reset();
 
     Scene *m_scene;
     Entity m_selectedEntity;

@@ -24,59 +24,59 @@ class SD_API Layer {
 
     Layer &operator=(const Layer &) = delete;
 
-    virtual void onPush() {}
+    virtual void OnPush() {}
 
-    virtual void onPop() {}
+    virtual void OnPop() {}
 
-    virtual void onTick(float) {}
+    virtual void OnTick(float) {}
 
-    virtual void onRender() {}
+    virtual void OnRender() {}
 
-    virtual void onImGui() {}
+    virtual void OnImGui() {}
 
-    virtual void onEventProcess(const Event &) {}
+    virtual void OnEventProcess(const Event &) {}
 
-    virtual void onEventsProcess() {}
+    virtual void OnEventsProcess() {}
 
-    void setBlockEvent(bool block) { m_blockEvent = block; }
-    bool isBlockEvent() const { return m_blockEvent; }
+    void SetBlockEvent(bool block) { m_blockEvent = block; }
+    bool IsBlockEvent() const { return m_blockEvent; }
 
     template <typename SYSTEM, typename... ARGS>
-    void pushSystem(ARGS &&...args) {
+    void PushSystem(ARGS &&...args) {
         SYSTEM *system = new SYSTEM(std::forward<ARGS>(args)...);
-        pushSystem(system);
+        PushSystem(system);
     }
 
-    void pushSystem(System *system) {
-        system->setAppVars(makeAppVars());
-        system->onPush();
-        m_systems.push(system);
+    void PushSystem(System *system) {
+        system->SetAppVars(MakeAppVars());
+        system->OnPush();
+        m_systems.Push(system);
     }
 
     template <typename SYSTEM>
-    SYSTEM *getSystem(const std::string &name) {
+    SYSTEM *GetSystem(const std::string &name) {
         for (auto iter = m_systems.begin(); iter != m_systems.end(); ++iter) {
-            if ((*iter)->getName() == name) {
+            if ((*iter)->GetName() == name) {
                 return dynamic_cast<SYSTEM *>(*iter);
             }
         }
         return nullptr;
     }
 
-    void popSystem(System *system) {
-        system->onPop();
-        m_systems.pop(system);
+    void PopSystem(System *system) {
+        system->OnPop();
+        m_systems.Pop(system);
     }
 
-    void destroySystem(System *system) {
-        popSystem(system);
+    void DestroySystem(System *system) {
+        PopSystem(system);
         delete system;
     }
 
-    const EventStack<System *> &getSystems() const { return m_systems; }
-    EventStack<System *> &getSystems() { return m_systems; }
+    const EventStack<System *> &GetSystems() const { return m_systems; }
+    EventStack<System *> &GetSystems() { return m_systems; }
 
-    const std::string &getName() const { return m_name; }
+    const std::string &GetName() const { return m_name; }
 
    protected:
     APP_VARS

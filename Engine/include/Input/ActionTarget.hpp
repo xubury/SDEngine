@@ -25,17 +25,17 @@ class ActionTarget {
 
     ActionTarget(const ActionMap<T> &map);
 
-    bool processEvent(const Event &event) const;
+    bool ProcessEvent(const Event &event) const;
 
-    void processEvents() const;
+    void ProcessEvents() const;
 
-    void bind(const Action &acton, const FuncType &callback);
+    void Bind(const Action &acton, const FuncType &callback);
 
-    void bind(Action &&action, const FuncType &callback);
+    void Bind(Action &&action, const FuncType &callback);
 
-    void bind(const T &key, const FuncType &callback);
+    void Bind(const T &key, const FuncType &callback);
 
-    void unbind(const T &key);
+    void Unbind(const T &key);
 
    private:
     std::list<KeyPair> m_eventRealTime;
@@ -50,7 +50,7 @@ template <typename T>
 ActionTarget<T>::ActionTarget(const ActionMap<T> &map) : m_actionMap(map) {}
 
 template <typename T>
-bool ActionTarget<T>::processEvent(const Event &event) const {
+bool ActionTarget<T>::ProcessEvent(const Event &event) const {
     for (const auto &[action, func] : m_eventPollAction) {
         if (action == event) {
             func(event);
@@ -58,7 +58,7 @@ bool ActionTarget<T>::processEvent(const Event &event) const {
         }
     }
     for (const auto &[key, func] : m_eventPoll) {
-        if (m_actionMap.get(key) == event) {
+        if (m_actionMap.Get(key) == event) {
             func(event);
             return true;
         }
@@ -67,23 +67,23 @@ bool ActionTarget<T>::processEvent(const Event &event) const {
 }
 
 template <typename T>
-void ActionTarget<T>::processEvents() const {
+void ActionTarget<T>::ProcessEvents() const {
     for (const auto &[action, func] : m_eventRealTimeAction) {
-        if (action.test()) {
+        if (action.Test()) {
             func(action.m_event);
         }
     }
     for (const auto &[key, func] : m_eventRealTime) {
-        const Action &action = m_actionMap.get(key);
-        if (action.test()) {
+        const Action &action = m_actionMap.Get(key);
+        if (action.Test()) {
             func(action.m_event);
         }
     }
 }
 
 template <typename T>
-void ActionTarget<T>::bind(const T &key, const FuncType &callback) {
-    const Action &action = m_actionMap.get(key);
+void ActionTarget<T>::Bind(const T &key, const FuncType &callback) {
+    const Action &action = m_actionMap.Get(key);
     if (action.m_type & Action::Type::REAL_TIME) {
         m_eventRealTime.emplace_back(key, callback);
     } else {
@@ -92,7 +92,7 @@ void ActionTarget<T>::bind(const T &key, const FuncType &callback) {
 }
 
 template <typename T>
-void ActionTarget<T>::bind(const Action &action, const FuncType &callback) {
+void ActionTarget<T>::Bind(const Action &action, const FuncType &callback) {
     if (action.m_type & Action::Type::REAL_TIME) {
         m_eventRealTimeAction.emplace_back(action, callback);
     } else {
@@ -101,7 +101,7 @@ void ActionTarget<T>::bind(const Action &action, const FuncType &callback) {
 }
 
 template <typename T>
-void ActionTarget<T>::bind(Action &&action, const FuncType &callback) {
+void ActionTarget<T>::Bind(Action &&action, const FuncType &callback) {
     if (action.m_type & Action::Type::REAL_TIME) {
         m_eventRealTimeAction.emplace_back(std::move(action), callback);
     } else {
@@ -110,8 +110,8 @@ void ActionTarget<T>::bind(Action &&action, const FuncType &callback) {
 }
 
 template <typename T>
-void ActionTarget<T>::unbind(const T &key) {
-    const Action &action = m_actionMap.get(key);
+void ActionTarget<T>::Unbind(const T &key) {
+    const Action &action = m_actionMap.Get(key);
     auto removeFunc = [&key](const ActionPair &pair) -> bool {
         return pair.first == key;
     };

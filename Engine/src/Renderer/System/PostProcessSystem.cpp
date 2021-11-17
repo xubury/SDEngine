@@ -12,19 +12,19 @@ PostProcessSystem::PostProcessSystem(RenderTarget *target, int width,
       m_exposure(1.2),
       m_gammaCorrection(1.2) {
     for (int i = 0; i < 2; ++i) {
-        m_blurTarget[i].addTexture(Texture::create(
+        m_blurTarget[i].AddTexture(Texture::Create(
             width, height, 1, TextureType::TEX_2D, TextureFormat::RGBA,
             TextureFormatType::FLOAT, TextureWrap::BORDER,
             TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
-        m_blurTarget[i].createFramebuffer();
+        m_blurTarget[i].CreateFramebuffer();
     }
-    m_postTarget.addTexture(Texture::create(
+    m_postTarget.AddTexture(Texture::Create(
         width, height, 1, TextureType::TEX_2D, TextureFormat::RGBA,
         TextureFormatType::FLOAT, TextureWrap::EDGE, TextureFilter::LINEAR,
         TextureMipmapFilter::LINEAR));
-    m_postTarget.createFramebuffer();
-    m_blurShader = ShaderLibrary::instance().load("shaders/blur.glsl");
-    m_postShader = ShaderLibrary::instance().load("shaders/postProcess.glsl");
+    m_postTarget.CreateFramebuffer();
+    m_blurShader = ShaderLibrary::Instance().Load("shaders/blur.glsl");
+    m_postShader = ShaderLibrary::Instance().Load("shaders/postProcess.glsl");
     const float quadVertices[] = {
         -1.0f, -1.0f, 0.f, 0.f,  0.f,   // bottom left
         1.0f,  -1.0f, 0.f, 1.0f, 0.f,   // bottom right
@@ -32,94 +32,96 @@ PostProcessSystem::PostProcessSystem(RenderTarget *target, int width,
         -1.0f, 1.0f,  0.f, 0.f,  1.0f,  // top left
     };
     const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
-    auto buffer = VertexBuffer::create(quadVertices, sizeof(quadVertices),
+    auto buffer = VertexBuffer::Create(quadVertices, sizeof(quadVertices),
                                        BufferIOType::STATIC);
-    auto indexBuffer = IndexBuffer::create(indices, 6, BufferIOType::STATIC);
-    m_quad = VertexArray::create();
+    auto indexBuffer = IndexBuffer::Create(indices, 6, BufferIOType::STATIC);
+    m_quad = VertexArray::Create();
     VertexBufferLayout layout;
-    layout.push(BufferDataType::FLOAT, 3);
-    layout.push(BufferDataType::FLOAT, 2);
-    m_quad->addVertexBuffer(buffer, layout);
-    m_quad->setIndexBuffer(indexBuffer);
+    layout.Push(BufferDataType::FLOAT, 3);
+    layout.Push(BufferDataType::FLOAT, 2);
+    m_quad->AddVertexBuffer(buffer, layout);
+    m_quad->SetIndexBuffer(indexBuffer);
 }
 
-void PostProcessSystem::onPush() {
-    dispatcher->subscribe(this, &PostProcessSystem::onSizeEvent);
+void PostProcessSystem::OnPush() {
+    dispatcher->Subscribe(this, &PostProcessSystem::OnSizeEvent);
 }
 
-void PostProcessSystem::onPop() { dispatcher->unsubscribe<WindowSizeEvent>(this); }
+void PostProcessSystem::OnPop() {
+    dispatcher->Unsubscribe<WindowSizeEvent>(this);
+}
 
-void PostProcessSystem::onRender() {
-    renderer->device().setDepthMask(false);
-    renderer->device().blitFramebuffer(
-        m_target->getFramebuffer(), 0, m_postTarget.getFramebuffer(), 0,
+void PostProcessSystem::OnRender() {
+    renderer->GetDevice().SetDepthMask(false);
+    renderer->GetDevice().BlitFramebuffer(
+        m_target->GetFramebuffer(), 0, m_postTarget.GetFramebuffer(), 0,
         BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::LINEAR);
     if (m_isBloom) {
-        renderBlur();
+        RenderBlur();
     }
-    renderPost();
-    renderer->device().setDepthMask(true);
+    RenderPost();
+    renderer->GetDevice().SetDepthMask(true);
 }
 
-void PostProcessSystem::onSizeEvent(const WindowSizeEvent &event) {
+void PostProcessSystem::OnSizeEvent(const WindowSizeEvent &event) {
     for (int i = 0; i < 2; ++i) {
-        m_blurTarget[i].resize(event.width, event.height);
+        m_blurTarget[i].Resize(event.width, event.height);
     }
-    m_postTarget.resize(event.width, event.height);
+    m_postTarget.Resize(event.width, event.height);
 }
 
-void PostProcessSystem::renderBlur() {
+void PostProcessSystem::RenderBlur() {
     const int amount = 10;
     bool horizontal = true;
-    m_blurShader->bind();
+    m_blurShader->Bind();
     for (int i = 0; i < amount; ++i) {
         const int inputId = horizontal;
         const int outputId = !horizontal;
-        renderer->setRenderTarget(m_blurTarget[outputId]);
-        m_blurResult = m_blurTarget[outputId].getTexture();
-        m_blurShader->setBool("u_horizontal", horizontal);
-        m_blurShader->setTexture("u_image",
-                                 i == 0 ? m_postTarget.getTexture()
-                                        : m_blurTarget[inputId].getTexture());
-        renderer->submit(*m_quad, MeshTopology::TRIANGLES,
-                         m_quad->getIndexBuffer()->getCount(), 0);
+        renderer->SetRenderTarget(m_blurTarget[outputId]);
+        m_blurResult = m_blurTarget[outputId].GetTexture();
+        m_blurShader->SetBool("u_horizontal", horizontal);
+        m_blurShader->SetTexture("u_image",
+                                 i == 0 ? m_postTarget.GetTexture()
+                                        : m_blurTarget[inputId].GetTexture());
+        renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
+                         m_quad->GetIndexBuffer()->GetCount(), 0);
         horizontal = !horizontal;
     }
 }
 
-void PostProcessSystem::renderPost() {
-    renderer->setRenderTarget(*m_target);
+void PostProcessSystem::RenderPost() {
+    renderer->SetRenderTarget(*m_target);
 
-    m_postShader->setBool("u_bloom", m_isBloom);
-    m_postShader->setFloat("u_bloomFactor", m_bloom);
-    m_postShader->setTexture("u_blur", m_blurResult);
+    m_postShader->SetBool("u_bloom", m_isBloom);
+    m_postShader->SetFloat("u_bloomFactor", m_bloom);
+    m_postShader->SetTexture("u_blur", m_blurResult);
 
-    m_postShader->setTexture("u_lighting", m_postTarget.getTexture());
-    m_postShader->setFloat("u_exposure", m_exposure);
+    m_postShader->SetTexture("u_lighting", m_postTarget.GetTexture());
+    m_postShader->SetFloat("u_exposure", m_exposure);
 
-    m_postShader->setFloat("u_gamma", m_gammaCorrection);
+    m_postShader->SetFloat("u_gamma", m_gammaCorrection);
 
-    m_postShader->bind();
-    renderer->submit(*m_quad, MeshTopology::TRIANGLES,
-                     m_quad->getIndexBuffer()->getCount(), 0);
+    m_postShader->Bind();
+    renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
+                     m_quad->GetIndexBuffer()->GetCount(), 0);
 }
 
-void PostProcessSystem::setExposure(float exposure) { m_exposure = exposure; }
+void PostProcessSystem::SetExposure(float exposure) { m_exposure = exposure; }
 
-float PostProcessSystem::getExposure() { return m_exposure; }
+float PostProcessSystem::GetExposure() { return m_exposure; }
 
-void PostProcessSystem::setBloom(bool isBloom) { m_isBloom = isBloom; }
+void PostProcessSystem::SetBloom(bool isBloom) { m_isBloom = isBloom; }
 
-bool PostProcessSystem::getBloom() { return m_isBloom; }
+bool PostProcessSystem::GetBloom() { return m_isBloom; }
 
-void PostProcessSystem::setBloomFactor(float bloom) { m_bloom = bloom; }
+void PostProcessSystem::SetBloomFactor(float bloom) { m_bloom = bloom; }
 
-float PostProcessSystem::getBloomFactor() { return m_bloom; }
+float PostProcessSystem::GetBloomFactor() { return m_bloom; }
 
-void PostProcessSystem::setGammaCorrection(float gamma) {
+void PostProcessSystem::SetGammaCorrection(float gamma) {
     m_gammaCorrection = gamma;
 }
 
-float PostProcessSystem::getGammaCorrection() { return m_gammaCorrection; }
+float PostProcessSystem::GetGammaCorrection() { return m_gammaCorrection; }
 
 }  // namespace SD

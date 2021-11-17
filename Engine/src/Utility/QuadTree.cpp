@@ -29,7 +29,7 @@ QuadTree::QuadTree(const Rect &bound, uint32_t capacity, uint32_t maxLevel)
 }
 
 QuadTree::~QuadTree() {
-    clear();
+    Clear();
     for (int i = 0; i < 4; ++i) {
         if (m_children[i]) {
             delete m_children[i];
@@ -37,68 +37,68 @@ QuadTree::~QuadTree() {
     }
 }
 
-bool QuadTree::insert(Collidable *obj) {
+bool QuadTree::Insert(Collidable *obj) {
     if (obj->qt != nullptr) return false;
 
     if (!m_isLeaf) {
-        QuadTree *child = getChild(obj->bound);
+        QuadTree *child = GetChild(obj->bound);
         if (child) {
-            return child->insert(obj);
+            return child->Insert(obj);
         }
     }
     m_objects.push_back(obj);
     obj->qt = this;
 
     if (m_isLeaf && m_level < m_maxLevel && m_objects.size() >= m_capacity) {
-        subdivide();
-        update(obj);
+        Subdivide();
+        Update(obj);
     }
     return true;
 }
 
-bool QuadTree::remove(Collidable *obj) {
+bool QuadTree::Remove(Collidable *obj) {
     if (obj->qt == nullptr) return false;
-    if (obj->qt != this) return obj->qt->remove(obj);
+    if (obj->qt != this) return obj->qt->Remove(obj);
 
     auto iter = std::find(m_objects.begin(), m_objects.end(), obj);
     if (iter != m_objects.end()) {
         m_objects.erase(iter);
         obj->qt = nullptr;
-        discardEmptyBuckets();
+        DiscardEmptyBuckets();
         return true;
     }
     return false;
 }
 
-bool QuadTree::update(Collidable *obj) {
-    if (!remove(obj)) return false;
+bool QuadTree::Update(Collidable *obj) {
+    if (!Remove(obj)) return false;
 
-    if (m_parent != nullptr && !m_bound.contains(obj->bound)) {
-        return m_parent->insert(obj);
+    if (m_parent != nullptr && !m_bound.Contains(obj->bound)) {
+        return m_parent->Insert(obj);
     }
     if (!m_isLeaf) {
-        QuadTree *child = getChild(obj->bound);
+        QuadTree *child = GetChild(obj->bound);
         if (child) {
-            return child->insert(obj);
+            return child->Insert(obj);
         }
     }
-    return insert(obj);
+    return Insert(obj);
 }
 
-void QuadTree::clear() {
+void QuadTree::Clear() {
     for (auto &obj : m_objects) {
         obj->qt = nullptr;
     }
     m_objects.clear();
     if (!m_isLeaf) {
         for (QuadTree *child : m_children) {
-            child->clear();
+            child->Clear();
         }
         m_isLeaf = true;
     }
 }
 
-void QuadTree::subdivide() {
+void QuadTree::Subdivide() {
     float width = m_bound.width * 0.5f;
     float height = m_bound.height * 0.5f;
     float x = 0, y = 0;
@@ -129,33 +129,33 @@ void QuadTree::subdivide() {
     m_isLeaf = false;
 }
 
-void QuadTree::discardEmptyBuckets() {
+void QuadTree::DiscardEmptyBuckets() {
     if (m_objects.size()) return;
     if (!m_isLeaf) {
         for (QuadTree *child : m_children)
             if (!child->m_isLeaf || child->m_objects.size()) return;
     }
-    clear();
-    if (m_parent != nullptr) m_parent->discardEmptyBuckets();
+    Clear();
+    if (m_parent != nullptr) m_parent->DiscardEmptyBuckets();
 }
 
-QuadTree *QuadTree::getChild(const Rect &bound) const {
-    bool left = bound.x + bound.width < m_bound.getRight();
-    bool right = bound.x > m_bound.getRight();
+QuadTree *QuadTree::GetChild(const Rect &bound) const {
+    bool left = bound.x + bound.width < m_bound.GetRight();
+    bool right = bound.x > m_bound.GetRight();
 
-    if (bound.y + bound.height < m_bound.getTop()) {
+    if (bound.y + bound.height < m_bound.GetTop()) {
         if (left) return m_children[1];   // Top left
         if (right) return m_children[0];  // Top right
-    } else if (bound.y > m_bound.getTop()) {
+    } else if (bound.y > m_bound.GetTop()) {
         if (left) return m_children[2];   // Bottom left
         if (right) return m_children[3];  // Bottom right
     }
     return nullptr;  // Cannot contain boundary -- too large
 }
 
-bool QuadTree::isLeaf() const { return m_isLeaf; }
+bool QuadTree::IsLeaf() const { return m_isLeaf; }
 
-const std::array<QuadTree *, 4> &QuadTree::getChildren() const {
+const std::array<QuadTree *, 4> &QuadTree::GetChildren() const {
     return m_children;
 }
 

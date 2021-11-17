@@ -1,7 +1,7 @@
 # SDEngine
 Simple and Direct Engine
 
-## Requirement
+## Compile Requirement
 - SDL2
 - GLEW
 - glm
@@ -19,6 +19,7 @@ Simple and Direct Engine
 - [ ] Event bus
 - [ ] Ini parser
 - [ ] Profile System
+- [ ] Gui System
 - [ ] Script System
 - [ ] Audio System
 - [ ] Physics

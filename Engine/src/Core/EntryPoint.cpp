@@ -3,9 +3,9 @@
 #include "Core/EntryPoint.hpp"
 
 int main(int, char **) {
-    auto app = SD::createApp();
-    app->onInit();
-    app->run();
+    auto app = SD::CreateApp();
+    app->OnInit();
+    app->Run();
     delete app;
     return 0;
 }

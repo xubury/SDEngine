@@ -9,7 +9,7 @@
 
 namespace SD {
 
-inline SD_API std::wstring stringToWstring(const std::string &t_str) {
+inline SD_API std::wstring StringToWstring(const std::string &t_str) {
     // setup converter
     typedef std::codecvt_utf8<wchar_t> convert_type;
     std::wstring_convert<convert_type, wchar_t> converter;
@@ -18,7 +18,7 @@ inline SD_API std::wstring stringToWstring(const std::string &t_str) {
     return converter.from_bytes(t_str);
 }
 
-inline SD_API std::string wstringToString(const std::wstring &wstr) {
+inline SD_API std::string WstringToString(const std::wstring &wstr) {
     // setup converter
     typedef std::codecvt_utf8<wchar_t> convert_type;
     std::wstring_convert<convert_type, wchar_t> converter;

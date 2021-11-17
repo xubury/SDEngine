@@ -15,18 +15,18 @@ struct Rect {
     float y;
     float width;
     float height;
-    bool contains(const Rect &other) const;
-    bool intersects(const Rect &other) const;
-    float getLeft() const;
-    float getTop() const;
-    float getRight() const;
-    float getBottom() const;
+    bool Contains(const Rect &other) const;
+    bool Intersects(const Rect &other) const;
+    float GetLeft() const;
+    float GetTop() const;
+    float GetRight() const;
+    float GetBottom() const;
 
     Rect(float x = 0, float y = 0, float width = 0, float height = 0);
 };
 
 template <glm::length_t L, typename T, glm::qualifier Q>
-inline void baryCentric(const glm::vec<L, T, Q> &a, const glm::vec<L, T, Q> &b,
+inline void BaryCentric(const glm::vec<L, T, Q> &a, const glm::vec<L, T, Q> &b,
                         const glm::vec<L, T, Q> &c,
                         const glm::vec<L, T, Q> &pos, float &u, float &v,
                         float &w) {

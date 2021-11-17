@@ -9,11 +9,11 @@ class SD_API SpriteRenderSystem : public System {
    public:
     SpriteRenderSystem(RenderTarget *target);
 
-    void onPush() override;
+    void OnPush() override;
 
-    void onPop() override;
+    void OnPop() override;
 
-    void onRender() override;
+    void OnRender() override;
 
    private:
     RenderTarget *m_target;

@@ -13,7 +13,7 @@ Action::Action(Keycode key, int type) : m_type(type) {
 }
 
 Action::Action(Scancode scancode, int type) : m_type(type) {
-    m_event.key.keycode = getKeycodeFromScancode(scancode);
+    m_event.key.keycode = GetKeycodeFromScancode(scancode);
     m_event.type = Event::EventType::KEY_PRESSED;
 }
 
@@ -53,22 +53,22 @@ bool Action::operator==(const Event &event) const {
     return res;
 }
 
-bool Action::test() const {
+bool Action::Test() const {
     bool res = false;
     // TODO:other detect (joystick) need to be implemented
     if (m_event.type == Event::EventType::KEY_PRESSED) {
         if (m_type & Type::PRESSED) {
-            res = Input::isKeyPressed(m_event.key.keycode);
+            res = Input::IsKeyPressed(m_event.key.keycode);
         }
         if (m_type & Type::DOWN) {
-            res = Input::isKeyDown(m_event.key.keycode);
+            res = Input::IsKeyDown(m_event.key.keycode);
         }
     } else if (m_event.type == Event::EventType::MOUSE_BUTTON_PRESSED) {
         if (m_type & Type::PRESSED) {
-            res = Input::isMousePressed(m_event.mouseButton.button);
+            res = Input::IsMousePressed(m_event.mouseButton.button);
         }
         if (m_type & Type::DOWN) {
-            res = Input::isMouseDown(m_event.mouseButton.button);
+            res = Input::IsMouseDown(m_event.mouseButton.button);
         }
     }
     return res;

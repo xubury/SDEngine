@@ -15,21 +15,21 @@ struct SD_API VertexBufferLayoutElement {
     bool normalized;
 };
 
-uint32_t getSizeOfType(BufferDataType type);
+uint32_t GetSizeOfType(BufferDataType type);
 
 class SD_API VertexBufferLayout {
    public:
     VertexBufferLayout(unsigned instanceStride = 0);
 
-    void push(BufferDataType type, uint32_t count, bool normalized = false);
+    void Push(BufferDataType type, uint32_t count, bool normalized = false);
 
-    void clear();
+    void Clear();
 
-    const std::vector<VertexBufferLayoutElement>& getElements() const;
+    const std::vector<VertexBufferLayoutElement>& GetElements() const;
 
-    uint32_t getStride() const;
+    uint32_t GetStride() const;
 
-    uint32_t getInstanceStride() const;
+    uint32_t GetInstanceStride() const;
 
    private:
     std::vector<VertexBufferLayoutElement> m_elements;
@@ -37,10 +37,10 @@ class SD_API VertexBufferLayout {
     uint32_t m_instanceStride;
 };
 
-inline VertexBufferLayout makeLayout(BufferDataType type, uint32_t count,
+inline VertexBufferLayout MakeLayout(BufferDataType type, uint32_t count,
                                      uint32_t instanceStride = 0) {
     VertexBufferLayout layout(instanceStride);
-    layout.push(type, count);
+    layout.Push(type, count);
     return layout;
 }
 

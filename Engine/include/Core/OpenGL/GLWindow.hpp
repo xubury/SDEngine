@@ -12,7 +12,7 @@ class SD_API GLWindow : public Window {
 
     ~GLWindow();
 
-    void *getGraphicsContext() override;
+    void *GetGraphicsContext() override;
 
    private:
     void *m_context;

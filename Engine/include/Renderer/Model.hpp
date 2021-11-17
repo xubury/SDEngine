@@ -10,19 +10,19 @@ class SD_API Model {
    public:
     Model() = default;
 
-    const std::vector<Mesh> &getMeshes() const { return m_meshes; };
-    std::vector<Mesh> &getMeshes() { return m_meshes; };
+    const std::vector<Mesh> &GetMeshes() const { return m_meshes; };
+    std::vector<Mesh> &GetMeshes() { return m_meshes; };
 
-    const std::vector<Material> &getMaterial() const { return m_materials; };
-    std::vector<Material> &getMaterials() { return m_materials; };
+    const std::vector<Material> &GetMaterial() const { return m_materials; };
+    std::vector<Material> &GetMaterials() { return m_materials; };
 
-    void addMesh(const Mesh &mesh);
-    void addMesh(Mesh &&mesh);
+    void AddMesh(const Mesh &mesh);
+    void AddMesh(Mesh &&mesh);
 
-    void addMaterial(const Material &material);
-    void addMaterial(Material &&material);
+    void AddMaterial(const Material &material);
+    void AddMaterial(Material &&material);
 
-    void clear();
+    void Clear();
 
    private:
     std::vector<Mesh> m_meshes;

@@ -12,11 +12,11 @@ class ProfileSystem : public System {
    public:
     ProfileSystem(RenderTarget *target, int width, int height);
 
-    void onPush() override;
-    void onPop() override;
-    void onTick(float dt) override;
-    void onRender() override;
-    void onSizeEvent(const WindowSizeEvent &event);
+    void OnPush() override;
+    void OnPop() override;
+    void OnTick(float dt) override;
+    void OnRender() override;
+    void OnSizeEvent(const WindowSizeEvent &event);
 
    private:
     RenderTarget *m_target;
