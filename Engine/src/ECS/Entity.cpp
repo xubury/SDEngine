@@ -9,7 +9,9 @@ Entity::Entity() : m_entityHandle(entt::null), m_scene(nullptr) {}
 Entity::Entity(entt::entity handle, Scene *scene)
     : m_entityHandle(handle), m_scene(scene) {}
 
-Entity::operator bool() const { return m_entityHandle != entt::null; }
+Entity::operator bool() const {
+    return m_entityHandle != entt::null && m_scene != nullptr;
+}
 
 Entity::operator entt::entity() const { return m_entityHandle; }
 

@@ -5,6 +5,8 @@
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGuizmo.h"
 
+#define ECS_MOVEENTITY "ECS MOVEENTITY"
+
 namespace SD {
 
 ScenePanel::ScenePanel()
@@ -67,6 +69,26 @@ void ScenePanel::OnImGui() {
 
         ImGui::EndPopup();
     }
+    ImGuiID id = ImGui::GetWindowDockID();
+    ImVec2 min = ImVec2(ImGui::GetWindowPos().x + ImGui::GetCursorPosX(),
+                        ImGui::GetWindowPos().y + ImGui::GetCursorPosY());
+    ImVec2 max = ImVec2(min.x + ImGui::GetWindowSize().x,
+                        min.y + ImGui::GetWindowSize().y);
+
+    if (ImGui::BeginDragDropTargetCustom(ImRect(min, max), id)) {
+        if (const ImGuiPayload *payload =
+                ImGui::AcceptDragDropPayload(ECS_MOVEENTITY)) {
+            IM_ASSERT(payload->DataSize == sizeof(Entity));
+            Entity entity = *(Entity *)payload->Data;
+
+            Entity parent(entity.GetComponent<EntityDataComponent>().parent,
+                          m_scene);
+            if (parent) {
+                m_scene->RemoveChildFromEntity(parent, entity);
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
 
     ImGui::End();
 
@@ -98,11 +120,28 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
         m_selectedEntity = entity;
     }
 
+    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+        ImGui::SetDragDropPayload(ECS_MOVEENTITY, &entity, sizeof(Entity));
+
+        // Display preview
+        ImGui::TextUnformatted(entity.GetComponent<TagComponent>().tag.c_str());
+        ImGui::EndDragDropSource();
+    }
+
+    if (ImGui::BeginDragDropTarget()) {
+        if (const ImGuiPayload *payload =
+                ImGui::AcceptDragDropPayload(ECS_MOVEENTITY)) {
+            IM_ASSERT(payload->DataSize == sizeof(Entity));
+            m_scene->AddChildToEntity(entity, *(Entity *)payload->Data);
+        }
+        ImGui::EndDragDropTarget();
+    }
+
     if (ImGui::BeginPopupContextItem()) {
         m_selectedEntity = entity;
         if (ImGui::MenuItem("Delete Entity")) {
             m_destroyEntity = entity;
-        };
+        }
         if (ImGui::MenuItem("Create Empty Entity")) {
             Entity newEntity = m_scene->CreateEntity("Empty Entity");
             m_scene->AddChildToEntity(entity, newEntity);
@@ -121,7 +160,7 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
 }
 
 template <typename T, typename UIFunction>
-static void drawComponent(const std::string &name, Entity entity,
+static void DrawComponent(const std::string &name, Entity entity,
                           UIFunction uiFunction, bool removeable = true) {
     const ImGuiTreeNodeFlags treeNodeFlags =
         ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed |
@@ -216,7 +255,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
     }
     ImGui::PopItemWidth();
 
-    drawComponent<TransformComponent>(
+    DrawComponent<TransformComponent>(
         "Transform", entity,
         [&](TransformComponent &component) {
             ImGui::RadioButton("World", &m_gizmoMode, ImGuizmo::WORLD);
@@ -245,7 +284,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
             }
         },
         false);
-    drawComponent<ModelComponent>("Model", entity, [&](ModelComponent &mc) {
+    DrawComponent<ModelComponent>("Model", entity, [&](ModelComponent &mc) {
         static bool fileDialogOpen = false;
         static ImFileDialogInfo fileDialogInfo;
         std::string path = fileDialogInfo.resultPath.string();
@@ -286,7 +325,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
     //             renderer->getTerrainSystem()->updateTerrain(entity);
     //         }
     //     });
-    drawComponent<LightComponent>(
+    DrawComponent<LightComponent>(
         "Light", entity, [&](LightComponent &lightComp) {
             Light &light = lightComp.light;
             glm::vec3 diffuse = light.GetDiffuse();
@@ -335,7 +374,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
                 }
             }
         });
-    drawComponent<TextComponent>("Text", entity, [&](TextComponent &textComp) {
+    DrawComponent<TextComponent>("Text", entity, [&](TextComponent &textComp) {
         // TODO: Can ImGui support UTF-16?
         static bool fileDialogOpen = false;
         static ImFileDialogInfo fileDialogInfo;

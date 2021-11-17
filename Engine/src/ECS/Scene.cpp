@@ -45,7 +45,6 @@ void Scene::AddChildToEntity(Entity &parent, Entity &child) {
     Entity oldParent(childData.parent, this);
     if (oldParent) {
         RemoveChildFromEntity(oldParent, child);
-        childTransform->GetParent()->RemoveChild(childTransform);
     }
     parentTransform->AddChild(childTransform);
     parentData.children.emplace(child);
