@@ -10,20 +10,9 @@ int main(int argc, char **argv);
 
 namespace SD {
 
-class Application;
-
-Application &GetApp();
-
-std::filesystem::path GetAppDirectory();
-
 class SD_API Application {
    public:
     void Quit();
-
-    std::filesystem::path GetDirectory();
-
-    Application(const Application &application) = delete;
-    Application &operator=(const Application &application) = delete;
 
     Window &GetWindow();
 
@@ -36,8 +25,10 @@ class SD_API Application {
 
     void DestroyLayer(Layer *layer);
 
-    Application();
-    virtual ~Application();
+    Application() = default;
+    virtual ~Application() = default;
+    Application(const Application &application) = delete;
+    Application &operator=(const Application &application) = delete;
 
     APP_VARS
    private:
@@ -46,7 +37,9 @@ class SD_API Application {
 
     friend int ::main(int argc, char **argv);
 
-    virtual void OnInit() = 0;
+    void OnInit();
+    void OnDestroy();
+    virtual void OnStart() = 0;
 
     void Run();
 

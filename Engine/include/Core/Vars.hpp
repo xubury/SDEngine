@@ -6,6 +6,9 @@
 #include "Asset/Asset.hpp"
 
 namespace SD {
+
+std::filesystem::path GetAppDirectory();
+
 #define APP_VARS             \
     Ref<Renderer> renderer;  \
     Ref<AssetManager> asset; \
@@ -30,6 +33,18 @@ namespace SD {
 struct AppVars {
     APP_VARS
 };
+
+class Application;
+
+Application &GetApp();
+
+#define IMPLEMENT_APP(x)                                       \
+    static ::SD::Application *s_instance;                      \
+    ::SD::Application & ::SD::GetApp() { return *s_instance; } \
+    ::SD::Application * ::SD::CreateApp() {                    \
+        s_instance = new x;                                    \
+        return s_instance;                                     \
+    }
 
 }  // namespace SD
 

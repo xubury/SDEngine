@@ -28,7 +28,8 @@ set(Core_Src
     ${Src_Root}/Window.cpp
     ${Src_Root}/EntryPoint.cpp
     ${Src_Root}/System.cpp
-    ${Src_Root}/Keyboard.cpp)
+    ${Src_Root}/Keyboard.cpp
+    ${Src_Root}/Vars.cpp)
 
 add_library(sd-core ${Core_Src})
 

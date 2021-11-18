@@ -7,6 +7,6 @@ IMPLEMENT_APP(SDEditor);
 
 namespace SD {
 
-void SDEditor::OnInit() { PushLayer(new EditorLayer(800, 600)); }
+void SDEditor::OnStart() { PushLayer(new EditorLayer(800, 600)); }
 
 }  // namespace SD

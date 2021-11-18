@@ -5,7 +5,9 @@
 int main(int, char **) {
     auto app = SD::CreateApp();
     app->OnInit();
+    app->OnStart();
     app->Run();
+    app->OnDestroy();
     delete app;
     return 0;
 }
