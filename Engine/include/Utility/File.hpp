@@ -12,16 +12,6 @@ class Exception : public std::exception, public std::string {
 
     Exception(const std::string& msg) throw() : std::string(msg) {}
 
-    Exception(const std::string& msg, char const* msg2) throw()
-        : std::string(msg) {
-        append(msg2);
-    }
-
-    Exception(const std::string& msg, const std::string& msg2) throw()
-        : std::string(msg) {
-        append(msg2);
-    }
-
     virtual ~Exception(void) throw() {}
 
     virtual const char* what(void) const throw() { return c_str(); }
@@ -30,9 +20,6 @@ class Exception : public std::exception, public std::string {
 class FileException : public Exception {
    public:
     FileException(const std::string& file_path, const std::string& msg) throw()
-        : Exception(msg), m_file_path(file_path) {}
-
-    FileException(const std::string& file_path, char const* msg) throw()
         : Exception(msg), m_file_path(file_path) {}
 
     virtual ~FileException(void) throw() {}
