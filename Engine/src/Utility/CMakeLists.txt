@@ -13,6 +13,7 @@ set(Utility_Include
     ${Include_Root}/Config.hpp
     ${Include_Root}/Export.hpp
     ${Include_Root}/File.hpp
+    ${Include_Root}/IniParser.hpp
     ${Include_Root}/Log.hpp
     ${Include_Root}/Math.hpp
     ${Include_Root}/PlatformDetection.hpp
@@ -27,6 +28,7 @@ set(Utility_Include
 
 set(Utility_Src
     ${Src_Root}/File.cpp
+    ${Src_Root}/IniParser.cpp
     ${Src_Root}/Log.cpp
     ${Src_Root}/Math.cpp
     ${Src_Root}/QuadTree.cpp
