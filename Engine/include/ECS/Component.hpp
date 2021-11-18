@@ -16,12 +16,8 @@ namespace SD {
 
 struct SD_API IDComponent {
     ResourceId id;
-    IDComponent() = default;
 
-    template <class Archive>
-    void serialize(Archive& archive) {
-        archive(id);
-    }
+    SERIALIZE(id)
 };
 
 struct SD_API EntityDataComponent {
@@ -29,10 +25,7 @@ struct SD_API EntityDataComponent {
     entt::entity parent;
     EntityDataComponent() : parent(entt::null) {}
 
-    template <class Archive>
-    void serialize(Archive& archive) {
-        archive(parent, children);
-    }
+    SERIALIZE(parent, children)
 };
 
 struct SD_API TagComponent {
@@ -40,30 +33,21 @@ struct SD_API TagComponent {
     TagComponent() = default;
     TagComponent(const std::string& tag) : tag(tag) {}
 
-    template <typename Archive>
-    void serialize(Archive& archive) {
-        archive(tag);
-    }
+    SERIALIZE(tag)
 };
 
 struct SD_API TransformComponent {
     Transform transform;
 
-    template <typename Archive>
-    void serialize(Archive& archive) {
-        archive(transform);
-    }
+    SERIALIZE(transform)
 };
 
 struct SD_API ModelComponent {
     ResourceId id;
     glm::vec3 color;
-    ModelComponent() : color(0.f) {}
+    ModelComponent() = default;
 
-    template <typename Archive>
-    void serialize(Archive& archive) {
-        archive(id, color);
-    }
+    SERIALIZE(id, color)
 };
 
 struct SD_API TerrainComponent {
@@ -74,12 +58,7 @@ struct SD_API TerrainComponent {
 struct SD_API LightComponent {
     Light light;
 
-    LightComponent() = default;
-
-    template <typename Archive>
-    void serialize(Archive& archive) {
-        archive(light);
-    }
+    SERIALIZE(light)
 };
 
 struct SD_API TextComponent {
@@ -88,10 +67,7 @@ struct SD_API TextComponent {
     glm::vec4 color = glm::vec4(1);
     std::wstring text;
 
-    template <typename Archive>
-    void serialize(Archive& archive) {
-        archive(id, pixelSize, color, text);
-    }
+    SERIALIZE(id, pixelSize, color, text)
 };
 
 }  // namespace SD

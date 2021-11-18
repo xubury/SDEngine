@@ -13,6 +13,12 @@
 #include <cereal/archives/xml.hpp>
 #include "Utility/String.hpp"
 
+#define SERIALIZE(...)                 \
+    template <typename Archive>        \
+    void serialize(Archive& archive) { \
+        archive(__VA_ARGS__);          \
+    }
+
 namespace cereal {
 template <class A>
 std::string CEREAL_SAVE_MINIMAL_FUNCTION_NAME(A const&,

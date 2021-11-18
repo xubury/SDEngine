@@ -2,6 +2,7 @@
 #define SD_TRANSFORM_HPP
 
 #include "Utility/Base.hpp"
+#include "Utility/Serialize.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -62,14 +63,11 @@ class SD_API Transform {
 
     glm::vec3 ToLocalSpace(const glm::vec3& world) const;
     glm::vec3 ToWorldSpace(const glm::vec3& local) const;
-    glm::vec3 ToLocalVector(const glm::vec3& worldVec) const;
-    glm::vec3 ToWorldVector(const glm::vec3& localVec) const;
+    glm::vec3 ToLocalVector(const glm::vec3& world_vec) const;
+    glm::vec3 ToWorldVector(const glm::vec3& local_vec) const;
 
-    template <typename Archive>
-    void serialize(Archive& archive) {
-        archive(m_position, m_rotation, m_scale, m_localPosition,
-                m_localRotation, m_localScale);
-    }
+    SERIALIZE(m_position, m_rotation, m_scale, m_local_position,
+              m_local_rotation, m_local_scale)
 
    private:
     void UpdateGlobalPosition();
@@ -84,9 +82,9 @@ class SD_API Transform {
     glm::quat m_rotation;
     glm::vec3 m_scale;
 
-    glm::vec3 m_localPosition;
-    glm::quat m_localRotation;
-    glm::vec3 m_localScale;
+    glm::vec3 m_local_position;
+    glm::quat m_local_rotation;
+    glm::vec3 m_local_scale;
 
     std::set<Transform*> m_children;
     Transform* m_parent;

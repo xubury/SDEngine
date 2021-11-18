@@ -4,15 +4,13 @@
 
 namespace SD {
 
-static std::random_device s_randomDevice;
-static std::mt19937_64 s_randomEngine(s_randomDevice());
-static std::uniform_int_distribution<uint64_t> s_uniformDistribution;
-
-static std::unordered_map<ResourceId, std::string> s_map;
+static std::random_device s_random_device;
+static std::mt19937_64 s_random_engine(s_random_device());
+static std::uniform_int_distribution<uint64_t> s_uniform_distribution;
 
 ResourceId::ResourceId()
-    : m_resourceID(s_uniformDistribution(s_randomEngine)) {}
+    : m_resource_id(s_uniform_distribution(s_random_engine)) {}
 
-ResourceId::ResourceId(uint64_t resourceID) : m_resourceID(resourceID) {}
+ResourceId::ResourceId(uint64_t resource_id) : m_resource_id(resource_id) {}
 
 }  // namespace SD

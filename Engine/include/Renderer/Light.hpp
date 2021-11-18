@@ -2,6 +2,7 @@
 #define SD_LIGHT_HPP
 
 #include "Utility/Base.hpp"
+#include "Utility/Serialize.hpp"
 #include "Utility/Transform.hpp"
 #include "Renderer/RenderTarget.hpp"
 #include "Renderer/Camera.hpp"
@@ -54,12 +55,9 @@ class SD_API Light {
 
     RenderTarget &GetRenderTarget() { return m_shadowTarget; };
 
-    template <typename Archive>
-    void serialize(Archive &archive) {
-        archive(m_ambient, m_diffuse, m_specular, m_cutOff, m_outerCutOff,
-                m_constant, m_linear, m_quadratic, m_isDirectional,
-                m_isCastShadow);
-    }
+    SERIALIZE(m_ambient, m_diffuse, m_specular, m_cutOff, m_outerCutOff,
+              m_constant, m_linear, m_quadratic, m_isDirectional,
+              m_isCastShadow)
 
    private:
     static void ComputeBoundingBox(const Transform &transform,

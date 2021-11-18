@@ -17,43 +17,43 @@ EditorLayer::EditorLayer(int width, int height)
       m_width(width),
       m_height(height),
       m_target(0, 0, width, height),
-      m_isViewportFocused(false),
-      m_isViewportHovered(false),
+      m_is_viewport_focused(false),
+      m_is_viewport_hovered(false),
       m_hide(false),
-      m_editorCamera(glm::radians(45.f), width, height, 0.1, 1000.f),
-      m_loadSceneOpen(false),
-      m_saveSceneOpen(false) {
-    m_cameraController.SetCamera(&m_editorCamera);
-    m_editorCamera.SetWorldPosition(glm::vec3(0, 0, 10));
-    m_screenBuffer = Framebuffer::Create();
-    m_screenBuffer->AttachTexture(Texture::Create(
+      m_editor_camera(glm::radians(45.f), width, height, 0.1, 1000.f),
+      m_load_scene_open(false),
+      m_save_scene_open(false) {
+    m_camera_controller.SetCamera(&m_editor_camera);
+    m_editor_camera.SetWorldPosition(glm::vec3(0, 0, 10));
+    m_screen_buffer = Framebuffer::Create();
+    m_screen_buffer->AttachTexture(Texture::Create(
         m_width, m_height, 1, TextureType::TEX_2D, TextureFormat::RGBA,
         TextureFormatType::UBYTE, TextureWrap::BORDER, TextureFilter::NEAREST,
         TextureMipmapFilter::NEAREST));
-    m_debugGBuffer = Framebuffer::Create();
+    m_debug_gbuffer = Framebuffer::Create();
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-        m_debugGBuffer->AttachTexture(Texture::Create(
+        m_debug_gbuffer->AttachTexture(Texture::Create(
             m_width, m_height, 1, TextureType::TEX_2D,
             GetTextureFormat(GeometryBufferType(i)),
             GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
             TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
     }
-    m_shadowSystem = new ShadowSystem();
-    m_lightingSystem = new LightingSystem(&m_target, m_width, m_height,
-                                          GetApp().GetWindow().GetSamples());
-    m_skyboxSystem = new SkyboxSystem(&m_target);
-    m_spriteSystem = new SpriteRenderSystem(&m_target);
-    m_postProcessSystem = new PostProcessSystem(&m_target, m_width, m_height);
-    m_profileSystem = new ProfileSystem(&m_target, m_width, m_height);
+    m_shadow_system = new ShadowSystem();
+    m_lighting_system = new LightingSystem(&m_target, m_width, m_height,
+                                           GetApp().GetWindow().GetSamples());
+    m_skybox_system = new SkyboxSystem(&m_target);
+    m_sprite_system = new SpriteRenderSystem(&m_target);
+    m_post_process_system = new PostProcessSystem(&m_target, m_width, m_height);
+    m_profile_system = new ProfileSystem(&m_target, m_width, m_height);
 }
 
 EditorLayer::~EditorLayer() {
-    delete m_shadowSystem;
-    delete m_lightingSystem;
-    delete m_skyboxSystem;
-    delete m_spriteSystem;
-    delete m_postProcessSystem;
-    delete m_profileSystem;
+    delete m_shadow_system;
+    delete m_lighting_system;
+    delete m_skybox_system;
+    delete m_sprite_system;
+    delete m_post_process_system;
+    delete m_profile_system;
 }
 
 void EditorLayer::OnPush() {
@@ -62,7 +62,7 @@ void EditorLayer::OnPush() {
     auto resourceId = asset->loadAsset<Image>("icons/light.png");
     auto image = asset->Get<Image>(resourceId);
 
-    m_lightIcon = Texture::Create(
+    m_light_icon = Texture::Create(
         image->width(), image->height(), 1, TextureType::TEX_2D,
         image->hasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
         TextureFormatType::UBYTE, TextureWrap::REPEAT, TextureFilter::LINEAR,
@@ -70,23 +70,23 @@ void EditorLayer::OnPush() {
 
     m_scenePanel.SetAppVars(MakeAppVars());
 
-    PushSystem(m_shadowSystem);
-    PushSystem(m_lightingSystem);
-    PushSystem(m_skyboxSystem);
-    PushSystem(m_spriteSystem);
-    PushSystem(m_postProcessSystem);
-    PushSystem(m_profileSystem);
+    PushSystem(m_shadow_system);
+    PushSystem(m_lighting_system);
+    PushSystem(m_skybox_system);
+    PushSystem(m_sprite_system);
+    PushSystem(m_post_process_system);
+    PushSystem(m_profile_system);
 
     Show();
 }
 
 void EditorLayer::OnPop() {
-    PopSystem(m_shadowSystem);
-    PopSystem(m_lightingSystem);
-    PopSystem(m_skyboxSystem);
-    PopSystem(m_spriteSystem);
-    PopSystem(m_postProcessSystem);
-    PopSystem(m_profileSystem);
+    PopSystem(m_shadow_system);
+    PopSystem(m_lighting_system);
+    PopSystem(m_skybox_system);
+    PopSystem(m_sprite_system);
+    PopSystem(m_post_process_system);
+    PopSystem(m_profile_system);
 }
 
 void EditorLayer::OnRender() {
@@ -98,29 +98,29 @@ void EditorLayer::OnRender() {
 
     if (m_hide) return;
 
-    renderer->BeginScene(m_editorCamera);
+    renderer->BeginScene(m_editor_camera);
     auto lightView = m_scene->view<LightComponent, TransformComponent>();
     lightView.each(
         [this](const LightComponent &, const TransformComponent &transComp) {
             glm::vec3 pos = transComp.transform.GetWorldPosition();
-            float dist = glm::distance(pos, m_editorCamera.GetWorldPosition());
-            float scale = (dist - m_editorCamera.GetNearZ()) / 20;
-            renderer->DrawBillboard(m_lightIcon, pos, glm::vec2(scale));
+            float dist = glm::distance(pos, m_editor_camera.GetWorldPosition());
+            float scale = (dist - m_editor_camera.GetNearZ()) / 20;
+            renderer->DrawBillboard(m_light_icon, pos, glm::vec2(scale));
         });
     renderer->EndScene();
 }
 
 void EditorLayer::OnTick(float dt) {
     auto [mouseX, mouseY] = ImGui::GetMousePos();
-    mouseX -= m_viewportBounds[0].x;
-    mouseY -= m_viewportBounds[0].y;
-    glm::vec2 viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
+    mouseX -= m_viewport_bounds[0].x;
+    mouseY -= m_viewport_bounds[0].y;
+    glm::vec2 viewportSize = m_viewport_bounds[1] - m_viewport_bounds[0];
     if (!ImGuizmo::IsUsing() && !m_hide && ImGui::IsMouseDown(0) &&
-        m_isViewportHovered) {
+        m_is_viewport_hovered) {
         entt::entity entity = Entity::INVALID_ID;
-        m_debugGBuffer->ReadPixels(GeometryBufferType::G_ENTITY_ID, 0, mouseX,
-                                   viewportSize.y - mouseY, 0, 1, 1, 1,
-                                   sizeof(entity), &entity);
+        m_debug_gbuffer->ReadPixels(GeometryBufferType::G_ENTITY_ID, 0, mouseX,
+                                    viewportSize.y - mouseY, 0, 1, 1, 1,
+                                    sizeof(entity), &entity);
         if (entity != Entity::INVALID_ID) {
             m_scenePanel.SetSelectedEntity({entity, m_scene.get()});
         }
@@ -129,9 +129,9 @@ void EditorLayer::OnTick(float dt) {
     if (entity) {
         glm::vec3 pos = entity.GetComponent<TransformComponent>()
                             .transform.GetWorldPosition();
-        m_cameraController.SetFocus(pos);
+        m_camera_controller.SetFocus(pos);
     }
-    m_cameraController.Tick(dt);
+    m_camera_controller.Tick(dt);
 }
 
 void EditorLayer::OnImGui() {
@@ -139,11 +139,11 @@ void EditorLayer::OnImGui() {
         return;
     }
     renderer->GetDevice().BlitFramebuffer(
-        m_target.GetFramebuffer(), 0, m_screenBuffer.get(), 0,
+        m_target.GetFramebuffer(), 0, m_screen_buffer.get(), 0,
         BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
         renderer->GetDevice().BlitFramebuffer(
-            m_lightingSystem->GetGBuffer(), i, m_debugGBuffer.get(), i,
+            m_lighting_system->GetGBuffer(), i, m_debug_gbuffer.get(), i,
             BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
     }
 
@@ -216,26 +216,26 @@ void EditorLayer::OnImGui() {
 
     ImGui::Begin("Render Settings");
     {
-        float exposure = m_postProcessSystem->GetExposure();
+        float exposure = m_post_process_system->GetExposure();
         ImGui::TextUnformatted("Exposure");
         if (ImGui::SliderFloat("##Exposure", &exposure, 0, 10)) {
-            m_postProcessSystem->SetExposure(exposure);
+            m_post_process_system->SetExposure(exposure);
         }
 
-        bool isBloom = m_postProcessSystem->GetBloom();
+        bool isBloom = m_post_process_system->GetBloom();
         if (ImGui::Checkbox("Bloom", &isBloom)) {
-            m_postProcessSystem->SetBloom(isBloom);
+            m_post_process_system->SetBloom(isBloom);
         }
-        float bloom = m_postProcessSystem->GetBloomFactor();
+        float bloom = m_post_process_system->GetBloomFactor();
         ImGui::TextUnformatted("Bloom Factor");
         if (ImGui::SliderFloat("##Bloom Factor", &bloom, 0.1, 1)) {
-            m_postProcessSystem->SetBloomFactor(bloom);
+            m_post_process_system->SetBloomFactor(bloom);
         }
 
-        float gamma = m_postProcessSystem->GetGammaCorrection();
+        float gamma = m_post_process_system->GetGammaCorrection();
         ImGui::TextUnformatted("Gamma Correction");
         if (ImGui::SliderFloat("##Gamma Correction", &gamma, 0.1, 3)) {
-            m_postProcessSystem->SetGammaCorrection(gamma);
+            m_post_process_system->SetGammaCorrection(gamma);
         }
     }
     ImGui::End();
@@ -245,7 +245,7 @@ void EditorLayer::OnImGui() {
     {
         ImVec2 wsize = ImGui::GetContentRegionAvail();
         for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
-            ImGui::DrawTexture(*m_debugGBuffer->GetTexture(i), wsize);
+            ImGui::DrawTexture(*m_debug_gbuffer->GetTexture(i), wsize);
         }
     }
     ImGui::End();
@@ -255,16 +255,16 @@ void EditorLayer::OnImGui() {
         auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
         auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
         auto viewportOffset = ImGui::GetWindowPos();
-        m_viewportBounds[0] = {viewportMinRegion.x + viewportOffset.x,
-                               viewportMinRegion.y + viewportOffset.y};
-        m_viewportBounds[1] = {viewportMaxRegion.x + viewportOffset.x,
-                               viewportMaxRegion.y + viewportOffset.y};
+        m_viewport_bounds[0] = {viewportMinRegion.x + viewportOffset.x,
+                                viewportMinRegion.y + viewportOffset.y};
+        m_viewport_bounds[1] = {viewportMaxRegion.x + viewportOffset.x,
+                                viewportMaxRegion.y + viewportOffset.y};
         if (m_width != wsize.x || m_height != wsize.y) {
             if (wsize.x > 0 && wsize.y > 0) {
-                m_editorCamera.Resize(wsize.x, wsize.y);
+                m_editor_camera.Resize(wsize.x, wsize.y);
                 m_target.Resize(wsize.x, wsize.y);
-                m_screenBuffer->Resize(wsize.x, wsize.y);
-                m_debugGBuffer->Resize(wsize.x, wsize.y);
+                m_screen_buffer->Resize(wsize.x, wsize.y);
+                m_debug_gbuffer->Resize(wsize.x, wsize.y);
                 WindowSizeEvent event;
                 event.width = wsize.x;
                 event.height = wsize.y;
@@ -274,19 +274,19 @@ void EditorLayer::OnImGui() {
             m_width = wsize.x;
             m_height = wsize.y;
         }
-        m_isViewportFocused = ImGui::IsWindowFocused();
-        m_isViewportHovered = ImGui::IsWindowHovered();
-        ImGui::DrawTexture(*m_screenBuffer->GetTexture(), wsize);
+        m_is_viewport_focused = ImGui::IsWindowFocused();
+        m_is_viewport_hovered = ImGui::IsWindowHovered();
+        ImGui::DrawTexture(*m_screen_buffer->GetTexture(), wsize);
 
         Entity selectedEntity = m_scenePanel.GetSelectedEntity();
         if (selectedEntity) {
             ImGuizmo::SetOrthographic(false);
             ImGuizmo::SetDrawlist();
-            ImGuizmo::SetRect(m_viewportBounds[0].x, m_viewportBounds[0].y,
-                              m_viewportBounds[1].x - m_viewportBounds[0].x,
-                              m_viewportBounds[1].y - m_viewportBounds[0].y);
-            const glm::mat4 &view = m_editorCamera.GetView();
-            const glm::mat4 &projection = m_editorCamera.GetProjection();
+            ImGuizmo::SetRect(m_viewport_bounds[0].x, m_viewport_bounds[0].y,
+                              m_viewport_bounds[1].x - m_viewport_bounds[0].x,
+                              m_viewport_bounds[1].y - m_viewport_bounds[0].y);
+            const glm::mat4 &view = m_editor_camera.GetView();
+            const glm::mat4 &projection = m_editor_camera.GetProjection();
 
             auto &tc = selectedEntity.GetComponent<TransformComponent>();
             glm::mat4 transform = tc.transform.GetWorldTransform();
@@ -317,12 +317,12 @@ void EditorLayer::Hide() {
 void EditorLayer::Show() {
     m_hide = false;
     SetBlockEvent(true);
-    renderer->SetCamera(&m_editorCamera);
+    renderer->SetCamera(&m_editor_camera);
 }
 
 void EditorLayer::OnEventProcess(const Event &event) {
-    if (m_isViewportHovered) {
-        m_cameraController.ProcessEvent(event);
+    if (m_is_viewport_hovered) {
+        m_camera_controller.ProcessEvent(event);
     }
     if (event.type == Event::EventType::KEY_PRESSED) {
         switch (event.key.keycode) {
@@ -360,8 +360,8 @@ void EditorLayer::OnEventProcess(const Event &event) {
 }
 
 void EditorLayer::OnEventsProcess() {
-    if (m_isViewportHovered) {
-        m_cameraController.ProcessEvents();
+    if (m_is_viewport_hovered) {
+        m_camera_controller.ProcessEvents();
     }
 }
 
@@ -372,29 +372,29 @@ void EditorLayer::NewScene() {
 }
 
 void EditorLayer::LoadScene() {
-    m_loadSceneOpen = true;
-    m_fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
-    m_fileDialogInfo.title = "Load Scene";
-    m_fileDialogInfo.fileName = "";
-    m_fileDialogInfo.fileExtension = ".scene";
-    m_fileDialogInfo.directoryPath = std::filesystem::current_path();
+    m_load_scene_open = true;
+    m_file_dialog_info.type = ImGuiFileDialogType_OpenFile;
+    m_file_dialog_info.title = "Load Scene";
+    m_file_dialog_info.fileName = "";
+    m_file_dialog_info.fileExtension = ".scene";
+    m_file_dialog_info.directoryPath = std::filesystem::current_path();
 }
 
 void EditorLayer::SaveScene() {
-    m_saveSceneOpen = true;
-    m_fileDialogInfo.type = ImGuiFileDialogType_SaveFile;
-    m_fileDialogInfo.title = "Save Scene";
-    m_fileDialogInfo.fileName = "test.scene";
-    m_fileDialogInfo.fileExtension = ".scene";
-    m_fileDialogInfo.directoryPath = std::filesystem::current_path();
+    m_save_scene_open = true;
+    m_file_dialog_info.type = ImGuiFileDialogType_SaveFile;
+    m_file_dialog_info.title = "Save Scene";
+    m_file_dialog_info.fileName = "test.scene";
+    m_file_dialog_info.fileExtension = ".scene";
+    m_file_dialog_info.directoryPath = std::filesystem::current_path();
 }
 
 void EditorLayer::ProcessDialog() {
-    if (ImGui::FileDialog(&m_loadSceneOpen, &m_fileDialogInfo)) {
-        m_scene->Load(m_fileDialogInfo.resultPath.string());
+    if (ImGui::FileDialog(&m_load_scene_open, &m_file_dialog_info)) {
+        m_scene->Load(m_file_dialog_info.resultPath.string());
     }
-    if (ImGui::FileDialog(&m_saveSceneOpen, &m_fileDialogInfo)) {
-        m_scene->Save(m_fileDialogInfo.resultPath.string());
+    if (ImGui::FileDialog(&m_save_scene_open, &m_file_dialog_info)) {
+        m_scene->Save(m_file_dialog_info.resultPath.string());
     }
 }
 

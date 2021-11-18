@@ -45,37 +45,37 @@ class EditorLayer : public Layer {
 
     void Show();
 
-    ShadowSystem *m_shadowSystem;
-    LightingSystem *m_lightingSystem;
-    SkyboxSystem *m_skyboxSystem;
-    SpriteRenderSystem *m_spriteSystem;
-    PostProcessSystem *m_postProcessSystem;
-    ProfileSystem *m_profileSystem;
+    ShadowSystem *m_shadow_system;
+    LightingSystem *m_lighting_system;
+    SkyboxSystem *m_skybox_system;
+    SpriteRenderSystem *m_sprite_system;
+    PostProcessSystem *m_post_process_system;
+    ProfileSystem *m_profile_system;
 
     int m_width;
     int m_height;
 
     RenderTarget m_target;
-    Ref<Framebuffer> m_screenBuffer;
-    Ref<Framebuffer> m_debugGBuffer;
+    Ref<Framebuffer> m_screen_buffer;
+    Ref<Framebuffer> m_debug_gbuffer;
 
-    glm::vec2 m_viewportBounds[2];
-    bool m_isViewportFocused;
-    bool m_isViewportHovered;
+    glm::vec2 m_viewport_bounds[2];
+    bool m_is_viewport_focused;
+    bool m_is_viewport_hovered;
 
     bool m_hide;
 
-    PerspectiveCamera m_editorCamera;
-    CameraController m_cameraController;
+    PerspectiveCamera m_editor_camera;
+    CameraController m_camera_controller;
 
     Ref<Scene> m_scene;
     ScenePanel m_scenePanel;
 
-    bool m_loadSceneOpen;
-    bool m_saveSceneOpen;
-    ImFileDialogInfo m_fileDialogInfo;
+    bool m_load_scene_open;
+    bool m_save_scene_open;
+    ImFileDialogInfo m_file_dialog_info;
 
-    Ref<Texture> m_lightIcon;
+    Ref<Texture> m_light_icon;
 };
 
 }  // namespace SD
