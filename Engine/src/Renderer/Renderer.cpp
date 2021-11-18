@@ -268,7 +268,7 @@ void Renderer::DrawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
         color);
 }
 
-void Renderer::DrawText(Font& font, const std::wstring& text, int pixelSize,
+void Renderer::DrawText(Font& font, const std::wstring& text, uint8_t pixelSize,
                         const glm::mat4& transform, const glm::vec4& color) {
     glm::mat4 t =
         glm::translate(glm::mat4(1.0f),

@@ -33,7 +33,7 @@ class SD_API FpsCounter {
     FpsCounter(const FpsCounter &) = delete;
     FpsCounter &operator=(const FpsCounter &) = delete;
 
-    float GetFps();
+    float GetFPS();
 
    private:
     Clock m_clock;

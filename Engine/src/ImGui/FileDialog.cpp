@@ -16,19 +16,19 @@ enum ImGuiFileDialogSortOrder_ {
 };
 
 void RefreshInfo(ImFileDialogInfo* dialogInfo) {
-    dialogInfo->refreshInfo = false;
-    dialogInfo->currentIndex = 0;
-    dialogInfo->currentFiles.clear();
-    dialogInfo->currentDirectories.clear();
+    dialogInfo->refresh_info = false;
+    dialogInfo->current_index = 0;
+    dialogInfo->current_files.clear();
+    dialogInfo->current_directories.clear();
 
     for (const std::filesystem::directory_entry& entry :
-         std::filesystem::directory_iterator(dialogInfo->directoryPath)) {
+         std::filesystem::directory_iterator(dialogInfo->directory_path)) {
         if (entry.is_directory()) {
-            dialogInfo->currentDirectories.push_back(entry);
+            dialogInfo->current_directories.push_back(entry);
         } else {
-            if (dialogInfo->fileExtension.empty() ||
-                entry.path().extension() == dialogInfo->fileExtension) {
-                dialogInfo->currentFiles.push_back(entry);
+            if (dialogInfo->file_extension.empty() ||
+                entry.path().extension() == dialogInfo->file_extension) {
+                dialogInfo->current_files.push_back(entry);
             }
         }
     }
@@ -57,13 +57,13 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
     ImGui::SetNextWindowSize(ImVec2(740.0f, 410.0f), ImGuiCond_FirstUseEver);
 
     if (ImGui::Begin(dialogInfo->title.c_str(), open)) {
-        if ((dialogInfo->currentFiles.empty() &&
-             dialogInfo->currentDirectories.empty()) ||
-            dialogInfo->refreshInfo)
+        if ((dialogInfo->current_files.empty() &&
+             dialogInfo->current_directories.empty()) ||
+            dialogInfo->refresh_info)
             RefreshInfo(dialogInfo);
 
         // Draw path
-        ImGui::Text("Path: %s", dialogInfo->directoryPath.string().c_str());
+        ImGui::Text("Path: %s", dialogInfo->directory_path.string().c_str());
 
         ImGui::BeginChild("##browser",
                           ImVec2(ImGui::GetWindowContentRegionWidth(), 300),
@@ -127,7 +127,7 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
         ImGui::Separator();
 
         // Sort directories
-        auto* directories = &dialogInfo->currentDirectories;
+        auto* directories = &dialogInfo->current_directories;
 
         if (fileNameSortOrder != ImGuiFileDialogSortOrder_None ||
             sizeSortOrder != ImGuiFileDialogSortOrder_None ||
@@ -154,7 +154,7 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
         }
 
         // Sort files
-        auto* files = &dialogInfo->currentFiles;
+        auto* files = &dialogInfo->current_files;
 
         if (fileNameSortOrder != ImGuiFileDialogSortOrder_None) {
             std::sort(
@@ -201,17 +201,17 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
         size_t index = 0;
 
         // Draw parent
-        if (dialogInfo->directoryPath.has_parent_path()) {
+        if (dialogInfo->directory_path.has_parent_path()) {
             if (ImGui::Selectable(
-                    "..", dialogInfo->currentIndex == index,
+                    "..", dialogInfo->current_index == index,
                     ImGuiSelectableFlags_AllowDoubleClick,
                     ImVec2(ImGui::GetWindowContentRegionWidth(), 0))) {
-                dialogInfo->currentIndex = index;
+                dialogInfo->current_index = index;
 
                 if (ImGui::IsMouseDoubleClicked(0)) {
-                    dialogInfo->directoryPath =
-                        dialogInfo->directoryPath.parent_path();
-                    dialogInfo->refreshInfo = true;
+                    dialogInfo->directory_path =
+                        dialogInfo->directory_path.parent_path();
+                    dialogInfo->refresh_info = true;
                 }
             }
             ImGui::NextColumn();
@@ -227,20 +227,20 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
 
         // Draw directories
         for (size_t i = 0; i < directories->size(); ++i) {
-            auto directoryEntry = dialogInfo->currentDirectories[i];
+            auto directoryEntry = dialogInfo->current_directories[i];
             auto directoryPath = directoryEntry.path();
             auto directoryName = directoryPath.filename();
 
             if (ImGui::Selectable(
                     directoryName.string().c_str(),
-                    dialogInfo->currentIndex == index,
+                    dialogInfo->current_index == index,
                     ImGuiSelectableFlags_AllowDoubleClick,
                     ImVec2(ImGui::GetWindowContentRegionWidth(), 0))) {
-                dialogInfo->currentIndex = index;
+                dialogInfo->current_index = index;
 
                 if (ImGui::IsMouseDoubleClicked(0)) {
-                    dialogInfo->directoryPath = directoryPath;
-                    dialogInfo->refreshInfo = true;
+                    dialogInfo->directory_path = directoryPath;
+                    dialogInfo->refresh_info = true;
                 }
             }
 
@@ -274,17 +274,17 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
 
         // Draw files
         for (size_t i = 0; i < files->size(); ++i) {
-            auto fileEntry = dialogInfo->currentFiles[i];
+            auto fileEntry = dialogInfo->current_files[i];
             auto filePath = fileEntry.path();
             auto fileName = filePath.filename();
 
             if (ImGui::Selectable(
                     fileName.string().c_str(),
-                    dialogInfo->currentIndex == index,
+                    dialogInfo->current_index == index,
                     ImGuiSelectableFlags_AllowDoubleClick,
                     ImVec2(ImGui::GetWindowContentRegionWidth(), 0))) {
-                dialogInfo->currentIndex = index;
-                dialogInfo->fileName = fileName;
+                dialogInfo->current_index = index;
+                dialogInfo->file_name = fileName;
             }
 
             ImGui::NextColumn();
@@ -321,7 +321,7 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
         static const size_t fileNameBufferSize = 200;
         static char fileNameBuffer[fileNameBufferSize];
 
-        std::string fileNameStr = dialogInfo->fileName.string();
+        std::string fileNameStr = dialogInfo->file_name.string();
         size_t fileNameSize = fileNameStr.size();
 
         if (fileNameSize >= fileNameBufferSize)
@@ -331,8 +331,8 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
 
         ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth());
         if (ImGui::InputText("File Name", fileNameBuffer, fileNameBufferSize)) {
-            dialogInfo->fileName = std::string(fileNameBuffer);
-            dialogInfo->currentIndex = 0;
+            dialogInfo->file_name = std::string(fileNameBuffer);
+            dialogInfo->current_index = 0;
         }
 
         if (ImGui::Button("Cancel")) {
@@ -341,51 +341,51 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
             typeSortOrder = ImGuiFileDialogSortOrder_None;
             dateSortOrder = ImGuiFileDialogSortOrder_None;
 
-            dialogInfo->refreshInfo = false;
-            dialogInfo->currentIndex = 0;
-            dialogInfo->currentFiles.clear();
-            dialogInfo->currentDirectories.clear();
+            dialogInfo->refresh_info = false;
+            dialogInfo->current_index = 0;
+            dialogInfo->current_files.clear();
+            dialogInfo->current_directories.clear();
 
             *open = false;
         }
 
         ImGui::SameLine();
 
-        if (dialogInfo->type == ImGuiFileDialogType_OpenFile) {
+        if (dialogInfo->type == ImGuiFileDialogType::OPEN_FILE) {
             if (ImGui::Button("Open")) {
-                dialogInfo->resultPath =
-                    dialogInfo->directoryPath / dialogInfo->fileName;
+                dialogInfo->result_path =
+                    dialogInfo->directory_path / dialogInfo->file_name;
 
-                if (std::filesystem::exists(dialogInfo->resultPath)) {
+                if (std::filesystem::exists(dialogInfo->result_path)) {
                     fileNameSortOrder = ImGuiFileDialogSortOrder_None;
                     sizeSortOrder = ImGuiFileDialogSortOrder_None;
                     typeSortOrder = ImGuiFileDialogSortOrder_None;
                     dateSortOrder = ImGuiFileDialogSortOrder_None;
 
-                    dialogInfo->refreshInfo = false;
-                    dialogInfo->currentIndex = 0;
-                    dialogInfo->currentFiles.clear();
-                    dialogInfo->currentDirectories.clear();
+                    dialogInfo->refresh_info = false;
+                    dialogInfo->current_index = 0;
+                    dialogInfo->current_files.clear();
+                    dialogInfo->current_directories.clear();
 
                     complete = true;
                     *open = false;
                 }
             }
-        } else if (dialogInfo->type == ImGuiFileDialogType_SaveFile) {
+        } else if (dialogInfo->type == ImGuiFileDialogType::SAVE_FILE) {
             if (ImGui::Button("Save")) {
-                dialogInfo->resultPath =
-                    dialogInfo->directoryPath / dialogInfo->fileName;
+                dialogInfo->result_path =
+                    dialogInfo->directory_path / dialogInfo->file_name;
 
-                if (!std::filesystem::exists(dialogInfo->resultPath)) {
+                if (!std::filesystem::exists(dialogInfo->result_path)) {
                     fileNameSortOrder = ImGuiFileDialogSortOrder_None;
                     sizeSortOrder = ImGuiFileDialogSortOrder_None;
                     typeSortOrder = ImGuiFileDialogSortOrder_None;
                     dateSortOrder = ImGuiFileDialogSortOrder_None;
 
-                    dialogInfo->refreshInfo = false;
-                    dialogInfo->currentIndex = 0;
-                    dialogInfo->currentFiles.clear();
-                    dialogInfo->currentDirectories.clear();
+                    dialogInfo->refresh_info = false;
+                    dialogInfo->current_index = 0;
+                    dialogInfo->current_files.clear();
+                    dialogInfo->current_directories.clear();
 
                     complete = true;
                     *open = false;

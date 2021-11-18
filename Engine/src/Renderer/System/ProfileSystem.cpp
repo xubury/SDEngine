@@ -26,7 +26,7 @@ void ProfileSystem::OnRender() {
     renderer->SetRenderTarget(*m_target);
     renderer->BeginScene(m_camera);
     std::wstring fpsStr =
-        L"FPS:" + std::to_wstring(static_cast<uint32_t>(m_fps.GetFps()));
+        L"FPS:" + std::to_wstring(static_cast<uint32_t>(m_fps.GetFPS()));
 
     float size = 20;
     renderer->SetTextOrigin(-m_camera.GetNearWidth() / 2.f,

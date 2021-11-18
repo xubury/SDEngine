@@ -373,28 +373,28 @@ void EditorLayer::NewScene() {
 
 void EditorLayer::LoadScene() {
     m_load_scene_open = true;
-    m_file_dialog_info.type = ImGuiFileDialogType_OpenFile;
+    m_file_dialog_info.type = ImGuiFileDialogType::OPEN_FILE;
     m_file_dialog_info.title = "Load Scene";
-    m_file_dialog_info.fileName = "";
-    m_file_dialog_info.fileExtension = ".scene";
-    m_file_dialog_info.directoryPath = std::filesystem::current_path();
+    m_file_dialog_info.file_name = "";
+    m_file_dialog_info.file_extension = ".scene";
+    m_file_dialog_info.directory_path = std::filesystem::current_path();
 }
 
 void EditorLayer::SaveScene() {
     m_save_scene_open = true;
-    m_file_dialog_info.type = ImGuiFileDialogType_SaveFile;
+    m_file_dialog_info.type = ImGuiFileDialogType::SAVE_FILE;
     m_file_dialog_info.title = "Save Scene";
-    m_file_dialog_info.fileName = "test.scene";
-    m_file_dialog_info.fileExtension = ".scene";
-    m_file_dialog_info.directoryPath = std::filesystem::current_path();
+    m_file_dialog_info.file_name = "test.scene";
+    m_file_dialog_info.file_extension = ".scene";
+    m_file_dialog_info.directory_path = std::filesystem::current_path();
 }
 
 void EditorLayer::ProcessDialog() {
     if (ImGui::FileDialog(&m_load_scene_open, &m_file_dialog_info)) {
-        m_scene->Load(m_file_dialog_info.resultPath.string());
+        m_scene->Load(m_file_dialog_info.result_path.string());
     }
     if (ImGui::FileDialog(&m_save_scene_open, &m_file_dialog_info)) {
-        m_scene->Save(m_file_dialog_info.resultPath.string());
+        m_scene->Save(m_file_dialog_info.result_path.string());
     }
 }
 

@@ -63,11 +63,11 @@ struct SD_API LightComponent {
 
 struct SD_API TextComponent {
     ResourceId id;
-    int pixelSize = 10;
+    uint8_t pixel_size = 10;
     glm::vec4 color = glm::vec4(1);
     std::wstring text;
 
-    SERIALIZE(id, pixelSize, color, text)
+    SERIALIZE(id, pixel_size, color, text)
 };
 
 }  // namespace SD

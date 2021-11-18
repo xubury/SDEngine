@@ -8,28 +8,25 @@
 #include <vector>
 #include <algorithm>
 
-typedef int ImGuiFileDialogType;  // -> enum ImGuiFileDialogType_        //
-                                  // Enum: A file dialog type
-
-enum ImGuiFileDialogType_ {
-    ImGuiFileDialogType_OpenFile,
-    ImGuiFileDialogType_SaveFile,
-    ImGuiFileDialogType_COUNT
+enum class ImGuiFileDialogType {
+    OPEN_FILE,
+    SAVE_FILE,
+    TYPE_COUNT = 2
 };
 
 struct SD_API ImFileDialogInfo {
     std::string title;
-    std::filesystem::path fileExtension;
+    std::filesystem::path file_extension;
     ImGuiFileDialogType type;
 
-    std::filesystem::path fileName;
-    std::filesystem::path directoryPath;
-    std::filesystem::path resultPath;
+    std::filesystem::path file_name;
+    std::filesystem::path directory_path;
+    std::filesystem::path result_path;
 
-    bool refreshInfo;
-    size_t currentIndex;
-    std::vector<std::filesystem::directory_entry> currentFiles;
-    std::vector<std::filesystem::directory_entry> currentDirectories;
+    bool refresh_info;
+    size_t current_index;
+    std::vector<std::filesystem::directory_entry> current_files;
+    std::vector<std::filesystem::directory_entry> current_directories;
 };
 
 namespace ImGui {

@@ -20,7 +20,7 @@ struct SD_API Character {
 
 struct CharacterId {
     CharacterId() = default;
-    CharacterId(wchar_t ch, int size) : ch(ch), size(size) {}
+    CharacterId(wchar_t ch, uint8_t size) : ch(ch), size(size) {}
     bool operator<(const CharacterId &rhs) const {
         return ch < rhs.ch && size < rhs.size;
     }
@@ -28,7 +28,7 @@ struct CharacterId {
         return ch == rhs.ch && size == rhs.size;
     }
     wchar_t ch;
-    int size;
+    uint8_t size;
 };
 
 struct CharacterHash {
@@ -47,15 +47,13 @@ class SD_API Font {
     Font(const Font &) = delete;
     Font operator=(const Font &) = delete;
 
-    const Character &GetCharacter(wchar_t ch, int size);
+    const Character &GetCharacter(wchar_t ch, uint8_t size);
 
    private:
     void LoadFont(const CharacterId &id);
 
     FT_Face m_face;
     std::unordered_map<CharacterId, Character, CharacterHash> m_characters;
-
-    int m_size;
 };
 
 }  // namespace SD

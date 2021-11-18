@@ -289,19 +289,19 @@ void ScenePanel::DrawComponents(Entity &entity) {
     DrawComponent<ModelComponent>("Model", entity, [&](ModelComponent &mc) {
         static bool fileDialogOpen = false;
         static ImFileDialogInfo fileDialogInfo;
-        std::string path = fileDialogInfo.resultPath.string();
+        std::string path = fileDialogInfo.result_path.string();
         ImGui::InputText("##Path", path.data(), path.size(),
                          ImGuiInputTextFlags_ReadOnly);
         ImGui::SameLine();
         if (ImGui::Button("Open")) {
             fileDialogOpen = true;
-            fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
+            fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
             fileDialogInfo.title = "Open File";
-            fileDialogInfo.fileName = "";
-            fileDialogInfo.directoryPath = std::filesystem::current_path();
+            fileDialogInfo.file_name = "";
+            fileDialogInfo.directory_path = std::filesystem::current_path();
         }
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
-            mc.id = asset->loadAsset<Model>(fileDialogInfo.resultPath);
+            mc.id = asset->loadAsset<Model>(fileDialogInfo.result_path);
         }
 
         ImGui::ColorEdit3("Color", &mc.color[0]);
@@ -384,27 +384,30 @@ void ScenePanel::DrawComponents(Entity &entity) {
         std::string utf8Str = WstringToString(textComp.text);
         memset(buffer, 0, sizeof(buffer));
         std::strncpy(buffer, utf8Str.c_str(), utf8Str.size());
-        std::string path = fileDialogInfo.resultPath.string();
+        std::string path = fileDialogInfo.result_path.string();
         ImGui::Text("Font File:");
         ImGui::InputText("##Path", path.data(), path.size(),
                          ImGuiInputTextFlags_ReadOnly);
         ImGui::SameLine();
         if (ImGui::Button("Open")) {
             fileDialogOpen = true;
-            fileDialogInfo.type = ImGuiFileDialogType_OpenFile;
+            fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
             fileDialogInfo.title = "Open File";
-            fileDialogInfo.fileName = "";
-            fileDialogInfo.directoryPath = std::filesystem::current_path();
+            fileDialogInfo.file_name = "";
+            fileDialogInfo.directory_path = std::filesystem::current_path();
         }
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
-            textComp.id = asset->loadAsset<Font>(fileDialogInfo.resultPath);
+            textComp.id = asset->loadAsset<Font>(fileDialogInfo.result_path);
         }
         ImGui::Text("Text Content:");
         if (ImGui::InputText("##TextEdit", buffer, sizeof(buffer))) {
             textComp.text = StringToWstring(buffer);
         }
         ImGui::Text("Pixel Size");
-        ImGui::InputInt("##PixelSize", &textComp.pixelSize);
+        int pixel_size = textComp.pixel_size;
+        if (ImGui::InputInt("##PixelSize", &pixel_size)) {
+            textComp.pixel_size = std::clamp(pixel_size, 1, 100);
+        }
         ImGui::Text("Color");
         ImGui::ColorEdit4("##TextColor", &textComp.color[0]);
     });
