@@ -11,14 +11,14 @@ namespace SD {
 
 ScenePanel::ScenePanel()
     : m_scene(nullptr),
-      m_gizmoMode(ImGuizmo::WORLD),
-      m_gizmoType(ImGuizmo::TRANSLATE) {}
+      m_gizmo_mode(ImGuizmo::WORLD),
+      m_gizmo_type(ImGuizmo::TRANSLATE) {}
 
 ScenePanel::ScenePanel(Scene *scene) : m_scene(scene) {}
 
 void ScenePanel::Reset() {
-    m_selectedEntity = {};
-    m_selectedMaterialIdMap.clear();
+    m_selected_entity = {};
+    m_selected_material_id_map.clear();
 }
 
 void ScenePanel::SetScene(Scene *scene) {
@@ -28,13 +28,15 @@ void ScenePanel::SetScene(Scene *scene) {
     m_scene = scene;
 }
 
-void ScenePanel::SetSelectedEntity(Entity entity) { m_selectedEntity = entity; }
+void ScenePanel::SetSelectedEntity(Entity entity) {
+    m_selected_entity = entity;
+}
 
-Entity ScenePanel::GetSelectedEntity() const { return m_selectedEntity; }
+Entity ScenePanel::GetSelectedEntity() const { return m_selected_entity; }
 
-int ScenePanel::GetGizmoMode() const { return m_gizmoMode; }
+int ScenePanel::GetGizmoMode() const { return m_gizmo_mode; }
 
-int ScenePanel::GetGizmoType() const { return m_gizmoType; }
+int ScenePanel::GetGizmoType() const { return m_gizmo_type; }
 
 void ScenePanel::OnImGui() {
     if (m_scene == nullptr) {
@@ -53,14 +55,14 @@ void ScenePanel::OnImGui() {
         }
     });
 
-    if (m_destroyEntity) {
-        m_scene->DestroyEntity(m_destroyEntity);
-        if (m_selectedEntity == m_destroyEntity) m_selectedEntity = {};
-        m_destroyEntity = {};
+    if (m_entity_to_destroy) {
+        m_scene->DestroyEntity(m_entity_to_destroy);
+        if (m_selected_entity == m_entity_to_destroy) m_selected_entity = {};
+        m_entity_to_destroy = {};
     }
 
     if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-        m_selectedEntity = {};
+        m_selected_entity = {};
 
     // Right-click on blank space
     if (ImGui::BeginPopupContextWindow(0, 1, false)) {
@@ -93,8 +95,8 @@ void ScenePanel::OnImGui() {
     ImGui::End();
 
     ImGui::Begin("Properties");
-    if (m_selectedEntity) {
-        DrawComponents(m_selectedEntity);
+    if (m_selected_entity) {
+        DrawComponents(m_selected_entity);
     }
 
     ImGui::End();
@@ -112,12 +114,12 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
         ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_SpanAvailWidth;
 
     ImGuiTreeNodeFlags flags = data.children.empty() ? leaf_flags : base_flags;
-    flags |= ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) |
+    flags |= ((m_selected_entity == entity) ? ImGuiTreeNodeFlags_Selected : 0) |
              ImGuiTreeNodeFlags_OpenOnArrow;
     bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(entt::entity)entity,
                                     flags, "%s", tag.c_str());
     if (ImGui::IsItemClicked(0)) {
-        m_selectedEntity = entity;
+        m_selected_entity = entity;
     }
 
     if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
@@ -138,9 +140,9 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
     }
 
     if (ImGui::BeginPopupContextItem()) {
-        m_selectedEntity = entity;
+        m_selected_entity = entity;
         if (ImGui::MenuItem("Delete Entity")) {
-            m_destroyEntity = entity;
+            m_entity_to_destroy = entity;
         }
         if (ImGui::MenuItem("Create Empty Entity")) {
             Entity newEntity = m_scene->CreateEntity("Empty Entity");
@@ -223,29 +225,29 @@ void ScenePanel::DrawComponents(Entity &entity) {
 
     if (ImGui::BeginPopup("AddComponent")) {
         if (ImGui::MenuItem("Model")) {
-            if (!m_selectedEntity.HasComponent<ModelComponent>())
-                m_selectedEntity.AddComponent<ModelComponent>();
+            if (!m_selected_entity.HasComponent<ModelComponent>())
+                m_selected_entity.AddComponent<ModelComponent>();
             else
                 SD_CORE_WARN("This entity already has the Model Component!");
             ImGui::CloseCurrentPopup();
         }
         if (ImGui::MenuItem("Terrain")) {
-            if (!m_selectedEntity.HasComponent<TerrainComponent>())
-                m_selectedEntity.AddComponent<TerrainComponent>();
+            if (!m_selected_entity.HasComponent<TerrainComponent>())
+                m_selected_entity.AddComponent<TerrainComponent>();
             else
                 SD_CORE_WARN("This entity already has the Terrain Component!");
             ImGui::CloseCurrentPopup();
         }
         if (ImGui::MenuItem("Light")) {
-            if (!m_selectedEntity.HasComponent<LightComponent>())
-                m_selectedEntity.AddComponent<LightComponent>();
+            if (!m_selected_entity.HasComponent<LightComponent>())
+                m_selected_entity.AddComponent<LightComponent>();
             else
                 SD_CORE_WARN("This entity already has the Light Component!");
             ImGui::CloseCurrentPopup();
         }
         if (ImGui::MenuItem("Text")) {
-            if (!m_selectedEntity.HasComponent<TextComponent>())
-                m_selectedEntity.AddComponent<TextComponent>();
+            if (!m_selected_entity.HasComponent<TextComponent>())
+                m_selected_entity.AddComponent<TextComponent>();
             else
                 SD_CORE_WARN("This entity already has the Text Component!");
             ImGui::CloseCurrentPopup();
@@ -258,15 +260,15 @@ void ScenePanel::DrawComponents(Entity &entity) {
     DrawComponent<TransformComponent>(
         "Transform", entity,
         [&](TransformComponent &component) {
-            ImGui::RadioButton("World", &m_gizmoMode, ImGuizmo::WORLD);
+            ImGui::RadioButton("World", &m_gizmo_mode, ImGuizmo::WORLD);
             ImGui::SameLine();
-            ImGui::RadioButton("Local", &m_gizmoMode, ImGuizmo::LOCAL);
+            ImGui::RadioButton("Local", &m_gizmo_mode, ImGuizmo::LOCAL);
 
-            ImGui::RadioButton("Translate", &m_gizmoType, ImGuizmo::TRANSLATE);
+            ImGui::RadioButton("Translate", &m_gizmo_type, ImGuizmo::TRANSLATE);
             ImGui::SameLine();
-            ImGui::RadioButton("Rotate", &m_gizmoType, ImGuizmo::ROTATE);
+            ImGui::RadioButton("Rotate", &m_gizmo_type, ImGuizmo::ROTATE);
             ImGui::SameLine();
-            ImGui::RadioButton("Scale", &m_gizmoType, ImGuizmo::SCALE);
+            ImGui::RadioButton("Scale", &m_gizmo_type, ImGuizmo::SCALE);
             glm::vec3 position = component.transform.GetWorldPosition();
             if (ImGui::DrawVec3Control("Translation", position)) {
                 component.transform.SetWorldPosition(position);
@@ -307,7 +309,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
         auto model = asset->Get<Model>(mc.id);
         if (model) {
             DrawMaterialsList(model->GetMaterials(), size,
-                              &m_selectedMaterialIdMap[entity]);
+                              &m_selected_material_id_map[entity]);
         }
     });
     // drawComponent<TerrainComponent>(

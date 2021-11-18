@@ -18,7 +18,7 @@ Action::Action(Scancode scancode, int type) : m_type(type) {
 }
 
 Action::Action(MouseButton button, int type) : m_type(type) {
-    m_event.mouseButton.button = button;
+    m_event.mouse_button.button = button;
     m_event.type = Event::EventType::MOUSE_BUTTON_PRESSED;
 }
 
@@ -39,12 +39,12 @@ bool Action::operator==(const Event &event) const {
         case Event::EventType::MOUSE_BUTTON_PRESSED: {
             if (m_type & Type::PRESSED &&
                 m_event.type == Event::EventType::MOUSE_BUTTON_PRESSED)
-                res = event.mouseButton.button == m_event.mouseButton.button;
+                res = event.mouse_button.button == m_event.mouse_button.button;
         } break;
         case Event::EventType::MOUSE_BUTTON_RELEASED: {
             if (m_type & Type::RELEASED &&
                 m_event.type == Event::EventType::MOUSE_BUTTON_PRESSED)
-                res = event.mouseButton.button == m_event.mouseButton.button;
+                res = event.mouse_button.button == m_event.mouse_button.button;
         } break;
         default:
             res = m_event.type == event.type;
@@ -65,10 +65,10 @@ bool Action::Test() const {
         }
     } else if (m_event.type == Event::EventType::MOUSE_BUTTON_PRESSED) {
         if (m_type & Type::PRESSED) {
-            res = Input::IsMousePressed(m_event.mouseButton.button);
+            res = Input::IsMousePressed(m_event.mouse_button.button);
         }
         if (m_type & Type::DOWN) {
-            res = Input::IsMouseDown(m_event.mouseButton.button);
+            res = Input::IsMouseDown(m_event.mouse_button.button);
         }
     }
     return res;

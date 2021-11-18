@@ -43,12 +43,12 @@ class ScenePanel {
     void Reset();
 
     Scene *m_scene;
-    Entity m_selectedEntity;
-    Entity m_destroyEntity;
-    std::unordered_map<entt::entity, int> m_selectedMaterialIdMap;
+    Entity m_selected_entity;
+    Entity m_entity_to_destroy;
+    std::unordered_map<entt::entity, int> m_selected_material_id_map;
 
-    int m_gizmoMode;
-    int m_gizmoType;
+    int m_gizmo_mode;
+    int m_gizmo_type;
 };
 
 }  // namespace SD

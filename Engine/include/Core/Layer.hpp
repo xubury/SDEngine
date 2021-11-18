@@ -15,7 +15,7 @@ namespace SD {
 class SD_API Layer {
    public:
    public:
-    Layer(const std::string &name) : m_name(name), m_blockEvent(false) {}
+    Layer(const std::string &name) : m_name(name), m_is_block_event(false) {}
 
     virtual ~Layer() = default;
 
@@ -37,8 +37,8 @@ class SD_API Layer {
 
     virtual void OnEventsProcess() {}
 
-    void SetBlockEvent(bool block) { m_blockEvent = block; }
-    bool IsBlockEvent() const { return m_blockEvent; }
+    void SetIsBlockEvent(bool is_block) { m_is_block_event = is_block; }
+    bool IsBlockEvent() const { return m_is_block_event; }
 
     template <typename SYSTEM, typename... ARGS>
     void PushSystem(ARGS &&...args) {
@@ -86,7 +86,7 @@ class SD_API Layer {
 
     SET_APP_VARS;
     std::string m_name;
-    bool m_blockEvent;
+    bool m_is_block_event;
     EventStack<System *> m_systems;
 };
 

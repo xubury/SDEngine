@@ -26,12 +26,12 @@ class CameraController : public ActionTarget<CameraMovement> {
     void RotateAround(float yaw, float pitch);
 
    private:
-    ActionMap<CameraMovement> m_controllerMap;
+    ActionMap<CameraMovement> m_controller_map;
     Camera *m_camera;
     glm::vec3 m_focus;
 
-    glm::vec2 m_mouseMovement;
-    glm::vec2 m_mouseSmoothMovement;
+    glm::vec2 m_mouse_movement;
+    glm::vec2 m_mouse_smooth_movement;
 
     float m_pitch;
 };

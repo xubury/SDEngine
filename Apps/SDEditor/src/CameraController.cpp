@@ -8,22 +8,22 @@ const float ROTATION_SPEED = 0.1;
 const float SMOOTHNESS = 10;
 
 CameraController::CameraController()
-    : ActionTarget<CameraMovement>(m_controllerMap),
+    : ActionTarget<CameraMovement>(m_controller_map),
       m_camera(nullptr),
       m_focus(0.f),
-      m_mouseMovement(0),
-      m_mouseSmoothMovement(0),
+      m_mouse_movement(0),
+      m_mouse_smooth_movement(0),
       m_pitch(0.f) {
-    m_controllerMap.Map(
+    m_controller_map.Map(
         CameraMovement::FORWARD,
         Action(Keycode::W, Action::Type::REAL_TIME | Action::Type::DOWN));
-    m_controllerMap.Map(
+    m_controller_map.Map(
         CameraMovement::BACKWARD,
         Action(Keycode::S, Action::Type::REAL_TIME | Action::Type::DOWN));
-    m_controllerMap.Map(
+    m_controller_map.Map(
         CameraMovement::LEFT,
         Action(Keycode::A, Action::Type::REAL_TIME | Action::Type::DOWN));
-    m_controllerMap.Map(
+    m_controller_map.Map(
         CameraMovement::RIGHT,
         Action(Keycode::D, Action::Type::REAL_TIME | Action::Type::DOWN));
 
@@ -37,19 +37,19 @@ CameraController::CameraController()
          [this](const Event &) { Move(m_camera->GetWorldRight()); });
     Bind(Action(Event::EventType::MOUSE_MOTION), [this](const Event &event) {
         if (Input::IsMouseDown(MouseButton::RIGHT)) {
-            m_mouseMovement.x += event.mouseMotion.xrel;
-            m_mouseMovement.y += event.mouseMotion.yrel;
+            m_mouse_movement.x += event.mouse_motion.x_rel;
+            m_mouse_movement.y += event.mouse_motion.y_rel;
         }
     });
 }
 
 void CameraController::Tick(float dt) {
-    m_mouseSmoothMovement =
-        glm::mix(m_mouseSmoothMovement, m_mouseMovement, dt * SMOOTHNESS);
-    Rotate(-m_mouseSmoothMovement.x * ROTATION_SPEED,
-           -m_mouseSmoothMovement.y * ROTATION_SPEED);
-    m_mouseMovement.x = 0;
-    m_mouseMovement.y = 0;
+    m_mouse_smooth_movement =
+        glm::mix(m_mouse_smooth_movement, m_mouse_movement, dt * SMOOTHNESS);
+    Rotate(-m_mouse_smooth_movement.x * ROTATION_SPEED,
+           -m_mouse_smooth_movement.y * ROTATION_SPEED);
+    m_mouse_movement.x = 0;
+    m_mouse_movement.y = 0;
 }
 
 void CameraController::Move(const glm::vec3 &t) { m_camera->TranslateWorld(t); }

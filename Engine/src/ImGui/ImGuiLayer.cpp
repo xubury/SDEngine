@@ -76,12 +76,12 @@ void ImGuiLayer::OnEventProcess(const Event& event) {
         default:
             break;
         case Event::EventType::WINDOW_RESIZED:
-            io.DisplaySize.x = static_cast<float>(event.size.width);
-            io.DisplaySize.y = static_cast<float>(event.size.height);
+            io.DisplaySize.x = static_cast<float>(event.window_size.width);
+            io.DisplaySize.y = static_cast<float>(event.window_size.height);
             break;
         case Event::EventType::TEXT_INPUT: {
             // TODO: not sure if it is correct
-            io.AddInputCharacterUTF16(*event.text.text);
+            io.AddInputCharacterUTF16(*event.text_input.text);
         } break;
         case Event::EventType::KEY_PRESSED: {
             io.KeysDown[static_cast<uint16_t>(
@@ -101,19 +101,19 @@ void ImGuiLayer::OnEventProcess(const Event& event) {
         } break;
         case Event::EventType::MOUSE_MOTION: {
             glm::vec2 screenPos =
-                glm::vec2(event.mouseMotion.x, event.mouseMotion.y);
+                glm::vec2(event.mouse_motion.x, event.mouse_motion.y);
             io.MousePos.x = static_cast<float>(screenPos.x);
             io.MousePos.y = static_cast<float>(screenPos.y);
         } break;
         case Event::EventType::MOUSE_BUTTON_PRESSED: {
-            int button = static_cast<int>(event.mouseButton.button) -
+            int button = static_cast<int>(event.mouse_button.button) -
                          static_cast<int>(MouseButton::LEFT);
             if (io.WantCaptureMouse) {
                 io.MouseDown[button] = true;
             }
         } break;
         case Event::EventType::MOUSE_BUTTON_RELEASED: {
-            int button = static_cast<int>(event.mouseButton.button) -
+            int button = static_cast<int>(event.mouse_button.button) -
                          static_cast<int>(MouseButton::LEFT);
             if (io.WantCaptureMouse) {
                 io.MouseDown[button] = false;
@@ -121,7 +121,7 @@ void ImGuiLayer::OnEventProcess(const Event& event) {
         } break;
         case Event::EventType::MOUSE_WHEEL_SCROLLED: {
             if (io.WantCaptureMouse) {
-                io.MouseWheel += event.mouseWheel.y;
+                io.MouseWheel += event.mouse_wheel.y;
             }
         } break;
     }

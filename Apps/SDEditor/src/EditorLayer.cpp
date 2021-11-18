@@ -311,12 +311,12 @@ void EditorLayer::OnImGui() {
 
 void EditorLayer::Hide() {
     m_hide = true;
-    SetBlockEvent(false);
+    SetIsBlockEvent(false);
 }
 
 void EditorLayer::Show() {
     m_hide = false;
-    SetBlockEvent(true);
+    SetIsBlockEvent(true);
     renderer->SetCamera(&m_editor_camera);
 }
 

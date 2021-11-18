@@ -118,25 +118,25 @@ enum class Scancode : uint16_t {
                      *   will never generate it with most (all?)
                      *   keyboards.
                      */
-    SCANCDOE_SEMICOLON = 51,
-    SCANCDOE_APOSTROPHE = 52,
-    SCANCDOE_GRAVE = 53, /**< Located in the top left corner (on both ANSI
-                          *   and ISO keyboards). Produces GRAVE ACCENT and
-                          *   TILDE in a US Windows layout and in US and UK
-                          *   Mac layouts on ANSI keyboards, GRAVE ACCENT
-                          *   and NOT SIGN in a UK Windows layout, SECTION
-                          *   SIGN and PLUS-MINUS SIGN in US and UK Mac
-                          *   layouts on ISO keyboards, SECTION SIGN and
-                          *   DEGREE SIGN in a Swiss German layout (Mac:
-                          *   only on ISO keyboards), CIRCUMFLEX ACCENT and
-                          *   DEGREE SIGN in a German layout (Mac: only on
-                          *   ISO keyboards), SUPERSCRIPT TWO and TILDE in a
-                          *   French Windows layout, COMMERCIAL AT and
-                          *   NUMBER SIGN in a French Mac layout on ISO
-                          *   keyboards, and LESS-THAN SIGN and GREATER-THAN
-                          *   SIGN in a Swiss German, German, or French Mac
-                          *   layout on ANSI keyboards.
-                          */
+    SEMICOLON = 51,
+    APOSTROPHE = 52,
+    GRAVE = 53, /**< Located in the top left corner (on both ANSI
+                 *   and ISO keyboards). Produces GRAVE ACCENT and
+                 *   TILDE in a US Windows layout and in US and UK
+                 *   Mac layouts on ANSI keyboards, GRAVE ACCENT
+                 *   and NOT SIGN in a UK Windows layout, SECTION
+                 *   SIGN and PLUS-MINUS SIGN in US and UK Mac
+                 *   layouts on ISO keyboards, SECTION SIGN and
+                 *   DEGREE SIGN in a Swiss German layout (Mac:
+                 *   only on ISO keyboards), CIRCUMFLEX ACCENT and
+                 *   DEGREE SIGN in a German layout (Mac: only on
+                 *   ISO keyboards), SUPERSCRIPT TWO and TILDE in a
+                 *   French Windows layout, COMMERCIAL AT and
+                 *   NUMBER SIGN in a French Mac layout on ISO
+                 *   keyboards, and LESS-THAN SIGN and GREATER-THAN
+                 *   SIGN in a Swiss German, German, or French Mac
+                 *   layout on ANSI keyboards.
+                 */
     COMMA = 54,
     PERIOD = 55,
     SLASH = 56,
@@ -237,25 +237,25 @@ enum class Scancode : uint16_t {
     KP_COMMA = 133,
     KP_EQUALSAS400 = 134,
 
-    SCANCDOE_INTERNATIONAL1 = 135, /**< used on Asian keyboards, see
+    INTERNATIONAL1 = 135, /**< used on Asian keyboards, see
                                             footnotes in USB doc */
-    SCANCDOE_NTERNATIONAL2 = 136,
-    SCANCDOE_NTERNATIONAL3 = 137, /**< Yen */
-    SCANCDOE_NTERNATIONAL4 = 138,
-    SCANCDOE_NTERNATIONAL5 = 139,
-    SCANCDOE_NTERNATIONAL6 = 140,
-    SCANCDOE_NTERNATIONAL7 = 141,
-    SCANCDOE_NTERNATIONAL8 = 142,
-    SCANCDOE_NTERNATIONAL9 = 143,
-    SCANCDOE_ANG1 = 144, /**< Hangul/English toggle */
-    SCANCDOE_ANG2 = 145, /**< Hanja conversion */
-    SCANCDOE_ANG3 = 146, /**< Katakana */
-    SCANCDOE_ANG4 = 147, /**< Hiragana */
-    SCANCDOE_ANG5 = 148, /**< Zenkaku/Hankaku */
-    SCANCDOE_ANG6 = 149, /**< reserved */
-    SCANCDOE_ANG7 = 150, /**< reserved */
-    SCANCDOE_ANG8 = 151, /**< reserved */
-    SCANCDOE_ANG9 = 152, /**< reserved */
+    INTERNATIONAL2 = 136,
+    INTERNATIONAL3 = 137, /**< Yen */
+    INTERNATIONAL4 = 138,
+    INTERNATIONAL5 = 139,
+    INTERNATIONAL6 = 140,
+    INTERNATIONAL7 = 141,
+    INTERNATIONAL8 = 142,
+    INTERNATIONAL9 = 143,
+    LANG1 = 144, /**< Hangul/English toggle */
+    LANG2 = 145, /**< Hanja conversion */
+    LANG3 = 146, /**< Katakana */
+    LANG4 = 147, /**< Hiragana */
+    LANG5 = 148, /**< Zenkaku/Hankaku */
+    LANG6 = 149, /**< reserved */
+    LANG7 = 150, /**< reserved */
+    LANG8 = 151, /**< reserved */
+    LANG9 = 152, /**< reserved */
 
     ALTERASE = 153, /**< Erase-Eaze */
     SYSREQ = 154,

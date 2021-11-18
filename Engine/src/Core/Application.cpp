@@ -87,35 +87,35 @@ void Application::ProcessEvent(const SDL_Event &sdl_event) {
     switch (sdl_event.type) {
         case SDL_MOUSEMOTION:
             event.type = Event::EventType::MOUSE_MOTION;
-            event.mouseMotion.x = sdl_event.motion.x;
-            event.mouseMotion.y = sdl_event.motion.y;
-            event.mouseMotion.xrel = sdl_event.motion.xrel;
-            event.mouseMotion.yrel = sdl_event.motion.yrel;
-            Input::SetMouseCoord(event.mouseMotion.x, event.mouseMotion.y);
+            event.mouse_motion.x = sdl_event.motion.x;
+            event.mouse_motion.y = sdl_event.motion.y;
+            event.mouse_motion.x_rel = sdl_event.motion.xrel;
+            event.mouse_motion.y_rel = sdl_event.motion.yrel;
+            Input::SetMouseCoord(event.mouse_motion.x, event.mouse_motion.y);
             break;
         case SDL_MOUSEBUTTONDOWN:
             event.type = Event::EventType::MOUSE_BUTTON_PRESSED;
-            event.mouseButton.button =
+            event.mouse_button.button =
                 static_cast<MouseButton>(sdl_event.button.button);
             SDL_BUTTON_LEFT;
-            event.mouseButton.x = sdl_event.button.x;
-            event.mouseButton.y = sdl_event.button.y;
-            event.mouseButton.clicks = sdl_event.button.clicks;
-            Input::PressMouseButton(event.mouseButton.button);
+            event.mouse_button.x = sdl_event.button.x;
+            event.mouse_button.y = sdl_event.button.y;
+            event.mouse_button.clicks = sdl_event.button.clicks;
+            Input::PressMouseButton(event.mouse_button.button);
             break;
         case SDL_MOUSEBUTTONUP:
             event.type = Event::EventType::MOUSE_BUTTON_RELEASED;
-            event.mouseButton.button =
+            event.mouse_button.button =
                 static_cast<MouseButton>(sdl_event.button.button);
-            event.mouseButton.x = sdl_event.button.x;
-            event.mouseButton.y = sdl_event.button.y;
-            event.mouseButton.clicks = sdl_event.button.clicks;
-            Input::ReleaseMouseButton(event.mouseButton.button);
+            event.mouse_button.x = sdl_event.button.x;
+            event.mouse_button.y = sdl_event.button.y;
+            event.mouse_button.clicks = sdl_event.button.clicks;
+            Input::ReleaseMouseButton(event.mouse_button.button);
             break;
         case SDL_MOUSEWHEEL:
             event.type = Event::EventType::MOUSE_WHEEL_SCROLLED;
-            event.mouseWheel.x = sdl_event.wheel.x;
-            event.mouseWheel.y = sdl_event.wheel.y;
+            event.mouse_wheel.x = sdl_event.wheel.x;
+            event.mouse_wheel.y = sdl_event.wheel.y;
             break;
         case SDL_KEYDOWN:
             event.type = Event::EventType::KEY_PRESSED;
@@ -134,15 +134,15 @@ void Application::ProcessEvent(const SDL_Event &sdl_event) {
                 case SDL_WINDOWEVENT_RESIZED:
                 case SDL_WINDOWEVENT_SIZE_CHANGED: {
                     event.type = Event::EventType::WINDOW_RESIZED;
-                    event.size.width = sdl_event.window.data1;
-                    event.size.height = sdl_event.window.data2;
+                    event.window_size.width = sdl_event.window.data1;
+                    event.window_size.height = sdl_event.window.data2;
                 } break;
             }
             break;
         case SDL_TEXTINPUT: {
             event.type = Event::EventType::TEXT_INPUT;
             std::copy(std::begin(sdl_event.text.text),
-                      std::end(sdl_event.text.text), event.text.text);
+                      std::end(sdl_event.text.text), event.text_input.text);
         } break;
     }
     for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {

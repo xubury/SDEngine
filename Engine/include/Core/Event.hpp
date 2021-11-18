@@ -20,8 +20,8 @@ struct KeyEvent {
 struct MouseMotionEvent {
     int32_t x;
     int32_t y;
-    int32_t xrel;
-    int32_t yrel;
+    int32_t x_rel;
+    int32_t y_rel;
 };
 
 struct MouseButtonEvent {
@@ -42,12 +42,12 @@ struct TextInputEvent {
 
 struct SD_API Event {
     union {
-        WindowSizeEvent size;
+        WindowSizeEvent window_size;
         KeyEvent key;
-        MouseMotionEvent mouseMotion;
-        MouseButtonEvent mouseButton;
-        MouseWheelEvent mouseWheel;
-        TextInputEvent text;
+        MouseMotionEvent mouse_motion;
+        MouseButtonEvent mouse_button;
+        MouseWheelEvent mouse_wheel;
+        TextInputEvent text_input;
     };
 
     enum EventType {
