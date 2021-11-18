@@ -50,8 +50,8 @@ Application::Application() {
 }
 
 Application::~Application() {
-    while (m_layers.size()) {
-        DestroyLayer(m_layers.front());
+    while (m_layers.Size()) {
+        DestroyLayer(m_layers.Front());
     }
     IMG_Quit();
     SDL_Quit();

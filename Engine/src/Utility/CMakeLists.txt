@@ -9,6 +9,7 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Utility)
 set(Utility_Include
     ${Include_Root}/Assert.hpp
     ${Include_Root}/Base.hpp
+    ${Include_Root}/BlockingQueue.hpp
     ${Include_Root}/Config.hpp
     ${Include_Root}/Export.hpp
     ${Include_Root}/File.hpp

@@ -61,10 +61,10 @@ class SD_API EventStack {
 
     const reverse_iterator rend() const { return m_items.rend(); }
 
-    size_t size() const { return m_items.size(); }
+    size_t Size() const { return m_items.size(); }
 
-    T &front() { return m_items.front(); }
-    const T &front() const { return m_items.front(); }
+    T &Front() { return m_items.front(); }
+    const T &Front() const { return m_items.front(); }
 
    private:
     std::vector<T> m_items;
