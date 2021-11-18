@@ -1,3 +1,5 @@
+find_package(Freetype REQUIRED)
+
 set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Renderer)
 set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Renderer)
 
@@ -58,7 +60,13 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(sd-renderer PUBLIC SD_SHARED)
 endif()
 
-target_link_libraries(sd-renderer PUBLIC sd-graphics sd-ecs sd-core)
+target_link_libraries(sd-renderer 
+    PUBLIC 
+    sd-graphics 
+    sd-ecs 
+    sd-core 
+    PRIVATE
+    Freetype::Freetype)
 
 target_include_directories(sd-renderer
     PUBLIC
