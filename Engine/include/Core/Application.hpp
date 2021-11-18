@@ -10,9 +10,17 @@ int main(int argc, char **argv);
 
 namespace SD {
 
+class Application;
+
+Application &GetApp();
+
+std::filesystem::path GetAppDirectory();
+
 class SD_API Application {
    public:
     void Quit();
+
+    std::filesystem::path GetDirectory();
 
     Application(const Application &application) = delete;
     Application &operator=(const Application &application) = delete;
@@ -54,8 +62,6 @@ class SD_API Application {
     EventStack<Layer *> m_layers;
     ImGuiLayer *m_imguiLayer;
 };
-
-Application &GetApp();
 
 }  // namespace SD
 
