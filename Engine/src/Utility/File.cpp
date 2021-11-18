@@ -17,8 +17,7 @@ void Read(const std::string &filePath, std::string &content) {
         file.close();
         content = fileStream.str();
     } catch (std::ifstream::failure &e) {
-        SD_CORE_ERROR("File from {} are not successfully read! Error: {}",
-                      filePath, e.what());
+        throw FileException(filePath, std::strerror(errno));
     }
 }
 

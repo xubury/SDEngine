@@ -6,11 +6,48 @@
 
 namespace SD {
 
+class Exception : public std::exception, public std::string {
+   public:
+    Exception(void) throw() {}
+
+    Exception(const std::string& msg) throw() : std::string(msg) {}
+
+    Exception(const std::string& msg, char const* msg2) throw()
+        : std::string(msg) {
+        append(msg2);
+    }
+
+    Exception(const std::string& msg, const std::string& msg2) throw()
+        : std::string(msg) {
+        append(msg2);
+    }
+
+    virtual ~Exception(void) throw() {}
+
+    virtual const char* what(void) const throw() { return c_str(); }
+};
+
+class FileException : public Exception {
+   public:
+    FileException(const std::string& file_path, const std::string& msg) throw()
+        : Exception(msg), m_file_path(file_path) {}
+
+    FileException(const std::string& file_path, char const* msg) throw()
+        : Exception(msg), m_file_path(file_path) {}
+
+    virtual ~FileException(void) throw() {}
+
+    const std::string& GetFilePath() const { return m_file_path; }
+
+   public:
+    std::string m_file_path;
+};
+
 namespace File {
 
-void SD_API Read(const std::string &filePath, std::string &content);
+void SD_API Read(const std::string& file_path, std::string& content);
 
-void SD_API Write(const std::string &filePath, const std::string &content);
+void SD_API Write(const std::string& file_path, const std::string& content);
 
 }  // namespace File
 
