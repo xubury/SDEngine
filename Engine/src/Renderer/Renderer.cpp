@@ -155,7 +155,6 @@ void Renderer::DrawMesh(const Mesh& mesh) {
 
 void Renderer::BeginScene(Camera& camera) {
     UpdateShader(*s_data.spriteShader, camera);
-    s_data.spriteShader->Bind();
     StartBatch();
 }
 
@@ -184,6 +183,7 @@ void Renderer::Flush() {
         s_data.spriteShader->SetTexture(i, s_data.textureSlots[i].get());
     }
 
+    s_data.spriteShader->Bind();
     Renderer::Submit(*s_data.quadVAO, MeshTopology::TRIANGLES,
                      s_data.quadIndexCnt, 0);
 

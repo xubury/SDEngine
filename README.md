@@ -15,10 +15,10 @@ Simple and Direct Engine
 - [X] ResourceId
 - [X] Asset System based on ResourceId
 - [X] Blocking queue
-- [X] code formatting (naming convension, GoogleStyle?)
 - [ ] Event bus
 - [ ] Ini parser
 - [ ] Profile System
+- [ ] Camera System, how to switch between cameras? like from editor camrea to scene camera?
 - [ ] Gui System
 - [ ] Script System
 - [ ] Audio System
