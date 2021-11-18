@@ -69,7 +69,7 @@ class EditorLayer : public Layer {
     CameraController m_camera_controller;
 
     Ref<Scene> m_scene;
-    ScenePanel m_scenePanel;
+    ScenePanel m_scene_panel;
 
     bool m_load_scene_open;
     bool m_save_scene_open;

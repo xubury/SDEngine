@@ -7,6 +7,7 @@
 #include "ECS/Entity.hpp"
 #include "ImGui/FileDialog.hpp"
 #include "ECS/Component.hpp"
+#include "ImGuizmo.h"
 
 namespace SD {
 
@@ -23,8 +24,11 @@ class ScenePanel {
 
     void OnImGui();
 
-    int GetGizmoMode() const;
-    int GetGizmoType() const;
+    void SetGizmoMode(ImGuizmo::MODE mode) { m_gizmo_mode = mode; }
+    ImGuizmo::MODE GetGizmoMode() const;
+
+    void SetGizmoOperation(ImGuizmo::OPERATION op) { m_gizmo_op = op; }
+    ImGuizmo::OPERATION GetGizmoOperation() const;
 
     SET_APP_VARS;
 
@@ -47,8 +51,8 @@ class ScenePanel {
     Entity m_entity_to_destroy;
     std::unordered_map<entt::entity, int> m_selected_material_id_map;
 
-    int m_gizmo_mode;
-    int m_gizmo_type;
+    ImGuizmo::MODE m_gizmo_mode;
+    ImGuizmo::OPERATION m_gizmo_op;
 };
 
 }  // namespace SD

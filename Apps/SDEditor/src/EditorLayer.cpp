@@ -68,7 +68,7 @@ void EditorLayer::OnPush() {
         TextureFormatType::UBYTE, TextureWrap::REPEAT, TextureFilter::LINEAR,
         TextureMipmapFilter::LINEAR_LINEAR, image->data());
 
-    m_scenePanel.SetAppVars(MakeAppVars());
+    m_scene_panel.SetAppVars(MakeAppVars());
 
     PushSystem(m_shadow_system);
     PushSystem(m_lighting_system);
@@ -122,10 +122,10 @@ void EditorLayer::OnTick(float dt) {
                                     viewportSize.y - mouseY, 0, 1, 1, 1,
                                     sizeof(entity), &entity);
         if (entity != Entity::INVALID_ID) {
-            m_scenePanel.SetSelectedEntity({entity, m_scene.get()});
+            m_scene_panel.SetSelectedEntity({entity, m_scene.get()});
         }
     }
-    Entity entity = m_scenePanel.GetSelectedEntity();
+    Entity entity = m_scene_panel.GetSelectedEntity();
     if (entity) {
         glm::vec3 pos = entity.GetComponent<TransformComponent>()
                             .transform.GetWorldPosition();
@@ -212,7 +212,7 @@ void EditorLayer::OnImGui() {
         ImGui::EndMenuBar();
     }
 
-    m_scenePanel.OnImGui();
+    m_scene_panel.OnImGui();
 
     ImGui::Begin("Render Settings");
     {
@@ -278,7 +278,7 @@ void EditorLayer::OnImGui() {
         m_is_viewport_hovered = ImGui::IsWindowHovered();
         ImGui::DrawTexture(*m_screen_buffer->GetTexture(), wsize);
 
-        Entity selectedEntity = m_scenePanel.GetSelectedEntity();
+        Entity selectedEntity = m_scene_panel.GetSelectedEntity();
         if (selectedEntity) {
             ImGuizmo::SetOrthographic(false);
             ImGuizmo::SetDrawlist();
@@ -290,13 +290,11 @@ void EditorLayer::OnImGui() {
 
             auto &tc = selectedEntity.GetComponent<TransformComponent>();
             glm::mat4 transform = tc.transform.GetWorldTransform();
-            ImGuizmo::OPERATION op =
-                static_cast<ImGuizmo::OPERATION>(m_scenePanel.GetGizmoType());
-            ImGuizmo::MODE mode =
-                static_cast<ImGuizmo::MODE>(m_scenePanel.GetGizmoMode());
             if (ImGuizmo::Manipulate(
-                    glm::value_ptr(view), glm::value_ptr(projection), op, mode,
-                    glm::value_ptr(transform), nullptr, nullptr)) {
+                    glm::value_ptr(view), glm::value_ptr(projection),
+                    m_scene_panel.GetGizmoOperation(),
+                    m_scene_panel.GetGizmoMode(), glm::value_ptr(transform),
+                    nullptr, nullptr)) {
                 tc.transform.SetWorldTransform(transform);
             }
         }
@@ -340,6 +338,8 @@ void EditorLayer::OnEventProcess(const Event &event) {
             case Keycode::S: {
                 if (event.key.mod == (Keymod::LCTRL | Keymod::LSHIFT)) {
                     SaveScene();
+                } else {
+                    m_scene_panel.SetGizmoOperation(ImGuizmo::SCALE);
                 }
             } break;
             case Keycode::N: {
@@ -355,6 +355,12 @@ void EditorLayer::OnEventProcess(const Event &event) {
             case Keycode::ESCAPE: {
                 GetApp().Quit();
             } break;
+            case Keycode::T: {
+                m_scene_panel.SetGizmoOperation(ImGuizmo::TRANSLATE);
+            } break;
+            case Keycode::R: {
+                m_scene_panel.SetGizmoOperation(ImGuizmo::ROTATE);
+            } break;
         }
     }
 }
@@ -367,7 +373,7 @@ void EditorLayer::OnEventsProcess() {
 
 void EditorLayer::NewScene() {
     m_scene = CreateRef<Scene>();
-    m_scenePanel.SetScene(m_scene.get());
+    m_scene_panel.SetScene(m_scene.get());
     renderer->SetScene(m_scene.get());
 }
 

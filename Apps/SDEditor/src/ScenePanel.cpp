@@ -3,7 +3,6 @@
 #include "Utility/String.hpp"
 #include "Asset/Asset.hpp"
 #include "ImGui/ImGuiWidget.hpp"
-#include "ImGuizmo.h"
 
 #define ECS_MOVEENTITY "ECS MOVEENTITY"
 
@@ -12,7 +11,7 @@ namespace SD {
 ScenePanel::ScenePanel()
     : m_scene(nullptr),
       m_gizmo_mode(ImGuizmo::WORLD),
-      m_gizmo_type(ImGuizmo::TRANSLATE) {}
+      m_gizmo_op(ImGuizmo::TRANSLATE) {}
 
 ScenePanel::ScenePanel(Scene *scene) : m_scene(scene) {}
 
@@ -34,9 +33,9 @@ void ScenePanel::SetSelectedEntity(Entity entity) {
 
 Entity ScenePanel::GetSelectedEntity() const { return m_selected_entity; }
 
-int ScenePanel::GetGizmoMode() const { return m_gizmo_mode; }
+ImGuizmo::MODE ScenePanel::GetGizmoMode() const { return m_gizmo_mode; }
 
-int ScenePanel::GetGizmoType() const { return m_gizmo_type; }
+ImGuizmo::OPERATION ScenePanel::GetGizmoOperation() const { return m_gizmo_op; }
 
 void ScenePanel::OnImGui() {
     if (m_scene == nullptr) {
@@ -260,15 +259,21 @@ void ScenePanel::DrawComponents(Entity &entity) {
     DrawComponent<TransformComponent>(
         "Transform", entity,
         [&](TransformComponent &component) {
-            ImGui::RadioButton("World", &m_gizmo_mode, ImGuizmo::WORLD);
+            ImGui::RadioButton("World", reinterpret_cast<int *>(&m_gizmo_mode),
+                               ImGuizmo::WORLD);
             ImGui::SameLine();
-            ImGui::RadioButton("Local", &m_gizmo_mode, ImGuizmo::LOCAL);
+            ImGui::RadioButton("Local", reinterpret_cast<int *>(&m_gizmo_mode),
+                               ImGuizmo::LOCAL);
 
-            ImGui::RadioButton("Translate", &m_gizmo_type, ImGuizmo::TRANSLATE);
+            ImGui::RadioButton("Translate",
+                               reinterpret_cast<int *>(&m_gizmo_op),
+                               ImGuizmo::TRANSLATE);
             ImGui::SameLine();
-            ImGui::RadioButton("Rotate", &m_gizmo_type, ImGuizmo::ROTATE);
+            ImGui::RadioButton("Rotate", reinterpret_cast<int *>(&m_gizmo_op),
+                               ImGuizmo::ROTATE);
             ImGui::SameLine();
-            ImGui::RadioButton("Scale", &m_gizmo_type, ImGuizmo::SCALE);
+            ImGui::RadioButton("Scale", reinterpret_cast<int *>(&m_gizmo_op),
+                               ImGuizmo::SCALE);
             glm::vec3 position = component.transform.GetWorldPosition();
             if (ImGui::DrawVec3Control("Translation", position)) {
                 component.transform.SetWorldPosition(position);
