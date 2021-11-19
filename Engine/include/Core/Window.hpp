@@ -48,20 +48,23 @@ class SD_API Window {
 
     glm::ivec2 GetSize();
 
-    uint8_t GetMSAA() const { return m_msaa; }
-
     SDL_Window *GetHandle();
 
     virtual void *GetGraphicsContext() = 0;
 
+    virtual uint8_t GetMSAA() const = 0;
+
+    virtual bool GetIsVSync() const = 0;
+
+    std::string GetTitle() const;
+
    protected:
-    Window(const WindowProp &property);
+    Window() = default;
 
     SDL_Window *m_window;
 
    private:
     bool m_shouldClose;
-    uint8_t m_msaa;
 };
 
 }  // namespace SD

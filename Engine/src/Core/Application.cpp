@@ -25,9 +25,11 @@ void Application::OnInit() {
             ini_path);
     }
 
+    std::string title = ini->Get("window", "title", "SD Engine");
     int width = ini->GetInteger("window", "width", 1600);
     int height = ini->GetInteger("window", "height", 900);
     int msaa = ini->GetInteger("window", "msaa", 4);
+    bool vsync = ini->GetBoolean("window", "vsync", true);
 
     SDL(SDL_Init(SDL_INIT_EVERYTHING));
     int img_flags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
@@ -38,10 +40,12 @@ void Application::OnInit() {
     SetGraphicsAPI(GraphicsAPI::OpenGL);
 
     WindowProp prop;
+    prop.title = title;
     prop.width = width;
     prop.height = height;
     prop.msaa = msaa;
     prop.flag = SDL_WINDOW_MAXIMIZED;
+    prop.vsync = vsync;
     m_window = Window::Create(prop);
 
     ShaderLibrary::Instance().SetRootPath("assets");
@@ -56,9 +60,11 @@ void Application::OnInit() {
 
 void Application::OnDestroy() {
     glm::ivec2 size = m_window->GetSize();
+    ini->Set("window", "title", m_window->GetTitle());
     ini->SetInteger("window", "width", size.x);
     ini->SetInteger("window", "height", size.y);
     ini->SetInteger("window", "msaa", m_window->GetMSAA());
+    ini->SetBoolean("window", "vsync", m_window->GetIsVSync());
 
     ini->Save(GetAppDirectory() / setting_filename);
 

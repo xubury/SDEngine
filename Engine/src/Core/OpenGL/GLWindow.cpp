@@ -4,7 +4,7 @@
 
 namespace SD {
 
-GLWindow::GLWindow(const WindowProp &property) : Window(property) {
+GLWindow::GLWindow(const WindowProp &property) {
     uint32_t sdlFlags =
         property.flag | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
 
@@ -36,5 +36,13 @@ GLWindow::GLWindow(const WindowProp &property) : Window(property) {
 GLWindow::~GLWindow() { SDL_GL_DeleteContext(m_context); }
 
 void *GLWindow::GetGraphicsContext() { return m_context; }
+
+uint8_t GLWindow::GetMSAA() const {
+    int value = 1;
+    SDL(SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &value));
+    return value;
+}
+
+bool GLWindow::GetIsVSync() const { return SDL_GL_GetSwapInterval() == 1; }
 
 }  // namespace SD

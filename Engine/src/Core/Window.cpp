@@ -19,7 +19,6 @@ Ref<Window> Window::Create(const WindowProp &property) {
     return window;
 }
 
-Window::Window(const WindowProp &property) : m_msaa(property.msaa) {}
 
 Window::~Window() { SDL_DestroyWindow(m_window); }
 
@@ -36,6 +35,8 @@ glm::ivec2 Window::GetSize() {
 }
 
 SDL_Window *Window::GetHandle() { return m_window; }
+
+std::string Window::GetTitle() const { return SDL_GetWindowTitle(m_window); }
 
 void Window::SwapBuffer() { SDL_GL_SwapWindow(m_window); }
 

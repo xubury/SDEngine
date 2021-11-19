@@ -14,6 +14,10 @@ class SD_API GLWindow : public Window {
 
     void *GetGraphicsContext() override;
 
+    uint8_t GetMSAA() const override;
+
+    bool GetIsVSync() const override;
+
    private:
     void *m_context;
 };
