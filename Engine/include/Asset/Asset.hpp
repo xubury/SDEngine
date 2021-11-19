@@ -81,7 +81,7 @@ class SD_API AssetManager {
     std::filesystem::path GetAbsolutePath(
         const std::filesystem::path &path) const;
 
-    bool HasLoaded(const std::string &path) const;
+    bool HasId(const std::string &path) const;
 
     bool HasCached(const ResourceId &id) const;
 
@@ -104,10 +104,10 @@ class SD_API AssetManager {
         std::filesystem::path fullPath = GetAbsolutePath(path);
         std::string relPath = GetRelativePath(fullPath).string();
         // check if loaded in asset
-        if (HasLoaded(relPath)) {
-            id = m_loaded.at(relPath);
+        if (HasId(relPath)) {
+            id = m_id_map.at(relPath);
         } else {
-            m_loaded.emplace(relPath, id);
+            m_id_map.emplace(relPath, id);
             m_resources[id] = Asset(type, relPath);
             Cache(id);
         }
@@ -127,7 +127,7 @@ class SD_API AssetManager {
     }
 
    private:
-    std::unordered_map<std::string, ResourceId> m_loaded;
+    std::unordered_map<std::string, ResourceId> m_id_map;
     std::unordered_map<ResourceId, Asset> m_resources;
     std::unordered_map<size_t, AssetLoaderBase *> m_loaders;
     std::filesystem::path m_directory;

@@ -52,7 +52,7 @@ void AssetManager::Load(const std::filesystem::path &path) {
         Clear();
         std::ifstream is(fileName);
         cereal::XMLInputArchive archive(is);
-        archive(m_loaded, m_resources);
+        archive(m_id_map, m_resources);
     }
     SetDirectory(std::filesystem::path(fileName).parent_path());
 }
@@ -61,7 +61,7 @@ void AssetManager::Save() {
     std::ofstream os(m_directory / assetExt);
     cereal::XMLOutputArchive archive(os);
     // To have order in serialized data
-    std::map<std::string, ResourceId> loaded(m_loaded.begin(), m_loaded.end());
+    std::map<std::string, ResourceId> loaded(m_id_map.begin(), m_id_map.end());
     std::map<ResourceId, Asset> resources(m_resources.begin(),
                                           m_resources.end());
     archive(loaded, resources);
@@ -90,8 +90,8 @@ std::filesystem::path AssetManager::GetAbsolutePath(
                : path;
 }
 
-bool AssetManager::HasLoaded(const std::string &path) const {
-    return m_loaded.count(path);
+bool AssetManager::HasId(const std::string &path) const {
+    return m_id_map.count(path);
 }
 
 bool AssetManager::HasCached(const ResourceId &id) const {
