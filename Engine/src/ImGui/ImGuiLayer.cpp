@@ -81,7 +81,7 @@ void ImGuiLayer::OnEventProcess(const Event& event) {
             break;
         case Event::EventType::TEXT_INPUT: {
             // TODO: not sure if it is correct
-            io.AddInputCharacterUTF16(*event.text_input.text);
+            io.AddInputCharactersUTF8(event.text_input.text);
         } break;
         case Event::EventType::KEY_PRESSED: {
             io.KeysDown[static_cast<uint16_t>(

@@ -13,7 +13,7 @@ ProfileSystem::ProfileSystem(RenderTarget *target, int width, int height)
 
 void ProfileSystem::OnPush() {
     auto resourceId =
-        asset->loadAsset<Font>("fonts/opensans/OpenSans-Regular.ttf");
+        asset->loadAsset<Font>("fonts/wqy-microhei.ttc");
     m_font = asset->Get<Font>(resourceId);
     dispatcher->Subscribe(this, &ProfileSystem::OnSizeEvent);
 }
@@ -25,13 +25,14 @@ void ProfileSystem::OnTick(float) {}
 void ProfileSystem::OnRender() {
     renderer->SetRenderTarget(*m_target);
     renderer->BeginScene(m_camera);
-    std::wstring fpsStr =
-        L"FPS:" + std::to_wstring(static_cast<uint32_t>(m_fps.GetFPS()));
+    std::string fpsStr =
+        "FPS:" + std::to_string(static_cast<uint32_t>(m_fps.GetFPS()));
 
     float size = 20;
     renderer->SetTextOrigin(-m_camera.GetNearWidth() / 2.f,
                             m_camera.GetNearHeight() / 2.f - size);
     renderer->DrawText(*m_font, fpsStr, size, glm::mat4(1.0f));
+    renderer->DrawText(*m_font, "测试", size, glm::mat4(1.0f));
     renderer->EndScene();
 }
 

@@ -65,7 +65,7 @@ struct SD_API TextComponent {
     ResourceId id;
     uint8_t pixel_size = 10;
     glm::vec4 color = glm::vec4(1);
-    std::wstring text;
+    std::string text;
 
     SERIALIZE(id, pixel_size, color, text)
 };

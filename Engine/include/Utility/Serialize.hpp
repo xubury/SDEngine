@@ -11,30 +11,12 @@
 #include <cereal/types/memory.hpp>
 #include <cereal/archives/binary.hpp>
 #include <cereal/archives/xml.hpp>
-#include "Utility/String.hpp"
 
 #define SERIALIZE(...)                 \
     template <typename Archive>        \
     void serialize(Archive& archive) { \
         archive(__VA_ARGS__);          \
     }
-
-namespace cereal {
-template <class A>
-std::string CEREAL_SAVE_MINIMAL_FUNCTION_NAME(A const&,
-                                              const std::wstring& in) {
-    return SD::WstringToString(in);
-}
-
-template <class A>
-void CEREAL_LOAD_MINIMAL_FUNCTION_NAME(A const&, std::wstring& out,
-                                       const std::string& in) {
-    out = SD::StringToWstring(in);
-}
-}  // namespace cereal
-
-CEREAL_SPECIALIZE_FOR_ALL_ARCHIVES(
-    std::wstring, cereal::specialization::non_member_load_save_minimal);
 
 namespace glm {
 

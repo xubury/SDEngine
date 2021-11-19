@@ -1,6 +1,7 @@
 #include "Renderer/Renderer.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Device.hpp"
+#include "Utility/String.hpp"
 
 namespace SD {
 
@@ -268,13 +269,14 @@ void Renderer::DrawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
         color);
 }
 
-void Renderer::DrawText(Font& font, const std::wstring& text, uint8_t pixelSize,
+void Renderer::DrawText(Font& font, const std::string& text, uint8_t pixelSize,
                         const glm::mat4& transform, const glm::vec4& color) {
     glm::mat4 t =
         glm::translate(glm::mat4(1.0f),
                        glm::vec3(s_data.textOrigin.x, s_data.textOrigin.y, 0)) *
         transform;
-    for (const auto c : text) {
+    std::u32string u32str = String::ConvertToUTF32(text);
+    for (const auto c : u32str) {
         if (c == '\n') {
             s_data.textCursor.x = 0;
             s_data.textCursor.y -= pixelSize;

@@ -385,10 +385,6 @@ void ScenePanel::DrawComponents(Entity &entity) {
         // TODO: Can ImGui support UTF-16?
         static bool fileDialogOpen = false;
         static ImFileDialogInfo fileDialogInfo;
-        char buffer[256];
-        std::string utf8Str = WstringToString(textComp.text);
-        memset(buffer, 0, sizeof(buffer));
-        std::strncpy(buffer, utf8Str.c_str(), utf8Str.size());
         std::string path = fileDialogInfo.result_path.string();
         ImGui::Text("Font File:");
         ImGui::InputText("##Path", path.data(), path.size(),
@@ -405,8 +401,10 @@ void ScenePanel::DrawComponents(Entity &entity) {
             textComp.id = asset->loadAsset<Font>(fileDialogInfo.result_path);
         }
         ImGui::Text("Text Content:");
+        // FIXME: chinese character has bug
+        static char buffer[256];
         if (ImGui::InputText("##TextEdit", buffer, sizeof(buffer))) {
-            textComp.text = StringToWstring(buffer);
+            textComp.text = buffer;
         }
         ImGui::Text("Pixel Size");
         int pixel_size = textComp.pixel_size;

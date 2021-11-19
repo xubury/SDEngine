@@ -8,7 +8,7 @@ Font::Font(FT_Face face) : m_face(face) {}
 
 Font::~Font() { FT_Done_Face(m_face); }
 
-const Character &Font::GetCharacter(wchar_t ch, uint8_t size) {
+const Character &Font::GetCharacter(char32_t ch, uint8_t size) {
     CharacterId id(ch, size);
     if (m_characters.count(id) == 0) {
         LoadFont(id);
