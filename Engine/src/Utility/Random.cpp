@@ -2,18 +2,14 @@
 
 namespace SD {
 
-std::mt19937 Random::s_randomEngine;
-std::uniform_int_distribution<std::mt19937::result_type> Random::s_distribution;
+static std::random_device s_random_device;
+static std::mt19937 s_random_engine(s_random_device());
+static std::uniform_int_distribution<std::mt19937::result_type> s_distribution;
 
-void Random::Init() {
-    std::random_device rd;
-    s_randomEngine.seed(rd());
-}
-
-void Random::init(uint32_t seed) { s_randomEngine.seed(seed); }
+void Random::Init(uint32_t seed) { s_random_engine.seed(seed); }
 
 double Random::Uniform() {
-    return static_cast<double>(s_distribution(s_randomEngine)) /
+    return static_cast<double>(s_distribution(s_random_engine)) /
            std::numeric_limits<uint32_t>::max();
 }
 

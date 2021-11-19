@@ -29,8 +29,6 @@ void Application::OnInit() {
     int height = ini->GetInteger("window", "height", 900);
     int msaa = ini->GetInteger("window", "msaa", 4);
 
-    Random::Init();
-
     SDL(SDL_Init(SDL_INIT_EVERYTHING));
     int img_flags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
     SD_CORE_ASSERT((IMG_Init(img_flags) & img_flags) == img_flags,

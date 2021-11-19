@@ -14,15 +14,10 @@ class SD_API Random {
     static double Rnd(double min, double max);
     static int Rnd(int min, int max);
 
-    static void Init();
-    static void init(uint32_t seed);
+    static void Init(uint32_t seed);
 
    private:
     static double Uniform();
-
-    static std::mt19937 s_randomEngine;
-    static std::uniform_int_distribution<std::mt19937::result_type>
-        s_distribution;
 };
 
 }  // namespace SD
