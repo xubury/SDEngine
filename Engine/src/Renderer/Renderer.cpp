@@ -53,12 +53,12 @@ struct Renderer2DData {
 
 static Renderer2DData s_data;
 
-Renderer::Renderer(int samples) {
+Renderer::Renderer(int msaa) {
     m_cameraUBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
                                         BufferIOType::DYNAMIC);
 
     m_device = Device::Create();
-    if (samples > 1) {
+    if (msaa > 1) {
         m_device->Enable(Operation::MULTISAMPLE);
     } else {
         m_device->Disable(Operation::MULTISAMPLE);
