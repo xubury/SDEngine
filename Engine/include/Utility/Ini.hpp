@@ -13,6 +13,7 @@ class SD_API Ini {
     Ini() = default;
     virtual ~Ini() = default;
 
+
     void Load(const std::string& filename);
     void Save(const std::string& filename) const;
 
@@ -70,6 +71,8 @@ class SD_API Ini {
                     bool default_value) const;
 
    private:
+    void Clear();
+
     std::map<std::string, std::string> m_values;
     std::set<std::string> m_sections;
 };

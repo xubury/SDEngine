@@ -9,8 +9,12 @@ const char SECTION_SEP = '.';
 const char COMMENTS_SYMBOL0 = '#';
 const char COMMENTS_SYMBOL1 = ';';
 
-static bool IsCommentSymbol(char ch) {
+inline bool IsCommentSymbol(char ch) {
     return ch == COMMENTS_SYMBOL0 || ch == COMMENTS_SYMBOL1;
+}
+
+inline Exception GetException(size_t line_number, const std::string& msg) {
+    return Exception(fmt::format("Line {}: {}", line_number, msg));
 }
 
 void Ini::OutputStream(std::ostream& stream) const {
@@ -42,10 +46,6 @@ void Ini::OutputStream(std::ostream& stream) const {
     std::flush(stream);
 }
 
-Exception GetException(size_t line_number, const std::string& msg) {
-    return Exception(fmt::format("Line {}: {}", line_number, msg));
-}
-
 void Ini::Load(const std::string& filename) {
     std::ifstream file;
     file.exceptions(std::ifstream::badbit | std::ifstream::failbit);
@@ -55,6 +55,7 @@ void Ini::Load(const std::string& filename) {
         throw FileException(filename, std::strerror(errno));
     }
     file.exceptions(std::ifstream::badbit);
+    Clear();
     ParseStream(file);
 }
 
@@ -67,6 +68,11 @@ void Ini::Save(const std::string& filename) const {
         throw FileException(filename, std::strerror(errno));
     }
     OutputStream(file);
+}
+
+void Ini::Clear() {
+    m_values.clear();
+    m_sections.clear();
 }
 
 void Ini::Set(const std::string& section, const std::string& name,
