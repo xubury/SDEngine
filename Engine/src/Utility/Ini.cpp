@@ -6,7 +6,12 @@
 namespace SD {
 
 const char SECTION_SEP = '.';
-const char COMMENTS_SYMBOL = '#';
+const char COMMENTS_SYMBOL0 = '#';
+const char COMMENTS_SYMBOL1 = ';';
+
+static bool IsCommentSymbol(char ch) {
+    return ch == COMMENTS_SYMBOL0 || ch == COMMENTS_SYMBOL1;
+}
 
 void Ini::OutputStream(std::ostream& stream) const {
     std::string last_section;
@@ -14,10 +19,8 @@ void Ini::OutputStream(std::ostream& stream) const {
     for (auto iter = m_values.begin(); iter != m_values.end(); iter++) {
         std::string key = iter->first;
         std::string value = iter->second;
-        String::TrimNewline(key);
-        String::TrimWhitespace(key);
-        String::TrimNewline(value);
-        String::TrimWhitespace(value);
+        String::Trim(key);
+        String::Trim(value);
 
         std::size_t section_pos = key.find_first_of(SECTION_SEP);
         if (section_pos == std::string::npos)
@@ -45,22 +48,19 @@ Exception GetException(size_t line_number, const std::string& msg) {
 
 void Ini::Load(const std::string& filename) {
     std::ifstream file;
-    file.exceptions(std::ifstream::badbit);
+    file.exceptions(std::ifstream::badbit | std::ifstream::failbit);
     try {
         file.open(filename);
     } catch (std::ifstream::failure& e) {
         throw FileException(filename, std::strerror(errno));
     }
-    if (file.is_open()) {
-        ParseStream(file);
-    } else {
-        SD_CORE_WARN("No such ini file: {}.", filename);
-    }
+    file.exceptions(std::ifstream::badbit);
+    ParseStream(file);
 }
 
 void Ini::Save(const std::string& filename) const {
     std::ofstream file;
-    file.exceptions(std::ifstream::badbit | std::ifstream::failbit);
+    file.exceptions(std::ofstream::badbit | std::ofstream::failbit);
     try {
         file.open(filename);
     } catch (std::ofstream::failure& e) {
@@ -148,14 +148,13 @@ void Ini::ParseStream(std::istream& stream) {
     int line_number = 0;
     std::string section;
     for (std::string line; std::getline(stream, line); ++line_number) {
-        String::TrimNewline(line);
-        String::TrimWhitespace(line);
+        String::Trim(line);
 
         // skip empty line
         if (line.empty()) continue;
 
         // skip comments
-        if (line.front() == COMMENTS_SYMBOL) continue;
+        if (IsCommentSymbol(line.front())) continue;
 
         if (line.front() == '[' && line.back() == ']') {
             section = line.substr(1, line.size() - 2);
@@ -168,13 +167,11 @@ void Ini::ParseStream(std::istream& stream) {
             throw GetException(line_number, "Invalid line");
 
         std::string name = line.substr(0, sep_pos);
-        String::TrimNewline(name);
-        String::TrimWhitespace(name);
+        String::Trim(name);
         if (name.empty()) throw GetException(line_number, "Empty key");
 
         std::string value = line.substr(sep_pos + 1);
-        String::TrimNewline(value);
-        String::TrimWhitespace(value);
+        String::Trim(value);
 
         std::string key = MakeKey(section, name);
         if (m_values.count(key)) {

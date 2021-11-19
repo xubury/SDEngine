@@ -16,7 +16,14 @@ void Application::OnInit() {
     SD_CORE_INFO("Debug info is output to: {}", debug_path);
 
     ini = CreateRef<Ini>();
-    ini->Load(GetAppDirectory() / setting_filename);
+    std::filesystem::path ini_path = GetAppDirectory() / setting_filename;
+    if (std::filesystem::exists(ini_path)) {
+        ini->Load(ini_path);
+    } else {
+        SD_CORE_WARN(
+            "No such ini file: {}. The application will create a new one.",
+            ini_path);
+    }
 
     int width = ini->GetInteger("window", "width", 1600);
     int height = ini->GetInteger("window", "height", 900);
