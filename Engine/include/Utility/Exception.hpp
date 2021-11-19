@@ -1,7 +1,11 @@
 #ifndef SD_EXCEPTION_HPP
 #define SD_EXCEPTION_HPP
 
-#include "Utility/Base.hpp"
+#include "Utility/Export.hpp"
+#include "Utility/Log.hpp"
+
+#include <exception>
+#include <string>
 
 namespace SD {
 

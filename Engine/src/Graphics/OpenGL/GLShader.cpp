@@ -43,8 +43,8 @@ GLShader::GLShader(const std::string& filePath)
 
         std::string code;
         if (type == ShaderType::INVALID) {
-            SD_CORE_ERROR("Invalid shader type: {}", name);
-            break;
+            throw FileException(filePath,
+                                fmt::format("Invalid shader type: {}", name));
         } else {
             code = source.substr(start, end - start);
         }
@@ -62,7 +62,14 @@ GLShader::GLShader(const std::string& filePath)
 
             code.erase(j, start - j);
             std::string includeCode;
-            File::Read(("assets" / include).string(), includeCode);
+            try {
+                File::Read(
+                    ShaderLibrary::Instance().GetAbsolutePath(include).string(),
+                    includeCode);
+            } catch (const FileException& e) {
+                throw FileException(
+                    filePath, fmt::format("Invalid include path: {}", include));
+            }
             code.insert(j, includeCode);
 
             j = code.find("#include", start);
