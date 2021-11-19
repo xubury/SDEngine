@@ -6,6 +6,8 @@
 
 namespace SD {
 
+const std::string setting_filename = "setting.ini";
+
 Window &Application::GetWindow() { return *m_window; }
 
 void Application::OnInit() {
@@ -14,11 +16,11 @@ void Application::OnInit() {
     SD_CORE_INFO("Debug info is output to: {}", debug_path);
 
     ini = CreateRef<Ini>();
-    ini->Load(GetAppDirectory() / "engine.ini");
+    ini->Load(GetAppDirectory() / setting_filename);
 
     int width = ini->GetInteger("window", "width", 1600);
     int height = ini->GetInteger("window", "height", 900);
-    int samples = ini->GetInteger("window", "samples", 4);
+    int msaa = ini->GetInteger("window", "msaa", 4);
 
     Random::Init();
 
@@ -33,13 +35,13 @@ void Application::OnInit() {
     WindowProp prop;
     prop.width = width;
     prop.height = height;
-    prop.samples = samples;
+    prop.msaa = msaa;
     prop.flag = SDL_WINDOW_MAXIMIZED;
     m_window = Window::Create(prop);
 
     ShaderLibrary::Instance().SetRootPath("assets");
 
-    renderer = CreateRef<Renderer>(samples);
+    renderer = CreateRef<Renderer>(msaa);
     asset = CreateRef<AssetManager>("assets");
     dispatcher = CreateRef<EventDispatcher>();
 
@@ -51,9 +53,9 @@ void Application::OnDestroy() {
     glm::ivec2 size = m_window->GetSize();
     ini->SetInteger("window", "width", size.x);
     ini->SetInteger("window", "height", size.y);
-    ini->SetInteger("window", "samples", m_window->GetSamples());
+    ini->SetInteger("window", "msaa", m_window->GetMSAA());
 
-    ini->Save(GetAppDirectory() / "engine.ini");
+    ini->Save(GetAppDirectory() / setting_filename);
 
     while (m_layers.Size()) {
         DestroyLayer(m_layers.Front());

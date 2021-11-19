@@ -7,6 +7,7 @@ int main(int, char **) {
     app->OnInit();
     app->OnStart();
     app->Run();
+    app->OnExit();
     app->OnDestroy();
     delete app;
     return 0;

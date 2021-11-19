@@ -38,6 +38,9 @@ class EditorLayer : public Layer {
     void LoadScene();
     void SaveScene();
 
+    int GetViewportWidth() const { return m_width; }
+    int GetViewportHeight() const { return m_height; }
+
    private:
     void ProcessDialog();
 

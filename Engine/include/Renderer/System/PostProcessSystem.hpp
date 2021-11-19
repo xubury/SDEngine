@@ -49,10 +49,10 @@ class SD_API PostProcessSystem : public System {
 
     RenderTarget *m_target;
 
-    bool m_isBloom;
-    float m_bloom;
+    bool m_is_bloom;
+    float m_bloom_factor;
     float m_exposure;
-    float m_gammaCorrection;
+    float m_gamma_correction;
 };
 
 }  // namespace SD

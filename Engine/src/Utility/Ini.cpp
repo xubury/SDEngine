@@ -10,6 +10,7 @@ const char COMMENTS_SYMBOL = '#';
 
 void Ini::OutputStream(std::ostream& stream) const {
     std::string last_section;
+    bool is_first_line = true;
     for (auto iter = m_values.begin(); iter != m_values.end(); iter++) {
         std::string key = iter->first;
         std::string value = iter->second;
@@ -25,8 +26,12 @@ void Ini::OutputStream(std::ostream& stream) const {
         key = key.substr(section_pos + 1);
 
         if (section != last_section) {
+            if (!is_first_line) stream << '\n';
+
             stream << "[" << section << "]\n";
             last_section = section;
+
+            is_first_line = false;
         }
 
         stream << key << " = " << value << '\n';
@@ -46,7 +51,11 @@ void Ini::Load(const std::string& filename) {
     } catch (std::ifstream::failure& e) {
         throw FileException(filename, std::strerror(errno));
     }
-    ParseStream(file);
+    if (file.is_open()) {
+        ParseStream(file);
+    } else {
+        SD_CORE_WARN("No such ini file: {}.", filename);
+    }
 }
 
 void Ini::Save(const std::string& filename) const {

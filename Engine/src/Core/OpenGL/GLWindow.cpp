@@ -2,7 +2,6 @@
 #include "Core/SDL.hpp"
 #include <GL/glew.h>
 
-
 namespace SD {
 
 GLWindow::GLWindow(const WindowProp &property) : Window(property) {
@@ -20,7 +19,7 @@ GLWindow::GLWindow(const WindowProp &property) : Window(property) {
 
     // MultiSampling
     SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1));
-    SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, property.samples));
+    SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, property.msaa));
 
     m_window = SDL_CreateWindow(property.title.c_str(), property.x, property.y,
                                 property.width, property.height, sdlFlags);

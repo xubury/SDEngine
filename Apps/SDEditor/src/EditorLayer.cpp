@@ -40,7 +40,7 @@ EditorLayer::EditorLayer(int width, int height)
     }
     m_shadow_system = new ShadowSystem();
     m_lighting_system = new LightingSystem(&m_target, m_width, m_height,
-                                           GetApp().GetWindow().GetSamples());
+                                           GetApp().GetWindow().GetMSAA());
     m_skybox_system = new SkyboxSystem(&m_target);
     m_sprite_system = new SpriteRenderSystem(&m_target);
     m_post_process_system = new PostProcessSystem(&m_target, m_width, m_height);

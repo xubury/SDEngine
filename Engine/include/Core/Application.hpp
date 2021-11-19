@@ -40,6 +40,7 @@ class SD_API Application {
     void OnInit();
     void OnDestroy();
     virtual void OnStart() = 0;
+    virtual void OnExit() = 0;
 
     void Run();
 

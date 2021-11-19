@@ -19,7 +19,7 @@ Ref<Window> Window::Create(const WindowProp &property) {
     return window;
 }
 
-Window::Window(const WindowProp &property) : m_samples(property.samples) {}
+Window::Window(const WindowProp &property) : m_msaa(property.msaa) {}
 
 Window::~Window() { SDL_DestroyWindow(m_window); }
 

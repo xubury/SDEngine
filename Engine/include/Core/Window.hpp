@@ -17,7 +17,7 @@ struct WindowProp {
     int y;
     int width;
     int height;
-    int samples;
+    int msaa;
     bool vsync;
     uint32_t flag;
     WindowProp()
@@ -26,7 +26,7 @@ struct WindowProp {
           y(0),
           width(1440),
           height(900),
-          samples(8),
+          msaa(8),
           vsync(true),
           flag(0) {}
 };
@@ -48,7 +48,7 @@ class SD_API Window {
 
     glm::ivec2 GetSize();
 
-    uint8_t GetSamples() const { return m_samples; }
+    uint8_t GetMSAA() const { return m_msaa; }
 
     SDL_Window *GetHandle();
 
@@ -61,7 +61,7 @@ class SD_API Window {
 
    private:
     bool m_shouldClose;
-    uint8_t m_samples;
+    uint8_t m_msaa;
 };
 
 }  // namespace SD
