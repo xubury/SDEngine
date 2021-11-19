@@ -25,57 +25,51 @@ GLShader::GLShader(const std::string& filePath)
     m_id = glCreateProgram();
     std::string source;
     SD_CORE_TRACE("Building shader code from {}", filePath);
-    try {
-        File::Read(filePath, source);
-        size_t i = source.find("#shader");
-        while (i < source.size()) {
-            size_t start = source.find('\n', i) + 1;
-            if (i != 0 && start == 0) {
-                start = source.find('\0', i) + 1;
-            }
-
-            size_t offset = i + 8;
-            std::string name = source.substr(offset, start - offset - 1);
-
-            size_t end = source.find("#shader", start);
-            i = end;
-
-            ShaderType type = ShaderTypeFromName(name);
-
-            std::string code;
-            if (type == ShaderType::INVALID) {
-                SD_CORE_ERROR("Invalid shader type: {}", name);
-                break;
-            } else {
-                code = source.substr(start, end - start);
-            }
-            // insert include code
-            size_t j = code.find("#include");
-            while (j < code.size()) {
-                size_t start = code.find('\n', j) + 1;
-                if (j != 0 && start == 0) {
-                    start = code.find('\0', j) + 1;
-                }
-
-                size_t offset = j + 9;
-                std::filesystem::path include =
-                    code.substr(offset, start - offset - 1);
-
-                code.erase(j, start - j);
-                std::string includeCode;
-                File::Read(("assets" / include).string(), includeCode);
-                code.insert(j, includeCode);
-
-                j = code.find("#include", start);
-            }
-            CompileShader(type, code.c_str());
+    File::Read(filePath, source);
+    size_t i = source.find("#shader");
+    while (i < source.size()) {
+        size_t start = source.find('\n', i) + 1;
+        if (i != 0 && start == 0) {
+            start = source.find('\0', i) + 1;
         }
-        LinkShaders();
-    } catch (const FileException& e) {
-        SD_CORE_ASSERT(
-            false, fmt::format("Error building shader code from {}, error: {}",
-                               e.GetFilePath(), e.what()));
+
+        size_t offset = i + 8;
+        std::string name = source.substr(offset, start - offset - 1);
+
+        size_t end = source.find("#shader", start);
+        i = end;
+
+        ShaderType type = ShaderTypeFromName(name);
+
+        std::string code;
+        if (type == ShaderType::INVALID) {
+            SD_CORE_ERROR("Invalid shader type: {}", name);
+            break;
+        } else {
+            code = source.substr(start, end - start);
+        }
+        // insert include code
+        size_t j = code.find("#include");
+        while (j < code.size()) {
+            size_t start = code.find('\n', j) + 1;
+            if (j != 0 && start == 0) {
+                start = code.find('\0', j) + 1;
+            }
+
+            size_t offset = j + 9;
+            std::filesystem::path include =
+                code.substr(offset, start - offset - 1);
+
+            code.erase(j, start - j);
+            std::string includeCode;
+            File::Read(("assets" / include).string(), includeCode);
+            code.insert(j, includeCode);
+
+            j = code.find("#include", start);
+        }
+        CompileShader(type, code.c_str());
     }
+    LinkShaders();
 }
 
 GLShader::~GLShader() {

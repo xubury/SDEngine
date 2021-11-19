@@ -25,5 +25,6 @@ constexpr Ref<T> CreateRef(Args&&... args) {
 #include "Utility/Export.hpp"
 #include "Utility/Log.hpp"
 #include "Utility/Assert.hpp"
+#include "Utility/Exception.hpp"
 
 #endif

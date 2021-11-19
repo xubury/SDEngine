@@ -9,6 +9,35 @@
 
 namespace SD {
 
+namespace String {
+
+inline SD_API void TrimNewline(std::string &s) {
+    s.erase(
+        std::find_if(s.rbegin(), s.rend(),
+                     [](unsigned char ch) { return ch != '\r' || ch != '\n'; })
+            .base(),
+        s.end());
+}
+
+inline SD_API void TrimLeftWhitespace(std::string &s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(),
+                                    [](char ch) { return !std::isspace(ch); }));
+}
+
+inline SD_API void TrimRightWhitespace(std::string &s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(),
+                         [](unsigned char ch) { return !std::isspace(ch); })
+                .base(),
+            s.end());
+}
+
+inline SD_API void TrimWhitespace(std::string &s) {
+    TrimLeftWhitespace(s);
+    TrimRightWhitespace(s);
+}
+
+}  // namespace String
+
 inline SD_API std::wstring StringToWstring(const std::string &t_str) {
     // setup converter
     typedef std::codecvt_utf8<wchar_t> convert_type;
