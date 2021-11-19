@@ -40,13 +40,12 @@ Exception GetException(size_t line_number, const std::string& msg) {
 
 void Ini::Load(const std::string& filename) {
     std::ifstream file;
-    file.exceptions(std::ifstream::badbit | std::ifstream::failbit);
+    file.exceptions(std::ifstream::badbit);
     try {
         file.open(filename);
     } catch (std::ifstream::failure& e) {
         throw FileException(filename, std::strerror(errno));
     }
-    file.exceptions(std::ifstream::badbit);
     ParseStream(file);
 }
 

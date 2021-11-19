@@ -9,14 +9,18 @@ namespace SD {
 Window &Application::GetWindow() { return *m_window; }
 
 void Application::OnInit() {
-    std::string debug_path = "Debug.txt";
+    std::string debug_path = GetAppDirectory() / "Debug.txt";
     Log::Init(debug_path);
-    int width = 1600;
-    int height = 900;
-    int samples = 4;
+    SD_CORE_INFO("Debug info is output to: {}", debug_path);
+
+    ini = CreateRef<Ini>();
+    ini->Load(GetAppDirectory() / "engine.ini");
+
+    int width = ini->GetInteger("window", "width", 1600);
+    int height = ini->GetInteger("window", "height", 900);
+    int samples = ini->GetInteger("window", "samples", 4);
 
     Random::Init();
-    SD_CORE_INFO("Debug info is output to: {}", debug_path);
 
     SDL(SDL_Init(SDL_INIT_EVERYTHING));
     int img_flags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
@@ -44,6 +48,13 @@ void Application::OnInit() {
 }
 
 void Application::OnDestroy() {
+    glm::ivec2 size = m_window->GetSize();
+    ini->SetInteger("window", "width", size.x);
+    ini->SetInteger("window", "height", size.y);
+    ini->SetInteger("window", "samples", m_window->GetSamples());
+
+    ini->Save(GetAppDirectory() / "engine.ini");
+
     while (m_layers.Size()) {
         DestroyLayer(m_layers.Front());
     }

@@ -4,18 +4,21 @@
 #include "Renderer/Renderer.hpp"
 #include "Core/EventDispatcher.hpp"
 #include "Asset/Asset.hpp"
+#include "Utility/Ini.hpp"
 
 namespace SD {
 
 std::filesystem::path GetAppDirectory();
 
 #define APP_VARS             \
+    Ref<Ini> ini;            \
     Ref<Renderer> renderer;  \
     Ref<AssetManager> asset; \
     Ref<EventDispatcher> dispatcher;
 
 #define SET_APP_VARS                       \
     void SetAppVars(const AppVars &vars) { \
+        ini = vars.ini;                    \
         renderer = vars.renderer;          \
         asset = vars.asset;                \
         dispatcher = vars.dispatcher;      \
@@ -24,6 +27,7 @@ std::filesystem::path GetAppDirectory();
 #define MAKE_APP_VARS                 \
     AppVars MakeAppVars() {           \
         AppVars vars;                 \
+        vars.ini = ini;               \
         vars.renderer = renderer;     \
         vars.asset = asset;           \
         vars.dispatcher = dispatcher; \
