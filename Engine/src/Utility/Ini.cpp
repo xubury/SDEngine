@@ -6,6 +6,7 @@
 namespace SD {
 
 const char SECTION_SEP = '.';
+const char COMMENTS_SYMBOL = '#';
 
 void Ini::OutputStream(std::ostream& stream) const {
     std::string last_section;
@@ -146,7 +147,7 @@ void Ini::ParseStream(std::istream& stream) {
         if (line.empty()) continue;
 
         // skip comments
-        if (line.front() == '#') continue;
+        if (line.front() == COMMENTS_SYMBOL) continue;
 
         if (line.front() == '[' && line.back() == ']') {
             section = line.substr(1, line.size() - 2);

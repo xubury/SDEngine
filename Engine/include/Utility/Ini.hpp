@@ -10,12 +10,17 @@ namespace SD {
 
 class SD_API Ini {
    public:
-    // Construct IniParser and parse given filename.
     Ini() = default;
     virtual ~Ini() = default;
 
     void Load(const std::string& filename);
     void Save(const std::string& filename) const;
+
+    void ParseStream(std::istream& stream);
+    void OutputStream(std::ostream& stream) const;
+
+    static std::string MakeKey(const std::string& section,
+                               const std::string& name);
 
     // Return the list of sections found in ini file
     const std::set<std::string>& GetSections() const { return m_sections; }
@@ -63,12 +68,6 @@ class SD_API Ini {
     // sensitive).
     bool GetBoolean(const std::string& section, const std::string& name,
                     bool default_value) const;
-
-   protected:
-    void ParseStream(std::istream& stream);
-    void OutputStream(std::ostream& stream) const;
-    static std::string MakeKey(const std::string& section,
-                               const std::string& name);
 
    private:
     std::map<std::string, std::string> m_values;
