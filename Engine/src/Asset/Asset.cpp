@@ -67,27 +67,21 @@ void AssetManager::Save() {
     archive(loaded, resources);
 }
 
-// FIXME: should use exe path instead of current path
 void AssetManager::SetDirectory(const std::filesystem::path &path) {
     m_directory =
-        path.is_relative()
-            ? path
-            : std::filesystem::relative(path, std::filesystem::current_path());
+        path.is_relative() ? std::filesystem::current_path() / path : path;
 }
 
 std::filesystem::path AssetManager::GetRelativePath(
     const std::filesystem::path &path) const {
-    return std::filesystem::relative(
-        path, std::filesystem::current_path() / m_directory);
+    return std::filesystem::relative(path, m_directory);
 }
 
 std::filesystem::path AssetManager::GetRootPath() const { return m_directory; };
 
 std::filesystem::path AssetManager::GetAbsolutePath(
     const std::filesystem::path &path) const {
-    return path.is_relative()
-               ? std::filesystem::current_path() / m_directory / path
-               : path;
+    return path.is_relative() ? m_directory / path : path;
 }
 
 bool AssetManager::HasId(const std::string &path) const {
