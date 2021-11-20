@@ -43,10 +43,13 @@ void ImGuiLayer::OnPush() {
     io.ConfigWindowsMoveFromTitleBarOnly = true;
 
     // Fonts
-    io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Bold.ttf",
-                                 18.0f);
-    io.FontDefault = io.Fonts->AddFontFromFileTTF(
-        "assets/fonts/opensans/OpenSans-Regular.ttf", 18.0f);
+    int pixel_size = 18.f;
+    // io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Regular.ttf",
+    //                              pixel_size, nullptr,
+    //                              io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
+    io.Fonts->AddFontFromFileTTF(
+        "assets/fonts/wqy-microhei.ttc", pixel_size, nullptr,
+        io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -92,7 +95,7 @@ void ImGuiLayer::OnEventProcess(const Event& event) {
         } break;
         case Event::EventType::KEY_RELEASED: {
             io.KeysDown[static_cast<uint16_t>(
-                GetScancodeFromKeycode(event.key.keycode))] = true;
+                GetScancodeFromKeycode(event.key.keycode))] = false;
             io.KeyShift = event.key.mod == Keymod::SHIFT;
             io.KeyCtrl = event.key.mod == Keymod::CTRL;
             io.KeyAlt = event.key.mod == Keymod::ALT;
