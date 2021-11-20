@@ -20,6 +20,7 @@ Simple and Direct Engine
 - [ ] Profile System
 - [ ] Camera System, how to switch between cameras? like from editor camrea to scene camera?
 - [ ] Gui System
+- [ ] Commandline args parser
 - [ ] Get EXE directory for windows
 - [ ] Script System
 - [ ] Audio System
