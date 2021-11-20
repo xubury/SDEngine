@@ -5,7 +5,7 @@
 
 namespace SD {
 
-const std::string assetExt = ".asset";
+const std::string ASSET_FILE = ".asset";
 
 Asset::Asset() : m_resource(nullptr) {}
 
@@ -38,27 +38,27 @@ void AssetManager::Cache(const ResourceId &id) {
 }
 
 void AssetManager::Load(const std::filesystem::path &path) {
-    std::string fileName;
+    std::string filename;
     if (std::filesystem::is_directory(path)) {
-        fileName = path / assetExt;
+        filename = path / ASSET_FILE;
     } else {
-        if (path.has_extension() && path.extension() == assetExt) {
-            fileName = path;
+        if (path.has_extension() && path.extension() == ASSET_FILE) {
+            filename = path;
         } else {
             SD_CORE_ASSERT(false, "Invalid asset path!");
         }
     }
-    if (std::filesystem::exists(fileName)) {
+    if (std::filesystem::exists(filename)) {
         Clear();
-        std::ifstream is(fileName);
+        std::ifstream is(filename);
         cereal::XMLInputArchive archive(is);
         archive(m_id_map, m_resources);
     }
-    SetDirectory(std::filesystem::path(fileName).parent_path());
+    SetDirectory(std::filesystem::path(filename).parent_path());
 }
 
 void AssetManager::Save() {
-    std::ofstream os(m_directory / assetExt);
+    std::ofstream os(m_directory / ASSET_FILE);
     cereal::XMLOutputArchive archive(os);
     // To have order in serialized data
     std::map<std::string, ResourceId> loaded(m_id_map.begin(), m_id_map.end());

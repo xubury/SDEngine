@@ -101,14 +101,14 @@ class SD_API AssetManager {
         // generate a random id
         ResourceId id;
         size_t type = GetAssetType<ASSET>();
-        std::filesystem::path fullPath = GetAbsolutePath(path);
-        std::string relPath = GetRelativePath(fullPath).string();
-        // check if loaded in asset
-        if (HasId(relPath)) {
-            id = m_id_map.at(relPath);
+        std::filesystem::path full_path = GetAbsolutePath(path);
+        std::string rel_path = GetRelativePath(full_path).string();
+        // check if the relative path has id
+        if (HasId(rel_path)) {
+            id = m_id_map.at(rel_path);
         } else {
-            m_id_map.emplace(relPath, id);
-            m_resources[id] = Asset(type, relPath);
+            m_id_map.emplace(rel_path, id);
+            m_resources[id] = Asset(type, rel_path);
             Cache(id);
         }
         return id;

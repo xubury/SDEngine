@@ -7,13 +7,10 @@
 namespace SD {
 
 class SD_API ModelLoader : public AssetLoaderBase {
-   private:
-    friend class AssetManager;
-
+   public:
     using AssetLoaderBase::AssetLoaderBase;
 
-   public:
-    Ref<void> LoadAsset(const std::string &filePath) override;
+    Ref<void> LoadAsset(const std::string &filename) override;
 };
 
 }  // namespace SD
