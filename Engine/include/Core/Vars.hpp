@@ -1,6 +1,7 @@
 #ifndef SD_VARIABLES_HPP
 #define SD_VARIABLES_HPP
 
+#include "Core/Window.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Core/EventDispatcher.hpp"
 #include "Asset/Asset.hpp"
@@ -12,6 +13,7 @@ std::filesystem::path GetAppDirectory();
 
 #define APP_VARS             \
     Ref<Ini> ini;            \
+    Ref<Window> window;      \
     Ref<Renderer> renderer;  \
     Ref<AssetManager> asset; \
     Ref<EventDispatcher> dispatcher;
@@ -19,6 +21,7 @@ std::filesystem::path GetAppDirectory();
 #define SET_APP_VARS                       \
     void SetAppVars(const AppVars &vars) { \
         ini = vars.ini;                    \
+        window = vars.window;               \
         renderer = vars.renderer;          \
         asset = vars.asset;                \
         dispatcher = vars.dispatcher;      \
@@ -28,6 +31,7 @@ std::filesystem::path GetAppDirectory();
     AppVars MakeAppVars() {           \
         AppVars vars;                 \
         vars.ini = ini;               \
+        vars.window = window;         \
         vars.renderer = renderer;     \
         vars.asset = asset;           \
         vars.dispatcher = dispatcher; \

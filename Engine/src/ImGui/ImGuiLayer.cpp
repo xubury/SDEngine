@@ -55,9 +55,8 @@ void ImGuiLayer::OnPush() {
     // Setup Platform/Renderer backends
     switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
-            ImGui_ImplSDL2_InitForOpenGL(
-                GetApp().GetWindow().GetHandle(),
-                GetApp().GetWindow().GetGraphicsContext());
+            ImGui_ImplSDL2_InitForOpenGL(window->GetHandle(),
+                                         window->GetGraphicsContext());
             ImGui_ImplOpenGL3_Init("#version 450");
             break;
         default:

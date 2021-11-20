@@ -11,7 +11,7 @@ struct SDL_Window;
 
 namespace SD {
 
-struct WindowProp {
+struct SD_API WindowProp {
     std::string title;
     int x;
     int y;
@@ -31,6 +31,8 @@ struct WindowProp {
           flag(0) {}
 };
 
+class RenderTarget;
+
 class SD_API Window {
    public:
     static Ref<Window> Create(const WindowProp &property);
@@ -39,12 +41,6 @@ class SD_API Window {
 
     Window(const Window &) = delete;
     Window &operator=(const Window &) = delete;
-
-    void SwapBuffer();
-    bool PollEvent(SDL_Event &event);
-
-    bool ShouldClose();
-    void SetShouldClose(bool shouldClose);
 
     glm::ivec2 GetSize();
 
@@ -58,12 +54,25 @@ class SD_API Window {
 
     std::string GetTitle() const;
 
+    glm::vec2 MapScreenToClip(const RenderTarget &target,
+                              const glm::ivec2 &pos) const;
+    glm::ivec2 MapClipToScreen(const RenderTarget &target,
+                               const glm::vec2 &pos) const;
+
    protected:
     Window() = default;
 
     SDL_Window *m_window;
 
    private:
+    friend class Application;
+
+    void SwapBuffer();
+    bool PollEvent(SDL_Event &event);
+
+    bool ShouldClose();
+    void SetShouldClose(bool shouldClose);
+
     bool m_shouldClose;
 };
 

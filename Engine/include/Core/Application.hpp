@@ -14,8 +14,6 @@ class SD_API Application {
    public:
     void Quit();
 
-    Window &GetWindow();
-
    protected:
     void PushLayer(Layer *layer);
 
@@ -50,8 +48,6 @@ class SD_API Application {
 
     void Tick(float dt);
     void Render();
-
-    Ref<Window> m_window;
 
     EventStack<Layer *> m_layers;
     ImGuiLayer *m_imguiLayer;

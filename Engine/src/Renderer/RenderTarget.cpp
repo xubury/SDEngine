@@ -58,20 +58,6 @@ void RenderTarget::SetOrigin(int x, int y) {
     m_y = y;
 }
 
-glm::vec2 RenderTarget::MapScreenToClip(const glm::vec2 &pos) {
-    glm::vec2 clip;
-    clip.x = -1.f + 2.f * (pos.x - m_x) / m_width;
-    clip.y = 1.f - 2.f * (pos.y - m_y) / m_height;
-    return clip;
-}
-
-glm::vec2 RenderTarget::MapClipToScreen(const glm::vec2 &pos) {
-    glm::vec2 screen;
-    screen.x = (pos.x + 1.f) * m_width / 2.f + m_x;
-    screen.y = (1.f - pos.y) * m_height / 2.f + m_y;
-    return screen;
-}
-
 const Framebuffer *RenderTarget::GetFramebuffer() const {
     return m_framebuffer.get();
 }

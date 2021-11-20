@@ -36,11 +36,6 @@ class SD_API RenderTarget {
     int GetHeight() const;
     void Resize(int width, int height);
 
-    // map coordinate from screen space to clip space
-    glm::vec2 MapScreenToClip(const glm::vec2 &pos);
-    // map coordinate from clip space to screen space
-    glm::vec2 MapClipToScreen(const glm::vec2 &pos);
-
    private:
     int m_x;
     int m_y;

@@ -8,8 +8,6 @@ namespace SD {
 
 const std::string setting_filename = "setting.ini";
 
-Window &Application::GetWindow() { return *m_window; }
-
 void Application::OnInit() {
     std::string debug_path = GetAppDirectory() / "Debug.txt";
     Log::Init(debug_path);
@@ -38,6 +36,7 @@ void Application::OnInit() {
 
     // Setting up which api to use
     SetGraphicsAPI(GraphicsAPI::OpenGL);
+    ShaderLibrary::Instance().SetRootPath("assets");
 
     WindowProp prop;
     prop.title = title;
@@ -46,9 +45,7 @@ void Application::OnInit() {
     prop.msaa = msaa;
     prop.flag = SDL_WINDOW_MAXIMIZED;
     prop.vsync = vsync;
-    m_window = Window::Create(prop);
-
-    ShaderLibrary::Instance().SetRootPath("assets");
+    window = Window::Create(prop);
 
     renderer = CreateRef<Renderer>(msaa);
     asset = CreateRef<AssetManager>("assets");
@@ -59,12 +56,12 @@ void Application::OnInit() {
 }
 
 void Application::OnDestroy() {
-    glm::ivec2 size = m_window->GetSize();
-    ini->Set("window", "title", m_window->GetTitle());
+    glm::ivec2 size = window->GetSize();
+    ini->Set("window", "title", window->GetTitle());
     ini->SetInteger("window", "width", size.x);
     ini->SetInteger("window", "height", size.y);
-    ini->SetInteger("window", "msaa", m_window->GetMSAA());
-    ini->SetBoolean("window", "vsync", m_window->GetIsVSync());
+    ini->SetInteger("window", "msaa", window->GetMSAA());
+    ini->SetBoolean("window", "vsync", window->GetIsVSync());
 
     ini->Save(GetAppDirectory() / setting_filename);
 
@@ -182,8 +179,8 @@ void Application::Run() {
     SDL_Event event;
     float ms_per_frame = 1000.f / min_fps;
     uint32_t ms_elapsed = 0;
-    while (!m_window->ShouldClose()) {
-        while (m_window->PollEvent(event)) {
+    while (!window->ShouldClose()) {
+        while (window->PollEvent(event)) {
             ProcessEvent(event);
         }
         ProcessEvents();
@@ -199,7 +196,7 @@ void Application::Run() {
     }
 }
 
-void Application::Quit() { m_window->SetShouldClose(true); }
+void Application::Quit() { window->SetShouldClose(true); }
 
 void Application::Tick(float dt) {
     Input::Tick();
@@ -220,7 +217,7 @@ void Application::Render() {
     }
     m_imguiLayer->End();
 
-    m_window->SwapBuffer();
+    window->SwapBuffer();
 }
 
 }  // namespace SD
