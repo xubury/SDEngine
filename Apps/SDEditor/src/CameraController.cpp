@@ -35,7 +35,7 @@ CameraController::CameraController()
          [this](const Event &) { Move(-m_camera->GetWorldRight()); });
     Bind(CameraMovement::RIGHT,
          [this](const Event &) { Move(m_camera->GetWorldRight()); });
-    Bind(Action(Event::EventType::MOUSE_MOTION), [this](const Event &event) {
+    Bind(Action(EventType::MOUSE_MOTION), [this](const Event &event) {
         if (Input::IsMouseDown(MouseButton::RIGHT)) {
             m_mouse_movement.x += event.mouse_motion.x_rel;
             m_mouse_movement.y += event.mouse_motion.y_rel;

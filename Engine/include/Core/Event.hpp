@@ -40,6 +40,18 @@ struct TextInputEvent {
     char text[32];  // std::string is not allowed in union
 };
 
+enum class EventType {
+    UNKNOWN = 0,
+    WINDOW_RESIZED,
+    KEY_PRESSED,
+    KEY_RELEASED,
+    MOUSE_MOTION,
+    MOUSE_BUTTON_PRESSED,
+    MOUSE_BUTTON_RELEASED,
+    MOUSE_WHEEL_SCROLLED,
+    TEXT_INPUT
+};
+
 struct SD_API Event {
     union {
         WindowSizeEvent window_size;
@@ -50,19 +62,7 @@ struct SD_API Event {
         TextInputEvent text_input;
     };
 
-    enum EventType {
-        UNKNOWN = 0,
-        WINDOW_RESIZED,
-        KEY_PRESSED,
-        KEY_RELEASED,
-        MOUSE_MOTION,
-        MOUSE_BUTTON_PRESSED,
-        MOUSE_BUTTON_RELEASED,
-        MOUSE_WHEEL_SCROLLED,
-        TEXT_INPUT
-    };
-
-    EventType type = Event::UNKNOWN;
+    EventType type = EventType::UNKNOWN;
     bool handled = false;
 };
 

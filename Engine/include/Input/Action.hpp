@@ -15,7 +15,7 @@ class SD_API Action {
         DOWN = 1 << 3
     };
 
-    Action(const Event::EventType &event);
+    Action(const EventType &event);
 
     Action(Keycode key, int type = Type::REAL_TIME | Type::PRESSED);
 

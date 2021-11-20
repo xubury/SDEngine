@@ -321,7 +321,7 @@ void EditorLayer::OnEventProcess(const Event &event) {
     if (m_is_viewport_hovered) {
         m_camera_controller.ProcessEvent(event);
     }
-    if (event.type == Event::EventType::KEY_PRESSED) {
+    if (event.type == EventType::KEY_PRESSED) {
         switch (event.key.keycode) {
             default:
                 break;
