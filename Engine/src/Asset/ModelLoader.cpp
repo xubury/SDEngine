@@ -40,7 +40,7 @@ static MeshTopology ConvertAssimpPrimitive(aiPrimitiveType type) {
         case aiPrimitiveType_POLYGON:
             return MeshTopology::QUADS;
         default:
-            SD_CORE_WARN("[convertAssimpPrimitive] Unhandled mesh topology!");
+            SD_CORE_WARN("[ConvertAssimpPrimitive] Unhandled mesh topology!");
             return MeshTopology::TRIANGLES;
     };
 }
@@ -78,7 +78,7 @@ static Mesh ProcessAiMesh(const aiMesh *assimpMesh) {
     return mesh;
 }
 
-static TextureWrap ConvertAssimpMapMode(aiTextureMapMode mode) {
+static inline TextureWrap ConvertAssimpMapMode(aiTextureMapMode mode) {
     switch (mode) {
         case aiTextureMapMode_Clamp:
             return TextureWrap::EDGE;
@@ -89,14 +89,36 @@ static TextureWrap ConvertAssimpMapMode(aiTextureMapMode mode) {
         case aiTextureMapMode_Wrap:
             return TextureWrap::REPEAT;
         default:
-            SD_CORE_WARN("[convertAssimpMapMode] invalid wrap mode!");
+            SD_CORE_WARN("[ConvertAssimpMapMode] invalid wrap mode!");
             return TextureWrap::REPEAT;
+    }
+}
+
+static inline MaterialType ConvertAssimpTextureType(aiTextureType textureType) {
+    switch (textureType) {
+        case aiTextureType_DIFFUSE:
+            return MaterialType::DIFFUSE;
+        case aiTextureType_AMBIENT:
+            return MaterialType::AMBIENT;
+        case aiTextureType_SPECULAR:
+            return MaterialType::SPECULAR;
+        case aiTextureType_EMISSIVE:
+            return MaterialType::EMISSIVE;
+        case aiTextureType_HEIGHT:
+            return MaterialType::HEIGHT;
+        case aiTextureType_NORMALS:
+            return MaterialType::NORMALS;
+        case aiTextureType_SHININESS:
+            return MaterialType::SHININESS;
+        default:
+            SD_CORE_WARN("[ConvertAssimpTextureType] invalid texture type!");
+            return MaterialType::NONE;
     }
 }
 
 static void processAiMaterial(AssetManager &manager,
                               const std::filesystem::path &directory,
-                              Material &material, MaterialType materialType,
+                              Material &material,
                               const aiMaterial *assimpMaterial,
                               aiTextureType assimpType) {
     uint32_t count = assimpMaterial->GetTextureCount(assimpType);
@@ -124,7 +146,7 @@ static void processAiMaterial(AssetManager &manager,
         TextureFormatType::UBYTE, ConvertAssimpMapMode(wrapMode),
         TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_LINEAR,
         image->data());
-    material.SetTexture(materialType, texture);
+    material.SetTexture(ConvertAssimpTextureType(assimpType), texture);
 }
 
 static void processNode(const aiScene *scene, const aiNode *node,
@@ -148,8 +170,7 @@ Ref<void> ModelLoader::LoadAsset(const std::string &filePath) {
     uint32_t importFlags = aiProcess_Triangulate | aiProcess_FlipUVs;
     const aiScene *scene = importer.ReadFile(filePath, importFlags);
     if (scene == nullptr) {
-        std::string error = importer.GetErrorString();
-        SD_CORE_ERROR("Model loading failed: {}", error.c_str());
+        SD_CORE_ERROR("Model loading failed: {}", importer.GetErrorString());
         return model;
     }
 
@@ -158,23 +179,11 @@ Ref<void> ModelLoader::LoadAsset(const std::string &filePath) {
         std::filesystem::path(filePath).parent_path();
     for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
         Material material;
-        processAiMaterial(Manager(), directory, material, MaterialType::DIFFUSE,
-                          scene->mMaterials[i], aiTextureType_DIFFUSE);
-        processAiMaterial(Manager(), directory, material,
-                          MaterialType::SPECULAR, scene->mMaterials[i],
-                          aiTextureType_SPECULAR);
-        processAiMaterial(Manager(), directory, material, MaterialType::AMBIENT,
-                          scene->mMaterials[i], aiTextureType_AMBIENT);
-        processAiMaterial(Manager(), directory, material,
-                          MaterialType::EMISSIVE, scene->mMaterials[i],
-                          aiTextureType_EMISSIVE);
-        processAiMaterial(Manager(), directory, material, MaterialType::HEIGHT,
-                          scene->mMaterials[i], aiTextureType_HEIGHT);
-        processAiMaterial(Manager(), directory, material, MaterialType::NORMALS,
-                          scene->mMaterials[i], aiTextureType_NORMALS);
-        processAiMaterial(Manager(), directory, material,
-                          MaterialType::SHININESS, scene->mMaterials[i],
-                          aiTextureType_SHININESS);
+        // TODO: other texture type not implement yet
+        for (int type = 1; type < aiTextureType_SHININESS; ++type) {
+            processAiMaterial(Manager(), directory, material,
+                              scene->mMaterials[i], aiTextureType(type));
+        }
         model->AddMaterial(std::move(material));
     }
 

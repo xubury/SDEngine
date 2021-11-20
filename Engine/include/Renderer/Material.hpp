@@ -11,6 +11,7 @@
 namespace SD {
 
 enum class MaterialType {
+    NONE,
     DIFFUSE,
     SPECULAR,
     AMBIENT,
