@@ -50,9 +50,7 @@ set(Renderer_Src
 
 add_library(sd-renderer ${Renderer_Src})
 
-set_property(TARGET sd-renderer PROPERTY CXX_STANDARD 17)
-
-target_compile_options(sd-renderer PUBLIC -Wall -Wextra -Wundef -pedantic)
+target_compile_options(sd-renderer PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 target_compile_definitions(sd-renderer PUBLIC SD_EXPORT)
 

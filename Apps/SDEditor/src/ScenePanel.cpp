@@ -251,6 +251,18 @@ void ScenePanel::DrawComponents(Entity &entity) {
                 SD_CORE_WARN("This entity already has the Text Component!");
             ImGui::CloseCurrentPopup();
         }
+        if (ImGui::MenuItem("Camera")) {
+            if (!m_selected_entity.HasComponent<CameraComponent>())
+                m_selected_entity.AddComponent<CameraComponent>(
+                    CameraType::PERSPECTIVE,
+                    &m_selected_entity.GetComponent<TransformComponent>()
+                         .transform,
+                    glm::radians(45.f), window->GetSize().x,
+                    window->GetSize().y, 0, 1000.f);
+            else
+                SD_CORE_WARN("This entity already has the Camera Component!");
+            ImGui::CloseCurrentPopup();
+        }
 
         ImGui::EndPopup();
     }
@@ -414,6 +426,36 @@ void ScenePanel::DrawComponents(Entity &entity) {
         ImGui::Text("Color");
         ImGui::ColorEdit4("##TextColor", &textComp.color[0]);
     });
+    DrawComponent<CameraComponent>(
+        "Camera", entity, [&](CameraComponent &cameraComp) {
+            CameraType type = cameraComp.camera.GetCameraType();
+            if (ImGui::RadioButton("Perspective",
+                                   reinterpret_cast<int *>(&type),
+                                   static_cast<int>(CameraType::PERSPECTIVE))) {
+                cameraComp.camera.SetCameraType(type);
+            }
+            ImGui::SameLine();
+            if (ImGui::RadioButton(
+                    "Ortho", reinterpret_cast<int *>(&type),
+                    static_cast<int>(CameraType::ORTHOGRAPHIC))) {
+                cameraComp.camera.SetCameraType(type);
+            }
+            float fov = cameraComp.camera.GetFOV();
+            ImGui::Text("Field of view");
+            if (ImGui::SliderAngle("##FOV", &fov, 1.0f, 89.f)) {
+                cameraComp.camera.SetFOV(fov);
+            }
+            float near_z = cameraComp.camera.GetNearZ();
+            ImGui::Text("Near Z");
+            if (ImGui::SliderFloat("##Near Z", &near_z, 0, 1000)) {
+                cameraComp.camera.SetNearZ(near_z);
+            }
+            ImGui::Text("Far Z");
+            float far_z = cameraComp.camera.GetFarZ();
+            if (ImGui::SliderFloat("##Far Z", &far_z, 0, 1000)) {
+                cameraComp.camera.SetFarZ(far_z);
+            }
+        });
 }
 
 void ScenePanel::DrawMaterialsList(const std::vector<Material> &materials,

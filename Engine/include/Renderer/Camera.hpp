@@ -6,14 +6,19 @@
 
 namespace SD {
 
+enum class CameraType { ORTHOGRAPHIC, PERSPECTIVE };
+
 class SD_API Camera {
    public:
-    Camera(float zNear, float zFar);
-    Camera(Transform *transform, float zNear, float zFar);
-    Camera(const glm::vec3 &position, const glm::quat &rotation, float zNear,
-           float zFar);
+    Camera(CameraType type, float fov, float width, float height, float near_z,
+           float far_z);
+    Camera(CameraType type, Transform *transform, float fov, float width,
+           float height, float zNear, float zFar);
+    Camera(CameraType type, const glm::vec3 &position,
+           const glm::quat &rotation, float fov, float width, float height,
+           float zNear, float zFar);
 
-    virtual void Resize(float width, float height) = 0;
+    void Resize(float width, float height);
 
     void TranslateLocal(const glm::vec3 &t);
     void TranslateWorld(const glm::vec3 &t);
@@ -47,100 +52,82 @@ class SD_API Camera {
     void SetWorldTransform(const glm::mat4 &transform);
     void SetLocalTransform(const glm::mat4 &transform);
 
-    void SetProjection(const glm::mat4 &projection);
+    void UpdateProjection();
 
     glm::mat4 GetView();
     glm::mat4 GetView() const;
 
+    glm::mat4 GetProjection();
     glm::mat4 GetProjection() const;
 
     glm::mat4 GetViewPorjection();
     glm::mat4 GetViewPorjection() const;
 
-    bool Outdated() const;
+    bool ViewOutdated() const;
+    bool ProjectionOutdated() const;
 
     glm::vec3 MapClipToWorld(const glm::vec2 &pos) const;
     glm::vec3 MapWorldToClip(const glm::vec3 &pos) const;
 
     void UpdateView();
 
-    virtual float GetNearWidth() const = 0;
-    virtual float GetNearHeight() const = 0;
+    void SetFOV(float fov) {
+        m_fov = fov;
+        m_projection_outdated = true;
+    }
+    float GetFOV() const { return m_fov; }
 
-    virtual float GetFarWidth() const = 0;
-    virtual float GetFarHeight() const = 0;
+    void SetNearWidth(float width) {
+        m_width = width;
+        m_projection_outdated = true;
+    }
+    void SetNearHeight(float height) {
+        m_height = height;
+        m_projection_outdated = true;
+    }
 
-    float GetNearZ() const { return m_zNear; }
-    float GetFarZ() const { return m_zFar; }
+    float GetNearWidth() const;
+    float GetNearHeight() const;
 
-   protected:
-    float m_zNear;
-    float m_zFar;
+    float GetFarWidth() const;
+    float GetFarHeight() const;
+
+    void SetNearZ(float near_z) {
+        m_near_z = near_z;
+        m_projection_outdated = true;
+    }
+    float GetNearZ() const { return m_near_z; }
+
+    void SetFarZ(float far_z) {
+        m_far_z = far_z;
+        m_projection_outdated = true;
+    }
+    float GetFarZ() const { return m_far_z; }
+
+    void SetCameraType(CameraType type) {
+        m_type = type;
+        m_projection_outdated = true;
+    }
+
+    CameraType GetCameraType() const { return m_type; }
 
    private:
     glm::mat4 m_view;
     glm::mat4 m_projection;
 
+    CameraType m_type;
     Transform *m_transform;
-
     glm::vec3 m_position;
     glm::quat m_rotation;
 
-    bool m_outdated;
-};
-
-class SD_API OrthographicCamera : public Camera {
-   public:
-    OrthographicCamera(float width, float height, float zNear, float zFar);
-    OrthographicCamera(Transform *m_transform, float width, float height,
-                       float zNear, float zFar);
-    OrthographicCamera(const glm::vec3 &position, const glm::quat &rotation,
-                       float width, float height, float zNear, float zFar);
-    ~OrthographicCamera() = default;
-
-    void Resize(float width, float height) override;
-
-    float GetNearWidth() const override { return m_width; };
-    float GetNearHeight() const override { return m_height; };
-
-    float GetFarWidth() const override { return m_width; };
-    float GetFarHeight() const override { return m_height; };
-
-   private:
+    float m_fov;
     float m_width;
     float m_height;
-};
+    float m_near_z;
+    float m_far_z;
 
-class SD_API PerspectiveCamera : public Camera {
-   public:
-    PerspectiveCamera(float fov, float width, float height, float zNear,
-                      float zFar);
-    PerspectiveCamera(float fov, float width, float height, float zNear,
-                      float zFar, Transform *m_transform);
-    PerspectiveCamera(float fov, float width, float height, float zNear,
-                      float zFar, const glm::vec3 &position,
-                      const glm::quat &rotation);
-    ~PerspectiveCamera() = default;
-
-    float GetFOV() const { return m_fov; }
-
-    float GetAspect() const { return m_aspect; }
-
-    void Resize(float width, float height) override;
-
-    float GetNearWidth() const override { return GetNearHeight() * m_aspect; };
-    float GetNearHeight() const override {
-        return std::tan(m_fov / 2.f) * m_zNear * 2.f;
-    };
-
-    float GetFarWidth() const override { return GetFarHeight() * m_aspect; };
-    float GetFarHeight() const override {
-        return std::tan(m_fov / 2.f) * m_zFar * 2.f;
-    };
-
-   private:
-    float m_fov;
-    float m_aspect;
+    bool m_view_outdated;
+    bool m_projection_outdated;
 };
 
 }  // namespace SD

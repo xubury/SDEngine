@@ -47,9 +47,7 @@ set(Graphics_Src
 
 add_library(sd-graphics ${Graphics_Src})
 
-set_property(TARGET sd-graphics PROPERTY CXX_STANDARD 17)
-
-target_compile_options(sd-graphics PUBLIC -Wall -Wextra -Wundef -pedantic)
+target_compile_options(sd-graphics PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 target_compile_definitions(sd-graphics PUBLIC SD_EXPORT)
 

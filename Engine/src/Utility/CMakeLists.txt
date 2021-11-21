@@ -51,9 +51,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     target_link_libraries(sd-utility PUBLIC ${CMAKE_DL_LIBS} pthread)
 endif()
 
-set_property(TARGET sd-utility PROPERTY CXX_STANDARD 17)
-
-target_compile_options(sd-utility PUBLIC -Wall -Wextra -Wundef -pedantic)
+target_compile_options(sd-utility PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 target_compile_definitions(sd-utility PUBLIC SD_EXPORT)
 

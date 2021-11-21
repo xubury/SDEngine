@@ -3,35 +3,58 @@
 
 namespace SD {
 
-Camera::Camera(float zNear, float zFar)
-    : m_zNear(zNear),
-      m_zFar(zFar),
+Camera::Camera(CameraType type, float fov, float width, float height,
+               float near_z, float far_z)
+    : m_type(type),
       m_transform(nullptr),
       m_position(0.f),
       m_rotation(1.f, 0.f, 0.f, 0.f),
-      m_outdated(true) {
+      m_fov(fov),
+      m_width(width),
+      m_height(height),
+      m_near_z(near_z),
+      m_far_z(far_z),
+      m_view_outdated(true) {
     UpdateView();
+    UpdateProjection();
 }
 
-Camera::Camera(Transform *transform, float zNear, float zFar)
-    : m_zNear(zNear),
-      m_zFar(zFar),
+Camera::Camera(CameraType type, Transform *transform, float fov, float width,
+               float height, float near_z, float far_z)
+    : m_type(type),
       m_transform(transform),
       m_position(0.f),
       m_rotation(1.f, 0.f, 0.f, 0.f),
-      m_outdated(true) {
+      m_fov(fov),
+      m_width(width),
+      m_height(height),
+      m_near_z(near_z),
+      m_far_z(far_z),
+      m_view_outdated(true) {
     UpdateView();
+    UpdateProjection();
 }
 
-Camera::Camera(const glm::vec3 &position, const glm::quat &rotation,
-               float zNear, float zFar)
-    : m_zNear(zNear),
-      m_zFar(zFar),
+Camera::Camera(CameraType type, const glm::vec3 &position,
+               const glm::quat &rotation, float fov, float width, float height,
+               float near_z, float far_z)
+    : m_type(type),
       m_transform(nullptr),
       m_position(position),
       m_rotation(rotation),
-      m_outdated(true) {
+      m_fov(fov),
+      m_width(width),
+      m_height(height),
+      m_near_z(near_z),
+      m_far_z(far_z),
+      m_view_outdated(true) {
     UpdateView();
+    UpdateProjection();
+}
+
+void Camera::Resize(float width, float height) {
+    m_width = width;
+    m_height = height;
 }
 
 void Camera::TranslateLocal(const glm::vec3 &t) {
@@ -40,7 +63,7 @@ void Camera::TranslateLocal(const glm::vec3 &t) {
     } else {
         m_position += GetWorldRotation() * t;
     }
-    m_outdated = true;
+    m_view_outdated = true;
 }
 
 void Camera::TranslateWorld(const glm::vec3 &t) {
@@ -49,7 +72,7 @@ void Camera::TranslateWorld(const glm::vec3 &t) {
     } else {
         m_position += t;
     }
-    m_outdated = true;
+    m_view_outdated = true;
 }
 
 void Camera::RotateLocal(const glm::quat &r) {
@@ -58,7 +81,7 @@ void Camera::RotateLocal(const glm::quat &r) {
     } else {
         m_rotation = GetWorldRotation() * r;
     }
-    m_outdated = true;
+    m_view_outdated = true;
 }
 
 void Camera::RotateWorld(const glm::quat &r) {
@@ -67,7 +90,7 @@ void Camera::RotateWorld(const glm::quat &r) {
     } else {
         m_rotation = r * GetWorldRotation();
     }
-    m_outdated = true;
+    m_view_outdated = true;
 }
 
 glm::vec3 Camera::GetLocalRight() const {
@@ -108,7 +131,7 @@ void Camera::SetLocalPosition(const glm::vec3 &position) {
     } else {
         m_position = position;
     }
-    m_outdated = true;
+    m_view_outdated = true;
 }
 
 void Camera::SetLocalRotation(const glm::quat &rotation) {
@@ -117,7 +140,7 @@ void Camera::SetLocalRotation(const glm::quat &rotation) {
     } else {
         m_rotation = rotation;
     }
-    m_outdated = true;
+    m_view_outdated = true;
 }
 
 void Camera::SetWorldPosition(const glm::vec3 &position) {
@@ -126,7 +149,7 @@ void Camera::SetWorldPosition(const glm::vec3 &position) {
     } else {
         m_position = position;
     }
-    m_outdated = true;
+    m_view_outdated = true;
 }
 
 void Camera::SetWorldRotation(const glm::quat &rotation) {
@@ -135,7 +158,7 @@ void Camera::SetWorldRotation(const glm::quat &rotation) {
     } else {
         m_rotation = rotation;
     }
-    m_outdated = true;
+    m_view_outdated = true;
 }
 
 glm::vec3 Camera::GetLocalPosition() const {
@@ -179,7 +202,7 @@ void Camera::SetWorldTransform(const glm::mat4 &transform) {
         glm::vec3 scale;
         Decompose(transform, m_position, m_rotation, scale);
     }
-    m_outdated = true;
+    m_view_outdated = true;
 }
 
 void Camera::SetLocalTransform(const glm::mat4 &transform) {
@@ -192,17 +215,26 @@ void Camera::SetLocalTransform(const glm::mat4 &transform) {
         glm::decompose(transform, scale, m_rotation, m_position, skew,
                        perspective);
     }
-    m_outdated = true;
+    m_view_outdated = true;
 }
 
-void Camera::SetProjection(const glm::mat4 &projection) {
-    m_projection = projection;
+void Camera::UpdateProjection() {
+    if (m_type == CameraType::ORTHOGRAPHIC) {
+        m_projection =
+            glm::ortho(-m_width / 2.f, m_width / 2.f, -m_height / 2.f,
+                       m_height / 2.f, m_near_z, m_far_z);
+    } else if (m_type == CameraType::PERSPECTIVE) {
+        m_projection =
+            glm::perspective(m_fov, m_width / m_height, m_near_z, m_far_z);
+    } else {
+        SD_CORE_ASSERT(false, "Invalid camera type!");
+    }
 }
 
 glm::mat4 Camera::GetView() const { return m_view; }
 
 glm::mat4 Camera::GetView() {
-    if (Outdated()) {
+    if (ViewOutdated()) {
         UpdateView();
     }
     return m_view;
@@ -210,13 +242,22 @@ glm::mat4 Camera::GetView() {
 
 glm::mat4 Camera::GetProjection() const { return m_projection; }
 
+glm::mat4 Camera::GetProjection() {
+    if (ProjectionOutdated()) {
+        UpdateProjection();
+    }
+    return m_projection;
+}
+
 glm::mat4 Camera::GetViewPorjection() { return GetProjection() * GetView(); }
 
 glm::mat4 Camera::GetViewPorjection() const {
     return GetProjection() * GetView();
 }
 
-bool Camera::Outdated() const { return m_outdated; }
+bool Camera::ViewOutdated() const { return m_view_outdated; }
+
+bool Camera::ProjectionOutdated() const { return m_projection_outdated; }
 
 void Camera::UpdateView() {
     m_position = GetWorldPosition();
@@ -225,7 +266,7 @@ void Camera::UpdateView() {
     m_view =
         glm::lookAt(m_position, m_position - GetWorldFront(), GetWorldUp());
 
-    m_outdated = false;
+    m_view_outdated = false;
 }
 
 glm::vec3 Camera::MapClipToWorld(const glm::vec2 &pos) const {
@@ -243,63 +284,40 @@ glm::vec3 Camera::MapWorldToClip(const glm::vec3 &pos) const {
     return clipPos;
 }
 
-OrthographicCamera::OrthographicCamera(float width, float height, float zNear,
-                                       float zFar)
-    : Camera(zNear, zFar), m_width(width), m_height(height) {
-    SetProjection(glm::ortho(-m_width / 2.f, m_width / 2.f, -m_height / 2.f,
-                             m_height / 2.f, m_zNear, m_zFar));
+float Camera::GetNearWidth() const {
+    switch (m_type) {
+        case CameraType::PERSPECTIVE:
+            return GetNearHeight() * m_width / m_height;
+        default:
+            return m_width;
+    }
 }
 
-OrthographicCamera::OrthographicCamera(Transform *transform, float width,
-                                       float height, float zNear, float zFar)
-    : Camera(transform, zNear, zFar), m_width(width), m_height(height) {
-    SetProjection(glm::ortho(-m_width / 2.f, m_width / 2.f, -m_height / 2.f,
-                             m_height / 2.f, m_zNear, m_zFar));
+float Camera::GetNearHeight() const {
+    switch (m_type) {
+        case CameraType::PERSPECTIVE:
+            return std::tan(m_fov / 2.f) * m_near_z * 2.f;
+        default:
+            return m_height;
+    }
 }
 
-OrthographicCamera::OrthographicCamera(const glm::vec3 &position,
-                                       const glm::quat &rotation, float width,
-                                       float height, float zNear, float zFar)
-    : Camera(position, rotation, zNear, zFar),
-      m_width(width),
-      m_height(height) {
-    SetProjection(glm::ortho(-m_width / 2.f, m_width / 2.f, -m_height / 2.f,
-                             m_height / 2.f, m_zNear, m_zFar));
+float Camera::GetFarWidth() const {
+    switch (m_type) {
+        case CameraType::PERSPECTIVE:
+            return GetFarHeight() * m_width / m_height;
+        default:
+            return m_width;
+    }
 }
 
-void OrthographicCamera::Resize(float width, float height) {
-    m_width = width;
-    m_height = height;
-    SetProjection(glm::ortho(-m_width / 2.f, m_width / 2.f, -m_height / 2.f,
-                             m_height / 2.f, m_zNear, m_zFar));
-}
-
-PerspectiveCamera::PerspectiveCamera(float fov, float width, float height,
-                                     float zNear, float zFar)
-    : Camera(zNear, zFar), m_fov(fov), m_aspect(width / height) {
-    SetProjection(glm::perspective(m_fov, m_aspect, m_zNear, m_zFar));
-}
-
-PerspectiveCamera::PerspectiveCamera(float fov, float width, float height,
-                                     float zNear, float zFar,
-                                     Transform *transform)
-    : Camera(transform, zNear, zFar), m_fov(fov), m_aspect(width / height) {
-    SetProjection(glm::perspective(m_fov, m_aspect, m_zNear, m_zFar));
-}
-
-PerspectiveCamera::PerspectiveCamera(float fov, float width, float height,
-                                     float zNear, float zFar,
-                                     const glm::vec3 &position,
-                                     const glm::quat &rotation)
-    : Camera(position, rotation, zNear, zFar),
-      m_fov(fov),
-      m_aspect(width / height) {
-    SetProjection(glm::perspective(m_fov, m_aspect, m_zNear, m_zFar));
-}
-
-void PerspectiveCamera::Resize(float width, float height) {
-    m_aspect = width / height;
-    SetProjection(glm::perspective(m_fov, m_aspect, m_zNear, m_zFar));
+float Camera::GetFarHeight() const {
+    switch (m_type) {
+        case CameraType::PERSPECTIVE:
+            return std::tan(m_fov / 2.f) * m_far_z * 2.f;
+        default:
+            return m_height;
+    }
 }
 
 }  // namespace SD

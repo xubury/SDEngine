@@ -33,9 +33,7 @@ set(Core_Src
 
 add_library(sd-core ${Core_Src})
 
-set_property(TARGET sd-core PROPERTY CXX_STANDARD 17)
-
-target_compile_options(sd-core PUBLIC -Wall -Wextra -Wundef -pedantic)
+target_compile_options(sd-core PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 target_compile_definitions(sd-core PUBLIC SD_EXPORT)
 

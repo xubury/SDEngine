@@ -24,9 +24,7 @@ set(Asset_Src
 
 add_library(sd-asset ${Asset_Src})
 
-set_property(TARGET sd-asset PROPERTY CXX_STANDARD 17)
-
-target_compile_options(sd-asset PUBLIC -Wall -Wextra -Wundef -pedantic)
+target_compile_options(sd-asset PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 target_compile_definitions(sd-asset PUBLIC SD_EXPORT)
 

@@ -14,9 +14,7 @@ set(ImGui_Src
 
 add_library(sd-imgui ${ImGui_Src})
 
-set_property(TARGET sd-imgui PROPERTY CXX_STANDARD 17)
-
-target_compile_options(sd-imgui PUBLIC -Wall -Wextra -Wundef -pedantic)
+target_compile_options(sd-imgui PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 target_compile_definitions(sd-imgui PUBLIC SD_EXPORT)
 

@@ -70,6 +70,13 @@ struct SD_API TextComponent {
     SERIALIZE(id, pixel_size, color, text)
 };
 
+struct SD_API CameraComponent {
+    Camera camera;
+    CameraComponent(CameraType type, Transform* transform, float fov,
+                   float width, float height, float near_z, float far_z)
+        : camera(type, transform, fov, width, height, near_z, far_z) {}
+};
+
 }  // namespace SD
 
 #endif /* SD_COMPONENT_HPP */

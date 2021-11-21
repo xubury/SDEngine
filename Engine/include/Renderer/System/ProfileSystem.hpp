@@ -20,7 +20,7 @@ class ProfileSystem : public System {
 
    private:
     RenderTarget *m_target;
-    OrthographicCamera m_camera;
+    Camera m_camera;
     FpsCounter m_fps;
     Ref<Font> m_font;
 };

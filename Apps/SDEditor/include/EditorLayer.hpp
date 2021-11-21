@@ -68,7 +68,7 @@ class EditorLayer : public Layer {
 
     bool m_hide;
 
-    PerspectiveCamera m_editor_camera;
+    Camera m_editor_camera;
     CameraController m_camera_controller;
 
     Ref<Scene> m_scene;

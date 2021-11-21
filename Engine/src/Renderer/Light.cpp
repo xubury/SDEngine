@@ -134,7 +134,7 @@ void Light::ComputeBoundingBox(const Transform &transform, const Camera &camera,
     vertices[7] = glm::vec3(farWidth, farHeight, -farZ);
 
     for (const auto &vertex : vertices) {
-        const glm::vec pos = lightTrans * vertex + camPos;
+        const glm::vec3 pos = lightTrans * vertex + camPos;
         min = glm::min(min, pos);
         max = glm::max(max, pos);
     }

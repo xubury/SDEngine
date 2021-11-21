@@ -15,9 +15,7 @@ set(Input_Src
 
 add_library(sd-input ${Input_Src})
 
-set_property(TARGET sd-input PROPERTY CXX_STANDARD 17)
-
-target_compile_options(sd-input PUBLIC -Wall -Wextra -Wundef -pedantic)
+target_compile_options(sd-input PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 target_compile_definitions(sd-input PUBLIC SD_EXPORT)
 

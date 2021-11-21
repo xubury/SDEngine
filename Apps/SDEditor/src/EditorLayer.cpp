@@ -20,7 +20,8 @@ EditorLayer::EditorLayer(int width, int height, int msaa)
       m_is_viewport_focused(false),
       m_is_viewport_hovered(false),
       m_hide(false),
-      m_editor_camera(glm::radians(45.f), width, height, 0.1, 1000.f),
+      m_editor_camera(CameraType::PERSPECTIVE, glm::radians(45.f), width,
+                      height, 0.1, 1000.f),
       m_load_scene_open(false),
       m_save_scene_open(false) {
     m_camera_controller.SetCamera(&m_editor_camera);

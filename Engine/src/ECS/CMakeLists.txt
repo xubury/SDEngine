@@ -13,9 +13,7 @@ set(ECS_Src
 
 add_library(sd-ecs ${ECS_Src})
 
-set_property(TARGET sd-ecs PROPERTY CXX_STANDARD 17)
-
-target_compile_options(sd-ecs PUBLIC -Wall -Wextra -Wundef -pedantic)
+target_compile_options(sd-ecs PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 target_compile_definitions(sd-ecs PUBLIC SD_EXPORT)
 
