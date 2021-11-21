@@ -12,11 +12,6 @@ class SD_API Camera {
    public:
     Camera(CameraType type, float fov, float width, float height, float near_z,
            float far_z);
-    Camera(CameraType type, Transform *transform, float fov, float width,
-           float height, float zNear, float zFar);
-    Camera(CameraType type, const glm::vec3 &position,
-           const glm::quat &rotation, float fov, float width, float height,
-           float zNear, float zFar);
 
     void Resize(float width, float height);
 

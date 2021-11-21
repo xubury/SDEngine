@@ -254,11 +254,8 @@ void ScenePanel::DrawComponents(Entity &entity) {
         if (ImGui::MenuItem("Camera")) {
             if (!m_selected_entity.HasComponent<CameraComponent>())
                 m_selected_entity.AddComponent<CameraComponent>(
-                    CameraType::PERSPECTIVE,
-                    &m_selected_entity.GetComponent<TransformComponent>()
-                         .transform,
-                    glm::radians(45.f), window->GetSize().x,
-                    window->GetSize().y, 0, 1000.f);
+                    CameraType::PERSPECTIVE, glm::radians(45.f),
+                    window->GetSize().x, window->GetSize().y, 0, 1000.f);
             else
                 SD_CORE_WARN("This entity already has the Camera Component!");
             ImGui::CloseCurrentPopup();

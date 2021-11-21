@@ -39,6 +39,12 @@ class SD_API Entity {
     bool operator<(const Entity &other) const;
 
    private:
+    template <typename T>
+    void OnComponentAdded(T &component);
+
+    template <typename>
+    void OnComponentAdded(CameraComponent &component);
+
     entt::entity m_entityHandle;
     Scene *m_scene;
 };
@@ -48,7 +54,7 @@ T &Entity::AddComponent(Args &&...args) {
     SD_CORE_ASSERT(!HasComponent<T>(), "Entity already has this component!");
     T &component =
         m_scene->emplace<T>(m_entityHandle, std::forward<Args>(args)...);
-    m_scene->OnComponentAdded(*this, component);
+    OnComponentAdded<T>(component);
     return component;
 }
 
@@ -75,6 +81,14 @@ const T &Entity::GetComponent() const {
     return m_scene->get<T>(m_entityHandle);
 }
 
+template <typename T>
+void Entity::OnComponentAdded(T &) {}
+
+template <typename>
+void Entity::OnComponentAdded(CameraComponent &component) {
+    Transform *trans = &GetComponent<TransformComponent>().transform;
+    component.camera.SetTransform(trans);
+}
 }  // namespace SD
 
 #endif /* SD_ENTTY_HPP */

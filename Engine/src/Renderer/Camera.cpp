@@ -19,39 +19,6 @@ Camera::Camera(CameraType type, float fov, float width, float height,
     UpdateProjection();
 }
 
-Camera::Camera(CameraType type, Transform *transform, float fov, float width,
-               float height, float near_z, float far_z)
-    : m_type(type),
-      m_transform(transform),
-      m_position(0.f),
-      m_rotation(1.f, 0.f, 0.f, 0.f),
-      m_fov(fov),
-      m_width(width),
-      m_height(height),
-      m_near_z(near_z),
-      m_far_z(far_z),
-      m_view_outdated(true) {
-    UpdateView();
-    UpdateProjection();
-}
-
-Camera::Camera(CameraType type, const glm::vec3 &position,
-               const glm::quat &rotation, float fov, float width, float height,
-               float near_z, float far_z)
-    : m_type(type),
-      m_transform(nullptr),
-      m_position(position),
-      m_rotation(rotation),
-      m_fov(fov),
-      m_width(width),
-      m_height(height),
-      m_near_z(near_z),
-      m_far_z(far_z),
-      m_view_outdated(true) {
-    UpdateView();
-    UpdateProjection();
-}
-
 void Camera::Resize(float width, float height) {
     m_width = width;
     m_height = height;

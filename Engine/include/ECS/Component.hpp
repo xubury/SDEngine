@@ -72,9 +72,9 @@ struct SD_API TextComponent {
 
 struct SD_API CameraComponent {
     Camera camera;
-    CameraComponent(CameraType type, Transform* transform, float fov,
-                   float width, float height, float near_z, float far_z)
-        : camera(type, transform, fov, width, height, near_z, far_z) {}
+    CameraComponent(CameraType type, float fov, float width, float height,
+                    float near_z, float far_z)
+        : camera(type, fov, width, height, near_z, far_z) {}
 };
 
 }  // namespace SD
