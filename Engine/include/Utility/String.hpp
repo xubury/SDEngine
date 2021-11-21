@@ -28,19 +28,30 @@ inline SD_API void Trim(std::string &s) {
     TrimRight(s);
 }
 
-inline SD_API std::u32string ConvertToUTF32(const std::string &t_str) {
-    typedef std::codecvt_utf8<char32_t> convert_type;
-    std::wstring_convert<convert_type, char32_t> converter;
-
-    return converter.from_bytes(t_str);
+inline SD_API std::u16string ConvertToUTF16(const std::string &str) {
+    typedef std::codecvt_utf8_utf16<char16_t> convert_type;
+    std::wstring_convert<convert_type, char16_t> converter;
+    return converter.from_bytes(str);
 }
 
-inline SD_API std::string ConvertToUTF8(const std::u32string &wstr) {
-    // setup converter
+inline SD_API std::u32string ConvertToUTF32(const std::string &str) {
     typedef std::codecvt_utf8<char32_t> convert_type;
     std::wstring_convert<convert_type, char32_t> converter;
 
-    return converter.to_bytes(wstr);
+    return converter.from_bytes(str);
+}
+
+inline SD_API std::string ConvertToUTF8(const std::u16string &str) {
+    typedef std::codecvt_utf8_utf16<char16_t> convert_type;
+    std::wstring_convert<convert_type, char16_t> converter;
+    return converter.to_bytes(str);
+}
+
+inline SD_API std::string ConvertToUTF8(const std::u32string &str) {
+    typedef std::codecvt_utf8<char32_t> convert_type;
+    std::wstring_convert<convert_type, char32_t> converter;
+
+    return converter.to_bytes(str);
 }
 
 }  // namespace String
