@@ -5,25 +5,9 @@
 
 namespace SD {
 
-struct Ray {
-    glm::vec3 origin;
-    glm::vec3 direction;
-};
+namespace Math {
 
-struct Rect {
-    float x;
-    float y;
-    float width;
-    float height;
-    bool Contains(const Rect &other) const;
-    bool Intersects(const Rect &other) const;
-    float GetLeft() const;
-    float GetTop() const;
-    float GetRight() const;
-    float GetBottom() const;
-
-    Rect(float x = 0, float y = 0, float width = 0, float height = 0);
-};
+constexpr float PI = 3.14159265358979323846;
 
 template <glm::length_t L, typename T, glm::qualifier Q>
 inline void BaryCentric(const glm::vec<L, T, Q> &a, const glm::vec<L, T, Q> &b,
@@ -43,6 +27,28 @@ inline void BaryCentric(const glm::vec<L, T, Q> &a, const glm::vec<L, T, Q> &b,
     w = (d00 * d21 - d01 * d20) * invDenom;
     u = 1.0f - v - w;
 }
+
+}  // namespace Math
+
+struct Ray {
+    glm::vec3 origin;
+    glm::vec3 direction;
+};
+
+struct Rect {
+    float x;
+    float y;
+    float width;
+    float height;
+    bool Contains(const Rect &other) const;
+    bool Intersects(const Rect &other) const;
+    float GetLeft() const;
+    float GetTop() const;
+    float GetRight() const;
+    float GetBottom() const;
+
+    Rect(float x = 0, float y = 0, float width = 0, float height = 0);
+};
 
 }  // namespace SD
 

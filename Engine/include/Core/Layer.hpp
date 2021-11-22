@@ -1,11 +1,11 @@
 #ifndef SD_LAYER_HPP
 #define SD_LAYER_HPP
 
+#include "Utility/Base.hpp"
+#include "Utility/EventStack.hpp"
 #include "Core/Vars.hpp"
 #include "Core/Event.hpp"
-#include "Core/EventStack.hpp"
 #include "Core/System.hpp"
-#include "Utility/Base.hpp"
 
 #include <string>
 #include <list>

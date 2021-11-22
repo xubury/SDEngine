@@ -1,8 +1,6 @@
 #include "Renderer/System/ParticleSystem.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Utility/Random.hpp"
-#define _USE_MATH_DEFINES
-#include <math.h>
 
 #include <glm/gtc/constants.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
@@ -49,7 +47,7 @@ void ParticleSystem::OnTick(float dt) {
 
         particle.lifeRemaining -= dt;
         particle.position += particle.velocity * dt;
-        // particle.rotation += dt * 180.0f / M_PI;
+        particle.rotation += dt * 180.0f / Math::PI;
     }
 }
 
@@ -59,7 +57,7 @@ void ParticleSystem::Emit(const ParticleProp &particleProps) {
     particle.active = true;
 
     particle.position = particleProps.position;
-    // particle.rotation = Random::Rnd(0.f, 1.0f) * M_PI * 2.0f;
+    particle.rotation = Random::Rnd(0.f, 1.0f) * Math::PI * 2.0f;
     particle.velocity = particleProps.velocity;
     particle.velocity.x +=
         particleProps.velocityVariation.x * Random::Rnd(-1.0f, 1.0f);

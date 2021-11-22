@@ -3,7 +3,6 @@
 
 #include "Core/Vars.hpp"
 #include "Core/Window.hpp"
-#include "Core/EventStack.hpp"
 #include "ImGui/ImGuiLayer.hpp"
 
 int main(int argc, char **argv);

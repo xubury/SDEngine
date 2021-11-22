@@ -2,10 +2,10 @@
 #define SD_VARIABLES_HPP
 
 #include "Core/Window.hpp"
-#include "Renderer/Renderer.hpp"
-#include "Core/EventDispatcher.hpp"
 #include "Asset/Asset.hpp"
 #include "Utility/Ini.hpp"
+#include "Renderer/Renderer.hpp"
+#include "Utility/EventDispatcher.hpp"
 
 namespace SD {
 

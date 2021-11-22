@@ -87,13 +87,13 @@ float Terrain::Height(float localX, float localZ) const {
         glm::vec2 a(0, 0);
         glm::vec2 b(1, 0);
         glm::vec2 c(0, 1);
-        BaryCentric(a, b, c, glm::vec2(xCoord, zCoord), u, v, w);
+        Math::BaryCentric(a, b, c, glm::vec2(xCoord, zCoord), u, v, w);
         return f00 * u + f10 * v + f01 * w;
     } else {
         glm::vec2 a(1, 0);
         glm::vec2 b(1, 1);
         glm::vec2 c(0, 1);
-        BaryCentric(a, b, c, glm::vec2(xCoord, zCoord), u, v, w);
+        Math::BaryCentric(a, b, c, glm::vec2(xCoord, zCoord), u, v, w);
         return f10 * u + f11 * v + f01 * w;
     }
 }
