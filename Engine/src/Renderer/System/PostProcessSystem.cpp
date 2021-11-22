@@ -6,6 +6,7 @@ namespace SD {
 PostProcessSystem::PostProcessSystem(RenderTarget *target, int width,
                                      int height)
     : System("PostProcess"),
+      m_blurResult(nullptr),
       m_target(target),
       m_is_bloom(true),
       m_bloom_factor(1.0f),
