@@ -23,14 +23,14 @@ void ShaderLibrary::Add(const std::string& name, const Ref<Shader>& shader) {
 }
 
 Ref<Shader> ShaderLibrary::Load(const std::string& filepath) {
-    auto shader = Shader::Create(GetAbsolutePath(filepath));
+    auto shader = Shader::Create(GetAbsolutePath(filepath).string());
     Add(filepath, shader);
     return shader;
 }
 
 Ref<Shader> ShaderLibrary::Load(const std::string& name,
                                 const std::string& filepath) {
-    auto shader = Shader::Create(GetAbsolutePath(filepath));
+    auto shader = Shader::Create(GetAbsolutePath(filepath).string());
     Add(name, shader);
     return shader;
 }

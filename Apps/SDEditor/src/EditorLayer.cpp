@@ -59,7 +59,7 @@ EditorLayer::~EditorLayer() {
 void EditorLayer::OnPush() {
     NewScene();
 
-    auto resourceId = asset->loadAsset<Image>("icons/light.png");
+    auto resourceId = asset->LoadAsset<Image>("icons/light.png");
     auto image = asset->Get<Image>(resourceId);
 
     m_light_icon = Texture::Create(
@@ -327,7 +327,7 @@ void EditorLayer::OnEventProcess(const Event &event) {
             default:
                 break;
             case Keycode::Z: {
-                if (event.key.mod == Keymod::LCTRL) {
+                if (event.key.mod & Keymod::LCTRL) {
                     if (m_hide) {
                         Show();
                     } else {
@@ -336,19 +336,19 @@ void EditorLayer::OnEventProcess(const Event &event) {
                 }
             } break;
             case Keycode::S: {
-                if (event.key.mod == (Keymod::LCTRL | Keymod::LSHIFT)) {
+                if (event.key.mod & (Keymod::LCTRL | Keymod::LSHIFT)) {
                     SaveScene();
                 } else {
                     m_scene_panel.SetGizmoOperation(ImGuizmo::SCALE);
                 }
             } break;
             case Keycode::N: {
-                if (event.key.mod == Keymod::LCTRL) {
+                if (event.key.mod & Keymod::LCTRL) {
                     NewScene();
                 }
             } break;
             case Keycode::L: {
-                if (event.key.mod == Keymod::LCTRL) {
+                if (event.key.mod & Keymod::LCTRL) {
                     LoadScene();
                 }
             } break;

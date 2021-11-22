@@ -138,7 +138,7 @@ static void processAiMaterial(AssetManager &manager,
         return;
     }
     std::string path = (directory / texturePath.C_Str()).string();
-    auto resourceId = manager.loadAsset<Image>(path);
+    auto resourceId = manager.LoadAsset<Image>(path);
     auto image = manager.Get<Image>(resourceId);
     auto texture = Texture::Create(
         image->width(), image->height(), 1, TextureType::TEX_2D,
@@ -162,13 +162,13 @@ static void processNode(const aiScene *scene, const aiNode *node,
     }
 }
 
-Ref<void> ModelLoader::LoadAsset(const std::string &filename) {
+Ref<void> ModelLoader::LoadAsset(const std::filesystem::path &filename) {
     Ref<Model> model = CreateRef<Model>();
     SD_CORE_TRACE("Loading model form: {}...", filename);
 
     Assimp::Importer importer;
     uint32_t importFlags = aiProcess_Triangulate | aiProcess_FlipUVs;
-    const aiScene *scene = importer.ReadFile(filename, importFlags);
+    const aiScene *scene = importer.ReadFile(filename.string(), importFlags);
     if (scene == nullptr) {
         SD_CORE_ERROR("Model loading failed: {}", importer.GetErrorString());
         return model;

@@ -3,12 +3,12 @@
 
 namespace SD {
 
-Ref<void> ImageLoader::LoadAsset(const std::string &filePath) {
-    Ref<Image> image = CreateRef<Image>(filePath);
-    SD_CORE_TRACE("Loading image form: {}...", filePath);
+Ref<void> ImageLoader::LoadAsset(const std::filesystem::path &path) {
+    Ref<Image> image = CreateRef<Image>(path.string());
+    SD_CORE_TRACE("Loading image form: {}...", path);
     if (!image->valid()) {
-        SD_CORE_ERROR("Unable to load image {}! SDL_image Error: {}",
-                      filePath.c_str(), IMG_GetError());
+        SD_CORE_ERROR("Unable to load image {}! SDL_image Error: {}", path,
+                      IMG_GetError());
     }
     return image;
 }

@@ -13,7 +13,7 @@ ProfileSystem::ProfileSystem(RenderTarget *target, int width, int height)
       m_fps(20) {}
 
 void ProfileSystem::OnPush() {
-    auto resourceId = asset->loadAsset<Font>("fonts/wqy-microhei.ttc");
+    auto resourceId = asset->LoadAsset<Font>("fonts/wqy-microhei.ttc");
     m_font = asset->Get<Font>(resourceId);
     dispatcher->Subscribe(this, &ProfileSystem::OnSizeEvent);
 }

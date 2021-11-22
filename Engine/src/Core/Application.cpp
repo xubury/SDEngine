@@ -9,14 +9,14 @@ namespace SD {
 const std::string setting_filename = "setting.ini";
 
 void Application::OnInit() {
-    std::string debug_path = GetAppDirectory() / "Debug.txt";
-    Log::Init(debug_path);
+    std::filesystem::path debug_path = (GetAppDirectory() / "Debug.txt");
+    Log::Init(debug_path.string());
     SD_CORE_INFO("Debug info is output to: {}", debug_path);
 
     ini = CreateRef<Ini>();
     std::filesystem::path ini_path = GetAppDirectory() / setting_filename;
     if (std::filesystem::exists(ini_path)) {
-        ini->Load(ini_path);
+        ini->Load(ini_path.string());
     } else {
         SD_CORE_WARN(
             "No such ini file: {}. The application will create a new one.",
@@ -63,7 +63,7 @@ void Application::OnDestroy() {
     ini->SetInteger("window", "msaa", window->GetMSAA());
     ini->SetBoolean("window", "vsync", window->GetIsVSync());
 
-    ini->Save(GetAppDirectory() / setting_filename);
+    ini->Save((GetAppDirectory() / setting_filename).string());
 
     while (m_layers.Size()) {
         DestroyLayer(m_layers.Front());

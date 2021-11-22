@@ -315,7 +315,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
             fileDialogInfo.directory_path = std::filesystem::current_path();
         }
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
-            mc.id = asset->loadAsset<Model>(fileDialogInfo.result_path);
+            mc.id = asset->LoadAsset<Model>(fileDialogInfo.result_path);
         }
 
         ImGui::ColorEdit3("Color", &mc.color[0]);
@@ -407,7 +407,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
             fileDialogInfo.directory_path = std::filesystem::current_path();
         }
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
-            textComp.id = asset->loadAsset<Font>(fileDialogInfo.result_path);
+            textComp.id = asset->LoadAsset<Font>(fileDialogInfo.result_path);
         }
         ImGui::Text("Text Content:");
         // FIXME: chinese character has bug

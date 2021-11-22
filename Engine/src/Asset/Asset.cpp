@@ -29,8 +29,8 @@ AssetManager::~AssetManager() {
 void AssetManager::Clear() { m_resources.clear(); }
 
 void AssetManager::Cache(const ResourceId &id) {
-    std::string relPath = m_resources.at(id).GetPath();
-    std::filesystem::path fullPath = GetAbsolutePath(relPath);
+    std::string rel_path = m_resources.at(id).GetPath();
+    std::filesystem::path fullPath = GetAbsolutePath(rel_path);
     size_t type = m_resources.at(id).GetLoaderType();
     Ref<void> resource = m_loaders.at(type)->LoadAsset(fullPath);
     SD_CORE_ASSERT(resource, "Invalid asset!");
@@ -38,7 +38,7 @@ void AssetManager::Cache(const ResourceId &id) {
 }
 
 void AssetManager::Load(const std::filesystem::path &path) {
-    std::string filename;
+    std::filesystem::path filename;
     if (std::filesystem::is_directory(path)) {
         filename = path / ASSET_FILE;
     } else {
@@ -74,7 +74,7 @@ void AssetManager::SetDirectory(const std::filesystem::path &path) {
 
 std::filesystem::path AssetManager::GetRelativePath(
     const std::filesystem::path &path) const {
-    return std::filesystem::relative(path, m_directory);
+    return path.lexically_relative(m_directory);
 }
 
 std::filesystem::path AssetManager::GetRootPath() const { return m_directory; };

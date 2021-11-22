@@ -12,7 +12,7 @@ class SD_API FontLoader : public AssetLoaderBase {
    public:
     FontLoader(AssetManager &manager);
 
-    Ref<void> LoadAsset(const std::string &filename) override;
+    Ref<void> LoadAsset(const std::filesystem::path &filename) override;
 
     ~FontLoader();
 

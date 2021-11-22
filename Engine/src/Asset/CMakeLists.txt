@@ -43,7 +43,13 @@ target_link_libraries(sd-asset
     sd-utility
     PRIVATE
     Freetype::Freetype
-    ${ASSIMP_LIBRARIES} SDL2::Image)
+    SDL2::Image)
+if(WIN32)
+    target_link_libraries(sd-asset PRIVATE assimp::assimp)
+else()
+    target_link_libraries(sd-asset PRIVATE ${ASSIMP_LIBRARIES})
+    target_link_directories(sd-asset PRIVATE ${ASSIMP_LIBRARY_DIRS})
+endif()
 
 install(TARGETS sd-asset LIBRARY DESTINATION lib)
 

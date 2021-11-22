@@ -52,7 +52,7 @@ class SD_API AssetLoaderBase {
     AssetLoaderBase &operator=(const AssetLoaderBase &) = delete;
     virtual ~AssetLoaderBase() = default;
 
-    virtual Ref<void> LoadAsset(const std::string &path) = 0;
+    virtual Ref<void> LoadAsset(const std::filesystem::path &path) = 0;
 
     AssetManager &Manager() { return m_manager; }
 
@@ -96,13 +96,13 @@ class SD_API AssetManager {
     AssetLoaderBase *getLoader(size_t id) { return m_loaders[id]; }
 
     template <typename ASSET>
-    ResourceId loadAsset(const std::string &path) {
+    ResourceId LoadAsset(const std::filesystem::path &path) {
         SD_CORE_ASSERT(valid(), "AssetManager's root path is invalid!");
         // generate a random id
         ResourceId id;
         size_t type = GetAssetType<ASSET>();
         std::filesystem::path full_path = GetAbsolutePath(path);
-        std::string rel_path = GetRelativePath(full_path).string();
+        std::string rel_path = GetRelativePath(full_path).generic_string();
         // check if the relative path has id
         if (HasId(rel_path)) {
             id = m_id_map.at(rel_path);
