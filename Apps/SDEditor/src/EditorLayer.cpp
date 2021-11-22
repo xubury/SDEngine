@@ -327,7 +327,7 @@ void EditorLayer::OnEventProcess(const Event &event) {
             default:
                 break;
             case Keycode::Z: {
-                if (event.key.mod & Keymod::LCTRL) {
+                if (IsKeyModActive(event.key.mod, Keymod::LCTRL)) {
                     if (m_hide) {
                         Show();
                     } else {
@@ -336,19 +336,20 @@ void EditorLayer::OnEventProcess(const Event &event) {
                 }
             } break;
             case Keycode::S: {
-                if (event.key.mod & (Keymod::LCTRL | Keymod::LSHIFT)) {
+                if (IsKeyModActive(event.key.mod,
+                                   (Keymod::LCTRL | Keymod::LSHIFT))) {
                     SaveScene();
                 } else {
                     m_scene_panel.SetGizmoOperation(ImGuizmo::SCALE);
                 }
             } break;
             case Keycode::N: {
-                if (event.key.mod & Keymod::LCTRL) {
+                if (IsKeyModActive(event.key.mod, Keymod::LCTRL)) {
                     NewScene();
                 }
             } break;
             case Keycode::L: {
-                if (event.key.mod & Keymod::LCTRL) {
+                if (IsKeyModActive(event.key.mod, Keymod::LCTRL)) {
                     LoadScene();
                 }
             } break;
