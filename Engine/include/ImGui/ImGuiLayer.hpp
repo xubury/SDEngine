@@ -10,10 +10,13 @@ namespace SD {
 class SD_API ImGuiLayer : public Layer {
    public:
     ImGuiLayer();
+    ~ImGuiLayer();
 
     void Begin();
 
     void End();
+
+    void OnInit() override;
 
     void OnPush() override;
 

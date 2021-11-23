@@ -12,6 +12,8 @@ class SD_API PostProcessSystem : public System {
    public:
     PostProcessSystem(RenderTarget *target, int width, int height);
 
+    void OnInit() override;
+
     void OnPush() override;
 
     void OnPop() override;

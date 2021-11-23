@@ -27,6 +27,8 @@ class SD_API LightingSystem : public System {
    public:
     LightingSystem(RenderTarget *target, int width, int height, int samples);
 
+    void OnInit() override;
+
     void OnPush() override;
 
     void OnPop() override;

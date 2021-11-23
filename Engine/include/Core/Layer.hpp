@@ -22,6 +22,7 @@ class SD_API Layer {
     Layer(const Layer &) = delete;
 
     Layer &operator=(const Layer &) = delete;
+    virtual void OnInit() {}
 
     virtual void OnPush() {}
 
@@ -40,14 +41,9 @@ class SD_API Layer {
     void SetIsBlockEvent(bool is_block) { m_is_block_event = is_block; }
     bool IsBlockEvent() const { return m_is_block_event; }
 
-    template <typename SYSTEM, typename... ARGS>
-    void PushSystem(ARGS &&...args) {
-        SYSTEM *system = new SYSTEM(std::forward<ARGS>(args)...);
-        PushSystem(system);
-    }
-
     void PushSystem(System *system) {
         system->SetAppVars(MakeAppVars());
+        system->OnInit();
         system->OnPush();
         m_systems.Push(system);
     }

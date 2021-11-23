@@ -10,6 +10,8 @@ class SD_API ShadowSystem : public System {
    public:
     ShadowSystem();
 
+    void OnInit() override;
+
     void OnPush() override;
 
     void OnPop() override;

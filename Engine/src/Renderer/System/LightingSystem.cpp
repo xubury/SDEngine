@@ -66,8 +66,9 @@ LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
     m_quad->SetIndexBuffer(indexBuffer);
 }
 
+void LightingSystem::OnInit() { InitShaders(); }
+
 void LightingSystem::OnPush() {
-    InitShaders();
     dispatcher->Subscribe(this, &LightingSystem::OnSizeEvent);
 }
 
@@ -140,7 +141,8 @@ void LightingSystem::Clear() {
 void LightingSystem::RenderEmissive() {
     renderer->SetRenderTarget(*m_target);
     m_emssive_shader->Bind();
-    m_emssive_shader->SetTexture("u_lighting", GetLightingTarget().GetTexture());
+    m_emssive_shader->SetTexture("u_lighting",
+                                 GetLightingTarget().GetTexture());
     m_emssive_shader->SetTexture(
         "u_gEmissive",
         m_gBufferTarget.GetTexture(GeometryBufferType::G_EMISSIVE));
@@ -171,29 +173,31 @@ void LightingSystem::RenderDeferred() {
         renderer->SetRenderTarget(m_lightTarget[outputId]);
         const Light &light = lightComp.light;
         m_deferred_shader->SetTexture("u_lighting",
-                                     m_lightTarget[inputId].GetTexture());
+                                      m_lightTarget[inputId].GetTexture());
         const Transform &transform = transformComp.transform;
         m_deferred_shader->SetVec3("u_light.direction",
-                                  transform.GetWorldFront());
+                                   transform.GetWorldFront());
         m_deferred_shader->SetVec3("u_light.ambient", light.GetAmbient());
         m_deferred_shader->SetVec3("u_light.diffuse", light.GetDiffuse());
         m_deferred_shader->SetVec3("u_light.specular", light.GetSpecular());
         m_deferred_shader->SetVec3("u_light.position",
-                                  transform.GetWorldPosition());
+                                   transform.GetWorldPosition());
         m_deferred_shader->SetFloat("u_light.cutOff",
-                                   glm::cos(light.GetCutOff()));
+                                    glm::cos(light.GetCutOff()));
         m_deferred_shader->SetFloat("u_light.outerCutOff",
-                                   glm::cos(light.GetOuterCutOff()));
+                                    glm::cos(light.GetOuterCutOff()));
         m_deferred_shader->SetFloat("u_light.constant", light.GetConstant());
         m_deferred_shader->SetFloat("u_light.linear", light.GetLinear());
         m_deferred_shader->SetFloat("u_light.quadratic", light.GetQuadratic());
 
         m_deferred_shader->SetBool("u_light.isDirectional",
-                                  light.IsDirectional());
-        m_deferred_shader->SetBool("u_light.isCastShadow", light.IsCastShadow());
-        m_deferred_shader->SetTexture("u_light.shadowMap", light.GetShadowMap());
+                                   light.IsDirectional());
+        m_deferred_shader->SetBool("u_light.isCastShadow",
+                                   light.IsCastShadow());
+        m_deferred_shader->SetTexture("u_light.shadowMap",
+                                      light.GetShadowMap());
         m_deferred_shader->SetMat4("u_light.projectionView",
-                                  light.GetProjectionView());
+                                   light.GetProjectionView());
         renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
                          m_quad->GetIndexBuffer()->GetCount(), 0);
         std::swap(m_lightTarget[inputId], m_lightTarget[outputId]);
@@ -215,16 +219,16 @@ void LightingSystem::RenderGBuffer() {
                             const TransformComponent &transformComp,
                             const TerrainComponent &terrainComp) {
         m_gbuffer_shader->SetMat4("u_model",
-                                 transformComp.transform.GetWorldTransform());
+                                  transformComp.transform.GetWorldTransform());
         m_gbuffer_shader->SetUint("u_entityId", static_cast<uint32_t>(entity));
         auto &terrain = terrainComp.terrain;
         auto &material = terrain.GetMaterial();
-        m_gbuffer_shader->SetTexture("u_material.diffuse",
-                                    material.GetTexture(MaterialType::DIFFUSE));
+        m_gbuffer_shader->SetTexture(
+            "u_material.diffuse", material.GetTexture(MaterialType::DIFFUSE));
         m_gbuffer_shader->SetTexture(
             "u_material.specular", material.GetTexture(MaterialType::SPECULAR));
-        m_gbuffer_shader->SetTexture("u_material.ambient",
-                                    material.GetTexture(MaterialType::AMBIENT));
+        m_gbuffer_shader->SetTexture(
+            "u_material.ambient", material.GetTexture(MaterialType::AMBIENT));
         m_gbuffer_shader->SetTexture(
             "u_material.emissive", material.GetTexture(MaterialType::EMISSIVE));
         renderer->DrawMesh(terrain.GetMesh());
@@ -234,7 +238,7 @@ void LightingSystem::RenderGBuffer() {
                           const TransformComponent &transformComp,
                           const ModelComponent &modelComp) {
         m_gbuffer_shader->SetMat4("u_model",
-                                 transformComp.transform.GetWorldTransform());
+                                  transformComp.transform.GetWorldTransform());
         m_gbuffer_shader->SetUint("u_entityId", static_cast<uint32_t>(entity));
         m_gbuffer_shader->SetVec3("u_color", modelComp.color);
         auto model = asset->Get<Model>(modelComp.id);

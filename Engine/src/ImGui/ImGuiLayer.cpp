@@ -9,6 +9,11 @@ namespace SD {
 
 ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}
 
+ImGuiLayer::~ImGuiLayer() {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+}
+
 void ImGuiLayer::Begin() {
     switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
@@ -33,7 +38,7 @@ void ImGuiLayer::End() {
     }
 }
 
-void ImGuiLayer::OnPush() {
+void ImGuiLayer::OnInit() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -67,10 +72,9 @@ void ImGuiLayer::OnPush() {
     }
 }
 
-void ImGuiLayer::OnPop() {
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplSDL2_Shutdown();
-}
+void ImGuiLayer::OnPush() {}
+
+void ImGuiLayer::OnPop() {}
 
 void ImGuiLayer::OnEventProcess(const Event& event) {
     auto& io = ImGui::GetIO();

@@ -8,9 +8,11 @@ namespace SD {
 
 ShadowSystem::ShadowSystem() : System("Shadow") {}
 
-void ShadowSystem::OnPush() {
+void ShadowSystem::OnInit() {
     m_shadowShader = asset->LoadAndGet<Shader>("shaders/shadow.glsl");
 }
+
+void ShadowSystem::OnPush() {}
 
 void ShadowSystem::OnPop() {}
 

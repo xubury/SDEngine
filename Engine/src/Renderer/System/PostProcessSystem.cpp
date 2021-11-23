@@ -43,6 +43,11 @@ PostProcessSystem::PostProcessSystem(RenderTarget *target, int width,
     m_quad->SetIndexBuffer(indexBuffer);
 }
 
+void PostProcessSystem::OnInit() {
+    m_blurShader = asset->LoadAndGet<Shader>("shaders/blur.glsl");
+    m_postShader = asset->LoadAndGet<Shader>("shaders/postProcess.glsl");
+}
+
 void PostProcessSystem::OnPush() {
     m_is_bloom = ini->GetBoolean("post process", "bloom", m_is_bloom);
     m_bloom_factor =
@@ -51,9 +56,6 @@ void PostProcessSystem::OnPush() {
     m_gamma_correction =
         ini->GetFloat("post process", "gamma correction", m_gamma_correction);
     dispatcher->Subscribe(this, &PostProcessSystem::OnSizeEvent);
-
-    m_blurShader = asset->LoadAndGet<Shader>("shaders/blur.glsl");
-    m_postShader = asset->LoadAndGet<Shader>("shaders/postProcess.glsl");
 }
 
 void PostProcessSystem::OnPop() {

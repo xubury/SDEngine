@@ -13,6 +13,8 @@ class System {
 
     virtual ~System() = default;
 
+    virtual void OnInit(){};
+
     virtual void OnPush(){};
 
     virtual void OnPop(){};

@@ -73,12 +73,14 @@ void Application::OnDestroy() {
 
 void Application::PushLayer(Layer *layer) {
     layer->SetAppVars(MakeAppVars());
+    layer->OnInit();
     layer->OnPush();
     m_layers.Push(layer);
 }
 
 void Application::PushOverlay(Layer *layer) {
     layer->SetAppVars(MakeAppVars());
+    layer->OnInit();
     layer->OnPush();
     m_layers.PushOverlay(layer);
 }

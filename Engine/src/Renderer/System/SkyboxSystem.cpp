@@ -33,9 +33,11 @@ SkyboxSystem::SkyboxSystem(RenderTarget *target)
     m_skybox->SetIndexBuffer(ibo);
 }
 
-void SkyboxSystem::OnPush() {
+void SkyboxSystem::OnInit() {
     m_skyboxShader = asset->LoadAndGet<Shader>("shaders/skybox.glsl");
 }
+
+void SkyboxSystem::OnPush() {}
 
 void SkyboxSystem::OnPop() {}
 
