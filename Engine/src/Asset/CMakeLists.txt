@@ -10,6 +10,7 @@ set(Asset_Include
     ${Include_Root}/FontLoader.hpp
     ${Include_Root}/Image.hpp
     ${Include_Root}/ImageLoader.hpp
+    ${Include_Root}/ShaderLoader.hpp
     ${Include_Root}/ModelLoader.hpp)
 
 
@@ -19,6 +20,7 @@ set(Asset_Src
     ${Src_Root}/FontLoader.cpp
     ${Src_Root}/Image.cpp
     ${Src_Root}/ImageLoader.cpp
+    ${Src_Root}/ShaderLoader.cpp
     ${Src_Root}/ModelLoader.cpp)
 
 

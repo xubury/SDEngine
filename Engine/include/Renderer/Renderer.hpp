@@ -1,7 +1,6 @@
 #ifndef SD_RENDERER_HPP
 #define SD_RENDERER_HPP
 
-#include <cstdint>
 #include "Renderer/RenderTarget.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Device.hpp"
@@ -13,9 +12,11 @@
 
 namespace SD {
 
+class AssetManager;
+
 class SD_API Renderer {
    public:
-    Renderer(int msaa);
+    Renderer(AssetManager *manager, int msaa);
     Renderer(const Renderer &) = delete;
     Renderer &operator=(const Renderer &) = delete;
 
@@ -59,7 +60,7 @@ class SD_API Renderer {
     Camera *GetCamera();
 
    private:
-    void InitRenderer2D();
+    void InitRenderer2D(AssetManager *manager);
 
     Scene *m_scene;
     Camera *m_camera;

@@ -18,7 +18,7 @@ enum class ShaderType { INVALID, VERTEX, FRAGMENT, GEOMETRY, COMPUTE };
 
 class SD_API Shader {
    public:
-    static Ref<Shader> Create(const std::string& filePath);
+    static Ref<Shader> Create();
 
     virtual ~Shader() = default;
 
@@ -26,7 +26,7 @@ class SD_API Shader {
 
     Shader& operator=(const Shader&) = delete;
 
-    virtual void CompileShader(ShaderType type, const char* code) = 0;
+    virtual void CompileShader(ShaderType type, const std::string& code) = 0;
 
     virtual void LinkShaders() = 0;
 
@@ -57,35 +57,6 @@ class SD_API Shader {
 
    protected:
     Shader() = default;
-};
-
-class ShaderLibrary {
-   public:
-    static ShaderLibrary& Instance() {
-        static ShaderLibrary s_instance;
-        return s_instance;
-    }
-    void Add(const std::string& name, const Ref<Shader>& shader);
-    Ref<Shader> Load(const std::string& filepath);
-    Ref<Shader> Load(const std::string& name, const std::string& filepath);
-
-    Ref<Shader> Get(const std::string& name);
-
-    bool Exists(const std::string& name) const;
-
-    void SetRootPath(const std::filesystem::path& path) {
-        m_rootPath =
-            path.is_relative() ? std::filesystem::current_path() / path : path;
-    }
-
-    std::filesystem::path GetAbsolutePath(
-        const std::filesystem::path& filePath) {
-        return filePath.is_relative() ? m_rootPath / filePath : filePath;
-    }
-
-   private:
-    std::unordered_map<std::string, Ref<Shader>> m_shaders;
-    std::filesystem::path m_rootPath;
 };
 
 }  // namespace SD

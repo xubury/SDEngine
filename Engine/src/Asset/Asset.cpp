@@ -2,6 +2,7 @@
 #include "Asset/ImageLoader.hpp"
 #include "Asset/ModelLoader.hpp"
 #include "Asset/FontLoader.hpp"
+#include "Asset/ShaderLoader.hpp"
 
 namespace SD {
 
@@ -9,13 +10,14 @@ const std::string ASSET_FILE = ".asset";
 
 Asset::Asset() : m_resource(nullptr) {}
 
-Asset::Asset(size_t loaderType, const std::string &path)
-    : m_resource(nullptr), m_loaderType(loaderType), m_path(path) {}
+Asset::Asset(size_t loader_type, const std::string &path)
+    : m_resource(nullptr), m_loader_type(loader_type), m_path(path) {}
 
 AssetManager::AssetManager(const std::filesystem::path &path) {
     SetLoader<Image>(new ImageLoader(*this));
     SetLoader<Model>(new ModelLoader(*this));
     SetLoader<Font>(new FontLoader(*this));
+    SetLoader<Shader>(new ShaderLoader(*this));
     Load(path);
 }
 
@@ -30,9 +32,12 @@ void AssetManager::Clear() { m_resources.clear(); }
 
 void AssetManager::Cache(const ResourceId &id) {
     std::string rel_path = m_resources.at(id).GetPath();
-    std::filesystem::path fullPath = GetAbsolutePath(rel_path);
+    std::string full_path = GetAbsolutePath(rel_path).string();
     size_t type = m_resources.at(id).GetLoaderType();
-    Ref<void> resource = m_loaders.at(type)->LoadAsset(fullPath);
+    if (m_loaders.count(type) == 0) {
+        throw Exception("Loader not set up correctly!");
+    }
+    Ref<void> resource = m_loaders.at(type)->LoadAsset(full_path);
     SD_CORE_ASSERT(resource, "Invalid asset!");
     m_resources.at(id).SetResource(resource);
 }
@@ -81,7 +86,8 @@ std::filesystem::path AssetManager::GetRootPath() const { return m_directory; };
 
 std::filesystem::path AssetManager::GetAbsolutePath(
     const std::filesystem::path &path) const {
-    return path.is_relative() ? m_directory / path : path;
+    auto ret = path.is_relative() ? m_directory / path : path;
+    return ret.make_preferred(); 
 }
 
 bool AssetManager::HasId(const std::string &path) const {

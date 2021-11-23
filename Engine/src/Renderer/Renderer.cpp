@@ -2,6 +2,7 @@
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Device.hpp"
 #include "Utility/String.hpp"
+#include "Asset/Asset.hpp"
 
 namespace SD {
 
@@ -54,7 +55,7 @@ struct Renderer2DData {
 
 static Renderer2DData s_data;
 
-Renderer::Renderer(int msaa) {
+Renderer::Renderer(AssetManager* manager, int msaa) {
     m_cameraUBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
                                         BufferIOType::DYNAMIC);
 
@@ -64,10 +65,10 @@ Renderer::Renderer(int msaa) {
     } else {
         m_device->Disable(Operation::MULTISAMPLE);
     }
-    InitRenderer2D();
+    InitRenderer2D(manager);
 }
 
-void Renderer::InitRenderer2D() {
+void Renderer::InitRenderer2D(AssetManager* manager) {
     std::array<uint32_t, s_data.MAX_INDICES> quadIndices;
     uint32_t offset = 0;
     for (uint32_t i = 0; i < s_data.MAX_INDICES; i += 6) {
@@ -115,7 +116,7 @@ void Renderer::InitRenderer2D() {
         TextureFormatType::FLOAT, TextureWrap::REPEAT, TextureFilter::LINEAR,
         TextureMipmapFilter::LINEAR, &color);
 
-    s_data.spriteShader = ShaderLibrary::Instance().Load("shaders/sprite.glsl");
+    s_data.spriteShader = manager->LoadAndGet<Shader>("shaders/sprite.glsl");
 }
 
 void Renderer::SetRenderTarget(RenderTarget& target) {

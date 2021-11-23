@@ -6,77 +6,9 @@
 
 namespace SD {
 
-static ShaderType ShaderTypeFromName(const std::string& name) {
-    if (name == "vertex") {
-        return ShaderType::VERTEX;
-    } else if (name == "fragment") {
-        return ShaderType::FRAGMENT;
-    } else if (name == "geometry") {
-        return ShaderType::GEOMETRY;
-    } else if (name == "compute") {
-        return ShaderType::COMPUTE;
-    }
-
-    return ShaderType::INVALID;
-}
-
-GLShader::GLShader(const std::string& filePath)
+GLShader::GLShader()
     : m_id(0), m_vertexId(0), m_fragmentId(0), m_geometryId(0), m_computeId(0) {
     m_id = glCreateProgram();
-    std::string source;
-    SD_CORE_TRACE("Building shader code from {}", filePath);
-    File::Read(filePath, source);
-    size_t i = source.find("#shader");
-    while (i < source.size()) {
-        size_t start = source.find('\n', i) + 1;
-        if (i != 0 && start == 0) {
-            start = source.find('\0', i) + 1;
-        }
-
-        size_t offset = i + 8;
-        std::string name = source.substr(offset, start - offset - 1);
-
-        size_t end = source.find("#shader", start);
-        i = end;
-
-        ShaderType type = ShaderTypeFromName(name);
-
-        std::string code;
-        if (type == ShaderType::INVALID) {
-            throw FileException(filePath,
-                                fmt::format("Invalid shader type: {}", name));
-        } else {
-            code = source.substr(start, end - start);
-        }
-        // insert include code
-        size_t j = code.find("#include");
-        while (j < code.size()) {
-            size_t start = code.find('\n', j) + 1;
-            if (j != 0 && start == 0) {
-                start = code.find('\0', j) + 1;
-            }
-
-            size_t offset = j + 9;
-            std::filesystem::path include =
-                code.substr(offset, start - offset - 1);
-
-            code.erase(j, start - j);
-            std::string includeCode;
-            try {
-                File::Read(
-                    ShaderLibrary::Instance().GetAbsolutePath(include).string(),
-                    includeCode);
-            } catch (const FileException& e) {
-                throw FileException(
-                    filePath, fmt::format("Invalid include path: {}", include));
-            }
-            code.insert(j, includeCode);
-
-            j = code.find("#include", start);
-        }
-        CompileShader(type, code.c_str());
-    }
-    LinkShaders();
 }
 
 GLShader::~GLShader() {
@@ -84,12 +16,13 @@ GLShader::~GLShader() {
     DestroyShaders();
 }
 
-void GLShader::CompileShader(ShaderType type, const char* code) {
+void GLShader::CompileShader(ShaderType type, const std::string& code) {
+    const char* c_code = code.c_str();
     switch (type) {
         case ShaderType::VERTEX:
             if (m_vertexId != 0) glDeleteShader(m_vertexId);
             m_vertexId = glCreateShader(GL_VERTEX_SHADER);
-            glShaderSource(m_vertexId, 1, &code, nullptr);
+            glShaderSource(m_vertexId, 1, &c_code, nullptr);
             glCompileShader(m_vertexId);
             CheckCompileErrors(m_vertexId, "Vertex");
             glAttachShader(m_id, m_vertexId);
@@ -97,7 +30,7 @@ void GLShader::CompileShader(ShaderType type, const char* code) {
         case ShaderType::FRAGMENT:
             if (m_fragmentId != 0) glDeleteShader(m_fragmentId);
             m_fragmentId = glCreateShader(GL_FRAGMENT_SHADER);
-            glShaderSource(m_fragmentId, 1, &code, nullptr);
+            glShaderSource(m_fragmentId, 1, &c_code, nullptr);
             glCompileShader(m_fragmentId);
             CheckCompileErrors(m_fragmentId, "Fragment");
             glAttachShader(m_id, m_fragmentId);
@@ -105,7 +38,7 @@ void GLShader::CompileShader(ShaderType type, const char* code) {
         case ShaderType::GEOMETRY:
             if (m_geometryId != 0) glDeleteShader(m_geometryId);
             m_geometryId = glCreateShader(GL_GEOMETRY_SHADER);
-            glShaderSource(m_geometryId, 1, &code, nullptr);
+            glShaderSource(m_geometryId, 1, &c_code, nullptr);
             glCompileShader(m_geometryId);
             CheckCompileErrors(m_geometryId, "Geometry");
             glAttachShader(m_id, m_geometryId);
@@ -113,7 +46,7 @@ void GLShader::CompileShader(ShaderType type, const char* code) {
         case ShaderType::COMPUTE:
             if (m_computeId != 0) glDeleteShader(m_computeId);
             m_computeId = glCreateShader(GL_COMPUTE_SHADER);
-            glShaderSource(m_computeId, 1, &code, nullptr);
+            glShaderSource(m_computeId, 1, &c_code, nullptr);
             glCompileShader(m_computeId);
             CheckCompileErrors(m_computeId, "Compute");
             glAttachShader(m_id, m_computeId);

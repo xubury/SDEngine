@@ -24,8 +24,7 @@ PostProcessSystem::PostProcessSystem(RenderTarget *target, int width,
         TextureFormatType::FLOAT, TextureWrap::EDGE, TextureFilter::LINEAR,
         TextureMipmapFilter::LINEAR));
     m_postTarget.CreateFramebuffer();
-    m_blurShader = ShaderLibrary::Instance().Load("shaders/blur.glsl");
-    m_postShader = ShaderLibrary::Instance().Load("shaders/postProcess.glsl");
+
     const float quadVertices[] = {
         -1.0f, -1.0f, 0.f, 0.f,  0.f,   // bottom left
         1.0f,  -1.0f, 0.f, 1.0f, 0.f,   // bottom right
@@ -52,6 +51,9 @@ void PostProcessSystem::OnPush() {
     m_gamma_correction =
         ini->GetFloat("post process", "gamma correction", m_gamma_correction);
     dispatcher->Subscribe(this, &PostProcessSystem::OnSizeEvent);
+
+    m_blurShader = asset->LoadAndGet<Shader>("shaders/blur.glsl");
+    m_postShader = asset->LoadAndGet<Shader>("shaders/postProcess.glsl");
 }
 
 void PostProcessSystem::OnPop() {

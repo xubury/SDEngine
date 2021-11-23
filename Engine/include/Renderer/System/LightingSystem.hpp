@@ -53,12 +53,12 @@ class SD_API LightingSystem : public System {
 
     RenderTarget *m_target;
 
-    Ref<Shader> m_emssiveShader;
+    Ref<Shader> m_emssive_shader;
 
-    Ref<Shader> m_deferredShader;
+    Ref<Shader> m_deferred_shader;
     RenderTarget m_lightTarget[2];
 
-    Ref<Shader> m_gBufferShader;
+    Ref<Shader> m_gbuffer_shader;
     RenderTarget m_gBufferTarget;
 
     Ref<VertexArray> m_quad;

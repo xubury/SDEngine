@@ -31,11 +31,11 @@ SkyboxSystem::SkyboxSystem(RenderTarget *target)
     auto ibo = IndexBuffer::Create(skyboxIndices, 36, BufferIOType::STATIC);
     m_skybox->AddVertexBuffer(vbo, layout);
     m_skybox->SetIndexBuffer(ibo);
-
-    m_skyboxShader = ShaderLibrary::Instance().Load("shaders/skybox.glsl");
 }
 
-void SkyboxSystem::OnPush() {}
+void SkyboxSystem::OnPush() {
+    m_skyboxShader = asset->LoadAndGet<Shader>("shaders/skybox.glsl");
+}
 
 void SkyboxSystem::OnPop() {}
 

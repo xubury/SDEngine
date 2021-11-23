@@ -22,8 +22,8 @@ class SD_API Asset {
     Asset();
     Asset(size_t loaderType, const std::string &path);
 
-    size_t GetLoaderType() const { return m_loaderType; }
-    void SetLoaderType(size_t type) { m_loaderType = type; }
+    size_t GetLoaderType() const { return m_loader_type; }
+    void SetLoaderType(size_t type) { m_loader_type = type; }
 
     Ref<void> GetResource() { return m_resource; }
     const Ref<void> GetResource() const { return m_resource; }
@@ -34,12 +34,12 @@ class SD_API Asset {
 
     template <typename Archive>
     void serialize(Archive &archive) {
-        archive(m_loaderType, m_path);
+        archive(m_loader_type, m_path);
     }
 
    private:
     Ref<void> m_resource;
-    size_t m_loaderType;
+    size_t m_loader_type;
     std::string m_path;
 };
 
@@ -52,7 +52,7 @@ class SD_API AssetLoaderBase {
     AssetLoaderBase &operator=(const AssetLoaderBase &) = delete;
     virtual ~AssetLoaderBase() = default;
 
-    virtual Ref<void> LoadAsset(const std::filesystem::path &path) = 0;
+    virtual Ref<void> LoadAsset(const std::string &path) = 0;
 
     AssetManager &Manager() { return m_manager; }
 
@@ -124,6 +124,12 @@ class SD_API AssetManager {
         }
         return std::static_pointer_cast<ASSET>(
             m_resources.at(id).GetResource());
+    }
+
+    template <typename ASSET>
+    Ref<ASSET> LoadAndGet(const std::filesystem::path &path) {
+        auto id = LoadAsset<ASSET>(path);
+        return Get<ASSET>(id);
     }
 
    private:

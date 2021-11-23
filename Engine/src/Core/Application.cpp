@@ -36,7 +36,6 @@ void Application::OnInit() {
 
     // Setting up which api to use
     SetGraphicsAPI(GraphicsAPI::OpenGL);
-    ShaderLibrary::Instance().SetRootPath("assets");
 
     WindowProp prop;
     prop.title = title;
@@ -47,8 +46,8 @@ void Application::OnInit() {
     prop.vsync = vsync;
     window = Window::Create(prop);
 
-    renderer = CreateRef<Renderer>(msaa);
     asset = CreateRef<AssetManager>("assets");
+    renderer = CreateRef<Renderer>(asset.get(), msaa);
     dispatcher = CreateRef<EventDispatcher>();
 
     m_imguiLayer = new ImGuiLayer();

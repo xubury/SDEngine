@@ -162,21 +162,20 @@ static void processNode(const aiScene *scene, const aiNode *node,
     }
 }
 
-Ref<void> ModelLoader::LoadAsset(const std::filesystem::path &filename) {
+Ref<void> ModelLoader::LoadAsset(const std::string &path) {
     Ref<Model> model = CreateRef<Model>();
-    SD_CORE_TRACE("Loading model form: {}...", filename);
+    SD_CORE_TRACE("Loading model form: {}...", path);
 
     Assimp::Importer importer;
     uint32_t importFlags = aiProcess_Triangulate | aiProcess_FlipUVs;
-    const aiScene *scene = importer.ReadFile(filename.string(), importFlags);
+    const aiScene *scene = importer.ReadFile(path, importFlags);
     if (scene == nullptr) {
         SD_CORE_ERROR("Model loading failed: {}", importer.GetErrorString());
         return model;
     }
 
     processNode(scene, scene->mRootNode, model);
-    std::filesystem::path directory =
-        std::filesystem::path(filename).parent_path();
+    std::filesystem::path directory = std::filesystem::path(path).parent_path();
     for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
         Material material;
         // TODO: other texture type not implement yet

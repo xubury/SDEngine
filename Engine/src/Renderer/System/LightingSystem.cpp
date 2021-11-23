@@ -46,7 +46,6 @@ TextureFormatType GetTextureFormatType(GeometryBufferType type) {
 LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
                                int samples)
     : System("Lighting"), m_target(target) {
-    InitShaders();
     InitLighting(width, height, samples);
 
     const float quadVertices[] = {
@@ -68,15 +67,16 @@ LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
 }
 
 void LightingSystem::OnPush() {
+    InitShaders();
     dispatcher->Subscribe(this, &LightingSystem::OnSizeEvent);
 }
 
 void LightingSystem::OnPop() { dispatcher->Unsubscribe<WindowSizeEvent>(this); }
 
 void LightingSystem::InitShaders() {
-    m_emssiveShader = ShaderLibrary::Instance().Load("shaders/emissive.glsl");
-    m_deferredShader = ShaderLibrary::Instance().Load("shaders/deferred.glsl");
-    m_gBufferShader = ShaderLibrary::Instance().Load("shaders/gbuffer.glsl");
+    m_emssive_shader = asset->LoadAndGet<Shader>("shaders/emissive.glsl");
+    m_deferred_shader = asset->LoadAndGet<Shader>("shaders/deferred.glsl");
+    m_gbuffer_shader = asset->LoadAndGet<Shader>("shaders/gbuffer.glsl");
 }
 
 void LightingSystem::InitLighting(int width, int height, int samples) {
@@ -131,7 +131,7 @@ void LightingSystem::Clear() {
 
     renderer->GetDevice().SetFramebuffer(m_gBufferTarget.GetFramebuffer());
     renderer->GetDevice().Clear(BufferBitMask::COLOR_BUFFER_BIT |
-                             BufferBitMask::DEPTH_BUFFER_BIT);
+                                BufferBitMask::DEPTH_BUFFER_BIT);
     uint32_t id = static_cast<uint32_t>(Entity::INVALID_ID);
     m_gBufferTarget.GetFramebuffer()->ClearAttachment(
         GeometryBufferType::G_ENTITY_ID, &id);
@@ -139,9 +139,9 @@ void LightingSystem::Clear() {
 
 void LightingSystem::RenderEmissive() {
     renderer->SetRenderTarget(*m_target);
-    m_emssiveShader->Bind();
-    m_emssiveShader->SetTexture("u_lighting", GetLightingTarget().GetTexture());
-    m_emssiveShader->SetTexture(
+    m_emssive_shader->Bind();
+    m_emssive_shader->SetTexture("u_lighting", GetLightingTarget().GetTexture());
+    m_emssive_shader->SetTexture(
         "u_gEmissive",
         m_gBufferTarget.GetTexture(GeometryBufferType::G_EMISSIVE));
     renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
@@ -152,16 +152,16 @@ void LightingSystem::RenderDeferred() {
     auto scene = renderer->GetScene();
     auto lightView = scene->view<TransformComponent, LightComponent>();
 
-    m_deferredShader->Bind();
-    renderer->UpdateShader(*m_deferredShader, *renderer->GetCamera());
-    m_deferredShader->SetTexture(
+    m_deferred_shader->Bind();
+    renderer->UpdateShader(*m_deferred_shader, *renderer->GetCamera());
+    m_deferred_shader->SetTexture(
         "u_gPosition",
         m_gBufferTarget.GetTexture(GeometryBufferType::G_POSITION));
-    m_deferredShader->SetTexture(
+    m_deferred_shader->SetTexture(
         "u_gNormal", m_gBufferTarget.GetTexture(GeometryBufferType::G_NORMAL));
-    m_deferredShader->SetTexture(
+    m_deferred_shader->SetTexture(
         "u_gAlbedo", m_gBufferTarget.GetTexture(GeometryBufferType::G_ALBEDO));
-    m_deferredShader->SetTexture(
+    m_deferred_shader->SetTexture(
         "u_gAmbient",
         m_gBufferTarget.GetTexture(GeometryBufferType::G_AMBIENT));
     const uint8_t inputId = 0;
@@ -170,29 +170,29 @@ void LightingSystem::RenderDeferred() {
                           const LightComponent &lightComp) {
         renderer->SetRenderTarget(m_lightTarget[outputId]);
         const Light &light = lightComp.light;
-        m_deferredShader->SetTexture("u_lighting",
+        m_deferred_shader->SetTexture("u_lighting",
                                      m_lightTarget[inputId].GetTexture());
         const Transform &transform = transformComp.transform;
-        m_deferredShader->SetVec3("u_light.direction",
+        m_deferred_shader->SetVec3("u_light.direction",
                                   transform.GetWorldFront());
-        m_deferredShader->SetVec3("u_light.ambient", light.GetAmbient());
-        m_deferredShader->SetVec3("u_light.diffuse", light.GetDiffuse());
-        m_deferredShader->SetVec3("u_light.specular", light.GetSpecular());
-        m_deferredShader->SetVec3("u_light.position",
+        m_deferred_shader->SetVec3("u_light.ambient", light.GetAmbient());
+        m_deferred_shader->SetVec3("u_light.diffuse", light.GetDiffuse());
+        m_deferred_shader->SetVec3("u_light.specular", light.GetSpecular());
+        m_deferred_shader->SetVec3("u_light.position",
                                   transform.GetWorldPosition());
-        m_deferredShader->SetFloat("u_light.cutOff",
+        m_deferred_shader->SetFloat("u_light.cutOff",
                                    glm::cos(light.GetCutOff()));
-        m_deferredShader->SetFloat("u_light.outerCutOff",
+        m_deferred_shader->SetFloat("u_light.outerCutOff",
                                    glm::cos(light.GetOuterCutOff()));
-        m_deferredShader->SetFloat("u_light.constant", light.GetConstant());
-        m_deferredShader->SetFloat("u_light.linear", light.GetLinear());
-        m_deferredShader->SetFloat("u_light.quadratic", light.GetQuadratic());
+        m_deferred_shader->SetFloat("u_light.constant", light.GetConstant());
+        m_deferred_shader->SetFloat("u_light.linear", light.GetLinear());
+        m_deferred_shader->SetFloat("u_light.quadratic", light.GetQuadratic());
 
-        m_deferredShader->SetBool("u_light.isDirectional",
+        m_deferred_shader->SetBool("u_light.isDirectional",
                                   light.IsDirectional());
-        m_deferredShader->SetBool("u_light.isCastShadow", light.IsCastShadow());
-        m_deferredShader->SetTexture("u_light.shadowMap", light.GetShadowMap());
-        m_deferredShader->SetMat4("u_light.projectionView",
+        m_deferred_shader->SetBool("u_light.isCastShadow", light.IsCastShadow());
+        m_deferred_shader->SetTexture("u_light.shadowMap", light.GetShadowMap());
+        m_deferred_shader->SetMat4("u_light.projectionView",
                                   light.GetProjectionView());
         renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
                          m_quad->GetIndexBuffer()->GetCount(), 0);
@@ -208,24 +208,24 @@ void LightingSystem::RenderGBuffer() {
     renderer->SetRenderTarget(m_gBufferTarget);
     renderer->GetDevice().Disable(Operation::BLEND);
 
-    renderer->UpdateShader(*m_gBufferShader, *renderer->GetCamera());
+    renderer->UpdateShader(*m_gbuffer_shader, *renderer->GetCamera());
 
-    m_gBufferShader->Bind();
+    m_gbuffer_shader->Bind();
     terrainView.each([this](const entt::entity &entity,
                             const TransformComponent &transformComp,
                             const TerrainComponent &terrainComp) {
-        m_gBufferShader->SetMat4("u_model",
+        m_gbuffer_shader->SetMat4("u_model",
                                  transformComp.transform.GetWorldTransform());
-        m_gBufferShader->SetUint("u_entityId", static_cast<uint32_t>(entity));
+        m_gbuffer_shader->SetUint("u_entityId", static_cast<uint32_t>(entity));
         auto &terrain = terrainComp.terrain;
         auto &material = terrain.GetMaterial();
-        m_gBufferShader->SetTexture("u_material.diffuse",
+        m_gbuffer_shader->SetTexture("u_material.diffuse",
                                     material.GetTexture(MaterialType::DIFFUSE));
-        m_gBufferShader->SetTexture(
+        m_gbuffer_shader->SetTexture(
             "u_material.specular", material.GetTexture(MaterialType::SPECULAR));
-        m_gBufferShader->SetTexture("u_material.ambient",
+        m_gbuffer_shader->SetTexture("u_material.ambient",
                                     material.GetTexture(MaterialType::AMBIENT));
-        m_gBufferShader->SetTexture(
+        m_gbuffer_shader->SetTexture(
             "u_material.emissive", material.GetTexture(MaterialType::EMISSIVE));
         renderer->DrawMesh(terrain.GetMesh());
     });
@@ -233,24 +233,24 @@ void LightingSystem::RenderGBuffer() {
     modelView.each([this](const entt::entity &entity,
                           const TransformComponent &transformComp,
                           const ModelComponent &modelComp) {
-        m_gBufferShader->SetMat4("u_model",
+        m_gbuffer_shader->SetMat4("u_model",
                                  transformComp.transform.GetWorldTransform());
-        m_gBufferShader->SetUint("u_entityId", static_cast<uint32_t>(entity));
-        m_gBufferShader->SetVec3("u_color", modelComp.color);
+        m_gbuffer_shader->SetUint("u_entityId", static_cast<uint32_t>(entity));
+        m_gbuffer_shader->SetVec3("u_color", modelComp.color);
         auto model = asset->Get<Model>(modelComp.id);
         if (model) {
             for (const auto &mesh : model->GetMeshes()) {
                 auto &material = model->GetMaterials()[mesh.GetMaterialIndex()];
-                m_gBufferShader->SetTexture(
+                m_gbuffer_shader->SetTexture(
                     "u_material.diffuse",
                     material.GetTexture(MaterialType::DIFFUSE));
-                m_gBufferShader->SetTexture(
+                m_gbuffer_shader->SetTexture(
                     "u_material.specular",
                     material.GetTexture(MaterialType::SPECULAR));
-                m_gBufferShader->SetTexture(
+                m_gbuffer_shader->SetTexture(
                     "u_material.ambient",
                     material.GetTexture(MaterialType::AMBIENT));
-                m_gBufferShader->SetTexture(
+                m_gbuffer_shader->SetTexture(
                     "u_material.emissive",
                     material.GetTexture(MaterialType::EMISSIVE));
                 renderer->DrawMesh(mesh);

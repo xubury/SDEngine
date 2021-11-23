@@ -14,12 +14,12 @@ FontLoader::~FontLoader() {
     // FT_Done_FreeType(m_ft);
 }
 
-Ref<void> FontLoader::LoadAsset(const std::filesystem::path &filename) {
+Ref<void> FontLoader::LoadAsset(const std::string &path) {
     FT_Face face;
     Ref<Font> font;
-    SD_CORE_TRACE("Loading font form: {}...", filename);
-    if (FT_New_Face(m_ft, filename.string().c_str(), 0, &face)) {
-        SD_CORE_ERROR("Failed to load font {}!", filename);
+    SD_CORE_TRACE("Loading font form: {}...", path);
+    if (FT_New_Face(m_ft, path.c_str(), 0, &face)) {
+        SD_CORE_ERROR("Failed to load font {}!", path);
     } else {
         font = CreateRef<Font>(face);
     }

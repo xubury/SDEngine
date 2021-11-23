@@ -15,11 +15,11 @@ class UniformBuffer;
 
 class SD_API GLShader : public Shader {
    public:
-    GLShader(const std::string &filePath);
+    GLShader();
 
     ~GLShader();
 
-    void CompileShader(ShaderType type, const char* code) override;
+    void CompileShader(ShaderType type, const std::string& code) override;
 
     void LinkShaders() override;
 
