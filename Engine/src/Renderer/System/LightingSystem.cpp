@@ -82,28 +82,28 @@ void LightingSystem::InitShaders() {
 
 void LightingSystem::InitLighting(int width, int height, int samples) {
     for (int i = 0; i < 2; ++i) {
-        m_lightTarget[i].AddTexture(Texture::Create(
+        m_light_target[i].AddTexture(Texture::Create(
             width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
             TextureFormat::RGBA, TextureFormatType::FLOAT, TextureWrap::EDGE,
             TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
-        m_lightTarget[i].CreateFramebuffer();
+        m_light_target[i].CreateFramebuffer();
     }
 
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-        m_gBufferTarget.AddTexture(Texture::Create(
+        m_gbuffer_target.AddTexture(Texture::Create(
             width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
             GetTextureFormat(GeometryBufferType(i)),
             GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
             TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
     }
-    m_gBufferTarget.CreateFramebuffer();
+    m_gbuffer_target.CreateFramebuffer();
 }
 
 void LightingSystem::OnSizeEvent(const WindowSizeEvent &event) {
     for (int i = 0; i < 2; ++i) {
-        m_lightTarget[i].Resize(event.width, event.height);
+        m_light_target[i].Resize(event.width, event.height);
     }
-    m_gBufferTarget.Resize(event.width, event.height);
+    m_gbuffer_target.Resize(event.width, event.height);
 }
 
 void LightingSystem::OnRender() {
@@ -118,7 +118,7 @@ void LightingSystem::OnRender() {
     renderer->GetDevice().SetDepthMask(true);
 
     renderer->GetDevice().BlitFramebuffer(
-        m_gBufferTarget.GetFramebuffer(), 0, m_target->GetFramebuffer(), 0,
+        m_gbuffer_target.GetFramebuffer(), 0, m_target->GetFramebuffer(), 0,
         BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
 }
 
@@ -126,15 +126,15 @@ void LightingSystem::Clear() {
     renderer->GetDevice().ResetShaderState();
     // clear the last lighting pass' result
     for (int i = 0; i < 2; ++i) {
-        renderer->GetDevice().SetFramebuffer(m_lightTarget[i].GetFramebuffer());
+        renderer->GetDevice().SetFramebuffer(m_light_target[i].GetFramebuffer());
         renderer->GetDevice().Clear(BufferBitMask::COLOR_BUFFER_BIT);
     }
 
-    renderer->GetDevice().SetFramebuffer(m_gBufferTarget.GetFramebuffer());
+    renderer->GetDevice().SetFramebuffer(m_gbuffer_target.GetFramebuffer());
     renderer->GetDevice().Clear(BufferBitMask::COLOR_BUFFER_BIT |
                                 BufferBitMask::DEPTH_BUFFER_BIT);
     uint32_t id = static_cast<uint32_t>(Entity::INVALID_ID);
-    m_gBufferTarget.GetFramebuffer()->ClearAttachment(
+    m_gbuffer_target.GetFramebuffer()->ClearAttachment(
         GeometryBufferType::G_ENTITY_ID, &id);
 }
 
@@ -145,7 +145,7 @@ void LightingSystem::RenderEmissive() {
                                  GetLightingTarget().GetTexture());
     m_emssive_shader->SetTexture(
         "u_gEmissive",
-        m_gBufferTarget.GetTexture(GeometryBufferType::G_EMISSIVE));
+        m_gbuffer_target.GetTexture(GeometryBufferType::G_EMISSIVE));
     renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
 }
@@ -158,22 +158,22 @@ void LightingSystem::RenderDeferred() {
     renderer->UpdateShader(*m_deferred_shader, *renderer->GetCamera());
     m_deferred_shader->SetTexture(
         "u_gPosition",
-        m_gBufferTarget.GetTexture(GeometryBufferType::G_POSITION));
+        m_gbuffer_target.GetTexture(GeometryBufferType::G_POSITION));
     m_deferred_shader->SetTexture(
-        "u_gNormal", m_gBufferTarget.GetTexture(GeometryBufferType::G_NORMAL));
+        "u_gNormal", m_gbuffer_target.GetTexture(GeometryBufferType::G_NORMAL));
     m_deferred_shader->SetTexture(
-        "u_gAlbedo", m_gBufferTarget.GetTexture(GeometryBufferType::G_ALBEDO));
+        "u_gAlbedo", m_gbuffer_target.GetTexture(GeometryBufferType::G_ALBEDO));
     m_deferred_shader->SetTexture(
         "u_gAmbient",
-        m_gBufferTarget.GetTexture(GeometryBufferType::G_AMBIENT));
+        m_gbuffer_target.GetTexture(GeometryBufferType::G_AMBIENT));
     const uint8_t inputId = 0;
     const uint8_t outputId = 1;
     lightView.each([this](const TransformComponent &transformComp,
                           const LightComponent &lightComp) {
-        renderer->SetRenderTarget(m_lightTarget[outputId]);
+        renderer->SetRenderTarget(m_light_target[outputId]);
         const Light &light = lightComp.light;
         m_deferred_shader->SetTexture("u_lighting",
-                                      m_lightTarget[inputId].GetTexture());
+                                      m_light_target[inputId].GetTexture());
         const Transform &transform = transformComp.transform;
         m_deferred_shader->SetVec3("u_light.direction",
                                    transform.GetWorldFront());
@@ -200,7 +200,7 @@ void LightingSystem::RenderDeferred() {
                                    light.GetProjectionView());
         renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
                          m_quad->GetIndexBuffer()->GetCount(), 0);
-        std::swap(m_lightTarget[inputId], m_lightTarget[outputId]);
+        std::swap(m_light_target[inputId], m_light_target[outputId]);
     });
 }
 
@@ -209,7 +209,7 @@ void LightingSystem::RenderGBuffer() {
     auto terrainView = scene->view<TransformComponent, TerrainComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
-    renderer->SetRenderTarget(m_gBufferTarget);
+    renderer->SetRenderTarget(m_gbuffer_target);
     renderer->GetDevice().Disable(Operation::BLEND);
 
     renderer->UpdateShader(*m_gbuffer_shader, *renderer->GetCamera());

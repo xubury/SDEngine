@@ -9,8 +9,8 @@ namespace SD {
 const std::string setting_filename = "setting.ini";
 
 void Application::OnInit() {
-    std::filesystem::path debug_path = (GetAppDirectory() / "Debug.txt");
-    Log::Init(debug_path.string());
+    std::string debug_path = (GetAppDirectory() / "Debug.txt").string();
+    Log::Init(debug_path);
     SD_CORE_INFO("Debug info is output to: {}", debug_path);
 
     ini = CreateRef<Ini>();

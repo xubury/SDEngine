@@ -37,7 +37,7 @@ class SD_API LightingSystem : public System {
 
     void OnSizeEvent(const WindowSizeEvent &event);
 
-    Framebuffer *GetGBuffer() { return m_gBufferTarget.GetFramebuffer(); }
+    Framebuffer *GetGBuffer() { return m_gbuffer_target.GetFramebuffer(); }
 
    private:
     void InitShaders();
@@ -51,17 +51,17 @@ class SD_API LightingSystem : public System {
 
     void RenderEmissive();
 
-    RenderTarget &GetLightingTarget() { return m_lightTarget[0]; };
+    RenderTarget &GetLightingTarget() { return m_light_target[0]; };
 
     RenderTarget *m_target;
 
     Ref<Shader> m_emssive_shader;
 
     Ref<Shader> m_deferred_shader;
-    RenderTarget m_lightTarget[2];
+    RenderTarget m_light_target[2];
 
     Ref<Shader> m_gbuffer_shader;
-    RenderTarget m_gBufferTarget;
+    RenderTarget m_gbuffer_target;
 
     Ref<VertexArray> m_quad;
 };
