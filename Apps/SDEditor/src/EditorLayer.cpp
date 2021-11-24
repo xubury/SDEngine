@@ -59,8 +59,7 @@ EditorLayer::~EditorLayer() {
 void EditorLayer::OnPush() {
     NewScene();
 
-    auto resourceId = asset->LoadAsset<Image>("icons/light.png");
-    auto image = asset->Get<Image>(resourceId);
+    auto image = asset->LoadAndGet<Image>("icons/light.png");
 
     m_light_icon = Texture::Create(
         image->Width(), image->Height(), 1, TextureType::TEX_2D,

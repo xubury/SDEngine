@@ -22,10 +22,12 @@ AssetManager::AssetManager(const std::filesystem::path &path) {
 }
 
 AssetManager::~AssetManager() {
+    Save();
+    m_id_map.clear();
+    m_resources.clear();
     for (const auto &[id, loader] : m_loaders) {
         delete loader;
     }
-    Save();
 }
 
 void AssetManager::Clear() { m_resources.clear(); }

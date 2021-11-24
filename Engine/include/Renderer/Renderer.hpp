@@ -43,6 +43,9 @@ class SD_API Renderer {
     void DrawQuad(const glm::mat4 &transform, const glm::vec4 &color);
 
     void DrawTexture(const Ref<Texture> &texture, const glm::mat4 &transform,
+                     const std::array<glm::vec2, 4> &texCoords,
+                     const glm::vec4 &color = glm::vec4(1.0f));
+    void DrawTexture(const Ref<Texture> &texture, const glm::mat4 &transform,
                      const glm::vec4 &color = glm::vec4(1.0f));
 
     void DrawBillboard(const Ref<Texture> &texture, const glm::vec3 &pos,

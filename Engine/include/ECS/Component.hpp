@@ -63,7 +63,7 @@ struct SD_API LightComponent {
 
 struct SD_API TextComponent {
     ResourceId id;
-    uint8_t pixel_size = 10;
+    uint8_t pixel_size = 20;
     glm::vec4 color = glm::vec4(1);
     std::string text;
 

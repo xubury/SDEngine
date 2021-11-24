@@ -13,12 +13,13 @@ namespace SD {
 struct SD_API Character {
     Character() = default;
     Ref<Texture> texture;
+    std::array<glm::vec2, 4> texCoord;
     glm::ivec2 size;
     glm::ivec2 bearing;
     uint32_t advance;
 };
 
-struct CharacterId {
+struct SD_API CharacterId {
     CharacterId() = default;
     CharacterId(char32_t ch, uint8_t size) : ch(ch), size(size) {}
     bool operator<(const CharacterId &rhs) const {
@@ -31,7 +32,7 @@ struct CharacterId {
     uint8_t size;
 };
 
-struct CharacterHash {
+struct SD_API CharacterHash {
     std::size_t operator()(const CharacterId &chId) const {
         auto h1 = std::hash<char32_t>{}(chId.ch);
         auto h2 = std::hash<int>{}(chId.size);
@@ -49,11 +50,17 @@ class SD_API Font {
 
     const Character &GetCharacter(char32_t ch, uint8_t size);
 
-   private:
-    void LoadFont(const CharacterId &id);
+    void LoadASCIIGlyph(uint8_t size);
 
+    const Ref<Texture> GetASICCGlyph(uint8_t size) const {
+        return m_ascii_glyph.at(size);
+    };
+
+   private:
     FT_Face m_face;
     std::unordered_map<CharacterId, Character, CharacterHash> m_characters;
+
+    std::unordered_map<uint8_t, Ref<Texture>> m_ascii_glyph;
 };
 
 }  // namespace SD

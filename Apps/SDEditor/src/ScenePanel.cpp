@@ -422,6 +422,23 @@ void ScenePanel::DrawComponents(Entity &entity) {
         }
         ImGui::Text("Color");
         ImGui::ColorEdit4("##TextColor", &textComp.color[0]);
+        auto font = asset->Get<Font>(textComp.id);
+        if (font) {
+            font->LoadASCIIGlyph(pixel_size);
+            static bool show_glyph = false;
+            if (ImGui::Button("Show glyph")) {
+                show_glyph = true;
+            }
+            if (show_glyph) {
+                ImGui::Begin("Glyph");
+                {
+                    auto glyph = font->GetASICCGlyph(pixel_size);
+                    ImGui::DrawTexture(
+                        *glyph, ImVec2(glyph->GetWidth(), glyph->GetHeight()));
+                }
+                ImGui::End();
+            }
+        }
     });
     DrawComponent<CameraComponent>(
         "Camera", entity, [&](CameraComponent &cameraComp) {

@@ -12,10 +12,14 @@ class ProfileSystem : public System {
    public:
     ProfileSystem(RenderTarget *target, int width, int height);
 
+    void OnInit() override;
+
     void OnPush() override;
     void OnPop() override;
+
     void OnTick(float dt) override;
     void OnRender() override;
+
     void OnSizeEvent(const WindowSizeEvent &event);
 
    private:

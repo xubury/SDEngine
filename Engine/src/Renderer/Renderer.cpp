@@ -227,7 +227,9 @@ void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color) {
 }
 
 void Renderer::DrawTexture(const Ref<Texture>& texture,
-                           const glm::mat4& transform, const glm::vec4& color) {
+                           const glm::mat4& transform,
+                           const std::array<glm::vec2, 4>& texCoords,
+                           const glm::vec4& color) {
     if (s_data.quadIndexCnt >= Renderer2DData::MAX_INDICES) {
         NextBatch();
     }
@@ -252,12 +254,16 @@ void Renderer::DrawTexture(const Ref<Texture>& texture,
         s_data.quadVertexBufferPtr->vertices[i].position =
             transform * s_data.quadVertexPositions[i];
         s_data.quadVertexBufferPtr->vertices[i].color = color;
-        s_data.quadVertexBufferPtr->vertices[i].texCoord =
-            s_data.quadTexCoords[i];
+        s_data.quadVertexBufferPtr->vertices[i].texCoord = texCoords[i];
         s_data.quadVertexBufferPtr->vertices[i].texIndex = textureIndex;
     }
     ++s_data.quadVertexBufferPtr;
     s_data.quadIndexCnt += 6;
+}
+
+void Renderer::DrawTexture(const Ref<Texture>& texture,
+                           const glm::mat4& transform, const glm::vec4& color) {
+    DrawTexture(texture, transform, s_data.quadTexCoords, color);
 }
 
 void Renderer::DrawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
@@ -282,6 +288,8 @@ void Renderer::DrawText(Font& font, const std::string& text, uint8_t pixelSize,
             s_data.textCursor.x = 0;
             s_data.textCursor.y -= pixelSize;
             continue;
+        } else if (std::iscntrl(c)) {
+            continue;
         }
         const Character& ch = font.GetCharacter(c, pixelSize);
         glm::mat4 offset =
@@ -291,8 +299,8 @@ void Renderer::DrawText(Font& font, const std::string& text, uint8_t pixelSize,
                           s_data.textCursor.y + ch.bearing.y - ch.size.y * 0.5f,
                           0)) *
             glm::scale(glm::mat4(1.0f), glm::vec3(ch.size.x, ch.size.y, 1.0f));
-        DrawTexture(ch.texture, t * offset, color);
-        s_data.textCursor.x += ch.advance >> 6;
+        DrawTexture(ch.texture, t * offset, ch.texCoord, color);
+        s_data.textCursor.x += ch.advance;
     }
 }
 

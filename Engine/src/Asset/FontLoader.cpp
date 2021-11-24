@@ -10,9 +10,7 @@ FontLoader::FontLoader(AssetManager &manager) : AssetLoaderBase(manager) {
     }
 }
 
-FontLoader::~FontLoader() {
-    // FT_Done_FreeType(m_ft);
-}
+FontLoader::~FontLoader() { FT_Done_FreeType(m_ft); }
 
 Ref<void> FontLoader::LoadAsset(const std::string &path) {
     FT_Face face;

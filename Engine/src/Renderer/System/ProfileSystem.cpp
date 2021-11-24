@@ -12,9 +12,12 @@ ProfileSystem::ProfileSystem(RenderTarget *target, int width, int height)
                1000.f),
       m_fps(20) {}
 
+void ProfileSystem::OnInit() {
+    m_font = asset->LoadAndGet<Font>("fonts/wqy-microhei.ttc");
+    m_font->LoadASCIIGlyph(20);
+}
+
 void ProfileSystem::OnPush() {
-    auto resourceId = asset->LoadAsset<Font>("fonts/wqy-microhei.ttc");
-    m_font = asset->Get<Font>(resourceId);
     dispatcher->Subscribe(this, &ProfileSystem::OnSizeEvent);
 }
 
@@ -28,11 +31,10 @@ void ProfileSystem::OnRender() {
     std::string fpsStr =
         "FPS:" + std::to_string(static_cast<uint32_t>(m_fps.GetFPS()));
 
-    float size = 20;
+    uint8_t size = 20;
     renderer->SetTextOrigin(-m_camera.GetNearWidth() / 2.f,
                             m_camera.GetNearHeight() / 2.f - size);
     renderer->DrawText(*m_font, fpsStr, size, glm::mat4(1.0f));
-    renderer->DrawText(*m_font, "测试", size, glm::mat4(1.0f));
     renderer->EndScene();
 }
 
