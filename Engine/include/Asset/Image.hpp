@@ -15,15 +15,15 @@ class Image {
     Image(const Image &) = delete;
     Image &operator=(const Image &) = delete;
 
-    bool valid() const;
+    bool Valid() const;
 
-    const void *data() const;
-    void *data();
+    const void *Data() const;
+    void *Data();
 
-    uint32_t width() const;
-    uint32_t height() const;
+    uint32_t Width() const;
+    uint32_t Height() const;
 
-    bool hasAlpha() const;
+    bool HasAlpha() const;
 
    private:
     SDL_Surface *m_surface;

@@ -63,10 +63,10 @@ void EditorLayer::OnPush() {
     auto image = asset->Get<Image>(resourceId);
 
     m_light_icon = Texture::Create(
-        image->width(), image->height(), 1, TextureType::TEX_2D,
-        image->hasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
+        image->Width(), image->Height(), 1, TextureType::TEX_2D,
+        image->HasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
         TextureFormatType::UBYTE, TextureWrap::REPEAT, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_LINEAR, image->data());
+        TextureMipmapFilter::LINEAR_LINEAR, image->Data());
 
     m_scene_panel.SetAppVars(MakeAppVars());
 

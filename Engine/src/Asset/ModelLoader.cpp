@@ -141,11 +141,11 @@ static void processAiMaterial(AssetManager &manager,
     auto resourceId = manager.LoadAsset<Image>(path);
     auto image = manager.Get<Image>(resourceId);
     auto texture = Texture::Create(
-        image->width(), image->height(), 1, TextureType::TEX_2D,
-        image->hasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
+        image->Width(), image->Height(), 1, TextureType::TEX_2D,
+        image->HasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
         TextureFormatType::UBYTE, ConvertAssimpMapMode(wrapMode),
         TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_LINEAR,
-        image->data());
+        image->Data());
     material.SetTexture(ConvertAssimpTextureType(assimpType), texture);
 }
 
