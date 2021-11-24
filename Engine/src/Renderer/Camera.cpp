@@ -196,6 +196,7 @@ void Camera::UpdateProjection() {
     } else {
         SD_CORE_ASSERT(false, "Invalid camera type!");
     }
+    m_projection_outdated = false;
 }
 
 glm::mat4 Camera::GetView() const { return m_view; }
@@ -251,6 +252,21 @@ glm::vec3 Camera::MapWorldToClip(const glm::vec3 &pos) const {
     return clipPos;
 }
 
+void Camera::SetFOV(float fov) {
+    m_fov = fov;
+    m_projection_outdated = true;
+}
+float Camera::GetFOV() const { return m_fov; }
+
+void Camera::SetNearWidth(float width) {
+    m_width = width;
+    m_projection_outdated = true;
+}
+void Camera::SetNearHeight(float height) {
+    m_height = height;
+    m_projection_outdated = true;
+}
+
 float Camera::GetNearWidth() const {
     switch (m_type) {
         case CameraType::PERSPECTIVE:
@@ -286,5 +302,23 @@ float Camera::GetFarHeight() const {
             return m_height;
     }
 }
+void Camera::SetNearZ(float near_z) {
+    m_near_z = near_z;
+    m_projection_outdated = true;
+}
+float Camera::GetNearZ() const { return m_near_z; }
+
+void Camera::SetFarZ(float far_z) {
+    m_far_z = far_z;
+    m_projection_outdated = true;
+}
+float Camera::GetFarZ() const { return m_far_z; }
+
+void Camera::SetCameraType(CameraType type) {
+    m_type = type;
+    m_projection_outdated = true;
+}
+
+CameraType Camera::GetCameraType() const { return m_type; }
 
 }  // namespace SD

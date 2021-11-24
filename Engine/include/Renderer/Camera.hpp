@@ -61,25 +61,16 @@ class SD_API Camera {
     bool ViewOutdated() const;
     bool ProjectionOutdated() const;
 
+    void UpdateView();
+
     glm::vec3 MapClipToWorld(const glm::vec2 &pos) const;
     glm::vec3 MapWorldToClip(const glm::vec3 &pos) const;
 
-    void UpdateView();
+    void SetFOV(float fov);
+    float GetFOV() const;
 
-    void SetFOV(float fov) {
-        m_fov = fov;
-        m_projection_outdated = true;
-    }
-    float GetFOV() const { return m_fov; }
-
-    void SetNearWidth(float width) {
-        m_width = width;
-        m_projection_outdated = true;
-    }
-    void SetNearHeight(float height) {
-        m_height = height;
-        m_projection_outdated = true;
-    }
+    void SetNearWidth(float width);
+    void SetNearHeight(float height);
 
     float GetNearWidth() const;
     float GetNearHeight() const;
@@ -87,24 +78,14 @@ class SD_API Camera {
     float GetFarWidth() const;
     float GetFarHeight() const;
 
-    void SetNearZ(float near_z) {
-        m_near_z = near_z;
-        m_projection_outdated = true;
-    }
-    float GetNearZ() const { return m_near_z; }
+    void SetNearZ(float near_z);
+    float GetNearZ() const;
 
-    void SetFarZ(float far_z) {
-        m_far_z = far_z;
-        m_projection_outdated = true;
-    }
-    float GetFarZ() const { return m_far_z; }
+    void SetFarZ(float far_z);
+    float GetFarZ() const;
 
-    void SetCameraType(CameraType type) {
-        m_type = type;
-        m_projection_outdated = true;
-    }
-
-    CameraType GetCameraType() const { return m_type; }
+    void SetCameraType(CameraType type);
+    CameraType GetCameraType() const;
 
    private:
     glm::mat4 m_view;
