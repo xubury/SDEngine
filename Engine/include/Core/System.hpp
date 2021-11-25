@@ -9,9 +9,11 @@ namespace SD {
 
 class System {
    public:
-    System(const std::string &name) : m_name(name) {}
+    System(const std::string &name) : m_name(name) {
+        SD_CORE_TRACE("Initializing system: {}", name);
+    }
 
-    virtual ~System() = default;
+    virtual ~System() { SD_CORE_TRACE("Deleting system: {}", m_name); };
 
     virtual void OnInit(){};
 

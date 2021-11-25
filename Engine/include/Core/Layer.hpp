@@ -14,10 +14,11 @@ namespace SD {
 
 class SD_API Layer {
    public:
-   public:
-    Layer(const std::string &name) : m_name(name), m_is_block_event(false) {}
+    Layer(const std::string &name) : m_name(name), m_is_block_event(false) {
+        SD_CORE_TRACE("Initializing layer: {}", name);
+    }
 
-    virtual ~Layer() = default;
+    virtual ~Layer() { SD_CORE_TRACE("Deleteing layer: {}", m_name); }
 
     Layer(const Layer &) = delete;
 
