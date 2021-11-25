@@ -22,20 +22,20 @@ class GLDevice : public Device {
 
     void SetPolygonMode(PolygonMode mode, Face face) override;
 
-    void SetDepthMask(bool depthMask) override;
+    void SetDepthMask(bool depth_mask) override;
 
     void Enable(Operation operation) override;
 
     void Disable(Operation operation) override;
 
-    void SetCullFace(Face cullface) override;
+    void SetCullFace(Face face) override;
 
-    void SetDepthfunc(DepthFunc depthFunc) override;
+    void SetDepthfunc(DepthFunc depth_func) override;
 
     void ResetShaderState() override;
 
-    void BlitFramebuffer(Framebuffer *src, uint32_t srcAttachment,
-                         Framebuffer *dst, uint32_t dstAttachment,
+    void BlitFramebuffer(Framebuffer *src, uint32_t src_attachment,
+                         Framebuffer *dst, uint32_t dst_attachment,
                          BufferBitMask mask, TextureFilter filter) override;
 };
 

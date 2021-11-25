@@ -2,8 +2,8 @@
 
 namespace SD {
 
-GLenum Translate(BufferDataType dataType) {
-    switch (dataType) {
+GLenum Translate(BufferDataType data_type) {
+    switch (data_type) {
         case BufferDataType::FLOAT:
         case BufferDataType::FLOAT2:
         case BufferDataType::FLOAT3:
@@ -17,8 +17,8 @@ GLenum Translate(BufferDataType dataType) {
     return GL_INVALID_ENUM;
 }
 
-GLenum Translate(MeshTopology meshType) {
-    switch (meshType) {
+GLenum Translate(MeshTopology mesh_type) {
+    switch (mesh_type) {
         case MeshTopology::TRIANGLES:
             return GL_TRIANGLES;
         case MeshTopology::LINES:
@@ -47,8 +47,8 @@ GLenum Translate(PolygonMode mode) {
     return GL_INVALID_VALUE;
 }
 
-GLint Translate(BufferIOType ioType) {
-    switch (ioType) {
+GLint Translate(BufferIOType io_type) {
+    switch (io_type) {
         case BufferIOType::STATIC:
             return GL_STATIC_DRAW;
         case BufferIOType::DYNAMIC:
@@ -57,8 +57,8 @@ GLint Translate(BufferIOType ioType) {
     return GL_INVALID_VALUE;
 }
 
-GLenum Translate(TextureType textureType) {
-    switch (textureType) {
+GLenum Translate(TextureType texture_type) {
+    switch (texture_type) {
         case TextureType::TEX_2D:
             return GL_TEXTURE_2D;
         case TextureType::TEX_2D_MULTISAMPLE:
@@ -72,12 +72,11 @@ GLenum Translate(TextureType textureType) {
     return GL_INVALID_ENUM;
 }
 
-GLenum TranslateFormat(TextureFormat textureFormat,
-                       TextureFormatType textureFormatType) {
-    switch (textureFormat) {
+GLenum TranslateFormat(TextureFormat format, TextureFormatType format_type) {
+    switch (format) {
         case TextureFormat::ALPHA:
         case TextureFormat::RED: {
-            switch (textureFormatType) {
+            switch (format_type) {
                 case TextureFormatType::UINT24_8:
                 case TextureFormatType::UINT:
                     return GL_RED_INTEGER;
@@ -100,8 +99,8 @@ GLenum TranslateFormat(TextureFormat textureFormat,
     return GL_INVALID_ENUM;
 }
 
-GLenum Translate(TextureFormatType textureFormatType) {
-    switch (textureFormatType) {
+GLenum Translate(TextureFormatType format_type) {
+    switch (format_type) {
         case TextureFormatType::UBYTE:
             return GL_UNSIGNED_BYTE;
         case TextureFormatType::UINT24_8:
@@ -115,12 +114,12 @@ GLenum Translate(TextureFormatType textureFormatType) {
     return GL_INVALID_VALUE;
 }
 
-GLint TranslateInternalFormat(TextureFormat textureFormat,
-                              TextureFormatType textureFormatType) {
-    switch (textureFormat) {
+GLint TranslateInternalFormat(TextureFormat format,
+                              TextureFormatType format_type) {
+    switch (format) {
         case TextureFormat::ALPHA:
         case TextureFormat::RED: {
-            switch (textureFormatType) {
+            switch (format_type) {
                 case TextureFormatType::UBYTE:
                     return GL_R8;
                 case TextureFormatType::UINT24_8:
@@ -132,7 +131,7 @@ GLint TranslateInternalFormat(TextureFormat textureFormat,
             break;
         }
         case TextureFormat::RG: {
-            switch (textureFormatType) {
+            switch (format_type) {
                 case TextureFormatType::UBYTE:
                     return GL_RG8;
                 case TextureFormatType::UINT24_8:
@@ -144,7 +143,7 @@ GLint TranslateInternalFormat(TextureFormat textureFormat,
             break;
         }
         case TextureFormat::RGB: {
-            switch (textureFormatType) {
+            switch (format_type) {
                 case TextureFormatType::UBYTE:
                     return GL_RGB8;
                 case TextureFormatType::UINT24_8:
@@ -156,7 +155,7 @@ GLint TranslateInternalFormat(TextureFormat textureFormat,
             break;
         }
         case TextureFormat::RGBA: {
-            switch (textureFormatType) {
+            switch (format_type) {
                 case TextureFormatType::UBYTE:
                     return GL_RGBA8;
                 case TextureFormatType::UINT24_8:
@@ -175,8 +174,8 @@ GLint TranslateInternalFormat(TextureFormat textureFormat,
     return GL_INVALID_VALUE;
 }
 
-GLint Translate(TextureWrap textureWrap) {
-    switch (textureWrap) {
+GLint Translate(TextureWrap wrap) {
+    switch (wrap) {
         case TextureWrap::EDGE:
             return GL_CLAMP_TO_EDGE;
         case TextureWrap::BORDER:
@@ -192,8 +191,8 @@ GLint Translate(TextureWrap textureWrap) {
     return GL_INVALID_VALUE;
 }
 
-GLint Translate(TextureFilter textureFilter) {
-    switch (textureFilter) {
+GLint Translate(TextureFilter filter) {
+    switch (filter) {
         case TextureFilter::NEAREST:
             return GL_NEAREST;
         case TextureFilter::LINEAR:
@@ -203,8 +202,8 @@ GLint Translate(TextureFilter textureFilter) {
     return GL_INVALID_VALUE;
 }
 
-GLint Translate(TextureMipmapFilter textureMipmapFilter) {
-    switch (textureMipmapFilter) {
+GLint Translate(TextureMipmapFilter mipmap_filter) {
+    switch (mipmap_filter) {
         case TextureMipmapFilter::LINEAR:
             return GL_LINEAR;
         case TextureMipmapFilter::NEAREST:
@@ -261,8 +260,8 @@ GLenum Translate(BufferBitMask bit) {
     return 0;
 }
 
-GLenum Translate(DepthFunc depthFunc) {
-    switch (depthFunc) {
+GLenum Translate(DepthFunc depth_func) {
+    switch (depth_func) {
         case DepthFunc::EQUAL:
             return GL_EQUAL;
         case DepthFunc::NOT_EQUAL:

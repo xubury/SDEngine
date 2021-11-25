@@ -25,20 +25,21 @@ class SD_API Framebuffer {
 
     virtual void Clear() = 0;
 
-    virtual void SetDrawable(const std::vector<uint32_t> &colorAttachments) = 0;
+    virtual void SetDrawable(const std::vector<uint32_t> &color_attchments) = 0;
 
-    virtual void ReadPixels(uint32_t attachmentId, int level, int x, int y,
+    virtual void ReadPixels(uint32_t attachment_id, int level, int x, int y,
                             int z, int w, int h, int d, size_t size,
                             void *data) const = 0;
 
     virtual void ClearDepth(const float value = 1) = 0;
 
-    virtual void ClearAttachment(uint32_t attachmentId, const int *value) = 0;
-    virtual void ClearAttachment(uint32_t attachmentId,
+    virtual void ClearAttachment(uint32_t attachment_id, const int *value) = 0;
+    virtual void ClearAttachment(uint32_t attachment_id,
                                  const uint32_t *value) = 0;
-    virtual void ClearAttachment(uint32_t attachmentId, const float *value) = 0;
+    virtual void ClearAttachment(uint32_t attachment_id,
+                                 const float *value) = 0;
 
-    virtual Texture *GetTexture(uint32_t attachmentId = 0) = 0;
+    virtual Texture *GetTexture(uint32_t attachment_id = 0) = 0;
 
     virtual void Bind() = 0;
 

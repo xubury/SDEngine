@@ -4,7 +4,7 @@
 
 namespace SD {
 
-GLFramebuffer::GLFramebuffer() : m_id(0), m_textureCnt(0) {
+GLFramebuffer::GLFramebuffer() : m_id(0), m_texture_cnt(0) {
     glCreateFramebuffers(1, &m_id);
 }
 
@@ -26,7 +26,7 @@ bool GLFramebuffer::AttachTexture(const Ref<Texture> &texture) {
         case TextureFormat::RGB:
         case TextureFormat::RGBA:
             isColor = true;
-            attachment = GL_COLOR_ATTACHMENT0 + m_textureCnt++;
+            attachment = GL_COLOR_ATTACHMENT0 + m_texture_cnt++;
             break;
     }
     m_attachments.emplace_back(attachment, texture);
@@ -36,20 +36,21 @@ bool GLFramebuffer::AttachTexture(const Ref<Texture> &texture) {
 }
 
 void GLFramebuffer::Clear() {
-    m_textureCnt = 0;
+    m_texture_cnt = 0;
     m_attachments.clear();
 }
 
-void GLFramebuffer::SetDrawable(const std::vector<uint32_t> &colorAttachments) {
-    if (colorAttachments.empty()) {
+void GLFramebuffer::SetDrawable(
+    const std::vector<uint32_t> &color_attachments) {
+    if (color_attachments.empty()) {
         glNamedFramebufferDrawBuffer(m_id, GL_NONE);
     } else {
-        std::vector<GLenum> glAttachments;
-        for (const auto i : colorAttachments) {
-            glAttachments.emplace_back(GL_COLOR_ATTACHMENT0 + i);
+        std::vector<GLenum> gl_attchments;
+        for (const auto i : color_attachments) {
+            gl_attchments.emplace_back(GL_COLOR_ATTACHMENT0 + i);
         }
-        glNamedFramebufferDrawBuffers(m_id, glAttachments.size(),
-                                      glAttachments.data());
+        glNamedFramebufferDrawBuffers(m_id, gl_attchments.size(),
+                                      gl_attchments.data());
     }
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         SD_CORE_ERROR("FrameBuffer is not complete!");
@@ -58,10 +59,10 @@ void GLFramebuffer::SetDrawable(const std::vector<uint32_t> &colorAttachments) {
 
 void GLFramebuffer::Bind() { glBindFramebuffer(GL_FRAMEBUFFER, m_id); }
 
-void GLFramebuffer::ReadPixels(uint32_t attachmentId, int level, int x, int y,
+void GLFramebuffer::ReadPixels(uint32_t attachment_id, int level, int x, int y,
                                int z, int w, int h, int d, size_t size,
                                void *data) const {
-    auto texture = m_attachments.at(attachmentId).second;
+    auto texture = m_attachments.at(attachment_id).second;
     texture->ReadPixels(level, x, y, z, w, h, d, size, data);
 }
 
@@ -69,21 +70,22 @@ void GLFramebuffer::ClearDepth(const float depth) {
     glClearNamedFramebufferfv(m_id, GL_DEPTH, 0, &depth);
 }
 
-void GLFramebuffer::ClearAttachment(uint32_t attachmentId, const int *value) {
-    glClearNamedFramebufferiv(m_id, GL_COLOR, attachmentId, value);
+void GLFramebuffer::ClearAttachment(uint32_t attachment_id, const int *value) {
+    glClearNamedFramebufferiv(m_id, GL_COLOR, attachment_id, value);
 }
 
-void GLFramebuffer::ClearAttachment(uint32_t attachmentId,
+void GLFramebuffer::ClearAttachment(uint32_t attachment_id,
                                     const uint32_t *value) {
-    glClearNamedFramebufferuiv(m_id, GL_COLOR, attachmentId, value);
+    glClearNamedFramebufferuiv(m_id, GL_COLOR, attachment_id, value);
 }
 
-void GLFramebuffer::ClearAttachment(uint32_t attachmentId, const float *value) {
-    glClearNamedFramebufferfv(m_id, GL_COLOR, attachmentId, value);
+void GLFramebuffer::ClearAttachment(uint32_t attachment_id,
+                                    const float *value) {
+    glClearNamedFramebufferfv(m_id, GL_COLOR, attachment_id, value);
 }
 
-Texture *GLFramebuffer::GetTexture(uint32_t attachmentId) {
-    return m_attachments[attachmentId].second.get();
+Texture *GLFramebuffer::GetTexture(uint32_t attachment_id) {
+    return m_attachments[attachment_id].second.get();
 }
 
 void GLFramebuffer::Resize(int width, int height) {

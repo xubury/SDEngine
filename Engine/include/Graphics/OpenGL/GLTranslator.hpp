@@ -7,29 +7,29 @@
 
 namespace SD {
 
-GLenum SD_API Translate(BufferDataType dataType);
+GLenum SD_API Translate(BufferDataType data_type);
 
-GLenum SD_API Translate(MeshTopology meshType);
+GLenum SD_API Translate(MeshTopology mesh_type);
 
 GLenum SD_API Translate(PolygonMode mode);
 
-GLint SD_API Translate(BufferIOType ioType);
+GLint SD_API Translate(BufferIOType io_type);
 
-GLenum SD_API Translate(TextureType textureType);
+GLenum SD_API Translate(TextureType texture_type);
 
-GLenum SD_API TranslateFormat(TextureFormat textureFormat,
-                              TextureFormatType textureFormatType);
+GLenum SD_API TranslateFormat(TextureFormat format,
+                              TextureFormatType format_type);
 
-GLenum SD_API Translate(TextureFormatType textureFormatType);
+GLenum SD_API Translate(TextureFormatType format_type);
 
-GLint SD_API TranslateInternalFormat(TextureFormat textureFormat,
-                                     TextureFormatType textureFormatType);
+GLint SD_API TranslateInternalFormat(TextureFormat format,
+                                     TextureFormatType format_type);
 
-GLint SD_API Translate(TextureWrap textureWrap);
+GLint SD_API Translate(TextureWrap wrap);
 
-GLint SD_API Translate(TextureFilter textureFilter);
+GLint SD_API Translate(TextureFilter filter);
 
-GLint SD_API Translate(TextureMipmapFilter textureMipmapFilter);
+GLint SD_API Translate(TextureMipmapFilter mipmap_filter);
 
 GLenum SD_API Translate(Operation operation);
 
@@ -37,7 +37,7 @@ GLenum SD_API Translate(Face face);
 
 GLenum SD_API Translate(BufferBitMask bit);
 
-GLenum SD_API Translate(DepthFunc depthFunc);
+GLenum SD_API Translate(DepthFunc depth_func);
 
 }  // namespace SD
 

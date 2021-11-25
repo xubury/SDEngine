@@ -34,20 +34,20 @@ class SD_API Device {
 
     virtual void SetPolygonMode(PolygonMode mode, Face face) = 0;
 
-    virtual void SetDepthMask(bool depthMask) = 0;
+    virtual void SetDepthMask(bool depth_mask) = 0;
 
     virtual void Enable(Operation operation) = 0;
 
     virtual void Disable(Operation operation) = 0;
 
-    virtual void SetCullFace(Face cullFace) = 0;
+    virtual void SetCullFace(Face face) = 0;
 
-    virtual void SetDepthfunc(DepthFunc depthFunc) = 0;
+    virtual void SetDepthfunc(DepthFunc depth_func) = 0;
 
     virtual void ResetShaderState() = 0;
 
-    virtual void BlitFramebuffer(Framebuffer *src, uint32_t srcAttachment,
-                                 Framebuffer *dst, uint32_t dstAttachment,
+    virtual void BlitFramebuffer(Framebuffer *src, uint32_t src_attchment,
+                                 Framebuffer *dst, uint32_t dst_attachment,
                                  BufferBitMask mask, TextureFilter filter) = 0;
 
    protected:

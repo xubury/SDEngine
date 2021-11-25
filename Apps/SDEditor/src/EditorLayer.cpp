@@ -97,6 +97,7 @@ void EditorLayer::OnRender() {
 
     if (m_hide) return;
 
+    renderer->GetDevice().Disable(Operation::DEPTH_TEST);
     renderer->BeginScene(m_editor_camera);
     auto lightView = m_scene->view<LightComponent, TransformComponent>();
     lightView.each(
@@ -107,6 +108,7 @@ void EditorLayer::OnRender() {
             renderer->DrawBillboard(m_light_icon, pos, glm::vec2(scale));
         });
     renderer->EndScene();
+    renderer->GetDevice().Enable(Operation::DEPTH_TEST);
 }
 
 void EditorLayer::OnTick(float dt) {

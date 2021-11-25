@@ -10,9 +10,9 @@ class SD_API Texture {
    public:
     static Ref<Texture> Create(int width, int height, int samples,
                                TextureType type, TextureFormat format,
-                               TextureFormatType formatType, TextureWrap wrap,
+                               TextureFormatType format_type, TextureWrap wrap,
                                TextureFilter filter,
-                               TextureMipmapFilter mipmapFilter,
+                               TextureMipmapFilter mipmap_filter,
                                const void *data = nullptr);
 
     virtual ~Texture() = default;
@@ -47,9 +47,9 @@ class SD_API Texture {
 
    protected:
     Texture(int width, int height, int samples, TextureType type,
-            TextureFormat format, TextureFormatType formatType,
+            TextureFormat format, TextureFormatType format_type,
             TextureWrap wrap, TextureFilter filter,
-            TextureMipmapFilter mipmapFilter);
+            TextureMipmapFilter mipmap_filter);
 
     int m_width;
     int m_height;
@@ -57,10 +57,10 @@ class SD_API Texture {
 
     TextureType m_type;
     TextureFormat m_format;
-    TextureFormatType m_formatType;
+    TextureFormatType m_format_type;
     TextureWrap m_wrap;
     TextureFilter m_filter;
-    TextureMipmapFilter m_mipmapFilter;
+    TextureMipmapFilter m_mipmap_filter;
 };
 
 }  // namespace SD

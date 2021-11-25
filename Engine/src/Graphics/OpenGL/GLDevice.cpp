@@ -79,37 +79,37 @@ void GLDevice::SetPolygonMode(PolygonMode mode, Face face) {
     glPolygonMode(Translate(face), Translate(mode));
 }
 
-void GLDevice::SetDepthMask(bool depthMask) { glDepthMask(depthMask); }
+void GLDevice::SetDepthMask(bool depth_mask) { glDepthMask(depth_mask); }
 
 void GLDevice::Disable(Operation operation) { glDisable(Translate(operation)); }
 
 void GLDevice::Enable(Operation operation) { glEnable(Translate(operation)); }
 
-void GLDevice::SetCullFace(Face cullFace) { glCullFace(Translate(cullFace)); }
+void GLDevice::SetCullFace(Face face) { glCullFace(Translate(face)); }
 
-void GLDevice::SetDepthfunc(DepthFunc depthFunc) {
-    glDepthFunc(Translate(depthFunc));
+void GLDevice::SetDepthfunc(DepthFunc depth_func) {
+    glDepthFunc(Translate(depth_func));
 }
 
 void GLDevice::ResetShaderState() { glUseProgram(0); }
 
-void GLDevice::BlitFramebuffer(Framebuffer *src, uint32_t srcAttachment,
-                               Framebuffer *dst, uint32_t dstAttachment,
+void GLDevice::BlitFramebuffer(Framebuffer *src, uint32_t src_attachment,
+                               Framebuffer *dst, uint32_t dst_attachment,
                                BufferBitMask mask, TextureFilter filter) {
-    int srcId = src ? src->GetId() : 0;
-    int dstId = dst ? dst->GetId() : 0;
+    int src_id = src ? src->GetId() : 0;
+    int dst_id = dst ? dst->GetId() : 0;
     GLenum glMask = Translate(mask & BufferBitMask::COLOR_BUFFER_BIT) |
                     Translate(mask & BufferBitMask::DEPTH_BUFFER_BIT) |
                     Translate(mask & BufferBitMask::STENCIL_BUFFER_BIT);
     GLenum glFilter = Translate(filter);
-    GLenum srcMode = GL_COLOR_ATTACHMENT0 + srcAttachment;
-    GLenum dstMode = GL_COLOR_ATTACHMENT0 + dstAttachment;
+    GLenum srcMode = GL_COLOR_ATTACHMENT0 + src_attachment;
+    GLenum dstMode = GL_COLOR_ATTACHMENT0 + dst_attachment;
     Texture *texture =
-        src ? src->GetTexture(srcAttachment) : dst->GetTexture(dstAttachment);
+        src ? src->GetTexture(src_attachment) : dst->GetTexture(dst_attachment);
     SD_CORE_ASSERT(texture != nullptr, "Invalid framebuffer");
-    glNamedFramebufferReadBuffer(srcId, src ? srcMode : GL_BACK);
-    glNamedFramebufferDrawBuffer(dstId, dst ? dstMode : GL_BACK);
-    glBlitNamedFramebuffer(srcId, dstId, 0, 0, texture->GetWidth(),
+    glNamedFramebufferReadBuffer(src_id, src ? srcMode : GL_BACK);
+    glNamedFramebufferDrawBuffer(dst_id, dst ? dstMode : GL_BACK);
+    glBlitNamedFramebuffer(src_id, dst_id, 0, 0, texture->GetWidth(),
                            texture->GetHeight(), 0, 0, texture->GetWidth(),
                            texture->GetHeight(), glMask, glFilter);
 }
