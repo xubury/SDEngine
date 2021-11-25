@@ -62,6 +62,7 @@ void AssetManager::Load(const std::filesystem::path &path) {
         archive(m_id_map, m_resources);
     }
     SetDirectory(std::filesystem::path(filename).parent_path());
+    Validate();
 }
 
 void AssetManager::Save() {
@@ -89,7 +90,7 @@ std::filesystem::path AssetManager::GetRootPath() const { return m_directory; };
 std::filesystem::path AssetManager::GetAbsolutePath(
     const std::filesystem::path &path) const {
     auto ret = path.is_relative() ? m_directory / path : path;
-    return ret.make_preferred(); 
+    return ret.make_preferred();
 }
 
 bool AssetManager::HasId(const std::string &path) const {
@@ -98,6 +99,18 @@ bool AssetManager::HasId(const std::string &path) const {
 
 bool AssetManager::HasCached(const ResourceId &id) const {
     return m_resources.at(id).GetResource() != nullptr;
+}
+
+void AssetManager::Validate() {
+    // remove asset that no longer exists.
+    auto iter = m_id_map.begin();
+    while (iter != m_id_map.end()) {
+        if (!std::filesystem::exists(GetAbsolutePath(iter->first))) {
+            iter = m_id_map.erase(iter);
+        } else {
+            ++iter;
+        }
+    }
 }
 
 }  // namespace SD

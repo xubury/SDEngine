@@ -139,6 +139,7 @@ class SD_API AssetManager {
         return Get<ASSET>(id);
     }
 
+    void Validate();
    private:
     std::unordered_map<std::string, ResourceId> m_id_map;
     std::unordered_map<ResourceId, Asset> m_resources;
