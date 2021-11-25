@@ -13,8 +13,8 @@ ProfileSystem::ProfileSystem(RenderTarget *target, int width, int height)
       m_fps(20) {}
 
 void ProfileSystem::OnInit() {
-    m_font = asset->LoadAndGet<Font>("fonts/wqy-microhei.ttc");
-    m_font->LoadChineseGlyph(20);
+    m_font = asset->LoadAndGet<Font>("fonts/msyh.ttc");
+    m_font->LoadGlyph(20);
 }
 
 void ProfileSystem::OnPush() {
@@ -35,6 +35,10 @@ void ProfileSystem::OnRender() {
     renderer->SetTextOrigin(-m_camera.GetNearWidth() / 2.f,
                             m_camera.GetNearHeight() / 2.f - size);
     renderer->DrawText(*m_font, fpsStr, size, glm::mat4(1.0f));
+    renderer->DrawText(*m_font, "\n中文测试: 你好", size, glm::mat4(1.0f));
+    renderer->DrawText(*m_font, "\n中文測試: 你好", size, glm::mat4(1.0f));
+    renderer->DrawText(*m_font, "\n日本語テスト: こんにちは", size,
+                       glm::mat4(1.0f));
     renderer->EndScene();
 }
 

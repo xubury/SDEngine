@@ -427,7 +427,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
         ImGui::ColorEdit4("##TextColor", &textComp.color[0]);
         auto font = asset->Get<Font>(textComp.id);
         if (font) {
-            font->LoadChineseGlyph(pixel_size);
+            font->LoadGlyph(pixel_size);
         }
     });
     DrawComponent<CameraComponent>(

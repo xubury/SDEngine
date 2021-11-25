@@ -16,36 +16,39 @@ const Character &Font::GetCharacter(char32_t ch, uint8_t size) {
     return m_characters.at(id);
 }
 
-void Font::LoadChineseGlyph(uint8_t size) {
+void Font::LoadGlyph(uint8_t size) {
     if (m_font_atlas.count(size)) return;
     static const char32_t ranges[] = {
         0x0020, 0x00FF,  // Basic Latin + Latin Supplement
+        0x0102, 0x0103,  // Vietnamese
+        0x0110, 0x0111,  // Vietnamese
+        0x0128, 0x0129,  // Vietnamese
+        0x0168, 0x0169,  // Vietnamese
+        0x01A0, 0x01A1,  // Vietnamese
+        0x01AF, 0x01B0,  // Vietnamese
+        0x1EA0, 0x1EF9,  // Vietnamese
+        0x0E00, 0x0E7F,  // Thai
         0x2000, 0x206F,  // General Punctuation
+        0x0400, 0x052F,  // Cyrillic + Cyrillic Supplement
+        0x2DE0, 0x2DFF,  // Cyrillic Extended-A
+        0xA640, 0xA69F,  // Cyrillic Extended-B
         0x3000, 0x30FF,  // CJK Symbols and Punctuations, Hiragana, Katakana
         0x31F0, 0x31FF,  // Katakana Phonetic Extensions
         0xFF00, 0xFFEF,  // Half-width characters
         0xFFFD, 0xFFFD,  // Invalid
         0x4E00, 0x9FFF,  // CJK Ideograms
-        // 0x3400, 0x4DBF,    // Rare
-        // 0x20000, 0x2A6DF,  // Rare, historic
-        // 0x2A700, 0x2B73F,  // Rare, historic
-        // 0x2B740, 0x2B81F,  // Uncommon, some in current use
-        // 0x2B820, 0x2CEAF,  // Rare, historic
-        // 0xF900, 0xFAFF,    // Duplicates, unifiable variants, corporate
-        //                    // characters
-        // 0x2F800, 0x2FA1F,  // Unifiable variants,
         0};
     FT_Set_Pixel_Sizes(m_face, 0, size);
     for (size_t i = 0; ranges[i] != 0; i += 2) {
-        LoadGlpyph(size, ranges[i], ranges[i + 1] + 1);
+        LoadRangedGlyph(size, ranges[i], ranges[i + 1] + 1);
     }
     m_font_atlas.emplace(size);
-    FT_Done_Face(m_face);
 }
 
-Ref<Texture> Font::LoadGlpyph(uint8_t size, char32_t start, char32_t end) {
+void Font::LoadRangedGlyph(uint8_t size, char32_t start,
+                                    char32_t end) {
     const int64_t NUM_GLYPHS = end - start;
-    if (NUM_GLYPHS < 0) return nullptr;
+    if (NUM_GLYPHS < 0) return;
 
     const uint32_t HEIGHT = m_face->size->metrics.height >> 6;
     const uint32_t max_dim = (HEIGHT + 1) * std::ceil(std::sqrt(NUM_GLYPHS));
@@ -100,7 +103,6 @@ Ref<Texture> Font::LoadGlpyph(uint8_t size, char32_t start, char32_t end) {
     }
     glyph->SetPixels(tex_size, tex_size, pixels);
     delete[] pixels;
-    return glyph;
 }
 
 }  // namespace SD
