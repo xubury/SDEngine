@@ -288,7 +288,7 @@ void Renderer::DrawText(Font& font, const std::string& text, uint8_t pixelSize,
             s_data.textCursor.x = 0;
             s_data.textCursor.y -= pixelSize;
             continue;
-        } else if (std::iscntrl(c)) {
+        } else if (c <= 128 && std::iscntrl(c)) {
             continue;
         }
         const Character& ch = font.GetCharacter(c, pixelSize);

@@ -31,7 +31,9 @@ void ScenePanel::SetSelectedEntity(Entity entity) {
     m_selected_entity = entity;
 }
 
-const Entity &ScenePanel::GetSelectedEntity() const { return m_selected_entity; }
+const Entity &ScenePanel::GetSelectedEntity() const {
+    return m_selected_entity;
+}
 
 Entity &ScenePanel::GetSelectedEntity() { return m_selected_entity; }
 
@@ -425,20 +427,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
         ImGui::ColorEdit4("##TextColor", &textComp.color[0]);
         auto font = asset->Get<Font>(textComp.id);
         if (font) {
-            font->LoadASCIIGlyph(pixel_size);
-            static bool show_glyph = false;
-            if (ImGui::Button("Show glyph")) {
-                show_glyph = true;
-            }
-            if (show_glyph) {
-                ImGui::Begin("Glyph");
-                {
-                    auto glyph = font->GetASICCGlyph(pixel_size);
-                    ImGui::DrawTexture(
-                        *glyph, ImVec2(glyph->GetWidth(), glyph->GetHeight()));
-                }
-                ImGui::End();
-            }
+            font->LoadChineseGlyph(pixel_size);
         }
     });
     DrawComponent<CameraComponent>(

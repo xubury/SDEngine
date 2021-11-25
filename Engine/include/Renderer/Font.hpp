@@ -5,6 +5,7 @@
 #include "Graphics/Texture.hpp"
 
 #include <glm/glm.hpp>
+#include <unordered_set>
 
 typedef struct FT_FaceRec_ *FT_Face;
 
@@ -50,17 +51,14 @@ class SD_API Font {
 
     const Character &GetCharacter(char32_t ch, uint8_t size);
 
-    void LoadASCIIGlyph(uint8_t size);
-
-    const Ref<Texture> GetASICCGlyph(uint8_t size) const {
-        return m_ascii_glyph.at(size);
-    };
+    void LoadChineseGlyph(uint8_t size);
 
    private:
+    Ref<Texture> LoadGlpyph(uint8_t size, char32_t start, char32_t end);
     FT_Face m_face;
     std::unordered_map<CharacterId, Character, CharacterHash> m_characters;
 
-    std::unordered_map<uint8_t, Ref<Texture>> m_ascii_glyph;
+    std::unordered_set<uint8_t> m_font_atlas;
 };
 
 }  // namespace SD

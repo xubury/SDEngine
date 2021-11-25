@@ -14,7 +14,7 @@ ProfileSystem::ProfileSystem(RenderTarget *target, int width, int height)
 
 void ProfileSystem::OnInit() {
     m_font = asset->LoadAndGet<Font>("fonts/wqy-microhei.ttc");
-    m_font->LoadASCIIGlyph(20);
+    m_font->LoadChineseGlyph(20);
 }
 
 void ProfileSystem::OnPush() {

@@ -16,41 +16,66 @@ const Character &Font::GetCharacter(char32_t ch, uint8_t size) {
     return m_characters.at(id);
 }
 
-void Font::LoadASCIIGlyph(uint8_t size) {
-    if (m_ascii_glyph.count(size)) return;
-
+void Font::LoadChineseGlyph(uint8_t size) {
+    if (m_font_atlas.count(size)) return;
+    static const char32_t ranges[] = {
+        0x0020, 0x00FF,  // Basic Latin + Latin Supplement
+        0x2000, 0x206F,  // General Punctuation
+        0x3000, 0x30FF,  // CJK Symbols and Punctuations, Hiragana, Katakana
+        0x31F0, 0x31FF,  // Katakana Phonetic Extensions
+        0xFF00, 0xFFEF,  // Half-width characters
+        0xFFFD, 0xFFFD,  // Invalid
+        0x4E00, 0x9FFF,  // CJK Ideograms
+        // 0x3400, 0x4DBF,    // Rare
+        // 0x20000, 0x2A6DF,  // Rare, historic
+        // 0x2A700, 0x2B73F,  // Rare, historic
+        // 0x2B740, 0x2B81F,  // Uncommon, some in current use
+        // 0x2B820, 0x2CEAF,  // Rare, historic
+        // 0xF900, 0xFAFF,    // Duplicates, unifiable variants, corporate
+        //                    // characters
+        // 0x2F800, 0x2FA1F,  // Unifiable variants,
+        0};
     FT_Set_Pixel_Sizes(m_face, 0, size);
+    for (size_t i = 0; ranges[i] != 0; i += 2) {
+        LoadGlpyph(size, ranges[i], ranges[i + 1] + 1);
+    }
+    m_font_atlas.emplace(size);
+    FT_Done_Face(m_face);
+}
 
-    const uint32_t NUM_GLYPHS = 128;
-    const uint32_t tex_size = ((m_face->size->metrics.height >> 6) + 1) *
-                              std::ceil(std::sqrt(NUM_GLYPHS));
+Ref<Texture> Font::LoadGlpyph(uint8_t size, char32_t start, char32_t end) {
+    const int64_t NUM_GLYPHS = end - start;
+    if (NUM_GLYPHS < 0) return nullptr;
+
+    const uint32_t HEIGHT = m_face->size->metrics.height >> 6;
+    const uint32_t max_dim = (HEIGHT + 1) * std::ceil(std::sqrt(NUM_GLYPHS));
+    uint32_t tex_size = 1;
+    while (tex_size < max_dim) tex_size <<= 1;
 
     char *pixels = new char[tex_size * tex_size];
     uint32_t x = 0;
     uint32_t y = 0;
-    m_ascii_glyph[size] = Texture::Create(
-        tex_size, tex_size, 1, TextureType::TEX_2D, TextureFormat::ALPHA,
-        TextureFormatType::UBYTE, TextureWrap::BORDER, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_LINEAR, nullptr);
-    for (char32_t ch = 0; ch < NUM_GLYPHS; ++ch) {
-        if (std::iscntrl(ch)) continue;
-
+    auto glyph = Texture::Create(tex_size, tex_size, 1, TextureType::TEX_2D,
+                                 TextureFormat::ALPHA, TextureFormatType::UBYTE,
+                                 TextureWrap::BORDER, TextureFilter::LINEAR,
+                                 TextureMipmapFilter::LINEAR_LINEAR, nullptr);
+    for (char32_t ch = start; ch < end; ++ch) {
         if (FT_Load_Char(m_face, ch,
                          FT_LOAD_RENDER | FT_LOAD_FORCE_AUTOHINT |
                              FT_LOAD_TARGET_LIGHT)) {
-            SD_CORE_WARN("[Font::LoadASCIIGlyph] Failed to load character!");
+            SD_CORE_WARN("[Font::LoadGlpyph] Failed to load character!");
             continue;
         }
-        FT_Bitmap *bmp = &m_face->glyph->bitmap;
 
+        FT_Bitmap *bmp = &m_face->glyph->bitmap;
         if (x + bmp->width >= tex_size) {
             x = 0;
-            y += (m_face->size->metrics.height >> 6) + 1;
+            y += HEIGHT + 1;
         }
 
         for (uint32_t row = 0; row < bmp->rows; ++row) {
-            std::copy(bmp->buffer + row * bmp->width,
-                      bmp->buffer + (row + 1) * bmp->width,
+            std::copy(bmp->buffer + row * bmp->pitch,
+                      bmp->buffer + (row + 1) * bmp->pitch,
                       pixels + (y + row) * tex_size + x);
         }
 
@@ -69,12 +94,13 @@ void Font::LoadASCIIGlyph(uint8_t size) {
                                   static_cast<float>(y) / tex_size);
         c.texCoord[3] = glm::vec2(static_cast<float>(x) / tex_size,
                                   static_cast<float>(y) / tex_size);
-        c.texture = m_ascii_glyph[size];
+        c.texture = glyph;
 
         x += bmp->width + 1;
     }
-    m_ascii_glyph[size]->SetPixels(tex_size, tex_size, pixels);
+    glyph->SetPixels(tex_size, tex_size, pixels);
     delete[] pixels;
+    return glyph;
 }
 
 }  // namespace SD
