@@ -1,6 +1,6 @@
 #include "Graphics/OpenGL/GLFramebuffer.hpp"
-#include "Graphics/OpenGL/GLTexture.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
+#include "Graphics/Texture.hpp"
 
 namespace SD {
 
@@ -11,32 +11,26 @@ GLFramebuffer::GLFramebuffer() : m_id(0), m_textureCnt(0) {
 GLFramebuffer::~GLFramebuffer() { glDeleteFramebuffers(1, &m_id); }
 
 bool GLFramebuffer::AttachTexture(const Ref<Texture> &texture) {
-    Ref<GLTexture> glTexture = std::static_pointer_cast<GLTexture>(texture);
     bool isColor = false;
-    if (glTexture) {
-        GLenum attachment = 0;
-        switch (glTexture->GetFormat()) {
-            case TextureFormat::DEPTH:
-                attachment = GL_DEPTH_ATTACHMENT;
-                break;
-            case TextureFormat::DEPTH_STENCIL:
-                attachment = GL_DEPTH_STENCIL_ATTACHMENT;
-                break;
-            case TextureFormat::ALPHA:
-            case TextureFormat::RED:
-            case TextureFormat::RG:
-            case TextureFormat::RGB:
-            case TextureFormat::RGBA:
-                isColor = true;
-                attachment = GL_COLOR_ATTACHMENT0 + m_textureCnt++;
-                break;
-        }
-        m_attachments.emplace_back(attachment, glTexture);
-        glNamedFramebufferTexture(m_id, attachment, glTexture->GetId(), 0);
-
-    } else {
-        SD_CORE_ERROR("Mismatched API!");
+    GLenum attachment = 0;
+    switch (texture->GetFormat()) {
+        case TextureFormat::DEPTH:
+            attachment = GL_DEPTH_ATTACHMENT;
+            break;
+        case TextureFormat::DEPTH_STENCIL:
+            attachment = GL_DEPTH_STENCIL_ATTACHMENT;
+            break;
+        case TextureFormat::ALPHA:
+        case TextureFormat::RED:
+        case TextureFormat::RG:
+        case TextureFormat::RGB:
+        case TextureFormat::RGBA:
+            isColor = true;
+            attachment = GL_COLOR_ATTACHMENT0 + m_textureCnt++;
+            break;
     }
+    m_attachments.emplace_back(attachment, texture);
+    glNamedFramebufferTexture(m_id, attachment, texture->GetId(), 0);
 
     return isColor;
 }
@@ -67,8 +61,8 @@ void GLFramebuffer::Bind() { glBindFramebuffer(GL_FRAMEBUFFER, m_id); }
 void GLFramebuffer::ReadPixels(uint32_t attachmentId, int level, int x, int y,
                                int z, int w, int h, int d, size_t size,
                                void *data) const {
-    auto glTexture = m_attachments.at(attachmentId).second;
-    glTexture->ReadPixels(level, x, y, z, w, h, d, size, data);
+    auto texture = m_attachments.at(attachmentId).second;
+    texture->ReadPixels(level, x, y, z, w, h, d, size, data);
 }
 
 void GLFramebuffer::ClearDepth(const float depth) {

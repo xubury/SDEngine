@@ -41,7 +41,7 @@ class GLFramebuffer : public Framebuffer {
    private:
     GLuint m_id;
     uint32_t m_textureCnt;
-    std::vector<std::pair<GLenum, Ref<GLTexture>>> m_attachments;
+    std::vector<std::pair<GLenum, Ref<Texture>>> m_attachments;
 };
 
 }  // namespace SD

@@ -26,7 +26,7 @@ GLTexture::GLTexture(int width, int height, int samples, TextureType type,
         glTextureParameteriv(gl_id, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
     }
 
-    SetPixels(m_width, m_height, data);
+    SetPixels(m_width, m_height, data, 0);
     if (m_type != TextureType::TEX_2D_MULTISAMPLE) {
         SetWrap(m_wrap);
         SetFilter(m_filter);
@@ -45,7 +45,8 @@ void GLTexture::Unbind() const { glBindTexture(gl_type, 0); }
 
 void GLTexture::SetSlot(uint32_t slot) const { glBindTextureUnit(slot, gl_id); }
 
-void GLTexture::SetPixels(int width, int height, const void *data) {
+void GLTexture::SetPixels(int width, int height, const void *data,
+                          uint8_t face) {
     m_width = width;
     m_height = height;
 
@@ -70,11 +71,9 @@ void GLTexture::SetPixels(int width, int height, const void *data) {
                          gl_format, gl_formatType, data);
             break;
         case TextureType::TEX_CUBE:
-            for (uint8_t i = 0; i < 6; i++) {
-                GLenum glFace = GL_TEXTURE_CUBE_MAP_POSITIVE_X + i;
-                glTexImage2D(glFace, 0, gl_iFormat, m_width, m_height, 0,
-                             gl_format, gl_formatType, data);
-            }
+            GLenum glFace = GL_TEXTURE_CUBE_MAP_POSITIVE_X + face;
+            glTexImage2D(glFace, 0, gl_iFormat, m_width, m_height, 0, gl_format,
+                         gl_formatType, data);
             break;
     }
     Unbind();
