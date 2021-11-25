@@ -110,21 +110,8 @@ void EditorLayer::OnRender() {
 }
 
 void EditorLayer::OnTick(float dt) {
-    auto [mouseX, mouseY] = ImGui::GetMousePos();
-    mouseX -= m_viewport_bounds[0].x;
-    mouseY -= m_viewport_bounds[0].y;
-    glm::vec2 viewportSize = m_viewport_bounds[1] - m_viewport_bounds[0];
-    if (!ImGuizmo::IsUsing() && !m_hide && ImGui::IsMouseDown(0) &&
-        m_is_viewport_hovered) {
-        entt::entity entity = Entity::INVALID_ID;
-        m_debug_gbuffer->ReadPixels(GeometryBufferType::G_ENTITY_ID, 0, mouseX,
-                                    viewportSize.y - mouseY, 0, 1, 1, 1,
-                                    sizeof(entity), &entity);
-        if (entity != Entity::INVALID_ID) {
-            m_scene_panel.SetSelectedEntity({entity, m_scene.get()});
-        }
-    }
-    Entity entity = m_scene_panel.GetSelectedEntity();
+    Entity &entity = m_scene_panel.GetSelectedEntity();
+
     if (entity) {
         glm::vec3 pos = entity.GetComponent<TransformComponent>()
                             .transform.GetWorldPosition();
@@ -244,7 +231,8 @@ void EditorLayer::OnImGui() {
     {
         ImVec2 wsize = ImGui::GetContentRegionAvail();
         for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
-            ImGui::DrawTexture(*m_debug_gbuffer->GetTexture(i), wsize);
+            ImGui::DrawTexture(*m_debug_gbuffer->GetTexture(i), wsize,
+                               ImVec2(0, 1), ImVec2(1, 0));
         }
     }
     ImGui::End();
@@ -275,19 +263,20 @@ void EditorLayer::OnImGui() {
         }
         m_is_viewport_focused = ImGui::IsWindowFocused();
         m_is_viewport_hovered = ImGui::IsWindowHovered();
-        ImGui::DrawTexture(*m_screen_buffer->GetTexture(), wsize);
-
-        Entity selectedEntity = m_scene_panel.GetSelectedEntity();
-        if (selectedEntity) {
-            ImGuizmo::SetOrthographic(false);
-            ImGuizmo::SetDrawlist();
-            ImGuizmo::SetRect(m_viewport_bounds[0].x, m_viewport_bounds[0].y,
-                              m_viewport_bounds[1].x - m_viewport_bounds[0].x,
-                              m_viewport_bounds[1].y - m_viewport_bounds[0].y);
+        ImGui::DrawTexture(*m_screen_buffer->GetTexture(), wsize, ImVec2(0, 1),
+                           ImVec2(1, 0));
+        ImGuizmo::SetOrthographic(m_editor_camera.GetCameraType() ==
+                                  CameraType::ORTHOGRAPHIC);
+        ImGuizmo::SetRect(m_viewport_bounds[0].x, m_viewport_bounds[0].y,
+                          m_viewport_bounds[1].x - m_viewport_bounds[0].x,
+                          m_viewport_bounds[1].y - m_viewport_bounds[0].y);
+        ImGuizmo::SetDrawlist();
+        Entity &entity = m_scene_panel.GetSelectedEntity();
+        if (entity) {
             const glm::mat4 &view = m_editor_camera.GetView();
             const glm::mat4 &projection = m_editor_camera.GetProjection();
 
-            auto &tc = selectedEntity.GetComponent<TransformComponent>();
+            auto &tc = entity.GetComponent<TransformComponent>();
             glm::mat4 transform = tc.transform.GetWorldTransform();
             if (ImGuizmo::Manipulate(
                     glm::value_ptr(view), glm::value_ptr(projection),
@@ -295,6 +284,20 @@ void EditorLayer::OnImGui() {
                     m_scene_panel.GetGizmoMode(), glm::value_ptr(transform),
                     nullptr, nullptr)) {
                 tc.transform.SetWorldTransform(transform);
+            }
+        }
+        auto [mouseX, mouseY] = ImGui::GetMousePos();
+        mouseX -= m_viewport_bounds[0].x;
+        mouseY -= m_viewport_bounds[0].y;
+        glm::vec2 viewportSize = m_viewport_bounds[1] - m_viewport_bounds[0];
+        if (!ImGuizmo::IsUsing() && !m_hide && ImGui::IsMouseDown(0) &&
+            m_is_viewport_hovered) {
+            entt::entity entity = Entity::INVALID_ID;
+            m_debug_gbuffer->ReadPixels(GeometryBufferType::G_ENTITY_ID, 0,
+                                        mouseX, viewportSize.y - mouseY, 0, 1,
+                                        1, 1, sizeof(entity), &entity);
+            if (entity != Entity::INVALID_ID) {
+                m_scene_panel.SetSelectedEntity({entity, m_scene.get()});
             }
         }
     }

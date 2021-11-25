@@ -20,7 +20,8 @@ class ScenePanel {
 
     void SetSelectedEntity(Entity entity);
 
-    Entity GetSelectedEntity() const;
+    const Entity &GetSelectedEntity() const;
+    Entity &GetSelectedEntity();
 
     void OnImGui();
 

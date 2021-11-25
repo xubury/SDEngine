@@ -103,7 +103,11 @@ void ImGuiLayer::OnEventProcess(const Event& event) {
             io.KeyShift = event.key.mod == Keymod::SHIFT;
             io.KeyCtrl = event.key.mod == Keymod::CTRL;
             io.KeyAlt = event.key.mod == Keymod::ALT;
+#if defined(SD_PLATFORM_WINDOWS)
+            io.KeySuper = false;
+#else
             io.KeySuper = event.key.mod == Keymod::GUI;
+#endif
         } break;
         case EventType::MOUSE_MOTION: {
             io.MousePos.x = static_cast<float>(event.mouse_motion.x);
@@ -112,21 +116,15 @@ void ImGuiLayer::OnEventProcess(const Event& event) {
         case EventType::MOUSE_BUTTON_PRESSED: {
             int button = static_cast<int>(event.mouse_button.button) -
                          static_cast<int>(MouseButton::LEFT);
-            if (io.WantCaptureMouse) {
-                io.MouseDown[button] = true;
-            }
+            io.MouseDown[button] = true;
         } break;
         case EventType::MOUSE_BUTTON_RELEASED: {
             int button = static_cast<int>(event.mouse_button.button) -
                          static_cast<int>(MouseButton::LEFT);
-            if (io.WantCaptureMouse) {
-                io.MouseDown[button] = false;
-            }
+            io.MouseDown[button] = false;
         } break;
         case EventType::MOUSE_WHEEL_SCROLLED: {
-            if (io.WantCaptureMouse) {
-                io.MouseWheel += event.mouse_wheel.y;
-            }
+            io.MouseWheel += event.mouse_wheel.y;
         } break;
     }
 }

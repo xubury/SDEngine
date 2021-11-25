@@ -126,6 +126,13 @@ class SD_API AssetManager {
             m_resources.at(id).GetResource());
     }
 
+    std::string GetAssetPath(ResourceId id) {
+        if (m_resources.count(id) == 0) {
+            return "";
+        }
+        return m_resources.at(id).GetPath();
+    }
+
     template <typename ASSET>
     Ref<ASSET> LoadAndGet(const std::filesystem::path &path) {
         auto id = LoadAsset<ASSET>(path);

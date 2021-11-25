@@ -31,7 +31,9 @@ void ScenePanel::SetSelectedEntity(Entity entity) {
     m_selected_entity = entity;
 }
 
-Entity ScenePanel::GetSelectedEntity() const { return m_selected_entity; }
+const Entity &ScenePanel::GetSelectedEntity() const { return m_selected_entity; }
+
+Entity &ScenePanel::GetSelectedEntity() { return m_selected_entity; }
 
 ImGuizmo::MODE ScenePanel::GetGizmoMode() const { return m_gizmo_mode; }
 
@@ -303,7 +305,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
     DrawComponent<ModelComponent>("Model", entity, [&](ModelComponent &mc) {
         static bool fileDialogOpen = false;
         static ImFileDialogInfo fileDialogInfo;
-        std::string path = fileDialogInfo.result_path.string();
+        std::string path = asset->GetAssetPath(mc.id);
         ImGui::InputText("##Path", path.data(), path.size(),
                          ImGuiInputTextFlags_ReadOnly);
         ImGui::SameLine();
@@ -312,7 +314,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
             fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
             fileDialogInfo.title = "Open File";
             fileDialogInfo.file_name = "";
-            fileDialogInfo.directory_path = std::filesystem::current_path();
+            fileDialogInfo.directory_path = asset->GetRootPath();
         }
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
             mc.id = asset->LoadAsset<Model>(fileDialogInfo.result_path);
@@ -394,7 +396,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
         // TODO: Can ImGui support UTF-16?
         static bool fileDialogOpen = false;
         static ImFileDialogInfo fileDialogInfo;
-        std::string path = fileDialogInfo.result_path.string();
+        std::string path = asset->GetAssetPath(textComp.id);
         ImGui::Text("Font File:");
         ImGui::InputText("##Path", path.data(), path.size(),
                          ImGuiInputTextFlags_ReadOnly);
@@ -404,13 +406,12 @@ void ScenePanel::DrawComponents(Entity &entity) {
             fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
             fileDialogInfo.title = "Open File";
             fileDialogInfo.file_name = "";
-            fileDialogInfo.directory_path = std::filesystem::current_path();
+            fileDialogInfo.directory_path = asset->GetRootPath();
         }
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
             textComp.id = asset->LoadAsset<Font>(fileDialogInfo.result_path);
         }
         ImGui::Text("Text Content:");
-        // FIXME: chinese character has bug
         static char buffer[256];
         if (ImGui::InputText("##TextEdit", buffer, sizeof(buffer))) {
             textComp.text = buffer;
