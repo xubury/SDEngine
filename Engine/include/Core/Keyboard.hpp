@@ -666,7 +666,7 @@ Keycode SD_API GetKeycodeFromScancode(Scancode scancode);
 Scancode SD_API GetScancodeFromKeycode(Keycode keycode);
 
 inline bool IsKeyModActive(uint16_t src, uint16_t dst) {
-    return src & dst;
+    return (src & dst) == dst;
 }
 
 }  // namespace SD

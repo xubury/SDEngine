@@ -343,7 +343,7 @@ void EditorLayer::OnEventProcess(const Event &event) {
                 if (IsKeyModActive(event.key.mod,
                                    (Keymod::LCTRL | Keymod::LSHIFT))) {
                     SaveScene();
-                } else {
+                } else if (IsKeyModActive(event.key.mod, Keymod::LSHIFT)) {
                     m_scene_panel.SetGizmoOperation(ImGuizmo::SCALE);
                 }
             } break;
@@ -361,10 +361,14 @@ void EditorLayer::OnEventProcess(const Event &event) {
                 GetApp().Quit();
             } break;
             case Keycode::T: {
-                m_scene_panel.SetGizmoOperation(ImGuizmo::TRANSLATE);
+                if (IsKeyModActive(event.key.mod, Keymod::LSHIFT)) {
+                    m_scene_panel.SetGizmoOperation(ImGuizmo::TRANSLATE);
+                }
             } break;
             case Keycode::R: {
-                m_scene_panel.SetGizmoOperation(ImGuizmo::ROTATE);
+                if (IsKeyModActive(event.key.mod, Keymod::LSHIFT)) {
+                    m_scene_panel.SetGizmoOperation(ImGuizmo::ROTATE);
+                }
             } break;
         }
     }
