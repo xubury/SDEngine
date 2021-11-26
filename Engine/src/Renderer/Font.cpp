@@ -45,8 +45,7 @@ void Font::LoadGlyph(uint8_t size) {
     m_font_atlas.emplace(size);
 }
 
-void Font::LoadRangedGlyph(uint8_t size, char32_t start,
-                                    char32_t end) {
+void Font::LoadRangedGlyph(uint8_t size, char32_t start, char32_t end) {
     const int64_t NUM_GLYPHS = end - start;
     if (NUM_GLYPHS < 0) return;
 
@@ -89,15 +88,13 @@ void Font::LoadRangedGlyph(uint8_t size, char32_t start,
         c.size = glm::ivec2(bmp->width, bmp->rows);
         c.advance = m_face->glyph->advance.x >> 6;
 
-        c.texCoord[0] = glm::vec2(static_cast<float>(x) / tex_size,
-                                  static_cast<float>(y + bmp->rows) / tex_size);
-        c.texCoord[1] = glm::vec2(static_cast<float>(x + bmp->width) / tex_size,
-                                  static_cast<float>(y + bmp->rows) / tex_size);
-        c.texCoord[2] = glm::vec2(static_cast<float>(x + bmp->width) / tex_size,
-                                  static_cast<float>(y) / tex_size);
-        c.texCoord[3] = glm::vec2(static_cast<float>(x) / tex_size,
-                                  static_cast<float>(y) / tex_size);
-        c.texture = glyph;
+        c.texCoords[0] =
+            glm::vec2(static_cast<float>(x) / tex_size,
+                      static_cast<float>(y + bmp->rows) / tex_size);
+        c.texCoords[1] =
+            glm::vec2(static_cast<float>(x + bmp->width) / tex_size,
+                      static_cast<float>(y) / tex_size);
+        c.glyph = glyph;
 
         x += bmp->width + 1;
     }

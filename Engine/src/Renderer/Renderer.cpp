@@ -58,9 +58,7 @@ void Renderer::InitRenderer2D(AssetManager* manager) {
     m_2d_data.quadVertexPositions[3] = {-0.5f, 0.5f, 0.0f, 1.0f};
 
     m_2d_data.quadTexCoords[0] = {0.0f, 1.0f};
-    m_2d_data.quadTexCoords[1] = {1.0f, 1.0f};
-    m_2d_data.quadTexCoords[2] = {1.0f, 0.0f};
-    m_2d_data.quadTexCoords[3] = {0.0f, 0.0f};
+    m_2d_data.quadTexCoords[1] = {1.0f, 0.0f};
 
     const float color[4] = {1, 1, 1, 1};
     m_2d_data.textureSlots[0] = Texture::Create(
@@ -180,7 +178,7 @@ void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color) {
 
 void Renderer::DrawTexture(const Ref<Texture>& texture,
                            const glm::mat4& transform,
-                           const std::array<glm::vec2, 4>& texCoords,
+                           const std::array<glm::vec2, 2>& texCoords,
                            const glm::vec4& color) {
     if (m_2d_data.quadIndexCnt >= Renderer2DData::MAX_INDICES) {
         NextBatch();
@@ -206,7 +204,10 @@ void Renderer::DrawTexture(const Ref<Texture>& texture,
         m_2d_data.quadVertexBufferPtr->vertices[i].position =
             transform * m_2d_data.quadVertexPositions[i];
         m_2d_data.quadVertexBufferPtr->vertices[i].color = color;
-        m_2d_data.quadVertexBufferPtr->vertices[i].texCoord = texCoords[i];
+        m_2d_data.quadVertexBufferPtr->vertices[i].texCoord.x =
+            texCoords[i == 1 || i == 2].x;
+        m_2d_data.quadVertexBufferPtr->vertices[i].texCoord.y =
+            texCoords[i >= 2].y;
         m_2d_data.quadVertexBufferPtr->vertices[i].texIndex = textureIndex;
     }
     ++m_2d_data.quadVertexBufferPtr;
@@ -252,7 +253,7 @@ void Renderer::DrawText(Font& font, const std::string& text, uint8_t pixelSize,
                     m_2d_data.textCursor.y + ch.bearing.y - ch.size.y * 0.5f,
                     0)) *
             glm::scale(glm::mat4(1.0f), glm::vec3(ch.size.x, ch.size.y, 1.0f));
-        DrawTexture(ch.texture, t * offset, ch.texCoord, color);
+        DrawTexture(ch.glyph, t * offset, ch.texCoords, color);
         m_2d_data.textCursor.x += ch.advance;
     }
 }

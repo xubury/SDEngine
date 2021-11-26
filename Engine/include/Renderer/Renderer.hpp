@@ -52,7 +52,7 @@ struct Renderer2DData {
     Quad *quadVertexBufferPtr = nullptr;
 
     std::array<glm::vec4, 4> quadVertexPositions;
-    std::array<glm::vec2, 4> quadTexCoords;
+    std::array<glm::vec2, 2> quadTexCoords;
 
     uint32_t textureSlotIndex = 1;
     std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> textureSlots;
@@ -91,7 +91,7 @@ class SD_API Renderer {
     void DrawQuad(const glm::mat4 &transform, const glm::vec4 &color);
 
     void DrawTexture(const Ref<Texture> &texture, const glm::mat4 &transform,
-                     const std::array<glm::vec2, 4> &texCoords,
+                     const std::array<glm::vec2, 2> &texCoords,
                      const glm::vec4 &color = glm::vec4(1.0f));
     void DrawTexture(const Ref<Texture> &texture, const glm::mat4 &transform,
                      const glm::vec4 &color = glm::vec4(1.0f));

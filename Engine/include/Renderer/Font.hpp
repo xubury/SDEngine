@@ -13,8 +13,8 @@ namespace SD {
 
 struct SD_API Character {
     Character() = default;
-    Ref<Texture> texture;
-    std::array<glm::vec2, 4> texCoord;
+    Ref<Texture> glyph;
+    std::array<glm::vec2, 2> texCoords;
     glm::ivec2 size;
     glm::ivec2 bearing;
     uint32_t advance;
