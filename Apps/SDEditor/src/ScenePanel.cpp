@@ -383,14 +383,14 @@ void ScenePanel::DrawComponents(Entity &entity) {
                                        0.1f)) {
                     light.SetQuadratic(quadratic);
                 }
-                float cutOff = glm::degrees(light.GetCutOff());
+                float cutOff = glm::degrees(light.GetCutoff());
                 if (ImGui::SliderFloat("cutOff", &cutOff, 0.f, 89.f)) {
-                    light.SetCutOff(glm::radians(cutOff));
+                    light.SetCutoff(glm::radians(cutOff));
                 }
-                float outerCutOff = glm::degrees(light.GetOuterCutOff());
+                float outerCutOff = glm::degrees(light.GetOuterCutoff());
                 if (ImGui::SliderFloat("outerCutOff", &outerCutOff, 1.0f,
                                        90.0f)) {
-                    light.SetOuterCutOff(glm::radians(outerCutOff));
+                    light.SetOuterCutoff(glm::radians(outerCutOff));
                 }
             }
         });

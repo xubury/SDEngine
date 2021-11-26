@@ -28,11 +28,11 @@ class SD_API Light {
     void SetSpecular(const glm::vec3 &specular);
     const glm::vec3 &GetSpecular() const;
 
-    void SetCutOff(float cutOff);
-    float GetCutOff() const;
+    void SetCutoff(float cutOff);
+    float GetCutoff() const;
 
-    void SetOuterCutOff(float outerCutOff);
-    float GetOuterCutOff() const;
+    void SetOuterCutoff(float outer_cutoff);
+    float GetOuterCutoff() const;
 
     void SetConstant(float constant);
     float GetConstant() const;
@@ -46,38 +46,38 @@ class SD_API Light {
     void CreateShadowMap();
     void DestroyShadowMap();
 
-    const glm::mat4 &GetProjectionView() const { return m_projectionView; }
+    const glm::mat4 &GetProjectionView() const { return m_projection_view; }
 
     void ComputeLightSpaceMatrix(const Transform &transform,
                                  const Camera *camera);
 
     Texture *GetShadowMap() const;
 
-    RenderTarget &GetRenderTarget() { return m_shadowTarget; };
+    RenderTarget &GetRenderTarget() { return m_shadow_target; };
 
-    SERIALIZE(m_ambient, m_diffuse, m_specular, m_cutOff, m_outerCutOff,
-              m_constant, m_linear, m_quadratic, m_isDirectional,
-              m_isCastShadow)
+    SERIALIZE(m_ambient, m_diffuse, m_specular, m_cutoff, m_outer_cutoff,
+              m_constant, m_linear, m_quadratic, m_is_directional,
+              m_is_cast_shadow)
 
    private:
     static void ComputeBoundingBox(const Transform &transform,
                                    const Camera &camera, glm::vec3 &min,
                                    glm::vec3 &max);
-    RenderTarget m_shadowTarget;
-    glm::mat4 m_projectionView;
+    RenderTarget m_shadow_target;
+    glm::mat4 m_projection_view;
 
-    bool m_isCastShadow;
-    bool m_isDirectional;
+    bool m_is_cast_shadow;
+    bool m_is_directional;
 
     glm::vec3 m_ambient;
     glm::vec3 m_diffuse;
     glm::vec3 m_specular;
 
-    float m_cutOff = 25.f;
-    float m_outerCutOff = 35.f;
-    float m_constant = 1.0f;
-    float m_linear = 0.09;
-    float m_quadratic = 0.032f;
+    float m_cutoff;
+    float m_outer_cutoff;
+    float m_constant;
+    float m_linear;
+    float m_quadratic;
 };
 
 }  // namespace SD

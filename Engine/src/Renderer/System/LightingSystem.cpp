@@ -183,9 +183,9 @@ void LightingSystem::RenderDeferred() {
         m_deferred_shader->SetVec3("u_light.position",
                                    transform.GetWorldPosition());
         m_deferred_shader->SetFloat("u_light.cutOff",
-                                    glm::cos(light.GetCutOff()));
+                                    glm::cos(light.GetCutoff()));
         m_deferred_shader->SetFloat("u_light.outerCutOff",
-                                    glm::cos(light.GetOuterCutOff()));
+                                    glm::cos(light.GetOuterCutoff()));
         m_deferred_shader->SetFloat("u_light.constant", light.GetConstant());
         m_deferred_shader->SetFloat("u_light.linear", light.GetLinear());
         m_deferred_shader->SetFloat("u_light.quadratic", light.GetQuadratic());
