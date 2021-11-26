@@ -14,7 +14,7 @@
 
 namespace SD {
 
-struct SD_API IDComponent {
+struct SD_API IdComponent {
     ResourceId id;
 
     SERIALIZE(id)
