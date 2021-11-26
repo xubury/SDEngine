@@ -19,6 +19,7 @@ Simple and Direct Engine
 - [X] Ini parser
 - [ ] Profile System
 - [ ] Camera System, how to switch between cameras? like from editor camrea to scene camera?
+- [ ] Log panel
 - [ ] Gui System
 - [ ] Commandline args parser
 - [ ] Get EXE directory for windows
