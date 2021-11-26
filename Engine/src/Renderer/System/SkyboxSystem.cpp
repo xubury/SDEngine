@@ -46,14 +46,14 @@ void SkyboxSystem::OnRender() {
     m_skyboxShader->SetMat4("u_model", glm::translate(glm::mat4(1.0f), pos));
 
     m_skyboxShader->Bind();
-    renderer->GetDevice().SetDepthfunc(DepthFunc::LESS_EQUAL);
-    renderer->GetDevice().SetCullFace(Face::FRONT);
+    Device::instance().SetDepthfunc(DepthFunc::LESS_EQUAL);
+    Device::instance().SetCullFace(Face::FRONT);
 
     renderer->SetRenderTarget(*m_target);
     renderer->Submit(*m_skybox, MeshTopology::TRIANGLES,
                      m_skybox->GetIndexBuffer()->GetCount(), 0);
-    renderer->GetDevice().SetCullFace(Face::BACK);
-    renderer->GetDevice().SetDepthfunc(DepthFunc::LESS);
+    Device::instance().SetCullFace(Face::BACK);
+    Device::instance().SetDepthfunc(DepthFunc::LESS);
 }
 
 }  // namespace SD

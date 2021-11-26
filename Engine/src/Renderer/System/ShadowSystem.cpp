@@ -21,7 +21,7 @@ void ShadowSystem::OnRender() {
     auto lightView = scene->view<TransformComponent, LightComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
-    renderer->GetDevice().SetCullFace(Face::FRONT);
+    Device::instance().SetCullFace(Face::FRONT);
     m_shadowShader->Bind();
     lightView.each([this, &modelView](const TransformComponent &transformComp,
                                       LightComponent &lightComp) {
@@ -46,7 +46,7 @@ void ShadowSystem::OnRender() {
             }
         });
     });
-    renderer->GetDevice().SetCullFace(Face::BACK);
+    Device::instance().SetCullFace(Face::BACK);
 }
 
 }  // namespace SD

@@ -11,11 +11,10 @@ Renderer::Renderer(AssetManager* manager, int msaa) {
     m_cameraUBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
                                         BufferIOType::DYNAMIC);
 
-    m_device = Device::Create();
     if (msaa > 1) {
-        m_device->Enable(Operation::MULTISAMPLE);
+        Device::instance().Enable(Operation::MULTISAMPLE);
     } else {
-        m_device->Disable(Operation::MULTISAMPLE);
+        Device::instance().Disable(Operation::MULTISAMPLE);
     }
     InitRenderer2D(manager);
 }
@@ -70,9 +69,9 @@ void Renderer::InitRenderer2D(AssetManager* manager) {
 }
 
 void Renderer::SetRenderTarget(RenderTarget& target) {
-    m_device->SetFramebuffer(target.GetFramebuffer());
-    m_device->SetViewport(target.GetX(), target.GetY(), target.GetWidth(),
-                          target.GetHeight());
+    Device::instance().SetFramebuffer(target.GetFramebuffer());
+    Device::instance().SetViewport(target.GetX(), target.GetY(),
+                                   target.GetWidth(), target.GetHeight());
 }
 
 void Renderer::UpdateShader(Shader& shader, Camera& camera) {
@@ -94,11 +93,11 @@ Camera* Renderer::GetCamera() { return m_camera; }
 void Renderer::Submit(const VertexArray& vao, MeshTopology topology,
                       size_t count, size_t offset) {
     vao.Bind();
-    m_device->DrawElements(topology, count, offset);
+    Device::instance().DrawElements(topology, count, offset);
 }
 
 void Renderer::DrawMesh(const Mesh& mesh) {
-    m_device->SetPolygonMode(mesh.GetPolygonMode(), Face::BOTH);
+    Device::instance().SetPolygonMode(mesh.GetPolygonMode(), Face::BOTH);
     VertexArray* vao = mesh.GetVertexArray();
     SD_CORE_ASSERT(vao, "Invalid mesh!");
     Renderer::Submit(*vao, mesh.GetTopology(),

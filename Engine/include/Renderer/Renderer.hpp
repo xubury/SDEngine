@@ -68,8 +68,6 @@ class SD_API Renderer {
     Renderer(const Renderer &) = delete;
     Renderer &operator=(const Renderer &) = delete;
 
-    Device &GetDevice() { return *m_device; }
-
     void SetRenderTarget(RenderTarget &target);
 
     void UpdateShader(Shader &shader, Camera &camera);
@@ -117,8 +115,6 @@ class SD_API Renderer {
     Camera *m_camera;
 
     Ref<UniformBuffer> m_cameraUBO;
-
-    Ref<Device> m_device;
 
     Renderer2DData m_2d_data;
 };

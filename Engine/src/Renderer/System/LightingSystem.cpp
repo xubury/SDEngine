@@ -112,27 +112,27 @@ void LightingSystem::OnRender() {
 
     Clear();
     RenderGBuffer();
-    renderer->GetDevice().SetDepthMask(false);
+    Device::instance().SetDepthMask(false);
     RenderDeferred();
     RenderEmissive();
-    renderer->GetDevice().SetDepthMask(true);
+    Device::instance().SetDepthMask(true);
 
-    renderer->GetDevice().BlitFramebuffer(
+    Device::instance().BlitFramebuffer(
         m_gbuffer_target.GetFramebuffer(), 0, m_target->GetFramebuffer(), 0,
         BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
 }
 
 void LightingSystem::Clear() {
-    renderer->GetDevice().ResetShaderState();
+    Device::instance().ResetShaderState();
     // clear the last lighting pass' result
     for (int i = 0; i < 2; ++i) {
-        renderer->GetDevice().SetFramebuffer(m_light_target[i].GetFramebuffer());
-        renderer->GetDevice().Clear(BufferBitMask::COLOR_BUFFER_BIT);
+        Device::instance().SetFramebuffer(m_light_target[i].GetFramebuffer());
+        Device::instance().Clear(BufferBitMask::COLOR_BUFFER_BIT);
     }
 
-    renderer->GetDevice().SetFramebuffer(m_gbuffer_target.GetFramebuffer());
-    renderer->GetDevice().Clear(BufferBitMask::COLOR_BUFFER_BIT |
-                                BufferBitMask::DEPTH_BUFFER_BIT);
+    Device::instance().SetFramebuffer(m_gbuffer_target.GetFramebuffer());
+    Device::instance().Clear(BufferBitMask::COLOR_BUFFER_BIT |
+                             BufferBitMask::DEPTH_BUFFER_BIT);
     uint32_t id = static_cast<uint32_t>(Entity::INVALID_ID);
     m_gbuffer_target.GetFramebuffer()->ClearAttachment(
         GeometryBufferType::G_ENTITY_ID, &id);
@@ -210,7 +210,7 @@ void LightingSystem::RenderGBuffer() {
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
     renderer->SetRenderTarget(m_gbuffer_target);
-    renderer->GetDevice().Disable(Operation::BLEND);
+    Device::instance().Disable(Operation::BLEND);
 
     renderer->UpdateShader(*m_gbuffer_shader, *renderer->GetCamera());
 
@@ -261,7 +261,7 @@ void LightingSystem::RenderGBuffer() {
             }
         }
     });
-    renderer->GetDevice().Enable(Operation::BLEND);
+    Device::instance().Enable(Operation::BLEND);
 }
 
 }  // namespace SD

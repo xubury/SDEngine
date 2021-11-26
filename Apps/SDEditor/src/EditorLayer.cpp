@@ -90,14 +90,14 @@ void EditorLayer::OnPop() {
 
 void EditorLayer::OnRender() {
     renderer->SetRenderTarget(m_target);
-    renderer->GetDevice().Clear();
+    Device::instance().Clear();
     for (auto &system : GetSystems()) {
         system->OnRender();
     }
 
     if (m_hide) return;
 
-    renderer->GetDevice().Disable(Operation::DEPTH_TEST);
+    Device::instance().Disable(Operation::DEPTH_TEST);
     renderer->BeginScene(m_editor_camera);
     auto lightView = m_scene->view<LightComponent, TransformComponent>();
     lightView.each(
@@ -108,7 +108,7 @@ void EditorLayer::OnRender() {
             renderer->DrawBillboard(m_light_icon, pos, glm::vec2(scale));
         });
     renderer->EndScene();
-    renderer->GetDevice().Enable(Operation::DEPTH_TEST);
+    Device::instance().Enable(Operation::DEPTH_TEST);
 }
 
 void EditorLayer::OnTick(float dt) {
@@ -126,11 +126,11 @@ void EditorLayer::OnImGui() {
     if (m_hide) {
         return;
     }
-    renderer->GetDevice().BlitFramebuffer(
+    Device::instance().BlitFramebuffer(
         m_target.GetFramebuffer(), 0, m_screen_buffer.get(), 0,
         BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-        renderer->GetDevice().BlitFramebuffer(
+        Device::instance().BlitFramebuffer(
             m_lighting_system->GetGBuffer(), i, m_debug_gbuffer.get(), i,
             BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
     }

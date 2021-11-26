@@ -12,6 +12,11 @@ class SD_API Device {
    public:
     static Ref<Device> Create();
 
+    static Device &instance() {
+        static Ref<Device> s_instance = Device::Create();
+        return *s_instance;
+    }
+
     virtual ~Device() = default;
 
     Device(const Device &) = delete;
