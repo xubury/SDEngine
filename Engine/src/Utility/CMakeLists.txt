@@ -69,7 +69,9 @@ target_include_directories(sd-utility
 
 target_link_libraries(sd-utility
     PUBLIC
-    spdlog::spdlog glm)
+    spdlog::spdlog 
+    glm 
+    cereal)
 
 install(TARGETS sd-utility LIBRARY DESTINATION lib)
 

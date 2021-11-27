@@ -1,5 +1,5 @@
 find_package(assimp REQUIRED)
-find_package(SDL2_image REQUIRED)
+pkg_search_module(SDL2IMAGE REQUIRED SDL2_image)
 find_package(Freetype REQUIRED)
 
 set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Asset)
@@ -13,8 +13,6 @@ set(Asset_Include
     ${Include_Root}/ShaderLoader.hpp
     ${Include_Root}/ModelLoader.hpp)
 
-
-
 set(Asset_Src
     ${Src_Root}/Asset.cpp
     ${Src_Root}/FontLoader.cpp
@@ -22,7 +20,6 @@ set(Asset_Src
     ${Src_Root}/ImageLoader.cpp
     ${Src_Root}/ShaderLoader.cpp
     ${Src_Root}/ModelLoader.cpp)
-
 
 add_library(sd-asset ${Asset_Src})
 
@@ -36,22 +33,16 @@ endif()
 
 target_include_directories(sd-asset
     PUBLIC
+    ${SDL2IMAGE_INCLUDE_DIRS}
     ${SD_ENGINE_SOURCE_DIR}/include)
-
-target_link_directories(sd-asset PRIVATE ${ASSIMP_LIBRARY_DIRS})
 
 target_link_libraries(sd-asset
     PUBLIC
     sd-utility
     PRIVATE
+    assimp::assimp
     Freetype::Freetype
-    SDL2::Image)
-if(WIN32)
-    target_link_libraries(sd-asset PRIVATE assimp::assimp)
-else()
-    target_link_libraries(sd-asset PRIVATE ${ASSIMP_LIBRARIES})
-    target_link_directories(sd-asset PRIVATE ${ASSIMP_LIBRARY_DIRS})
-endif()
+    ${SDL2IMAGE_LIBRARIES})
 
 install(TARGETS sd-asset LIBRARY DESTINATION lib)
 

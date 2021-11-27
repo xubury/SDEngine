@@ -1,5 +1,5 @@
 find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
+pkg_search_module(SDL2IMAGE REQUIRED SDL2_image)
 
 set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Core)
 set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Core)
@@ -47,11 +47,12 @@ target_link_libraries(sd-core
     sd-imgui
     sd-input
     INTERFACE
-    SDL2::Main
-    SDL2::Image)
+    SDL2::SDL2
+    ${SDL2IMAGE_LIBRARIES})
 
 target_include_directories(sd-core
     PUBLIC
+    ${SDL2IMAGE_INCLUDE_DIRS}
     ${SD_ENGINE_SOURCE_DIR}/include)
 
 install(TARGETS sd-core LIBRARY DESTINATION lib)
