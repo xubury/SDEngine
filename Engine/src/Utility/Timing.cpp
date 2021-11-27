@@ -32,7 +32,7 @@ float FpsCounter::GetFPS() {
         m_queue.pop_front();
     }
 
-    return std::accumulate(m_queue.begin(), m_queue.end(), 0.f) / m_capacity;
+    return std::accumulate(m_queue.begin(), m_queue.end(), 0.f) / m_queue.size();
 }
 
 }  // namespace SD
