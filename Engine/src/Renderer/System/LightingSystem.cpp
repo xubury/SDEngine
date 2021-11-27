@@ -60,8 +60,8 @@ LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
     auto indexBuffer = IndexBuffer::Create(indices, 6, BufferIOType::STATIC);
     m_quad = VertexArray::Create();
     VertexBufferLayout layout;
-    layout.Push(BufferDataType::FLOAT, 3);
-    layout.Push(BufferDataType::FLOAT, 2);
+    layout.Push(BufferDataType::FLOAT3);
+    layout.Push(BufferDataType::FLOAT2);
     m_quad->AddVertexBuffer(buffer, layout);
     m_quad->SetIndexBuffer(indexBuffer);
 }

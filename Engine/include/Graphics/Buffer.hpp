@@ -23,6 +23,8 @@ class SD_API Buffer {
 
     virtual void Unbind() const = 0;
 
+    virtual uint32_t GetId() const = 0;
+
    protected:
     Buffer() = default;
 };

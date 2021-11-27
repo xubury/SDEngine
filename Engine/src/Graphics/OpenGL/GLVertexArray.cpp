@@ -13,10 +13,9 @@ void GLVertexArray::AddVertexBuffer(const Ref<VertexBuffer> &buffer,
                                     const VertexBufferLayout &layout,
                                     int index) {
     size_t offset = 0;
-    auto glbuffer = std::static_pointer_cast<GLVertexBuffer>(buffer);
     uint32_t i = index > 0 ? index : m_vertexBuffers.size();
     for (const auto &element : layout.GetElements()) {
-        glVertexArrayVertexBuffer(m_id, i, glbuffer->GetId(), 0,
+        glVertexArrayVertexBuffer(m_id, i, buffer->GetId(), 0,
                                   layout.GetStride());
         glVertexArrayBindingDivisor(m_id, i, layout.GetInstanceStride());
         glVertexArrayAttribBinding(m_id, i, i);
@@ -38,10 +37,11 @@ void GLVertexArray::AddVertexBuffer(const Ref<VertexBuffer> &buffer,
 
                 break;
         }
-        offset += element.count * GetSizeOfType(element.type);
+        offset += GetBufferDataSize(element.type);
         ++i;
     }
     m_vertexBuffers.push_back(buffer);
+    m_layouts.push_back(layout);
 }
 
 void GLVertexArray::UpdateBuffer(size_t index, const void *data, size_t size,

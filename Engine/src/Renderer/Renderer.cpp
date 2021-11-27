@@ -43,10 +43,10 @@ void Renderer::InitRenderer2D(AssetManager* manager) {
         m_2d_data.quad_buffers.size() * sizeof(Quad), BufferIOType::DYNAMIC);
 
     VertexBufferLayout layout;
-    layout.Push(BufferDataType::FLOAT, 3);  // position
-    layout.Push(BufferDataType::FLOAT, 4);  // color
-    layout.Push(BufferDataType::FLOAT, 2);  // texCoord
-    layout.Push(BufferDataType::FLOAT, 1);  // texIndex
+    layout.Push(BufferDataType::FLOAT3);  // position
+    layout.Push(BufferDataType::FLOAT4);  // color
+    layout.Push(BufferDataType::FLOAT2);  // texCoord
+    layout.Push(BufferDataType::FLOAT);   // texIndex
 
     m_2d_data.quad_vao = VertexArray::Create();
     m_2d_data.quad_vao->AddVertexBuffer(quad_vbo, layout);
