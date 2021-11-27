@@ -17,9 +17,9 @@ class AssetManager;
 struct QuadVertex {
     glm::vec3 position;
     glm::vec4 color;
-    glm::vec2 texCoord;
-    float texIndex;
-    QuadVertex() : position(0.f), color(0.f), texCoord(0.f), texIndex(0.f) {}
+    glm::vec2 uv;
+    float tex_id;
+    QuadVertex() : position(0.f), color(0.f), uv(0.f), tex_id(0.f) {}
 };
 
 struct Quad {
@@ -32,8 +32,8 @@ struct Quad {
 };
 
 struct CameraData {
-    glm::mat4 viewProjection;
-    glm::vec3 viewPos;
+    glm::mat4 view_projection;
+    glm::vec3 view_pos;
 };
 
 struct Renderer2DData {
@@ -42,23 +42,21 @@ struct Renderer2DData {
     static const uint32_t MAX_INDICES = MAX_QUADS * 6;
     static const uint32_t MAX_TEXTURE_SLOTS = 32;
 
-    Ref<VertexArray> quadVAO;
-    Ref<VertexBuffer> quadVBO;
-    Ref<IndexBuffer> quadEBO;
-    Ref<Shader> spriteShader;
+    Ref<VertexArray> quad_vao;
+    Ref<Shader> sprite_shader;
 
-    size_t quadIndexCnt = 0;
-    std::array<Quad, MAX_QUADS> quadVertexBufferBase;
-    Quad *quadVertexBufferPtr = nullptr;
+    size_t quad_index_cnt = 0;
+    std::array<Quad, MAX_QUADS> quad_buffers;
+    Quad *quad_buffers_ptr = nullptr;
 
-    std::array<glm::vec4, 4> quadVertexPositions;
-    std::array<glm::vec2, 2> quadTexCoords;
+    std::array<glm::vec4, 4> quad_vertex_pos;
+    std::array<glm::vec2, 2> quad_uv;
 
-    uint32_t textureSlotIndex = 1;
-    std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> textureSlots;
+    uint32_t texture_index = 1;
+    std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> texture_slots;
 
     glm::vec2 textOrigin;
-    glm::vec2 textCursor;
+    glm::vec2 text_cursor;
 };
 
 class SD_API Renderer {
@@ -114,7 +112,7 @@ class SD_API Renderer {
     Scene *m_scene;
     Camera *m_camera;
 
-    Ref<UniformBuffer> m_cameraUBO;
+    Ref<UniformBuffer> m_camera_UBO;
 
     Renderer2DData m_2d_data;
 };

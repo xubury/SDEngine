@@ -6,6 +6,8 @@
 
 namespace SD {
 
+const uint8_t MAX_TEXTURES = 32;
+
 GLShader::GLShader()
     : m_id(0), m_vertexId(0), m_fragmentId(0), m_geometryId(0), m_computeId(0) {
     m_id = glCreateProgram();
@@ -139,8 +141,7 @@ void GLShader::SetMat4(const std::string& name, const glm::mat4& value) {
 }
 
 void GLShader::SetTexture(const std::string& name, const Texture* texture) {
-    uint8_t id = glGetUniformLocation(m_id, name.c_str());
-    id = id % 32;
+    uint8_t id = glGetUniformLocation(m_id, name.c_str()) % MAX_TEXTURES;
     SetInt(name, id);
     SetTexture(id, texture);
 }

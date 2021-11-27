@@ -88,10 +88,10 @@ void Font::LoadRangedGlyph(uint8_t size, char32_t start, char32_t end) {
         c.size = glm::ivec2(bmp->width, bmp->rows);
         c.advance = m_face->glyph->advance.x >> 6;
 
-        c.texCoords[0] =
+        c.uv[0] =
             glm::vec2(static_cast<float>(x) / tex_size,
                       static_cast<float>(y + bmp->rows) / tex_size);
-        c.texCoords[1] =
+        c.uv[1] =
             glm::vec2(static_cast<float>(x + bmp->width) / tex_size,
                       static_cast<float>(y) / tex_size);
         c.glyph = glyph;
