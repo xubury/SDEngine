@@ -22,7 +22,7 @@ Simple and Direct Engine
 - [ ] Log panel
 - [ ] Gui System
 - [ ] Commandline args parser
-- [ ] Get EXE directory for windows
+- [X] Get EXE directory for windows
 - [ ] Script System
 - [ ] Audio System
 - [ ] Physics
