@@ -2,12 +2,12 @@
 #version 450 core
 
 layout(location = 0) in vec3 a_pos;
-layout(location = 1) in vec2 a_texCoord;
+layout(location = 1) in vec2 a_uv;
 
-layout(location = 0) out vec2 out_texCoord;
+layout(location = 0) out vec2 out_uv;
 
 void main() {
-    out_texCoord = a_texCoord;
+    out_uv = a_uv;
     gl_Position = vec4(a_pos, 1.0);
 }
 
@@ -19,31 +19,31 @@ void main() {
 
 layout(location = 0) out vec4 fragColor;
 
-layout(location = 0) in vec2 in_texCoord;
+layout(location = 0) in vec2 in_uv;
 
 uniform Light u_light;
 
 layout(binding = 0) uniform sampler2DMS u_lighting;
-layout(binding = 1) uniform sampler2DMS u_gPosition;
-layout(binding = 2) uniform sampler2DMS u_gNormal;
-layout(binding = 3) uniform sampler2DMS u_gAlbedo;
-layout(binding = 4) uniform sampler2DMS u_gAmbient;
+layout(binding = 1) uniform sampler2DMS u_position;
+layout(binding = 2) uniform sampler2DMS u_normal;
+layout(binding = 3) uniform sampler2DMS u_albedo;
+layout(binding = 4) uniform sampler2DMS u_ambient;
 
 
 void main() {
     vec3 color = vec3(0);
-    const ivec2 uv = ivec2(in_texCoord * textureSize(u_gPosition));
-    const int samples = textureSamples(u_gPosition);
+    const ivec2 uv = ivec2(in_uv * textureSize(u_position));
+    const int samples = textureSamples(u_position);
     for (int i = 0; i < samples; ++i) {
-        vec3 fragPos = texelFetch(u_gPosition, uv, i).rgb;
-        vec3 normal = texelFetch(u_gNormal, uv, i).rgb;
-        vec4 albedo = texelFetch(u_gAlbedo, uv, i);
-        vec3 ambient = texelFetch(u_gAmbient, uv, i).rgb;
+        vec3 pos = texelFetch(u_position, uv, i).rgb;
+        vec3 normal = texelFetch(u_normal, uv, i).rgb;
+        vec4 albedo = texelFetch(u_albedo, uv, i);
+        vec3 ambient = texelFetch(u_ambient, uv, i).rgb;
         vec3 last = texelFetch(u_lighting, uv, i).rgb;
 
-        vec3 viewDir = normalize(u_viewPos - fragPos);
-        color += last + 
-            calculateLight(u_light, fragPos, normal, viewDir, ambient, albedo);
+        vec3 view_dir = normalize(u_view_pos - pos);
+        color += last +
+            calculateLight(u_light, pos, normal, view_dir, ambient, albedo);
     }
     fragColor = vec4(color / samples, 1.0f);
 }

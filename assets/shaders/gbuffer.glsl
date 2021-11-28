@@ -21,7 +21,7 @@ uniform mat4 u_model;
 
 void main() {
     vec3 fragPos = (u_model * vec4(a_pos, 1.0f)).xyz;
-    gl_Position = u_projectionView * vec4(fragPos, 1.0f);
+    gl_Position = u_projection_view * vec4(fragPos, 1.0f);
 
     out_vertex.position = fragPos;
     out_vertex.normal = transpose(inverse(mat3(u_model))) * a_normal;
@@ -42,26 +42,26 @@ struct VertexOutput {
 uniform Material u_material;
 
 uniform vec3 u_color;
-uniform uint u_entityId;
+uniform uint u_entity_id;
 
-layout(location = 0) out vec3 gPosition;
-layout(location = 1) out vec3 gNormal;
-layout(location = 2) out vec4 gAlbedo;
-layout(location = 3) out vec3 gAmbient;
-layout(location = 4) out vec3 gEmissive;
-layout(location = 5) out uint gEntityId;
+layout(location = 0) out vec3 g_position;
+layout(location = 1) out vec3 g_normal;
+layout(location = 2) out vec4 g_albedo;
+layout(location = 3) out vec3 g_ambient;
+layout(location = 4) out vec3 g_emissive;
+layout(location = 5) out uint g_entity_id;
 
 layout(location = 0) in VertexOutput in_vertex;
 
 void main() {
-    gPosition = in_vertex.position;
-    gNormal = normalize(in_vertex.normal);
+    g_position = in_vertex.position;
+    g_normal = normalize(in_vertex.normal);
     vec3 halfColor = u_color * 0.5f;
-    gAlbedo.rgb =
+    g_albedo.rgb =
         texture(u_material.diffuse, in_vertex.texCoord).rgb + halfColor;
-    gAlbedo.a = texture(u_material.specular, in_vertex.texCoord).r;
-    gAmbient = texture(u_material.ambient, in_vertex.texCoord).rgb + halfColor;
-    gEmissive = texture(u_material.emissive, in_vertex.texCoord).rgb;
+    g_albedo.a = texture(u_material.specular, in_vertex.texCoord).r;
+    g_ambient = texture(u_material.ambient, in_vertex.texCoord).rgb + halfColor;
+    g_emissive = texture(u_material.emissive, in_vertex.texCoord).rgb;
 
-    gEntityId = u_entityId;
+    g_entity_id = u_entity_id;
 }

@@ -26,12 +26,12 @@ class SD_API Clock {
     std::chrono::time_point<ClockType> m_lastTicks;
 };
 
-class SD_API FpsCounter {
+class SD_API FPSCounter {
    public:
-    FpsCounter(uint8_t capacity);
+    FPSCounter(uint8_t capacity);
 
-    FpsCounter(const FpsCounter &) = delete;
-    FpsCounter &operator=(const FpsCounter &) = delete;
+    FPSCounter(const FPSCounter &) = delete;
+    FPSCounter &operator=(const FPSCounter &) = delete;
 
     float GetFPS();
 

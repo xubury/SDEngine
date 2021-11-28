@@ -2,8 +2,8 @@ struct Light {
     vec3 position;
     vec3 direction;
 
-    float cutOff;
-    float outerCutOff;
+    float cutoff;
+    float outer_cutoff;
 
     vec3 ambient;
     vec3 diffuse;
@@ -13,17 +13,17 @@ struct Light {
     float linear;
     float quadratic;
 
-    bool isDirectional;
-    bool isCastShadow;
+    bool is_directional;
+    bool is_cast_shadow;
 
-    sampler2D shadowMap;
-    mat4 projectionView;
+    sampler2D shadow_map;
+    mat4 projection_view;
 };
 
 float shadowCalculation(Light light, vec3 fragPos, vec3 normal) {
-    if (!light.isCastShadow) return 0.f;
+    if (!light.is_cast_shadow) return 0.f;
 
-    vec4 fragPosLightSpace = light.projectionView * vec4(fragPos, 1.0);
+    vec4 fragPosLightSpace = light.projection_view * vec4(fragPos, 1.0);
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     // transform to [0,1] range
@@ -33,19 +33,19 @@ float shadowCalculation(Light light, vec3 fragPos, vec3 normal) {
 
     // get closest depth value from light's perspective
     // (using [0,1] range fragPosLight as coords)
-    float closestDepth = texture(light.shadowMap, projCoords.xy).r;
+    float closestDepth = texture(light.shadow_map, projCoords.xy).r;
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
     // check whether current frag pos is in shadow
     vec3 lightDir = normalize(light.position - fragPos);
     float bias = max(0.0005 * (1.0 - dot(normal, lightDir)), 0);
     float shadow = 0.0f;
-    vec2 texelSize = 1.0f / textureSize(light.shadowMap, 0);
+    vec2 texelSize = 1.0f / textureSize(light.shadow_map, 0);
     const int halfKernelWidth = 1;
     for (int x = -halfKernelWidth; x <= halfKernelWidth; ++x) {
         for (int y = -halfKernelWidth; y <= halfKernelWidth; ++y) {
             float pcfDepth =
-                texture(light.shadowMap, projCoords.xy + vec2(x, y) * texelSize)
+                texture(light.shadow_map, projCoords.xy + vec2(x, y) * texelSize)
                     .r;
             shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
         }
@@ -102,8 +102,8 @@ vec3 pointLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
 
     // spotlight
     float theta = dot(lightDir, normalize(-light.direction));
-    float epsilon = light.cutOff - light.outerCutOff;
-    float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0f, 1.0f);
+    float epsilon = light.cutoff - light.outer_cutoff;
+    float intensity = clamp((theta - light.outer_cutoff) / epsilon, 0.0f, 1.0f);
     diffuse *= intensity;
     specular *= intensity;
 
@@ -113,8 +113,8 @@ vec3 pointLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
 
 vec3 calculateLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
                     vec3 ambient, vec4 albedo) {
-    return light.isDirectional ? dirLight(light, fragPos, normal, viewDir,
+    return light.is_directional ? dirLight(light, fragPos, normal, viewDir,
                                           ambient, albedo)
-                               : pointLight(light, fragPos, normal, viewDir,
+                                  : pointLight(light, fragPos, normal, viewDir,
                                             ambient, albedo);
 }

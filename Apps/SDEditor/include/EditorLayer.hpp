@@ -20,6 +20,8 @@ class EditorLayer : public Layer {
     EditorLayer(int width, int height, int msaa);
     ~EditorLayer();
 
+    void OnInit() override;
+
     void OnPush() override;
 
     void OnPop() override;

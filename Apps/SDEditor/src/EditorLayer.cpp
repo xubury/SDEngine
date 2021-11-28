@@ -56,7 +56,7 @@ EditorLayer::~EditorLayer() {
     delete m_profile_system;
 }
 
-void EditorLayer::OnPush() {
+void EditorLayer::OnInit() {
     NewScene();
 
     auto image = asset->LoadAndGet<Image>("icons/light.png");
@@ -68,7 +68,9 @@ void EditorLayer::OnPush() {
         TextureMipmapFilter::LINEAR_LINEAR, image->Data());
 
     m_scene_panel.SetAppVars(MakeAppVars());
+}
 
+void EditorLayer::OnPush() {
     PushSystem(m_shadow_system);
     PushSystem(m_lighting_system);
     PushSystem(m_skybox_system);

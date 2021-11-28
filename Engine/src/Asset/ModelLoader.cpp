@@ -7,25 +7,25 @@
 
 namespace SD {
 
-static Vertex ConstructVertex(const aiVector3D &pos, const aiVector3D &texCoord,
+static Vertex ConstructVertex(const aiVector3D &pos, const aiVector3D &uv,
                               const aiVector3D &normal,
                               const aiVector3D &tangent,
-                              const aiVector3D &biTangent) {
+                              const aiVector3D &bi_tangent) {
     Vertex vertex;
     vertex.position.x = pos.x;
     vertex.position.y = pos.y;
     vertex.position.z = pos.z;
-    vertex.texCoord.x = texCoord.x;
-    vertex.texCoord.y = texCoord.y;
+    vertex.uv.x = uv.x;
+    vertex.uv.y = uv.y;
     vertex.normal.x = normal.x;
     vertex.normal.y = normal.y;
     vertex.normal.z = normal.z;
     vertex.tangent.x = tangent.x;
     vertex.tangent.y = tangent.y;
     vertex.tangent.z = tangent.z;
-    vertex.biTangent.x = biTangent.x;
-    vertex.biTangent.y = biTangent.y;
-    vertex.biTangent.z = biTangent.z;
+    vertex.bi_tangent.x = bi_tangent.x;
+    vertex.bi_tangent.y = bi_tangent.y;
+    vertex.bi_tangent.z = bi_tangent.z;
     return vertex;
 }
 
@@ -53,17 +53,17 @@ static Mesh ProcessAiMesh(const aiMesh *assimpMesh) {
         const aiVector3D pos = assimpMesh->mVertices[i];
         const aiVector3D normal =
             assimpMesh->HasNormals() ? assimpMesh->mNormals[i] : aiZeroVector;
-        const aiVector3D texCoord = assimpMesh->HasTextureCoords(0)
-                                        ? assimpMesh->mTextureCoords[0][i]
-                                        : aiZeroVector;
+        const aiVector3D uv = assimpMesh->HasTextureCoords(0)
+                                  ? assimpMesh->mTextureCoords[0][i]
+                                  : aiZeroVector;
         const aiVector3D tangent = assimpMesh->HasTangentsAndBitangents()
                                        ? assimpMesh->mTangents[i]
                                        : aiZeroVector;
-        const aiVector3D biTangent = assimpMesh->HasTangentsAndBitangents()
-                                         ? assimpMesh->mBitangents[i]
-                                         : aiZeroVector;
+        const aiVector3D bi_tangent = assimpMesh->HasTangentsAndBitangents()
+                                          ? assimpMesh->mBitangents[i]
+                                          : aiZeroVector;
         vertices.push_back(
-            ConstructVertex(pos, texCoord, normal, tangent, biTangent));
+            ConstructVertex(pos, uv, normal, tangent, bi_tangent));
     }
     for (uint32_t i = 0; i < assimpMesh->mNumFaces; ++i) {
         const aiFace &face = assimpMesh->mFaces[i];
@@ -130,20 +130,19 @@ static void processAiMaterial(AssetManager &manager,
     }
 
     aiString texturePath;
-    aiTextureMapMode wrapMode;
+    aiTextureMapMode map_mode;
     if (assimpMaterial->GetTexture(assimpType, 0, &texturePath, nullptr,
                                    nullptr, nullptr, nullptr,
-                                   &wrapMode) != AI_SUCCESS) {
+                                   &map_mode) != AI_SUCCESS) {
         SD_CORE_ERROR("[processAiMaterial] Assimp GetTexture error!");
         return;
     }
     std::string path = (directory / texturePath.C_Str()).string();
-    auto resourceId = manager.LoadAsset<Image>(path);
-    auto image = manager.Get<Image>(resourceId);
+    auto image = manager.LoadAndGet<Image>(path);
     auto texture = Texture::Create(
         image->Width(), image->Height(), 1, TextureType::TEX_2D,
         image->HasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
-        TextureFormatType::UBYTE, ConvertAssimpMapMode(wrapMode),
+        TextureFormatType::UBYTE, ConvertAssimpMapMode(map_mode),
         TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_LINEAR,
         image->Data());
     material.SetTexture(ConvertAssimpTextureType(assimpType), texture);

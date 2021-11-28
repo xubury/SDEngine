@@ -23,9 +23,9 @@ uint64_t Clock::Restart() {
     return elapsed;
 }
 
-FpsCounter::FpsCounter(uint8_t capacity) : m_capacity(capacity) {}
+FPSCounter::FPSCounter(uint8_t capacity) : m_capacity(capacity) {}
 
-float FpsCounter::GetFPS() {
+float FPSCounter::GetFPS() {
     float fps = 1000.f / static_cast<float>(m_clock.Restart());
     m_queue.push_back(fps);
     if (m_queue.size() > m_capacity) {

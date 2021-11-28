@@ -25,7 +25,7 @@ class ProfileSystem : public System {
    private:
     RenderTarget *m_target;
     Camera m_camera;
-    FpsCounter m_fps;
+    FPSCounter m_fps;
     Ref<Font> m_font;
 };
 

@@ -23,9 +23,9 @@ void Terrain::GenerateMesh() {
             vertices[vertexPointer].normal.x = 0.f;
             vertices[vertexPointer].normal.y = 1.0f;
             vertices[vertexPointer].normal.z = 0.f;
-            vertices[vertexPointer].texCoord.x =
+            vertices[vertexPointer].uv.x =
                 (float)(j + halfSize) / (m_vertexCount - 1);
-            vertices[vertexPointer].texCoord.y =
+            vertices[vertexPointer].uv.y =
                 (float)(i + halfSize) / (m_vertexCount - 1);
             vertexPointer++;
         }
