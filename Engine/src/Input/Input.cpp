@@ -3,17 +3,17 @@
 
 namespace SD {
 
-static std::unordered_map<Keycode, bool> s_keyMap;
-static std::unordered_map<Keycode, bool> s_lastKeyMap;
+static std::unordered_map<Keycode, bool> s_key;
+static std::unordered_map<Keycode, bool> s_last_key;
 
-static std::unordered_map<MouseButton, bool> s_mouseBtnMap;
-static std::unordered_map<MouseButton, bool> s_lastMouseBtnMap;
+static std::unordered_map<MouseButton, bool> s_mouse_button;
+static std::unordered_map<MouseButton, bool> s_last_mouse_button;
 
-static glm::vec2 s_mouseCoord;
+static glm::vec2 s_mouse_coord;
 
 bool Input::IsKeyDown(Keycode keycode) {
-    auto it = s_keyMap.find(keycode);
-    if (it != s_keyMap.end()) {
+    auto it = s_key.find(keycode);
+    if (it != s_key.end()) {
         return it->second;
     } else {
         return false;
@@ -21,8 +21,8 @@ bool Input::IsKeyDown(Keycode keycode) {
 }
 
 bool Input::WasKeyDown(Keycode keycode) {
-    auto it = s_lastKeyMap.find(keycode);
-    if (it != s_lastKeyMap.end()) {
+    auto it = s_last_key.find(keycode);
+    if (it != s_last_key.end()) {
         return it->second;
     } else {
         return false;
@@ -34,8 +34,8 @@ bool Input::IsKeyPressed(Keycode keycode) {
 }
 
 bool Input::IsMouseDown(MouseButton button) {
-    auto it = s_mouseBtnMap.find(button);
-    if (it != s_mouseBtnMap.end()) {
+    auto it = s_mouse_button.find(button);
+    if (it != s_mouse_button.end()) {
         return it->second;
     } else {
         return false;
@@ -43,8 +43,8 @@ bool Input::IsMouseDown(MouseButton button) {
 }
 
 bool Input::WasMouseDown(MouseButton button) {
-    auto it = s_lastMouseBtnMap.find(button);
-    if (it != s_lastMouseBtnMap.end()) {
+    auto it = s_last_mouse_button.find(button);
+    if (it != s_last_mouse_button.end()) {
         return it->second;
     } else {
         return false;
@@ -55,32 +55,32 @@ bool Input::IsMousePressed(MouseButton button) {
     return IsMouseDown(button) && !WasMouseDown(button);
 }
 
-glm::vec2 Input::GetMouseCoord() { return s_mouseCoord; }
+glm::vec2 Input::GetMouseCoord() { return s_mouse_coord; }
 
 void Input::Tick() {
-    for (auto &[key, press] : s_keyMap) {
-        s_lastKeyMap[key] = press;
+    for (auto &[key, press] : s_key) {
+        s_last_key[key] = press;
     }
-    for (auto &[button, press] : s_mouseBtnMap) {
-        s_lastMouseBtnMap[button] = press;
+    for (auto &[button, press] : s_mouse_button) {
+        s_last_mouse_button[button] = press;
     }
 }
 
-void Input::PressKey(Keycode keycode) { s_keyMap[keycode] = true; }
+void Input::PressKey(Keycode keycode) { s_key[keycode] = true; }
 
-void Input::ReleaseKey(Keycode keycode) { s_keyMap[keycode] = false; }
+void Input::ReleaseKey(Keycode keycode) { s_key[keycode] = false; }
 
 void Input::PressMouseButton(MouseButton button) {
-    s_mouseBtnMap[button] = true;
+    s_mouse_button[button] = true;
 }
 
 void Input::ReleaseMouseButton(MouseButton button) {
-    s_mouseBtnMap[button] = false;
+    s_mouse_button[button] = false;
 }
 
 void Input::SetMouseCoord(float x, float y) {
-    s_mouseCoord.x = x;
-    s_mouseCoord.y = y;
+    s_mouse_coord.x = x;
+    s_mouse_coord.y = y;
 }
 
 }  // namespace SD
