@@ -43,11 +43,34 @@ void SkyboxSystem::OnPop() {}
 
 void SkyboxSystem::OnRender() {
     glm::vec3 pos = renderer->GetCamera()->GetWorldPosition();
-    m_skyboxShader->SetMat4("u_model", glm::translate(glm::mat4(1.0f), pos));
+    glm::mat4 projection = renderer->GetCamera()->GetViewPorjection() *
+                           glm::translate(glm::mat4(1.0f), pos);
+    m_skyboxShader->SetMat4("u_projection", projection);
 
     m_skyboxShader->Bind();
     Device::instance().SetDepthfunc(DepthFunc::LESS_EQUAL);
     Device::instance().SetCullFace(Face::FRONT);
+
+    auto skyboxView = renderer->GetScene()->view<SkyboxComponent>();
+    auto iter = skyboxView.begin();
+    if (iter != skyboxView.end()) {
+        auto &skybox = skyboxView.get<SkyboxComponent>(*iter);
+        // check if all face are valid
+        if (!skybox.skybox.Valid()) {
+            for (CubeMapFace face = static_cast<CubeMapFace>(0);
+                 face < CubeMapFace::NUMS; ++face) {
+                // load invalid face
+                if (!skybox.skybox.Valid(face)) {
+                    auto image =
+                        asset->Get<Image>(skybox.id[static_cast<int>(face)]);
+                    if (image) {
+                        skybox.skybox.SetFace(face, *image);
+                    }
+                }
+            }
+        }
+        m_skyboxShader->SetTexture("skybox", skybox.skybox.GetTexture());
+    }
 
     renderer->SetRenderTarget(*m_target);
     renderer->Submit(*m_skybox, MeshTopology::TRIANGLES,

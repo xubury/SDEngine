@@ -34,6 +34,7 @@ set(Renderer_Include
     ${Include_Root}/Model.hpp
     ${Include_Root}/Renderer.hpp
     ${Include_Root}/RenderTarget.hpp
+    ${Include_Root}/Skybox.hpp
     ${Include_Root}/Terrain.hpp)
 
 set(Renderer_Src
@@ -46,6 +47,7 @@ set(Renderer_Src
     ${Src_Root}/Model.cpp
     ${Src_Root}/Renderer.cpp
     ${Src_Root}/RenderTarget.cpp
+    ${Src_Root}/Skybox.cpp
     ${Src_Root}/Terrain.cpp)
 
 add_library(sd-renderer ${Renderer_Src})

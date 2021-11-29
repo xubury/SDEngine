@@ -26,7 +26,7 @@ GLTexture::GLTexture(int width, int height, int samples, TextureType type,
         glTextureParameteriv(gl_id, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
     }
 
-    SetPixels(m_width, m_height, data, 0);
+    SetPixels(m_width, m_height, data, CUBE_MAP_FACE_ALL);
     if (m_type != TextureType::TEX_2D_MULTISAMPLE) {
         SetWrap(m_wrap);
         SetFilter(m_filter);
@@ -46,7 +46,7 @@ void GLTexture::Unbind() const { glBindTexture(gl_type, 0); }
 void GLTexture::SetSlot(uint32_t slot) const { glBindTextureUnit(slot, gl_id); }
 
 void GLTexture::SetPixels(int width, int height, const void *data,
-                          uint8_t face) {
+                          uint8_t face_mask) {
     m_width = width;
     m_height = height;
 
@@ -71,9 +71,16 @@ void GLTexture::SetPixels(int width, int height, const void *data,
                          m_height, 0, gl_format, gl_format_type, data);
             break;
         case TextureType::TEX_CUBE:
-            GLenum glFace = GL_TEXTURE_CUBE_MAP_POSITIVE_X + face;
-            glTexImage2D(glFace, 0, gl_internal_format, m_width, m_height, 0,
-                         gl_format, gl_format_type, data);
+            for (CubeMapFace face = static_cast<CubeMapFace>(0);
+                 face < CubeMapFace::NUMS; ++face) {
+                GLenum gl_face =
+                    GL_TEXTURE_CUBE_MAP_POSITIVE_X + static_cast<int>(face);
+                int mask = GetCubeMapFaceMask(face);
+                if (face_mask & mask) {
+                    glTexImage2D(gl_face, 0, gl_internal_format, m_width,
+                                 m_height, 0, gl_format, gl_format_type, data);
+                }
+            }
             break;
     }
     Unbind();

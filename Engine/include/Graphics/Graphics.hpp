@@ -94,6 +94,36 @@ enum class DepthFunc {
     NOT_EQUAL
 };
 
+enum class CubeMapFace {
+    RIGHT = 0,
+    LEFT,
+    TOP,
+    BOTTOM,
+    FRONT,
+    BACK,
+
+    NUMS
+};
+
+inline constexpr uint8_t GetCubeMapFaceMask(CubeMapFace face) {
+    return 1 << static_cast<uint8_t>(face);
+}
+
+inline CubeMapFace operator++(CubeMapFace &face) {
+    face = static_cast<CubeMapFace>(static_cast<int>(face) + 1);
+    return face;
+}
+
+enum CubeMapFaceMask {
+    CUBE_MAP_FACE_MASK_RIGHT = GetCubeMapFaceMask(CubeMapFace::RIGHT),
+    CUBE_MAP_FACE_MASK_LEFT = GetCubeMapFaceMask(CubeMapFace::LEFT),
+    CUBE_MAP_FACE_MASK_TOP = GetCubeMapFaceMask(CubeMapFace::TOP),
+    CUBE_MAP_FACE_MASK_BOTTOM = GetCubeMapFaceMask(CubeMapFace::BOTTOM),
+    CUBE_MAP_FACE_MASK_FRONT = GetCubeMapFaceMask(CubeMapFace::FRONT),
+    CUBE_MAP_FACE_MASK_BACK = GetCubeMapFaceMask(CubeMapFace::BACK),
+    CUBE_MAP_FACE_ALL = GetCubeMapFaceMask(CubeMapFace::NUMS) - 1,
+};
+
 struct SD_API RGBA {
    public:
     RGBA(float r, float g, float b, float a) : m_color{r, g, b, a} {}

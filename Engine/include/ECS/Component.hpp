@@ -1,6 +1,7 @@
 #ifndef SD_COMPONENT_HPP
 #define SD_COMPONENT_HPP
 
+#include "Utility/Serialize.hpp"
 #include "entt/entt.hpp"
 #include "Utility/Base.hpp"
 #include "Utility/Transform.hpp"
@@ -11,6 +12,7 @@
 #include "Renderer/Terrain.hpp"
 #include "Renderer/Light.hpp"
 #include "Renderer/Font.hpp"
+#include "Renderer/Skybox.hpp"
 
 namespace SD {
 
@@ -75,6 +77,14 @@ struct SD_API CameraComponent {
     CameraComponent(CameraType type, float fov, float width, float height,
                     float near_z, float far_z)
         : camera(type, fov, width, height, near_z, far_z) {}
+};
+
+struct SD_API SkyboxComponent {
+    std::array<ResourceId, 6> id;
+
+    Skybox skybox;
+
+    SERIALIZE(id)
 };
 
 }  // namespace SD

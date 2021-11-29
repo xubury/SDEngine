@@ -23,7 +23,7 @@ class SD_API Texture {
     virtual void SetSlot(uint32_t slot) const = 0;
 
     virtual void SetPixels(int width, int height, const void *data,
-                           uint8_t face = 0) = 0;
+                           uint8_t face_mask = CUBE_MAP_FACE_ALL) = 0;
     virtual void SetBorderColor(const void *color) = 0;
     virtual void SetWrap(TextureWrap wrap) = 0;
     virtual void SetFilter(TextureFilter filter) = 0;

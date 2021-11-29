@@ -1,17 +1,15 @@
 #shader vertex
 #version 450 core
 
-#include shaders/camera.glsl
-
 layout (location = 0) in vec3 a_pos;
 
 out vec3 out_uv;
 
-uniform mat4 u_model;
+uniform mat4 u_projection;
 
 void main() {
     out_uv = a_pos;
-    vec4 pos = u_projection_view * u_model * vec4(a_pos, 1.0f);
+    vec4 pos = u_projection * vec4(a_pos, 1.0f);
     gl_Position = pos.xyww;
 }
 
@@ -22,6 +20,8 @@ out vec4 fragColor;
 
 in vec3 out_uv;
 
+uniform samplerCube skybox;
+
 void main() {
-    fragColor = vec4(out_uv.y, out_uv.y, out_uv.y , 1.0);
+    fragColor = texture(skybox, out_uv);
 }
