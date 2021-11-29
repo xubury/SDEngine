@@ -20,8 +20,7 @@ class SD_API VertexArray {
     virtual void Bind() const = 0;
 
     virtual void AddVertexBuffer(const Ref<VertexBuffer> &buffer,
-                                 const VertexBufferLayout &layout,
-                                 int index = -1) = 0;
+                                 const VertexBufferLayout &layout) = 0;
 
     virtual void UpdateBuffer(size_t index, const void *data, size_t size,
                               size_t offset = 0) = 0;
