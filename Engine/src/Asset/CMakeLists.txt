@@ -1,5 +1,5 @@
 find_package(assimp REQUIRED)
-pkg_search_module(SDL2IMAGE REQUIRED SDL2_image)
+find_package(SDL2_image REQUIRED)
 find_package(Freetype REQUIRED)
 
 set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Asset)
@@ -33,8 +33,9 @@ endif()
 
 target_include_directories(sd-asset
     PUBLIC
-    ${SDL2IMAGE_INCLUDE_DIRS}
-    ${SD_ENGINE_SOURCE_DIR}/include)
+    ${SD_ENGINE_SOURCE_DIR}/include
+    PRIVATE
+    ${SDL2_IMAGE_INCLUDE_DIRS})
 
 target_link_libraries(sd-asset
     PUBLIC
@@ -42,7 +43,7 @@ target_link_libraries(sd-asset
     PRIVATE
     assimp::assimp
     Freetype::Freetype
-    ${SDL2IMAGE_LIBRARIES})
+    ${SDL2_IMAGE_LIBRARIES})
 
 install(TARGETS sd-asset LIBRARY DESTINATION lib)
 

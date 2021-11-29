@@ -2,7 +2,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(DEBUG_BUILD)
 endif()
 
-INCLUDE(FindPkgConfig)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 set(SD_ENGINE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Engine)
 
