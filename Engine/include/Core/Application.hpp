@@ -22,7 +22,8 @@ class SD_API Application {
 
     void DestroyLayer(Layer *layer);
 
-    Application() = default;
+    Application(const WindowProp &property);
+
     virtual ~Application() = default;
     Application(const Application &application) = delete;
     Application &operator=(const Application &application) = delete;
@@ -47,6 +48,8 @@ class SD_API Application {
 
     void Tick(float dt);
     void Render();
+
+    WindowProp m_window_property;
 
     EventStack<Layer *> m_layers;
     ImGuiLayer *m_imguiLayer;

@@ -22,6 +22,7 @@ Camera::Camera(CameraType type, float fov, float width, float height,
 void Camera::Resize(float width, float height) {
     m_width = width;
     m_height = height;
+    m_projection_outdated = true;
 }
 
 void Camera::TranslateLocal(const glm::vec3 &t) {

@@ -8,6 +8,9 @@ namespace SD {
 
 const std::string setting_filename = "setting.ini";
 
+Application::Application(const WindowProp &property)
+    : m_window_property(property) {}
+
 void Application::OnInit() {
     std::string debug_path = (GetAppDirectory() / "Debug.txt").string();
     Log::Init(debug_path);
@@ -23,11 +26,16 @@ void Application::OnInit() {
             ini_path);
     }
 
-    std::string title = ini->Get("window", "title", "SD Engine");
-    int width = ini->GetInteger("window", "width", 1600);
-    int height = ini->GetInteger("window", "height", 900);
-    int msaa = ini->GetInteger("window", "msaa", 4);
-    bool vsync = ini->GetBoolean("window", "vsync", true);
+    m_window_property.title =
+        ini->Get("window", "title", m_window_property.title);
+    m_window_property.width =
+        ini->GetInteger("window", "width", m_window_property.width);
+    m_window_property.height =
+        ini->GetInteger("window", "height", m_window_property.height);
+    m_window_property.msaa =
+        ini->GetInteger("window", "msaa", m_window_property.msaa);
+    m_window_property.vsync =
+        ini->GetBoolean("window", "vsync", m_window_property.vsync);
 
     SDL(SDL_Init(SDL_INIT_EVERYTHING));
     int img_flags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
@@ -37,17 +45,10 @@ void Application::OnInit() {
     // Setting up which api to use
     SetGraphicsAPI(GraphicsAPI::OpenGL);
 
-    WindowProp prop;
-    prop.title = title;
-    prop.width = width;
-    prop.height = height;
-    prop.msaa = msaa;
-    prop.flag = SDL_WINDOW_MAXIMIZED;
-    prop.vsync = vsync;
-    window = Window::Create(prop);
+    window = Window::Create(m_window_property);
 
     asset = CreateRef<AssetManager>("assets");
-    renderer = CreateRef<Renderer>(asset.get(), msaa);
+    renderer = CreateRef<Renderer>(asset.get(), m_window_property.msaa);
     dispatcher = CreateRef<EventDispatcher>();
 
     m_imguiLayer = new ImGuiLayer();

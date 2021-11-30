@@ -29,6 +29,16 @@ struct SD_API WindowProp {
           msaa(8),
           vsync(true),
           flag(0) {}
+    WindowProp(const std::string &title, int x, int y, int width, int height,
+               int msaa, bool vsync, uint32_t flag)
+        : title(title),
+          x(x),
+          y(y),
+          width(width),
+          height(height),
+          msaa(msaa),
+          vsync(vsync),
+          flag(flag) {}
 };
 
 class RenderTarget;
