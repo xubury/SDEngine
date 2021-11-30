@@ -20,25 +20,7 @@ struct SD_API WindowProp {
     int msaa;
     bool vsync;
     uint32_t flag;
-    WindowProp()
-        : title("SD Engine"),
-          x(0),
-          y(0),
-          width(1440),
-          height(900),
-          msaa(8),
-          vsync(true),
-          flag(0) {}
-    WindowProp(const std::string &title, int x, int y, int width, int height,
-               int msaa, bool vsync, uint32_t flag)
-        : title(title),
-          x(x),
-          y(y),
-          width(width),
-          height(height),
-          msaa(msaa),
-          vsync(vsync),
-          flag(flag) {}
+    WindowProp();
 };
 
 class RenderTarget;

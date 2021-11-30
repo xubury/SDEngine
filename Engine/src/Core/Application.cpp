@@ -8,10 +8,9 @@ namespace SD {
 
 const std::string setting_filename = "setting.ini";
 
-Application::Application(const WindowProp &property)
-    : m_window_property(property) {}
+Application::Application(const std::string &title) {
+    WindowProp property;
 
-void Application::OnInit() {
     std::string debug_path = (GetAppDirectory() / "Debug.txt").string();
     Log::Init(debug_path);
     SD_CORE_INFO("Debug info is output to: {}", debug_path);
@@ -26,16 +25,11 @@ void Application::OnInit() {
             ini_path);
     }
 
-    m_window_property.title =
-        ini->Get("window", "title", m_window_property.title);
-    m_window_property.width =
-        ini->GetInteger("window", "width", m_window_property.width);
-    m_window_property.height =
-        ini->GetInteger("window", "height", m_window_property.height);
-    m_window_property.msaa =
-        ini->GetInteger("window", "msaa", m_window_property.msaa);
-    m_window_property.vsync =
-        ini->GetBoolean("window", "vsync", m_window_property.vsync);
+    property.title = ini->Get("window", "title", title);
+    property.width = ini->GetInteger("window", "width", property.width);
+    property.height = ini->GetInteger("window", "height", property.height);
+    property.msaa = ini->GetInteger("window", "msaa", property.msaa);
+    property.vsync = ini->GetBoolean("window", "vsync", property.vsync);
 
     SDL(SDL_Init(SDL_INIT_EVERYTHING));
     int img_flags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
@@ -45,17 +39,16 @@ void Application::OnInit() {
     // Setting up which api to use
     SetGraphicsAPI(GraphicsAPI::OpenGL);
 
-    window = Window::Create(m_window_property);
+    window = Window::Create(property);
 
     asset = CreateRef<AssetManager>("assets");
-    renderer = CreateRef<Renderer>(asset.get(), m_window_property.msaa);
+    renderer = CreateRef<Renderer>(asset.get(), property.msaa);
     dispatcher = CreateRef<EventDispatcher>();
-
     m_imguiLayer = new ImGuiLayer();
     PushOverlay(m_imguiLayer);
 }
 
-void Application::OnDestroy() {
+Application::~Application() {
     glm::ivec2 size = window->GetSize();
     ini->Set("window", "title", window->GetTitle());
     ini->SetInteger("window", "width", size.x);

@@ -8,9 +8,7 @@ IMPLEMENT_APP(SDEditor);
 
 namespace SD {
 
-SDEditor::SDEditor()
-    : Application(WindowProp("SD Editor", 0, 0, 1440, 900, 4, true,
-                             SDL_WINDOW_MAXIMIZED)) {}
+SDEditor::SDEditor() : Application("SD Editor") {}
 
 void SDEditor::OnStart() {
     int viewport_width = ini->GetInteger("editor", "viewport width", 800);

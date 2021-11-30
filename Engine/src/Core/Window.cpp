@@ -6,6 +6,16 @@
 
 namespace SD {
 
+WindowProp::WindowProp()
+    : title("SD Engine"),
+      x(SDL_WINDOWPOS_CENTERED),
+      y(SDL_WINDOWPOS_CENTERED),
+      width(1440),
+      height(900),
+      msaa(8),
+      vsync(true),
+      flag(0) {}
+
 Ref<Window> Window::Create(const WindowProp &property) {
     SD_CORE_TRACE("Initializing Window...");
     Ref<Window> window;

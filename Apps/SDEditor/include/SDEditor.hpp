@@ -9,7 +9,6 @@ namespace SD {
 class SDEditor : public Application {
    public:
     SDEditor();
-
     void OnStart() override;
     void OnExit() override;
 
