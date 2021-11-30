@@ -45,6 +45,8 @@ EditorLayer::EditorLayer(int width, int height, int msaa)
     m_sprite_system = new SpriteRenderSystem(&m_target);
     m_post_process_system = new PostProcessSystem(&m_target, m_width, m_height);
     m_profile_system = new ProfileSystem(&m_target, m_width, m_height);
+
+    ImGuizmo::SetGizmoSizeClipSpace(0.2);
 }
 
 EditorLayer::~EditorLayer() {

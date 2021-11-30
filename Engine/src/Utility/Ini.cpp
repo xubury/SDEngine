@@ -4,9 +4,11 @@
 
 namespace SD {
 
-const char SECTION_SEP = '.';
-const char COMMENTS_SYMBOL0 = '#';
-const char COMMENTS_SYMBOL1 = ';';
+// Const are implicitly static in c++, but not in c.
+// So for consistancy, i added static anyway.
+static const char SECTION_SEP = '.';
+static const char COMMENTS_SYMBOL0 = '#';
+static const char COMMENTS_SYMBOL1 = ';';
 
 inline bool IsCommentSymbol(char ch) {
     return ch == COMMENTS_SYMBOL0 || ch == COMMENTS_SYMBOL1;
