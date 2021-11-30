@@ -31,23 +31,4 @@ bool Skybox::Valid(CubeMapFace face) const {
     return m_valid_mask & mask;
 }
 
-const std::string Skybox::GetFaceName(CubeMapFace face) {
-    switch (face) {
-        case CubeMapFace::RIGHT:
-            return "Right";
-        case CubeMapFace::LEFT:
-            return "Left";
-        case CubeMapFace::TOP:
-            return "Top";
-        case CubeMapFace::BOTTOM:
-            return "Bottom";
-        case CubeMapFace::FRONT:
-            return "Front";
-        case CubeMapFace::BACK:
-            return "Back";
-        default:
-            return "";
-    }
-}
-
 }  // namespace SD

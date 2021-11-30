@@ -471,12 +471,11 @@ void ScenePanel::DrawComponents(Entity &entity) {
     DrawComponent<SkyboxComponent>(
         "Skybox", entity, [&](SkyboxComponent &skyboxComp) {
             static CubeMapFace selected = static_cast<CubeMapFace>(0);
-            if (ImGui::BeginCombo("##Skybox",
-                                  Skybox::GetFaceName(selected).c_str())) {
+            if (ImGui::BeginCombo("##Skybox", GetFaceName(selected).c_str())) {
                 for (CubeMapFace face = static_cast<CubeMapFace>(0);
                      face < CubeMapFace::NUMS; ++face) {
                     const bool is_selected = (selected == face);
-                    if (ImGui::Selectable(Skybox::GetFaceName(face).c_str(),
+                    if (ImGui::Selectable(GetFaceName(face).c_str(),
                                           is_selected))
                         selected = face;
 

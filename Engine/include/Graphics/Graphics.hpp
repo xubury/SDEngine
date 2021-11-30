@@ -114,6 +114,8 @@ inline CubeMapFace operator++(CubeMapFace &face) {
     return face;
 }
 
+const std::string SD_API GetFaceName(CubeMapFace face);
+
 enum CubeMapFaceMask {
     CUBE_MAP_FACE_MASK_RIGHT = GetCubeMapFaceMask(CubeMapFace::RIGHT),
     CUBE_MAP_FACE_MASK_LEFT = GetCubeMapFaceMask(CubeMapFace::LEFT),

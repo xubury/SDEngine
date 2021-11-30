@@ -18,8 +18,6 @@ class SD_API Skybox {
     bool Valid() const;
     bool Valid(CubeMapFace face) const;
 
-    static const std::string GetFaceName(CubeMapFace face);
-
    private:
     Ref<Texture> m_texture;
     uint32_t m_width;

@@ -21,7 +21,7 @@ enum class MaterialType {
     SHININESS
 };
 
-std::string SD_API GetMaterialName(MaterialType type);
+const std::string SD_API GetMaterialName(MaterialType type);
 
 class SD_API Material {
    public:

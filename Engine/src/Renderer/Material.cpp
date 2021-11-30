@@ -3,18 +3,18 @@
 
 namespace SD {
 
-const std::unordered_map<MaterialType, std::string> stringByMaterialType = {
-    {MaterialType::AMBIENT, "Ambient"},
-    {MaterialType::DIFFUSE, "Diffuse"},
-    {MaterialType::SPECULAR, "Specular"},
-    {MaterialType::EMISSIVE, "Emissive"},
-    {MaterialType::HEIGHT, "Height"},
-    {MaterialType::NORMALS, "Normals"},
-    {MaterialType::SHININESS, "Shininess"},
+const std::string GetMaterialName(MaterialType type) {
+    static const std::unordered_map<MaterialType, std::string>
+        stringByMaterialType = {
+            {MaterialType::AMBIENT, "Ambient"},
+            {MaterialType::DIFFUSE, "Diffuse"},
+            {MaterialType::SPECULAR, "Specular"},
+            {MaterialType::EMISSIVE, "Emissive"},
+            {MaterialType::HEIGHT, "Height"},
+            {MaterialType::NORMALS, "Normals"},
+            {MaterialType::SHININESS, "Shininess"},
 
-};
-
-std::string GetMaterialName(MaterialType type) {
+        };
     return stringByMaterialType.at(type);
 }
 
