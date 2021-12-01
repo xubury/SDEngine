@@ -1,0 +1,35 @@
+#ifndef SD_PROFILE_SYSTEM_HPP
+#define SD_PROFILE_SYSTEM_HPP
+
+#include "System/Export.hpp"
+#include "Core/System.hpp"
+#include "Renderer/Font.hpp"
+#include "Renderer/Camera.hpp"
+#include "Utility/Timing.hpp"
+
+namespace SD {
+
+class SD_SYSTEM_API ProfileSystem : public System {
+   public:
+    ProfileSystem(RenderTarget *target, int width, int height);
+
+    void OnInit() override;
+
+    void OnPush() override;
+    void OnPop() override;
+
+    void OnTick(float dt) override;
+    void OnRender() override;
+
+    void OnSizeEvent(const WindowSizeEvent &event);
+
+   private:
+    RenderTarget *m_target;
+    Camera m_camera;
+    FPSCounter m_fps;
+    Ref<Font> m_font;
+};
+
+}  // namespace SD
+
+#endif /* SD_PROFILE_SYSTEM_HPP */

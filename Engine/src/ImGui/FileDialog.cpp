@@ -15,7 +15,7 @@ enum ImGuiFileDialogSortOrder_ {
     ImGuiFileDialogSortOrder_None
 };
 
-void RefreshInfo(ImFileDialogInfo* dialogInfo) {
+static void RefreshInfo(ImFileDialogInfo* dialogInfo) {
     dialogInfo->refresh_info = false;
     dialogInfo->current_index = 0;
     dialogInfo->current_files.clear();

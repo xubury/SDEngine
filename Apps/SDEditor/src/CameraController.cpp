@@ -1,6 +1,5 @@
 #include "CameraController.hpp"
-#include "Input/Input.hpp"
-#include "Utility/Log.hpp"
+#include "Core/Input.hpp"
 
 namespace SD {
 

@@ -9,7 +9,7 @@
 
 namespace SD {
 
-class SD_API Exception : public std::exception, public std::string {
+class SD_UTILITY_API Exception : public std::exception, public std::string {
    public:
     Exception(void) throw() {}
 
@@ -20,7 +20,7 @@ class SD_API Exception : public std::exception, public std::string {
     virtual const char* what(void) const throw() { return c_str(); }
 };
 
-class SD_API FileException : public Exception {
+class SD_UTILITY_API FileException : public Exception {
    public:
     FileException(const std::string& file_path, const std::string& msg) throw()
         : Exception(fmt::format("File exception from \"{}\", error: {}",

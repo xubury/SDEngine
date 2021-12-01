@@ -6,7 +6,7 @@
 
 namespace SD {
 
-class SD_API Terrain {
+class SD_RENDERER_API Terrain {
    public:
     Terrain(int gridSize, int vertexCount);
 

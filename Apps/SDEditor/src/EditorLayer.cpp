@@ -1,5 +1,5 @@
 #include "EditorLayer.hpp"
-#include "Input/Input.hpp"
+#include "Core/Input.hpp"
 #include "Core/Application.hpp"
 #include "ECS/Component.hpp"
 #include "Renderer/Renderer.hpp"
@@ -12,8 +12,8 @@
 
 namespace SD {
 
-EditorLayer::EditorLayer(int width, int height, int msaa)
-    : Layer("Editor Layer"),
+EditorLayer::EditorLayer(int width, int height)
+    : Layer("EditorLayer"),
       m_width(width),
       m_height(height),
       m_target(0, 0, width, height),
@@ -39,27 +39,30 @@ EditorLayer::EditorLayer(int width, int height, int msaa)
             GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
             TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
     }
-    m_shadow_system = new ShadowSystem();
-    m_lighting_system = new LightingSystem(&m_target, m_width, m_height, msaa);
-    m_skybox_system = new SkyboxSystem(&m_target);
-    m_sprite_system = new SpriteRenderSystem(&m_target);
-    m_post_process_system = new PostProcessSystem(&m_target, m_width, m_height);
-    m_profile_system = new ProfileSystem(&m_target, m_width, m_height);
 
     ImGuizmo::SetGizmoSizeClipSpace(0.2);
 }
 
 EditorLayer::~EditorLayer() {
-    delete m_shadow_system;
-    delete m_lighting_system;
-    delete m_skybox_system;
-    delete m_sprite_system;
-    delete m_post_process_system;
-    delete m_profile_system;
+    DestroySystem(m_shadow_system);
+    DestroySystem(m_lighting_system);
+    DestroySystem(m_skybox_system);
+    DestroySystem(m_sprite_system);
+    DestroySystem(m_post_process_system);
+    DestroySystem(m_profile_system);
 }
 
 void EditorLayer::OnInit() {
     NewScene();
+    m_shadow_system = CreateSystem<ShadowSystem>();
+    m_lighting_system = CreateSystem<LightingSystem>(
+        &m_target, m_width, m_height, window->GetMSAA());
+    m_skybox_system = CreateSystem<SkyboxSystem>(&m_target);
+    m_sprite_system = CreateSystem<SpriteRenderSystem>(&m_target);
+    m_post_process_system =
+        CreateSystem<PostProcessSystem>(&m_target, m_width, m_height);
+    m_profile_system =
+        CreateSystem<ProfileSystem>(&m_target, m_width, m_height);
 
     auto image = asset->LoadAndGet<Image>("icons/light.png");
 

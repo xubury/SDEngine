@@ -11,7 +11,7 @@ namespace SD {
 
 using ClockType = std::chrono::high_resolution_clock;
 
-class SD_API Clock {
+class SD_UTILITY_API Clock {
    public:
     Clock();
 
@@ -26,7 +26,7 @@ class SD_API Clock {
     std::chrono::time_point<ClockType> m_lastTicks;
 };
 
-class SD_API FPSCounter {
+class SD_UTILITY_API FPSCounter {
    public:
     FPSCounter(uint8_t capacity);
 

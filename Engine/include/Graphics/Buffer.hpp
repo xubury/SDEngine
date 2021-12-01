@@ -6,7 +6,7 @@
 
 namespace SD {
 
-class SD_API Buffer {
+class SD_GRAPHICS_API Buffer {
    public:
     virtual ~Buffer() = default;
 
@@ -29,7 +29,7 @@ class SD_API Buffer {
     Buffer() = default;
 };
 
-class SD_API VertexBuffer : virtual public Buffer {
+class SD_GRAPHICS_API VertexBuffer : virtual public Buffer {
    public:
     static Ref<VertexBuffer> Create(const void *data, size_t size,
                                     BufferIOType io);
@@ -40,7 +40,7 @@ class SD_API VertexBuffer : virtual public Buffer {
     VertexBuffer() = default;
 };
 
-class SD_API IndexBuffer : virtual public Buffer {
+class SD_GRAPHICS_API IndexBuffer : virtual public Buffer {
    public:
     static Ref<IndexBuffer> Create(const uint32_t *data, uint32_t count,
                                    BufferIOType io);
@@ -55,7 +55,7 @@ class SD_API IndexBuffer : virtual public Buffer {
     uint32_t m_count;
 };
 
-class SD_API UniformBuffer : virtual public Buffer {
+class SD_GRAPHICS_API UniformBuffer : virtual public Buffer {
    public:
     static Ref<UniformBuffer> Create(const void *data, size_t size,
                                      BufferIOType io);

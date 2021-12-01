@@ -2,6 +2,7 @@
 #define SD_RENDER_TARGET_HPP
 
 #include "Utility/Base.hpp"
+#include "Renderer/Export.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/Framebuffer.hpp"
 #include <vector>
@@ -9,7 +10,7 @@
 
 namespace SD {
 
-class SD_API RenderTarget {
+class SD_RENDERER_API RenderTarget {
    public:
     RenderTarget();
     RenderTarget(int x, int y, int width, int height);

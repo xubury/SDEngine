@@ -9,17 +9,17 @@
 
 namespace SD {
 
-struct SD_API VertexBufferLayoutElement {
+struct SD_GRAPHICS_API VertexBufferLayoutElement {
     BufferDataType type;
     uint32_t count;
     bool normalized;
 };
 
-uint32_t SD_API GetBufferDataSize(BufferDataType type);
+uint32_t SD_GRAPHICS_API GetBufferDataSize(BufferDataType type);
 
-uint32_t SD_API GetComponentCount(BufferDataType type);
+uint32_t SD_GRAPHICS_API GetComponentCount(BufferDataType type);
 
-class SD_API VertexBufferLayout {
+class SD_GRAPHICS_API VertexBufferLayout {
    public:
     VertexBufferLayout(uint32_t instance_stride = 0);
 

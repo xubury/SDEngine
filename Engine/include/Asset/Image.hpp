@@ -1,15 +1,17 @@
 #ifndef SD_IMAGE_HPP
 #define SD_IMAGE_HPP
 
+#include "Utility/Base.hpp"
+#include "Asset/Export.hpp"
 #include <string>
 
 struct SDL_Surface;
 
 namespace SD {
 
-class Image {
+class SD_ASSET_API Image {
    public:
-    Image(const std::string &name);
+    Image(SDL_Surface *surface);
     ~Image();
 
     Image(const Image &) = delete;

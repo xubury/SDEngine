@@ -22,7 +22,6 @@ constexpr Ref<T> CreateRef(Args&&... args) {
 
 }  // namespace SD
 
-#include "Utility/Export.hpp"
 #include "Utility/Log.hpp"
 #include "Utility/Assert.hpp"
 #include "Utility/Exception.hpp"

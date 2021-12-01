@@ -2,6 +2,7 @@
 #define SD_WINDOW_HPP
 
 #include "Utility/Base.hpp"
+#include "Core/Export.hpp"
 
 #include <glm/glm.hpp>
 #include <string>
@@ -11,7 +12,7 @@ struct SDL_Window;
 
 namespace SD {
 
-struct SD_API WindowProp {
+struct SD_CORE_API WindowProp {
     std::string title;
     int x;
     int y;
@@ -25,7 +26,7 @@ struct SD_API WindowProp {
 
 class RenderTarget;
 
-class SD_API Window {
+class SD_CORE_API Window {
    public:
     static Ref<Window> Create(const WindowProp &property);
 

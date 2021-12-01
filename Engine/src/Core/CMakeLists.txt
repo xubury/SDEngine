@@ -14,39 +14,44 @@ set(Core_Include
     ${OpenGL_Include}
     ${Include_Root}/Application.hpp
     ${Include_Root}/Window.hpp
-    ${Include_Root}/EntryPoint.hpp
     ${Include_Root}/System.hpp
     ${Include_Root}/Keyboard.hpp
     ${Include_Root}/Mouse.hpp
-    ${Include_Root}/Layer.hpp)
+    ${Include_Root}/Layer.hpp
+    ${Include_Root}/ImGuiLayer.hpp
+    ${Include_Root}/Event.hpp
+    ${Include_Root}/Action.hpp
+    ${Include_Root}/ActionMap.hpp
+    ${Include_Root}/ActionTarget.hpp
+    ${Include_Root}/Input.hpp)
 
 set(Core_Src
     ${OpenGL_Src}
     ${Src_Root}/Application.cpp
     ${Src_Root}/Window.cpp
-    ${Src_Root}/EntryPoint.cpp
     ${Src_Root}/System.cpp
     ${Src_Root}/Keyboard.cpp
-    ${Src_Root}/Vars.cpp)
+    ${Src_Root}/ImGuiLayer.cpp
+    ${Src_Root}/Vars.cpp
+    ${Src_Root}/Action.cpp
+    ${Src_Root}/Input.cpp)
 
 add_library(sd-core ${Core_Src})
 
 target_compile_options(sd-core PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
-target_compile_definitions(sd-core PUBLIC SD_EXPORT)
-
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(sd-core PUBLIC SD_SHARED)
+    target_compile_definitions(sd-core PUBLIC SD_SHARED PRIVATE SD_CORE_EXPORT)
 endif()
 
 target_link_libraries(sd-core
     PUBLIC
     sd-renderer
-    sd-utility
     sd-asset
+    sd-loader
+    sd-utility
     sd-imgui
-    sd-input
-    INTERFACE
+    PRIVATE
     SDL2::SDL2
     ${SDL2_IMAGE_LIBRARIES})
 

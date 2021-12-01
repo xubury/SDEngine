@@ -1,6 +1,9 @@
 #ifndef SD_MATH_HPP
 #define SD_MATH_HPP
 
+#include "Utility/Base.hpp"
+#include "Utility/Export.hpp"
+
 #include <glm/glm.hpp>
 
 namespace SD {
@@ -30,12 +33,12 @@ inline void BaryCentric(const glm::vec<L, T, Q> &a, const glm::vec<L, T, Q> &b,
 
 }  // namespace Math
 
-struct Ray {
+struct SD_UTILITY_API Ray {
     glm::vec3 origin;
     glm::vec3 direction;
 };
 
-struct Rect {
+struct SD_UTILITY_API Rect {
     float x;
     float y;
     float width;

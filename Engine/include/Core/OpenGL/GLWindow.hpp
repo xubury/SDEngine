@@ -6,7 +6,7 @@
 
 namespace SD {
 
-class SD_API GLWindow : public Window {
+class SD_CORE_API GLWindow : public Window {
    public:
     GLWindow(const WindowProp &property);
 

@@ -12,7 +12,7 @@
 
 namespace SD {
 
-class SD_API Log {
+class SD_UTILITY_API Log {
    public:
     static void Init(const std::string& logFileName);
 

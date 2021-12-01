@@ -9,7 +9,7 @@
 
 namespace SD {
 
-class SD_API Light {
+class SD_RENDERER_API Light {
    public:
     Light();
 

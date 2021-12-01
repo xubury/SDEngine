@@ -14,8 +14,6 @@ add_executable(SDEditor
 
 target_include_directories(SDEditor PUBLIC include)
 
-set_property(TARGET SDEditor PROPERTY CXX_STANDARD 17)
+target_compile_options(SDEditor PUBLIC  -Wall -Wextra -Wundef -pedantic -std=c++17)
 
-target_compile_options(SDEditor PUBLIC  -Wall -Wextra -Wundef -pedantic)
-
-target_link_libraries(SDEditor PUBLIC sd-core sd-utility sd-renderer sd-asset)
+target_link_libraries(SDEditor PUBLIC sd-core sd-system)

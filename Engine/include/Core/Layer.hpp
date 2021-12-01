@@ -3,6 +3,7 @@
 
 #include "Utility/Base.hpp"
 #include "Utility/EventStack.hpp"
+#include "Core/Export.hpp"
 #include "Core/Vars.hpp"
 #include "Core/Event.hpp"
 #include "Core/System.hpp"
@@ -12,7 +13,7 @@
 
 namespace SD {
 
-class SD_API Layer {
+class SD_CORE_API Layer {
    public:
     Layer(const std::string &name) : m_name(name), m_is_block_event(false) {
         SD_CORE_TRACE("Initializing layer: {}", name);
@@ -42,9 +43,15 @@ class SD_API Layer {
     void SetIsBlockEvent(bool is_block) { m_is_block_event = is_block; }
     bool IsBlockEvent() const { return m_is_block_event; }
 
-    void PushSystem(System *system) {
+    template <typename T, typename... ARGS>
+    T *CreateSystem(ARGS &&...args) {
+        T *system = new T(std::forward<ARGS>(args)...);
         system->SetAppVars(MakeAppVars());
         system->OnInit();
+        return system;
+    }
+
+    void PushSystem(System *system) {
         system->OnPush();
         m_systems.Push(system);
     }
@@ -65,7 +72,9 @@ class SD_API Layer {
     }
 
     void DestroySystem(System *system) {
-        PopSystem(system);
+        if (m_systems.Has(system)) {
+            PopSystem(system);
+        }
         delete system;
     }
 

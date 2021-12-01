@@ -1,13 +1,14 @@
 #ifndef SD_SYSTEM_HPP
 #define SD_SYSTEM_HPP
 
+#include "Core/Export.hpp"
 #include "Utility/Base.hpp"
 #include "Core/Vars.hpp"
 #include "Core/Event.hpp"
 
 namespace SD {
 
-class System {
+class SD_CORE_API System {
    public:
     System(const std::string &name) : m_name(name) {
         SD_CORE_TRACE("Initializing system: {}", name);

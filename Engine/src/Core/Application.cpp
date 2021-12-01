@@ -1,8 +1,18 @@
 #include "Core/Application.hpp"
 #include "Core/SDL.hpp"
+#include "Core/Input.hpp"
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
-#include "Input/Input.hpp"
+
+#include "Loader/ImageLoader.hpp"
+#include "Loader/ModelLoader.hpp"
+#include "Loader/FontLoader.hpp"
+#include "Loader/ShaderLoader.hpp"
+
+#include "Renderer/Model.hpp"
+#include "Asset/Image.hpp"
+#include "Renderer/Font.hpp"
+#include "Graphics/Shader.hpp"
 
 namespace SD {
 
@@ -41,14 +51,23 @@ Application::Application(const std::string &title) {
 
     window = Window::Create(property);
 
-    asset = CreateRef<AssetManager>("assets");
+    asset = CreateRef<AssetManager>();
+
+    asset->SetLoader<Image>(new ImageLoader(*asset));
+    asset->SetLoader<Model>(new ModelLoader(*asset));
+    asset->SetLoader<Font>(new FontLoader(*asset));
+    asset->SetLoader<Shader>(new ShaderLoader(*asset));
+    asset->Load("assets");
+
     renderer = CreateRef<Renderer>(asset.get(), property.msaa);
     dispatcher = CreateRef<EventDispatcher>();
-    m_imguiLayer = new ImGuiLayer();
+    m_imguiLayer = CreateLayer<ImGuiLayer>();
     PushOverlay(m_imguiLayer);
 }
 
 Application::~Application() {
+    asset->Save();
+
     glm::ivec2 size = window->GetSize();
     ini->Set("window", "title", window->GetTitle());
     ini->SetInteger("window", "width", size.x);
@@ -66,15 +85,11 @@ Application::~Application() {
 }
 
 void Application::PushLayer(Layer *layer) {
-    layer->SetAppVars(MakeAppVars());
-    layer->OnInit();
     layer->OnPush();
     m_layers.Push(layer);
 }
 
 void Application::PushOverlay(Layer *layer) {
-    layer->SetAppVars(MakeAppVars());
-    layer->OnInit();
     layer->OnPush();
     m_layers.PushOverlay(layer);
 }
@@ -85,7 +100,9 @@ void Application::PopLayer(Layer *layer) {
 }
 
 void Application::DestroyLayer(Layer *layer) {
-    PopLayer(layer);
+    if (m_layers.Has(layer)) {
+        PopLayer(layer);
+    }
     delete layer;
 }
 

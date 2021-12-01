@@ -2,6 +2,7 @@
 #define SD_GRAPHICS_HPP
 
 #include "Utility/Base.hpp"
+#include "Graphics/Export.hpp"
 
 #include <type_traits>
 #include <array>
@@ -114,7 +115,7 @@ inline CubeMapFace operator++(CubeMapFace &face) {
     return face;
 }
 
-const std::string SD_API GetFaceName(CubeMapFace face);
+const std::string SD_GRAPHICS_API GetFaceName(CubeMapFace face);
 
 enum CubeMapFaceMask {
     CUBE_MAP_FACE_MASK_RIGHT = GetCubeMapFaceMask(CubeMapFace::RIGHT),
@@ -126,7 +127,7 @@ enum CubeMapFaceMask {
     CUBE_MAP_FACE_ALL = GetCubeMapFaceMask(CubeMapFace::NUMS) - 1,
 };
 
-struct SD_API RGBA {
+struct SD_GRAPHICS_API RGBA {
    public:
     RGBA(float r, float g, float b, float a) : m_color{r, g, b, a} {}
 
@@ -144,9 +145,9 @@ struct SD_API RGBA {
 
 enum class GraphicsAPI { None, OpenGL };
 
-void SD_API SetGraphicsAPI(GraphicsAPI api);
+void SD_GRAPHICS_API SetGraphicsAPI(GraphicsAPI api);
 
-GraphicsAPI SD_API GetGraphicsAPI();
+GraphicsAPI SD_GRAPHICS_API GetGraphicsAPI();
 
 }  // namespace SD
 

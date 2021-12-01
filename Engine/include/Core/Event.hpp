@@ -2,6 +2,7 @@
 #define SD_EVENT_HPP
 
 #include "Utility/Base.hpp"
+#include "Core/Export.hpp"
 #include "Core/Keyboard.hpp"
 #include "Core/Mouse.hpp"
 
@@ -52,7 +53,7 @@ enum class EventType {
     TEXT_INPUT
 };
 
-struct SD_API Event {
+struct SD_CORE_API Event {
     union {
         WindowSizeEvent window_size;
         KeyEvent key;

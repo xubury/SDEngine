@@ -8,7 +8,7 @@
 
 namespace SD {
 
-class SD_API GLBuffer : virtual public Buffer {
+class SD_GRAPHICS_API GLBuffer : virtual public Buffer {
    public:
     void UpdateData(const void *data, size_t size, size_t offset) override;
 
@@ -34,14 +34,14 @@ class SD_API GLBuffer : virtual public Buffer {
     size_t m_size;
 };
 
-class SD_API GLVertexBuffer : public VertexBuffer, public GLBuffer {
+class SD_GRAPHICS_API GLVertexBuffer : public VertexBuffer, public GLBuffer {
    public:
     GLVertexBuffer(const void *data, size_t size, BufferIOType io);
 
     ~GLVertexBuffer() = default;
 };
 
-class SD_API GLIndexBuffer : public IndexBuffer, public GLBuffer {
+class SD_GRAPHICS_API GLIndexBuffer : public IndexBuffer, public GLBuffer {
    public:
     GLIndexBuffer(const uint32_t *data, uint32_t count, BufferIOType io);
 
@@ -50,7 +50,7 @@ class SD_API GLIndexBuffer : public IndexBuffer, public GLBuffer {
     ~GLIndexBuffer() = default;
 };
 
-class SD_API GLUniformBuffer : public UniformBuffer, public GLBuffer {
+class SD_GRAPHICS_API GLUniformBuffer : public UniformBuffer, public GLBuffer {
    public:
     GLUniformBuffer(const void *data, size_t size, BufferIOType io);
 

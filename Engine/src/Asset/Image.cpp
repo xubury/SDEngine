@@ -1,27 +1,10 @@
 #include "Asset/Image.hpp"
 
-#include <SDL_image.h>
 #include <SDL.h>
 
 namespace SD {
 
-Image::Image(const std::string &filePath) : m_surface(nullptr) {
-    SDL_Surface *loaded = IMG_Load(filePath.c_str());
-    if (loaded) {
-        if (SDL_ISPIXELFORMAT_ALPHA(loaded->format->format)) {
-            SDL_PixelFormat *SDL_format =
-                SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
-            m_surface = SDL_ConvertSurface(loaded, SDL_format, 0);
-            SDL_FreeFormat(SDL_format);
-        } else {
-            SDL_PixelFormat *SDL_format =
-                SDL_AllocFormat(SDL_PIXELFORMAT_RGB24);
-            m_surface = SDL_ConvertSurface(loaded, SDL_format, 0);
-            SDL_FreeFormat(SDL_format);
-        }
-        SDL_FreeSurface(loaded);
-    }
-}
+Image::Image(SDL_Surface *surface) : m_surface(surface) {}
 
 Image::~Image() { SDL_FreeSurface(m_surface); }
 

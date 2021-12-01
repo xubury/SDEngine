@@ -1,17 +1,19 @@
 #ifndef SD_QUAD_TREE_HPP
 #define SD_QUAD_TREE_HPP
 
+#include "Utility/Base.hpp"
+#include "Utility/Math.hpp"
+
 #include <any>
 #include <cstdint>
 #include <vector>
 #include <array>
-#include "Utility/Math.hpp"
 
 namespace SD {
 
 class QuadTree;
 
-struct Collidable {
+struct SD_UTILITY_API Collidable {
    public:
     Rect bound;
     std::any data;
@@ -25,7 +27,7 @@ struct Collidable {
     friend class QuadTree;
 };
 
-class QuadTree {
+class SD_UTILITY_API QuadTree {
    public:
     QuadTree();
     QuadTree(const Rect &bound, uint32_t capacity, uint32_t maxLevel);

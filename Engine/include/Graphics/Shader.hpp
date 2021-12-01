@@ -2,6 +2,7 @@
 #define SD_SHADER_HPP
 
 #include "Utility/Base.hpp"
+#include "Graphics/Export.hpp"
 
 #include <string>
 #include <vector>
@@ -16,7 +17,7 @@ class UniformBuffer;
 
 enum class ShaderType { INVALID, VERTEX, FRAGMENT, GEOMETRY, COMPUTE };
 
-class SD_API Shader {
+class SD_GRAPHICS_API Shader {
    public:
     static Ref<Shader> Create();
 

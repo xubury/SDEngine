@@ -14,7 +14,7 @@ namespace SD {
 template <typename EVENT>
 using Callback = std::function<void(const EVENT&)>;
 
-class SD_API EventDispatcher {
+class SD_UTILITY_API EventDispatcher {
    public:
     template <typename F, typename EVENT>
     void Subscribe(F* object, void (F::*METHOD)(const EVENT&)) {

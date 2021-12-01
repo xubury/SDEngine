@@ -1,9 +1,9 @@
 #ifndef SD_COMPONENT_HPP
 #define SD_COMPONENT_HPP
 
-#include "Utility/Serialize.hpp"
-#include "entt/entt.hpp"
 #include "Utility/Base.hpp"
+#include "ECS/Export.hpp"
+#include "Utility/Serialize.hpp"
 #include "Utility/Transform.hpp"
 #include "Utility/Math.hpp"
 #include "Utility/ResourceId.hpp"
@@ -14,15 +14,17 @@
 #include "Renderer/Font.hpp"
 #include "Renderer/Skybox.hpp"
 
+#include "entt/entt.hpp"
+
 namespace SD {
 
-struct SD_API IdComponent {
+struct SD_ECS_API IdComponent {
     ResourceId id;
 
     SERIALIZE(id)
 };
 
-struct SD_API EntityDataComponent {
+struct SD_ECS_API EntityDataComponent {
     std::set<entt::entity> children;
     entt::entity parent;
     EntityDataComponent() : parent(entt::null) {}
@@ -30,7 +32,7 @@ struct SD_API EntityDataComponent {
     SERIALIZE(parent, children)
 };
 
-struct SD_API TagComponent {
+struct SD_ECS_API TagComponent {
     std::string tag;
     TagComponent() = default;
     TagComponent(const std::string& tag) : tag(tag) {}
@@ -38,13 +40,13 @@ struct SD_API TagComponent {
     SERIALIZE(tag)
 };
 
-struct SD_API TransformComponent {
+struct SD_ECS_API TransformComponent {
     Transform transform;
 
     SERIALIZE(transform)
 };
 
-struct SD_API ModelComponent {
+struct SD_ECS_API ModelComponent {
     ResourceId id;
     glm::vec3 color;
     ModelComponent() = default;
@@ -52,18 +54,18 @@ struct SD_API ModelComponent {
     SERIALIZE(id, color)
 };
 
-struct SD_API TerrainComponent {
+struct SD_ECS_API TerrainComponent {
     Terrain terrain;
-    TerrainComponent();
+    TerrainComponent() : terrain(1, 10) {}
 };
 
-struct SD_API LightComponent {
+struct SD_ECS_API LightComponent {
     Light light;
 
     SERIALIZE(light)
 };
 
-struct SD_API TextComponent {
+struct SD_ECS_API TextComponent {
     ResourceId id;
     uint8_t pixel_size = 20;
     glm::vec4 color = glm::vec4(1);
@@ -72,14 +74,14 @@ struct SD_API TextComponent {
     SERIALIZE(id, pixel_size, color, text)
 };
 
-struct SD_API CameraComponent {
+struct SD_ECS_API CameraComponent {
     Camera camera;
     CameraComponent(CameraType type, float fov, float width, float height,
                     float near_z, float far_z)
         : camera(type, fov, width, height, near_z, far_z) {}
 };
 
-struct SD_API SkyboxComponent {
+struct SD_ECS_API SkyboxComponent {
     std::array<ResourceId, 6> id;
 
     Skybox skybox;

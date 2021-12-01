@@ -2,13 +2,14 @@
 #define SD_SKYBOX_HPP
 
 #include "Utility/Base.hpp"
+#include "Renderer/Export.hpp"
 
 #include "Graphics/Texture.hpp"
 #include "Asset/Image.hpp"
 
 namespace SD {
 
-class SD_API Skybox {
+class SD_RENDERER_API Skybox {
    public:
     Skybox();
 

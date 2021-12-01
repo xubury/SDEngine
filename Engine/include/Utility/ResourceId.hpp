@@ -9,7 +9,7 @@
 
 namespace SD {
 
-class SD_API ResourceId {
+class SD_UTILITY_API ResourceId {
    public:
     ResourceId();
     ResourceId(uint64_t resource_id);

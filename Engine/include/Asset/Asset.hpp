@@ -5,6 +5,8 @@
 #include "Utility/ResourceId.hpp"
 #include "Utility/Serialize.hpp"
 
+#include "Asset/Export.hpp"
+
 #include <string>
 #include <unordered_map>
 #include <typeinfo>
@@ -17,7 +19,7 @@ inline size_t GetAssetType() {
     return typeid(ASSET).hash_code();
 }
 
-class SD_API Asset {
+class SD_ASSET_API Asset {
    public:
     Asset();
     Asset(size_t loaderType, const std::string &path);
@@ -45,7 +47,7 @@ class SD_API Asset {
 
 class AssetManager;
 
-class SD_API AssetLoaderBase {
+class SD_ASSET_API AssetLoaderBase {
    public:
     AssetLoaderBase(AssetManager &manager) : m_manager(manager) {}
     AssetLoaderBase(const AssetLoaderBase &) = delete;
@@ -60,14 +62,14 @@ class SD_API AssetLoaderBase {
     AssetManager &m_manager;
 };
 
-class SD_API AssetManager {
+class SD_ASSET_API AssetManager {
    private:
     void Clear();
 
     void Cache(const ResourceId &id);
 
    public:
-    AssetManager(const std::filesystem::path &path);
+    AssetManager();
     ~AssetManager();
 
     void Load(const std::filesystem::path &path);
@@ -140,6 +142,7 @@ class SD_API AssetManager {
     }
 
     void Validate();
+
    private:
     std::unordered_map<std::string, ResourceId> m_id_map;
     std::unordered_map<ResourceId, Asset> m_resources;

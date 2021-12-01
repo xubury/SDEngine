@@ -6,7 +6,7 @@
 
 namespace SD {
 
-class SD_API Model {
+class SD_RENDERER_API Model {
    public:
     Model() = default;
 

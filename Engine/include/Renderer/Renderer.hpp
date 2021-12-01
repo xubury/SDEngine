@@ -8,11 +8,12 @@
 #include "Renderer/Camera.hpp"
 #include "Renderer/Font.hpp"
 #include "Renderer/Mesh.hpp"
-#include "ECS/Scene.hpp"
 
 namespace SD {
 
 class AssetManager;
+
+class Scene;
 
 struct QuadVertex {
     glm::vec3 position;
@@ -59,7 +60,7 @@ struct Renderer2DData {
     glm::vec2 text_cursor;
 };
 
-class SD_API Renderer {
+class SD_RENDERER_API Renderer {
    public:
     Renderer(AssetManager *manager, int msaa);
     ~Renderer() { SD_CORE_TRACE("Deleting Renderer"); }

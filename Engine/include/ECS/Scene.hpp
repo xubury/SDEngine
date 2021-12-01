@@ -2,14 +2,16 @@
 #define SD_SCENE_HPP
 
 #include "Utility/Base.hpp"
-#include "entt/entt.hpp"
+#include "ECS/Export.hpp"
 #include "ECS/Component.hpp"
+
+#include "entt/entt.hpp"
 
 namespace SD {
 
 class Entity;
 
-class SD_API Scene : public entt::registry {
+class SD_ECS_API Scene : public entt::registry {
    public:
     Scene();
     ~Scene() = default;

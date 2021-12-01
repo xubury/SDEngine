@@ -10,10 +10,10 @@
 
 namespace SD {
 
-bool SD_API Decompose(const glm::mat4& transform, glm::vec3& translation,
+bool SD_UTILITY_API Decompose(const glm::mat4& transform, glm::vec3& translation,
                       glm::quat& rotation, glm::vec3& scale);
 
-class SD_API Transform {
+class SD_UTILITY_API Transform {
    public:
     Transform();
     virtual ~Transform() = default;

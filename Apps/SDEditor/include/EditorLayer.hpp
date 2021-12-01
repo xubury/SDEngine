@@ -6,18 +6,18 @@
 #include "ScenePanel.hpp"
 #include "CameraController.hpp"
 
-#include "Renderer/System/ShadowSystem.hpp"
-#include "Renderer/System/LightingSystem.hpp"
-#include "Renderer/System/SkyboxSystem.hpp"
-#include "Renderer/System/ProfileSystem.hpp"
-#include "Renderer/System/PostProcessSystem.hpp"
-#include "Renderer/System/SpriteRenderSystem.hpp"
+#include "System/ShadowSystem.hpp"
+#include "System/LightingSystem.hpp"
+#include "System/SkyboxSystem.hpp"
+#include "System/ProfileSystem.hpp"
+#include "System/PostProcessSystem.hpp"
+#include "System/SpriteRenderSystem.hpp"
 
 namespace SD {
 
 class EditorLayer : public Layer {
    public:
-    EditorLayer(int width, int height, int msaa);
+    EditorLayer(int width, int height);
     ~EditorLayer();
 
     void OnInit() override;

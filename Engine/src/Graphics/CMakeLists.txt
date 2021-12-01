@@ -50,10 +50,8 @@ add_library(sd-graphics ${Graphics_Src})
 
 target_compile_options(sd-graphics PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
-target_compile_definitions(sd-graphics PUBLIC SD_EXPORT)
-
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(sd-graphics PUBLIC SD_SHARED)
+    target_compile_definitions(sd-graphics PUBLIC SD_SHARED PRIVATE SD_GRAPHICS_EXPORT)
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")

@@ -1,6 +1,7 @@
 #ifndef SD_KEYCDOE_HPP
 #define SD_KEYCDOE_HPP
 
+#include "Core/Export.hpp"
 #include "Utility/Base.hpp"
 #include <cstdint>
 
@@ -662,8 +663,8 @@ enum class Keycode : uint32_t {
     AUDIOFASTFORWARD = SCANCODE_TO_KEYCODE(Scancode::AUDIOFASTFORWARD)
 };
 
-Keycode SD_API GetKeycodeFromScancode(Scancode scancode);
-Scancode SD_API GetScancodeFromKeycode(Keycode keycode);
+Keycode SD_CORE_API GetKeycodeFromScancode(Scancode scancode);
+Scancode SD_CORE_API GetScancodeFromKeycode(Keycode keycode);
 
 inline bool IsKeyModActive(uint16_t src, uint16_t dst) {
     return (src & dst) == dst;

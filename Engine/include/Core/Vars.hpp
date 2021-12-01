@@ -1,6 +1,7 @@
 #ifndef SD_VARIABLES_HPP
 #define SD_VARIABLES_HPP
 
+#include "Core/Export.hpp"
 #include "Core/Window.hpp"
 #include "Asset/Asset.hpp"
 #include "Utility/Ini.hpp"
@@ -9,7 +10,7 @@
 
 namespace SD {
 
-std::filesystem::path GetAppDirectory();
+std::filesystem::path SD_CORE_API GetAppDirectory();
 
 #define APP_VARS             \
     Ref<Ini> ini;            \
@@ -21,7 +22,7 @@ std::filesystem::path GetAppDirectory();
 #define SET_APP_VARS                       \
     void SetAppVars(const AppVars &vars) { \
         ini = vars.ini;                    \
-        window = vars.window;               \
+        window = vars.window;              \
         renderer = vars.renderer;          \
         asset = vars.asset;                \
         dispatcher = vars.dispatcher;      \
@@ -47,11 +48,14 @@ class Application;
 Application &GetApp();
 
 #define IMPLEMENT_APP(x)                                       \
-    static ::SD::Application *s_instance;                      \
+    static ::SD::Application *s_instance = new x;              \
     ::SD::Application & ::SD::GetApp() { return *s_instance; } \
-    ::SD::Application * ::SD::CreateApp() {                    \
-        s_instance = new x;                                    \
-        return s_instance;                                     \
+    int main(int, char **) {                                   \
+        s_instance->OnStart();                                 \
+        s_instance->Run();                                     \
+        s_instance->OnExit();                                  \
+        delete s_instance;                                     \
+        return 0;                                              \
     }
 
 }  // namespace SD

@@ -8,7 +8,7 @@
 
 namespace SD {
 
-class SD_API Random {
+class SD_UTILITY_API Random {
    public:
     static float Rnd(float min, float max);
     static double Rnd(double min, double max);

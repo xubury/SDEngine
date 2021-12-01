@@ -2,7 +2,7 @@
 #define SD_CAMERA_CONTROLLER_HPP
 
 #include "Utility/Base.hpp"
-#include "Input/ActionTarget.hpp"
+#include "Core/ActionTarget.hpp"
 #include "Renderer/Camera.hpp"
 
 namespace SD {

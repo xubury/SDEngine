@@ -13,7 +13,7 @@ namespace SD {
 
 class UniformBuffer;
 
-class SD_API GLShader : public Shader {
+class SD_GRAPHICS_API GLShader : public Shader {
    public:
     GLShader();
 

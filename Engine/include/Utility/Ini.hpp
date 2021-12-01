@@ -2,17 +2,17 @@
 #define SD_INI_HPP
 
 #include "Utility/Base.hpp"
+#include "Utility/Export.hpp"
 
 #include <set>
 #include <map>
 
 namespace SD {
 
-class SD_API Ini {
+class SD_UTILITY_API Ini {
    public:
     Ini() = default;
     virtual ~Ini() = default;
-
 
     void Load(const std::string& filename);
     void Save(const std::string& filename) const;

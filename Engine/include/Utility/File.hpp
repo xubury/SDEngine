@@ -9,9 +9,9 @@ namespace SD {
 
 namespace File {
 
-void SD_API Read(const std::string& file_path, std::string& content);
+void SD_UTILITY_API Read(const std::string& file_path, std::string& content);
 
-void SD_API Write(const std::string& file_path, const std::string& content);
+void SD_UTILITY_API Write(const std::string& file_path, const std::string& content);
 
 }  // namespace File
 

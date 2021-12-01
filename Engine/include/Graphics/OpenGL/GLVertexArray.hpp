@@ -8,7 +8,7 @@
 
 namespace SD {
 
-class SD_API GLVertexArray : public VertexArray {
+class SD_GRAPHICS_API GLVertexArray : public VertexArray {
    public:
     GLVertexArray();
 

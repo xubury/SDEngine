@@ -8,7 +8,7 @@
 
 namespace SD {
 
-class SD_API Device {
+class SD_GRAPHICS_API Device {
    public:
     static Ref<Device> Create();
 

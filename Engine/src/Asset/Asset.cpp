@@ -1,8 +1,4 @@
 #include "Asset/Asset.hpp"
-#include "Asset/ImageLoader.hpp"
-#include "Asset/ModelLoader.hpp"
-#include "Asset/FontLoader.hpp"
-#include "Asset/ShaderLoader.hpp"
 
 namespace SD {
 
@@ -13,18 +9,10 @@ Asset::Asset() : m_resource(nullptr) {}
 Asset::Asset(size_t loader_type, const std::string &path)
     : m_resource(nullptr), m_loader_type(loader_type), m_path(path) {}
 
-AssetManager::AssetManager(const std::filesystem::path &path) {
-    SD_CORE_TRACE("Initalizing AssetManager");
-    SetLoader<Image>(new ImageLoader(*this));
-    SetLoader<Model>(new ModelLoader(*this));
-    SetLoader<Font>(new FontLoader(*this));
-    SetLoader<Shader>(new ShaderLoader(*this));
-    Load(path);
-}
+AssetManager::AssetManager() { SD_CORE_TRACE("Initalizing AssetManager"); }
 
 AssetManager::~AssetManager() {
     SD_CORE_TRACE("Deleting AssetManager");
-    Save();
     m_id_map.clear();
     m_resources.clear();
     for (const auto &[id, loader] : m_loaders) {

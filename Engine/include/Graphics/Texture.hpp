@@ -6,7 +6,7 @@
 
 namespace SD {
 
-class SD_API Texture {
+class SD_GRAPHICS_API Texture {
    public:
     static Ref<Texture> Create(int width, int height, int samples,
                                TextureType type, TextureFormat format,
