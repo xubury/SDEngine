@@ -25,7 +25,7 @@ class SD_CORE_API ImGuiLayer : public Layer {
 
     void OnEventProcess(const Event &event) override;
 
-    ImGuiContext *GetContext() { return m_context; }
+    ImGuiContext *GetContext() const { return m_context; }
 
    private:
     void SetDarkThemeColor();

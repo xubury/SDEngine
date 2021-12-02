@@ -13,15 +13,10 @@ class Entity;
 
 class SD_ECS_API Scene : public entt::registry {
    public:
-    Scene();
+    Scene() = default;
     ~Scene() = default;
 
-    Entity CreateEntity(const std::string &name = "Entity");
-    void DestroyEntity(Entity &entity, bool isRoot = true);
-
-    void AddChildToEntity(Entity &parent, Entity &child);
-
-    void RemoveChildFromEntity(Entity &parent, Entity &child);
+    Entity CreateEntity(const std::string &name);
 
     void Refresh();
 

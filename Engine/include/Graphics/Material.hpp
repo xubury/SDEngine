@@ -2,7 +2,6 @@
 #define SD_MATERIAL_HPP
 
 #include "Utility/Base.hpp"
-#include "Renderer/Export.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/Shader.hpp"
 
@@ -22,9 +21,9 @@ enum class MaterialType {
     SHININESS
 };
 
-const std::string SD_RENDERER_API GetMaterialName(MaterialType type);
+const std::string SD_GRAPHICS_API GetMaterialName(MaterialType type);
 
-class SD_RENDERER_API Material {
+class SD_GRAPHICS_API Material {
    public:
     void SetTexture(MaterialType type, const Ref<Texture> &texture);
 

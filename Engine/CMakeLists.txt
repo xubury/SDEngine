@@ -13,7 +13,6 @@ add_subdirectory(src/ImGui)
 add_subdirectory(src/Graphics)
 add_subdirectory(src/Renderer)
 add_subdirectory(src/Asset)
-add_subdirectory(src/Loader)
 add_subdirectory(src/System)
 
 add_subdirectory(libs/entt)

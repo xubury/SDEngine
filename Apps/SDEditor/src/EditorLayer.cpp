@@ -54,6 +54,7 @@ EditorLayer::~EditorLayer() {
 
 void EditorLayer::OnInit() {
     NewScene();
+
     m_shadow_system = CreateSystem<ShadowSystem>();
     m_lighting_system = CreateSystem<LightingSystem>(
         &m_target, m_width, m_height, window->GetMSAA());
@@ -73,6 +74,8 @@ void EditorLayer::OnInit() {
         TextureMipmapFilter::LINEAR_LINEAR, image->Data());
 
     m_scene_panel.SetAppVars(MakeAppVars());
+
+    renderer->SetCamera(&m_editor_camera);
 }
 
 void EditorLayer::OnPush() {
@@ -326,7 +329,6 @@ void EditorLayer::Hide() {
 void EditorLayer::Show() {
     m_hide = false;
     SetIsBlockEvent(true);
-    renderer->SetCamera(&m_editor_camera);
 }
 
 void EditorLayer::OnEventProcess(const Event &event) {

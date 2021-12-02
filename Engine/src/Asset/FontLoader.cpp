@@ -1,12 +1,12 @@
-#include "Loader/FontLoader.hpp"
-#include "Renderer/Font.hpp"
+#include "Asset/FontLoader.hpp"
+#include "Asset/Font.hpp"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
 namespace SD {
 
-FontLoader::FontLoader(AssetManager &manager) : AssetLoaderBase(manager) {
+FontLoader::FontLoader(AssetManager &manager) : AssetLoader(manager) {
     if (FT_Init_FreeType(&m_ft)) {
         SD_CORE_ERROR("Could not init Freetype library!");
     }

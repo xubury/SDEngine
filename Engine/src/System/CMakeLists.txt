@@ -26,7 +26,12 @@ add_library(sd-system ${System_Src})
 target_compile_options(sd-system PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(sd-system PUBLIC SD_SHARED PRIVATE SD_SYSTEM_EXPORT)
+    target_compile_definitions(sd-system 
+        INTERFACE 
+        SD_SYSTEM_IMPORT 
+
+        PRIVATE 
+        SD_SYSTEM_EXPORT)
 endif()
 
 target_link_libraries(sd-system 

@@ -7,8 +7,6 @@
 
 namespace SD {
 
-Scene::Scene() {}
-
 Entity Scene::CreateEntity(const std::string &name) {
     Entity entity(create(), this);
     entity.AddComponent<IdComponent>();
@@ -16,51 +14,6 @@ Entity Scene::CreateEntity(const std::string &name) {
     entity.AddComponent<TransformComponent>();
     entity.AddComponent<EntityDataComponent>();
     return entity;
-}
-
-void Scene::DestroyEntity(Entity &entity, bool is_root) {
-    auto &data = entity.GetComponent<EntityDataComponent>();
-    for (entt::entity entity_id : data.children) {
-        Entity child(entity_id, this);
-        DestroyEntity(child, false);
-    }
-    Entity parent(data.parent, this);
-    if (is_root && parent) {
-        RemoveChildFromEntity(parent, entity);
-    }
-    destroy(entity);
-}
-
-void Scene::AddChildToEntity(Entity &parent, Entity &child) {
-    if (parent == child) return;
-    auto &parent_data = parent.GetComponent<EntityDataComponent>();
-    auto &child_data = child.GetComponent<EntityDataComponent>();
-    if (parent_data.parent == child || child_data.parent == parent) return;
-
-    Transform *child_transform =
-        &child.GetComponent<TransformComponent>().transform;
-    Transform *parent_transform =
-        &parent.GetComponent<TransformComponent>().transform;
-
-    Entity old_parent(child_data.parent, this);
-    if (old_parent) {
-        RemoveChildFromEntity(old_parent, child);
-    }
-    parent_transform->AddChild(child_transform);
-    parent_data.children.emplace(child);
-    child_data.parent = parent;
-}
-
-void Scene::RemoveChildFromEntity(Entity &parent, Entity &child) {
-    auto &children = parent.GetComponent<EntityDataComponent>().children;
-    if (children.find(child) != children.end()) {
-        children.erase(child);
-        Transform *childTransform =
-            &child.GetComponent<TransformComponent>().transform;
-        parent.GetComponent<TransformComponent>().transform.RemoveChild(
-            childTransform);
-    }
-    child.GetComponent<EntityDataComponent>().parent = Entity();
 }
 
 void Scene::Refresh() {

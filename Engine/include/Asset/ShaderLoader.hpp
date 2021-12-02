@@ -1,14 +1,14 @@
 #ifndef SD_SHADER_LOADER_HPP
 #define SD_SHADER_LOADER_HPP
 
-#include "Loader/Export.hpp"
+#include "Asset/Export.hpp"
 #include "Asset/Asset.hpp"
 
 namespace SD {
 
-class SD_LOADER_API ShaderLoader : public AssetLoaderBase {
+class SD_ASSET_API ShaderLoader : public AssetLoader {
    public:
-    using AssetLoaderBase::AssetLoaderBase;
+    using AssetLoader::AssetLoader;
     Ref<void> LoadAsset(const std::string &path) override;
 };
 

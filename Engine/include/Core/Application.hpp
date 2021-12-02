@@ -14,6 +14,8 @@ class SD_CORE_API Application {
     void Quit();
 
    protected:
+    ImGuiLayer *GetImGuiLayer() const { return m_imguiLayer; }
+
     template <typename T>
     T *GetLayer(const std::string &name) {
         auto iter = std::find_if(

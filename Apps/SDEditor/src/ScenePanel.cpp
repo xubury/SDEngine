@@ -60,7 +60,7 @@ void ScenePanel::OnImGui() {
     });
 
     if (m_entity_to_destroy) {
-        m_scene->DestroyEntity(m_entity_to_destroy);
+        m_entity_to_destroy.Destroy();
         if (m_selected_entity == m_entity_to_destroy) m_selected_entity = {};
         m_entity_to_destroy = {};
     }
@@ -90,7 +90,7 @@ void ScenePanel::OnImGui() {
             Entity parent(entity.GetComponent<EntityDataComponent>().parent,
                           m_scene);
             if (parent) {
-                m_scene->RemoveChildFromEntity(parent, entity);
+                parent.RemoveChild(entity);
             }
         }
         ImGui::EndDragDropTarget();
@@ -138,7 +138,7 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
         if (const ImGuiPayload *payload =
                 ImGui::AcceptDragDropPayload(ECS_MOVEENTITY)) {
             IM_ASSERT(payload->DataSize == sizeof(Entity));
-            m_scene->AddChildToEntity(entity, *(Entity *)payload->Data);
+            entity.AddChild(*(Entity *)payload->Data);
         }
         ImGui::EndDragDropTarget();
     }
@@ -150,7 +150,7 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
         }
         if (ImGui::MenuItem("Create Empty Entity")) {
             Entity newEntity = m_scene->CreateEntity("Empty Entity");
-            m_scene->AddChildToEntity(entity, newEntity);
+            entity.AddChild(newEntity);
         }
 
         ImGui::EndPopup();

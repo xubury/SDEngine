@@ -3,8 +3,6 @@
 
 #include "Utility/PlatformDetection.hpp"
 
-#if defined(SD_SHARED)
-
 #if defined(SD_PLATFORM_WINDOWS)
 
 // Windows compilers need specific (and different) keywords for export and
@@ -40,11 +38,5 @@
 #endif
 
 #else
-
-// Static build doesn't need import/export macros
-#define SD_API_EXPORT
-#define SD_API_IMPORT
-
-#endif
 
 #endif

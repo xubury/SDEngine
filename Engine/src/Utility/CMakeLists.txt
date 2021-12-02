@@ -56,7 +56,12 @@ endif()
 target_compile_options(sd-utility PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(sd-utility PUBLIC SD_SHARED PRIVATE SD_UTILITY_EXPORT)
+    target_compile_definitions(sd-utility 
+        INTERFACE
+        SD_UTILITY_IMPORT
+
+        PRIVATE 
+        SD_UTILITY_EXPORT)
 endif()
 
 target_include_directories(sd-utility

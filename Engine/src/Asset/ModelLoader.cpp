@@ -1,7 +1,7 @@
-#include "Loader/ModelLoader.hpp"
-#include "Renderer/Model.hpp"
+#include "Asset/ModelLoader.hpp"
+#include "Asset/Model.hpp"
 #include "Asset/Image.hpp"
-#include "Renderer/Material.hpp"
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>

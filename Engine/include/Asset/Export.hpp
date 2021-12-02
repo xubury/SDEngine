@@ -3,10 +3,12 @@
 
 #include "Utility/Config.hpp"
 
-#ifdef SD_ASSET_EXPORT
+#if defined(SD_ASSET_EXPORT)
 #define SD_ASSET_API SD_API_EXPORT
-#else
+#elif defined(SD_ASSET_IMPORT)
 #define SD_ASSET_API SD_API_IMPORT
+#else
+#define SD_ASSET_API
 #endif
 
 #endif

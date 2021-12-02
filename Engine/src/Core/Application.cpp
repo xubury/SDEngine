@@ -4,14 +4,14 @@
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
 
-#include "Loader/ImageLoader.hpp"
-#include "Loader/ModelLoader.hpp"
-#include "Loader/FontLoader.hpp"
-#include "Loader/ShaderLoader.hpp"
+#include "Asset/ImageLoader.hpp"
+#include "Asset/ModelLoader.hpp"
+#include "Asset/FontLoader.hpp"
+#include "Asset/ShaderLoader.hpp"
 
-#include "Renderer/Model.hpp"
+#include "Asset/Model.hpp"
 #include "Asset/Image.hpp"
-#include "Renderer/Font.hpp"
+#include "Asset/Font.hpp"
 #include "Graphics/Shader.hpp"
 
 namespace SD {

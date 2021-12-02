@@ -10,10 +10,10 @@ void SDEditor::OnStart() {
     int viewport_width = ini->GetInteger("editor", "viewport width", 800);
     int viewport_height = ini->GetInteger("editor", "viewport height", 600);
 
-
+#ifdef SD_IMGUI_IMPORT
     // for DLL context
-    // SetContext(entt::meta_ctx{});
-    ImGui::SetCurrentContext(GetLayer<ImGuiLayer>("ImGuiLayer")->GetContext());
+    ImGui::SetCurrentContext(GetImGuiLayer()->GetContext());
+#endif
 
     m_layer = CreateLayer<EditorLayer>(viewport_width, viewport_height);
     PushLayer(m_layer);

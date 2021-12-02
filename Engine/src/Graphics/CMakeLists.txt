@@ -30,6 +30,8 @@ set(Graphics_Include
     ${Include_Root}/Device.hpp
     ${Include_Root}/Framebuffer.hpp
     ${Include_Root}/Graphics.hpp
+    ${Include_Root}/Mateiral.hpp
+    ${Include_Root}/Mesh.hpp
     ${Include_Root}/Shader.hpp
     ${Include_Root}/Texture.hpp
     ${Include_Root}/Translator.hpp
@@ -42,6 +44,8 @@ set(Graphics_Src
     ${Src_Root}/Device.cpp
     ${Src_Root}/Framebuffer.cpp
     ${Src_Root}/Graphics.cpp
+    ${Src_Root}/Material.cpp
+    ${Src_Root}/Mesh.cpp
     ${Src_Root}/Shader.cpp
     ${Src_Root}/Texture.cpp
     ${Src_Root}/VertexArray.cpp)
@@ -51,10 +55,15 @@ add_library(sd-graphics ${Graphics_Src})
 target_compile_options(sd-graphics PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(sd-graphics PUBLIC SD_SHARED PRIVATE SD_GRAPHICS_EXPORT)
+    target_compile_definitions(sd-graphics 
+        INTERFACE
+        SD_GRAPHICS_IMPORT
+
+        PRIVATE 
+        SD_GRAPHICS_EXPORT)
 endif()
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+if(UNIX)
     target_link_libraries(sd-graphics PUBLIC X11 Xrandr Xi)
 endif()
 

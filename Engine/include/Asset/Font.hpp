@@ -2,7 +2,7 @@
 #define SD_FONT_HPP
 
 #include "Utility/Base.hpp"
-#include "Renderer/Export.hpp"
+#include "Asset/Export.hpp"
 #include "Graphics/Texture.hpp"
 
 #include <glm/glm.hpp>
@@ -12,7 +12,7 @@ typedef struct FT_FaceRec_ *FT_Face;
 
 namespace SD {
 
-struct SD_RENDERER_API Character {
+struct SD_ASSET_API Character {
     Character() = default;
     Ref<Texture> glyph;
     std::array<glm::vec2, 2> uv;
@@ -21,7 +21,7 @@ struct SD_RENDERER_API Character {
     uint32_t advance;
 };
 
-struct SD_RENDERER_API CharacterId {
+struct SD_ASSET_API CharacterId {
     CharacterId() = default;
     CharacterId(char32_t ch, uint8_t size) : ch(ch), size(size) {}
     bool operator<(const CharacterId &rhs) const {
@@ -34,7 +34,7 @@ struct SD_RENDERER_API CharacterId {
     uint8_t size;
 };
 
-struct SD_RENDERER_API CharacterHash {
+struct SD_ASSET_API CharacterHash {
     std::size_t operator()(const CharacterId &chId) const {
         auto h1 = std::hash<char32_t>{}(chId.ch);
         auto h2 = std::hash<int>{}(chId.size);
@@ -42,7 +42,7 @@ struct SD_RENDERER_API CharacterHash {
     }
 };
 
-class SD_RENDERER_API Font {
+class SD_ASSET_API Font {
    public:
     Font(FT_Face face);
     ~Font();

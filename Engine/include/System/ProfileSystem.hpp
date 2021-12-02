@@ -3,7 +3,7 @@
 
 #include "System/Export.hpp"
 #include "Core/System.hpp"
-#include "Renderer/Font.hpp"
+#include "Asset/Font.hpp"
 #include "Renderer/Camera.hpp"
 #include "Utility/Timing.hpp"
 

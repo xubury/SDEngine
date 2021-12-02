@@ -1,6 +1,6 @@
-#include "Loader/ImageLoader.hpp"
+#include "Asset/ImageLoader.hpp"
+
 #include <SDL_image.h>
-#include "Utility/Assert.hpp"
 
 namespace SD {
 

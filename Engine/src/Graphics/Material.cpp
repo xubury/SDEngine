@@ -1,4 +1,4 @@
-#include "Renderer/Material.hpp"
+#include "Graphics/Material.hpp"
 #include <map>
 
 namespace SD {

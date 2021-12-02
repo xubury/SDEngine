@@ -1,14 +1,14 @@
 #ifndef SD_FONT_LOADER_HPP
 #define SD_FONT_LOADER_HPP
 
-#include "Loader/Export.hpp"
+#include "Asset/Export.hpp"
 #include "Asset/Asset.hpp"
 
 typedef struct FT_LibraryRec_ *FT_Library;
 
 namespace SD {
 
-class SD_LOADER_API FontLoader : public AssetLoaderBase {
+class SD_ASSET_API FontLoader : public AssetLoader {
    public:
     FontLoader(AssetManager &manager);
 

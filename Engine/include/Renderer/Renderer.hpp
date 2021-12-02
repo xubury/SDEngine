@@ -5,9 +5,9 @@
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Device.hpp"
 #include "Graphics/Shader.hpp"
+#include "Graphics/Mesh.hpp"
 #include "Renderer/Camera.hpp"
-#include "Renderer/Font.hpp"
-#include "Renderer/Mesh.hpp"
+#include "Asset/Font.hpp"
 
 namespace SD {
 

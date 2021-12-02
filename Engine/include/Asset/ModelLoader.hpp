@@ -1,14 +1,14 @@
 #ifndef SD_MODEL_LOADER_HPP
 #define SD_MODEL_LOADER_HPP
 
-#include "Loader/Export.hpp"
+#include "Asset/Export.hpp"
 #include "Asset/Asset.hpp"
 
 namespace SD {
 
-class SD_LOADER_API ModelLoader : public AssetLoaderBase {
+class SD_ASSET_API ModelLoader : public AssetLoader {
    public:
-    using AssetLoaderBase::AssetLoaderBase;
+    using AssetLoader::AssetLoader;
 
     Ref<void> LoadAsset(const std::string &path) override;
 };

@@ -7,11 +7,10 @@
 #include "Utility/Transform.hpp"
 #include "Utility/Math.hpp"
 #include "Utility/ResourceId.hpp"
-#include "Renderer/Model.hpp"
-#include "Renderer/Mesh.hpp"
+#include "Asset/Model.hpp"
+#include "Asset/Font.hpp"
 #include "Renderer/Terrain.hpp"
 #include "Renderer/Light.hpp"
-#include "Renderer/Font.hpp"
 #include "Renderer/Skybox.hpp"
 
 #include "entt/entt.hpp"

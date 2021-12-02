@@ -1,4 +1,4 @@
-#include "Loader/ShaderLoader.hpp"
+#include "Asset/ShaderLoader.hpp"
 #include "Graphics/Shader.hpp"
 #include "Utility/File.hpp"
 

@@ -1,16 +1,10 @@
-find_package(Freetype REQUIRED)
-
 set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Renderer)
 set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Renderer)
 
 
 set(Renderer_Include
     ${Include_Root}/Camera.hpp
-    ${Include_Root}/Font.hpp
     ${Include_Root}/Light.hpp
-    ${Include_Root}/Mateiral.hpp
-    ${Include_Root}/Mesh.hpp
-    ${Include_Root}/Model.hpp
     ${Include_Root}/Renderer.hpp
     ${Include_Root}/RenderTarget.hpp
     ${Include_Root}/Skybox.hpp
@@ -18,11 +12,7 @@ set(Renderer_Include
 
 set(Renderer_Src
     ${Src_Root}/Camera.cpp
-    ${Src_Root}/Font.cpp
     ${Src_Root}/Light.cpp
-    ${Src_Root}/Material.cpp
-    ${Src_Root}/Mesh.cpp
-    ${Src_Root}/Model.cpp
     ${Src_Root}/Renderer.cpp
     ${Src_Root}/RenderTarget.cpp
     ${Src_Root}/Skybox.cpp
@@ -33,16 +23,19 @@ add_library(sd-renderer ${Renderer_Src})
 target_compile_options(sd-renderer PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(sd-renderer PUBLIC SD_SHARED PRIVATE SD_RENDERER_EXPORT)
+    target_compile_definitions(sd-renderer 
+        INTERFACE
+        SD_RENDERER_IMPORT
+
+        PRIVATE 
+        SD_RENDERER_EXPORT)
 endif()
 
 target_link_libraries(sd-renderer
     PUBLIC
     sd-utility
     sd-graphics
-    sd-asset
-    PRIVATE
-    Freetype::Freetype)
+    sd-asset)
 
 target_include_directories(sd-renderer
     PUBLIC

@@ -41,14 +41,17 @@ add_library(sd-core ${Core_Src})
 target_compile_options(sd-core PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(sd-core PUBLIC SD_SHARED PRIVATE SD_CORE_EXPORT)
+    target_compile_definitions(sd-core 
+        INTERFACE
+        SD_CORE_IMPORT
+
+        PRIVATE 
+        SD_CORE_EXPORT)
 endif()
 
 target_link_libraries(sd-core
     PUBLIC
     sd-renderer
-    sd-asset
-    sd-loader
     sd-utility
     sd-imgui
     PRIVATE

@@ -3,10 +3,12 @@
 
 #include "Utility/Config.hpp"
 
-#ifdef SD_RENDERER_EXPORT
+#if defined(SD_RENDERER_EXPORT)
 #define SD_RENDERER_API SD_API_EXPORT
-#else
+#elif defined(SD_RENDERER_IMPORT)
 #define SD_RENDERER_API SD_API_IMPORT
+#else
+#define SD_RENDERER_API
 #endif
 
 #endif

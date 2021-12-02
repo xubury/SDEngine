@@ -3,10 +3,12 @@
 
 #include "Utility/Config.hpp"
 
-#ifdef SD_CORE_EXPORT
+#if defined(SD_CORE_EXPORT)
 #define SD_CORE_API SD_API_EXPORT
-#else
+#elif defined(SD_CORE_IMPORT)
 #define SD_CORE_API SD_API_IMPORT
+#else
+#define SD_CORE_API
 #endif
 
 #endif

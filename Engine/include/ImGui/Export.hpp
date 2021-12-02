@@ -3,10 +3,12 @@
 
 #include "Utility/Config.hpp"
 
-#ifdef SD_IMGUI_EXPORT
+#if defined(SD_IMGUI_EXPORT)
 #define IMGUI_API SD_API_EXPORT
-#else
+#elif defined(SD_IMGUI_IMPORT)
 #define IMGUI_API SD_API_IMPORT
+#else
+#define IMGUI_API
 #endif
 
 #endif

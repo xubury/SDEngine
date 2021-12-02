@@ -16,12 +16,12 @@ add_library(sd-ecs ${ECS_Src})
 target_compile_options(sd-ecs PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(sd-ecs 
-        PUBLIC 
-        SD_SHARED
-        PRIVATE 
-        SD_ECS_EXPORT 
-        ENTT_API_EXPORT)
+    target_compile_definitions(sd-ecs
+        INTERFACE
+        SD_ECS_IMPORT
+
+        PRIVATE
+        SD_ECS_EXPORT)
 endif()
 
 target_include_directories(sd-ecs

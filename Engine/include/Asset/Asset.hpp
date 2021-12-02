@@ -47,12 +47,12 @@ class SD_ASSET_API Asset {
 
 class AssetManager;
 
-class SD_ASSET_API AssetLoaderBase {
+class SD_ASSET_API AssetLoader {
    public:
-    AssetLoaderBase(AssetManager &manager) : m_manager(manager) {}
-    AssetLoaderBase(const AssetLoaderBase &) = delete;
-    AssetLoaderBase &operator=(const AssetLoaderBase &) = delete;
-    virtual ~AssetLoaderBase() = default;
+    AssetLoader(AssetManager &manager) : m_manager(manager) {}
+    AssetLoader(const AssetLoader &) = delete;
+    AssetLoader &operator=(const AssetLoader &) = delete;
+    virtual ~AssetLoader() = default;
 
     virtual Ref<void> LoadAsset(const std::string &path) = 0;
 
@@ -90,12 +90,12 @@ class SD_ASSET_API AssetManager {
     bool valid() const { return std::filesystem::exists(m_directory); }
 
     template <typename ASSET>
-    void SetLoader(AssetLoaderBase *loader) {
+    void SetLoader(AssetLoader *loader) {
         size_t type = GetAssetType<ASSET>();
         m_loaders[type] = loader;
     }
 
-    AssetLoaderBase *getLoader(size_t id) { return m_loaders[id]; }
+    AssetLoader *getLoader(size_t id) { return m_loaders[id]; }
 
     template <typename ASSET>
     ResourceId LoadAsset(const std::filesystem::path &path) {
@@ -146,7 +146,7 @@ class SD_ASSET_API AssetManager {
    private:
     std::unordered_map<std::string, ResourceId> m_id_map;
     std::unordered_map<ResourceId, Asset> m_resources;
-    std::unordered_map<size_t, AssetLoaderBase *> m_loaders;
+    std::unordered_map<size_t, AssetLoader *> m_loaders;
     std::filesystem::path m_directory;
 };
 

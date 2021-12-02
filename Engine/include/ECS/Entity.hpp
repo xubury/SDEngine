@@ -7,15 +7,20 @@
 
 namespace SD {
 
-void SD_ECS_API SetContext(entt::meta_ctx ctx);
-
 class SD_ECS_API Entity {
    public:
     static const entt::entity INVALID_ID;
 
    public:
     Entity();
+
     Entity(entt::entity handle, Scene *scene);
+
+    void Destroy(bool is_root = true);
+
+    void AddChild(Entity &child);
+
+    void RemoveChild(Entity &child);
 
     template <typename T, typename... Args>
     T &AddComponent(Args &&...args);

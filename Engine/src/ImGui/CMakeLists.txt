@@ -17,7 +17,12 @@ add_library(sd-imgui ${ImGui_Src})
 target_compile_options(sd-imgui PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(sd-imgui PUBLIC SD_SHARED PRIVATE SD_IMGUI_EXPORT)
+    target_compile_definitions(sd-imgui 
+        INTERFACE 
+        SD_IMGUI_IMPORT
+
+        PRIVATE 
+        SD_IMGUI_EXPORT)
 endif()
 
 target_link_libraries(sd-imgui
