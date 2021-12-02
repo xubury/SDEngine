@@ -1,22 +1,20 @@
 #include "Graphics/Shader.hpp"
+#include <unordered_map>
 #include "Graphics/Graphics.hpp"
 #include "Graphics/OpenGL/GLShader.hpp"
 #include "Utility/File.hpp"
 
 namespace SD {
 
-static inline ShaderType ShaderTypeFromName(const std::string& name) {
-    if (name == "vertex") {
-        return ShaderType::VERTEX;
-    } else if (name == "fragment") {
-        return ShaderType::FRAGMENT;
-    } else if (name == "geometry") {
-        return ShaderType::GEOMETRY;
-    } else if (name == "compute") {
-        return ShaderType::COMPUTE;
-    }
+static inline ShaderType GetShaderType(const std::string& name) {
+    static const std::unordered_map<std::string, ShaderType> map = {
+        {"vertex", ShaderType::VERTEX},
+        {"fragment", ShaderType::FRAGMENT},
+        {"geometry", ShaderType::GEOMETRY},
+        {"compute", ShaderType::COMPUTE},
+    };
 
-    return ShaderType::INVALID;
+    return map.at(name);
 }
 
 Ref<Shader> Shader::Create() {
@@ -32,7 +30,13 @@ Ref<Shader> Shader::Create() {
     return shader;
 }
 
-void ShaderLibrary::BuildShader(Shader& shader, const std::filesystem::path& path) {
+ShaderLibrary& ShaderLibrary::Instance() {
+    static ShaderLibrary s_instance;
+    return s_instance;
+}
+
+void ShaderLibrary::BuildShader(Shader& shader,
+                                const std::filesystem::path& path) {
     std::string full_path = GetAbsolutePath(path).string();
     SD_CORE_TRACE("Building shader code from {}", full_path);
     std::string source;
@@ -50,7 +54,7 @@ void ShaderLibrary::BuildShader(Shader& shader, const std::filesystem::path& pat
         size_t end = source.find("#shader", start);
         i = end;
 
-        ShaderType type = ShaderTypeFromName(name);
+        ShaderType type = GetShaderType(name);
 
         std::string code;
         if (type == ShaderType::INVALID) {
@@ -116,6 +120,17 @@ Ref<Shader> ShaderLibrary::Get(const std::string& name) {
 
 bool ShaderLibrary::Exists(const std::string& name) const {
     return m_shaders.find(name) != m_shaders.end();
+}
+
+void ShaderLibrary::SetDirectory(const std::filesystem::path& path) {
+    m_directory =
+        path.is_relative() ? std::filesystem::current_path() / path : path;
+}
+
+std::filesystem::path ShaderLibrary::GetAbsolutePath(
+    const std::filesystem::path& path) const {
+    auto ret = path.is_relative() ? m_directory / path : path;
+    return ret.make_preferred();
 }
 
 }  // namespace SD

@@ -60,13 +60,11 @@ class SD_GRAPHICS_API Shader {
     Shader() = default;
 };
 
-class ShaderLibrary {
+class SD_GRAPHICS_API ShaderLibrary {
    public:
-    static ShaderLibrary& Instance() {
-        static ShaderLibrary s_instance;
-        return s_instance;
-    }
-    void BuildShader(Shader &shader, const std::filesystem::path &path);
+    static ShaderLibrary& Instance();
+
+    void BuildShader(Shader& shader, const std::filesystem::path& path);
 
     void Add(const std::string& name, const Ref<Shader>& shader);
     Ref<Shader> Load(const std::string& filepath);
@@ -76,15 +74,10 @@ class ShaderLibrary {
 
     bool Exists(const std::string& name) const;
 
-    void SetDirectory(const std::filesystem::path& path) {
-        m_directory =
-            path.is_relative() ? std::filesystem::current_path() / path : path;
-    }
+    void SetDirectory(const std::filesystem::path& path);
 
-    std::filesystem::path GetAbsolutePath(const std::filesystem::path& path) {
-        auto ret = path.is_relative() ? m_directory / path : path;
-        return ret.make_preferred();
-    }
+    std::filesystem::path GetAbsolutePath(
+        const std::filesystem::path& path) const;
 
    private:
     std::unordered_map<std::string, Ref<Shader>> m_shaders;

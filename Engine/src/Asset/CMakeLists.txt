@@ -47,6 +47,7 @@ target_link_libraries(sd-asset
     PUBLIC
     sd-utility
     PRIVATE
+    sd-graphics
     SDL2::SDL2
     ${SDL2_IMAGE_LIBRARIES}
     assimp::assimp
