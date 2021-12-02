@@ -75,9 +75,9 @@ void LightingSystem::OnPush() {
 void LightingSystem::OnPop() { dispatcher->Unsubscribe<WindowSizeEvent>(this); }
 
 void LightingSystem::InitShaders() {
-    m_emssive_shader = asset->LoadAndGet<Shader>("shaders/emissive.glsl");
-    m_deferred_shader = asset->LoadAndGet<Shader>("shaders/deferred.glsl");
-    m_gbuffer_shader = asset->LoadAndGet<Shader>("shaders/gbuffer.glsl");
+    m_emssive_shader = ShaderLibrary::Instance().Load("shaders/emissive.glsl");
+    m_deferred_shader = ShaderLibrary::Instance().Load("shaders/deferred.glsl");
+    m_gbuffer_shader = ShaderLibrary::Instance().Load("shaders/gbuffer.glsl");
 }
 
 void LightingSystem::InitLighting(int width, int height, int samples) {

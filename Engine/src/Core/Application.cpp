@@ -7,12 +7,10 @@
 #include "Asset/ImageLoader.hpp"
 #include "Asset/ModelLoader.hpp"
 #include "Asset/FontLoader.hpp"
-#include "Asset/ShaderLoader.hpp"
 
 #include "Asset/Model.hpp"
 #include "Asset/Image.hpp"
 #include "Asset/Font.hpp"
-#include "Graphics/Shader.hpp"
 
 namespace SD {
 
@@ -49,17 +47,17 @@ Application::Application(const std::string &title) {
     // Setting up which api to use
     SetGraphicsAPI(GraphicsAPI::OpenGL);
 
+    ShaderLibrary::Instance().SetDirectory("assets");
+
     window = Window::Create(property);
 
     asset = CreateRef<AssetManager>();
-
     asset->SetLoader<Image>(new ImageLoader(*asset));
     asset->SetLoader<Model>(new ModelLoader(*asset));
     asset->SetLoader<Font>(new FontLoader(*asset));
-    asset->SetLoader<Shader>(new ShaderLoader(*asset));
     asset->Load("assets");
 
-    renderer = CreateRef<Renderer>(asset.get(), property.msaa);
+    renderer = CreateRef<Renderer>(property.msaa);
     dispatcher = CreateRef<EventDispatcher>();
     m_imguiLayer = CreateLayer<ImGuiLayer>();
     PushOverlay(m_imguiLayer);

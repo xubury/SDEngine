@@ -35,7 +35,7 @@ SkyboxSystem::SkyboxSystem(RenderTarget *target)
 }
 
 void SkyboxSystem::OnInit() {
-    m_skyboxShader = asset->LoadAndGet<Shader>("shaders/skybox.glsl");
+    m_skyboxShader = ShaderLibrary::Instance().Load("shaders/skybox.glsl");
 }
 
 void SkyboxSystem::OnPush() {}

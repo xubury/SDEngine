@@ -8,7 +8,7 @@ namespace SD {
 
 const static uint8_t UV_INDEX[][2] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
 
-Renderer::Renderer(AssetManager* manager, int msaa) {
+Renderer::Renderer(int msaa) {
     SD_CORE_TRACE("Initializing Renderer");
     m_camera_UBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
                                          BufferIOType::DYNAMIC);
@@ -18,10 +18,10 @@ Renderer::Renderer(AssetManager* manager, int msaa) {
     } else {
         Device::instance().Disable(Operation::MULTISAMPLE);
     }
-    InitRenderer2D(manager);
+    InitRenderer2D();
 }
 
-void Renderer::InitRenderer2D(AssetManager* manager) {
+void Renderer::InitRenderer2D() {
     std::array<uint32_t, Renderer2DData::MAX_INDICES> quad_indices;
     uint32_t offset = 0;
     for (uint32_t i = 0; i < Renderer2DData::MAX_INDICES; i += 6) {
@@ -67,7 +67,7 @@ void Renderer::InitRenderer2D(AssetManager* manager) {
         TextureMipmapFilter::LINEAR, &color);
 
     m_2d_data.sprite_shader =
-        manager->LoadAndGet<Shader>("shaders/sprite.glsl");
+        ShaderLibrary::Instance().Load("shaders/sprite.glsl");
 }
 
 void Renderer::SetRenderTarget(RenderTarget& target) {

@@ -44,8 +44,8 @@ PostProcessSystem::PostProcessSystem(RenderTarget *target, int width,
 }
 
 void PostProcessSystem::OnInit() {
-    m_blurShader = asset->LoadAndGet<Shader>("shaders/blur.glsl");
-    m_postShader = asset->LoadAndGet<Shader>("shaders/postProcess.glsl");
+    m_blurShader = ShaderLibrary::Instance().Load("shaders/blur.glsl");
+    m_postShader = ShaderLibrary::Instance().Load("shaders/postProcess.glsl");
 }
 
 void PostProcessSystem::OnPush() {

@@ -9,7 +9,7 @@ namespace SD {
 ShadowSystem::ShadowSystem() : System("Shadow") {}
 
 void ShadowSystem::OnInit() {
-    m_shadowShader = asset->LoadAndGet<Shader>("shaders/shadow.glsl");
+    m_shadowShader = ShaderLibrary::Instance().Load("shaders/shadow.glsl");
 }
 
 void ShadowSystem::OnPush() {}

@@ -13,7 +13,6 @@ set(Asset_Include
     ${Include_Root}/Image.hpp
     ${Include_Root}/ImageLoader.hpp
     ${Include_Root}/FontLoader.hpp
-    ${Include_Root}/ShaderLoader.hpp
     ${Include_Root}/ModelLoader.hpp)
 
 set(Asset_Src
@@ -23,7 +22,6 @@ set(Asset_Src
     ${Src_Root}/Image.cpp
     ${Src_Root}/FontLoader.cpp
     ${Src_Root}/ImageLoader.cpp
-    ${Src_Root}/ShaderLoader.cpp
     ${Src_Root}/ModelLoader.cpp)
 
 add_library(sd-asset ${Asset_Src})
@@ -49,7 +47,6 @@ target_link_libraries(sd-asset
     PUBLIC
     sd-utility
     PRIVATE
-    sd-graphics
     SDL2::SDL2
     ${SDL2_IMAGE_LIBRARIES}
     assimp::assimp

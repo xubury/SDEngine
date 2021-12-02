@@ -62,7 +62,7 @@ struct Renderer2DData {
 
 class SD_RENDERER_API Renderer {
    public:
-    Renderer(AssetManager *manager, int msaa);
+    Renderer(int msaa);
     ~Renderer() { SD_CORE_TRACE("Deleting Renderer"); }
     Renderer(const Renderer &) = delete;
     Renderer &operator=(const Renderer &) = delete;
@@ -108,7 +108,7 @@ class SD_RENDERER_API Renderer {
     Camera *GetCamera();
 
    private:
-    void InitRenderer2D(AssetManager *manager);
+    void InitRenderer2D();
 
     Scene *m_scene;
     Camera *m_camera;
