@@ -19,12 +19,8 @@ EditorLayer::EditorLayer(int width, int height)
       m_is_viewport_focused(false),
       m_is_viewport_hovered(false),
       m_hide(false),
-      m_editor_camera(CameraType::PERSPECTIVE, glm::radians(45.f), width,
-                      height, 0.1, 1000.f),
       m_load_scene_open(false),
       m_save_scene_open(false) {
-    m_camera_controller.SetCamera(&m_editor_camera);
-    m_editor_camera.SetWorldPosition(glm::vec3(0, 0, 10));
     m_screen_buffer = Framebuffer::Create();
     m_screen_buffer->AttachTexture(Texture::Create(
         m_width, m_height, 1, TextureType::TEX_2D, TextureFormat::RGBA,
@@ -43,6 +39,7 @@ EditorLayer::EditorLayer(int width, int height)
 }
 
 EditorLayer::~EditorLayer() {
+    DestroySystem(m_editor_camera_system);
     DestroySystem(m_shadow_system);
     DestroySystem(m_lighting_system);
     DestroySystem(m_skybox_system);
@@ -63,6 +60,8 @@ void EditorLayer::OnInit() {
         CreateSystem<PostProcessSystem>(&m_target, m_width, m_height);
     m_profile_system =
         CreateSystem<ProfileSystem>(&m_target, m_width, m_height);
+    m_editor_camera_system =
+        CreateSystem<EditorCameraSystem>(m_width, m_height);
 
     auto image = asset->LoadAndGet<Bitmap>("icons/light.png");
 
@@ -73,11 +72,10 @@ void EditorLayer::OnInit() {
         TextureMipmapFilter::LINEAR_LINEAR, image->Data());
 
     m_scene_panel.SetAppVars(MakeAppVars());
-
-    renderer->SetCamera(&m_editor_camera);
 }
 
 void EditorLayer::OnPush() {
+    PushSystem(m_editor_camera_system);
     PushSystem(m_shadow_system);
     PushSystem(m_lighting_system);
     PushSystem(m_skybox_system);
@@ -89,6 +87,7 @@ void EditorLayer::OnPush() {
 }
 
 void EditorLayer::OnPop() {
+    PopSystem(m_editor_camera_system);
     PopSystem(m_shadow_system);
     PopSystem(m_lighting_system);
     PopSystem(m_skybox_system);
@@ -107,28 +106,24 @@ void EditorLayer::OnRender() {
     if (m_hide) return;
 
     Device::instance().Disable(Operation::DEPTH_TEST);
-    renderer->BeginScene(m_editor_camera);
+    Camera *cam = renderer->GetCamera();
+    renderer->BeginScene(*cam);
     auto lightView = m_scene->view<LightComponent, TransformComponent>();
-    lightView.each(
-        [this](const LightComponent &, const TransformComponent &transComp) {
-            glm::vec3 pos = transComp.transform.GetWorldPosition();
-            float dist = glm::distance(pos, m_editor_camera.GetWorldPosition());
-            float scale = (dist - m_editor_camera.GetNearZ()) / 20;
-            renderer->DrawBillboard(m_light_icon, pos, glm::vec2(scale));
-        });
+    lightView.each([this, &cam](const LightComponent &,
+                                const TransformComponent &transComp) {
+        glm::vec3 pos = transComp.transform.GetWorldPosition();
+        float dist = glm::distance(pos, cam->GetWorldPosition());
+        float scale = (dist - cam->GetNearZ()) / 20;
+        renderer->DrawBillboard(m_light_icon, pos, glm::vec2(scale));
+    });
     renderer->EndScene();
     Device::instance().Enable(Operation::DEPTH_TEST);
 }
 
 void EditorLayer::OnTick(float dt) {
-    Entity &entity = m_scene_panel.GetSelectedEntity();
-
-    if (entity) {
-        glm::vec3 pos = entity.GetComponent<TransformComponent>()
-                            .transform.GetWorldPosition();
-        m_camera_controller.SetFocus(pos);
+    for (auto &system : GetSystems()) {
+        system->OnTick(dt);
     }
-    m_camera_controller.Tick(dt);
 }
 
 void EditorLayer::OnImGui() {
@@ -259,7 +254,6 @@ void EditorLayer::OnImGui() {
                                 viewportMaxRegion.y + viewportOffset.y};
         if (m_width != wsize.x || m_height != wsize.y) {
             if (wsize.x > 0 && wsize.y > 0) {
-                m_editor_camera.Resize(wsize.x, wsize.y);
                 m_target.Resize(wsize.x, wsize.y);
                 m_screen_buffer->Resize(wsize.x, wsize.y);
                 m_debug_gbuffer->Resize(wsize.x, wsize.y);
@@ -276,16 +270,17 @@ void EditorLayer::OnImGui() {
         m_is_viewport_hovered = ImGui::IsWindowHovered();
         ImGui::DrawTexture(*m_screen_buffer->GetTexture(), wsize, ImVec2(0, 1),
                            ImVec2(1, 0));
-        ImGuizmo::SetOrthographic(m_editor_camera.GetCameraType() ==
-                                  CameraType::ORTHOGRAPHIC);
         ImGuizmo::SetRect(m_viewport_bounds[0].x, m_viewport_bounds[0].y,
                           m_viewport_bounds[1].x - m_viewport_bounds[0].x,
                           m_viewport_bounds[1].y - m_viewport_bounds[0].y);
         ImGuizmo::SetDrawlist();
         Entity &entity = m_scene_panel.GetSelectedEntity();
         if (entity) {
-            const glm::mat4 &view = m_editor_camera.GetView();
-            const glm::mat4 &projection = m_editor_camera.GetProjection();
+            Camera *cam = m_editor_camera_system->GetCamera();
+            ImGuizmo::SetOrthographic(cam->GetCameraType() ==
+                                      CameraType::ORTHOGRAPHIC);
+            const glm::mat4 &view = cam->GetView();
+            const glm::mat4 &projection = cam->GetProjection();
 
             auto &tc = entity.GetComponent<TransformComponent>();
             glm::mat4 transform = tc.transform.GetWorldTransform();
@@ -331,10 +326,9 @@ void EditorLayer::Show() {
 }
 
 void EditorLayer::OnEventProcess(const Event &event) {
-    if (m_is_viewport_hovered) {
-        m_camera_controller.ProcessEvent(event);
-    }
-    if (event.type == EventType::KEY_PRESSED) {
+    if (event.type == EventType::MOUSE_MOTION) {
+        dispatcher->PublishEvent(event.mouse_motion);
+    } else if (event.type == EventType::KEY_PRESSED) {
         switch (event.key.keycode) {
             default:
                 break;
@@ -382,11 +376,7 @@ void EditorLayer::OnEventProcess(const Event &event) {
     }
 }
 
-void EditorLayer::OnEventsProcess() {
-    if (m_is_viewport_hovered) {
-        m_camera_controller.ProcessEvents();
-    }
-}
+void EditorLayer::OnEventsProcess() {}
 
 void EditorLayer::NewScene() {
     m_scene = CreateRef<Scene>();

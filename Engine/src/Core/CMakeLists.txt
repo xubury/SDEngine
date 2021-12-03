@@ -20,9 +20,6 @@ set(Core_Include
     ${Include_Root}/Layer.hpp
     ${Include_Root}/ImGuiLayer.hpp
     ${Include_Root}/Event.hpp
-    ${Include_Root}/Action.hpp
-    ${Include_Root}/ActionMap.hpp
-    ${Include_Root}/ActionTarget.hpp
     ${Include_Root}/Input.hpp)
 
 set(Core_Src
@@ -33,7 +30,6 @@ set(Core_Src
     ${Src_Root}/Keyboard.cpp
     ${Src_Root}/ImGuiLayer.cpp
     ${Src_Root}/Vars.cpp
-    ${Src_Root}/Action.cpp
     ${Src_Root}/Input.cpp)
 
 add_library(sd-core ${Core_Src})

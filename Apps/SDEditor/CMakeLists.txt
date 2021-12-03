@@ -10,7 +10,7 @@ add_executable(SDEditor
     src/SDEditor.cpp
     src/EditorLayer.cpp
     src/ScenePanel.cpp
-    src/CameraController.cpp)
+    src/EditorCameraSystem.cpp)
 
 target_include_directories(SDEditor PUBLIC include)
 

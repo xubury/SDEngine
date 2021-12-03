@@ -4,7 +4,8 @@
 #include "Core/Layer.hpp"
 #include "Renderer/Camera.hpp"
 #include "ScenePanel.hpp"
-#include "CameraController.hpp"
+
+#include "EditorCameraSystem.hpp"
 
 #include "System/ShadowSystem.hpp"
 #include "System/LightingSystem.hpp"
@@ -50,6 +51,7 @@ class EditorLayer : public Layer {
 
     void Show();
 
+    EditorCameraSystem *m_editor_camera_system;
     ShadowSystem *m_shadow_system;
     LightingSystem *m_lighting_system;
     SkyboxSystem *m_skybox_system;
@@ -69,9 +71,6 @@ class EditorLayer : public Layer {
     bool m_is_viewport_hovered;
 
     bool m_hide;
-
-    Camera m_editor_camera;
-    CameraController m_camera_controller;
 
     Ref<Scene> m_scene;
     ScenePanel m_scene_panel;
