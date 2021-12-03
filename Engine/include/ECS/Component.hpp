@@ -75,9 +75,12 @@ struct SD_ECS_API TextComponent {
 
 struct SD_ECS_API CameraComponent {
     Camera camera;
+    CameraComponent() = default;
     CameraComponent(CameraType type, float fov, float width, float height,
                     float near_z, float far_z)
         : camera(type, fov, width, height, near_z, far_z) {}
+
+    SERIALIZE(camera)
 };
 
 struct SD_ECS_API SkyboxComponent {

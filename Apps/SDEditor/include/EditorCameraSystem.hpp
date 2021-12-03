@@ -23,7 +23,7 @@ class EditorCameraSystem : public System {
 
     void Rotate(float yaw, float pitch);
 
-    Camera *GetCamera() const;
+    const Camera &GetCamera() const;
 
    private:
     HandlerRegistration m_key_handler;
@@ -37,8 +37,7 @@ class EditorCameraSystem : public System {
     glm::vec2 m_mouse_smooth_movement;
     glm::vec2 m_mouse_movement;
 
-    Scene m_editor_scene;
-    Camera* m_camera;
+    Camera m_camera;
 };
 
 }  // namespace SD

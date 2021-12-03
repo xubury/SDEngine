@@ -11,6 +11,7 @@ enum class CameraType { ORTHOGRAPHIC, PERSPECTIVE };
 
 class SD_RENDERER_API Camera {
    public:
+    Camera() = default;
     Camera(CameraType type, float fov, float width, float height, float near_z,
            float far_z);
 
@@ -88,6 +89,8 @@ class SD_RENDERER_API Camera {
     void SetCameraType(CameraType type);
     CameraType GetCameraType() const;
 
+    SERIALIZE(m_type, m_position, m_rotation, m_fov, m_width, m_height,
+              m_near_z, m_far_z)
    private:
     glm::mat4 m_view;
     glm::mat4 m_projection;

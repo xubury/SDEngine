@@ -276,11 +276,11 @@ void EditorLayer::OnImGui() {
         ImGuizmo::SetDrawlist();
         Entity &entity = m_scene_panel.GetSelectedEntity();
         if (entity) {
-            Camera *cam = m_editor_camera_system->GetCamera();
-            ImGuizmo::SetOrthographic(cam->GetCameraType() ==
+            const Camera &cam = m_editor_camera_system->GetCamera();
+            ImGuizmo::SetOrthographic(cam.GetCameraType() ==
                                       CameraType::ORTHOGRAPHIC);
-            const glm::mat4 &view = cam->GetView();
-            const glm::mat4 &projection = cam->GetProjection();
+            const glm::mat4 &view = cam.GetView();
+            const glm::mat4 &projection = cam.GetProjection();
 
             auto &tc = entity.GetComponent<TransformComponent>();
             glm::mat4 transform = tc.transform.GetWorldTransform();

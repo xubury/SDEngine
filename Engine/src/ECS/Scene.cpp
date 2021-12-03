@@ -23,6 +23,7 @@ void Scene::Refresh() {
         Entity entity(entity_id, this);
         RefreshEntityChildTranforms(entity);
         RefreshLight(entity);
+        RefreshCamera(entity);
     }
 }
 
@@ -34,7 +35,7 @@ void Scene::Load(const std::string &filePath) {
         .entities(archive)
         .component<IdComponent, EntityDataComponent, TagComponent,
                    TransformComponent, ModelComponent, LightComponent,
-                   TextComponent, SkyboxComponent>(archive);
+                   TextComponent, CameraComponent, SkyboxComponent>(archive);
     Refresh();
 }
 
@@ -45,7 +46,7 @@ void Scene::Save(const std::string &filePath) {
         .entities(archive)
         .component<IdComponent, EntityDataComponent, TagComponent,
                    TransformComponent, ModelComponent, LightComponent,
-                   TextComponent, SkyboxComponent>(archive);
+                   TextComponent, CameraComponent, SkyboxComponent>(archive);
 }
 
 void Scene::RefreshLight(Entity &entity) {
@@ -72,6 +73,12 @@ void Scene::RefreshEntityChildTranforms(Entity &entity) {
         entity.GetComponent<TransformComponent>().transform.AddChild(
             &child.GetComponent<TransformComponent>().transform);
         RefreshEntityChildTranforms(child);
+    }
+}
+
+void Scene::RefreshCamera(Entity &entity) {
+    if (entity.HasComponent<CameraComponent>()) {
+        entity.OnComponentAdded(entity.GetComponent<CameraComponent>());
     }
 }
 

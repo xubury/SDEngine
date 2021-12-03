@@ -45,13 +45,13 @@ class SD_ECS_API Entity {
 
     bool operator<(const Entity &other) const;
 
-   private:
     template <typename T>
     void OnComponentAdded(T &component);
 
     template <typename>
     void OnComponentAdded(CameraComponent &component);
 
+   private:
     entt::entity m_handle;
     Scene *m_scene;
 };
