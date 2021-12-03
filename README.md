@@ -23,6 +23,7 @@ Simple and Direct Engine
 - [ ] Gui System
 - [ ] Commandline args parser
 - [X] Get EXE directory for windows
+- [ ] Font has some bugs (loading for different size)
 - [ ] Script System
 - [ ] Audio System
 - [ ] Physics
