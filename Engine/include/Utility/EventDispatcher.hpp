@@ -8,6 +8,7 @@
 #include <typeindex>
 #include <vector>
 #include <unordered_map>
+#include <shared_mutex>
 #include <any>
 
 namespace SD {
@@ -42,46 +43,67 @@ class HandlerRegistration {
         : m_handle(handle), m_dispatcher(bus) {}
 };
 
-// WARNING:NOT Thread-safe
 class EventDispatcher {
    public:
     template <typename F, typename EVENT>
     HandlerRegistration Register(F* object, void (F::*method)(const EVENT&)) {
         const auto type_idx = std::type_index(typeid(EVENT));
-        auto iter = m_callbacks.emplace(type_idx, [object, method](auto value) {
-            (object->*method)(std::any_cast<EVENT>(value));
+        const void* handle;
+        SafeUniqueAccess([&]() {
+            auto iter =
+                m_callbacks.emplace(type_idx, [object, method](auto value) {
+                    (object->*method)(std::any_cast<EVENT>(value));
+                });
+            handle = static_cast<const void*>(&(iter->second));
         });
-        const void* handle = static_cast<const void*>(&(iter->second));
         return {handle, this};
     }
 
     bool RemoveHandler(HandlerRegistration& registration) {
         if (!registration.GetHandle()) return false;
-
         bool res = false;
-        for (auto it = m_callbacks.begin(); it != m_callbacks.end(); ++it) {
-            if (static_cast<const void*>(&(it->second)) ==
-                registration.GetHandle()) {
-                m_callbacks.erase(it);
-                res = true;
-                registration.Reset();
-                break;
+
+        SafeUniqueAccess([&]() {
+            for (auto it = m_callbacks.begin(); it != m_callbacks.end(); ++it) {
+                if (static_cast<const void*>(&(it->second)) ==
+                    registration.GetHandle()) {
+                    m_callbacks.erase(it);
+                    res = true;
+                    registration.Reset();
+                    break;
+                }
             }
-        }
+        });
         return res;
     }
 
     template <typename EVENT>
-    void PublishEvent(const EVENT& e) {
-        const auto type_idx = std::type_index(typeid(EVENT));
-        auto [begin, end] = m_callbacks.equal_range(type_idx);
-        for (; begin != end; ++begin) {
-            begin->second(e);
-        }
+    void PublishEvent(EVENT&& e) {
+        SafeSharedAccess([this, local_evt = std::forward<EVENT>(e)]() {
+            auto [begin, end] =
+                m_callbacks.equal_range(std::type_index(typeid(EVENT)));
+            for (; begin != end; ++begin) {
+                begin->second(local_evt);
+            }
+        });
     }
 
    private:
     std::unordered_multimap<std::type_index, Callback> m_callbacks;
+    using MutexType = std::shared_mutex;
+    MutexType m_mutex;
+
+    template <typename CALLBACK>
+    void SafeUniqueAccess(CALLBACK&& callback) {
+        std::unique_lock<MutexType> lock(m_mutex);
+        callback();
+    }
+
+    template <typename CALLBACK>
+    void SafeSharedAccess(CALLBACK&& callback) {
+        std::shared_lock<MutexType> lock(m_mutex);
+        callback();
+    }
 };
 
 inline void HandlerRegistration::Unregister() noexcept {
