@@ -31,8 +31,8 @@ class SD_UTILITY_API EventStack {
             }
         }
         if (iter != m_items.end()) {
+            size_t id = iter - m_items.begin();
             m_items.erase(iter);
-            size_t id = std::distance(iter, m_items.begin());
             if (id < m_insertId) {
                 --m_insertId;
             }
