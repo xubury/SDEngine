@@ -10,8 +10,8 @@ set(Asset_Include
     ${Include_Root}/Asset.hpp
     ${Include_Root}/Font.hpp
     ${Include_Root}/Model.hpp
-    ${Include_Root}/Image.hpp
-    ${Include_Root}/ImageLoader.hpp
+    ${Include_Root}/Bitmap.hpp
+    ${Include_Root}/BitmapLoader.hpp
     ${Include_Root}/FontLoader.hpp
     ${Include_Root}/ModelLoader.hpp)
 
@@ -19,9 +19,9 @@ set(Asset_Src
     ${Src_Root}/Asset.cpp
     ${Src_Root}/Font.cpp
     ${Src_Root}/Model.cpp
-    ${Src_Root}/Image.cpp
+    ${Src_Root}/Bitmap.cpp
     ${Src_Root}/FontLoader.cpp
-    ${Src_Root}/ImageLoader.cpp
+    ${Src_Root}/BitmapLoader.cpp
     ${Src_Root}/ModelLoader.cpp)
 
 add_library(sd-asset ${Asset_Src})

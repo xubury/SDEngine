@@ -4,21 +4,21 @@ namespace SD {
 
 Skybox::Skybox() : m_valid_mask(0) {}
 
-void Skybox::SetFace(CubeMapFace face, Image &image) {
+void Skybox::SetFace(CubeMapFace face, Bitmap &bitmap) {
     TextureFormat format =
-        image.HasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB;
+        bitmap.HasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB;
     uint8_t mask = GetCubeMapFaceMask(face);
-    if (m_texture == nullptr || m_width != image.Width() ||
-        m_height != image.Height() || format != m_format) {
-        m_width = image.Width();
-        m_height = image.Height();
+    if (m_texture == nullptr || m_width != bitmap.Width() ||
+        m_height != bitmap.Height() || format != m_format) {
+        m_width = bitmap.Width();
+        m_height = bitmap.Height();
         m_format = format;
         m_texture = Texture::Create(m_width, m_height, 1, TextureType::TEX_CUBE,
                                     m_format, TextureFormatType::UBYTE,
                                     TextureWrap::EDGE, TextureFilter::LINEAR,
                                     TextureMipmapFilter::LINEAR);
     }
-    m_texture->SetPixels(image.Width(), image.Height(), image.Data(), mask);
+    m_texture->SetPixels(bitmap.Width(), bitmap.Height(), bitmap.Data(), mask);
     m_valid_mask |= mask;
 }
 

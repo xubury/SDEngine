@@ -3,7 +3,6 @@
 #include "Utility/String.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "Asset/Asset.hpp"
-#include "Asset/Image.hpp"
 
 #define ECS_MOVEENTITY "ECS MOVEENTITY"
 
@@ -402,7 +401,6 @@ void ScenePanel::DrawComponents(Entity &entity) {
             }
         });
     DrawComponent<TextComponent>("Text", entity, [&](TextComponent &textComp) {
-        // TODO: Can ImGui support UTF-16?
         static bool fileDialogOpen = false;
         static ImFileDialogInfo fileDialogInfo;
         std::string path = asset->GetAssetPath(textComp.id);
@@ -422,6 +420,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
         }
         ImGui::Text("Text Content:");
         static char buffer[256];
+        std::copy(textComp.text.begin(),textComp.text.end(), buffer);
         if (ImGui::InputText("##TextEdit", buffer, sizeof(buffer))) {
             textComp.text = buffer;
         }
@@ -499,8 +498,8 @@ void ScenePanel::DrawComponents(Entity &entity) {
             }
             if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
                 skyboxComp.id[index] =
-                    asset->LoadAsset<Image>(fileDialogInfo.result_path);
-                auto image = asset->Get<Image>(skyboxComp.id[index]);
+                    asset->LoadAsset<Bitmap>(fileDialogInfo.result_path);
+                auto image = asset->Get<Bitmap>(skyboxComp.id[index]);
                 skyboxComp.skybox.SetFace(selected, *image);
             }
         });

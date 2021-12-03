@@ -2,12 +2,12 @@
 #include "ECS/Scene.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Asset/Asset.hpp"
-#include "Asset/Image.hpp"
+#include "Asset/Bitmap.hpp"
 
 namespace SD {
 
 SpriteRenderSystem::SpriteRenderSystem(RenderTarget *target)
-    : System("SpriteRender"), m_target(target) {}
+    : System("SpriteRenderSystem"), m_target(target) {}
 
 void SpriteRenderSystem::OnPush() {}
 

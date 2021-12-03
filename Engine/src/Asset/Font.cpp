@@ -60,7 +60,7 @@ void Font::LoadRangedGlyph(uint8_t size, char32_t start, char32_t end) {
     auto glyph = Texture::Create(tex_size, tex_size, 1, TextureType::TEX_2D,
                                  TextureFormat::ALPHA, TextureFormatType::UBYTE,
                                  TextureWrap::BORDER, TextureFilter::LINEAR,
-                                 TextureMipmapFilter::LINEAR_LINEAR, nullptr);
+                                 TextureMipmapFilter::LINEAR);
     for (char32_t ch = start; ch < end; ++ch) {
         if (FT_Load_Char(m_face, ch,
                          FT_LOAD_RENDER | FT_LOAD_FORCE_AUTOHINT |
@@ -88,12 +88,10 @@ void Font::LoadRangedGlyph(uint8_t size, char32_t start, char32_t end) {
         c.size = glm::ivec2(bmp->width, bmp->rows);
         c.advance = m_face->glyph->advance.x >> 6;
 
-        c.uv[0] =
-            glm::vec2(static_cast<float>(x) / tex_size,
-                      static_cast<float>(y + bmp->rows) / tex_size);
-        c.uv[1] =
-            glm::vec2(static_cast<float>(x + bmp->width) / tex_size,
-                      static_cast<float>(y) / tex_size);
+        c.uv[0] = glm::vec2(static_cast<float>(x) / tex_size,
+                            static_cast<float>(y + bmp->rows) / tex_size);
+        c.uv[1] = glm::vec2(static_cast<float>(x + bmp->width) / tex_size,
+                            static_cast<float>(y) / tex_size);
         c.glyph = glyph;
 
         x += bmp->width + 1;

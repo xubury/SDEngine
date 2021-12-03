@@ -63,7 +63,7 @@ void SkyboxSystem::OnRender() {
                 // load invalid face
                 if (!skybox.skybox.Valid(face)) {
                     auto image =
-                        asset->Get<Image>(skybox.id[static_cast<int>(face)]);
+                        asset->Get<Bitmap>(skybox.id[static_cast<int>(face)]);
                     if (image) {
                         skybox.skybox.SetFace(face, *image);
                     }

@@ -1,6 +1,6 @@
 #include "Asset/ModelLoader.hpp"
 #include "Asset/Model.hpp"
-#include "Asset/Image.hpp"
+#include "Asset/Bitmap.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -139,7 +139,7 @@ static void processAiMaterial(AssetManager &manager,
         return;
     }
     std::string path = (directory / texturePath.C_Str()).string();
-    auto image = manager.LoadAndGet<Image>(path);
+    auto image = manager.LoadAndGet<Bitmap>(path);
     auto texture = Texture::Create(
         image->Width(), image->Height(), 1, TextureType::TEX_2D,
         image->HasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,

@@ -4,12 +4,12 @@
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
 
-#include "Asset/ImageLoader.hpp"
+#include "Asset/BitmapLoader.hpp"
 #include "Asset/ModelLoader.hpp"
 #include "Asset/FontLoader.hpp"
 
 #include "Asset/Model.hpp"
-#include "Asset/Image.hpp"
+#include "Asset/Bitmap.hpp"
 #include "Asset/Font.hpp"
 
 namespace SD {
@@ -52,7 +52,7 @@ Application::Application(const std::string &title) {
     window = Window::Create(property);
 
     asset = CreateRef<AssetManager>();
-    asset->SetLoader<Image>(new ImageLoader(*asset));
+    asset->SetLoader<Bitmap>(new BitmapLoader(*asset));
     asset->SetLoader<Model>(new ModelLoader(*asset));
     asset->SetLoader<Font>(new FontLoader(*asset));
     asset->Load("assets");

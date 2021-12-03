@@ -4,7 +4,6 @@
 #include "ECS/Component.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Asset/Asset.hpp"
-#include "Asset/Image.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGuizmo.h"
 
@@ -65,7 +64,7 @@ void EditorLayer::OnInit() {
     m_profile_system =
         CreateSystem<ProfileSystem>(&m_target, m_width, m_height);
 
-    auto image = asset->LoadAndGet<Image>("icons/light.png");
+    auto image = asset->LoadAndGet<Bitmap>("icons/light.png");
 
     m_light_icon = Texture::Create(
         image->Width(), image->Height(), 1, TextureType::TEX_2D,
