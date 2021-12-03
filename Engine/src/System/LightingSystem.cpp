@@ -104,6 +104,7 @@ void LightingSystem::OnSizeEvent(const WindowSizeEvent &event) {
         m_light_target[i].Resize(event.width, event.height);
     }
     m_gbuffer_target.Resize(event.width, event.height);
+    renderer->GetCamera()->Resize(event.width, event.height);
 }
 
 void LightingSystem::OnRender() {

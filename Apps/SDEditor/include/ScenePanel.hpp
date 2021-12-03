@@ -2,7 +2,7 @@
 #define SD_SCENE_PANEL_HPP
 
 #include "Utility/Base.hpp"
-#include "Core/Vars.hpp"
+#include "Core/System.hpp"
 #include "ECS/Scene.hpp"
 #include "ECS/Entity.hpp"
 #include "ImGui/FileDialog.hpp"
@@ -11,10 +11,17 @@
 
 namespace SD {
 
-class ScenePanel {
+class ScenePanel : public System {
    public:
     ScenePanel();
-    ScenePanel(Scene *scene);
+
+    void OnPush() override;
+
+    void OnPop() override;
+
+    void OnImGui() override;
+
+    void OnSizeEvent(const WindowSizeEvent &event);
 
     void SetScene(Scene *scene);
 
@@ -23,19 +30,11 @@ class ScenePanel {
     const Entity &GetSelectedEntity() const;
     Entity &GetSelectedEntity();
 
-    void OnImGui();
-
     void SetGizmoMode(ImGuizmo::MODE mode) { m_gizmo_mode = mode; }
     ImGuizmo::MODE GetGizmoMode() const;
 
     void SetGizmoOperation(ImGuizmo::OPERATION op) { m_gizmo_op = op; }
     ImGuizmo::OPERATION GetGizmoOperation() const;
-
-    SET_APP_VARS;
-
-   protected:
-    APP_VARS
-    MAKE_APP_VARS;
 
    private:
     void DrawEntityNode(Entity &entity);
@@ -54,6 +53,11 @@ class ScenePanel {
 
     ImGuizmo::MODE m_gizmo_mode;
     ImGuizmo::OPERATION m_gizmo_op;
+
+    uint32_t m_width;
+    uint32_t m_height;
+
+    HandlerRegistration m_size_handler;
 };
 
 }  // namespace SD

@@ -24,6 +24,8 @@ class SD_CORE_API System {
 
     virtual void OnRender(){};
 
+    virtual void OnImGui() {}
+
     virtual void OnTick(float) {}
 
     const std::string &GetName() const { return m_name; }

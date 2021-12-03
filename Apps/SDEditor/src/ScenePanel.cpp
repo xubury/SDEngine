@@ -9,11 +9,21 @@
 namespace SD {
 
 ScenePanel::ScenePanel()
-    : m_scene(nullptr),
+    : System("ScenePanel"),
+      m_scene(nullptr),
       m_gizmo_mode(ImGuizmo::WORLD),
       m_gizmo_op(ImGuizmo::TRANSLATE) {}
 
-ScenePanel::ScenePanel(Scene *scene) : m_scene(scene) {}
+void ScenePanel::OnPush() {
+    m_size_handler = dispatcher->Register(this, &ScenePanel::OnSizeEvent);
+}
+
+void ScenePanel::OnPop() { dispatcher->RemoveHandler(m_size_handler); }
+
+void ScenePanel::OnSizeEvent(const WindowSizeEvent &event) {
+    m_width = event.width;
+    m_height = event.height;
+}
 
 void ScenePanel::Reset() {
     m_selected_entity = {};
@@ -258,8 +268,8 @@ void ScenePanel::DrawComponents(Entity &entity) {
         if (ImGui::MenuItem("Camera")) {
             if (!m_selected_entity.HasComponent<CameraComponent>())
                 m_selected_entity.AddComponent<CameraComponent>(
-                    CameraType::PERSPECTIVE, glm::radians(45.f),
-                    window->GetSize().x, window->GetSize().y, 0, 1000.f);
+                    CameraType::PERSPECTIVE, glm::radians(45.f), m_width,
+                    m_height, 0.1f, 1000.f);
             else
                 SD_CORE_WARN("This entity already has the Camera Component!");
             ImGui::CloseCurrentPopup();
@@ -420,7 +430,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
         }
         ImGui::Text("Text Content:");
         static char buffer[256];
-        std::copy(textComp.text.begin(),textComp.text.end(), buffer);
+        std::copy(textComp.text.begin(), textComp.text.end(), buffer);
         if (ImGui::InputText("##TextEdit", buffer, sizeof(buffer))) {
             textComp.text = buffer;
         }
@@ -457,12 +467,12 @@ void ScenePanel::DrawComponents(Entity &entity) {
             }
             float near_z = cameraComp.camera.GetNearZ();
             ImGui::Text("Near Z");
-            if (ImGui::SliderFloat("##Near Z", &near_z, 0, 1000)) {
+            if (ImGui::SliderFloat("##Near Z", &near_z, FLT_EPSILON, 1000)) {
                 cameraComp.camera.SetNearZ(near_z);
             }
             ImGui::Text("Far Z");
             float far_z = cameraComp.camera.GetFarZ();
-            if (ImGui::SliderFloat("##Far Z", &far_z, 0, 1000)) {
+            if (ImGui::SliderFloat("##Far Z", &far_z, FLT_EPSILON, 1000)) {
                 cameraComp.camera.SetFarZ(far_z);
             }
         });

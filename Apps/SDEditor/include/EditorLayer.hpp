@@ -51,6 +51,7 @@ class EditorLayer : public Layer {
 
     void Show();
 
+    ScenePanel *m_scene_panel;
     EditorCameraSystem *m_editor_camera_system;
     ShadowSystem *m_shadow_system;
     LightingSystem *m_lighting_system;
@@ -73,7 +74,6 @@ class EditorLayer : public Layer {
     bool m_hide;
 
     Ref<Scene> m_scene;
-    ScenePanel m_scene_panel;
 
     bool m_load_scene_open;
     bool m_save_scene_open;

@@ -49,8 +49,13 @@ EditorLayer::~EditorLayer() {
 }
 
 void EditorLayer::OnInit() {
-    NewScene();
 
+    // editor related system
+    m_scene_panel = CreateSystem<ScenePanel>();
+    m_editor_camera_system =
+        CreateSystem<EditorCameraSystem>(m_width, m_height);
+
+    // normal render systems
     m_shadow_system = CreateSystem<ShadowSystem>();
     m_lighting_system = CreateSystem<LightingSystem>(
         &m_target, m_width, m_height, window->GetMSAA());
@@ -60,8 +65,7 @@ void EditorLayer::OnInit() {
         CreateSystem<PostProcessSystem>(&m_target, m_width, m_height);
     m_profile_system =
         CreateSystem<ProfileSystem>(&m_target, m_width, m_height);
-    m_editor_camera_system =
-        CreateSystem<EditorCameraSystem>(m_width, m_height);
+
 
     auto image = asset->LoadAndGet<Bitmap>("icons/light.png");
 
@@ -69,12 +73,9 @@ void EditorLayer::OnInit() {
         image->Width(), image->Height(), 1, TextureType::TEX_2D,
         image->HasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
         TextureFormatType::UBYTE, TextureWrap::REPEAT, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR_LINEAR, image->Data());
+        TextureMipmapFilter::LINEAR, image->Data());
 
-    m_scene_panel.SetAppVars(MakeAppVars());
-}
-
-void EditorLayer::OnPush() {
+    PushSystem(m_scene_panel);
     PushSystem(m_editor_camera_system);
     PushSystem(m_shadow_system);
     PushSystem(m_lighting_system);
@@ -83,18 +84,12 @@ void EditorLayer::OnPush() {
     PushSystem(m_post_process_system);
     PushSystem(m_profile_system);
 
-    Show();
+    NewScene();
 }
 
-void EditorLayer::OnPop() {
-    PopSystem(m_editor_camera_system);
-    PopSystem(m_shadow_system);
-    PopSystem(m_lighting_system);
-    PopSystem(m_skybox_system);
-    PopSystem(m_sprite_system);
-    PopSystem(m_post_process_system);
-    PopSystem(m_profile_system);
-}
+void EditorLayer::OnPush() {}
+
+void EditorLayer::OnPop() {}
 
 void EditorLayer::OnRender() {
     renderer->SetRenderTarget(m_target);
@@ -127,9 +122,6 @@ void EditorLayer::OnTick(float dt) {
 }
 
 void EditorLayer::OnImGui() {
-    if (m_hide) {
-        return;
-    }
     Device::instance().BlitFramebuffer(
         m_target.GetFramebuffer(), 0, m_screen_buffer.get(), 0,
         BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
@@ -204,8 +196,6 @@ void EditorLayer::OnImGui() {
         ImGui::EndMenuBar();
     }
 
-    m_scene_panel.OnImGui();
-
     ImGui::Begin("Render Settings");
     {
         float exposure = m_post_process_system->GetExposure();
@@ -274,22 +264,26 @@ void EditorLayer::OnImGui() {
                           m_viewport_bounds[1].x - m_viewport_bounds[0].x,
                           m_viewport_bounds[1].y - m_viewport_bounds[0].y);
         ImGuizmo::SetDrawlist();
-        Entity &entity = m_scene_panel.GetSelectedEntity();
+        Entity &entity = m_scene_panel->GetSelectedEntity();
         if (entity) {
-            const Camera &cam = m_editor_camera_system->GetCamera();
-            ImGuizmo::SetOrthographic(cam.GetCameraType() ==
+            Camera *cam = renderer->GetCamera();
+            ImGuizmo::SetOrthographic(cam->GetCameraType() ==
                                       CameraType::ORTHOGRAPHIC);
-            const glm::mat4 &view = cam.GetView();
-            const glm::mat4 &projection = cam.GetProjection();
+            const glm::mat4 &view = cam->GetView();
+            const glm::mat4 &projection = cam->GetProjection();
 
             auto &tc = entity.GetComponent<TransformComponent>();
             glm::mat4 transform = tc.transform.GetWorldTransform();
             if (ImGuizmo::Manipulate(
                     glm::value_ptr(view), glm::value_ptr(projection),
-                    m_scene_panel.GetGizmoOperation(),
-                    m_scene_panel.GetGizmoMode(), glm::value_ptr(transform),
+                    m_scene_panel->GetGizmoOperation(),
+                    m_scene_panel->GetGizmoMode(), glm::value_ptr(transform),
                     nullptr, nullptr)) {
                 tc.transform.SetWorldTransform(transform);
+                if (entity.HasComponent<CameraComponent>()) {
+                    entity.GetComponent<CameraComponent>()
+                        .camera.SetWorldTransform(transform);
+                }
             }
         }
         auto [mouseX, mouseY] = ImGui::GetMousePos();
@@ -303,7 +297,7 @@ void EditorLayer::OnImGui() {
                                         mouseX, viewportSize.y - mouseY, 0, 1,
                                         1, 1, sizeof(entity), &entity);
             if (entity != Entity::INVALID_ID) {
-                m_scene_panel.SetSelectedEntity({entity, m_scene.get()});
+                m_scene_panel->SetSelectedEntity({entity, m_scene.get()});
             }
         }
     }
@@ -313,16 +307,22 @@ void EditorLayer::OnImGui() {
     ImGui::End();
 
     ProcessDialog();
+
+    for (auto &system : GetSystems()) {
+        system->OnImGui();
+    }
 }
 
 void EditorLayer::Hide() {
     m_hide = true;
     SetIsBlockEvent(false);
+    m_editor_camera_system->ActiveEditorCam(false);
 }
 
 void EditorLayer::Show() {
     m_hide = false;
     SetIsBlockEvent(true);
+    m_editor_camera_system->ActiveEditorCam(true);
 }
 
 void EditorLayer::OnEventProcess(const Event &event) {
@@ -346,7 +346,7 @@ void EditorLayer::OnEventProcess(const Event &event) {
                                    (Keymod::LCTRL | Keymod::LSHIFT))) {
                     SaveScene();
                 } else if (IsKeyModActive(event.key.mod, Keymod::LSHIFT)) {
-                    m_scene_panel.SetGizmoOperation(ImGuizmo::SCALE);
+                    m_scene_panel->SetGizmoOperation(ImGuizmo::SCALE);
                 }
             } break;
             case Keycode::N: {
@@ -364,12 +364,12 @@ void EditorLayer::OnEventProcess(const Event &event) {
             } break;
             case Keycode::T: {
                 if (IsKeyModActive(event.key.mod, Keymod::LSHIFT)) {
-                    m_scene_panel.SetGizmoOperation(ImGuizmo::TRANSLATE);
+                    m_scene_panel->SetGizmoOperation(ImGuizmo::TRANSLATE);
                 }
             } break;
             case Keycode::R: {
                 if (IsKeyModActive(event.key.mod, Keymod::LSHIFT)) {
-                    m_scene_panel.SetGizmoOperation(ImGuizmo::ROTATE);
+                    m_scene_panel->SetGizmoOperation(ImGuizmo::ROTATE);
                 }
             } break;
         }
@@ -380,7 +380,7 @@ void EditorLayer::OnEventsProcess() {}
 
 void EditorLayer::NewScene() {
     m_scene = CreateRef<Scene>();
-    m_scene_panel.SetScene(m_scene.get());
+    m_scene_panel->SetScene(m_scene.get());
     renderer->SetScene(m_scene.get());
 }
 

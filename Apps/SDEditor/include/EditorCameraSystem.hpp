@@ -23,7 +23,7 @@ class EditorCameraSystem : public System {
 
     void Rotate(float yaw, float pitch);
 
-    const Camera &GetCamera() const;
+    void ActiveEditorCam(bool active);
 
    private:
     HandlerRegistration m_key_handler;
