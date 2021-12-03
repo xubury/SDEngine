@@ -21,10 +21,10 @@ void ProfileSystem::OnInit() {
 }
 
 void ProfileSystem::OnPush() {
-    dispatcher->Subscribe(this, &ProfileSystem::OnSizeEvent);
+    m_size_handler = dispatcher->Register(this, &ProfileSystem::OnSizeEvent);
 }
 
-void ProfileSystem::OnPop() { dispatcher->Unsubscribe<WindowSizeEvent>(this); }
+void ProfileSystem::OnPop() { dispatcher->RemoveHandler(m_size_handler); }
 
 void ProfileSystem::OnTick(float) {}
 

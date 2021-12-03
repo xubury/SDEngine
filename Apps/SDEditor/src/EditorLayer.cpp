@@ -267,7 +267,7 @@ void EditorLayer::OnImGui() {
                 WindowSizeEvent event;
                 event.width = wsize.x;
                 event.height = wsize.y;
-                dispatcher->publishEvent(event);
+                dispatcher->PublishEvent(event);
             }
 
             m_width = wsize.x;

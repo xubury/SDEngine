@@ -56,6 +56,8 @@ class SD_SYSTEM_API PostProcessSystem : public System {
     float m_bloom_factor;
     float m_exposure;
     float m_gamma_correction;
+
+    HandlerRegistration m_size_handler;
 };
 
 }  // namespace SD

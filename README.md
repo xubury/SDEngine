@@ -15,7 +15,7 @@ Simple and Direct Engine
 - [X] ResourceId
 - [X] Asset System based on ResourceId
 - [X] Blocking queue
-- [ ] Event bus
+- [X] Event bus
 - [X] Ini parser
 - [ ] Profile System
 - [ ] Camera System, how to switch between cameras? like from editor camrea to scene camera?

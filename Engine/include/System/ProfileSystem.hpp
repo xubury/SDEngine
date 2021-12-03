@@ -28,6 +28,8 @@ class SD_SYSTEM_API ProfileSystem : public System {
     Camera m_camera;
     FPSCounter m_fps;
     Ref<Font> m_font;
+
+    HandlerRegistration m_size_handler;
 };
 
 }  // namespace SD

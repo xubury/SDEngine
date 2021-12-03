@@ -55,7 +55,8 @@ void PostProcessSystem::OnPush() {
     m_exposure = ini->GetFloat("post process", "exposure", m_exposure);
     m_gamma_correction =
         ini->GetFloat("post process", "gamma correction", m_gamma_correction);
-    dispatcher->Subscribe(this, &PostProcessSystem::OnSizeEvent);
+    m_size_handler =
+        dispatcher->Register(this, &PostProcessSystem::OnSizeEvent);
 }
 
 void PostProcessSystem::OnPop() {
@@ -63,7 +64,7 @@ void PostProcessSystem::OnPop() {
     ini->SetFloat("post process", "bloom factor", m_bloom_factor);
     ini->SetFloat("post process", "exposure", m_exposure);
     ini->SetFloat("post process", "gamma correction", m_gamma_correction);
-    dispatcher->Unsubscribe<WindowSizeEvent>(this);
+    dispatcher->RemoveHandler(m_size_handler);
 }
 
 void PostProcessSystem::OnRender() {

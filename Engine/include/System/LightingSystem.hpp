@@ -65,6 +65,8 @@ class SD_SYSTEM_API LightingSystem : public System {
     RenderTarget m_gbuffer_target;
 
     Ref<VertexArray> m_quad;
+
+    HandlerRegistration m_size_handler;
 };
 
 }  // namespace SD

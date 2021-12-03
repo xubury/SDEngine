@@ -69,10 +69,10 @@ LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
 void LightingSystem::OnInit() { InitShaders(); }
 
 void LightingSystem::OnPush() {
-    dispatcher->Subscribe(this, &LightingSystem::OnSizeEvent);
+    m_size_handler = dispatcher->Register(this, &LightingSystem::OnSizeEvent);
 }
 
-void LightingSystem::OnPop() { dispatcher->Unsubscribe<WindowSizeEvent>(this); }
+void LightingSystem::OnPop() { dispatcher->RemoveHandler(m_size_handler); }
 
 void LightingSystem::InitShaders() {
     m_emssive_shader = ShaderLibrary::Instance().Load("shaders/emissive.glsl");
