@@ -23,7 +23,6 @@ void Camera::Resize(float width, float height) {
     m_width = width;
     m_height = height;
     m_projection_outdated = true;
-    SD_TRACE("{}, {}", m_width, m_height);
 }
 
 void Camera::TranslateLocal(const glm::vec3 &t) {

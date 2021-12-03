@@ -9,7 +9,7 @@ const uint8_t FONT_SIZE = 20;
 const uint32_t FPS_CAPACITY = 50;
 
 ProfileSystem::ProfileSystem(RenderTarget *target, int width, int height)
-    : System("Profile"),
+    : System("ProfileSystem"),
       m_target(target),
       m_camera(CameraType::ORTHOGRAPHIC, glm::radians(45.f), width, height, 0.f,
                1000.f),

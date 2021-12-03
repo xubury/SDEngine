@@ -45,7 +45,7 @@ TextureFormatType GetTextureFormatType(GeometryBufferType type) {
 
 LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
                                int samples)
-    : System("Lighting"), m_target(target) {
+    : System("LightingSystem"), m_target(target) {
     InitLighting(width, height, samples);
 
     const float quadVertices[] = {
@@ -75,6 +75,7 @@ void LightingSystem::OnPush() {
 void LightingSystem::OnPop() { dispatcher->RemoveHandler(m_size_handler); }
 
 void LightingSystem::InitShaders() {
+    m_shadow_shader = ShaderLibrary::Instance().Load("shaders/shadow.glsl");
     m_emssive_shader = ShaderLibrary::Instance().Load("shaders/emissive.glsl");
     m_deferred_shader = ShaderLibrary::Instance().Load("shaders/deferred.glsl");
     m_gbuffer_shader = ShaderLibrary::Instance().Load("shaders/gbuffer.glsl");
@@ -104,7 +105,6 @@ void LightingSystem::OnSizeEvent(const WindowSizeEvent &event) {
         m_light_target[i].Resize(event.width, event.height);
     }
     m_gbuffer_target.Resize(event.width, event.height);
-    renderer->GetCamera()->Resize(event.width, event.height);
 }
 
 void LightingSystem::OnRender() {
@@ -112,6 +112,7 @@ void LightingSystem::OnRender() {
     SD_CORE_ASSERT(renderer->GetCamera(), "No camera is set!");
 
     Clear();
+    RenderShadowMap();
     Device::instance().Disable(Operation::BLEND);
     RenderGBuffer();
     Device::instance().Enable(Operation::BLEND);
@@ -139,6 +140,38 @@ void LightingSystem::Clear() {
     uint32_t id = static_cast<uint32_t>(Entity::INVALID_ID);
     m_gbuffer_target.GetFramebuffer()->ClearAttachment(
         GeometryBufferType::G_ENTITY_ID, &id);
+}
+
+void LightingSystem::RenderShadowMap() {
+    auto scene = renderer->GetScene();
+    auto lightView = scene->view<TransformComponent, LightComponent>();
+    auto modelView = scene->view<TransformComponent, ModelComponent>();
+    Device::instance().SetCullFace(Face::FRONT);
+    m_shadow_shader->Bind();
+    lightView.each([this, &modelView](const TransformComponent &transformComp,
+                                      LightComponent &lightComp) {
+        Light &light = lightComp.light;
+        if (!light.IsCastShadow()) return;
+
+        renderer->SetRenderTarget(light.GetRenderTarget());
+        light.GetRenderTarget().GetFramebuffer()->ClearDepth();
+        light.ComputeLightSpaceMatrix(transformComp.transform,
+                                      renderer->GetCamera());
+        m_shadow_shader->SetMat4("u_projectionView", light.GetProjectionView());
+
+        modelView.each([this](const TransformComponent &transformComp,
+                              const ModelComponent &modelComp) {
+            auto model = asset->Get<Model>(modelComp.id);
+            m_shadow_shader->SetMat4(
+                "u_model", transformComp.transform.GetWorldTransform());
+            if (model) {
+                for (const auto &mesh : model->GetMeshes()) {
+                    renderer->DrawMesh(mesh);
+                }
+            }
+        });
+    });
+    Device::instance().SetCullFace(Face::BACK);
 }
 
 void LightingSystem::RenderEmissive() {

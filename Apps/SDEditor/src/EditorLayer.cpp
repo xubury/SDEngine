@@ -40,7 +40,6 @@ EditorLayer::EditorLayer(int width, int height)
 
 EditorLayer::~EditorLayer() {
     DestroySystem(m_editor_camera_system);
-    DestroySystem(m_shadow_system);
     DestroySystem(m_lighting_system);
     DestroySystem(m_skybox_system);
     DestroySystem(m_sprite_system);
@@ -49,14 +48,12 @@ EditorLayer::~EditorLayer() {
 }
 
 void EditorLayer::OnInit() {
-
     // editor related system
     m_scene_panel = CreateSystem<ScenePanel>();
     m_editor_camera_system =
         CreateSystem<EditorCameraSystem>(m_width, m_height);
 
     // normal render systems
-    m_shadow_system = CreateSystem<ShadowSystem>();
     m_lighting_system = CreateSystem<LightingSystem>(
         &m_target, m_width, m_height, window->GetMSAA());
     m_skybox_system = CreateSystem<SkyboxSystem>(&m_target);
@@ -65,7 +62,6 @@ void EditorLayer::OnInit() {
         CreateSystem<PostProcessSystem>(&m_target, m_width, m_height);
     m_profile_system =
         CreateSystem<ProfileSystem>(&m_target, m_width, m_height);
-
 
     auto image = asset->LoadAndGet<Bitmap>("icons/light.png");
 
@@ -77,7 +73,6 @@ void EditorLayer::OnInit() {
 
     PushSystem(m_scene_panel);
     PushSystem(m_editor_camera_system);
-    PushSystem(m_shadow_system);
     PushSystem(m_lighting_system);
     PushSystem(m_skybox_system);
     PushSystem(m_sprite_system);

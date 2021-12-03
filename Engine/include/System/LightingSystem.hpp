@@ -46,13 +46,14 @@ class SD_SYSTEM_API LightingSystem : public System {
 
     void Clear();
 
+    void RenderShadowMap();
     void RenderGBuffer();
-    void RenderShadow();
     void RenderDeferred();
 
     void RenderEmissive();
 
     RenderTarget &GetLightingTarget() { return m_light_target[0]; };
+    Ref<Shader> m_shadow_shader;
 
     RenderTarget *m_target;
 

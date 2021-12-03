@@ -6,7 +6,6 @@ set(System_Include
     ${Include_Root}/ParticleSystem.hpp
     ${Include_Root}/PostProcessSystem.hpp
     ${Include_Root}/ProfileSystem.hpp
-    ${Include_Root}/ShadowSystem.hpp
     ${Include_Root}/SkyboxSystem.hpp
     ${Include_Root}/SpriteRenderSystem.hpp
     ${Include_Root}/TerrainSystem.hpp)
@@ -16,7 +15,6 @@ set(System_Src
     ${Src_Root}/ParticleSystem.cpp
     ${Src_Root}/PostProcessSystem.cpp
     ${Src_Root}/ProfileSystem.cpp
-    ${Src_Root}/ShadowSystem.cpp
     ${Src_Root}/SkyboxSystem.cpp
     ${Src_Root}/SpriteRenderSystem.cpp
     ${Src_Root}/TerrainSystem.cpp)

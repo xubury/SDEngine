@@ -5,7 +5,7 @@
 namespace SD {
 
 SkyboxSystem::SkyboxSystem(RenderTarget *target)
-    : System("Skybox"), m_target(target) {
+    : System("SkyboxSystem"), m_target(target) {
     const float skyboxVertices[] = {
         // front
         -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
