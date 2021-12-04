@@ -21,8 +21,6 @@ class SD_SYSTEM_API ProfileSystem : public System {
     void OnTick(float dt) override;
     void OnRender() override;
 
-    void OnSizeEvent(const WindowSizeEvent &event);
-
    private:
     RenderTarget *m_target;
     Camera m_camera;

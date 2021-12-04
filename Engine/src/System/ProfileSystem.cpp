@@ -21,7 +21,10 @@ void ProfileSystem::OnInit() {
 }
 
 void ProfileSystem::OnPush() {
-    m_size_handler = dispatcher->Register(this, &ProfileSystem::OnSizeEvent);
+    m_size_handler =
+        dispatcher->Register<WindowSizeEvent>([this](const WindowSizeEvent &e) {
+            m_camera.Resize(e.width, e.height);
+        });
 }
 
 void ProfileSystem::OnPop() { dispatcher->RemoveHandler(m_size_handler); }
@@ -42,10 +45,6 @@ void ProfileSystem::OnRender() {
     renderer->DrawText(*m_font, "\n日本語テスト: こんにちは", FONT_SIZE,
                        glm::mat4(1.0f));
     renderer->EndScene();
-}
-
-void ProfileSystem::OnSizeEvent(const WindowSizeEvent &event) {
-    m_camera.Resize(event.width, event.height);
 }
 
 }  // namespace SD
