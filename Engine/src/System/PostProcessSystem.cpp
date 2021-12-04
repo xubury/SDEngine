@@ -13,16 +13,14 @@ PostProcessSystem::PostProcessSystem(RenderTarget *target, int width,
       m_exposure(1.2),
       m_gamma_correction(1.2) {
     for (int i = 0; i < 2; ++i) {
-        m_blurTarget[i].AddTexture(Texture::Create(
-            width, height, 1, TextureType::TEX_2D, TextureFormat::RGBA,
-            TextureFormatType::FLOAT, TextureWrap::BORDER,
-            TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
+        m_blurTarget[i].AddTexture(
+            Texture::Create(width, height, 1, TextureType::TEX_2D,
+                            TextureFormat::RGBA, TextureFormatType::FLOAT));
         m_blurTarget[i].CreateFramebuffer();
     }
-    m_postTarget.AddTexture(Texture::Create(
-        width, height, 1, TextureType::TEX_2D, TextureFormat::RGBA,
-        TextureFormatType::FLOAT, TextureWrap::EDGE, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR));
+    m_postTarget.AddTexture(
+        Texture::Create(width, height, 1, TextureType::TEX_2D,
+                        TextureFormat::RGBA, TextureFormatType::FLOAT));
     m_postTarget.CreateFramebuffer();
 
     const float quadVertices[] = {

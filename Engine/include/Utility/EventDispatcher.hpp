@@ -18,10 +18,10 @@ using Callback = std::function<void(std::any)>;
 class EventDispatcher;
 
 class HandlerRegistration {
-    const void* m_handle{nullptr};
-    EventDispatcher* m_dispatcher{nullptr};
-
    public:
+    HandlerRegistration() : m_handle(nullptr), m_dispatcher(nullptr){};
+    HandlerRegistration(const void* handle, EventDispatcher* bus)
+        : m_handle(handle), m_dispatcher(bus) {}
     HandlerRegistration(const HandlerRegistration& other) = delete;
     HandlerRegistration(HandlerRegistration&& other) noexcept
         : m_handle(std::exchange(other.m_handle, nullptr)),
@@ -38,9 +38,9 @@ class HandlerRegistration {
     void Unregister() noexcept;
     void Reset();
 
-    HandlerRegistration() = default;
-    HandlerRegistration(const void* handle, EventDispatcher* bus)
-        : m_handle(handle), m_dispatcher(bus) {}
+   private:
+    const void* m_handle;
+    EventDispatcher* m_dispatcher;
 };
 
 class EventDispatcher {

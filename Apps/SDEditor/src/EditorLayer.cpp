@@ -22,17 +22,15 @@ EditorLayer::EditorLayer(int width, int height)
       m_load_scene_open(false),
       m_save_scene_open(false) {
     m_screen_buffer = Framebuffer::Create();
-    m_screen_buffer->AttachTexture(Texture::Create(
-        m_width, m_height, 1, TextureType::TEX_2D, TextureFormat::RGBA,
-        TextureFormatType::UBYTE, TextureWrap::BORDER, TextureFilter::NEAREST,
-        TextureMipmapFilter::NEAREST));
+    m_screen_buffer->AttachTexture(
+        Texture::Create(m_width, m_height, 1, TextureType::TEX_2D,
+                        TextureFormat::RGBA, TextureFormatType::UBYTE));
     m_debug_gbuffer = Framebuffer::Create();
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-        m_debug_gbuffer->AttachTexture(Texture::Create(
-            m_width, m_height, 1, TextureType::TEX_2D,
-            GetTextureFormat(GeometryBufferType(i)),
-            GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
-            TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
+        m_debug_gbuffer->AttachTexture(
+            Texture::Create(m_width, m_height, 1, TextureType::TEX_2D,
+                            GetTextureFormat(GeometryBufferType(i)),
+                            GetTextureFormatType(GeometryBufferType(i))));
     }
 
     ImGuizmo::SetGizmoSizeClipSpace(0.2);
@@ -72,7 +70,7 @@ void EditorLayer::OnInit() {
     m_light_icon = Texture::Create(
         image->Width(), image->Height(), 1, TextureType::TEX_2D,
         image->HasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
-        TextureFormatType::UBYTE, TextureWrap::REPEAT, TextureFilter::LINEAR,
+        TextureFormatType::UBYTE, TextureWrap::EDGE, TextureFilter::LINEAR,
         TextureMipmapFilter::LINEAR, image->Data());
 
     PushSystem(m_scene_panel);

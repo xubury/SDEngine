@@ -8,12 +8,13 @@ namespace SD {
 
 class SD_GRAPHICS_API Texture {
    public:
-    static Ref<Texture> Create(int width, int height, int samples,
-                               TextureType type, TextureFormat format,
-                               TextureFormatType format_type, TextureWrap wrap,
-                               TextureFilter filter,
-                               TextureMipmapFilter mipmap_filter,
-                               const void *data = nullptr);
+    static Ref<Texture> Create(
+        int width, int height, int samples, TextureType type,
+        TextureFormat format, TextureFormatType format_type,
+        TextureWrap wrap = TextureWrap::EDGE,
+        TextureFilter filter = TextureFilter::LINEAR,
+        TextureMipmapFilter mipmap_filter = TextureMipmapFilter::LINEAR,
+        const void *data = nullptr);
 
     virtual ~Texture() = default;
 
