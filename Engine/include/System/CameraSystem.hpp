@@ -9,7 +9,7 @@ class CameraSystem : public System {
    public:
     CameraSystem();
 
-    void OnTick(float dt) override;
+    void OnRender() override;
 };
 
 }  // namespace SD
