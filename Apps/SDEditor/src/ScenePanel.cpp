@@ -466,13 +466,13 @@ void ScenePanel::DrawComponents(Entity &entity) {
                 cameraComp.camera.SetFOV(fov);
             }
             float near_z = cameraComp.camera.GetNearZ();
+            float far_z = cameraComp.camera.GetFarZ();
             ImGui::Text("Near Z");
-            if (ImGui::SliderFloat("##Near Z", &near_z, FLT_EPSILON, 1000)) {
+            if (ImGui::SliderFloat("##Near Z", &near_z, 1e-3, far_z)) {
                 cameraComp.camera.SetNearZ(near_z);
             }
             ImGui::Text("Far Z");
-            float far_z = cameraComp.camera.GetFarZ();
-            if (ImGui::SliderFloat("##Far Z", &far_z, FLT_EPSILON, 1000)) {
+            if (ImGui::SliderFloat("##Far Z", &far_z, near_z, 1000)) {
                 cameraComp.camera.SetFarZ(far_z);
             }
         });
