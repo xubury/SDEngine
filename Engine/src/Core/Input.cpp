@@ -66,16 +66,10 @@ void Input::Tick() {
     }
 }
 
-void Input::PressKey(Keycode keycode) { s_key[keycode] = true; }
+void Input::SetKeyState(Keycode keycode, bool state) { s_key[keycode] = state; }
 
-void Input::ReleaseKey(Keycode keycode) { s_key[keycode] = false; }
-
-void Input::PressMouseButton(MouseButton button) {
-    s_mouse_button[button] = true;
-}
-
-void Input::ReleaseMouseButton(MouseButton button) {
-    s_mouse_button[button] = false;
+void Input::SetMouseButtonState(MouseButton button, bool state) {
+    s_mouse_button[button] = state;
 }
 
 void Input::SetMouseCoord(float x, float y) {

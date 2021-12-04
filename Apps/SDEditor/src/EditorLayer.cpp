@@ -285,13 +285,19 @@ void EditorLayer::OnImGui() {
         auto [mouseX, mouseY] = ImGui::GetMousePos();
         mouseX -= m_viewport_bounds[0].x;
         mouseY -= m_viewport_bounds[0].y;
-        glm::vec2 viewportSize = m_viewport_bounds[1] - m_viewport_bounds[0];
-        if (!ImGuizmo::IsUsing() && !m_hide && ImGui::IsMouseDown(0) &&
+        glm::vec2 viewport_size = m_viewport_bounds[1] - m_viewport_bounds[0];
+        if (!ImGuizmo::IsUsing() && ImGui::IsMouseDown(0) &&
             m_is_viewport_hovered) {
             entt::entity entity = Entity::INVALID_ID;
-            m_debug_gbuffer->ReadPixels(GeometryBufferType::G_ENTITY_ID, 0,
-                                        mouseX, viewportSize.y - mouseY, 0, 1,
-                                        1, 1, sizeof(entity), &entity);
+            int x = mouseX;
+            int y = viewport_size.y - mouseY;
+            auto entity_tex =
+                m_debug_gbuffer->GetTexture(GeometryBufferType::G_ENTITY_ID);
+            // out of bound check
+            if (x > 0 && y > 0 && x < entity_tex->GetWidth() &&
+                y < entity_tex->GetHeight())
+                entity_tex->ReadPixels(0, x, y, 0, 1, 1, 1, sizeof(entity),
+                                       &entity);
             if (entity != Entity::INVALID_ID) {
                 m_scene_panel->SetSelectedEntity({entity, m_scene.get()});
             }
@@ -324,7 +330,11 @@ void EditorLayer::Show() {
 void EditorLayer::OnEventProcess(const Event &event) {
     if (event.type == EventType::MOUSE_MOTION) {
         dispatcher->PublishEvent(event.mouse_motion);
-    } else if (event.type == EventType::KEY_PRESSED) {
+    } else if (event.type == EventType::KEY) {
+        dispatcher->PublishEvent(event.key);
+
+        if (!event.key.state) return;
+
         switch (event.key.keycode) {
             default:
                 break;

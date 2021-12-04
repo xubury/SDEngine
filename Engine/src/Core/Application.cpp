@@ -118,41 +118,30 @@ void Application::ProcessEvent(const SDL_Event &sdl_event) {
             event.mouse_motion.y_rel = sdl_event.motion.yrel;
             Input::SetMouseCoord(event.mouse_motion.x, event.mouse_motion.y);
         } break;
-        case SDL_MOUSEBUTTONDOWN: {
-            event.type = EventType::MOUSE_BUTTON_PRESSED;
-            event.mouse_button.button =
-                static_cast<MouseButton>(sdl_event.button.button);
-            SDL_BUTTON_LEFT;
-            event.mouse_button.x = sdl_event.button.x;
-            event.mouse_button.y = sdl_event.button.y;
-            event.mouse_button.clicks = sdl_event.button.clicks;
-            Input::PressMouseButton(event.mouse_button.button);
-        } break;
+        case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP: {
-            event.type = EventType::MOUSE_BUTTON_RELEASED;
+            event.type = EventType::MOUSE_BUTTON;
             event.mouse_button.button =
                 static_cast<MouseButton>(sdl_event.button.button);
             event.mouse_button.x = sdl_event.button.x;
             event.mouse_button.y = sdl_event.button.y;
             event.mouse_button.clicks = sdl_event.button.clicks;
-            Input::ReleaseMouseButton(event.mouse_button.button);
+            event.mouse_button.state = sdl_event.button.state;
+            Input::SetMouseButtonState(event.mouse_button.button,
+                                       event.mouse_button.state);
         } break;
         case SDL_MOUSEWHEEL: {
             event.type = EventType::MOUSE_WHEEL_SCROLLED;
             event.mouse_wheel.x = sdl_event.wheel.x;
             event.mouse_wheel.y = sdl_event.wheel.y;
         } break;
-        case SDL_KEYDOWN: {
-            event.type = EventType::KEY_PRESSED;
-            event.key.keycode = static_cast<Keycode>(sdl_event.key.keysym.sym);
-            event.key.mod = sdl_event.key.keysym.mod;
-            Input::PressKey(event.key.keycode);
-        } break;
+        case SDL_KEYDOWN:
         case SDL_KEYUP: {
-            event.type = EventType::KEY_RELEASED;
+            event.type = EventType::KEY;
             event.key.keycode = static_cast<Keycode>(sdl_event.key.keysym.sym);
             event.key.mod = sdl_event.key.keysym.mod;
-            Input::ReleaseKey(event.key.keycode);
+            event.key.state = sdl_event.key.state;
+            Input::SetKeyState(event.key.keycode, event.key.state);
         } break;
         case SDL_WINDOWEVENT: {
             switch (sdl_event.window.event) {
@@ -209,11 +198,10 @@ void Application::Run() {
 void Application::Quit() { window->SetShouldClose(true); }
 
 void Application::Tick(float dt) {
-    Input::Tick();
-
     for (auto iter = m_layers.rbegin(); iter != m_layers.rend(); ++iter) {
         (*iter)->OnTick(dt);
     }
+    Input::Tick();
 }
 
 void Application::Render() {

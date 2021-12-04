@@ -16,6 +16,7 @@ struct WindowSizeEvent {
 struct KeyEvent {
     Keycode keycode;
     uint16_t mod;
+    bool state;
 };
 
 struct MouseMotionEvent {
@@ -30,6 +31,7 @@ struct MouseButtonEvent {
     int32_t x;
     int32_t y;
     uint8_t clicks;
+    bool state;
 };
 
 struct MouseWheelEvent {
@@ -44,11 +46,9 @@ struct TextInputEvent {
 enum class EventType {
     UNKNOWN = 0,
     WINDOW_RESIZED,
-    KEY_PRESSED,
-    KEY_RELEASED,
+    KEY,
     MOUSE_MOTION,
-    MOUSE_BUTTON_PRESSED,
-    MOUSE_BUTTON_RELEASED,
+    MOUSE_BUTTON,
     MOUSE_WHEEL_SCROLLED,
     TEXT_INPUT
 };

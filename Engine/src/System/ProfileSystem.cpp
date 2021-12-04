@@ -1,6 +1,7 @@
 #include "System/ProfileSystem.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Asset/Asset.hpp"
+#include "Core/Input.hpp"
 
 namespace SD {
 
@@ -13,7 +14,8 @@ ProfileSystem::ProfileSystem(RenderTarget *target, int width, int height)
       m_target(target),
       m_camera(CameraType::ORTHOGRAPHIC, glm::radians(45.f), width, height, 0.f,
                1000.f),
-      m_fps(FPS_CAPACITY) {}
+      m_fps(FPS_CAPACITY),
+      m_is_show_message(true) {}
 
 void ProfileSystem::OnInit() {
     m_font = asset->LoadAndGet<Font>("fonts/msyh.ttc");
@@ -29,9 +31,15 @@ void ProfileSystem::OnPush() {
 
 void ProfileSystem::OnPop() { dispatcher->RemoveHandler(m_size_handler); }
 
-void ProfileSystem::OnTick(float) {}
+void ProfileSystem::OnTick(float) {
+    if (Input::IsKeyPressed(Keycode::F12)) {
+        m_is_show_message = !m_is_show_message;
+    }
+}
 
 void ProfileSystem::OnRender() {
+    if (!m_is_show_message) return;
+
     renderer->SetRenderTarget(*m_target);
     renderer->BeginScene(m_camera);
     std::string fpsStr =

@@ -27,6 +27,8 @@ class SD_SYSTEM_API ProfileSystem : public System {
     FPSCounter m_fps;
     Ref<Font> m_font;
 
+    bool m_is_show_message;
+
     HandlerRegistration m_size_handler;
 };
 

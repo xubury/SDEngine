@@ -25,11 +25,8 @@ class SD_CORE_API Input {
 
     static void Tick();
 
-    static void PressKey(Keycode keycode);
-    static void ReleaseKey(Keycode keycode);
-
-    static void PressMouseButton(MouseButton mouse);
-    static void ReleaseMouseButton(MouseButton mouse);
+    static void SetKeyState(Keycode keycode, bool state);
+    static void SetMouseButtonState(MouseButton mouse, bool state);
 
     static void SetMouseCoord(float x, float y);
 };
