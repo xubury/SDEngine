@@ -48,9 +48,6 @@ class SD_ECS_API Entity {
     template <typename T>
     void OnComponentAdded(T &component);
 
-    template <typename>
-    void OnComponentAdded(CameraComponent &component);
-
    private:
     entt::entity m_handle;
     Scene *m_scene;
@@ -89,12 +86,6 @@ const T &Entity::GetComponent() const {
 
 template <typename T>
 void Entity::OnComponentAdded(T &) {}
-
-template <typename>
-void Entity::OnComponentAdded(CameraComponent &component) {
-    Transform *trans = &GetComponent<TransformComponent>().transform;
-    component.camera.SetTransform(trans);
-}
 
 }  // namespace SD
 

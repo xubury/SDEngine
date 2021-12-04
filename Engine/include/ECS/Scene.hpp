@@ -27,7 +27,6 @@ class SD_ECS_API Scene : public entt::registry {
    private:
     void RefreshEntityChildTranforms(Entity &entity);
     void RefreshLight(Entity &entity);
-    void RefreshCamera(Entity &entity);
 };
 
 }  // namespace SD

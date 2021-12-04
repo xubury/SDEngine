@@ -22,32 +22,20 @@ class SD_RENDERER_API Camera {
     void RotateLocal(const glm::quat &r);
     void RotateWorld(const glm::quat &r);
 
-    glm::vec3 GetLocalRight() const;
-    glm::vec3 GetLocalUp() const;
-    glm::vec3 GetLocalFront() const;
-
     glm::vec3 GetWorldRight() const;
     glm::vec3 GetWorldUp() const;
     glm::vec3 GetWorldFront() const;
 
-    void SetTransform(Transform *transform);
-    void SetLocalPosition(const glm::vec3 &position);
-    void SetLocalRotation(const glm::quat &rotation);
-
     void SetWorldPosition(const glm::vec3 &position);
     void SetWorldRotation(const glm::quat &rotation);
 
-    glm::vec3 GetLocalPosition() const;
     glm::vec3 GetWorldPosition() const;
 
-    glm::quat GetLocalRotation() const;
     glm::quat GetWorldRotation() const;
 
-    glm::mat4 GetLocalTransform() const;
     glm::mat4 GetWorldTransform() const;
 
     void SetWorldTransform(const glm::mat4 &transform);
-    void SetLocalTransform(const glm::mat4 &transform);
 
     void UpdateProjection();
 
@@ -96,7 +84,6 @@ class SD_RENDERER_API Camera {
     glm::mat4 m_projection;
 
     CameraType m_type;
-    Transform *m_transform;
     glm::vec3 m_position;
     glm::quat m_rotation;
 

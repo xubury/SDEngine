@@ -39,7 +39,9 @@ EditorLayer::EditorLayer(int width, int height)
 }
 
 EditorLayer::~EditorLayer() {
+    DestroySystem(m_scene_panel);
     DestroySystem(m_editor_camera_system);
+    DestroySystem(m_camera_system);
     DestroySystem(m_lighting_system);
     DestroySystem(m_skybox_system);
     DestroySystem(m_sprite_system);
@@ -53,6 +55,8 @@ void EditorLayer::OnInit() {
     m_editor_camera_system =
         CreateSystem<EditorCameraSystem>(m_width, m_height);
 
+    // engine logic system
+    m_camera_system = CreateSystem<CameraSystem>();
     // normal render systems
     m_lighting_system = CreateSystem<LightingSystem>(
         &m_target, m_width, m_height, window->GetMSAA());
@@ -73,6 +77,7 @@ void EditorLayer::OnInit() {
 
     PushSystem(m_scene_panel);
     PushSystem(m_editor_camera_system);
+    PushSystem(m_camera_system);
     PushSystem(m_lighting_system);
     PushSystem(m_skybox_system);
     PushSystem(m_sprite_system);
@@ -275,10 +280,6 @@ void EditorLayer::OnImGui() {
                     m_scene_panel->GetGizmoMode(), glm::value_ptr(transform),
                     nullptr, nullptr)) {
                 tc.transform.SetWorldTransform(transform);
-                if (entity.HasComponent<CameraComponent>()) {
-                    entity.GetComponent<CameraComponent>()
-                        .camera.SetWorldTransform(transform);
-                }
             }
         }
         auto [mouseX, mouseY] = ImGui::GetMousePos();

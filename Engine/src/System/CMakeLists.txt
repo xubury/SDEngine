@@ -2,6 +2,7 @@ set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/System)
 set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/System)
 
 set(System_Include
+    ${Include_Root}/CameraSystem.hpp
     ${Include_Root}/LightingSystem.hpp
     ${Include_Root}/ParticleSystem.hpp
     ${Include_Root}/PostProcessSystem.hpp
@@ -11,6 +12,7 @@ set(System_Include
     ${Include_Root}/TerrainSystem.hpp)
 
 set(System_Src
+    ${Src_Root}/CameraSystem.cpp
     ${Src_Root}/LightingSystem.cpp
     ${Src_Root}/ParticleSystem.cpp
     ${Src_Root}/PostProcessSystem.cpp

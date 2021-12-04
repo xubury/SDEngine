@@ -7,6 +7,7 @@
 
 #include "EditorCameraSystem.hpp"
 
+#include "System/CameraSystem.hpp"
 #include "System/LightingSystem.hpp"
 #include "System/SkyboxSystem.hpp"
 #include "System/ProfileSystem.hpp"
@@ -52,6 +53,7 @@ class EditorLayer : public Layer {
 
     ScenePanel *m_scene_panel;
     EditorCameraSystem *m_editor_camera_system;
+    CameraSystem *m_camera_system;
     LightingSystem *m_lighting_system;
     SkyboxSystem *m_skybox_system;
     SpriteRenderSystem *m_sprite_system;

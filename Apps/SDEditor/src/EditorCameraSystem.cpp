@@ -38,25 +38,21 @@ void EditorCameraSystem::OnMouseMotion(const MouseMotionEvent &event) {
 }
 
 void EditorCameraSystem::OnSizeEvent(const WindowSizeEvent &event) {
-    renderer->GetCamera()->Resize(event.width, event.height);
+    m_camera.Resize(event.width, event.height);
 }
 
 void EditorCameraSystem::OnTick(float dt) {
     if (Input::IsKeyDown(Keycode::W)) {
-        renderer->GetCamera()->TranslateWorld(
-            -renderer->GetCamera()->GetWorldFront());
+        m_camera.TranslateWorld(-m_camera.GetWorldFront());
     }
     if (Input::IsKeyDown(Keycode::S)) {
-        renderer->GetCamera()->TranslateWorld(
-            renderer->GetCamera()->GetWorldFront());
+        m_camera.TranslateWorld(m_camera.GetWorldFront());
     }
     if (Input::IsKeyDown(Keycode::A)) {
-        renderer->GetCamera()->TranslateWorld(
-            -renderer->GetCamera()->GetWorldRight());
+        m_camera.TranslateWorld(-m_camera.GetWorldRight());
     }
     if (Input::IsKeyDown(Keycode::D)) {
-        renderer->GetCamera()->TranslateWorld(
-            renderer->GetCamera()->GetWorldRight());
+        m_camera.TranslateWorld(m_camera.GetWorldRight());
     }
     m_mouse_smooth_movement =
         glm::mix(m_mouse_smooth_movement, m_mouse_movement, dt * SMOOTHNESS);
@@ -70,17 +66,15 @@ void EditorCameraSystem::Rotate(float yaw, float pitch) {
     yaw = glm::radians(yaw);
     pitch = glm::radians(pitch);
 
-    glm::quat rotation = renderer->GetCamera()->GetWorldRotation();
+    glm::quat rotation = m_camera.GetWorldRotation();
     m_pitch += pitch;
     if (std::abs(m_pitch) < glm::radians(89.f)) {
-        rotation =
-            glm::angleAxis(pitch, renderer->GetCamera()->GetWorldRight()) *
-            rotation;
+        rotation = glm::angleAxis(pitch, m_camera.GetWorldRight()) * rotation;
     } else {
         m_pitch -= pitch;
     }
     rotation = glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotation;
-    renderer->GetCamera()->SetWorldRotation(rotation);
+    m_camera.SetWorldRotation(rotation);
 }
 
 void EditorCameraSystem::ActiveEditorCam(bool active) {

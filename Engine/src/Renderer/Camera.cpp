@@ -6,7 +6,6 @@ namespace SD {
 Camera::Camera(CameraType type, float fov, float width, float height,
                float near_z, float far_z)
     : m_type(type),
-      m_transform(nullptr),
       m_position(0.f),
       m_rotation(1.f, 0.f, 0.f, 0.f),
       m_fov(fov),
@@ -26,163 +25,57 @@ void Camera::Resize(float width, float height) {
 }
 
 void Camera::TranslateLocal(const glm::vec3 &t) {
-    if (m_transform) {
-        m_transform->TranslateLocal(t);
-    } else {
-        m_position += GetWorldRotation() * t;
-    }
+    m_position += GetWorldRotation() * t;
     m_view_outdated = true;
 }
 
 void Camera::TranslateWorld(const glm::vec3 &t) {
-    if (m_transform) {
-        m_transform->TranslateWorld(t);
-    } else {
-        m_position += t;
-    }
+    m_position += t;
     m_view_outdated = true;
 }
 
 void Camera::RotateLocal(const glm::quat &r) {
-    if (m_transform) {
-        m_transform->RotateLocal(r);
-    } else {
-        m_rotation = GetWorldRotation() * r;
-    }
+    m_rotation = GetWorldRotation() * r;
     m_view_outdated = true;
 }
 
 void Camera::RotateWorld(const glm::quat &r) {
-    if (m_transform) {
-        m_transform->RotateWorld(r);
-    } else {
-        m_rotation = r * GetWorldRotation();
-    }
+    m_rotation = r * GetWorldRotation();
     m_view_outdated = true;
-}
-
-glm::vec3 Camera::GetLocalRight() const {
-    return m_transform ? m_transform->GetLocalRight()
-                       : m_rotation * glm::vec3(1, 0, 0);
-}
-
-glm::vec3 Camera::GetLocalUp() const {
-    return m_transform ? m_transform->GetLocalUp()
-                       : m_rotation * glm::vec3(0, 1, 0);
-}
-
-glm::vec3 Camera::GetLocalFront() const {
-    return m_transform ? m_transform->GetLocalFront()
-                       : m_rotation * glm::vec3(0, 0, 1);
 }
 
 glm::vec3 Camera::GetWorldRight() const {
-    return m_transform ? m_transform->GetWorldRight()
-                       : m_rotation * glm::vec3(1, 0, 0);
+    return m_rotation * glm::vec3(1, 0, 0);
 }
 
-glm::vec3 Camera::GetWorldUp() const {
-    return m_transform ? m_transform->GetWorldUp()
-                       : m_rotation * glm::vec3(0, 1, 0);
-}
+glm::vec3 Camera::GetWorldUp() const { return m_rotation * glm::vec3(0, 1, 0); }
 
 glm::vec3 Camera::GetWorldFront() const {
-    return m_transform ? m_transform->GetWorldFront()
-                       : m_rotation * glm::vec3(0, 0, 1);
-}
-
-void Camera::SetTransform(Transform *transform) { m_transform = transform; }
-
-void Camera::SetLocalPosition(const glm::vec3 &position) {
-    if (m_transform) {
-        m_transform->SetLocalPosition(position);
-    } else {
-        m_position = position;
-    }
-    m_view_outdated = true;
-}
-
-void Camera::SetLocalRotation(const glm::quat &rotation) {
-    if (m_transform) {
-        m_transform->SetLocalRotation(rotation);
-    } else {
-        m_rotation = rotation;
-    }
-    m_view_outdated = true;
+    return m_rotation * glm::vec3(0, 0, 1);
 }
 
 void Camera::SetWorldPosition(const glm::vec3 &position) {
-    if (m_transform) {
-        m_transform->SetWorldPosition(position);
-    } else {
-        m_position = position;
-    }
+    m_position = position;
     m_view_outdated = true;
 }
 
 void Camera::SetWorldRotation(const glm::quat &rotation) {
-    if (m_transform) {
-        m_transform->SetWorldRotation(rotation);
-    } else {
-        m_rotation = rotation;
-    }
+    m_rotation = rotation;
     m_view_outdated = true;
 }
 
-glm::vec3 Camera::GetLocalPosition() const {
-    return m_transform ? m_transform->GetLocalPosition() : m_position;
-}
+glm::vec3 Camera::GetWorldPosition() const { return m_position; }
 
-glm::vec3 Camera::GetWorldPosition() const {
-    return m_transform ? m_transform->GetWorldPosition() : m_position;
-}
-
-glm::quat Camera::GetLocalRotation() const {
-    return m_transform ? m_transform->GetLocalRotation() : m_rotation;
-}
-
-glm::quat Camera::GetWorldRotation() const {
-    return m_transform ? m_transform->GetWorldRotation() : m_rotation;
-}
-
-glm::mat4 Camera::GetLocalTransform() const {
-    if (m_transform) {
-        return m_transform->GetLocalTransform();
-    } else {
-        return glm::translate(glm::mat4(1.0f), m_position) *
-               glm::toMat4(m_rotation);
-    }
-}
+glm::quat Camera::GetWorldRotation() const { return m_rotation; }
 
 glm::mat4 Camera::GetWorldTransform() const {
-    if (m_transform) {
-        return m_transform->GetWorldTransform();
-    } else {
-        return glm::translate(glm::mat4(1.0f), m_position) *
-               glm::toMat4(m_rotation);
-    }
+    return glm::translate(glm::mat4(1.0f), m_position) *
+           glm::toMat4(m_rotation);
 }
 
 void Camera::SetWorldTransform(const glm::mat4 &transform) {
-    if (m_transform) {
-        m_transform->SetWorldTransform(transform);
-    } else {
-        glm::vec3 scale;
-        Decompose(transform, m_position, m_rotation, scale);
-    }
-    m_view_outdated = true;
-}
-
-void Camera::SetLocalTransform(const glm::mat4 &transform) {
-    if (m_transform) {
-        m_transform->SetLocalTransform(transform);
-    } else {
-        glm::vec3 skew;
-        glm::vec4 perspective;
-        glm::vec3 scale;
-        glm::decompose(transform, scale, m_rotation, m_position, skew,
-                       perspective);
-    }
+    glm::vec3 scale;
+    Decompose(transform, m_position, m_rotation, scale);
     m_view_outdated = true;
 }
 
