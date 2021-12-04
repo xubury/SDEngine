@@ -3,6 +3,8 @@
 
 namespace SD {
 
+Camera::Camera() : m_view_outdated(true), m_projection_outdated(true) {}
+
 Camera::Camera(CameraType type, float fov, float width, float height,
                float near_z, float far_z)
     : m_type(type),
@@ -13,10 +15,8 @@ Camera::Camera(CameraType type, float fov, float width, float height,
       m_height(height),
       m_near_z(near_z),
       m_far_z(far_z),
-      m_view_outdated(true) {
-    UpdateView();
-    UpdateProjection();
-}
+      m_view_outdated(true),
+      m_projection_outdated(true) {}
 
 void Camera::Resize(float width, float height) {
     m_width = width;

@@ -11,7 +11,7 @@ enum class CameraType { ORTHOGRAPHIC, PERSPECTIVE };
 
 class SD_RENDERER_API Camera {
    public:
-    Camera() = default;
+    Camera();
     Camera(CameraType type, float fov, float width, float height, float near_z,
            float far_z);
 
