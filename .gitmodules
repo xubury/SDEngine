@@ -1,12 +1,9 @@
 [submodule "Engine/libs/entt"]
 	path = Engine/libs/entt
 	url = git@github.com:skypjack/entt.git
-    branch = master
 [submodule "Engine/libs/imgui"]
 	path = Engine/libs/imgui
 	url = git@github.com:ocornut/imgui.git
-    branch = docking
 [submodule "Engine/libs/ImGuizmo"]
 	path = Engine/libs/ImGuizmo
 	url = git@github.com:CedricGuillemet/ImGuizmo.git
-    branch = master
