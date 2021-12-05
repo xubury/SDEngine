@@ -65,9 +65,13 @@ LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
     layout.Push(BufferDataType::FLOAT2);
     m_quad->AddVertexBuffer(buffer, layout);
     m_quad->SetIndexBuffer(indexBuffer);
+}
+
+void LightingSystem::OnInit() {
+    InitShaders();
 
     // SSAO init
-    uint32_t kernel_size = 64;
+    uint32_t kernel_size = m_ssao_shader->GetUint("u_kernel_size");
     m_ssao_kernel.clear();
     m_ssao_kernel.reserve(kernel_size);
     for (uint32_t i = 0; i < kernel_size; ++i) {
@@ -82,6 +86,7 @@ LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
         sample *= scale;
         m_ssao_kernel.push_back(sample);
     }
+
     std::vector<glm::vec3> ssao_noise;
     ssao_noise.reserve(16);
     for (uint32_t i = 0; i < 16; i++) {
@@ -94,8 +99,6 @@ LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
         TextureFormatType::FLOAT16, TextureWrap::REPEAT, TextureFilter::NEAREST,
         TextureMipmapFilter::NEAREST, ssao_noise.data());
 }
-
-void LightingSystem::OnInit() { InitShaders(); }
 
 void LightingSystem::OnPush() {
     m_size_handler = dispatcher->Register(this, &LightingSystem::OnSizeEvent);

@@ -166,4 +166,10 @@ void GLShader::SetUniformBuffer(const std::string& name,
         glUniformBlockBinding(m_id, index, buffer.GetBindingPoint());
 }
 
+uint32_t GLShader::GetUint(const std::string& name) {
+    uint32_t value = 0;
+    glGetUniformuiv(m_id, glGetUniformLocation(m_id, name.c_str()), &value);
+    return value;
+}
+
 }  // namespace SD

@@ -23,7 +23,8 @@ layout(location = 0) in vec2 in_uv;
 layout(binding = 0) uniform sampler2DMS u_position;
 layout(binding = 1) uniform sampler2DMS u_normal;
 
-const int kernel_size = 32;
+const uint kernel_size = 32;
+uniform uint u_kernel_size = kernel_size;
 
 uniform sampler2D u_noise;
 uniform vec3 u_samples[kernel_size];
@@ -46,7 +47,7 @@ float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
     mat3 TBN = mat3(tangent, bi_tangent, normal);
     // iterate over the sample kernel and calculate occlusion factor
     float occlusion = 0.0;
-    for(int i = 0; i < kernel_size; ++i)
+    for(int i = 0; i < u_kernel_size; ++i)
     {
         // get sample position
         vec3 sample_pos = TBN * u_samples[i]; // from tangent to view-space
@@ -69,7 +70,7 @@ float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
         float range_check = smoothstep(0.0, 1.0, factor);
         occlusion += (offset_pos.z <= sample_pos.z + u_bias ? 1.0 : 0.0) * range_check;
     }
-    return occlusion / kernel_size;
+    return occlusion / u_kernel_size;
 }
 
 void main() {

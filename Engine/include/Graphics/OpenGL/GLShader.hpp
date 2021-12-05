@@ -44,10 +44,13 @@ class SD_GRAPHICS_API GLShader : public Shader {
     void SetMat4(const std::string& name, const glm::mat4& value) override;
 
     void SetTexture(const std::string& name, const Texture* texture) override;
+
     void SetTexture(uint32_t id, const Texture* texture) override;
 
     void SetUniformBuffer(const std::string& name,
                           const UniformBuffer& buffer) override;
+
+    uint32_t GetUint(const std::string &name) override;
 
    private:
     static void CheckCompileErrors(uint32_t shader, const std::string& type);

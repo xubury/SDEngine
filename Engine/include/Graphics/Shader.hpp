@@ -58,6 +58,8 @@ class SD_GRAPHICS_API Shader {
     virtual void SetUniformBuffer(const std::string& name,
                                   const UniformBuffer& buffer) = 0;
 
+    virtual uint32_t GetUint(const std::string& name) = 0;
+
    protected:
     Shader() = default;
 };
