@@ -120,9 +120,9 @@ void LightingSystem::InitLighting(int width, int height, int samples) {
         TextureMipmapFilter::NEAREST));
     m_ssao_target.CreateFramebuffer();
     m_ssao_blur_target.AddTexture(Texture::Create(
-        width, height, 1, TextureType::TEX_2D, TextureFormat::RED,
-        TextureFormatType::FLOAT, TextureWrap::EDGE, TextureFilter::NEAREST,
-        TextureMipmapFilter::NEAREST));
+        width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
+        TextureFormat::RED, TextureFormatType::FLOAT, TextureWrap::EDGE,
+        TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
     m_ssao_blur_target.CreateFramebuffer();
 
     // lighting target
@@ -208,7 +208,8 @@ void LightingSystem::RenderShadowMap() {
         light.GetRenderTarget().GetFramebuffer()->ClearDepth();
         light.ComputeLightSpaceMatrix(transformComp.transform,
                                       renderer->GetCamera());
-        m_shadow_shader->SetMat4("u_projection_view", light.GetProjectionView());
+        m_shadow_shader->SetMat4("u_projection_view",
+                                 light.GetProjectionView());
 
         modelView.each([this](const TransformComponent &transformComp,
                               const ModelComponent &modelComp) {
@@ -233,8 +234,7 @@ void LightingSystem::RenderSSAO() {
                                m_ssao_kernel[i]);
     }
 
-    m_ssao_shader->SetMat4("u_projection",
-                           renderer->GetCamera()->GetProjection());
+    renderer->UpdateShader(*m_ssao_shader, *renderer->GetCamera());
     m_ssao_shader->SetTexture(
         "u_position",
         m_gbuffer_target.GetTexture(GeometryBufferType::G_POSITION));

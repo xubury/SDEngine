@@ -20,11 +20,11 @@ layout(location = 0) out VertexOutput out_vertex;
 uniform mat4 u_model;
 
 void main() {
-    vec3 fragPos = (u_view * u_model * vec4(a_pos, 1.0f)).xyz;
-    gl_Position = u_projection * vec4(fragPos, 1.0f);
+    vec3 fragPos = (u_model * vec4(a_pos, 1.0f)).xyz;
+    gl_Position = u_projection * u_view * vec4(fragPos, 1.0f);
 
     out_vertex.position = fragPos;
-    out_vertex.normal = transpose(inverse(mat3(u_view * u_model))) * a_normal;
+    out_vertex.normal = transpose(inverse(mat3(u_model))) * a_normal;
     out_vertex.texCoord = a_texCoord;
 }
 

@@ -14,6 +14,8 @@ void main() {
 #shader fragment
 #version 450 core
 
+#include shaders/camera.glsl
+
 layout(location = 0) out float frag_color;
 
 layout(location = 0) in vec2 in_uv;
@@ -21,7 +23,6 @@ layout(location = 0) in vec2 in_uv;
 layout(binding = 0) uniform sampler2DMS u_position;
 layout(binding = 1) uniform sampler2DMS u_normal;
 
-uniform mat4 u_projection;
 uniform sampler2D u_noise;
 uniform vec3 u_samples[64];
 
@@ -31,10 +32,12 @@ float radius = 0.5;
 float bias = 0.025;
 
 float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
-                        vec3 random_vec) {
+                        vec3 random_vec, mat3 ti_view) {
     // get input for SSAO algorithm
     vec3 frag_pos = texelFetch(u_position, uv, level).xyz;
-    vec3 normal = texelFetch(u_normal, uv, level).rgb;
+    vec3 normal = texelFetch(u_normal, uv, level).xyz;
+    frag_pos = (u_view * vec4(frag_pos, 1.0f)).xyz;
+    normal = ti_view * normal;
 
     // create TBN change-of-basis matrix: from tangent-space to view-space
     vec3 tangent = normalize(random_vec - normal * dot(random_vec, normal));
@@ -57,11 +60,13 @@ float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
 
         // get sample depth
         const ivec2 uv = ivec2(offset.xy * tex_size);
-        float sample_depth = texelFetch(u_position, uv, level).z;
+        vec3 offset_pos = texelFetch(u_position, uv, level).xyz;
+        offset_pos = (u_view * vec4(offset_pos, 1.0f)).xyz;
 
         // range check & accumulate
-        float range_check = smoothstep(0.0, 1.0, radius / abs(frag_pos.z - sample_depth));
-        occlusion += (sample_depth >= sample_pos.z + bias ? 1.0 : 0.0) * range_check;
+        float factor = radius / abs(frag_pos.z - offset_pos.z);
+        float range_check = smoothstep(0.0, 1.0, factor);
+        occlusion += (offset_pos.z >= sample_pos.z + bias ? 1.0 : 0.0) * range_check;
     }
     return 1.0 - (occlusion / kernel_size);
 }
@@ -74,8 +79,9 @@ void main() {
     const ivec2 uv = ivec2(in_uv * tex_size);
     const int num_msaa = textureSamples(u_position);
     float occlusion = 0;
+    mat3 view = transpose(inverse(mat3(u_view)));
     for (int i = 0; i < num_msaa; ++i) {
-        occlusion += compute_occlusion(i, tex_size, uv, random_vec);
+        occlusion += compute_occlusion(i, tex_size, uv, random_vec, view);
     }
     occlusion /= num_msaa;
     frag_color = occlusion;
