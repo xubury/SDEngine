@@ -29,7 +29,7 @@ uniform vec3 u_samples[64];
 // parameters (you'd probably want to use them as uniforms to more easily tweak the effect)
 int kernel_size = 64;
 float radius = 0.5;
-float bias = 0.025;
+float bias = 0.25;
 
 float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
                         vec3 random_vec, mat3 ti_view) {
@@ -66,9 +66,9 @@ float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
         // range check & accumulate
         float factor = radius / abs(frag_pos.z - offset_pos.z);
         float range_check = smoothstep(0.0, 1.0, factor);
-        occlusion += (offset_pos.z >= sample_pos.z + bias ? 1.0 : 0.0) * range_check;
+        occlusion += (offset_pos.z <= sample_pos.z + bias ? 1.0 : 0.0) * range_check;
     }
-    return 1.0 - (occlusion / kernel_size);
+    return occlusion / kernel_size;
 }
 
 void main() {
