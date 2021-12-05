@@ -47,6 +47,8 @@ class SD_GRAPHICS_API Shader {
 
     virtual void SetVec4(const std::string& name, const glm::vec4& value) = 0;
 
+    virtual void SetMat3(const std::string& name, const glm::mat3& value) = 0;
+
     virtual void SetMat4(const std::string& name, const glm::mat4& value) = 0;
 
     virtual void SetTexture(const std::string& name,

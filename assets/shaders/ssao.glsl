@@ -23,21 +23,22 @@ layout(location = 0) in vec2 in_uv;
 layout(binding = 0) uniform sampler2DMS u_position;
 layout(binding = 1) uniform sampler2DMS u_normal;
 
-const int kernel_size = 64;
+const int kernel_size = 32;
 
 uniform sampler2D u_noise;
 uniform vec3 u_samples[kernel_size];
 uniform float u_radius;
 uniform float u_bias;
 
+uniform mat3 u_view_ti; // transpose(inverse(view))
 
 float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
-                        vec3 random_vec, mat3 ti_view) {
+                        vec3 random_vec) {
     // get input for SSAO algorithm
     vec3 frag_pos = texelFetch(u_position, uv, level).xyz;
     vec3 normal = texelFetch(u_normal, uv, level).xyz;
     frag_pos = (u_view * vec4(frag_pos, 1.0f)).xyz;
-    normal = ti_view * normal;
+    normal = u_view_ti * normal;
 
     // create TBN change-of-basis matrix: from tangent-space to view-space
     vec3 tangent = normalize(random_vec - normal * dot(random_vec, normal));
@@ -79,9 +80,8 @@ void main() {
     const ivec2 uv = ivec2(in_uv * tex_size);
     const int num_msaa = textureSamples(u_position);
     float occlusion = 0;
-    mat3 view = transpose(inverse(mat3(u_view)));
     for (int i = 0; i < num_msaa; ++i) {
-        occlusion += compute_occlusion(i, tex_size, uv, random_vec, view);
+        occlusion += compute_occlusion(i, tex_size, uv, random_vec);
     }
     occlusion /= num_msaa;
     frag_color = occlusion;

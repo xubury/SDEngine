@@ -253,6 +253,9 @@ void LightingSystem::RenderSSAO() {
     renderer->UpdateShader(*m_ssao_shader, *renderer->GetCamera());
     m_ssao_shader->SetFloat("u_radius", m_ssao_radius);
     m_ssao_shader->SetFloat("u_bias", m_ssao_bias);
+    m_ssao_shader->SetMat3("u_view_ti",
+                           glm::transpose(glm::inverse(
+                               glm::mat3(renderer->GetCamera()->GetView()))));
     m_ssao_shader->SetTexture(
         "u_position",
         m_gbuffer_target.GetTexture(GeometryBufferType::G_POSITION));

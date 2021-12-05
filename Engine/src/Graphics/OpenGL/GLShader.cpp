@@ -134,6 +134,11 @@ void GLShader::SetVec4(const std::string& name, const glm::vec4& value) {
                         &value[0]);
 }
 
+void GLShader::SetMat3(const std::string& name, const glm::mat3& value) {
+    glProgramUniformMatrix3fv(m_id, glGetUniformLocation(m_id, name.c_str()), 1,
+                              GL_FALSE, glm::value_ptr(value));
+}
+
 void GLShader::SetMat4(const std::string& name, const glm::mat4& value) {
     glProgramUniformMatrix4fv(m_id, glGetUniformLocation(m_id, name.c_str()), 1,
                               GL_FALSE, glm::value_ptr(value));
