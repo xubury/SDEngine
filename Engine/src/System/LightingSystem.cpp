@@ -3,6 +3,7 @@
 #include "Asset/Asset.hpp"
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
+#include "Utility/Random.hpp"
 
 namespace SD {
 
@@ -64,6 +65,33 @@ LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
     layout.Push(BufferDataType::FLOAT2);
     m_quad->AddVertexBuffer(buffer, layout);
     m_quad->SetIndexBuffer(indexBuffer);
+
+    // SSAO init
+    m_ssao_kernel.reserve(64);
+    for (uint32_t i = 0; i < 64; ++i) {
+        glm::vec3 sample(Random::Rnd(-1.f, 1.f), Random::Rnd(-1.f, 1.f),
+                         Random::Rnd(0.f, 1.0f));
+        sample = glm::normalize(sample);
+        sample *= Random::Rnd(0.f, 1.0f);
+        float scale = float(i) / 64.0;
+
+        // scale samples s.t. they're more aligned to center of kernel
+        scale = Math::Lerp(0.1f, 1.0f, scale * scale);
+        sample *= scale;
+        m_ssao_kernel.push_back(sample);
+        SD_TRACE("{}", m_ssao_kernel.back());
+    }
+    std::vector<glm::vec3> ssao_noise;
+    ssao_noise.reserve(16);
+    for (uint32_t i = 0; i < 16; i++) {
+        glm::vec3 noise(Random::Rnd(-1.f, 1.0f), Random::Rnd(-1.f, 1.0f),
+                        0.0f);  // rotate around z-axis (in tangent space)
+        ssao_noise.push_back(glm::normalize(noise));
+    }
+    m_ssao_noise = Texture::Create(
+        4, 4, 1, TextureType::TEX_2D, TextureFormat::RGB,
+        TextureFormatType::FLOAT, TextureWrap::REPEAT, TextureFilter::NEAREST,
+        TextureMipmapFilter::NEAREST, ssao_noise.data());
 }
 
 void LightingSystem::OnInit() { InitShaders(); }
@@ -79,23 +107,38 @@ void LightingSystem::InitShaders() {
     m_emssive_shader = ShaderLibrary::Instance().Load("shaders/emissive.glsl");
     m_deferred_shader = ShaderLibrary::Instance().Load("shaders/deferred.glsl");
     m_gbuffer_shader = ShaderLibrary::Instance().Load("shaders/gbuffer.glsl");
+    m_ssao_shader = ShaderLibrary::Instance().Load("shaders/ssao.glsl");
+    m_ssao_blur_shader =
+        ShaderLibrary::Instance().Load("shaders/ssao_blur.glsl");
 }
 
 void LightingSystem::InitLighting(int width, int height, int samples) {
+    // ssao target
+    m_ssao_target.AddTexture(Texture::Create(
+        width, height, 1, TextureType::TEX_2D, TextureFormat::RED,
+        TextureFormatType::FLOAT, TextureWrap::EDGE, TextureFilter::NEAREST,
+        TextureMipmapFilter::NEAREST));
+    m_ssao_target.CreateFramebuffer();
+    m_ssao_blur_target.AddTexture(Texture::Create(
+        width, height, 1, TextureType::TEX_2D, TextureFormat::RED,
+        TextureFormatType::FLOAT, TextureWrap::EDGE, TextureFilter::NEAREST,
+        TextureMipmapFilter::NEAREST));
+    m_ssao_blur_target.CreateFramebuffer();
+
+    // lighting target
     for (int i = 0; i < 2; ++i) {
         m_light_target[i].AddTexture(Texture::Create(
             width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
-            TextureFormat::RGBA, TextureFormatType::FLOAT, TextureWrap::EDGE,
-            TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
+            TextureFormat::RGBA, TextureFormatType::FLOAT));
         m_light_target[i].CreateFramebuffer();
     }
 
+    // gbuffer target
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
         m_gbuffer_target.AddTexture(Texture::Create(
             width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
             GetTextureFormat(GeometryBufferType(i)),
-            GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
-            TextureFilter::LINEAR, TextureMipmapFilter::LINEAR));
+            GetTextureFormatType(GeometryBufferType(i))));
     }
     m_gbuffer_target.CreateFramebuffer();
 }
@@ -105,6 +148,8 @@ void LightingSystem::OnSizeEvent(const WindowSizeEvent &event) {
         m_light_target[i].Resize(event.width, event.height);
     }
     m_gbuffer_target.Resize(event.width, event.height);
+    m_ssao_target.Resize(event.width, event.height);
+    m_ssao_blur_target.Resize(event.width, event.height);
 }
 
 void LightingSystem::OnRender() {
@@ -115,8 +160,9 @@ void LightingSystem::OnRender() {
     RenderShadowMap();
     Device::instance().Disable(Operation::BLEND);
     RenderGBuffer();
-    Device::instance().Enable(Operation::BLEND);
     Device::instance().SetDepthMask(false);
+    RenderSSAO();
+    Device::instance().Enable(Operation::BLEND);
     RenderDeferred();
     RenderEmissive();
     Device::instance().SetDepthMask(true);
@@ -128,6 +174,11 @@ void LightingSystem::OnRender() {
 
 void LightingSystem::Clear() {
     Device::instance().ResetShaderState();
+
+    Device::instance().SetFramebuffer(m_ssao_target.GetFramebuffer());
+    Device::instance().Clear(BufferBitMask::COLOR_BUFFER_BIT);
+    Device::instance().SetFramebuffer(m_ssao_blur_target.GetFramebuffer());
+    Device::instance().Clear(BufferBitMask::COLOR_BUFFER_BIT);
     // clear the last lighting pass' result
     for (int i = 0; i < 2; ++i) {
         Device::instance().SetFramebuffer(m_light_target[i].GetFramebuffer());
@@ -157,7 +208,7 @@ void LightingSystem::RenderShadowMap() {
         light.GetRenderTarget().GetFramebuffer()->ClearDepth();
         light.ComputeLightSpaceMatrix(transformComp.transform,
                                       renderer->GetCamera());
-        m_shadow_shader->SetMat4("u_projectionView", light.GetProjectionView());
+        m_shadow_shader->SetMat4("u_projection_view", light.GetProjectionView());
 
         modelView.each([this](const TransformComponent &transformComp,
                               const ModelComponent &modelComp) {
@@ -172,6 +223,32 @@ void LightingSystem::RenderShadowMap() {
         });
     });
     Device::instance().SetCullFace(Face::BACK);
+}
+
+void LightingSystem::RenderSSAO() {
+    renderer->SetRenderTarget(m_ssao_target);
+    m_ssao_shader->Bind();
+    for (uint32_t i = 0; i < 64; ++i) {
+        m_ssao_shader->SetVec3("u_samples[" + std::to_string(i) + "]",
+                               m_ssao_kernel[i]);
+    }
+
+    m_ssao_shader->SetMat4("u_projection",
+                           renderer->GetCamera()->GetProjection());
+    m_ssao_shader->SetTexture(
+        "u_position",
+        m_gbuffer_target.GetTexture(GeometryBufferType::G_POSITION));
+    m_ssao_shader->SetTexture(
+        "u_normal", m_gbuffer_target.GetTexture(GeometryBufferType::G_NORMAL));
+    m_ssao_shader->SetTexture("u_noise", m_ssao_noise.get());
+    renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
+                     m_quad->GetIndexBuffer()->GetCount(), 0);
+
+    renderer->SetRenderTarget(m_ssao_blur_target);
+    m_ssao_blur_shader->Bind();
+    m_ssao_blur_shader->SetTexture("u_ssao", m_ssao_target.GetTexture());
+    renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
+                     m_quad->GetIndexBuffer()->GetCount(), 0);
 }
 
 void LightingSystem::RenderEmissive() {
@@ -202,6 +279,7 @@ void LightingSystem::RenderDeferred() {
     m_deferred_shader->SetTexture(
         "u_ambient",
         m_gbuffer_target.GetTexture(GeometryBufferType::G_AMBIENT));
+    m_deferred_shader->SetTexture("u_ssao", m_ssao_blur_target.GetTexture());
     const uint8_t inputId = 0;
     const uint8_t outputId = 1;
     lightView.each([this](const TransformComponent &transformComp,

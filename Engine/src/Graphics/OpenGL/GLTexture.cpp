@@ -51,11 +51,11 @@ void GLTexture::SetPixels(int width, int height, const void *data,
     m_height = height;
 
     Bind();
-    if (m_format == TextureFormat::RED || m_format == TextureFormat::ALPHA) {
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    } else {
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-    }
+    // if (m_format == TextureFormat::RED || m_format == TextureFormat::ALPHA) {
+        // glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    // } else {
+    //     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    // }
 
     switch (m_type) {
         case TextureType::TEX_2D:

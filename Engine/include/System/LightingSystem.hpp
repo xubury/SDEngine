@@ -40,6 +40,8 @@ class SD_SYSTEM_API LightingSystem : public System {
 
     Framebuffer *GetGBuffer() { return m_gbuffer_target.GetFramebuffer(); }
 
+    Texture *GetSSAO() { return m_ssao_blur_target.GetTexture(); }
+
    private:
     void InitShaders();
     void InitLighting(int width, int height, int samples);
@@ -48,6 +50,9 @@ class SD_SYSTEM_API LightingSystem : public System {
 
     void RenderShadowMap();
     void RenderGBuffer();
+
+    void RenderSSAO();
+
     void RenderDeferred();
 
     void RenderEmissive();
@@ -64,6 +69,16 @@ class SD_SYSTEM_API LightingSystem : public System {
 
     Ref<Shader> m_gbuffer_shader;
     RenderTarget m_gbuffer_target;
+
+    Ref<Shader> m_ssao_shader;
+    RenderTarget m_ssao_target;
+
+    Ref<Texture> m_ssao_noise;
+
+    Ref<Shader> m_ssao_blur_shader;
+    RenderTarget m_ssao_blur_target;
+
+    std::vector<glm::vec3> m_ssao_kernel;
 
     Ref<VertexArray> m_quad;
 

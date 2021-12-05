@@ -12,6 +12,11 @@ namespace Math {
 
 constexpr float PI = 3.14159265358979323846;
 
+template <typename T>
+inline T Lerp(T a, T b, float f) {
+    return a + f * (b - a);
+}
+
 template <glm::length_t L, typename T, glm::qualifier Q>
 inline void BaryCentric(const glm::vec<L, T, Q> &a, const glm::vec<L, T, Q> &b,
                         const glm::vec<L, T, Q> &c,

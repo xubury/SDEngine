@@ -33,8 +33,8 @@ struct Quad {
 };
 
 struct CameraData {
-    glm::mat4 view_projection;
-    glm::vec3 view_pos;
+    glm::mat4 projection;
+    glm::mat4 view;
 };
 
 struct Renderer2DData {

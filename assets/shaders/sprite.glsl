@@ -17,7 +17,7 @@ struct VertexOutput {
 layout(location = 0) out VertexOutput out_vertex;
 
 void main() {
-    gl_Position = u_projection_view * vec4(a_pos, 1.0f);
+    gl_Position = u_projection * u_view * vec4(a_pos, 1.0f);
     out_vertex.color = a_color;
     out_vertex.uv = a_uv;
     out_vertex.tex_id = a_tex_id;

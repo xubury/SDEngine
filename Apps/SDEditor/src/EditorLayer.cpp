@@ -230,6 +230,14 @@ void EditorLayer::OnImGui() {
         }
     }
     ImGui::End();
+    ImGui::Begin("SSAO");
+    {
+        ImVec2 wsize = ImGui::GetContentRegionAvail();
+        ImGui::DrawTexture(*m_lighting_system->GetSSAO(), wsize, ImVec2(0, 1),
+                           ImVec2(1, 0));
+    }
+    ImGui::End();
+
     ImGui::Begin("Scene");
     {
         ImVec2 wsize = ImGui::GetContentRegionAvail();
@@ -293,9 +301,10 @@ void EditorLayer::OnImGui() {
                 m_debug_gbuffer->GetTexture(GeometryBufferType::G_ENTITY_ID);
             // out of bound check
             if (x > 0 && y > 0 && x < entity_tex->GetWidth() &&
-                y < entity_tex->GetHeight())
+                y < entity_tex->GetHeight()) {
                 entity_tex->ReadPixels(0, x, y, 0, 1, 1, 1, sizeof(entity),
                                        &entity);
+            }
             if (entity != Entity::INVALID_ID) {
                 m_scene_panel->SetSelectedEntity({entity, m_scene.get()});
             }

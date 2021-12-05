@@ -90,7 +90,7 @@ static inline TextureWrap ConvertAssimpMapMode(aiTextureMapMode mode) {
         case aiTextureMapMode_Wrap:
             return TextureWrap::REPEAT;
         default:
-            SD_CORE_WARN("[ConvertAssimpMapMode] invalid wrap mode!");
+            SD_CORE_WARN("[ConvertAssimpMapMode] invalid wrap mode: {}!", mode);
             return TextureWrap::REPEAT;
     }
 }
@@ -131,7 +131,7 @@ static void processAiMaterial(AssetManager &manager,
     }
 
     aiString texturePath;
-    aiTextureMapMode map_mode;
+    aiTextureMapMode map_mode = aiTextureMapMode::aiTextureMapMode_Wrap;
     if (assimpMaterial->GetTexture(assimpType, 0, &texturePath, nullptr,
                                    nullptr, nullptr, nullptr,
                                    &map_mode) != AI_SUCCESS) {

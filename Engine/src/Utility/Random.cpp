@@ -4,14 +4,11 @@ namespace SD {
 
 static std::random_device s_random_device;
 static std::mt19937 s_random_engine(s_random_device());
-static std::uniform_int_distribution<std::mt19937::result_type> s_distribution;
+static std::uniform_real_distribution<double> s_distribution(0.0, 1.0);
 
 void Random::Init(uint32_t seed) { s_random_engine.seed(seed); }
 
-double Random::Uniform() {
-    return static_cast<double>(s_distribution(s_random_engine)) /
-           std::numeric_limits<uint32_t>::max();
-}
+double Random::Uniform() { return s_distribution(s_random_engine); }
 
 float Random::Rnd(float min, float max) {
     return Uniform() * (max - min) + min;

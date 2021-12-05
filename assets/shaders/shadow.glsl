@@ -10,9 +10,9 @@ layout(location = 4) in vec3 a_biTangent;
 out float depth;
 
 uniform mat4 u_model;
-uniform mat4 u_projectionView;
+uniform mat4 u_projection_view;
 
-void main() { gl_Position = u_projectionView * u_model * vec4(a_pos, 1.0f); }
+void main() { gl_Position = u_projection_view * u_model * vec4(a_pos, 1.0f); }
 
 #shader fragment
 #version 450 core

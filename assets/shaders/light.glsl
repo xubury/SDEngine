@@ -23,7 +23,9 @@ struct Light {
 float shadowCalculation(Light light, vec3 fragPos, vec3 normal) {
     if (!light.is_cast_shadow) return 0.f;
 
-    vec4 fragPosLightSpace = light.projection_view * vec4(fragPos, 1.0);
+    //FIXME: try not to inverse in shader!
+    vec4 fragPosLightSpace = light.projection_view * inverse(u_view) 
+                             * vec4(fragPos, 1.0);
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     // transform to [0,1] range
@@ -37,7 +39,8 @@ float shadowCalculation(Light light, vec3 fragPos, vec3 normal) {
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
     // check whether current frag pos is in shadow
-    vec3 lightDir = normalize(light.position - fragPos);
+    vec3 light_pos = (u_view * vec4(light.position, 1.0f)).xyz;
+    vec3 lightDir = normalize(light_pos - fragPos);
     float bias = max(0.0005 * (1.0 - dot(normal, lightDir)), 0);
     float shadow = 0.0f;
     vec2 texelSize = 1.0f / textureSize(light.shadow_map, 0);
@@ -57,7 +60,7 @@ float shadowCalculation(Light light, vec3 fragPos, vec3 normal) {
 
 vec3 dirLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
               vec3 ambient, vec4 albedo) {
-    vec3 lightDir = normalize(-light.direction);
+    vec3 lightDir = transpose(inverse(mat3(u_view))) * normalize(-light.direction);
 
     // ambient
     ambient = light.ambient * ambient;
@@ -78,7 +81,8 @@ vec3 dirLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
 
 vec3 pointLight(Light light, vec3 fragPos, vec3 normal, vec3 viewDir,
                 vec3 ambient, vec4 albedo) {
-    vec3 lightDir = normalize(light.position - fragPos);
+    vec3 light_pos = (u_view * vec4(light.position, 1.0f)).xyz;
+    vec3 lightDir = normalize(light_pos - fragPos);
 
     // ambient
     ambient = light.ambient * ambient;

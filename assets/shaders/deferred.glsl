@@ -28,20 +28,23 @@ layout(binding = 1) uniform sampler2DMS u_position;
 layout(binding = 2) uniform sampler2DMS u_normal;
 layout(binding = 3) uniform sampler2DMS u_albedo;
 layout(binding = 4) uniform sampler2DMS u_ambient;
+layout(binding = 5) uniform sampler2D u_ssao;
 
 
 void main() {
     vec3 color = vec3(0);
     const ivec2 uv = ivec2(in_uv * textureSize(u_position));
     const int samples = textureSamples(u_position);
+    float ambient_occlusion = texture(u_ssao, in_uv).r;
     for (int i = 0; i < samples; ++i) {
         vec3 pos = texelFetch(u_position, uv, i).rgb;
         vec3 normal = texelFetch(u_normal, uv, i).rgb;
         vec4 albedo = texelFetch(u_albedo, uv, i);
-        vec3 ambient = texelFetch(u_ambient, uv, i).rgb;
+        vec3 ambient = texelFetch(u_ambient, uv, i).rgb * vec3(ambient_occlusion);
         vec3 last = texelFetch(u_lighting, uv, i).rgb;
 
-        vec3 view_dir = normalize(u_view_pos - pos);
+        vec3 view_pos = u_view[3].xyz;
+        vec3 view_dir = normalize(view_pos - pos);
         color += last +
             calculateLight(u_light, pos, normal, view_dir, ambient, albedo);
     }

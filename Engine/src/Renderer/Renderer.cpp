@@ -78,8 +78,8 @@ void Renderer::SetRenderTarget(RenderTarget& target) {
 
 void Renderer::UpdateShader(Shader& shader, Camera& camera) {
     CameraData cameraData;
-    cameraData.view_pos = camera.GetWorldPosition();
-    cameraData.view_projection = camera.GetViewPorjection();
+    cameraData.view = camera.GetView();
+    cameraData.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&cameraData, sizeof(CameraData));
     shader.SetUniformBuffer("Camera", *m_camera_UBO);
 }

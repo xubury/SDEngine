@@ -162,7 +162,7 @@ GLint TranslateInternalFormat(TextureFormat format,
                 case TextureFormatType::UINT:
                     return GL_RGBA32UI;
                 case TextureFormatType::FLOAT:
-                    return GL_RGB16F;
+                    return GL_RGBA16F;
             }
             break;
         }
