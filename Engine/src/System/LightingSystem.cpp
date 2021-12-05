@@ -67,19 +67,20 @@ LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
     m_quad->SetIndexBuffer(indexBuffer);
 
     // SSAO init
-    m_ssao_kernel.reserve(64);
-    for (uint32_t i = 0; i < 64; ++i) {
+    uint32_t kernel_size = 64;
+    m_ssao_kernel.clear();
+    m_ssao_kernel.reserve(kernel_size);
+    for (uint32_t i = 0; i < kernel_size; ++i) {
         glm::vec3 sample(Random::Rnd(-1.f, 1.f), Random::Rnd(-1.f, 1.f),
                          Random::Rnd(0.f, 1.0f));
         sample = glm::normalize(sample);
         sample *= Random::Rnd(0.f, 1.0f);
-        float scale = float(i) / 64.0;
+        float scale = static_cast<float>(i) / kernel_size;
 
         // scale samples s.t. they're more aligned to center of kernel
         scale = Math::Lerp(0.1f, 1.0f, scale * scale);
         sample *= scale;
         m_ssao_kernel.push_back(sample);
-        SD_TRACE("{}", m_ssao_kernel.back());
     }
     std::vector<glm::vec3> ssao_noise;
     ssao_noise.reserve(16);
@@ -90,7 +91,7 @@ LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
     }
     m_ssao_noise = Texture::Create(
         4, 4, 1, TextureType::TEX_2D, TextureFormat::RGB,
-        TextureFormatType::FLOAT32, TextureWrap::REPEAT, TextureFilter::NEAREST,
+        TextureFormatType::FLOAT16, TextureWrap::REPEAT, TextureFilter::NEAREST,
         TextureMipmapFilter::NEAREST, ssao_noise.data());
 }
 
@@ -98,9 +99,19 @@ void LightingSystem::OnInit() { InitShaders(); }
 
 void LightingSystem::OnPush() {
     m_size_handler = dispatcher->Register(this, &LightingSystem::OnSizeEvent);
+
+    m_ssao_state = ini->GetBoolean("ssao", "state", true);
+    m_ssao_radius = ini->GetFloat("ssao", "radius", 0.5);
+    m_ssao_bias = ini->GetFloat("ssao", "bias", 0.25);
 }
 
-void LightingSystem::OnPop() { dispatcher->RemoveHandler(m_size_handler); }
+void LightingSystem::OnPop() {
+    dispatcher->RemoveHandler(m_size_handler);
+
+    ini->SetBoolean("ssao", "state", m_ssao_state);
+    ini->SetFloat("ssao", "radius", m_ssao_radius);
+    ini->SetFloat("ssao", "bias", m_ssao_bias);
+}
 
 void LightingSystem::InitShaders() {
     m_shadow_shader = ShaderLibrary::Instance().Load("shaders/shadow.glsl");
@@ -161,7 +172,9 @@ void LightingSystem::OnRender() {
     Device::instance().Disable(Operation::BLEND);
     RenderGBuffer();
     Device::instance().SetDepthMask(false);
-    RenderSSAO();
+    if (m_ssao_state) {
+        RenderSSAO();
+    }
     Device::instance().Enable(Operation::BLEND);
     RenderDeferred();
     RenderEmissive();
@@ -175,10 +188,13 @@ void LightingSystem::OnRender() {
 void LightingSystem::Clear() {
     Device::instance().ResetShaderState();
 
+    Device::instance().SetClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     Device::instance().SetFramebuffer(m_ssao_target.GetFramebuffer());
     Device::instance().Clear(BufferBitMask::COLOR_BUFFER_BIT);
     Device::instance().SetFramebuffer(m_ssao_blur_target.GetFramebuffer());
     Device::instance().Clear(BufferBitMask::COLOR_BUFFER_BIT);
+
+    Device::instance().SetClearColor(0.f, 0.f, 0.f, 0.f);
     // clear the last lighting pass' result
     for (int i = 0; i < 2; ++i) {
         Device::instance().SetFramebuffer(m_light_target[i].GetFramebuffer());
@@ -235,6 +251,8 @@ void LightingSystem::RenderSSAO() {
     }
 
     renderer->UpdateShader(*m_ssao_shader, *renderer->GetCamera());
+    m_ssao_shader->SetFloat("u_radius", m_ssao_radius);
+    m_ssao_shader->SetFloat("u_bias", m_ssao_bias);
     m_ssao_shader->SetTexture(
         "u_position",
         m_gbuffer_target.GetTexture(GeometryBufferType::G_POSITION));
@@ -375,5 +393,9 @@ void LightingSystem::RenderGBuffer() {
         }
     });
 }
+
+void LightingSystem::SetSSAORadius(float radius) { m_ssao_radius = radius; }
+
+void LightingSystem::SetSSAOBias(float bias) { m_ssao_bias = bias; }
 
 }  // namespace SD

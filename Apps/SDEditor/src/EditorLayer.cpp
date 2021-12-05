@@ -206,6 +206,7 @@ void EditorLayer::OnImGui() {
         if (ImGui::Checkbox("Bloom", &isBloom)) {
             m_post_process_system->SetBloom(isBloom);
         }
+
         float bloom = m_post_process_system->GetBloomFactor();
         ImGui::TextUnformatted("Bloom Factor");
         if (ImGui::SliderFloat("##Bloom Factor", &bloom, 0.1, 1)) {
@@ -216,6 +217,23 @@ void EditorLayer::OnImGui() {
         ImGui::TextUnformatted("Gamma Correction");
         if (ImGui::SliderFloat("##Gamma Correction", &gamma, 0.1, 3)) {
             m_post_process_system->SetGammaCorrection(gamma);
+        }
+
+        bool ssao_state = m_lighting_system->GetSSAOState();
+        if (ImGui::Checkbox("SSAO", &ssao_state)) {
+            m_lighting_system->SetSSAOState(ssao_state);
+        }
+
+        float ssao_radius = m_lighting_system->GetSSAORadius();
+        ImGui::TextUnformatted("SSAO Radius");
+        if (ImGui::SliderFloat("##SSAO Radius", &ssao_radius, 0.1, 3)) {
+            m_lighting_system->SetSSAORadius(ssao_radius);
+        }
+
+        float ssao_bias = m_lighting_system->GetSSAOBias();
+        ImGui::TextUnformatted("SSAO Bias");
+        if (ImGui::SliderFloat("##SSAO Bias", &ssao_bias, 0.01, 2)) {
+            m_lighting_system->SetSSAOBias(ssao_bias);
         }
     }
     ImGui::End();

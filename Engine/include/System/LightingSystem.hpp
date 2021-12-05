@@ -42,6 +42,15 @@ class SD_SYSTEM_API LightingSystem : public System {
 
     Texture *GetSSAO() { return m_ssao_target.GetTexture(); }
 
+    void SetSSAOState(bool ssao_state) { m_ssao_state = ssao_state; }
+    bool GetSSAOState() const { return m_ssao_state; }
+
+    float GetSSAORadius() const { return m_ssao_radius; }
+    void SetSSAORadius(float radius);
+
+    float GetSSAOBias() const { return m_ssao_bias; }
+    void SetSSAOBias(float bias);
+
    private:
     void InitShaders();
     void InitLighting(int width, int height, int samples);
@@ -72,12 +81,13 @@ class SD_SYSTEM_API LightingSystem : public System {
 
     Ref<Shader> m_ssao_shader;
     RenderTarget m_ssao_target;
-
-    Ref<Texture> m_ssao_noise;
-
     Ref<Shader> m_ssao_blur_shader;
     RenderTarget m_ssao_blur_target;
 
+    bool m_ssao_state;
+    float m_ssao_radius;
+    float m_ssao_bias;
+    Ref<Texture> m_ssao_noise;
     std::vector<glm::vec3> m_ssao_kernel;
 
     Ref<VertexArray> m_quad;

@@ -23,13 +23,13 @@ layout(location = 0) in vec2 in_uv;
 layout(binding = 0) uniform sampler2DMS u_position;
 layout(binding = 1) uniform sampler2DMS u_normal;
 
-uniform sampler2D u_noise;
-uniform vec3 u_samples[64];
+const int kernel_size = 64;
 
-// parameters (you'd probably want to use them as uniforms to more easily tweak the effect)
-int kernel_size = 64;
-float radius = 0.5;
-float bias = 0.25;
+uniform sampler2D u_noise;
+uniform vec3 u_samples[kernel_size];
+uniform float u_radius;
+uniform float u_bias;
+
 
 float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
                         vec3 random_vec, mat3 ti_view) {
@@ -49,9 +49,9 @@ float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
     {
         // get sample position
         vec3 sample_pos = TBN * u_samples[i]; // from tangent to view-space
-        sample_pos = frag_pos + sample_pos * radius;
+        sample_pos = frag_pos + sample_pos * u_radius;
 
-        // project sample position (to sample texture) 
+        // project sample position (to sample texture)
         // (to get position on screen/texture)
         vec4 offset = vec4(sample_pos, 1.0);
         offset = u_projection * offset; // from view to clip-space
@@ -64,9 +64,9 @@ float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
         offset_pos = (u_view * vec4(offset_pos, 1.0f)).xyz;
 
         // range check & accumulate
-        float factor = radius / abs(frag_pos.z - offset_pos.z);
+        float factor = u_radius / abs(frag_pos.z - offset_pos.z);
         float range_check = smoothstep(0.0, 1.0, factor);
-        occlusion += (offset_pos.z <= sample_pos.z + bias ? 1.0 : 0.0) * range_check;
+        occlusion += (offset_pos.z <= sample_pos.z + u_bias ? 1.0 : 0.0) * range_check;
     }
     return occlusion / kernel_size;
 }
