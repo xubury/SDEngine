@@ -80,7 +80,8 @@ GLenum TranslateFormat(TextureFormat format, TextureFormatType format_type) {
                 case TextureFormatType::UINT24_8:
                 case TextureFormatType::UINT:
                     return GL_RED_INTEGER;
-                case TextureFormatType::FLOAT:
+                case TextureFormatType::FLOAT16:
+                case TextureFormatType::FLOAT32:
                 case TextureFormatType::UBYTE:
                     return GL_RED;
             }
@@ -107,7 +108,8 @@ GLenum Translate(TextureFormatType format_type) {
             return GL_UNSIGNED_INT_24_8;
         case TextureFormatType::UINT:
             return GL_UNSIGNED_INT;
-        case TextureFormatType::FLOAT:
+        case TextureFormatType::FLOAT16:
+        case TextureFormatType::FLOAT32:
             return GL_FLOAT;
     }
 
@@ -125,8 +127,10 @@ GLint TranslateInternalFormat(TextureFormat format,
                 case TextureFormatType::UINT24_8:
                 case TextureFormatType::UINT:
                     return GL_R32UI;
-                case TextureFormatType::FLOAT:
+                case TextureFormatType::FLOAT16:
                     return GL_R16F;
+                case TextureFormatType::FLOAT32:
+                    return GL_R32F;
             }
             break;
         }
@@ -137,8 +141,10 @@ GLint TranslateInternalFormat(TextureFormat format,
                 case TextureFormatType::UINT24_8:
                 case TextureFormatType::UINT:
                     return GL_RG32UI;
-                case TextureFormatType::FLOAT:
+                case TextureFormatType::FLOAT16:
                     return GL_RG16F;
+                case TextureFormatType::FLOAT32:
+                    return GL_RG32F;
             }
             break;
         }
@@ -149,8 +155,10 @@ GLint TranslateInternalFormat(TextureFormat format,
                 case TextureFormatType::UINT24_8:
                 case TextureFormatType::UINT:
                     return GL_RGB32UI;
-                case TextureFormatType::FLOAT:
+                case TextureFormatType::FLOAT16:
                     return GL_RGB16F;
+                case TextureFormatType::FLOAT32:
+                    return GL_RGB32F;
             }
             break;
         }
@@ -161,8 +169,10 @@ GLint TranslateInternalFormat(TextureFormat format,
                 case TextureFormatType::UINT24_8:
                 case TextureFormatType::UINT:
                     return GL_RGBA32UI;
-                case TextureFormatType::FLOAT:
+                case TextureFormatType::FLOAT16:
                     return GL_RGBA16F;
+                case TextureFormatType::FLOAT32:
+                    return GL_RGBA32F;
             }
             break;
         }

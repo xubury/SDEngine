@@ -69,7 +69,7 @@ float Light::GetQuadratic() const { return m_quadratic; }
 void Light::CreateShadowMap() {
     auto shadowMap = Texture::Create(
         SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, 1, TextureType::TEX_2D,
-        TextureFormat::DEPTH, TextureFormatType::FLOAT, TextureWrap::BORDER,
+        TextureFormat::DEPTH, TextureFormatType::FLOAT16, TextureWrap::BORDER,
         TextureFilter::NEAREST, TextureMipmapFilter::NEAREST);
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
     shadowMap->SetBorderColor(&color);

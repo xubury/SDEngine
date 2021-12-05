@@ -44,7 +44,7 @@ enum class PolygonMode { POINT, LINE, FILL };
 
 enum class TextureType { TEX_2D, TEX_2D_MULTISAMPLE, TEX_3D, TEX_CUBE };
 
-enum class TextureFormatType { UBYTE, UINT, FLOAT, UINT24_8 };
+enum class TextureFormatType { UBYTE, UINT, FLOAT16, FLOAT32, UINT24_8 };
 
 enum class Face { FRONT, BACK, BOTH };
 

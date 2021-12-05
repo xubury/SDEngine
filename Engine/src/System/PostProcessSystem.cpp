@@ -15,12 +15,12 @@ PostProcessSystem::PostProcessSystem(RenderTarget *target, int width,
     for (int i = 0; i < 2; ++i) {
         m_blurTarget[i].AddTexture(
             Texture::Create(width, height, 1, TextureType::TEX_2D,
-                            TextureFormat::RGBA, TextureFormatType::FLOAT));
+                            TextureFormat::RGBA, TextureFormatType::FLOAT16));
         m_blurTarget[i].CreateFramebuffer();
     }
     m_postTarget.AddTexture(
         Texture::Create(width, height, 1, TextureType::TEX_2D,
-                        TextureFormat::RGBA, TextureFormatType::FLOAT));
+                        TextureFormat::RGBA, TextureFormatType::FLOAT16));
     m_postTarget.CreateFramebuffer();
 
     const float quadVertices[] = {

@@ -31,7 +31,7 @@ TextureFormatType GetTextureFormatType(GeometryBufferType type) {
         case GeometryBufferType::G_POSITION:
         case GeometryBufferType::G_NORMAL:
         case GeometryBufferType::G_DEPTH:
-            return TextureFormatType::FLOAT;
+            return TextureFormatType::FLOAT16;
         case GeometryBufferType::G_ALBEDO:
         case GeometryBufferType::G_AMBIENT:
         case GeometryBufferType::G_EMISSIVE:
@@ -90,7 +90,7 @@ LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
     }
     m_ssao_noise = Texture::Create(
         4, 4, 1, TextureType::TEX_2D, TextureFormat::RGB,
-        TextureFormatType::FLOAT, TextureWrap::REPEAT, TextureFilter::NEAREST,
+        TextureFormatType::FLOAT32, TextureWrap::REPEAT, TextureFilter::NEAREST,
         TextureMipmapFilter::NEAREST, ssao_noise.data());
 }
 
@@ -116,12 +116,12 @@ void LightingSystem::InitLighting(int width, int height, int samples) {
     // ssao target
     m_ssao_target.AddTexture(Texture::Create(
         width, height, 1, TextureType::TEX_2D, TextureFormat::RED,
-        TextureFormatType::FLOAT, TextureWrap::EDGE, TextureFilter::NEAREST,
+        TextureFormatType::FLOAT16, TextureWrap::EDGE, TextureFilter::NEAREST,
         TextureMipmapFilter::NEAREST));
     m_ssao_target.CreateFramebuffer();
     m_ssao_blur_target.AddTexture(Texture::Create(
         width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
-        TextureFormat::RED, TextureFormatType::FLOAT, TextureWrap::EDGE,
+        TextureFormat::RED, TextureFormatType::FLOAT16, TextureWrap::EDGE,
         TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
     m_ssao_blur_target.CreateFramebuffer();
 
@@ -129,7 +129,7 @@ void LightingSystem::InitLighting(int width, int height, int samples) {
     for (int i = 0; i < 2; ++i) {
         m_light_target[i].AddTexture(Texture::Create(
             width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
-            TextureFormat::RGBA, TextureFormatType::FLOAT));
+            TextureFormat::RGBA, TextureFormatType::FLOAT16));
         m_light_target[i].CreateFramebuffer();
     }
 

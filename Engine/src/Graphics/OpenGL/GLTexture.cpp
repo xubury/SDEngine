@@ -88,7 +88,8 @@ void GLTexture::SetPixels(int width, int height, const void *data,
 
 void GLTexture::SetBorderColor(const void *color) {
     switch (m_format_type) {
-        case TextureFormatType::FLOAT:
+        case TextureFormatType::FLOAT32:
+        case TextureFormatType::FLOAT16:
             glTextureParameterfv(gl_id, GL_TEXTURE_BORDER_COLOR,
                                  (float *)color);
             break;

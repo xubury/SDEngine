@@ -63,7 +63,7 @@ void Renderer::InitRenderer2D() {
     const float color[4] = {1, 1, 1, 1};
     m_2d_data.texture_slots[0] = Texture::Create(
         1, 1, 1, TextureType::TEX_2D, TextureFormat::RGBA,
-        TextureFormatType::FLOAT, TextureWrap::REPEAT, TextureFilter::LINEAR,
+        TextureFormatType::FLOAT16, TextureWrap::REPEAT, TextureFilter::LINEAR,
         TextureMipmapFilter::LINEAR, &color);
 
     m_2d_data.sprite_shader =
