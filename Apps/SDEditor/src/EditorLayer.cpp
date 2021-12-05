@@ -232,7 +232,7 @@ void EditorLayer::OnImGui() {
 
         float ssao_radius = m_lighting_system->GetSSAORadius();
         ImGui::TextUnformatted("SSAO Radius");
-        if (ImGui::SliderFloat("##SSAO Radius", &ssao_radius, 0.1, 3)) {
+        if (ImGui::SliderFloat("##SSAO Radius", &ssao_radius, 0.1, 30)) {
             m_lighting_system->SetSSAORadius(ssao_radius);
         }
 

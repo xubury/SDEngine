@@ -23,7 +23,7 @@ layout(location = 0) in vec2 in_uv;
 layout(binding = 0) uniform sampler2DMS u_position;
 layout(binding = 1) uniform sampler2DMS u_normal;
 
-const uint KERNEL_SIZE = 32;
+const uint KERNEL_SIZE = 64;
 uniform uint u_kernel_size = KERNEL_SIZE;
 
 uniform sampler2D u_noise;
@@ -48,8 +48,7 @@ float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
     mat3 TBN = mat3(tangent, bi_tangent, normal);
     // iterate over the sample kernel and calculate occlusion factor
     float occlusion = 0.0;
-    for(int i = 0; i < u_kernel_size; ++i)
-    {
+    for(int i = 0; i < u_kernel_size; ++i) {
         // get sample position
         vec3 sample_pos = TBN * u_samples[i]; // from tangent to view-space
         sample_pos = frag_pos + sample_pos * u_radius;
@@ -61,26 +60,32 @@ float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
         offset /= offset.w; // perspective divide
         offset.xyz = offset.xyz * 0.5 + 0.5; // transform to range 0.0 - 1.0
 
+        if (offset.x < 0 || offset.y < 0 || offset.x > 1 || offset.y > 1) {
+            continue;
+        }
         // get sample depth
         const ivec2 uv = ivec2(offset.xy * tex_size);
-        vec3 offset_pos = texelFetch(u_position, uv, level).xyz;
-        offset_pos = (u_view * vec4(offset_pos, 1.0f)).xyz;
+        float sample_depth = (u_view * 
+                vec4(texelFetch(u_position, uv, level).xyz, 1.0f)).z;
 
         // range check & accumulate
-        float factor = u_radius / abs(frag_pos.z - offset_pos.z);
+        float factor = u_radius / abs(frag_pos.z - sample_depth);
         float range_check = smoothstep(0.0, 1.0, factor);
-        occlusion += (offset_pos.z <= sample_pos.z + u_bias ? 1.0 : 0.0) * range_check;
+        occlusion += (sample_depth >= sample_pos.z + u_bias ? 1.0 : 0.0) * range_check;
     }
-    return occlusion / u_kernel_size;
+    return 1.0f - (occlusion / u_kernel_size);
 }
 
 void main() {
     const vec2 tex_size = textureSize(u_position);
     const vec2 noise_scale = tex_size / 4.f;
-    vec3 random_vec = texture(u_noise, in_uv * noise_scale).xyz;
-
     const ivec2 uv = ivec2(in_uv * tex_size);
-    const int num_msaa = textureSamples(u_position);
+
+    vec3 random_vec = texture(u_noise, uv / 4.f).xyz;
+
+    // TODO: MSAA seems not working with SSAO
+    // const int num_msaa = textureSamples(u_position);
+    const int num_msaa = 1;
     float occlusion = 0;
     for (int i = 0; i < num_msaa; ++i) {
         occlusion += compute_occlusion(i, tex_size, uv, random_vec);
