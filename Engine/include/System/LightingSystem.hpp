@@ -51,6 +51,9 @@ class SD_SYSTEM_API LightingSystem : public System {
     float GetSSAOBias() const { return m_ssao_bias; }
     void SetSSAOBias(float bias);
 
+    uint8_t GetSSAOPower() const { return m_ssao_power; }
+    void SetSSAOPower(uint8_t power) { m_ssao_power = power; }
+
    private:
     void InitShaders();
     void InitLighting(int width, int height, int samples);
@@ -87,6 +90,7 @@ class SD_SYSTEM_API LightingSystem : public System {
     bool m_ssao_state;
     float m_ssao_radius;
     float m_ssao_bias;
+    uint8_t m_ssao_power;
     Ref<Texture> m_ssao_noise;
     std::vector<glm::vec3> m_ssao_kernel;
 

@@ -224,6 +224,12 @@ void EditorLayer::OnImGui() {
             m_lighting_system->SetSSAOState(ssao_state);
         }
 
+        int ssao_power = m_lighting_system->GetSSAOPower();
+        ImGui::TextUnformatted("SSAO Power");
+        if (ImGui::SliderInt("##SSAO Power", &ssao_power, 1, 32)) {
+            m_lighting_system->SetSSAOPower(ssao_power);
+        }
+
         float ssao_radius = m_lighting_system->GetSSAORadius();
         ImGui::TextUnformatted("SSAO Radius");
         if (ImGui::SliderFloat("##SSAO Radius", &ssao_radius, 0.1, 3)) {

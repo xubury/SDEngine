@@ -106,6 +106,7 @@ void LightingSystem::OnPush() {
     m_ssao_state = ini->GetBoolean("ssao", "state", true);
     m_ssao_radius = ini->GetFloat("ssao", "radius", 0.5);
     m_ssao_bias = ini->GetFloat("ssao", "bias", 0.25);
+    m_ssao_power = ini->GetInteger("ssao", "power", 1);
 }
 
 void LightingSystem::OnPop() {
@@ -114,6 +115,7 @@ void LightingSystem::OnPop() {
     ini->SetBoolean("ssao", "state", m_ssao_state);
     ini->SetFloat("ssao", "radius", m_ssao_radius);
     ini->SetFloat("ssao", "bias", m_ssao_bias);
+    ini->SetInteger("ssao", "power", m_ssao_power);
 }
 
 void LightingSystem::InitShaders() {
@@ -256,6 +258,7 @@ void LightingSystem::RenderSSAO() {
     renderer->UpdateShader(*m_ssao_shader, *renderer->GetCamera());
     m_ssao_shader->SetFloat("u_radius", m_ssao_radius);
     m_ssao_shader->SetFloat("u_bias", m_ssao_bias);
+    m_ssao_shader->SetUint("u_power", m_ssao_power);
     m_ssao_shader->SetMat3("u_view_ti",
                            glm::transpose(glm::inverse(
                                glm::mat3(renderer->GetCamera()->GetView()))));

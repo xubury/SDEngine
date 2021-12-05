@@ -23,13 +23,14 @@ layout(location = 0) in vec2 in_uv;
 layout(binding = 0) uniform sampler2DMS u_position;
 layout(binding = 1) uniform sampler2DMS u_normal;
 
-const uint kernel_size = 32;
-uniform uint u_kernel_size = kernel_size;
+const uint KERNEL_SIZE = 32;
+uniform uint u_kernel_size = KERNEL_SIZE;
 
 uniform sampler2D u_noise;
-uniform vec3 u_samples[kernel_size];
+uniform vec3 u_samples[KERNEL_SIZE];
 uniform float u_radius;
 uniform float u_bias;
+uniform uint u_power;
 
 uniform mat3 u_view_ti; // transpose(inverse(view))
 
@@ -85,5 +86,5 @@ void main() {
         occlusion += compute_occlusion(i, tex_size, uv, random_vec);
     }
     occlusion /= num_msaa;
-    frag_color = occlusion;
+    frag_color = pow(occlusion, u_power);
 }
