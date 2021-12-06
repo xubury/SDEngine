@@ -98,6 +98,11 @@ void LightingSystem::OnInit() {
         4, 4, 1, TextureType::TEX_2D, TextureFormat::RGB,
         TextureFormatType::FLOAT16, TextureWrap::REPEAT, TextureFilter::NEAREST,
         TextureMipmapFilter::NEAREST, ssao_noise.data());
+
+    for (uint32_t i = 0; i < kernel_size; ++i) {
+        m_ssao_shader->SetVec3("u_samples[" + std::to_string(i) + "]",
+                               m_ssao_kernel[i]);
+    }
 }
 
 void LightingSystem::OnPush() {
@@ -250,18 +255,11 @@ void LightingSystem::RenderShadowMap() {
 void LightingSystem::RenderSSAO() {
     renderer->SetRenderTarget(m_ssao_target);
     m_ssao_shader->Bind();
-    for (uint32_t i = 0; i < 64; ++i) {
-        m_ssao_shader->SetVec3("u_samples[" + std::to_string(i) + "]",
-                               m_ssao_kernel[i]);
-    }
 
     renderer->UpdateShader(*m_ssao_shader, *renderer->GetCamera());
     m_ssao_shader->SetFloat("u_radius", m_ssao_radius);
     m_ssao_shader->SetFloat("u_bias", m_ssao_bias);
     m_ssao_shader->SetUint("u_power", m_ssao_power);
-    m_ssao_shader->SetMat3("u_view_ti",
-                           glm::transpose(glm::inverse(
-                               glm::mat3(renderer->GetCamera()->GetView()))));
     m_ssao_shader->SetTexture(
         "u_position",
         m_gbuffer_target.GetTexture(GeometryBufferType::G_POSITION));
