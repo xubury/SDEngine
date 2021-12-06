@@ -40,7 +40,7 @@ class SD_SYSTEM_API LightingSystem : public System {
 
     Framebuffer *GetGBuffer() { return m_gbuffer_target.GetFramebuffer(); }
 
-    Texture *GetSSAO() { return m_ssao_target.GetTexture(); }
+    Texture *GetSSAO() { return m_ssao_blur_target.GetTexture(); }
 
     void SetSSAOState(bool ssao_state) { m_ssao_state = ssao_state; }
     bool GetSSAOState() const { return m_ssao_state; }

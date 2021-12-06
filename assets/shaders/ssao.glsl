@@ -37,8 +37,11 @@ float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
     // get input for SSAO algorithm
     vec3 frag_pos = texelFetch(u_position, uv, level).xyz;
     vec3 normal = texelFetch(u_normal, uv, level).xyz;
+    if (normal == vec3(0)) return 1;
+
     frag_pos = (u_view * vec4(frag_pos, 1.0f)).xyz;
-    normal = transpose(inverse(mat3(u_view))) * normal;
+    mat3 rot_view = transpose(inverse(mat3(u_view)));
+    normal = rot_view * normal;
 
     // create TBN change-of-basis matrix: from tangent-space to view-space
     vec3 tangent = normalize(random_vec - normal * dot(random_vec, normal));
@@ -68,6 +71,9 @@ float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
         const ivec2 uv = ivec2(offset.xy * tex_size);
         float sample_depth = (u_view * 
                 vec4(texelFetch(u_position, uv, level).xyz, 1.0f)).z;
+        if ((rot_view * texelFetch(u_normal, uv, level).xyz) == vec3(0)) {
+            continue;
+        }
 
         // range check & accumulate
         float factor = u_radius / abs(frag_pos.z - sample_depth);

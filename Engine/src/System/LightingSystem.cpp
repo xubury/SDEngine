@@ -141,9 +141,9 @@ void LightingSystem::InitLighting(int width, int height, int samples) {
         TextureMipmapFilter::NEAREST));
     m_ssao_target.CreateFramebuffer();
     m_ssao_blur_target.AddTexture(Texture::Create(
-        width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
-        TextureFormat::RED, TextureFormatType::FLOAT16, TextureWrap::EDGE,
-        TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
+        width, height, 1, TextureType::TEX_2D, TextureFormat::RED,
+        TextureFormatType::FLOAT16, TextureWrap::EDGE, TextureFilter::NEAREST,
+        TextureMipmapFilter::NEAREST));
     m_ssao_blur_target.CreateFramebuffer();
 
     // lighting target
