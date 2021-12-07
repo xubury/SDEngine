@@ -47,6 +47,8 @@ TextureFormatType GetTextureFormatType(GeometryBufferType type) {
 LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
                                int samples)
     : System("LightingSystem"), m_target(target) {
+    InitShaders();
+    InitSSAO(width, height);
     InitLighting(width, height, samples);
 
     const float quadVertices[] = {
@@ -67,10 +69,49 @@ LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
     m_quad->SetIndexBuffer(indexBuffer);
 }
 
-void LightingSystem::OnInit() {
-    InitShaders();
+void LightingSystem::OnInit() {}
 
-    // SSAO init
+void LightingSystem::OnPush() {
+    m_size_handler = dispatcher->Register(this, &LightingSystem::OnSizeEvent);
+
+    m_ssao_state = ini->GetBoolean("ssao", "state", true);
+    m_ssao_radius = ini->GetFloat("ssao", "radius", 0.5);
+    m_ssao_bias = ini->GetFloat("ssao", "bias", 0.25);
+    m_ssao_power = ini->GetInteger("ssao", "power", 1);
+}
+
+void LightingSystem::OnPop() {
+    dispatcher->RemoveHandler(m_size_handler);
+
+    ini->SetBoolean("ssao", "state", m_ssao_state);
+    ini->SetFloat("ssao", "radius", m_ssao_radius);
+    ini->SetFloat("ssao", "bias", m_ssao_bias);
+    ini->SetInteger("ssao", "power", m_ssao_power);
+}
+
+void LightingSystem::InitShaders() {
+    m_shadow_shader = ShaderLibrary::Instance().Load("shaders/shadow.glsl");
+    m_emssive_shader = ShaderLibrary::Instance().Load("shaders/emissive.glsl");
+    m_deferred_shader = ShaderLibrary::Instance().Load("shaders/deferred.glsl");
+    m_gbuffer_shader = ShaderLibrary::Instance().Load("shaders/gbuffer.glsl");
+    m_ssao_shader = ShaderLibrary::Instance().Load("shaders/ssao.glsl");
+    m_ssao_blur_shader =
+        ShaderLibrary::Instance().Load("shaders/ssao_blur.glsl");
+}
+
+void LightingSystem::InitSSAO(int width, int height) {
+    // ssao target
+    m_ssao_target.AddTexture(Texture::Create(
+        width, height, 1, TextureType::TEX_2D, TextureFormat::RED,
+        TextureFormatType::FLOAT16, TextureWrap::EDGE, TextureFilter::NEAREST,
+        TextureMipmapFilter::NEAREST));
+    m_ssao_target.CreateFramebuffer();
+    m_ssao_blur_target.AddTexture(Texture::Create(
+        width, height, 1, TextureType::TEX_2D, TextureFormat::RED,
+        TextureFormatType::FLOAT16, TextureWrap::EDGE, TextureFilter::NEAREST,
+        TextureMipmapFilter::NEAREST));
+    m_ssao_blur_target.CreateFramebuffer();
+
     uint32_t kernel_size = m_ssao_shader->GetUint("u_kernel_size");
     m_ssao_kernel.clear();
     m_ssao_kernel.reserve(kernel_size);
@@ -105,47 +146,7 @@ void LightingSystem::OnInit() {
     }
 }
 
-void LightingSystem::OnPush() {
-    m_size_handler = dispatcher->Register(this, &LightingSystem::OnSizeEvent);
-
-    m_ssao_state = ini->GetBoolean("ssao", "state", true);
-    m_ssao_radius = ini->GetFloat("ssao", "radius", 0.5);
-    m_ssao_bias = ini->GetFloat("ssao", "bias", 0.25);
-    m_ssao_power = ini->GetInteger("ssao", "power", 1);
-}
-
-void LightingSystem::OnPop() {
-    dispatcher->RemoveHandler(m_size_handler);
-
-    ini->SetBoolean("ssao", "state", m_ssao_state);
-    ini->SetFloat("ssao", "radius", m_ssao_radius);
-    ini->SetFloat("ssao", "bias", m_ssao_bias);
-    ini->SetInteger("ssao", "power", m_ssao_power);
-}
-
-void LightingSystem::InitShaders() {
-    m_shadow_shader = ShaderLibrary::Instance().Load("shaders/shadow.glsl");
-    m_emssive_shader = ShaderLibrary::Instance().Load("shaders/emissive.glsl");
-    m_deferred_shader = ShaderLibrary::Instance().Load("shaders/deferred.glsl");
-    m_gbuffer_shader = ShaderLibrary::Instance().Load("shaders/gbuffer.glsl");
-    m_ssao_shader = ShaderLibrary::Instance().Load("shaders/ssao.glsl");
-    m_ssao_blur_shader =
-        ShaderLibrary::Instance().Load("shaders/ssao_blur.glsl");
-}
-
 void LightingSystem::InitLighting(int width, int height, int samples) {
-    // ssao target
-    m_ssao_target.AddTexture(Texture::Create(
-        width, height, 1, TextureType::TEX_2D, TextureFormat::RED,
-        TextureFormatType::FLOAT16, TextureWrap::EDGE, TextureFilter::NEAREST,
-        TextureMipmapFilter::NEAREST));
-    m_ssao_target.CreateFramebuffer();
-    m_ssao_blur_target.AddTexture(Texture::Create(
-        width, height, 1, TextureType::TEX_2D, TextureFormat::RED,
-        TextureFormatType::FLOAT16, TextureWrap::EDGE, TextureFilter::NEAREST,
-        TextureMipmapFilter::NEAREST));
-    m_ssao_blur_target.CreateFramebuffer();
-
     // lighting target
     for (int i = 0; i < 2; ++i) {
         m_light_target[i].AddTexture(Texture::Create(
