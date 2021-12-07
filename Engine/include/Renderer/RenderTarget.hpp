@@ -12,7 +12,6 @@ namespace SD {
 
 class SD_RENDERER_API RenderTarget {
    public:
-    RenderTarget();
     RenderTarget(int x, int y, int width, int height);
 
     RenderTarget(const RenderTarget &) = delete;
@@ -26,7 +25,7 @@ class SD_RENDERER_API RenderTarget {
     Framebuffer *GetFramebuffer();
     const Framebuffer *GetFramebuffer() const;
 
-    void AddTexture(const Ref<Texture> &texture);
+    void AddTexture(const TextureSpec &spec);
     Texture *GetTexture(uint32_t attachmentId = 0) const;
     void Clear();
 
@@ -42,7 +41,7 @@ class SD_RENDERER_API RenderTarget {
     int m_y;
     int m_width;
     int m_height;
-    std::vector<Ref<Texture>> m_textures;
+    std::vector<TextureSpec> m_texture_specs;
     Ref<Framebuffer> m_framebuffer;
 };
 

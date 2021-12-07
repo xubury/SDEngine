@@ -6,6 +6,28 @@
 
 namespace SD {
 
+struct SD_GRAPHICS_API TextureSpec {
+    uint8_t samples;
+    TextureType type;
+    TextureFormat format;
+    TextureFormatType format_type;
+    TextureWrap wrap = TextureWrap::EDGE;
+    TextureFilter filter = TextureFilter::LINEAR;
+    TextureMipmapFilter mipmap_filter;
+    TextureSpec(uint8_t samples, TextureType type, TextureFormat format,
+                TextureFormatType format_type,
+                TextureWrap wrap = TextureWrap::EDGE,
+                TextureFilter filter = TextureFilter::LINEAR,
+                TextureMipmapFilter mipmap_filter = TextureMipmapFilter::LINEAR)
+        : samples(samples),
+          type(type),
+          format(format),
+          format_type(format_type),
+          wrap(wrap),
+          filter(filter),
+          mipmap_filter(mipmap_filter) {}
+};
+
 class SD_GRAPHICS_API Texture {
    public:
     static Ref<Texture> Create(
@@ -23,7 +45,7 @@ class SD_GRAPHICS_API Texture {
 
     virtual void SetSlot(uint32_t slot) const = 0;
 
-    virtual void SetPixels(int width, int height, const void *data,
+    virtual void SetPixels(const void *data,
                            uint8_t face_mask = CUBE_MAP_FACE_ALL) = 0;
     virtual void SetBorderColor(const void *color) = 0;
     virtual void SetWrap(TextureWrap wrap) = 0;

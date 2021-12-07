@@ -16,7 +16,7 @@ void Skybox::SetFace(CubeMapFace face, Bitmap &bitmap) {
         m_texture = Texture::Create(m_width, m_height, 1, TextureType::TEX_CUBE,
                                     m_format, TextureFormatType::UBYTE);
     }
-    m_texture->SetPixels(bitmap.Width(), bitmap.Height(), bitmap.Data(), mask);
+    m_texture->SetPixels(bitmap.Data(), mask);
     m_valid_mask |= mask;
 }
 

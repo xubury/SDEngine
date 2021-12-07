@@ -36,8 +36,6 @@ class GLFramebuffer : public Framebuffer {
 
     Texture *GetTexture(uint32_t attachment_id) override;
 
-    void Resize(int width, int height) override;
-
    private:
     GLuint m_id;
     uint32_t m_texture_cnt;

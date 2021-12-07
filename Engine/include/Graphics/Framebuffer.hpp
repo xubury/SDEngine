@@ -43,8 +43,6 @@ class SD_GRAPHICS_API Framebuffer {
 
     virtual void Bind() = 0;
 
-    virtual void Resize(int width, int height) = 0;
-
    protected:
     Framebuffer() = default;
 };

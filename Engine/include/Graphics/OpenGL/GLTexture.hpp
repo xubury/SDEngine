@@ -22,8 +22,7 @@ class GLTexture : public Texture {
 
     void SetSlot(uint32_t slot) const override;
 
-    void SetPixels(int width, int height, const void *data,
-                   uint8_t face_mask) override;
+    void SetPixels(const void *data, uint8_t face_mask) override;
     void SetBorderColor(const void *color) override;
     void SetWrap(TextureWrap wrap) override;
     void SetFilter(TextureFilter filter) override;
@@ -37,6 +36,8 @@ class GLTexture : public Texture {
     GLenum GetGLFormatType() const;
 
    private:
+    void Allocate();
+
     GLuint gl_id;
     GLenum gl_type;
     GLint gl_internal_format;

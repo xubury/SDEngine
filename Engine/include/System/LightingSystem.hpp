@@ -56,8 +56,8 @@ class SD_SYSTEM_API LightingSystem : public System {
 
    private:
     void InitShaders();
-    void InitSSAO(int width, int height);
-    void InitLighting(int width, int height, int samples);
+    void InitSSAO();
+    void InitLighting(int samples);
 
     void Clear();
 

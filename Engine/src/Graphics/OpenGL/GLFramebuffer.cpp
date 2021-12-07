@@ -88,10 +88,4 @@ Texture *GLFramebuffer::GetTexture(uint32_t attachment_id) {
     return m_attachments[attachment_id].second.get();
 }
 
-void GLFramebuffer::Resize(int width, int height) {
-    for (auto &[attachment, texture] : m_attachments) {
-        texture->SetPixels(width, height, nullptr);
-    }
-}
-
 }  // namespace SD

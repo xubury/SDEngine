@@ -26,7 +26,10 @@ GLTexture::GLTexture(int width, int height, int samples, TextureType type,
         glTextureParameteriv(gl_id, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
     }
 
-    SetPixels(m_width, m_height, data, CUBE_MAP_FACE_ALL);
+    Allocate();
+    if (data) {
+        SetPixels(data, CUBE_MAP_FACE_ALL);
+    }
     if (m_type != TextureType::TEX_2D_MULTISAMPLE) {
         SetWrap(m_wrap);
         SetFilter(m_filter);
@@ -37,6 +40,24 @@ GLTexture::GLTexture(int width, int height, int samples, TextureType type,
 
 GLTexture::~GLTexture() { glDeleteTextures(1, &gl_id); }
 
+void GLTexture::Allocate() {
+    switch (m_type) {
+        case TextureType::TEX_2D:
+        case TextureType::TEX_CUBE:
+            glTextureStorage2D(gl_id, 1, gl_internal_format, m_width, m_height);
+            break;
+        case TextureType::TEX_2D_MULTISAMPLE:
+            glTextureStorage2DMultisample(gl_id, m_samples, gl_internal_format,
+                                          m_width, m_height, GL_TRUE);
+            break;
+        case TextureType::TEX_3D:
+            // FIXME: depth not impl
+            glTextureStorage3D(gl_id, 0, gl_internal_format, m_width, m_height,
+                               0);
+            break;
+    }
+}
+
 uint32_t GLTexture::GetId() const { return gl_id; }
 
 void GLTexture::Bind() const { glBindTexture(gl_type, gl_id); }
@@ -45,40 +66,33 @@ void GLTexture::Unbind() const { glBindTexture(gl_type, 0); }
 
 void GLTexture::SetSlot(uint32_t slot) const { glBindTextureUnit(slot, gl_id); }
 
-void GLTexture::SetPixels(int width, int height, const void *data,
-                          uint8_t face_mask) {
-    m_width = width;
-    m_height = height;
-
-    Bind();
-
+void GLTexture::SetPixels(const void *data, uint8_t face_mask) {
     switch (m_type) {
         case TextureType::TEX_2D:
-            glTexImage2D(gl_type, 0, gl_internal_format, m_width, m_height, 0,
-                         gl_format, gl_format_type, data);
+            glTextureSubImage2D(gl_id, 0, 0, 0, m_width, m_height, gl_format,
+                                gl_format_type, data);
             break;
         case TextureType::TEX_2D_MULTISAMPLE:
-            glTexImage2DMultisample(gl_type, m_samples, gl_internal_format,
-                                    m_width, m_height, GL_TRUE);
+            SD_CORE_ASSERT(false,
+                           "TEX_2D_MULTISAMPLE is not allowed to set pixels!");
             break;
         case TextureType::TEX_3D:
-            glTexImage3D(gl_type, 0, gl_internal_format, m_width, m_height,
-                         m_height, 0, gl_format, gl_format_type, data);
+            // FIXME: depth not impl
+            glTextureSubImage3D(gl_id, 0, 0, 0, 0, m_width, m_height, 1,
+                                gl_format, gl_format_type, data);
             break;
         case TextureType::TEX_CUBE:
             for (CubeMapFace face = static_cast<CubeMapFace>(0);
                  face < CubeMapFace::NUMS; ++face) {
-                GLenum gl_face =
-                    GL_TEXTURE_CUBE_MAP_POSITIVE_X + static_cast<int>(face);
                 int mask = GetCubeMapFaceMask(face);
                 if (face_mask & mask) {
-                    glTexImage2D(gl_face, 0, gl_internal_format, m_width,
-                                 m_height, 0, gl_format, gl_format_type, data);
+                    glTextureSubImage3D(gl_id, 0, 0, 0, static_cast<int>(face),
+                                        m_width, m_height, 1, gl_format,
+                                        gl_format_type, data);
                 }
             }
             break;
     }
-    Unbind();
 }
 
 void GLTexture::SetBorderColor(const void *color) {

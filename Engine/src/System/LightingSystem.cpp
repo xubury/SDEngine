@@ -46,10 +46,15 @@ TextureFormatType GetTextureFormatType(GeometryBufferType type) {
 
 LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
                                int samples)
-    : System("LightingSystem"), m_target(target) {
+    : System("LightingSystem"),
+      m_target(target),
+      m_light_target{{0, 0, width, height}, {0, 0, width, height}},
+      m_gbuffer_target(0, 0, width, height),
+      m_ssao_target(0, 0, width, height),
+      m_ssao_blur_target(0, 0, width, height) {
     InitShaders();
-    InitSSAO(width, height);
-    InitLighting(width, height, samples);
+    InitSSAO();
+    InitLighting(samples);
 
     const float quadVertices[] = {
         -1.0f, -1.0f, 0.f, 0.f,  0.f,   // bottom left
@@ -99,17 +104,17 @@ void LightingSystem::InitShaders() {
         ShaderLibrary::Instance().Load("shaders/ssao_blur.glsl");
 }
 
-void LightingSystem::InitSSAO(int width, int height) {
+void LightingSystem::InitSSAO() {
     // ssao target
-    m_ssao_target.AddTexture(Texture::Create(
-        width, height, 1, TextureType::TEX_2D, TextureFormat::RED,
-        TextureFormatType::FLOAT16, TextureWrap::EDGE, TextureFilter::NEAREST,
-        TextureMipmapFilter::NEAREST));
+    m_ssao_target.AddTexture(
+        TextureSpec(1, TextureType::TEX_2D, TextureFormat::RED,
+                    TextureFormatType::FLOAT16, TextureWrap::EDGE,
+                    TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
     m_ssao_target.CreateFramebuffer();
-    m_ssao_blur_target.AddTexture(Texture::Create(
-        width, height, 1, TextureType::TEX_2D, TextureFormat::RED,
-        TextureFormatType::FLOAT16, TextureWrap::EDGE, TextureFilter::NEAREST,
-        TextureMipmapFilter::NEAREST));
+    m_ssao_blur_target.AddTexture(
+        TextureSpec(1, TextureType::TEX_2D, TextureFormat::RED,
+                    TextureFormatType::FLOAT16, TextureWrap::EDGE,
+                    TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
     m_ssao_blur_target.CreateFramebuffer();
 
     uint32_t kernel_size = m_ssao_shader->GetUint("u_kernel_size");
@@ -146,21 +151,21 @@ void LightingSystem::InitSSAO(int width, int height) {
     }
 }
 
-void LightingSystem::InitLighting(int width, int height, int samples) {
+void LightingSystem::InitLighting(int samples) {
     // lighting target
     for (int i = 0; i < 2; ++i) {
-        m_light_target[i].AddTexture(Texture::Create(
-            width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
-            TextureFormat::RGBA, TextureFormatType::FLOAT16));
+        m_light_target[i].AddTexture(
+            TextureSpec(samples, TextureType::TEX_2D_MULTISAMPLE,
+                        TextureFormat::RGBA, TextureFormatType::FLOAT16));
         m_light_target[i].CreateFramebuffer();
     }
 
     // gbuffer target
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-        m_gbuffer_target.AddTexture(Texture::Create(
-            width, height, samples, TextureType::TEX_2D_MULTISAMPLE,
-            GetTextureFormat(GeometryBufferType(i)),
-            GetTextureFormatType(GeometryBufferType(i))));
+        m_gbuffer_target.AddTexture(
+            TextureSpec(samples, TextureType::TEX_2D_MULTISAMPLE,
+                        GetTextureFormat(GeometryBufferType(i)),
+                        GetTextureFormatType(GeometryBufferType(i))));
     }
     m_gbuffer_target.CreateFramebuffer();
 }

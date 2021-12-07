@@ -6,21 +6,23 @@ namespace SD {
 PostProcessSystem::PostProcessSystem(RenderTarget *target, int width,
                                      int height)
     : System("PostProcessSystem"),
+      m_blur_target{{0, 0, width, height}, {0, 0, width, height}},
       m_blur_result(nullptr),
+      m_post_target(0, 0, width, height),
       m_target(target),
       m_is_bloom(true),
       m_bloom_factor(1.0f),
       m_exposure(1.2),
       m_gamma_correction(1.2) {
     for (int i = 0; i < 2; ++i) {
-        m_blur_target[i].AddTexture(
-            Texture::Create(width, height, 1, TextureType::TEX_2D,
-                            TextureFormat::RGBA, TextureFormatType::FLOAT16));
+        m_blur_target[i].AddTexture(TextureSpec(1, TextureType::TEX_2D,
+                                                TextureFormat::RGBA,
+                                                TextureFormatType::FLOAT16));
         m_blur_target[i].CreateFramebuffer();
     }
-    m_post_target.AddTexture(
-        Texture::Create(width, height, 1, TextureType::TEX_2D,
-                        TextureFormat::RGBA, TextureFormatType::FLOAT16));
+    m_post_target.AddTexture(TextureSpec(1, TextureType::TEX_2D,
+                                         TextureFormat::RGBA,
+                                         TextureFormatType::FLOAT16));
     m_post_target.CreateFramebuffer();
 
     const float quadVertices[] = {

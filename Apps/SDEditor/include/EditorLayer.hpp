@@ -44,6 +44,7 @@ class EditorLayer : public Layer {
     int GetViewportWidth() const { return m_width; }
     int GetViewportHeight() const { return m_height; }
 
+    void SetViewportBufferSize(uint32_t width, uint32_t height);
    private:
     void ProcessDialog();
 

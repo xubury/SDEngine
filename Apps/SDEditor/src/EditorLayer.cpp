@@ -21,18 +21,7 @@ EditorLayer::EditorLayer(int width, int height)
       m_hide(false),
       m_load_scene_open(false),
       m_save_scene_open(false) {
-    m_screen_buffer = Framebuffer::Create();
-    m_screen_buffer->AttachTexture(
-        Texture::Create(m_width, m_height, 1, TextureType::TEX_2D,
-                        TextureFormat::RGBA, TextureFormatType::UBYTE));
-    m_debug_gbuffer = Framebuffer::Create();
-    for (int i = 0; i <= GeometryBufferType::G_ENTITY_ID; ++i) {
-        m_debug_gbuffer->AttachTexture(
-            Texture::Create(m_width, m_height, 1, TextureType::TEX_2D,
-                            GetTextureFormat(GeometryBufferType(i)),
-                            GetTextureFormatType(GeometryBufferType(i))));
-    }
-
+    SetViewportBufferSize(width, height);
     ImGuizmo::SetGizmoSizeClipSpace(0.2);
 }
 
@@ -275,8 +264,7 @@ void EditorLayer::OnImGui() {
         if (m_width != wsize.x || m_height != wsize.y) {
             if (wsize.x > 0 && wsize.y > 0) {
                 m_target.Resize(wsize.x, wsize.y);
-                m_screen_buffer->Resize(wsize.x, wsize.y);
-                m_debug_gbuffer->Resize(wsize.x, wsize.y);
+                SetViewportBufferSize(wsize.x, wsize.y);
                 WindowSizeEvent event;
                 event.width = wsize.x;
                 event.height = wsize.y;
@@ -414,6 +402,20 @@ void EditorLayer::OnEventProcess(const Event &event) {
 }
 
 void EditorLayer::OnEventsProcess() {}
+
+void EditorLayer::SetViewportBufferSize(uint32_t width, uint32_t height) {
+    m_screen_buffer = Framebuffer::Create();
+    m_screen_buffer->AttachTexture(
+        Texture::Create(width, height, 1, TextureType::TEX_2D,
+                        TextureFormat::RGBA, TextureFormatType::UBYTE));
+    m_debug_gbuffer = Framebuffer::Create();
+    for (int i = 0; i <= GeometryBufferType::G_ENTITY_ID; ++i) {
+        m_debug_gbuffer->AttachTexture(
+            Texture::Create(width, height, 1, TextureType::TEX_2D,
+                            GetTextureFormat(GeometryBufferType(i)),
+                            GetTextureFormatType(GeometryBufferType(i))));
+    }
+}
 
 void EditorLayer::NewScene() {
     m_scene = CreateRef<Scene>();

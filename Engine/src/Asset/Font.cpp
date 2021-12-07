@@ -95,7 +95,7 @@ void Font::LoadRangedGlyph(uint8_t size, char32_t start, char32_t end) {
 
         x += bmp->width + 1;
     }
-    glyph->SetPixels(tex_size, tex_size, pixels);
+    glyph->SetPixels(pixels);
     delete[] pixels;
 }
 

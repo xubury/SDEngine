@@ -177,7 +177,8 @@ GLint TranslateInternalFormat(TextureFormat format,
             break;
         }
         case TextureFormat::DEPTH:
-            return GL_DEPTH_COMPONENT;
+            // TODO:This has problem for different video cards
+            return GL_DEPTH_COMPONENT24;
         case TextureFormat::DEPTH_STENCIL:
             return GL_DEPTH_STENCIL;
     }
