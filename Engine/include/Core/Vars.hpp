@@ -47,15 +47,16 @@ class Application;
 
 Application &GetApp();
 
-#define IMPLEMENT_APP(x)                                       \
-    static ::SD::Application *s_instance = new x;              \
-    ::SD::Application & ::SD::GetApp() { return *s_instance; } \
-    int main(int, char **) {                                   \
-        s_instance->OnStart();                                 \
-        s_instance->Run();                                     \
-        s_instance->OnExit();                                  \
-        delete s_instance;                                     \
-        return 0;                                              \
+#define IMPLEMENT_APP(x)                 \
+    ::SD::Application & ::SD::GetApp() { \
+        static x s_instance;             \
+        return s_instance;               \
+    }                                    \
+    int main(int, char **) {             \
+        SD::GetApp().OnStart();          \
+        SD::GetApp().Run();              \
+        SD::GetApp().OnExit();           \
+        return 0;                        \
     }
 
 }  // namespace SD
