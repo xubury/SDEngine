@@ -26,7 +26,7 @@ EditorLayer::EditorLayer(int width, int height)
         Texture::Create(m_width, m_height, 1, TextureType::TEX_2D,
                         TextureFormat::RGBA, TextureFormatType::UBYTE));
     m_debug_gbuffer = Framebuffer::Create();
-    for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
+    for (int i = 0; i <= GeometryBufferType::G_ENTITY_ID; ++i) {
         m_debug_gbuffer->AttachTexture(
             Texture::Create(m_width, m_height, 1, TextureType::TEX_2D,
                             GetTextureFormat(GeometryBufferType(i)),
@@ -123,7 +123,7 @@ void EditorLayer::OnImGui() {
     Device::instance().BlitFramebuffer(
         m_target.GetFramebuffer(), 0, m_screen_buffer.get(), 0,
         BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
-    for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
+    for (int i = 0; i <= GeometryBufferType::G_ENTITY_ID; ++i) {
         Device::instance().BlitFramebuffer(
             m_lighting_system->GetGBuffer(), i, m_debug_gbuffer.get(), i,
             BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
