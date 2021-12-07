@@ -50,9 +50,9 @@ void Font::LoadRangedGlyph(uint8_t size, char32_t start, char32_t end) {
     if (NUM_GLYPHS < 0) return;
 
     const uint32_t HEIGHT = m_face->size->metrics.height >> 6;
-    const uint32_t max_dim = (HEIGHT + 1) * std::ceil(std::sqrt(NUM_GLYPHS));
+    const uint32_t MAX_DIM = (HEIGHT + 1) * std::ceil(std::sqrt(NUM_GLYPHS));
     uint32_t tex_size = 1;
-    while (tex_size < max_dim) tex_size <<= 1;
+    while (tex_size < MAX_DIM) tex_size <<= 1;
 
     char *pixels = new char[tex_size * tex_size];
     uint32_t x = 0;
