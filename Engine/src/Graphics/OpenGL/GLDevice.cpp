@@ -98,20 +98,20 @@ void GLDevice::BlitFramebuffer(Framebuffer *src, uint32_t src_attachment,
                                BufferBitMask mask, TextureMagFilter filter) {
     int src_id = src ? src->GetId() : 0;
     int dst_id = dst ? dst->GetId() : 0;
-    GLenum glMask = Translate(mask & BufferBitMask::COLOR_BUFFER_BIT) |
+    GLint gl_mask = Translate(mask & BufferBitMask::COLOR_BUFFER_BIT) |
                     Translate(mask & BufferBitMask::DEPTH_BUFFER_BIT) |
                     Translate(mask & BufferBitMask::STENCIL_BUFFER_BIT);
-    GLenum glFilter = Translate(filter);
-    GLenum srcMode = GL_COLOR_ATTACHMENT0 + src_attachment;
-    GLenum dstMode = GL_COLOR_ATTACHMENT0 + dst_attachment;
+    GLenum gl_filter = Translate(filter);
+    GLenum src_mode = GL_COLOR_ATTACHMENT0 + src_attachment;
+    GLenum dst_mode = GL_COLOR_ATTACHMENT0 + dst_attachment;
     Texture *texture =
         src ? src->GetTexture(src_attachment) : dst->GetTexture(dst_attachment);
     SD_CORE_ASSERT(texture != nullptr, "Invalid framebuffer");
-    glNamedFramebufferReadBuffer(src_id, src ? srcMode : GL_BACK);
-    glNamedFramebufferDrawBuffer(dst_id, dst ? dstMode : GL_BACK);
+    glNamedFramebufferReadBuffer(src_id, src ? src_mode : GL_BACK);
+    glNamedFramebufferDrawBuffer(dst_id, dst ? dst_mode : GL_BACK);
     glBlitNamedFramebuffer(src_id, dst_id, 0, 0, texture->GetWidth(),
                            texture->GetHeight(), 0, 0, texture->GetWidth(),
-                           texture->GetHeight(), glMask, glFilter);
+                           texture->GetHeight(), gl_mask, gl_filter);
 }
 
 }  // namespace SD

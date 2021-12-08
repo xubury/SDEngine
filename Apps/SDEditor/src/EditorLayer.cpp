@@ -58,8 +58,8 @@ void EditorLayer::OnInit() {
         TextureSpec(
             1, TextureType::TEX_2D,
             image->HasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
-            TextureFormatType::UBYTE, TextureWrap::EDGE, TextureMagFilter::LINEAR,
-            TextureMinFilter::LINEAR));
+            TextureFormatType::UBYTE, TextureWrap::EDGE,
+            TextureMagFilter::LINEAR, TextureMinFilter::LINEAR));
     m_light_icon->SetPixels(0, 0, 0, image->Width(), image->Height(), 1,
                             image->Data());
 

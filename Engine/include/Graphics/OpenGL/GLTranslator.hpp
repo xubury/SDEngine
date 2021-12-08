@@ -18,12 +18,12 @@ GLint SD_GRAPHICS_API Translate(BufferIOType io_type);
 GLenum SD_GRAPHICS_API Translate(TextureType texture_type);
 
 GLenum SD_GRAPHICS_API TranslateFormat(TextureFormat format,
-                              TextureFormatType format_type);
+                                       TextureFormatType format_type);
 
 GLenum SD_GRAPHICS_API Translate(TextureFormatType format_type);
 
 GLint SD_GRAPHICS_API TranslateInternalFormat(TextureFormat format,
-                                     TextureFormatType format_type);
+                                              TextureFormatType format_type);
 
 GLint SD_GRAPHICS_API Translate(TextureWrap wrap);
 
@@ -35,7 +35,7 @@ GLenum SD_GRAPHICS_API Translate(Operation operation);
 
 GLenum SD_GRAPHICS_API Translate(Face face);
 
-GLenum SD_GRAPHICS_API Translate(BufferBitMask bit);
+GLint SD_GRAPHICS_API Translate(BufferBitMask bit);
 
 GLenum SD_GRAPHICS_API Translate(DepthFunc depth_func);
 

@@ -14,7 +14,7 @@ GLenum Translate(BufferDataType data_type) {
         case BufferDataType::UCHAR:
             return GL_UNSIGNED_BYTE;
     }
-    return GL_INVALID_ENUM;
+    return 0;
 }
 
 GLenum Translate(MeshTopology mesh_type) {
@@ -32,7 +32,7 @@ GLenum Translate(MeshTopology mesh_type) {
         case MeshTopology::SEGMENTS:
             return GL_LINE_STRIP;
     }
-    return GL_INVALID_ENUM;
+    return 0;
 }
 
 GLenum Translate(PolygonMode mode) {
@@ -44,7 +44,7 @@ GLenum Translate(PolygonMode mode) {
         case PolygonMode::FILL:
             return GL_FILL;
     }
-    return GL_INVALID_VALUE;
+    return 0;
 }
 
 GLint Translate(BufferIOType io_type) {
@@ -54,7 +54,7 @@ GLint Translate(BufferIOType io_type) {
         case BufferIOType::DYNAMIC:
             return GL_DYNAMIC_DRAW;
     }
-    return GL_INVALID_VALUE;
+    return 0;
 }
 
 GLenum Translate(TextureType texture_type) {
@@ -69,7 +69,7 @@ GLenum Translate(TextureType texture_type) {
             return GL_TEXTURE_CUBE_MAP;
     }
 
-    return GL_INVALID_ENUM;
+    return 0;
 }
 
 GLenum TranslateFormat(TextureFormat format, TextureFormatType format_type) {
@@ -77,35 +77,48 @@ GLenum TranslateFormat(TextureFormat format, TextureFormatType format_type) {
         case TextureFormat::ALPHA:
         case TextureFormat::RED: {
             switch (format_type) {
-                case TextureFormatType::UINT24_8:
                 case TextureFormatType::UINT:
                     return GL_RED_INTEGER;
-                case TextureFormatType::FLOAT16:
-                case TextureFormatType::FLOAT32:
-                case TextureFormatType::UBYTE:
+                default:
                     return GL_RED;
             }
         } break;
-        case TextureFormat::RG:
-            return GL_RG;
-        case TextureFormat::RGB:
-            return GL_RGB;
-        case TextureFormat::RGBA:
-            return GL_RGBA;
+        case TextureFormat::RG: {
+            switch (format_type) {
+                case TextureFormatType::UINT:
+                    return GL_RG_INTEGER;
+                default:
+                    return GL_RG;
+            }
+        } break;
+        case TextureFormat::RGB: {
+            switch (format_type) {
+                case TextureFormatType::UINT:
+                    return GL_RGB_INTEGER;
+                default:
+                    return GL_RGB;
+            }
+        } break;
+        case TextureFormat::RGBA: {
+            switch (format_type) {
+                case TextureFormatType::UINT:
+                    return GL_RGBA_INTEGER;
+                default:
+                    return GL_RGBA;
+            }
+        } break;
         case TextureFormat::DEPTH:
             return GL_DEPTH_COMPONENT;
         case TextureFormat::DEPTH_STENCIL:
             return GL_DEPTH_STENCIL;
     }
-    return GL_INVALID_ENUM;
+    return 0;
 }
 
 GLenum Translate(TextureFormatType format_type) {
     switch (format_type) {
         case TextureFormatType::UBYTE:
             return GL_UNSIGNED_BYTE;
-        case TextureFormatType::UINT24_8:
-            return GL_UNSIGNED_INT_24_8;
         case TextureFormatType::UINT:
             return GL_UNSIGNED_INT;
         case TextureFormatType::FLOAT16:
@@ -113,7 +126,7 @@ GLenum Translate(TextureFormatType format_type) {
             return GL_FLOAT;
     }
 
-    return GL_INVALID_VALUE;
+    return 0;
 }
 
 GLint TranslateInternalFormat(TextureFormat format,
@@ -124,7 +137,6 @@ GLint TranslateInternalFormat(TextureFormat format,
             switch (format_type) {
                 case TextureFormatType::UBYTE:
                     return GL_R8;
-                case TextureFormatType::UINT24_8:
                 case TextureFormatType::UINT:
                     return GL_R32UI;
                 case TextureFormatType::FLOAT16:
@@ -138,7 +150,6 @@ GLint TranslateInternalFormat(TextureFormat format,
             switch (format_type) {
                 case TextureFormatType::UBYTE:
                     return GL_RG8;
-                case TextureFormatType::UINT24_8:
                 case TextureFormatType::UINT:
                     return GL_RG32UI;
                 case TextureFormatType::FLOAT16:
@@ -152,7 +163,6 @@ GLint TranslateInternalFormat(TextureFormat format,
             switch (format_type) {
                 case TextureFormatType::UBYTE:
                     return GL_RGB8;
-                case TextureFormatType::UINT24_8:
                 case TextureFormatType::UINT:
                     return GL_RGB32UI;
                 case TextureFormatType::FLOAT16:
@@ -166,7 +176,6 @@ GLint TranslateInternalFormat(TextureFormat format,
             switch (format_type) {
                 case TextureFormatType::UBYTE:
                     return GL_RGBA8;
-                case TextureFormatType::UINT24_8:
                 case TextureFormatType::UINT:
                     return GL_RGBA32UI;
                 case TextureFormatType::FLOAT16:
@@ -180,9 +189,9 @@ GLint TranslateInternalFormat(TextureFormat format,
             // TODO:This has problem for different video cards
             return GL_DEPTH_COMPONENT24;
         case TextureFormat::DEPTH_STENCIL:
-            return GL_DEPTH_STENCIL;
+            return GL_DEPTH24_STENCIL8;
     }
-    return GL_INVALID_VALUE;
+    return 0;
 }
 
 GLint Translate(TextureWrap wrap) {
@@ -199,7 +208,7 @@ GLint Translate(TextureWrap wrap) {
             return GL_MIRROR_CLAMP_TO_EDGE;
     }
 
-    return GL_INVALID_VALUE;
+    return 0;
 }
 
 GLint Translate(TextureMagFilter filter) {
@@ -210,7 +219,7 @@ GLint Translate(TextureMagFilter filter) {
             return GL_LINEAR;
     }
 
-    return GL_INVALID_VALUE;
+    return 0;
 }
 
 GLint Translate(TextureMinFilter min_filter) {
@@ -228,7 +237,7 @@ GLint Translate(TextureMinFilter min_filter) {
         case TextureMinFilter::LINEAR_LINEAR:
             return GL_LINEAR_MIPMAP_LINEAR;
     }
-    return GL_INVALID_VALUE;
+    return 0;
 }
 
 GLenum Translate(Operation operation) {
@@ -244,7 +253,7 @@ GLenum Translate(Operation operation) {
         case Operation::CULL_FACE:
             return GL_CULL_FACE;
     }
-    return GL_INVALID_ENUM;
+    return 0;
 }
 
 GLenum Translate(Face face) {
@@ -256,10 +265,10 @@ GLenum Translate(Face face) {
         case Face::BOTH:
             return GL_FRONT_AND_BACK;
     }
-    return GL_INVALID_ENUM;
+    return 0;
 }
 
-GLenum Translate(BufferBitMask bit) {
+GLint Translate(BufferBitMask bit) {
     switch (bit) {
         case BufferBitMask::COLOR_BUFFER_BIT:
             return GL_COLOR_BUFFER_BIT;
@@ -286,7 +295,7 @@ GLenum Translate(DepthFunc depth_func) {
         case DepthFunc::LESS_EQUAL:
             return GL_LEQUAL;
     }
-    return GL_INVALID_ENUM;
+    return 0;
 }
 
 }  // namespace SD
