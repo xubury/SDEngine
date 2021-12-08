@@ -8,11 +8,9 @@ RenderTarget::RenderTarget(int x, int y, int width, int height)
       m_y(y),
       m_width(width),
       m_height(height),
-      m_framebuffer(nullptr) {}
+      m_framebuffer(Framebuffer::Create()) {}
 
 void RenderTarget::CreateFramebuffer() {
-    m_framebuffer = Framebuffer::Create();
-
     std::vector<uint32_t> colors;
     for (const auto &spec : m_texture_specs) {
         m_framebuffer->AttachTexture(Texture::Create(
@@ -31,7 +29,7 @@ void RenderTarget::AddTexture(const TextureSpec &spec) {
 }
 
 void RenderTarget::Clear() {
-    if (m_framebuffer) m_framebuffer->Clear();
+    m_framebuffer = Framebuffer::Create();
     m_texture_specs.clear();
 }
 
@@ -47,7 +45,8 @@ void RenderTarget::Resize(int width, int height) {
     if (m_width != width || m_height != height) {
         m_width = width;
         m_height = height;
-        if (m_framebuffer) CreateFramebuffer();
+        m_framebuffer = Framebuffer::Create();
+        CreateFramebuffer();
     }
 }
 

@@ -31,11 +31,6 @@ void GLFramebuffer::AttachTexture(const Ref<Texture> &texture) {
     glNamedFramebufferTexture(m_id, attachment, texture->GetId(), 0);
 }
 
-void GLFramebuffer::Clear() {
-    m_texture_cnt = 0;
-    m_attachments.clear();
-}
-
 void GLFramebuffer::SetDrawable(
     const std::vector<uint32_t> &color_attachments) {
     if (color_attachments.empty()) {
