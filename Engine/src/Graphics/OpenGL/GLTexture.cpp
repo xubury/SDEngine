@@ -64,8 +64,8 @@ void GLTexture::Unbind() const { glBindTexture(gl_type, 0); }
 
 void GLTexture::SetSlot(uint32_t slot) const { glBindTextureUnit(slot, gl_id); }
 
-void GLTexture::SetPixels(int x, int y, int z, size_t width, size_t height,
-                          size_t depth, const void *data) {
+void GLTexture::SetPixels(int x, int y, int z, int width, int height, int depth,
+                          const void *data) {
     switch (m_type) {
         case TextureType::TEX_2D:
             glTextureSubImage2D(gl_id, 0, x, y, width, height, gl_format,
@@ -111,14 +111,14 @@ void GLTexture::SetWrap(TextureWrap wrap) {
 void GLTexture::SetMagFilter(TextureMagFilter filter) {
     m_filter = filter;
 
-    GLint glFilter = Translate(m_filter);
-    glTextureParameteri(gl_id, GL_TEXTURE_MAG_FILTER, glFilter);
+    GLint gl_filter = Translate(m_filter);
+    glTextureParameteri(gl_id, GL_TEXTURE_MAG_FILTER, gl_filter);
 }
 
 void GLTexture::SetMinFilter(TextureMinFilter min_filter) {
     m_min_filter = min_filter;
-    GLint glMipmapFilter = Translate(m_min_filter);
-    glTextureParameteri(gl_id, GL_TEXTURE_MIN_FILTER, glMipmapFilter);
+    GLint gl_min_filter = Translate(m_min_filter);
+    glTextureParameteri(gl_id, GL_TEXTURE_MIN_FILTER, gl_min_filter);
 }
 
 void GLTexture::ReadPixels(int level, int x, int y, int z, int w, int h, int d,
@@ -126,11 +126,5 @@ void GLTexture::ReadPixels(int level, int x, int y, int z, int w, int h, int d,
     glGetTextureSubImage(gl_id, level, x, y, z, w, h, d, gl_format,
                          gl_format_type, size, data);
 }
-
-GLenum GLTexture::GetGLType() const { return gl_type; }
-
-GLenum GLTexture::GetGLFormat() const { return gl_format; }
-
-GLenum GLTexture::GetGLFormatType() const { return gl_format_type; }
 
 }  // namespace SD

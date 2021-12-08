@@ -41,8 +41,8 @@ class SD_GRAPHICS_API Texture {
 
     // Set the base level pixel data (TODO: Does SetPixels for other levels
     // really needed?)
-    virtual void SetPixels(int x, int y, int z, size_t width, size_t height,
-                           size_t depth, const void *data) = 0;
+    virtual void SetPixels(int x, int y, int z, int width, int height,
+                           int depth, const void *data) = 0;
     virtual void SetBorderColor(const void *color) = 0;
     virtual void SetWrap(TextureWrap wrap) = 0;
     virtual void SetMagFilter(TextureMagFilter filter) = 0;
