@@ -12,10 +12,10 @@ void Skybox::SetFace(CubeMapFace face, Bitmap &bitmap) {
         m_width = bitmap.Width();
         m_height = bitmap.Height();
         m_format = format;
-        m_texture =
-            Texture::Create(m_width, m_height,
-                            TextureSpec(1, TextureType::TEX_CUBE, m_format,
-                                        TextureFormatType::UBYTE));
+        m_texture = Texture::Create(
+            m_width, m_height,
+            TextureSpec(1, TextureType::TEX_CUBE, m_format,
+                        TextureFormatType::UBYTE, TextureWrap::EDGE));
     }
     m_texture->SetPixels(0, 0, static_cast<size_t>(face), m_width, m_height, 1,
                          bitmap.Data());
