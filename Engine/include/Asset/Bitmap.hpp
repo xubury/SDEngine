@@ -27,10 +27,12 @@ class SD_ASSET_API Bitmap {
     size_t GetPixelsSize() const;
 
     uint8_t GetPixel(uint32_t x, uint32_t y, uint8_t channel) const;
-    uint8_t *GetPixels(uint32_t x, uint32_t y) const;
+    void GetPixels(uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+                   uint8_t *value) const;
 
     void SetPixel(uint32_t x, uint32_t y, uint8_t channel, uint8_t value);
-    void SetPixels(uint32_t x, uint32_t y, uint8_t *value);
+    void SetPixels(uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+                   uint8_t *value);
 
    private:
     uint32_t m_width;
