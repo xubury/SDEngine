@@ -7,7 +7,6 @@ Skybox::Skybox() : m_valid_mask(0) {}
 void Skybox::SetFace(CubeMapFace face, Bitmap &bitmap) {
     TextureFormat format =
         bitmap.HasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB;
-    uint8_t mask = GetCubeMapFaceMask(face);
     if (m_texture == nullptr || m_width != bitmap.Width() ||
         m_height != bitmap.Height() || format != m_format) {
         m_width = bitmap.Width();
@@ -16,8 +15,9 @@ void Skybox::SetFace(CubeMapFace face, Bitmap &bitmap) {
         m_texture = Texture::Create(m_width, m_height, 1, TextureType::TEX_CUBE,
                                     m_format, TextureFormatType::UBYTE);
     }
-    m_texture->SetPixels(bitmap.Data(), mask);
-    m_valid_mask |= mask;
+    m_texture->SetPixels(0, 0, static_cast<size_t>(face), m_width, m_height, 1,
+                         bitmap.Data());
+    m_valid_mask |= GetCubeMapFaceMask(face);
 }
 
 bool Skybox::Valid() const {

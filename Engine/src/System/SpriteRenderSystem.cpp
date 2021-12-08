@@ -6,8 +6,8 @@
 
 namespace SD {
 
-SpriteRenderSystem::SpriteRenderSystem(RenderTarget *target)
-    : System("SpriteRenderSystem"), m_target(target) {}
+SpriteRenderSystem::SpriteRenderSystem()
+    : System("SpriteRenderSystem") {}
 
 void SpriteRenderSystem::OnPush() {}
 
@@ -17,7 +17,7 @@ void SpriteRenderSystem::OnRender() {
     auto scene = renderer->GetScene();
     auto textView = scene->view<TransformComponent, TextComponent>();
 
-    renderer->SetRenderTarget(*m_target);
+    renderer->SetRenderTarget(renderer->GetDefaultTarget());
     renderer->BeginScene(*renderer->GetCamera());
     textView.each([this](const TransformComponent &transformComp,
                          const TextComponent &textComp) {

@@ -10,7 +10,7 @@ namespace SD {
 
 class SD_SYSTEM_API SkyboxSystem : public System {
    public:
-    SkyboxSystem(RenderTarget *target);
+    SkyboxSystem();
 
     void OnInit() override;
 
@@ -23,8 +23,6 @@ class SD_SYSTEM_API SkyboxSystem : public System {
    private:
     Ref<Shader> m_skyboxShader;
     Ref<VertexArray> m_skybox;
-
-    RenderTarget *m_target;
 };
 
 }  // namespace SD

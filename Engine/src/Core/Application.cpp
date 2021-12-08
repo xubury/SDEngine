@@ -57,7 +57,8 @@ Application::Application(const std::string &title) {
     asset->SetLoader<Font>(new FontLoader(*asset));
     asset->Load("assets");
 
-    renderer = CreateRef<Renderer>(property.msaa);
+    renderer =
+        CreateRef<Renderer>(property.width, property.width, property.msaa);
     dispatcher = CreateRef<EventDispatcher>();
     m_imguiLayer = CreateLayer<ImGuiLayer>();
     PushOverlay(m_imguiLayer);

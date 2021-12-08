@@ -8,16 +8,13 @@ namespace SD {
 
 class SD_SYSTEM_API SpriteRenderSystem : public System {
    public:
-    SpriteRenderSystem(RenderTarget *target);
+    SpriteRenderSystem();
 
     void OnPush() override;
 
     void OnPop() override;
 
     void OnRender() override;
-
-   private:
-    RenderTarget *m_target;
 };
 
 }  // namespace SD

@@ -8,7 +8,8 @@ namespace SD {
 
 const static uint8_t UV_INDEX[][2] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
 
-Renderer::Renderer(int msaa) {
+Renderer::Renderer(int width, int height, int msaa)
+    : m_target(0, 0, width, height) {
     SD_CORE_TRACE("Initializing Renderer");
     m_camera_UBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
                                          BufferIOType::DYNAMIC);
@@ -19,6 +20,14 @@ Renderer::Renderer(int msaa) {
         Device::instance().Disable(Operation::MULTISAMPLE);
     }
     InitRenderer2D();
+
+    m_target.AddTexture(TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE,
+                                    TextureFormat::RGBA,
+                                    TextureFormatType::UBYTE));
+    m_target.AddTexture(TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE,
+                                    TextureFormat::DEPTH,
+                                    TextureFormatType::FLOAT16));
+    m_target.CreateFramebuffer();
 }
 
 void Renderer::InitRenderer2D() {
@@ -60,11 +69,12 @@ void Renderer::InitRenderer2D() {
     m_2d_data.quad_uv[0] = {0.0f, 1.0f};
     m_2d_data.quad_uv[1] = {1.0f, 0.0f};
 
+    m_2d_data.texture_slots[0] =
+        Texture::Create(1, 1, 1, TextureType::TEX_2D, TextureFormat::RGBA,
+                        TextureFormatType::FLOAT16, TextureWrap::REPEAT,
+                        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR);
     const float color[4] = {1, 1, 1, 1};
-    m_2d_data.texture_slots[0] = Texture::Create(
-        1, 1, 1, TextureType::TEX_2D, TextureFormat::RGBA,
-        TextureFormatType::FLOAT16, TextureWrap::REPEAT, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR, &color);
+    m_2d_data.texture_slots[0]->SetPixels(0, 0, 0, 1, 1, 1, color);
 
     m_2d_data.sprite_shader =
         ShaderLibrary::Instance().Load("shaders/sprite.glsl");
@@ -257,6 +267,12 @@ void Renderer::DrawText(Font& font, const std::string& text, uint8_t pixelSize,
         DrawTexture(ch.glyph, t * offset, ch.uv, color);
         m_2d_data.text_cursor.x += ch.advance;
     }
+}
+
+void Renderer::RenderToScreen() {
+    Device::instance().BlitFramebuffer(m_target.GetFramebuffer(), 0, nullptr, 0,
+                                       BufferBitMask::COLOR_BUFFER_BIT,
+                                       TextureFilter::NEAREST);
 }
 
 }  // namespace SD

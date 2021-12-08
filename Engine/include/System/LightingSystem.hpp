@@ -26,7 +26,7 @@ TextureFormatType SD_SYSTEM_API GetTextureFormatType(GeometryBufferType type);
 
 class SD_SYSTEM_API LightingSystem : public System {
    public:
-    LightingSystem(RenderTarget *target, int width, int height, int samples);
+    LightingSystem(int width, int height, int samples);
 
     void OnInit() override;
 
@@ -72,8 +72,6 @@ class SD_SYSTEM_API LightingSystem : public System {
 
     RenderTarget &GetLightingTarget() { return m_light_target[0]; };
     Ref<Shader> m_shadow_shader;
-
-    RenderTarget *m_target;
 
     Ref<Shader> m_emssive_shader;
 

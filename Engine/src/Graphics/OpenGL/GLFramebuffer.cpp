@@ -10,8 +10,7 @@ GLFramebuffer::GLFramebuffer() : m_id(0), m_texture_cnt(0) {
 
 GLFramebuffer::~GLFramebuffer() { glDeleteFramebuffers(1, &m_id); }
 
-bool GLFramebuffer::AttachTexture(const Ref<Texture> &texture) {
-    bool isColor = false;
+void GLFramebuffer::AttachTexture(const Ref<Texture> &texture) {
     GLenum attachment = 0;
     switch (texture->GetFormat()) {
         case TextureFormat::DEPTH:
@@ -25,14 +24,11 @@ bool GLFramebuffer::AttachTexture(const Ref<Texture> &texture) {
         case TextureFormat::RG:
         case TextureFormat::RGB:
         case TextureFormat::RGBA:
-            isColor = true;
             attachment = GL_COLOR_ATTACHMENT0 + m_texture_cnt++;
             break;
     }
     m_attachments.emplace_back(attachment, texture);
     glNamedFramebufferTexture(m_id, attachment, texture->GetId(), 0);
-
-    return isColor;
 }
 
 void GLFramebuffer::Clear() {

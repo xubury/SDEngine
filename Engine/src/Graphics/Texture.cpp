@@ -8,14 +8,13 @@ Ref<Texture> Texture::Create(int width, int height, int samples,
                              TextureType type, TextureFormat format,
                              TextureFormatType format_type, TextureWrap wrap,
                              TextureFilter filter,
-                             TextureMipmapFilter mipmap_filter,
-                             const void *data) {
+                             TextureMipmapFilter mipmap_filter) {
     Ref<Texture> texture;
     switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
-            texture = CreateRef<GLTexture>(width, height, samples, type, format,
-                                           format_type, wrap, filter,
-                                           mipmap_filter, data);
+            texture =
+                CreateRef<GLTexture>(width, height, samples, type, format,
+                                     format_type, wrap, filter, mipmap_filter);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");

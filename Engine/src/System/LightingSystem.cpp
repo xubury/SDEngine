@@ -44,10 +44,8 @@ TextureFormatType GetTextureFormatType(GeometryBufferType type) {
     }
 }
 
-LightingSystem::LightingSystem(RenderTarget *target, int width, int height,
-                               int samples)
+LightingSystem::LightingSystem(int width, int height, int samples)
     : System("LightingSystem"),
-      m_target(target),
       m_light_target{{0, 0, width, height}, {0, 0, width, height}},
       m_gbuffer_target(0, 0, width, height),
       m_ssao_target(0, 0, width, height),
@@ -133,17 +131,17 @@ void LightingSystem::InitSSAO() {
         m_ssao_kernel.push_back(sample);
     }
 
-    std::vector<glm::vec3> ssao_noise;
-    ssao_noise.reserve(16);
+    std::array<glm::vec3, 16> ssao_noise;
     for (uint32_t i = 0; i < 16; i++) {
         glm::vec3 noise(Random::Rnd(-1.f, 1.0f), Random::Rnd(-1.f, 1.0f),
                         0.0f);  // rotate around z-axis (in tangent space)
-        ssao_noise.push_back(glm::normalize(noise));
+        ssao_noise[i] = glm::normalize(noise);
     }
-    m_ssao_noise = Texture::Create(
-        4, 4, 1, TextureType::TEX_2D, TextureFormat::RGB,
-        TextureFormatType::FLOAT16, TextureWrap::REPEAT, TextureFilter::NEAREST,
-        TextureMipmapFilter::NEAREST, ssao_noise.data());
+    m_ssao_noise =
+        Texture::Create(4, 4, 1, TextureType::TEX_2D, TextureFormat::RGB,
+                        TextureFormatType::FLOAT16, TextureWrap::REPEAT,
+                        TextureFilter::NEAREST, TextureMipmapFilter::NEAREST);
+    m_ssao_noise->SetPixels(0, 0, 0, 4, 4, 1, ssao_noise.data());
 
     for (uint32_t i = 0; i < kernel_size; ++i) {
         m_ssao_shader->SetVec3("u_samples[" + std::to_string(i) + "]",
@@ -197,7 +195,7 @@ void LightingSystem::OnRender() {
     Device::instance().SetDepthMask(true);
 
     Device::instance().BlitFramebuffer(
-        m_gbuffer_target.GetFramebuffer(), 0, m_target->GetFramebuffer(), 0,
+        m_gbuffer_target.GetFramebuffer(), 0, renderer->GetFramebuffer(), 0,
         BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
 }
 
@@ -283,7 +281,7 @@ void LightingSystem::RenderSSAO() {
 }
 
 void LightingSystem::RenderEmissive() {
-    renderer->SetRenderTarget(*m_target);
+    renderer->SetRenderTarget(renderer->GetDefaultTarget());
     m_emssive_shader->Bind();
     m_emssive_shader->SetTexture("u_lighting",
                                  GetLightingTarget().GetTexture());

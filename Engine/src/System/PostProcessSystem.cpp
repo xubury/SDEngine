@@ -3,13 +3,11 @@
 
 namespace SD {
 
-PostProcessSystem::PostProcessSystem(RenderTarget *target, int width,
-                                     int height)
+PostProcessSystem::PostProcessSystem(int width, int height)
     : System("PostProcessSystem"),
       m_blur_target{{0, 0, width, height}, {0, 0, width, height}},
       m_blur_result(nullptr),
       m_post_target(0, 0, width, height),
-      m_target(target),
       m_is_bloom(true),
       m_bloom_factor(1.0f),
       m_exposure(1.2),
@@ -70,7 +68,7 @@ void PostProcessSystem::OnPop() {
 void PostProcessSystem::OnRender() {
     Device::instance().SetDepthMask(false);
     Device::instance().BlitFramebuffer(
-        m_target->GetFramebuffer(), 0, m_post_target.GetFramebuffer(), 0,
+        renderer->GetFramebuffer(), 0, m_post_target.GetFramebuffer(), 0,
         BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::LINEAR);
     if (m_is_bloom) {
         RenderBlur();
@@ -106,7 +104,7 @@ void PostProcessSystem::RenderBlur() {
 }
 
 void PostProcessSystem::RenderPost() {
-    renderer->SetRenderTarget(*m_target);
+    renderer->SetRenderTarget(renderer->GetDefaultTarget());
 
     m_post_shader->SetBool("u_bloom", m_is_bloom);
     m_post_shader->SetFloat("u_bloomFactor", m_bloom_factor);

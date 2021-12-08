@@ -16,7 +16,7 @@ class GLFramebuffer : public Framebuffer {
 
     uint32_t GetId() const override { return m_id; }
 
-    bool AttachTexture(const Ref<Texture> &texture) override;
+    void AttachTexture(const Ref<Texture> &texture) override;
 
     void Clear() override;
 

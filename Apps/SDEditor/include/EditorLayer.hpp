@@ -64,9 +64,8 @@ class EditorLayer : public Layer {
     int m_width;
     int m_height;
 
-    RenderTarget m_target;
-    Ref<Framebuffer> m_screen_buffer;
     Ref<Framebuffer> m_debug_gbuffer;
+    Ref<Framebuffer> m_screen_buffer;
 
     glm::vec2 m_viewport_bounds[2];
     bool m_is_viewport_focused;

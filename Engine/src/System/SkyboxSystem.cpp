@@ -4,8 +4,7 @@
 
 namespace SD {
 
-SkyboxSystem::SkyboxSystem(RenderTarget *target)
-    : System("SkyboxSystem"), m_target(target) {
+SkyboxSystem::SkyboxSystem() : System("SkyboxSystem") {
     const float skyboxVertices[] = {
         // front
         -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
@@ -62,10 +61,10 @@ void SkyboxSystem::OnRender() {
                  face < CubeMapFace::NUMS; ++face) {
                 // load invalid face
                 if (!skybox.skybox.Valid(face)) {
-                    auto image =
+                    auto bitmap =
                         asset->Get<Bitmap>(skybox.id[static_cast<int>(face)]);
-                    if (image) {
-                        skybox.skybox.SetFace(face, *image);
+                    if (bitmap) {
+                        skybox.skybox.SetFace(face, *bitmap);
                     }
                 }
             }
@@ -73,7 +72,7 @@ void SkyboxSystem::OnRender() {
         m_skyboxShader->SetTexture("skybox", skybox.skybox.GetTexture());
     }
 
-    renderer->SetRenderTarget(*m_target);
+    renderer->SetRenderTarget(renderer->GetDefaultTarget());
     renderer->Submit(*m_skybox, MeshTopology::TRIANGLES,
                      m_skybox->GetIndexBuffer()->GetCount(), 0);
     Device::instance().SetCullFace(Face::BACK);

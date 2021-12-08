@@ -9,9 +9,8 @@ const uint8_t FONT_SIZE = 20;
 
 const uint32_t FPS_CAPACITY = 50;
 
-ProfileSystem::ProfileSystem(RenderTarget *target, int width, int height)
+ProfileSystem::ProfileSystem(int width, int height)
     : System("ProfileSystem"),
-      m_target(target),
       m_camera(CameraType::ORTHOGRAPHIC, glm::radians(45.f), width, height, 0.f,
                1000.f),
       m_fps(FPS_CAPACITY),
@@ -40,7 +39,7 @@ void ProfileSystem::OnTick(float) {
 void ProfileSystem::OnRender() {
     if (!m_is_show_message) return;
 
-    renderer->SetRenderTarget(*m_target);
+    renderer->SetRenderTarget(renderer->GetDefaultTarget());
     renderer->BeginScene(m_camera);
     std::string fpsStr =
         "FPS:" + std::to_string(static_cast<uint32_t>(m_fps.GetFPS()));

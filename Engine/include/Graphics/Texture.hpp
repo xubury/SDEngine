@@ -11,12 +11,12 @@ struct SD_GRAPHICS_API TextureSpec {
     TextureType type;
     TextureFormat format;
     TextureFormatType format_type;
-    TextureWrap wrap = TextureWrap::EDGE;
-    TextureFilter filter = TextureFilter::LINEAR;
+    TextureWrap wrap;
+    TextureFilter filter;
     TextureMipmapFilter mipmap_filter;
     TextureSpec(uint8_t samples, TextureType type, TextureFormat format,
                 TextureFormatType format_type,
-                TextureWrap wrap = TextureWrap::EDGE,
+                TextureWrap wrap = TextureWrap::REPEAT,
                 TextureFilter filter = TextureFilter::LINEAR,
                 TextureMipmapFilter mipmap_filter = TextureMipmapFilter::LINEAR)
         : samples(samples),
@@ -33,10 +33,9 @@ class SD_GRAPHICS_API Texture {
     static Ref<Texture> Create(
         int width, int height, int samples, TextureType type,
         TextureFormat format, TextureFormatType format_type,
-        TextureWrap wrap = TextureWrap::EDGE,
+        TextureWrap wrap = TextureWrap::REPEAT,
         TextureFilter filter = TextureFilter::LINEAR,
-        TextureMipmapFilter mipmap_filter = TextureMipmapFilter::LINEAR,
-        const void *data = nullptr);
+        TextureMipmapFilter mipmap_filter = TextureMipmapFilter::LINEAR);
 
     virtual ~Texture() = default;
 
@@ -45,8 +44,10 @@ class SD_GRAPHICS_API Texture {
 
     virtual void SetSlot(uint32_t slot) const = 0;
 
-    virtual void SetPixels(const void *data,
-                           uint8_t face_mask = CUBE_MAP_FACE_ALL) = 0;
+    // Set the base level pixel data (TODO: Does SetPixels for other levels
+    // really needed?)
+    virtual void SetPixels(int x, int y, int z, size_t width, size_t height,
+                           size_t depth, const void *data) = 0;
     virtual void SetBorderColor(const void *color) = 0;
     virtual void SetWrap(TextureWrap wrap) = 0;
     virtual void SetFilter(TextureFilter filter) = 0;
@@ -77,6 +78,7 @@ class SD_GRAPHICS_API Texture {
     int m_width;
     int m_height;
     int m_samples;
+    int m_mipmap_levels;
 
     TextureType m_type;
     TextureFormat m_format;

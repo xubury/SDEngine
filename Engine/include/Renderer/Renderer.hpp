@@ -62,7 +62,7 @@ struct Renderer2DData {
 
 class SD_RENDERER_API Renderer {
    public:
-    Renderer(int msaa);
+    Renderer(int width, int height, int msaa);
     ~Renderer() { SD_CORE_TRACE("Deleting Renderer"); }
     Renderer(const Renderer &) = delete;
     Renderer &operator=(const Renderer &) = delete;
@@ -107,6 +107,12 @@ class SD_RENDERER_API Renderer {
     void SetCamera(Camera *camera);
     Camera *GetCamera();
 
+    void RenderToScreen();
+
+    Framebuffer *GetFramebuffer() { return m_target.GetFramebuffer(); }
+
+    RenderTarget &GetDefaultTarget() { return m_target; }
+
    private:
     void InitRenderer2D();
 
@@ -116,6 +122,8 @@ class SD_RENDERER_API Renderer {
     Ref<UniformBuffer> m_camera_UBO;
 
     Renderer2DData m_2d_data;
+
+    RenderTarget m_target;
 };
 
 }  // namespace SD

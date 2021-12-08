@@ -11,7 +11,7 @@ namespace SD {
 
 class SD_SYSTEM_API PostProcessSystem : public System {
    public:
-    PostProcessSystem(RenderTarget *target, int width, int height);
+    PostProcessSystem(int width, int height);
 
     void OnInit() override;
 
@@ -49,8 +49,6 @@ class SD_SYSTEM_API PostProcessSystem : public System {
     RenderTarget m_post_target;
 
     Ref<VertexArray> m_quad;
-
-    RenderTarget *m_target;
 
     bool m_is_bloom;
     float m_bloom_factor;

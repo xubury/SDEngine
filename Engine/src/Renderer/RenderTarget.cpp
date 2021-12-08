@@ -11,23 +11,19 @@ RenderTarget::RenderTarget(int x, int y, int width, int height)
       m_framebuffer(nullptr) {}
 
 void RenderTarget::CreateFramebuffer() {
-    if (m_texture_specs.size()) {
-        m_framebuffer = Framebuffer::Create();
-    }
+    m_framebuffer = Framebuffer::Create();
 
     std::vector<uint32_t> colors;
-    for (const auto &texture : m_texture_specs) {
-        bool isColor = m_framebuffer->AttachTexture(
-            Texture::Create(m_width, m_height, texture.samples, texture.type,
-                            texture.format, texture.format_type, texture.wrap,
-                            texture.filter, texture.mipmap_filter));
-        if (isColor) {
+    for (const auto &spec : m_texture_specs) {
+        m_framebuffer->AttachTexture(Texture::Create(
+            m_width, m_height, spec.samples, spec.type, spec.format,
+            spec.format_type, spec.wrap, spec.filter, spec.mipmap_filter));
+        if (spec.format != TextureFormat::DEPTH &&
+            spec.format != TextureFormat::DEPTH_STENCIL) {
             colors.push_back(colors.size());
         }
     }
-    if (m_framebuffer) {
-        m_framebuffer->SetDrawable(colors);
-    }
+    m_framebuffer->SetDrawable(colors);
 }
 
 void RenderTarget::AddTexture(const TextureSpec &spec) {
@@ -51,7 +47,7 @@ void RenderTarget::Resize(int width, int height) {
     if (m_width != width || m_height != height) {
         m_width = width;
         m_height = height;
-        CreateFramebuffer();
+        if (m_framebuffer) CreateFramebuffer();
     }
 }
 

@@ -21,7 +21,7 @@ class SD_GRAPHICS_API Framebuffer {
 
     virtual uint32_t GetId() const = 0;
 
-    virtual bool AttachTexture(const Ref<Texture> &texture) = 0;
+    virtual void AttachTexture(const Ref<Texture> &texture) = 0;
 
     virtual void Clear() = 0;
 

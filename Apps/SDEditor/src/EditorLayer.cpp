@@ -15,13 +15,11 @@ EditorLayer::EditorLayer(int width, int height)
     : Layer("EditorLayer"),
       m_width(width),
       m_height(height),
-      m_target(0, 0, width, height),
       m_is_viewport_focused(false),
       m_is_viewport_hovered(false),
       m_hide(false),
       m_load_scene_open(false),
       m_save_scene_open(false) {
-    SetViewportBufferSize(width, height);
     ImGuizmo::SetGizmoSizeClipSpace(0.2);
 }
 
@@ -37,6 +35,7 @@ EditorLayer::~EditorLayer() {
 }
 
 void EditorLayer::OnInit() {
+    SetViewportBufferSize(m_width, m_height);
     // editor related system
     m_scene_panel = CreateSystem<ScenePanel>();
     m_editor_camera_system =
@@ -45,14 +44,12 @@ void EditorLayer::OnInit() {
     // engine logic system
     m_camera_system = CreateSystem<CameraSystem>();
     // normal render systems
-    m_lighting_system = CreateSystem<LightingSystem>(
-        &m_target, m_width, m_height, window->GetMSAA());
-    m_skybox_system = CreateSystem<SkyboxSystem>(&m_target);
-    m_sprite_system = CreateSystem<SpriteRenderSystem>(&m_target);
-    m_post_process_system =
-        CreateSystem<PostProcessSystem>(&m_target, m_width, m_height);
-    m_profile_system =
-        CreateSystem<ProfileSystem>(&m_target, m_width, m_height);
+    m_lighting_system =
+        CreateSystem<LightingSystem>(m_width, m_height, window->GetMSAA());
+    m_skybox_system = CreateSystem<SkyboxSystem>();
+    m_sprite_system = CreateSystem<SpriteRenderSystem>();
+    m_post_process_system = CreateSystem<PostProcessSystem>(m_width, m_height);
+    m_profile_system = CreateSystem<ProfileSystem>(m_width, m_height);
 
     auto image = asset->LoadAndGet<Bitmap>("icons/light.png");
 
@@ -60,7 +57,9 @@ void EditorLayer::OnInit() {
         image->Width(), image->Height(), 1, TextureType::TEX_2D,
         image->HasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
         TextureFormatType::UBYTE, TextureWrap::EDGE, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR, image->Data());
+        TextureMipmapFilter::LINEAR);
+    m_light_icon->SetPixels(0, 0, 0, image->Width(), image->Height(), 1,
+                            image->Data());
 
     PushSystem(m_scene_panel);
     PushSystem(m_editor_camera_system);
@@ -79,7 +78,7 @@ void EditorLayer::OnPush() {}
 void EditorLayer::OnPop() {}
 
 void EditorLayer::OnRender() {
-    renderer->SetRenderTarget(m_target);
+    renderer->SetRenderTarget(renderer->GetDefaultTarget());
     Device::instance().Clear();
     for (auto &system : GetSystems()) {
         system->OnRender();
@@ -110,7 +109,7 @@ void EditorLayer::OnTick(float dt) {
 
 void EditorLayer::OnImGui() {
     Device::instance().BlitFramebuffer(
-        m_target.GetFramebuffer(), 0, m_screen_buffer.get(), 0,
+        renderer->GetFramebuffer(), 0, m_screen_buffer.get(), 0,
         BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
     for (int i = 0; i <= GeometryBufferType::G_ENTITY_ID; ++i) {
         Device::instance().BlitFramebuffer(
@@ -263,7 +262,6 @@ void EditorLayer::OnImGui() {
                                 viewportMaxRegion.y + viewportOffset.y};
         if (m_width != wsize.x || m_height != wsize.y) {
             if (wsize.x > 0 && wsize.y > 0) {
-                m_target.Resize(wsize.x, wsize.y);
                 SetViewportBufferSize(wsize.x, wsize.y);
                 WindowSizeEvent event;
                 event.width = wsize.x;
@@ -404,16 +402,18 @@ void EditorLayer::OnEventProcess(const Event &event) {
 void EditorLayer::OnEventsProcess() {}
 
 void EditorLayer::SetViewportBufferSize(uint32_t width, uint32_t height) {
+    renderer->GetDefaultTarget().Resize(width, height);
     m_screen_buffer = Framebuffer::Create();
     m_screen_buffer->AttachTexture(
         Texture::Create(width, height, 1, TextureType::TEX_2D,
-                        TextureFormat::RGBA, TextureFormatType::UBYTE));
+                        TextureFormat::RGB, TextureFormatType::UBYTE));
     m_debug_gbuffer = Framebuffer::Create();
     for (int i = 0; i <= GeometryBufferType::G_ENTITY_ID; ++i) {
-        m_debug_gbuffer->AttachTexture(
-            Texture::Create(width, height, 1, TextureType::TEX_2D,
-                            GetTextureFormat(GeometryBufferType(i)),
-                            GetTextureFormatType(GeometryBufferType(i))));
+        m_debug_gbuffer->AttachTexture(Texture::Create(
+            width, height, 1, TextureType::TEX_2D,
+            GetTextureFormat(GeometryBufferType(i)),
+            GetTextureFormatType(GeometryBufferType(i)), TextureWrap::REPEAT,
+            TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_LINEAR));
     }
 }
 
