@@ -54,10 +54,12 @@ void EditorLayer::OnInit() {
     auto image = asset->LoadAndGet<Bitmap>("icons/light.png");
 
     m_light_icon = Texture::Create(
-        image->Width(), image->Height(), 1, TextureType::TEX_2D,
-        image->HasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
-        TextureFormatType::UBYTE, TextureWrap::EDGE, TextureFilter::LINEAR,
-        TextureMipmapFilter::LINEAR);
+        image->Width(), image->Height(),
+        TextureSpec(
+            1, TextureType::TEX_2D,
+            image->HasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
+            TextureFormatType::UBYTE, TextureWrap::EDGE, TextureMagFilter::LINEAR,
+            TextureMinFilter::LINEAR));
     m_light_icon->SetPixels(0, 0, 0, image->Width(), image->Height(), 1,
                             image->Data());
 
@@ -110,11 +112,11 @@ void EditorLayer::OnTick(float dt) {
 void EditorLayer::OnImGui() {
     Device::instance().BlitFramebuffer(
         renderer->GetFramebuffer(), 0, m_screen_buffer.get(), 0,
-        BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
+        BufferBitMask::COLOR_BUFFER_BIT, TextureMagFilter::NEAREST);
     for (int i = 0; i <= GeometryBufferType::G_ENTITY_ID; ++i) {
         Device::instance().BlitFramebuffer(
             m_lighting_system->GetGBuffer(), i, m_debug_gbuffer.get(), i,
-            BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::NEAREST);
+            BufferBitMask::COLOR_BUFFER_BIT, TextureMagFilter::NEAREST);
     }
 
     static bool dockspaceOpen = true;
@@ -404,16 +406,19 @@ void EditorLayer::OnEventsProcess() {}
 void EditorLayer::SetViewportBufferSize(uint32_t width, uint32_t height) {
     renderer->GetDefaultTarget().Resize(width, height);
     m_screen_buffer = Framebuffer::Create();
-    m_screen_buffer->AttachTexture(
-        Texture::Create(width, height, 1, TextureType::TEX_2D,
-                        TextureFormat::RGB, TextureFormatType::UBYTE));
+    m_screen_buffer->AttachTexture(Texture::Create(
+        width, height,
+        TextureSpec(1, TextureType::TEX_2D, TextureFormat::RGB,
+                    TextureFormatType::UBYTE, TextureWrap::EDGE,
+                    TextureMagFilter::NEAREST, TextureMinFilter::NEAREST)));
     m_debug_gbuffer = Framebuffer::Create();
     for (int i = 0; i <= GeometryBufferType::G_ENTITY_ID; ++i) {
         m_debug_gbuffer->AttachTexture(Texture::Create(
-            width, height, 1, TextureType::TEX_2D,
-            GetTextureFormat(GeometryBufferType(i)),
-            GetTextureFormatType(GeometryBufferType(i)), TextureWrap::REPEAT,
-            TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_LINEAR));
+            width, height,
+            TextureSpec(
+                1, TextureType::TEX_2D, GetTextureFormat(GeometryBufferType(i)),
+                GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
+                TextureMagFilter::NEAREST, TextureMinFilter::NEAREST)));
     }
 }
 

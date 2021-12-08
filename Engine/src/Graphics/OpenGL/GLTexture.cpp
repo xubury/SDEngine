@@ -5,18 +5,15 @@ namespace SD {
 
 GLTexture::GLTexture(int width, int height, int samples, TextureType type,
                      TextureFormat format, TextureFormatType format_type,
-                     TextureWrap wrap, TextureFilter filter,
-                     TextureMipmapFilter mipmap_filter)
+                     TextureWrap wrap, TextureMagFilter filter,
+                     TextureMinFilter min_filter)
     : Texture(width, height, samples, type, format, format_type, wrap, filter,
-              mipmap_filter),
+              min_filter),
       gl_id(0),
       gl_type(0),
       gl_internal_format(0),
       gl_format(0),
       gl_format_type(0) {
-    m_mipmap_levels = std::max(
-        static_cast<int>(std::floor(std::log2(std::max(m_width, m_height)))),
-        1);
     gl_type = Translate(m_type);
     gl_internal_format = TranslateInternalFormat(m_format, m_format_type);
     gl_format = TranslateFormat(m_format, m_format_type);
@@ -26,8 +23,8 @@ GLTexture::GLTexture(int width, int height, int samples, TextureType type,
 
     if (m_type != TextureType::TEX_2D_MULTISAMPLE) {
         SetWrap(m_wrap);
-        SetFilter(m_filter);
-        SetMipmapFilter(m_mipmap_filter);
+        SetMagFilter(m_filter);
+        SetMinFilter(m_min_filter);
     }
 }
 
@@ -111,16 +108,16 @@ void GLTexture::SetWrap(TextureWrap wrap) {
     glTextureParameteri(gl_id, GL_TEXTURE_WRAP_T, glWrap);
 }
 
-void GLTexture::SetFilter(TextureFilter filter) {
+void GLTexture::SetMagFilter(TextureMagFilter filter) {
     m_filter = filter;
 
     GLint glFilter = Translate(m_filter);
     glTextureParameteri(gl_id, GL_TEXTURE_MAG_FILTER, glFilter);
 }
 
-void GLTexture::SetMipmapFilter(TextureMipmapFilter mipmap_filter) {
-    m_mipmap_filter = mipmap_filter;
-    GLint glMipmapFilter = Translate(m_mipmap_filter);
+void GLTexture::SetMinFilter(TextureMinFilter min_filter) {
+    m_min_filter = min_filter;
+    GLint glMipmapFilter = Translate(m_min_filter);
     glTextureParameteri(gl_id, GL_TEXTURE_MIN_FILTER, glMipmapFilter);
 }
 

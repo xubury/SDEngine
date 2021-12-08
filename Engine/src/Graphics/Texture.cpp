@@ -4,17 +4,13 @@
 
 namespace SD {
 
-Ref<Texture> Texture::Create(int width, int height, int samples,
-                             TextureType type, TextureFormat format,
-                             TextureFormatType format_type, TextureWrap wrap,
-                             TextureFilter filter,
-                             TextureMipmapFilter mipmap_filter) {
+Ref<Texture> Texture::Create(int width, int height, const TextureSpec &spec) {
     Ref<Texture> texture;
     switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
-            texture =
-                CreateRef<GLTexture>(width, height, samples, type, format,
-                                     format_type, wrap, filter, mipmap_filter);
+            texture = CreateRef<GLTexture>(
+                width, height, spec.samples, spec.type, spec.format,
+                spec.format_type, spec.wrap, spec.filter, spec.min_filter);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
@@ -25,8 +21,8 @@ Ref<Texture> Texture::Create(int width, int height, int samples,
 
 Texture::Texture(int width, int height, int samples, TextureType type,
                  TextureFormat format, TextureFormatType format_type,
-                 TextureWrap wrap, TextureFilter filter,
-                 TextureMipmapFilter mipmap_filter)
+                 TextureWrap wrap, TextureMagFilter filter,
+                 TextureMinFilter min_filter)
     : m_width(width),
       m_height(height),
       m_samples(samples),
@@ -35,7 +31,16 @@ Texture::Texture(int width, int height, int samples, TextureType type,
       m_format_type(format_type),
       m_wrap(wrap),
       m_filter(filter),
-      m_mipmap_filter(mipmap_filter) {}
+      m_min_filter(min_filter) {
+    if (min_filter == TextureMinFilter::LINEAR ||
+        min_filter == TextureMinFilter::NEAREST) {
+        m_mipmap_levels = 1;
+    } else {
+        m_mipmap_levels = std::max(static_cast<int>(std::floor(
+                                       std::log2(std::max(m_width, m_height)))),
+                                   1);
+    }
+}
 
 bool Texture::operator==(const Texture &other) const {
     return GetId() == other.GetId();

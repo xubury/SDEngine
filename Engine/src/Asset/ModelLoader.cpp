@@ -141,10 +141,12 @@ static void processAiMaterial(AssetManager &manager,
     std::string path = (directory / texturePath.C_Str()).string();
     auto image = manager.LoadAndGet<Bitmap>(path);
     auto texture = Texture::Create(
-        image->Width(), image->Height(), 1, TextureType::TEX_2D,
-        image->HasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
-        TextureFormatType::UBYTE, ConvertAssimpMapMode(map_mode),
-        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR_LINEAR);
+        image->Width(), image->Height(),
+        TextureSpec(
+            1, TextureType::TEX_2D,
+            image->HasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
+            TextureFormatType::UBYTE, ConvertAssimpMapMode(map_mode),
+            TextureMagFilter::LINEAR, TextureMinFilter::LINEAR_LINEAR));
     texture->SetPixels(0, 0, 0, image->Width(), image->Height(), 1,
                        image->Data());
     material.SetTexture(ConvertAssimpTextureType(assimpType), texture);

@@ -104,15 +104,12 @@ void LightingSystem::InitShaders() {
 
 void LightingSystem::InitSSAO() {
     // ssao target
-    m_ssao_target.AddTexture(
-        TextureSpec(1, TextureType::TEX_2D, TextureFormat::RED,
-                    TextureFormatType::FLOAT16, TextureWrap::EDGE,
-                    TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
+    TextureSpec spec(1, TextureType::TEX_2D, TextureFormat::RED,
+                     TextureFormatType::FLOAT16, TextureWrap::EDGE,
+                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST);
+    m_ssao_target.AddTexture(spec);
+    m_ssao_blur_target.AddTexture(spec);
     m_ssao_target.CreateFramebuffer();
-    m_ssao_blur_target.AddTexture(
-        TextureSpec(1, TextureType::TEX_2D, TextureFormat::RED,
-                    TextureFormatType::FLOAT16, TextureWrap::EDGE,
-                    TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
     m_ssao_blur_target.CreateFramebuffer();
 
     uint32_t kernel_size = m_ssao_shader->GetUint("u_kernel_size");
@@ -137,10 +134,11 @@ void LightingSystem::InitSSAO() {
                         0.0f);  // rotate around z-axis (in tangent space)
         ssao_noise[i] = glm::normalize(noise);
     }
-    m_ssao_noise =
-        Texture::Create(4, 4, 1, TextureType::TEX_2D, TextureFormat::RGB,
-                        TextureFormatType::FLOAT16, TextureWrap::REPEAT,
-                        TextureFilter::NEAREST, TextureMipmapFilter::NEAREST);
+    m_ssao_noise = Texture::Create(
+        4, 4,
+        TextureSpec(1, TextureType::TEX_2D, TextureFormat::RGB,
+                    TextureFormatType::FLOAT16, TextureWrap::REPEAT,
+                    TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     m_ssao_noise->SetPixels(0, 0, 0, 4, 4, 1, ssao_noise.data());
 
     for (uint32_t i = 0; i < kernel_size; ++i) {
@@ -152,18 +150,20 @@ void LightingSystem::InitSSAO() {
 void LightingSystem::InitLighting(int samples) {
     // lighting target
     for (int i = 0; i < 2; ++i) {
-        m_light_target[i].AddTexture(
-            TextureSpec(samples, TextureType::TEX_2D_MULTISAMPLE,
-                        TextureFormat::RGBA, TextureFormatType::FLOAT16));
+        m_light_target[i].AddTexture(TextureSpec(
+            samples, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::RGBA,
+            TextureFormatType::FLOAT16, TextureWrap::EDGE,
+            TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
         m_light_target[i].CreateFramebuffer();
     }
 
     // gbuffer target
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-        m_gbuffer_target.AddTexture(
-            TextureSpec(samples, TextureType::TEX_2D_MULTISAMPLE,
-                        GetTextureFormat(GeometryBufferType(i)),
-                        GetTextureFormatType(GeometryBufferType(i))));
+        m_gbuffer_target.AddTexture(TextureSpec(
+            samples, TextureType::TEX_2D_MULTISAMPLE,
+            GetTextureFormat(GeometryBufferType(i)),
+            GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
+            TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     }
     m_gbuffer_target.CreateFramebuffer();
 }
@@ -196,7 +196,7 @@ void LightingSystem::OnRender() {
 
     Device::instance().BlitFramebuffer(
         m_gbuffer_target.GetFramebuffer(), 0, renderer->GetFramebuffer(), 0,
-        BufferBitMask::DEPTH_BUFFER_BIT, TextureFilter::NEAREST);
+        BufferBitMask::DEPTH_BUFFER_BIT, TextureMagFilter::NEAREST);
 }
 
 void LightingSystem::Clear() {

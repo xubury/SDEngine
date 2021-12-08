@@ -21,12 +21,12 @@ Renderer::Renderer(int width, int height, int msaa)
     }
     InitRenderer2D();
 
-    m_target.AddTexture(TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE,
-                                    TextureFormat::RGBA,
-                                    TextureFormatType::UBYTE));
-    m_target.AddTexture(TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE,
-                                    TextureFormat::DEPTH,
-                                    TextureFormatType::FLOAT16));
+    m_target.AddTexture(
+        TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::RGBA,
+                    TextureFormatType::UBYTE, TextureWrap::EDGE));
+    m_target.AddTexture(
+        TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::DEPTH,
+                    TextureFormatType::FLOAT16, TextureWrap::EDGE));
     m_target.CreateFramebuffer();
 }
 
@@ -69,10 +69,11 @@ void Renderer::InitRenderer2D() {
     m_2d_data.quad_uv[0] = {0.0f, 1.0f};
     m_2d_data.quad_uv[1] = {1.0f, 0.0f};
 
-    m_2d_data.texture_slots[0] =
-        Texture::Create(1, 1, 1, TextureType::TEX_2D, TextureFormat::RGBA,
-                        TextureFormatType::FLOAT16, TextureWrap::REPEAT,
-                        TextureFilter::LINEAR, TextureMipmapFilter::LINEAR);
+    m_2d_data.texture_slots[0] = Texture::Create(
+        1, 1,
+        TextureSpec(1, TextureType::TEX_2D, TextureFormat::RGBA,
+                    TextureFormatType::FLOAT16, TextureWrap::REPEAT,
+                    TextureMagFilter::LINEAR, TextureMinFilter::LINEAR));
     const float color[4] = {1, 1, 1, 1};
     m_2d_data.texture_slots[0]->SetPixels(0, 0, 0, 1, 1, 1, color);
 
@@ -272,7 +273,7 @@ void Renderer::DrawText(Font& font, const std::string& text, uint8_t pixelSize,
 void Renderer::RenderToScreen() {
     Device::instance().BlitFramebuffer(m_target.GetFramebuffer(), 0, nullptr, 0,
                                        BufferBitMask::COLOR_BUFFER_BIT,
-                                       TextureFilter::NEAREST);
+                                       TextureMagFilter::NEAREST);
 }
 
 }  // namespace SD

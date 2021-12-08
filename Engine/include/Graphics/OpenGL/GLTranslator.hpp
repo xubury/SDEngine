@@ -27,9 +27,9 @@ GLint SD_GRAPHICS_API TranslateInternalFormat(TextureFormat format,
 
 GLint SD_GRAPHICS_API Translate(TextureWrap wrap);
 
-GLint SD_GRAPHICS_API Translate(TextureFilter filter);
+GLint SD_GRAPHICS_API Translate(TextureMagFilter filter);
 
-GLint SD_GRAPHICS_API Translate(TextureMipmapFilter mipmap_filter);
+GLint SD_GRAPHICS_API Translate(TextureMinFilter min_filter);
 
 GLenum SD_GRAPHICS_API Translate(Operation operation);
 

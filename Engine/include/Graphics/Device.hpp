@@ -53,7 +53,7 @@ class SD_GRAPHICS_API Device {
 
     virtual void BlitFramebuffer(Framebuffer *src, uint32_t src_attchment,
                                  Framebuffer *dst, uint32_t dst_attachment,
-                                 BufferBitMask mask, TextureFilter filter) = 0;
+                                 BufferBitMask mask, TextureMagFilter filter) = 0;
 
    protected:
     Device() = default;

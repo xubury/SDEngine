@@ -13,9 +13,7 @@ RenderTarget::RenderTarget(int x, int y, int width, int height)
 void RenderTarget::CreateFramebuffer() {
     std::vector<uint32_t> colors;
     for (const auto &spec : m_texture_specs) {
-        m_framebuffer->AttachTexture(Texture::Create(
-            m_width, m_height, spec.samples, spec.type, spec.format,
-            spec.format_type, spec.wrap, spec.filter, spec.mipmap_filter));
+        m_framebuffer->AttachTexture(Texture::Create(m_width, m_height, spec));
         if (spec.format != TextureFormat::DEPTH &&
             spec.format != TextureFormat::DEPTH_STENCIL) {
             colors.push_back(colors.size());

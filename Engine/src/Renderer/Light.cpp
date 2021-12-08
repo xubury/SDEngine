@@ -72,7 +72,7 @@ void Light::CreateShadowMap() {
     m_shadow_target.AddTexture(
         TextureSpec(1, TextureType::TEX_2D, TextureFormat::DEPTH,
                     TextureFormatType::FLOAT16, TextureWrap::BORDER,
-                    TextureFilter::NEAREST, TextureMipmapFilter::NEAREST));
+                    TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     m_shadow_target.CreateFramebuffer();
     m_shadow_target.GetTexture()->SetBorderColor(&color);
 }

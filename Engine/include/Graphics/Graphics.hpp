@@ -52,9 +52,9 @@ enum class TextureFormat { ALPHA, RED, RG, RGB, RGBA, DEPTH, DEPTH_STENCIL };
 
 enum class TextureWrap { EDGE, BORDER, MIRROR, REPEAT, MIRROR_EDGE };
 
-enum class TextureFilter { NEAREST, LINEAR };
+enum class TextureMagFilter { NEAREST, LINEAR };
 
-enum class TextureMipmapFilter {
+enum class TextureMinFilter {
     LINEAR,
     NEAREST,
     NEAREST_NEAREST,

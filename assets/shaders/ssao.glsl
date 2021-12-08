@@ -51,7 +51,7 @@ float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
     float occlusion = 0.0;
     for(int i = 0; i < u_kernel_size; ++i) {
         // get sample position
-        if (dot(u_samples[i], normal) < 0.15) {
+        if (dot(u_samples[i], normal) < 0.05) {
             continue;
         }
         vec3 sample_pos = TBN * u_samples[i]; // from tangent to view-space

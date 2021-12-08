@@ -10,8 +10,8 @@ class GLTexture : public Texture {
    public:
     GLTexture(int width, int height, int samples, TextureType type,
               TextureFormat format, TextureFormatType format_type,
-              TextureWrap wrap, TextureFilter filter,
-              TextureMipmapFilter mipmap_filter);
+              TextureWrap wrap, TextureMagFilter filter,
+              TextureMinFilter min_filter);
 
     ~GLTexture();
 
@@ -26,8 +26,8 @@ class GLTexture : public Texture {
                    size_t depth, const void *data) override;
     void SetBorderColor(const void *color) override;
     void SetWrap(TextureWrap wrap) override;
-    void SetFilter(TextureFilter filter) override;
-    void SetMipmapFilter(TextureMipmapFilter mipmap_filter) override;
+    void SetMagFilter(TextureMagFilter filter) override;
+    void SetMinFilter(TextureMinFilter min_filter) override;
 
     void ReadPixels(int level, int x, int y, int z, int w, int h, int d,
                     size_t size, void *data) const override;

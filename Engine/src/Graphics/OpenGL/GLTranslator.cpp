@@ -202,30 +202,30 @@ GLint Translate(TextureWrap wrap) {
     return GL_INVALID_VALUE;
 }
 
-GLint Translate(TextureFilter filter) {
+GLint Translate(TextureMagFilter filter) {
     switch (filter) {
-        case TextureFilter::NEAREST:
+        case TextureMagFilter::NEAREST:
             return GL_NEAREST;
-        case TextureFilter::LINEAR:
+        case TextureMagFilter::LINEAR:
             return GL_LINEAR;
     }
 
     return GL_INVALID_VALUE;
 }
 
-GLint Translate(TextureMipmapFilter mipmap_filter) {
-    switch (mipmap_filter) {
-        case TextureMipmapFilter::LINEAR:
+GLint Translate(TextureMinFilter min_filter) {
+    switch (min_filter) {
+        case TextureMinFilter::LINEAR:
             return GL_LINEAR;
-        case TextureMipmapFilter::NEAREST:
+        case TextureMinFilter::NEAREST:
             return GL_NEAREST;
-        case TextureMipmapFilter::NEAREST_NEAREST:
+        case TextureMinFilter::NEAREST_NEAREST:
             return GL_NEAREST_MIPMAP_NEAREST;
-        case TextureMipmapFilter::NEAREST_LINEAR:
+        case TextureMinFilter::NEAREST_LINEAR:
             return GL_NEAREST_MIPMAP_LINEAR;
-        case TextureMipmapFilter::LINEAR_NEAREST:
+        case TextureMinFilter::LINEAR_NEAREST:
             return GL_LINEAR_MIPMAP_NEAREST;
-        case TextureMipmapFilter::LINEAR_LINEAR:
+        case TextureMinFilter::LINEAR_LINEAR:
             return GL_LINEAR_MIPMAP_LINEAR;
     }
     return GL_INVALID_VALUE;

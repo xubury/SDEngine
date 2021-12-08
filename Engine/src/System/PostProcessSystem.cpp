@@ -13,14 +13,14 @@ PostProcessSystem::PostProcessSystem(int width, int height)
       m_exposure(1.2),
       m_gamma_correction(1.2) {
     for (int i = 0; i < 2; ++i) {
-        m_blur_target[i].AddTexture(TextureSpec(1, TextureType::TEX_2D,
-                                                TextureFormat::RGBA,
-                                                TextureFormatType::FLOAT16));
+        m_blur_target[i].AddTexture(
+            TextureSpec(1, TextureType::TEX_2D, TextureFormat::RGBA,
+                        TextureFormatType::FLOAT16, TextureWrap::EDGE));
         m_blur_target[i].CreateFramebuffer();
     }
-    m_post_target.AddTexture(TextureSpec(1, TextureType::TEX_2D,
-                                         TextureFormat::RGBA,
-                                         TextureFormatType::FLOAT16));
+    m_post_target.AddTexture(
+        TextureSpec(1, TextureType::TEX_2D, TextureFormat::RGBA,
+                    TextureFormatType::FLOAT16, TextureWrap::EDGE));
     m_post_target.CreateFramebuffer();
 
     const float quadVertices[] = {
@@ -69,7 +69,7 @@ void PostProcessSystem::OnRender() {
     Device::instance().SetDepthMask(false);
     Device::instance().BlitFramebuffer(
         renderer->GetFramebuffer(), 0, m_post_target.GetFramebuffer(), 0,
-        BufferBitMask::COLOR_BUFFER_BIT, TextureFilter::LINEAR);
+        BufferBitMask::COLOR_BUFFER_BIT, TextureMagFilter::LINEAR);
     if (m_is_bloom) {
         RenderBlur();
     }

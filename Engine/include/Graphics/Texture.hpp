@@ -12,30 +12,25 @@ struct SD_GRAPHICS_API TextureSpec {
     TextureFormat format;
     TextureFormatType format_type;
     TextureWrap wrap;
-    TextureFilter filter;
-    TextureMipmapFilter mipmap_filter;
+    TextureMagFilter filter;
+    TextureMinFilter min_filter;
     TextureSpec(uint8_t samples, TextureType type, TextureFormat format,
                 TextureFormatType format_type,
                 TextureWrap wrap = TextureWrap::REPEAT,
-                TextureFilter filter = TextureFilter::LINEAR,
-                TextureMipmapFilter mipmap_filter = TextureMipmapFilter::LINEAR)
+                TextureMagFilter filter = TextureMagFilter::LINEAR,
+                TextureMinFilter min_filter = TextureMinFilter::LINEAR_LINEAR)
         : samples(samples),
           type(type),
           format(format),
           format_type(format_type),
           wrap(wrap),
           filter(filter),
-          mipmap_filter(mipmap_filter) {}
+          min_filter(min_filter) {}
 };
 
 class SD_GRAPHICS_API Texture {
    public:
-    static Ref<Texture> Create(
-        int width, int height, int samples, TextureType type,
-        TextureFormat format, TextureFormatType format_type,
-        TextureWrap wrap = TextureWrap::REPEAT,
-        TextureFilter filter = TextureFilter::LINEAR,
-        TextureMipmapFilter mipmap_filter = TextureMipmapFilter::LINEAR);
+    static Ref<Texture> Create(int width, int height, const TextureSpec &spec);
 
     virtual ~Texture() = default;
 
@@ -50,8 +45,8 @@ class SD_GRAPHICS_API Texture {
                            size_t depth, const void *data) = 0;
     virtual void SetBorderColor(const void *color) = 0;
     virtual void SetWrap(TextureWrap wrap) = 0;
-    virtual void SetFilter(TextureFilter filter) = 0;
-    virtual void SetMipmapFilter(TextureMipmapFilter filter) = 0;
+    virtual void SetMagFilter(TextureMagFilter filter) = 0;
+    virtual void SetMinFilter(TextureMinFilter filter) = 0;
 
     virtual void ReadPixels(int level, int x, int y, int z, int w, int h, int d,
                             size_t size, void *data) const = 0;
@@ -72,8 +67,8 @@ class SD_GRAPHICS_API Texture {
    protected:
     Texture(int width, int height, int samples, TextureType type,
             TextureFormat format, TextureFormatType format_type,
-            TextureWrap wrap, TextureFilter filter,
-            TextureMipmapFilter mipmap_filter);
+            TextureWrap wrap, TextureMagFilter filter,
+            TextureMinFilter min_filter);
 
     int m_width;
     int m_height;
@@ -84,8 +79,8 @@ class SD_GRAPHICS_API Texture {
     TextureFormat m_format;
     TextureFormatType m_format_type;
     TextureWrap m_wrap;
-    TextureFilter m_filter;
-    TextureMipmapFilter m_mipmap_filter;
+    TextureMagFilter m_filter;
+    TextureMinFilter m_min_filter;
 };
 
 }  // namespace SD
