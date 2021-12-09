@@ -38,8 +38,8 @@ class EditorLayer : public Layer {
     void OnEventsProcess() override;
 
     void NewScene();
-    void LoadScene();
-    void SaveScene();
+    void OpenLoadSceneDialog();
+    void OpenSaveSceneDialog();
 
     int GetViewportWidth() const { return m_width; }
     int GetViewportHeight() const { return m_height; }

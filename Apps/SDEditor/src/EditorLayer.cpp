@@ -167,11 +167,11 @@ void EditorLayer::OnImGui() {
             }
 
             if (ImGui::MenuItem("Load Scene...", "Ctrl+L")) {
-                LoadScene();
+                OpenLoadSceneDialog();
             }
 
             if (ImGui::MenuItem("Save Scene As...", "Ctrl+Shift+S")) {
-                SaveScene();
+                OpenSaveSceneDialog();
             }
 
             if (ImGui::MenuItem("Exit", "Esc")) {
@@ -368,7 +368,7 @@ void EditorLayer::OnEventProcess(const Event &event) {
             case Keycode::S: {
                 if (IsKeyModActive(event.key.mod,
                                    (Keymod::LCTRL | Keymod::LSHIFT))) {
-                    SaveScene();
+                    OpenSaveSceneDialog();
                 } else if (IsKeyModActive(event.key.mod, Keymod::LSHIFT)) {
                     m_scene_panel->SetGizmoOperation(ImGuizmo::SCALE);
                 }
@@ -380,7 +380,7 @@ void EditorLayer::OnEventProcess(const Event &event) {
             } break;
             case Keycode::L: {
                 if (IsKeyModActive(event.key.mod, Keymod::LCTRL)) {
-                    LoadScene();
+                    OpenLoadSceneDialog();
                 }
             } break;
             case Keycode::ESCAPE: {
@@ -427,7 +427,7 @@ void EditorLayer::NewScene() {
     renderer->SetScene(m_scene.get());
 }
 
-void EditorLayer::LoadScene() {
+void EditorLayer::OpenLoadSceneDialog() {
     m_load_scene_open = true;
     m_file_dialog_info.type = ImGuiFileDialogType::OPEN_FILE;
     m_file_dialog_info.title = "Load Scene";
@@ -436,7 +436,7 @@ void EditorLayer::LoadScene() {
     m_file_dialog_info.directory_path = std::filesystem::current_path();
 }
 
-void EditorLayer::SaveScene() {
+void EditorLayer::OpenSaveSceneDialog() {
     m_save_scene_open = true;
     m_file_dialog_info.type = ImGuiFileDialogType::SAVE_FILE;
     m_file_dialog_info.title = "Save Scene";
