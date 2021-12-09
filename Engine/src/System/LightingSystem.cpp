@@ -151,7 +151,7 @@ void LightingSystem::InitLighting(int samples) {
     // lighting target
     for (int i = 0; i < 2; ++i) {
         m_light_target[i].AddTexture(TextureSpec(
-            samples, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::RGBA,
+            samples, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::RGB,
             TextureFormatType::FLOAT16, TextureWrap::EDGE,
             TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
         m_light_target[i].CreateFramebuffer();
