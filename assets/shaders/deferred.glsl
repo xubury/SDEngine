@@ -17,7 +17,7 @@ void main() {
 #include shaders/camera.glsl
 #include shaders/light.glsl
 
-layout(location = 0) out vec4 fragColor;
+layout(location = 0) out vec3 frag_color;
 
 layout(location = 0) in vec2 in_uv;
 
@@ -58,5 +58,5 @@ void main() {
             color += texelFetch(u_background, uv, i).rgb;
         }
     }
-    fragColor = vec4(color / samples, 1.0f);
+    frag_color = color / samples;
 }

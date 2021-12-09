@@ -27,7 +27,8 @@ void main() {
     const int samples = textureSamples(u_lighting);
     const ivec2 uv = ivec2(in_uv * textureSize(u_lighting));
     for (int i = 0; i < samples; ++i) {
-        color += texelFetch(u_lighting, uv, i) + texelFetch(u_emissive, uv, i);
+        color.rgb += texelFetch(u_lighting, uv, i).rgb;
+        color += texelFetch(u_emissive, uv, i);
     }
     frag_color = color / samples;
 }
