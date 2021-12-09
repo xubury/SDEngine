@@ -112,7 +112,7 @@ void EditorLayer::OnImGui() {
     Device::instance().BlitFramebuffer(
         renderer->GetFramebuffer(), 0, m_screen_buffer.get(), 0,
         BufferBitMask::COLOR_BUFFER_BIT, TextureMagFilter::NEAREST);
-    for (int i = 0; i <= GeometryBufferType::G_ENTITY_ID; ++i) {
+    for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
         Device::instance().BlitFramebuffer(
             m_lighting_system->GetGBuffer(), i, m_debug_gbuffer.get(), i,
             BufferBitMask::COLOR_BUFFER_BIT, TextureMagFilter::NEAREST);
@@ -237,7 +237,7 @@ void EditorLayer::OnImGui() {
     ImGui::Begin("GBuffer");
     {
         ImVec2 wsize = ImGui::GetContentRegionAvail();
-        for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
+        for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
             ImGui::DrawTexture(*m_debug_gbuffer->GetTexture(i), wsize,
                                ImVec2(0, 1), ImVec2(1, 0));
         }
