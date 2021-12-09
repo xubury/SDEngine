@@ -66,8 +66,8 @@ void EditorLayer::OnInit() {
     PushSystem(m_scene_panel);
     PushSystem(m_editor_camera_system);
     PushSystem(m_camera_system);
-    PushSystem(m_lighting_system);
     PushSystem(m_skybox_system);
+    PushSystem(m_lighting_system);
     PushSystem(m_sprite_system);
     PushSystem(m_post_process_system);
     PushSystem(m_profile_system);

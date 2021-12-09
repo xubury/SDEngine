@@ -52,7 +52,7 @@ LightingSystem::LightingSystem(int width, int height, int samples)
       m_ssao_blur_target(0, 0, width, height) {
     InitShaders();
     InitSSAO();
-    InitLighting(samples);
+    InitLighting(std::max(samples, 1));
 
     const float quadVertices[] = {
         -1.0f, -1.0f, 0.f, 0.f,  0.f,   // bottom left
@@ -308,15 +308,17 @@ void LightingSystem::RenderDeferred() {
     m_deferred_shader->SetTexture(
         "u_ambient",
         m_gbuffer_target.GetTexture(GeometryBufferType::G_AMBIENT));
+    m_deferred_shader->SetTexture("u_background",
+                                  renderer->GetFramebuffer()->GetTexture());
     m_deferred_shader->SetTexture("u_ssao", m_ssao_blur_target.GetTexture());
-    const uint8_t inputId = 0;
-    const uint8_t outputId = 1;
+    const uint8_t input_id = 0;
+    const uint8_t output_id = 1;
     lightView.each([this](const TransformComponent &transformComp,
                           const LightComponent &lightComp) {
-        renderer->SetRenderTarget(m_light_target[outputId]);
+        renderer->SetRenderTarget(m_light_target[output_id]);
         const Light &light = lightComp.light;
         m_deferred_shader->SetTexture("u_lighting",
-                                      m_light_target[inputId].GetTexture());
+                                      m_light_target[input_id].GetTexture());
         const Transform &transform = transformComp.transform;
         m_deferred_shader->SetVec3("u_light.direction",
                                    transform.GetWorldFront());
@@ -343,7 +345,7 @@ void LightingSystem::RenderDeferred() {
                                    light.GetProjectionView());
         renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
                          m_quad->GetIndexBuffer()->GetCount(), 0);
-        std::swap(m_light_target[inputId], m_light_target[outputId]);
+        std::swap(m_light_target[input_id], m_light_target[output_id]);
     });
 }
 

@@ -18,8 +18,10 @@ GLWindow::GLWindow(const WindowProp &property) {
                             SDL_GL_CONTEXT_PROFILE_CORE));
 
     // MultiSampling
-    SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1));
-    SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, property.msaa));
+    if (property.msaa > 1) {
+        SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1));
+        SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, property.msaa));
+    }
 
     m_window = SDL_CreateWindow(property.title.c_str(), property.x, property.y,
                                 property.width, property.height, sdlFlags);
