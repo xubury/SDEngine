@@ -23,7 +23,7 @@ class SD_RENDERER_API Skybox {
     Ref<Texture> m_texture;
     uint32_t m_width;
     uint32_t m_height;
-    TextureFormat m_format;
+    DataFormat m_format;
     uint8_t m_valid_mask;
 };
 

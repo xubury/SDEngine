@@ -3,12 +3,12 @@
 
 #include "Utility/Base.hpp"
 #include "Graphics/Graphics.hpp"
+#include "Graphics/Texture.hpp"
+#include "Graphics/Renderbuffer.hpp"
 
 #include <vector>
 
 namespace SD {
-
-class Texture;
 
 class SD_GRAPHICS_API Framebuffer {
    public:
@@ -22,6 +22,8 @@ class SD_GRAPHICS_API Framebuffer {
     virtual uint32_t GetId() const = 0;
 
     virtual void AttachTexture(const Ref<Texture> &texture) = 0;
+
+    virtual void AttachRenderbuffer(const Ref<Renderbuffer> &renderbuffer) = 0;
 
     virtual void SetDrawable(const std::vector<uint32_t> &color_attchments) = 0;
 
@@ -38,6 +40,7 @@ class SD_GRAPHICS_API Framebuffer {
                                  const float *value) = 0;
 
     virtual Texture *GetTexture(uint32_t attachment_id = 0) = 0;
+    virtual const Texture *GetTexture(uint32_t attachment_id = 0) const = 0;
 
     virtual void Bind() = 0;
 

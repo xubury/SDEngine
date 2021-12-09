@@ -9,13 +9,13 @@ namespace SD {
 struct SD_GRAPHICS_API TextureSpec {
     uint8_t samples;
     TextureType type;
-    TextureFormat format;
-    TextureFormatType format_type;
+    DataFormat format;
+    DataFormatType format_type;
     TextureWrap wrap;
     TextureMagFilter filter;
     TextureMinFilter min_filter;
-    TextureSpec(uint8_t samples, TextureType type, TextureFormat format,
-                TextureFormatType format_type,
+    TextureSpec(uint8_t samples, TextureType type, DataFormat format,
+                DataFormatType format_type,
                 TextureWrap wrap = TextureWrap::REPEAT,
                 TextureMagFilter filter = TextureMagFilter::LINEAR,
                 TextureMinFilter min_filter = TextureMinFilter::LINEAR_LINEAR)
@@ -61,12 +61,12 @@ class SD_GRAPHICS_API Texture {
     int GetSamples() const;
 
     TextureType GetType() const;
-    TextureFormat GetFormat() const;
-    TextureFormatType GetFormatType() const;
+    DataFormat GetFormat() const;
+    DataFormatType GetFormatType() const;
 
    protected:
     Texture(int width, int height, int samples, TextureType type,
-            TextureFormat format, TextureFormatType format_type,
+            DataFormat format, DataFormatType format_type,
             TextureWrap wrap, TextureMagFilter filter,
             TextureMinFilter min_filter);
 
@@ -76,8 +76,8 @@ class SD_GRAPHICS_API Texture {
     int m_mipmap_levels;
 
     TextureType m_type;
-    TextureFormat m_format;
-    TextureFormatType m_format_type;
+    DataFormat m_format;
+    DataFormatType m_format_type;
     TextureWrap m_wrap;
     TextureMagFilter m_filter;
     TextureMinFilter m_min_filter;

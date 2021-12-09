@@ -16,13 +16,12 @@ enum GeometryBufferType {
     G_AMBIENT,
     G_EMISSIVE,
     G_ENTITY_ID,
-    G_DEPTH,
     GBUFFER_COUNT
 };
 
-TextureFormat SD_SYSTEM_API GetTextureFormat(GeometryBufferType type);
+DataFormat SD_SYSTEM_API GetTextureFormat(GeometryBufferType type);
 
-TextureFormatType SD_SYSTEM_API GetTextureFormatType(GeometryBufferType type);
+DataFormatType SD_SYSTEM_API GetTextureFormatType(GeometryBufferType type);
 
 class SD_SYSTEM_API LightingSystem : public System {
    public:

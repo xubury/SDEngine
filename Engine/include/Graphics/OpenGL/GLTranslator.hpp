@@ -7,7 +7,7 @@
 
 namespace SD {
 
-GLenum SD_GRAPHICS_API Translate(BufferDataType data_type);
+GLenum SD_GRAPHICS_API Translate(BufferLayoutType data_type);
 
 GLenum SD_GRAPHICS_API Translate(MeshTopology mesh_type);
 
@@ -17,13 +17,13 @@ GLint SD_GRAPHICS_API Translate(BufferIOType io_type);
 
 GLenum SD_GRAPHICS_API Translate(TextureType texture_type);
 
-GLenum SD_GRAPHICS_API TranslateFormat(TextureFormat format,
-                                       TextureFormatType format_type);
+GLenum SD_GRAPHICS_API TranslateFormat(DataFormat format,
+                                       DataFormatType format_type);
 
-GLenum SD_GRAPHICS_API Translate(TextureFormatType format_type);
+GLenum SD_GRAPHICS_API Translate(DataFormatType format_type);
 
-GLint SD_GRAPHICS_API TranslateInternalFormat(TextureFormat format,
-                                              TextureFormatType format_type);
+GLenum SD_GRAPHICS_API TranslateInternalFormat(DataFormat format,
+                                              DataFormatType format_type);
 
 GLint SD_GRAPHICS_API Translate(TextureWrap wrap);
 

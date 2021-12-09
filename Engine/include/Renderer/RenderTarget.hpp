@@ -27,6 +27,9 @@ class SD_RENDERER_API RenderTarget {
 
     void AddTexture(const TextureSpec &spec);
     Texture *GetTexture(uint32_t attachmentId = 0) const;
+
+    void AddRenderbuffer(const RenderbufferSpec &spec);
+
     void Clear();
 
     void SetOrigin(int x, int y);
@@ -41,8 +44,10 @@ class SD_RENDERER_API RenderTarget {
     int m_y;
     int m_width;
     int m_height;
-    std::vector<TextureSpec> m_texture_specs;
     Ref<Framebuffer> m_framebuffer;
+
+    std::vector<TextureSpec> m_texture_specs;
+    std::vector<RenderbufferSpec> m_renderbuffer_specs;
 };
 
 }  // namespace SD

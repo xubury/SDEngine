@@ -55,11 +55,10 @@ void EditorLayer::OnInit() {
 
     m_light_icon = Texture::Create(
         image->Width(), image->Height(),
-        TextureSpec(
-            1, TextureType::TEX_2D,
-            image->HasAlpha() ? TextureFormat::RGBA : TextureFormat::RGB,
-            TextureFormatType::UBYTE, TextureWrap::EDGE,
-            TextureMagFilter::LINEAR, TextureMinFilter::LINEAR));
+        TextureSpec(1, TextureType::TEX_2D,
+                    image->HasAlpha() ? DataFormat::RGBA : DataFormat::RGB,
+                    DataFormatType::UBYTE, TextureWrap::EDGE,
+                    TextureMagFilter::LINEAR, TextureMinFilter::LINEAR));
     m_light_icon->SetPixels(0, 0, 0, image->Width(), image->Height(), 1,
                             image->Data());
 
@@ -408,8 +407,8 @@ void EditorLayer::SetViewportBufferSize(uint32_t width, uint32_t height) {
     m_screen_buffer = Framebuffer::Create();
     m_screen_buffer->AttachTexture(Texture::Create(
         width, height,
-        TextureSpec(1, TextureType::TEX_2D, TextureFormat::RGB,
-                    TextureFormatType::UBYTE, TextureWrap::EDGE,
+        TextureSpec(1, TextureType::TEX_2D, DataFormat::RGB,
+                    DataFormatType::UBYTE, TextureWrap::EDGE,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST)));
     m_debug_gbuffer = Framebuffer::Create();
     for (int i = 0; i <= GeometryBufferType::G_ENTITY_ID; ++i) {

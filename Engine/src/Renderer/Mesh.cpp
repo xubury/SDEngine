@@ -17,11 +17,11 @@ Mesh::Mesh()
 
     m_vertexArray = VertexArray::Create();
     VertexBufferLayout layout;
-    layout.Push(BufferDataType::FLOAT3);
-    layout.Push(BufferDataType::FLOAT2);
-    layout.Push(BufferDataType::FLOAT3);
-    layout.Push(BufferDataType::FLOAT3);
-    layout.Push(BufferDataType::FLOAT3);
+    layout.Push(BufferLayoutType::FLOAT3);
+    layout.Push(BufferLayoutType::FLOAT2);
+    layout.Push(BufferLayoutType::FLOAT3);
+    layout.Push(BufferLayoutType::FLOAT3);
+    layout.Push(BufferLayoutType::FLOAT3);
     m_vertexArray->AddVertexBuffer(m_vertexBuffer, layout);
     m_vertexArray->SetIndexBuffer(m_indexBuffer);
 }
@@ -42,11 +42,11 @@ Mesh::Mesh(const std::vector<Vertex> &vertices,
 
     m_vertexArray = VertexArray::Create();
     VertexBufferLayout layout;
-    layout.Push(BufferDataType::FLOAT3);
-    layout.Push(BufferDataType::FLOAT2);
-    layout.Push(BufferDataType::FLOAT3);
-    layout.Push(BufferDataType::FLOAT3);
-    layout.Push(BufferDataType::FLOAT3);
+    layout.Push(BufferLayoutType::FLOAT3);
+    layout.Push(BufferLayoutType::FLOAT2);
+    layout.Push(BufferLayoutType::FLOAT3);
+    layout.Push(BufferLayoutType::FLOAT3);
+    layout.Push(BufferLayoutType::FLOAT3);
     m_vertexArray->AddVertexBuffer(m_vertexBuffer, layout);
     m_vertexArray->SetIndexBuffer(m_indexBuffer);
 }

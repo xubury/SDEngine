@@ -14,8 +14,16 @@ void RenderTarget::CreateFramebuffer() {
     std::vector<uint32_t> colors;
     for (const auto &spec : m_texture_specs) {
         m_framebuffer->AttachTexture(Texture::Create(m_width, m_height, spec));
-        if (spec.format != TextureFormat::DEPTH &&
-            spec.format != TextureFormat::DEPTH_STENCIL) {
+        if (spec.format != DataFormat::DEPTH &&
+            spec.format != DataFormat::DEPTH_STENCIL) {
+            colors.push_back(colors.size());
+        }
+    }
+    for (const auto &spec : m_renderbuffer_specs) {
+        m_framebuffer->AttachRenderbuffer(
+            Renderbuffer::Create(m_width, m_height, spec));
+        if (spec.format != DataFormat::DEPTH &&
+            spec.format != DataFormat::DEPTH_STENCIL) {
             colors.push_back(colors.size());
         }
     }
@@ -24,6 +32,10 @@ void RenderTarget::CreateFramebuffer() {
 
 void RenderTarget::AddTexture(const TextureSpec &spec) {
     m_texture_specs.push_back(spec);
+}
+
+void RenderTarget::AddRenderbuffer(const RenderbufferSpec &spec) {
+    m_renderbuffer_specs.push_back(spec);
 }
 
 void RenderTarget::Clear() {

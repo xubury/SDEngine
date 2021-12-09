@@ -10,20 +10,20 @@
 namespace SD {
 
 struct SD_GRAPHICS_API VertexBufferLayoutElement {
-    BufferDataType type;
+    BufferLayoutType type;
     uint32_t count;
     bool normalized;
 };
 
-uint32_t SD_GRAPHICS_API GetBufferDataSize(BufferDataType type);
+uint32_t SD_GRAPHICS_API GetBufferDataSize(BufferLayoutType type);
 
-uint32_t SD_GRAPHICS_API GetComponentCount(BufferDataType type);
+uint32_t SD_GRAPHICS_API GetComponentCount(BufferLayoutType type);
 
 class SD_GRAPHICS_API VertexBufferLayout {
    public:
     VertexBufferLayout(uint32_t instance_stride = 0);
 
-    void Push(BufferDataType type, bool normalized = false);
+    void Push(BufferLayoutType type, bool normalized = false);
 
     void Clear();
 

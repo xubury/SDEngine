@@ -4,7 +4,7 @@
 namespace SD {
 
 GLTexture::GLTexture(int width, int height, int samples, TextureType type,
-                     TextureFormat format, TextureFormatType format_type,
+                     DataFormat format, DataFormatType format_type,
                      TextureWrap wrap, TextureMagFilter filter,
                      TextureMinFilter min_filter)
     : Texture(width, height, samples, type, format, format_type, wrap, filter,
@@ -33,7 +33,7 @@ GLTexture::~GLTexture() { glDeleteTextures(1, &gl_id); }
 void GLTexture::Allocate() {
     glCreateTextures(gl_type, 1, &gl_id);
 
-    if (m_format == TextureFormat::ALPHA) {
+    if (m_format == DataFormat::ALPHA) {
         const GLint swizzle_mask[] = {GL_ONE, GL_ONE, GL_ONE, GL_RED};
         glTextureParameteriv(gl_id, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
     }
@@ -86,13 +86,13 @@ void GLTexture::SetPixels(int x, int y, int z, int width, int height, int depth,
 
 void GLTexture::SetBorderColor(const void *color) {
     switch (m_format_type) {
-        case TextureFormatType::FLOAT32:
-        case TextureFormatType::FLOAT16:
+        case DataFormatType::FLOAT32:
+        case DataFormatType::FLOAT16:
             glTextureParameterfv(gl_id, GL_TEXTURE_BORDER_COLOR,
                                  (float *)color);
             break;
-        case TextureFormatType::UINT:
-        case TextureFormatType::UBYTE:
+        case DataFormatType::UINT:
+        case DataFormatType::UBYTE:
             glTextureParameteriv(gl_id, GL_TEXTURE_BORDER_COLOR, (int *)color);
             break;
     }

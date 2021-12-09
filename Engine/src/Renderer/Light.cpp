@@ -70,8 +70,8 @@ float Light::GetQuadratic() const { return m_quadratic; }
 void Light::CreateShadowMap() {
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
     m_shadow_target.AddTexture(
-        TextureSpec(1, TextureType::TEX_2D, TextureFormat::DEPTH,
-                    TextureFormatType::FLOAT16, TextureWrap::BORDER,
+        TextureSpec(1, TextureType::TEX_2D, DataFormat::DEPTH,
+                    DataFormatType::FLOAT16, TextureWrap::BORDER,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     m_shadow_target.CreateFramebuffer();
     m_shadow_target.GetTexture()->SetBorderColor(&color);

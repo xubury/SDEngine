@@ -13,22 +13,44 @@ GLFramebuffer::~GLFramebuffer() { glDeleteFramebuffers(1, &m_id); }
 void GLFramebuffer::AttachTexture(const Ref<Texture> &texture) {
     GLenum attachment = 0;
     switch (texture->GetFormat()) {
-        case TextureFormat::DEPTH:
+        case DataFormat::DEPTH:
             attachment = GL_DEPTH_ATTACHMENT;
             break;
-        case TextureFormat::DEPTH_STENCIL:
+        case DataFormat::DEPTH_STENCIL:
             attachment = GL_DEPTH_STENCIL_ATTACHMENT;
             break;
-        case TextureFormat::ALPHA:
-        case TextureFormat::RED:
-        case TextureFormat::RG:
-        case TextureFormat::RGB:
-        case TextureFormat::RGBA:
+        case DataFormat::ALPHA:
+        case DataFormat::RED:
+        case DataFormat::RG:
+        case DataFormat::RGB:
+        case DataFormat::RGBA:
             attachment = GL_COLOR_ATTACHMENT0 + m_texture_cnt++;
             break;
     }
-    m_attachments.emplace_back(attachment, texture);
+    m_attachments.emplace_back(texture);
     glNamedFramebufferTexture(m_id, attachment, texture->GetId(), 0);
+}
+
+void GLFramebuffer::AttachRenderbuffer(const Ref<Renderbuffer> &renderbuffer) {
+    GLenum attachment = 0;
+    switch (renderbuffer->GetFormat()) {
+        case DataFormat::DEPTH:
+            attachment = GL_DEPTH_ATTACHMENT;
+            break;
+        case DataFormat::DEPTH_STENCIL:
+            attachment = GL_DEPTH_STENCIL_ATTACHMENT;
+            break;
+        case DataFormat::ALPHA:
+        case DataFormat::RED:
+        case DataFormat::RG:
+        case DataFormat::RGB:
+        case DataFormat::RGBA:
+            attachment = GL_COLOR_ATTACHMENT0 + m_texture_cnt++;
+            break;
+    }
+    m_attachments.emplace_back(renderbuffer);
+    glNamedFramebufferRenderbuffer(m_id, attachment, GL_RENDERBUFFER,
+                                   renderbuffer->GetId());
 }
 
 void GLFramebuffer::SetDrawable(
@@ -53,8 +75,7 @@ void GLFramebuffer::Bind() { glBindFramebuffer(GL_FRAMEBUFFER, m_id); }
 void GLFramebuffer::ReadPixels(uint32_t attachment_id, int level, int x, int y,
                                int z, int w, int h, int d, size_t size,
                                void *data) const {
-    auto texture = m_attachments.at(attachment_id).second;
-    texture->ReadPixels(level, x, y, z, w, h, d, size, data);
+    GetTexture(attachment_id)->ReadPixels(level, x, y, z, w, h, d, size, data);
 }
 
 void GLFramebuffer::ClearDepth(const float depth) {
@@ -76,7 +97,10 @@ void GLFramebuffer::ClearAttachment(uint32_t attachment_id,
 }
 
 Texture *GLFramebuffer::GetTexture(uint32_t attachment_id) {
-    return m_attachments[attachment_id].second.get();
+    return static_cast<Texture *>(m_attachments[attachment_id].get());
 }
 
+const Texture *GLFramebuffer::GetTexture(uint32_t attachment_id) const {
+    return static_cast<const Texture *>(m_attachments[attachment_id].get());
+}
 }  // namespace SD

@@ -25,7 +25,7 @@ SkyboxSystem::SkyboxSystem() : System("SkyboxSystem") {
                                       3, 2, 6, 6, 7, 3};
     m_skybox = VertexArray::Create();
     VertexBufferLayout layout;
-    layout.Push(BufferDataType::FLOAT3);
+    layout.Push(BufferLayoutType::FLOAT3);
     auto vbo = VertexBuffer::Create(skyboxVertices, sizeof(skyboxVertices),
                                     BufferIOType::STATIC);
     auto ibo = IndexBuffer::Create(skyboxIndices, 36, BufferIOType::STATIC);

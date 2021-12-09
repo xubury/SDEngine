@@ -2,16 +2,16 @@
 
 namespace SD {
 
-GLenum Translate(BufferDataType data_type) {
+GLenum Translate(BufferLayoutType data_type) {
     switch (data_type) {
-        case BufferDataType::FLOAT:
-        case BufferDataType::FLOAT2:
-        case BufferDataType::FLOAT3:
-        case BufferDataType::FLOAT4:
+        case BufferLayoutType::FLOAT:
+        case BufferLayoutType::FLOAT2:
+        case BufferLayoutType::FLOAT3:
+        case BufferLayoutType::FLOAT4:
             return GL_FLOAT;
-        case BufferDataType::UINT:
+        case BufferLayoutType::UINT:
             return GL_UNSIGNED_INT;
-        case BufferDataType::UCHAR:
+        case BufferLayoutType::UCHAR:
             return GL_UNSIGNED_BYTE;
     }
     return 0;
@@ -72,123 +72,123 @@ GLenum Translate(TextureType texture_type) {
     return 0;
 }
 
-GLenum TranslateFormat(TextureFormat format, TextureFormatType format_type) {
+GLenum TranslateFormat(DataFormat format, DataFormatType format_type) {
     switch (format) {
-        case TextureFormat::ALPHA:
-        case TextureFormat::RED: {
+        case DataFormat::ALPHA:
+        case DataFormat::RED: {
             switch (format_type) {
-                case TextureFormatType::UINT:
+                case DataFormatType::UINT:
                     return GL_RED_INTEGER;
                 default:
                     return GL_RED;
             }
         } break;
-        case TextureFormat::RG: {
+        case DataFormat::RG: {
             switch (format_type) {
-                case TextureFormatType::UINT:
+                case DataFormatType::UINT:
                     return GL_RG_INTEGER;
                 default:
                     return GL_RG;
             }
         } break;
-        case TextureFormat::RGB: {
+        case DataFormat::RGB: {
             switch (format_type) {
-                case TextureFormatType::UINT:
+                case DataFormatType::UINT:
                     return GL_RGB_INTEGER;
                 default:
                     return GL_RGB;
             }
         } break;
-        case TextureFormat::RGBA: {
+        case DataFormat::RGBA: {
             switch (format_type) {
-                case TextureFormatType::UINT:
+                case DataFormatType::UINT:
                     return GL_RGBA_INTEGER;
                 default:
                     return GL_RGBA;
             }
         } break;
-        case TextureFormat::DEPTH:
+        case DataFormat::DEPTH:
             return GL_DEPTH_COMPONENT;
-        case TextureFormat::DEPTH_STENCIL:
+        case DataFormat::DEPTH_STENCIL:
             return GL_DEPTH_STENCIL;
     }
     return 0;
 }
 
-GLenum Translate(TextureFormatType format_type) {
+GLenum Translate(DataFormatType format_type) {
     switch (format_type) {
-        case TextureFormatType::UBYTE:
+        case DataFormatType::UBYTE:
             return GL_UNSIGNED_BYTE;
-        case TextureFormatType::UINT:
+        case DataFormatType::UINT:
             return GL_UNSIGNED_INT;
-        case TextureFormatType::FLOAT16:
-        case TextureFormatType::FLOAT32:
+        case DataFormatType::FLOAT16:
+        case DataFormatType::FLOAT32:
             return GL_FLOAT;
     }
 
     return 0;
 }
 
-GLint TranslateInternalFormat(TextureFormat format,
-                              TextureFormatType format_type) {
+GLenum TranslateInternalFormat(DataFormat format,
+                              DataFormatType format_type) {
     switch (format) {
-        case TextureFormat::ALPHA:
-        case TextureFormat::RED: {
+        case DataFormat::ALPHA:
+        case DataFormat::RED: {
             switch (format_type) {
-                case TextureFormatType::UBYTE:
+                case DataFormatType::UBYTE:
                     return GL_R8;
-                case TextureFormatType::UINT:
+                case DataFormatType::UINT:
                     return GL_R32UI;
-                case TextureFormatType::FLOAT16:
+                case DataFormatType::FLOAT16:
                     return GL_R16F;
-                case TextureFormatType::FLOAT32:
+                case DataFormatType::FLOAT32:
                     return GL_R32F;
             }
             break;
         }
-        case TextureFormat::RG: {
+        case DataFormat::RG: {
             switch (format_type) {
-                case TextureFormatType::UBYTE:
+                case DataFormatType::UBYTE:
                     return GL_RG8;
-                case TextureFormatType::UINT:
+                case DataFormatType::UINT:
                     return GL_RG32UI;
-                case TextureFormatType::FLOAT16:
+                case DataFormatType::FLOAT16:
                     return GL_RG16F;
-                case TextureFormatType::FLOAT32:
+                case DataFormatType::FLOAT32:
                     return GL_RG32F;
             }
             break;
         }
-        case TextureFormat::RGB: {
+        case DataFormat::RGB: {
             switch (format_type) {
-                case TextureFormatType::UBYTE:
+                case DataFormatType::UBYTE:
                     return GL_RGB8;
-                case TextureFormatType::UINT:
+                case DataFormatType::UINT:
                     return GL_RGB32UI;
-                case TextureFormatType::FLOAT16:
+                case DataFormatType::FLOAT16:
                     return GL_RGB16F;
-                case TextureFormatType::FLOAT32:
+                case DataFormatType::FLOAT32:
                     return GL_RGB32F;
             }
             break;
         }
-        case TextureFormat::RGBA: {
+        case DataFormat::RGBA: {
             switch (format_type) {
-                case TextureFormatType::UBYTE:
+                case DataFormatType::UBYTE:
                     return GL_RGBA8;
-                case TextureFormatType::UINT:
+                case DataFormatType::UINT:
                     return GL_RGBA32UI;
-                case TextureFormatType::FLOAT16:
+                case DataFormatType::FLOAT16:
                     return GL_RGBA16F;
-                case TextureFormatType::FLOAT32:
+                case DataFormatType::FLOAT32:
                     return GL_RGBA32F;
             }
             break;
         }
-        case TextureFormat::DEPTH:
+        case DataFormat::DEPTH:
             // TODO:This has problem for different video cards
             return GL_DEPTH_COMPONENT24;
-        case TextureFormat::DEPTH_STENCIL:
+        case DataFormat::DEPTH_STENCIL:
             return GL_DEPTH24_STENCIL8;
     }
     return 0;

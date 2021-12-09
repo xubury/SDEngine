@@ -44,11 +44,11 @@ enum class PolygonMode { POINT, LINE, FILL };
 
 enum class TextureType { TEX_2D, TEX_2D_MULTISAMPLE, TEX_3D, TEX_CUBE };
 
-enum class TextureFormatType { UBYTE, UINT, FLOAT16, FLOAT32 };
+enum class DataFormat { ALPHA, RED, RG, RGB, RGBA, DEPTH, DEPTH_STENCIL };
+
+enum class DataFormatType { UBYTE, UINT, FLOAT16, FLOAT32 };
 
 enum class Face { FRONT, BACK, BOTH };
-
-enum class TextureFormat { ALPHA, RED, RG, RGB, RGBA, DEPTH, DEPTH_STENCIL };
 
 enum class TextureWrap { EDGE, BORDER, MIRROR, REPEAT, MIRROR_EDGE };
 
@@ -63,7 +63,7 @@ enum class TextureMinFilter {
     LINEAR_LINEAR,
 };
 
-enum class BufferDataType { UCHAR, UINT, FLOAT, FLOAT2, FLOAT3, FLOAT4 };
+enum class BufferLayoutType { UCHAR, UINT, FLOAT, FLOAT2, FLOAT3, FLOAT4 };
 
 enum class BufferIOType { STATIC, DYNAMIC };
 

@@ -2,33 +2,33 @@
 
 namespace SD {
 
-uint32_t GetBufferDataSize(BufferDataType type) {
+uint32_t GetBufferDataSize(BufferLayoutType type) {
     switch (type) {
-        case BufferDataType::UCHAR:
+        case BufferLayoutType::UCHAR:
             return 1;
-        case BufferDataType::UINT:
-        case BufferDataType::FLOAT:
+        case BufferLayoutType::UINT:
+        case BufferLayoutType::FLOAT:
             return 4;
-        case BufferDataType::FLOAT2:
+        case BufferLayoutType::FLOAT2:
             return 2 * 4;
-        case BufferDataType::FLOAT3:
+        case BufferLayoutType::FLOAT3:
             return 3 * 4;
-        case BufferDataType::FLOAT4:
+        case BufferLayoutType::FLOAT4:
             return 4 * 4;
     }
     return 0;
 }
-uint32_t GetComponentCount(BufferDataType type) {
+uint32_t GetComponentCount(BufferLayoutType type) {
     switch (type) {
-        case BufferDataType::UCHAR:
-        case BufferDataType::UINT:
-        case BufferDataType::FLOAT:
+        case BufferLayoutType::UCHAR:
+        case BufferLayoutType::UINT:
+        case BufferLayoutType::FLOAT:
             return 1;
-        case BufferDataType::FLOAT2:
+        case BufferLayoutType::FLOAT2:
             return 2;
-        case BufferDataType::FLOAT3:
+        case BufferLayoutType::FLOAT3:
             return 3;
-        case BufferDataType::FLOAT4:
+        case BufferLayoutType::FLOAT4:
             return 4;
     }
     return 0;
@@ -37,7 +37,7 @@ uint32_t GetComponentCount(BufferDataType type) {
 VertexBufferLayout::VertexBufferLayout(uint32_t instance_stride)
     : m_stride(0), m_instance_stride(instance_stride) {}
 
-void VertexBufferLayout::Push(BufferDataType type, bool normalized) {
+void VertexBufferLayout::Push(BufferLayoutType type, bool normalized) {
     m_elements.push_back({type, GetComponentCount(type), normalized});
     m_stride += GetBufferDataSize(type);
 }

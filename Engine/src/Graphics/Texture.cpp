@@ -20,7 +20,7 @@ Ref<Texture> Texture::Create(int width, int height, const TextureSpec &spec) {
 }
 
 Texture::Texture(int width, int height, int samples, TextureType type,
-                 TextureFormat format, TextureFormatType format_type,
+                 DataFormat format, DataFormatType format_type,
                  TextureWrap wrap, TextureMagFilter filter,
                  TextureMinFilter min_filter)
     : m_width(width),
@@ -58,8 +58,8 @@ int Texture::GetSamples() const { return m_samples; }
 
 TextureType Texture::GetType() const { return m_type; }
 
-TextureFormat Texture::GetFormat() const { return m_format; }
+DataFormat Texture::GetFormat() const { return m_format; }
 
-TextureFormatType Texture::GetFormatType() const { return m_format_type; }
+DataFormatType Texture::GetFormatType() const { return m_format_type; }
 
 }  // namespace SD

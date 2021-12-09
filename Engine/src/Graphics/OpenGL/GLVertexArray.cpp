@@ -26,16 +26,16 @@ void GLVertexArray::AddVertexBuffer(const Ref<VertexBuffer> &buffer,
 
         glEnableVertexArrayAttrib(m_id, m_attrib_id);
         switch (element.type) {
-            case BufferDataType::FLOAT:
-            case BufferDataType::FLOAT2:
-            case BufferDataType::FLOAT3:
-            case BufferDataType::FLOAT4:
+            case BufferLayoutType::FLOAT:
+            case BufferLayoutType::FLOAT2:
+            case BufferLayoutType::FLOAT3:
+            case BufferLayoutType::FLOAT4:
                 glVertexArrayAttribFormat(m_id, m_attrib_id, element.count,
                                           Translate(element.type),
                                           element.normalized, offset);
                 break;
-            case BufferDataType::UCHAR:
-            case BufferDataType::UINT:
+            case BufferLayoutType::UCHAR:
+            case BufferLayoutType::UINT:
                 glVertexArrayAttribIFormat(m_id, m_attrib_id, element.count,
                                            Translate(element.type), offset);
 

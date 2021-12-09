@@ -14,13 +14,13 @@ PostProcessSystem::PostProcessSystem(int width, int height)
       m_gamma_correction(1.2) {
     for (int i = 0; i < 2; ++i) {
         m_blur_target[i].AddTexture(
-            TextureSpec(1, TextureType::TEX_2D, TextureFormat::RGBA,
-                        TextureFormatType::FLOAT16, TextureWrap::EDGE));
+            TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
+                        DataFormatType::FLOAT16, TextureWrap::EDGE));
         m_blur_target[i].CreateFramebuffer();
     }
     m_post_target.AddTexture(
-        TextureSpec(1, TextureType::TEX_2D, TextureFormat::RGBA,
-                    TextureFormatType::FLOAT16, TextureWrap::EDGE));
+        TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
+                    DataFormatType::FLOAT16, TextureWrap::EDGE));
     m_post_target.CreateFramebuffer();
 
     const float quadVertices[] = {
@@ -35,8 +35,8 @@ PostProcessSystem::PostProcessSystem(int width, int height)
     auto indexBuffer = IndexBuffer::Create(indices, 6, BufferIOType::STATIC);
     m_quad = VertexArray::Create();
     VertexBufferLayout layout;
-    layout.Push(BufferDataType::FLOAT3);
-    layout.Push(BufferDataType::FLOAT2);
+    layout.Push(BufferLayoutType::FLOAT3);
+    layout.Push(BufferLayoutType::FLOAT2);
     m_quad->AddVertexBuffer(buffer, layout);
     m_quad->SetIndexBuffer(indexBuffer);
 }

@@ -7,40 +7,37 @@
 
 namespace SD {
 
-TextureFormat GetTextureFormat(GeometryBufferType type) {
+DataFormat GetTextureFormat(GeometryBufferType type) {
     switch (type) {
         case GeometryBufferType::G_ALBEDO:
-            return TextureFormat::RGBA;
+            return DataFormat::RGBA;
         case GeometryBufferType::G_POSITION:
         case GeometryBufferType::G_NORMAL:
         case GeometryBufferType::G_AMBIENT:
         case GeometryBufferType::G_EMISSIVE:
-            return TextureFormat::RGB;
+            return DataFormat::RGB;
         case GeometryBufferType::G_ENTITY_ID:
-            return TextureFormat::RED;
-        case GeometryBufferType::G_DEPTH:
-            return TextureFormat::DEPTH;
+            return DataFormat::RED;
         default:
             SD_CORE_WARN("Unknown GBuffer!");
-            return TextureFormat::RGBA;
+            return DataFormat::RGBA;
     }
 }
 
-TextureFormatType GetTextureFormatType(GeometryBufferType type) {
+DataFormatType GetTextureFormatType(GeometryBufferType type) {
     switch (type) {
         case GeometryBufferType::G_POSITION:
         case GeometryBufferType::G_NORMAL:
-        case GeometryBufferType::G_DEPTH:
-            return TextureFormatType::FLOAT16;
+            return DataFormatType::FLOAT16;
         case GeometryBufferType::G_ALBEDO:
         case GeometryBufferType::G_AMBIENT:
         case GeometryBufferType::G_EMISSIVE:
-            return TextureFormatType::UBYTE;
+            return DataFormatType::UBYTE;
         case GeometryBufferType::G_ENTITY_ID:
-            return TextureFormatType::UINT;
+            return DataFormatType::UINT;
         default:
             SD_CORE_WARN("Unknown GBuffer!");
-            return TextureFormatType::UBYTE;
+            return DataFormatType::UBYTE;
     }
 }
 
@@ -66,8 +63,8 @@ LightingSystem::LightingSystem(int width, int height, int samples)
     auto indexBuffer = IndexBuffer::Create(indices, 6, BufferIOType::STATIC);
     m_quad = VertexArray::Create();
     VertexBufferLayout layout;
-    layout.Push(BufferDataType::FLOAT3);
-    layout.Push(BufferDataType::FLOAT2);
+    layout.Push(BufferLayoutType::FLOAT3);
+    layout.Push(BufferLayoutType::FLOAT2);
     m_quad->AddVertexBuffer(buffer, layout);
     m_quad->SetIndexBuffer(indexBuffer);
 }
@@ -104,8 +101,8 @@ void LightingSystem::InitShaders() {
 
 void LightingSystem::InitSSAO() {
     // ssao target
-    TextureSpec spec(1, TextureType::TEX_2D, TextureFormat::RED,
-                     TextureFormatType::FLOAT16, TextureWrap::EDGE,
+    TextureSpec spec(1, TextureType::TEX_2D, DataFormat::RED,
+                     DataFormatType::FLOAT16, TextureWrap::EDGE,
                      TextureMagFilter::NEAREST, TextureMinFilter::NEAREST);
     m_ssao_target.AddTexture(spec);
     m_ssao_blur_target.AddTexture(spec);
@@ -136,8 +133,8 @@ void LightingSystem::InitSSAO() {
     }
     m_ssao_noise = Texture::Create(
         4, 4,
-        TextureSpec(1, TextureType::TEX_2D, TextureFormat::RGB,
-                    TextureFormatType::FLOAT16, TextureWrap::REPEAT,
+        TextureSpec(1, TextureType::TEX_2D, DataFormat::RGB,
+                    DataFormatType::FLOAT16, TextureWrap::REPEAT,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     m_ssao_noise->SetPixels(0, 0, 0, 4, 4, 1, ssao_noise.data());
 
@@ -151,8 +148,8 @@ void LightingSystem::InitLighting(int samples) {
     // lighting target
     for (int i = 0; i < 2; ++i) {
         m_light_target[i].AddTexture(TextureSpec(
-            samples, TextureType::TEX_2D_MULTISAMPLE, TextureFormat::RGB,
-            TextureFormatType::FLOAT16, TextureWrap::EDGE,
+            samples, TextureType::TEX_2D_MULTISAMPLE, DataFormat::RGB,
+            DataFormatType::FLOAT16, TextureWrap::EDGE,
             TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
         m_light_target[i].CreateFramebuffer();
     }
@@ -165,6 +162,8 @@ void LightingSystem::InitLighting(int samples) {
             GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
             TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     }
+    m_gbuffer_target.AddRenderbuffer(RenderbufferSpec(
+        samples, DataFormat::DEPTH, DataFormatType::FLOAT16));
     m_gbuffer_target.CreateFramebuffer();
 }
 
