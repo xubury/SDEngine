@@ -162,8 +162,8 @@ void LightingSystem::InitLighting(int samples) {
             GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
             TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     }
-    m_gbuffer_target.AddRenderbuffer(RenderbufferSpec(
-        samples, DataFormat::DEPTH, DataFormatType::FLOAT16));
+    m_gbuffer_target.AddRenderbuffer(
+        RenderbufferSpec(samples, DataFormat::DEPTH, DataFormatType::FLOAT16));
     m_gbuffer_target.CreateFramebuffer();
 }
 
@@ -255,7 +255,7 @@ void LightingSystem::RenderSSAO() {
     renderer->SetRenderTarget(m_ssao_target);
     m_ssao_shader->Bind();
 
-    renderer->UpdateShader(*m_ssao_shader, *renderer->GetCamera());
+    renderer->Begin(*m_ssao_shader, *renderer->GetCamera());
     m_ssao_shader->SetFloat("u_radius", m_ssao_radius);
     m_ssao_shader->SetFloat("u_bias", m_ssao_bias);
     m_ssao_shader->SetUint("u_power", m_ssao_power);
@@ -273,6 +273,7 @@ void LightingSystem::RenderSSAO() {
     m_ssao_blur_shader->SetTexture("u_ssao", m_ssao_target.GetTexture());
     renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
+    renderer->End();
 }
 
 void LightingSystem::RenderEmissive() {
@@ -291,7 +292,7 @@ void LightingSystem::RenderDeferred() {
     auto lightView = scene->view<TransformComponent, LightComponent>();
 
     m_deferred_shader->Bind();
-    renderer->UpdateShader(*m_deferred_shader, *renderer->GetCamera());
+    renderer->Begin(*m_deferred_shader, *renderer->GetCamera());
     m_deferred_shader->SetTexture(
         "u_position",
         m_gbuffer_target.GetTexture(GeometryBufferType::G_POSITION));
@@ -341,6 +342,7 @@ void LightingSystem::RenderDeferred() {
                          m_quad->GetIndexBuffer()->GetCount(), 0);
         std::swap(m_light_target[input_id], m_light_target[output_id]);
     });
+    renderer->End();
 }
 
 void LightingSystem::RenderGBuffer() {
@@ -349,7 +351,7 @@ void LightingSystem::RenderGBuffer() {
 
     renderer->SetRenderTarget(m_gbuffer_target);
 
-    renderer->UpdateShader(*m_gbuffer_shader, *renderer->GetCamera());
+    renderer->Begin(*m_gbuffer_shader, *renderer->GetCamera());
 
     m_gbuffer_shader->Bind();
     terrainView.each([this](const entt::entity &entity,
@@ -398,6 +400,7 @@ void LightingSystem::RenderGBuffer() {
             }
         }
     });
+    renderer->End();
 }
 
 void LightingSystem::SetSSAORadius(float radius) { m_ssao_radius = radius; }

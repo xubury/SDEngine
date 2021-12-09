@@ -17,7 +17,7 @@ void SpriteRenderSystem::OnRender() {
     auto textView = scene->view<TransformComponent, TextComponent>();
 
     renderer->SetRenderTarget(renderer->GetDefaultTarget());
-    renderer->BeginScene(*renderer->GetCamera());
+    renderer->Begin(*renderer->GetCamera());
     textView.each([this](const TransformComponent &transformComp,
                          const TextComponent &textComp) {
         renderer->SetTextOrigin(0, 0);
@@ -28,7 +28,7 @@ void SpriteRenderSystem::OnRender() {
                                textComp.color);
         }
     });
-    renderer->EndScene();
+    renderer->End();
 }
 
 }  // namespace SD

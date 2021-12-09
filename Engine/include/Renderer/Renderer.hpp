@@ -69,8 +69,6 @@ class SD_RENDERER_API Renderer {
 
     void SetRenderTarget(RenderTarget &target);
 
-    void UpdateShader(Shader &shader, Camera &camera);
-
     void Submit(const VertexArray &vao, MeshTopology topology, size_t count,
                 size_t offset);
 
@@ -80,8 +78,9 @@ class SD_RENDERER_API Renderer {
     void Flush();
     void NextBatch();
 
-    void BeginScene(Camera &camera);
-    void EndScene();
+    void Begin(Camera &camera);
+    void Begin(Shader &shader, Camera &camera);
+    void End();
 
     void SetTextOrigin(float x, float y);
 

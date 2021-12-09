@@ -87,7 +87,7 @@ void EditorLayer::OnRender() {
 
     Device::instance().Disable(Operation::DEPTH_TEST);
     Camera *cam = renderer->GetCamera();
-    renderer->BeginScene(*cam);
+    renderer->Begin(*cam);
     auto lightView = scene->view<LightComponent, TransformComponent>();
     lightView.each([this, &cam](const LightComponent &,
                                 const TransformComponent &transComp) {
@@ -96,7 +96,7 @@ void EditorLayer::OnRender() {
         float scale = (dist - cam->GetNearZ()) / 20;
         renderer->DrawBillboard(m_light_icon, pos, glm::vec2(scale));
     });
-    renderer->EndScene();
+    renderer->End();
     Device::instance().Enable(Operation::DEPTH_TEST);
 }
 

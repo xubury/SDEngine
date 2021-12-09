@@ -40,7 +40,7 @@ void ProfileSystem::OnRender() {
     if (!m_is_show_message) return;
 
     renderer->SetRenderTarget(renderer->GetDefaultTarget());
-    renderer->BeginScene(m_camera);
+    renderer->Begin(m_camera);
     std::string fpsStr =
         "FPS:" + std::to_string(static_cast<uint32_t>(m_fps.GetFPS()));
 
@@ -51,7 +51,7 @@ void ProfileSystem::OnRender() {
     renderer->DrawText(*m_font, "\n中文測試: 你好", FONT_SIZE, glm::mat4(1.0f));
     renderer->DrawText(*m_font, "\n日本語テスト: こんにちは", FONT_SIZE,
                        glm::mat4(1.0f));
-    renderer->EndScene();
+    renderer->End();
 }
 
 }  // namespace SD

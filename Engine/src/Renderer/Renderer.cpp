@@ -87,14 +87,6 @@ void Renderer::SetRenderTarget(RenderTarget& target) {
                                    target.GetWidth(), target.GetHeight());
 }
 
-void Renderer::UpdateShader(Shader& shader, Camera& camera) {
-    CameraData cameraData;
-    cameraData.view = camera.GetView();
-    cameraData.projection = camera.GetProjection();
-    m_camera_UBO->UpdateData(&cameraData, sizeof(CameraData));
-    shader.SetUniformBuffer("Camera", *m_camera_UBO);
-}
-
 void Renderer::SetCamera(Camera* camera) { m_camera = camera; }
 
 Camera* Renderer::GetCamera() { return m_camera; }
@@ -113,12 +105,20 @@ void Renderer::DrawMesh(const Mesh& mesh) {
                      vao->GetIndexBuffer()->GetCount(), 0);
 }
 
-void Renderer::BeginScene(Camera& camera) {
-    UpdateShader(*m_2d_data.sprite_shader, camera);
+void Renderer::Begin(Shader& shader, Camera& camera) {
+    CameraData cameraData;
+    cameraData.view = camera.GetView();
+    cameraData.projection = camera.GetProjection();
+    m_camera_UBO->UpdateData(&cameraData, sizeof(CameraData));
+    shader.SetUniformBuffer("Camera", *m_camera_UBO);
+}
+
+void Renderer::Begin(Camera& camera) {
+    Begin(*m_2d_data.sprite_shader, camera);
     StartBatch();
 }
 
-void Renderer::EndScene() { Flush(); }
+void Renderer::End() { Flush(); }
 
 void Renderer::Flush() {
     if (m_2d_data.quad_index_cnt == 0) {
@@ -144,13 +144,14 @@ void Renderer::Flush() {
     }
 
     m_2d_data.sprite_shader->Bind();
-    Renderer::Submit(*m_2d_data.quad_vao, MeshTopology::TRIANGLES,
-                     m_2d_data.quad_index_cnt, 0);
+    Submit(*m_2d_data.quad_vao, MeshTopology::TRIANGLES,
+           m_2d_data.quad_index_cnt, 0);
 
-    SetTextOrigin(0, 0);
+    StartBatch();
 }
 
 void Renderer::StartBatch() {
+    SetTextOrigin(0, 0);
     m_2d_data.quad_index_cnt = 0;
     m_2d_data.texture_index = 1;
     m_2d_data.quad_buffers_ptr = m_2d_data.quad_buffers.data();
