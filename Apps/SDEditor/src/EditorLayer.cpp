@@ -425,7 +425,6 @@ void EditorLayer::NewScene() {
     m_scene = CreateRef<Scene>();
     m_scene_panel->SetScene(m_scene.get());
     renderer->SetScene(m_scene.get());
-    m_scene_panel->SetSelectedEntity({entt::null, m_scene.get()});
 }
 
 void EditorLayer::LoadScene() {
@@ -449,7 +448,7 @@ void EditorLayer::SaveScene() {
 void EditorLayer::ProcessDialog() {
     if (ImGui::FileDialog(&m_load_scene_open, &m_file_dialog_info)) {
         m_scene->Load(m_file_dialog_info.result_path.string());
-        m_scene_panel->SetSelectedEntity({entt::null, m_scene.get()});
+        m_scene_panel->Reset();
     }
     if (ImGui::FileDialog(&m_save_scene_open, &m_file_dialog_info)) {
         m_scene->Save(m_file_dialog_info.result_path.string());

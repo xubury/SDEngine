@@ -36,6 +36,8 @@ class ScenePanel : public System {
     void SetGizmoOperation(ImGuizmo::OPERATION op) { m_gizmo_op = op; }
     ImGuizmo::OPERATION GetGizmoOperation() const;
 
+    void Reset();
+
    private:
     void DrawEntityNode(Entity &entity);
 
@@ -43,8 +45,6 @@ class ScenePanel : public System {
 
     void DrawMaterialsList(const std::vector<Material> &materials,
                            const ImVec2 &size, int *selected);
-
-    void Reset();
 
     Scene *m_scene;
     Entity m_selected_entity;
