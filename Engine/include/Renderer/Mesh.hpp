@@ -1,7 +1,7 @@
 #ifndef SD_MESH_HPP
 #define SD_MESH_HPP
 
-#include "Graphics/Export.hpp"
+#include "Renderer/Export.hpp"
 #include "Graphics/VertexArray.hpp"
 
 #include <glm/glm.hpp>
@@ -9,7 +9,7 @@
 
 namespace SD {
 
-struct SD_GRAPHICS_API Vertex {
+struct SD_RENDERER_API Vertex {
     glm::vec3 position;
     glm::vec2 uv;
     glm::vec3 normal;
@@ -17,7 +17,7 @@ struct SD_GRAPHICS_API Vertex {
     glm::vec3 bi_tangent;
 };
 
-class SD_GRAPHICS_API Mesh {
+class SD_RENDERER_API Mesh {
    public:
     Mesh();
     Mesh(const std::vector<Vertex> &vertices,

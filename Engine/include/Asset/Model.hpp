@@ -2,8 +2,8 @@
 #define SD_MODEL_HPP
 
 #include "Asset/Export.hpp"
-#include "Graphics/Mesh.hpp"
-#include "Graphics/Material.hpp"
+#include "Renderer/Mesh.hpp"
+#include "Renderer/Material.hpp"
 
 namespace SD {
 

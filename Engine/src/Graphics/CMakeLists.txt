@@ -30,8 +30,6 @@ set(Graphics_Include
     ${Include_Root}/Device.hpp
     ${Include_Root}/Framebuffer.hpp
     ${Include_Root}/Graphics.hpp
-    ${Include_Root}/Mateiral.hpp
-    ${Include_Root}/Mesh.hpp
     ${Include_Root}/Shader.hpp
     ${Include_Root}/Texture.hpp
     ${Include_Root}/Translator.hpp
@@ -44,8 +42,6 @@ set(Graphics_Src
     ${Src_Root}/Device.cpp
     ${Src_Root}/Framebuffer.cpp
     ${Src_Root}/Graphics.cpp
-    ${Src_Root}/Material.cpp
-    ${Src_Root}/Mesh.cpp
     ${Src_Root}/Shader.cpp
     ${Src_Root}/Texture.cpp
     ${Src_Root}/VertexArray.cpp)

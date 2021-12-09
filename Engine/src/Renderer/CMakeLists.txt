@@ -7,6 +7,8 @@ set(Renderer_Include
     ${Include_Root}/Light.hpp
     ${Include_Root}/Renderer.hpp
     ${Include_Root}/RenderTarget.hpp
+    ${Include_Root}/Mateiral.hpp
+    ${Include_Root}/Mesh.hpp
     ${Include_Root}/Skybox.hpp
     ${Include_Root}/Terrain.hpp)
 
@@ -15,6 +17,8 @@ set(Renderer_Src
     ${Src_Root}/Light.cpp
     ${Src_Root}/Renderer.cpp
     ${Src_Root}/RenderTarget.cpp
+    ${Src_Root}/Material.cpp
+    ${Src_Root}/Mesh.cpp
     ${Src_Root}/Skybox.cpp
     ${Src_Root}/Terrain.cpp)
 

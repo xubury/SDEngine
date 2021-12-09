@@ -5,7 +5,7 @@
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Device.hpp"
 #include "Graphics/Shader.hpp"
-#include "Graphics/Mesh.hpp"
+#include "Renderer/Mesh.hpp"
 #include "Renderer/Camera.hpp"
 #include "Asset/Font.hpp"
 
