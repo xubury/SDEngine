@@ -229,7 +229,7 @@ void LightingSystem::RenderShadowMap() {
         Light &light = lightComp.light;
         if (!light.IsCastShadow()) return;
 
-        renderer->SetRenderTarget(light.GetRenderTarget());
+        light.GetRenderTarget().Bind();
         light.GetRenderTarget().GetFramebuffer()->ClearDepth();
         light.ComputeLightSpaceMatrix(transformComp.transform,
                                       renderer->GetCamera());
@@ -252,7 +252,7 @@ void LightingSystem::RenderShadowMap() {
 }
 
 void LightingSystem::RenderSSAO() {
-    renderer->SetRenderTarget(m_ssao_target);
+    m_ssao_target.Bind();
     m_ssao_shader->Bind();
 
     renderer->Begin(*m_ssao_shader, *renderer->GetCamera());
@@ -268,7 +268,7 @@ void LightingSystem::RenderSSAO() {
     renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
 
-    renderer->SetRenderTarget(m_ssao_blur_target);
+    m_ssao_blur_target.Bind();
     m_ssao_blur_shader->Bind();
     m_ssao_blur_shader->SetTexture("u_ssao", m_ssao_target.GetTexture());
     renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
@@ -277,7 +277,7 @@ void LightingSystem::RenderSSAO() {
 }
 
 void LightingSystem::RenderEmissive() {
-    renderer->SetRenderTarget(renderer->GetDefaultTarget());
+    renderer->GetDefaultTarget().Bind();
     m_emssive_shader->Bind();
     m_emssive_shader->SetTexture("u_lighting",
                                  GetLightingTarget().GetTexture());
@@ -310,7 +310,7 @@ void LightingSystem::RenderDeferred() {
     const uint8_t output_id = 1;
     lightView.each([this](const TransformComponent &transformComp,
                           const LightComponent &lightComp) {
-        renderer->SetRenderTarget(m_light_target[output_id]);
+        m_light_target[output_id].Bind();
         const Light &light = lightComp.light;
         m_deferred_shader->SetTexture("u_lighting",
                                       m_light_target[input_id].GetTexture());
@@ -349,7 +349,7 @@ void LightingSystem::RenderGBuffer() {
     auto terrainView = scene->view<TransformComponent, TerrainComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
-    renderer->SetRenderTarget(m_gbuffer_target);
+    m_gbuffer_target.Bind();
 
     renderer->Begin(*m_gbuffer_shader, *renderer->GetCamera());
 

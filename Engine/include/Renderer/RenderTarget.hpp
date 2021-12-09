@@ -13,6 +13,7 @@ namespace SD {
 class SD_RENDERER_API RenderTarget {
    public:
     RenderTarget(int x, int y, int width, int height);
+    void Bind();
 
     RenderTarget(const RenderTarget &) = delete;
     RenderTarget &operator=(const RenderTarget &) = delete;

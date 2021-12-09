@@ -1,5 +1,6 @@
 #include "Renderer/RenderTarget.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Graphics/Device.hpp"
 
 namespace SD {
 
@@ -9,6 +10,11 @@ RenderTarget::RenderTarget(int x, int y, int width, int height)
       m_width(width),
       m_height(height),
       m_framebuffer(Framebuffer::Create()) {}
+
+void RenderTarget::Bind() {
+    Device::instance().SetFramebuffer(GetFramebuffer());
+    Device::instance().SetViewport(GetX(), GetY(), GetWidth(), GetHeight());
+}
 
 void RenderTarget::CreateFramebuffer() {
     std::vector<uint32_t> colors;

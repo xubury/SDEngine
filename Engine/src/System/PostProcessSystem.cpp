@@ -91,7 +91,7 @@ void PostProcessSystem::RenderBlur() {
     for (int i = 0; i < amount; ++i) {
         const int inputId = horizontal;
         const int outputId = !horizontal;
-        renderer->SetRenderTarget(m_blur_target[outputId]);
+        m_blur_target[outputId].Bind();
         m_blur_result = m_blur_target[outputId].GetTexture();
         m_blur_shader->SetBool("u_horizontal", horizontal);
         m_blur_shader->SetTexture("u_image",
@@ -104,7 +104,7 @@ void PostProcessSystem::RenderBlur() {
 }
 
 void PostProcessSystem::RenderPost() {
-    renderer->SetRenderTarget(renderer->GetDefaultTarget());
+    renderer->GetDefaultTarget().Bind();
 
     m_post_shader->SetBool("u_bloom", m_is_bloom);
     m_post_shader->SetFloat("u_bloomFactor", m_bloom_factor);

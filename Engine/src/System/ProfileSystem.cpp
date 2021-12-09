@@ -39,7 +39,7 @@ void ProfileSystem::OnTick(float) {
 void ProfileSystem::OnRender() {
     if (!m_is_show_message) return;
 
-    renderer->SetRenderTarget(renderer->GetDefaultTarget());
+    renderer->GetDefaultTarget().Bind();
     renderer->Begin(m_camera);
     std::string fpsStr =
         "FPS:" + std::to_string(static_cast<uint32_t>(m_fps.GetFPS()));

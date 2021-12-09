@@ -77,7 +77,7 @@ void EditorLayer::OnPush() {}
 void EditorLayer::OnPop() {}
 
 void EditorLayer::OnRender() {
-    renderer->SetRenderTarget(renderer->GetDefaultTarget());
+    renderer->GetDefaultTarget().Bind();
     Device::instance().Clear();
     for (auto &system : GetSystems()) {
         system->OnRender();

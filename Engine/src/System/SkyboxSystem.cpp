@@ -72,7 +72,7 @@ void SkyboxSystem::OnRender() {
         m_skyboxShader->SetTexture("skybox", skybox.skybox.GetTexture());
     }
 
-    renderer->SetRenderTarget(renderer->GetDefaultTarget());
+    renderer->GetDefaultTarget().Bind();
     renderer->Submit(*m_skybox, MeshTopology::TRIANGLES,
                      m_skybox->GetIndexBuffer()->GetCount(), 0);
     Device::instance().SetCullFace(Face::BACK);

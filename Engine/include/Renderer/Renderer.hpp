@@ -67,8 +67,6 @@ class SD_RENDERER_API Renderer {
     Renderer(const Renderer &) = delete;
     Renderer &operator=(const Renderer &) = delete;
 
-    void SetRenderTarget(RenderTarget &target);
-
     void Submit(const VertexArray &vao, MeshTopology topology, size_t count,
                 size_t offset);
 

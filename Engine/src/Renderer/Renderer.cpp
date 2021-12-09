@@ -81,12 +81,6 @@ void Renderer::InitRenderer2D() {
         ShaderLibrary::Instance().Load("shaders/sprite.glsl");
 }
 
-void Renderer::SetRenderTarget(RenderTarget& target) {
-    Device::instance().SetFramebuffer(target.GetFramebuffer());
-    Device::instance().SetViewport(target.GetX(), target.GetY(),
-                                   target.GetWidth(), target.GetHeight());
-}
-
 void Renderer::SetCamera(Camera* camera) { m_camera = camera; }
 
 Camera* Renderer::GetCamera() { return m_camera; }
