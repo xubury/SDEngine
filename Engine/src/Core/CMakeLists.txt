@@ -50,6 +50,7 @@ target_link_libraries(sd-core
     sd-renderer
     sd-utility
     sd-imgui
+    sd-ecs
     PRIVATE
     SDL2::SDL2
     ${SDL2_IMAGE_LIBRARIES})

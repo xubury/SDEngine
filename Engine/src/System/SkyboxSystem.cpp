@@ -51,7 +51,7 @@ void SkyboxSystem::OnRender() {
     Device::instance().SetDepthfunc(DepthFunc::LESS_EQUAL);
     Device::instance().SetCullFace(Face::FRONT);
 
-    auto skyboxView = renderer->GetScene()->view<SkyboxComponent>();
+    auto skyboxView = scene->view<SkyboxComponent>();
     auto iter = skyboxView.begin();
     if (iter != skyboxView.end()) {
         auto &skybox = skyboxView.get<SkyboxComponent>(*iter);

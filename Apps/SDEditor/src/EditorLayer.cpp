@@ -70,8 +70,6 @@ void EditorLayer::OnInit() {
     PushSystem(m_sprite_system);
     PushSystem(m_post_process_system);
     PushSystem(m_profile_system);
-
-    NewScene();
 }
 
 void EditorLayer::OnPush() {}
@@ -90,7 +88,7 @@ void EditorLayer::OnRender() {
     Device::instance().Disable(Operation::DEPTH_TEST);
     Camera *cam = renderer->GetCamera();
     renderer->BeginScene(*cam);
-    auto lightView = m_scene->view<LightComponent, TransformComponent>();
+    auto lightView = scene->view<LightComponent, TransformComponent>();
     lightView.each([this, &cam](const LightComponent &,
                                 const TransformComponent &transComp) {
         glm::vec3 pos = transComp.transform.GetWorldPosition();
@@ -317,7 +315,7 @@ void EditorLayer::OnImGui() {
                                        &entity);
             }
             if (entity != Entity::INVALID_ID) {
-                m_scene_panel->SetSelectedEntity({entity, m_scene.get()});
+                m_scene_panel->SetSelectedEntity({entity, scene.get()});
             }
         }
     }
@@ -421,11 +419,7 @@ void EditorLayer::SetViewportBufferSize(uint32_t width, uint32_t height) {
     }
 }
 
-void EditorLayer::NewScene() {
-    m_scene = CreateRef<Scene>();
-    m_scene_panel->SetScene(m_scene.get());
-    renderer->SetScene(m_scene.get());
-}
+void EditorLayer::NewScene() { scene->clear(); }
 
 void EditorLayer::OpenLoadSceneDialog() {
     m_load_scene_open = true;
@@ -447,11 +441,11 @@ void EditorLayer::OpenSaveSceneDialog() {
 
 void EditorLayer::ProcessDialog() {
     if (ImGui::FileDialog(&m_load_scene_open, &m_file_dialog_info)) {
-        m_scene->Load(m_file_dialog_info.result_path.string());
+        scene->Load(m_file_dialog_info.result_path.string());
         m_scene_panel->Reset();
     }
     if (ImGui::FileDialog(&m_save_scene_open, &m_file_dialog_info)) {
-        m_scene->Save(m_file_dialog_info.result_path.string());
+        scene->Save(m_file_dialog_info.result_path.string());
     }
 }
 

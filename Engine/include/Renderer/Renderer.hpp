@@ -101,10 +101,8 @@ class SD_RENDERER_API Renderer {
                   const glm::mat4 &transform,
                   const glm::vec4 &color = glm::vec4(1.0f));
 
-    void SetScene(Scene *scene);
-    Scene *GetScene();
-
     void SetCamera(Camera *camera);
+
     Camera *GetCamera();
 
     void RenderToScreen();
@@ -116,7 +114,6 @@ class SD_RENDERER_API Renderer {
    private:
     void InitRenderer2D();
 
-    Scene *m_scene;
     Camera *m_camera;
 
     Ref<UniformBuffer> m_camera_UBO;

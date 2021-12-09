@@ -14,7 +14,6 @@ void SpriteRenderSystem::OnPush() {}
 void SpriteRenderSystem::OnPop() {}
 
 void SpriteRenderSystem::OnRender() {
-    auto scene = renderer->GetScene();
     auto textView = scene->view<TransformComponent, TextComponent>();
 
     renderer->SetRenderTarget(renderer->GetDefaultTarget());

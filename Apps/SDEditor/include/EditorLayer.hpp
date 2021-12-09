@@ -73,8 +73,6 @@ class EditorLayer : public Layer {
 
     bool m_hide;
 
-    Ref<Scene> m_scene;
-
     bool m_load_scene_open;
     bool m_save_scene_open;
     ImFileDialogInfo m_file_dialog_info;

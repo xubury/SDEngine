@@ -177,7 +177,6 @@ void LightingSystem::OnSizeEvent(const WindowSizeEvent &event) {
 }
 
 void LightingSystem::OnRender() {
-    SD_CORE_ASSERT(renderer->GetScene(), "No active scene.");
     SD_CORE_ASSERT(renderer->GetCamera(), "No camera is set!");
 
     Clear();
@@ -221,7 +220,6 @@ void LightingSystem::Clear() {
 }
 
 void LightingSystem::RenderShadowMap() {
-    auto scene = renderer->GetScene();
     auto lightView = scene->view<TransformComponent, LightComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
     Device::instance().SetCullFace(Face::FRONT);
@@ -290,7 +288,6 @@ void LightingSystem::RenderEmissive() {
 }
 
 void LightingSystem::RenderDeferred() {
-    auto scene = renderer->GetScene();
     auto lightView = scene->view<TransformComponent, LightComponent>();
 
     m_deferred_shader->Bind();
@@ -347,7 +344,6 @@ void LightingSystem::RenderDeferred() {
 }
 
 void LightingSystem::RenderGBuffer() {
-    auto scene = renderer->GetScene();
     auto terrainView = scene->view<TransformComponent, TerrainComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 

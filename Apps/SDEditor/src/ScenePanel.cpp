@@ -10,7 +10,6 @@ namespace SD {
 
 ScenePanel::ScenePanel()
     : System("ScenePanel"),
-      m_scene(nullptr),
       m_gizmo_mode(ImGuizmo::WORLD),
       m_gizmo_op(ImGuizmo::TRANSLATE) {}
 
@@ -30,13 +29,6 @@ void ScenePanel::Reset() {
     m_selected_material_id_map.clear();
 }
 
-void ScenePanel::SetScene(Scene *scene) {
-    if (m_scene != scene) {
-        Reset();
-    }
-    m_scene = scene;
-}
-
 void ScenePanel::SetSelectedEntity(Entity entity) {
     m_selected_entity = entity;
 }
@@ -52,17 +44,13 @@ ImGuizmo::MODE ScenePanel::GetGizmoMode() const { return m_gizmo_mode; }
 ImGuizmo::OPERATION ScenePanel::GetGizmoOperation() const { return m_gizmo_op; }
 
 void ScenePanel::OnImGui() {
-    if (m_scene == nullptr) {
-        return;
-    }
-
     ImGui::Begin("Scene Hierarchy");
 
-    m_scene->each([&](auto entityID) {
-        Entity entity{entityID, m_scene};
+    scene->each([&](auto entityID) {
+        Entity entity{entityID, scene.get()};
 
         EntityDataComponent &data = entity.GetComponent<EntityDataComponent>();
-        Entity parent(data.parent, m_scene);
+        Entity parent(data.parent, scene.get());
         if (!parent) {
             DrawEntityNode(entity);
         }
@@ -80,7 +68,7 @@ void ScenePanel::OnImGui() {
     // Right-click on blank space
     if (ImGui::BeginPopupContextWindow(0, 1, false)) {
         if (ImGui::MenuItem("Create Empty Entity"))
-            m_scene->CreateEntity("Empty Entity");
+            scene->CreateEntity("Empty Entity");
 
         ImGui::EndPopup();
     }
@@ -97,7 +85,7 @@ void ScenePanel::OnImGui() {
             Entity entity = *(Entity *)payload->Data;
 
             Entity parent(entity.GetComponent<EntityDataComponent>().parent,
-                          m_scene);
+                          scene.get());
             if (parent) {
                 parent.RemoveChild(entity);
             }
@@ -158,7 +146,7 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
             m_entity_to_destroy = entity;
         }
         if (ImGui::MenuItem("Create Empty Entity")) {
-            Entity newEntity = m_scene->CreateEntity("Empty Entity");
+            Entity newEntity = scene->CreateEntity("Empty Entity");
             entity.AddChild(newEntity);
         }
 
@@ -167,7 +155,7 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
 
     if (opened) {
         for (entt::entity childId : data.children) {
-            Entity child(childId, m_scene);
+            Entity child(childId, scene.get());
             DrawEntityNode(child);
         }
         ImGui::TreePop();

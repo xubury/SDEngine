@@ -95,10 +95,6 @@ void Renderer::UpdateShader(Shader& shader, Camera& camera) {
     shader.SetUniformBuffer("Camera", *m_camera_UBO);
 }
 
-void Renderer::SetScene(Scene* scene) { m_scene = scene; }
-
-Scene* Renderer::GetScene() { return m_scene; }
-
 void Renderer::SetCamera(Camera* camera) { m_camera = camera; }
 
 Camera* Renderer::GetCamera() { return m_camera; }

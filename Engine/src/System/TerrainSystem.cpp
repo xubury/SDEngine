@@ -17,8 +17,7 @@ void TerrainSystem::OnTick(float) {}
 void TerrainSystem::OnRender() {}
 
 void TerrainSystem::UpdateAllTerrains() {
-    auto terrainView =
-        renderer->GetScene()->view<TransformComponent, TerrainComponent>();
+    auto terrainView = scene->view<TransformComponent, TerrainComponent>();
     m_terrainGrids.clear();
 
     terrainView.each([this](const entt::entity &entity,
@@ -63,7 +62,7 @@ void TerrainSystem::UpdateAllTerrains() {
 }
 
 void TerrainSystem::UpdateTerrain(entt::entity id) {
-    Entity entity(id, renderer->GetScene());
+    Entity entity(id, scene.get());
     const auto &transformComp = entity.GetComponent<TransformComponent>();
     const auto &terrainComp = entity.GetComponent<TerrainComponent>();
     const auto &terrain = terrainComp.terrain;

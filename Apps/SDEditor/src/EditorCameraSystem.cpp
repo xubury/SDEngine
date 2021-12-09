@@ -81,7 +81,7 @@ void EditorCameraSystem::ActiveEditorCam(bool active) {
     if (active) {
         renderer->SetCamera(&m_camera);
     } else {
-        auto view = renderer->GetScene()->view<CameraComponent>();
+        auto view = scene->view<CameraComponent>();
         auto iter = view.begin();
         if (iter != view.end()) {
             auto &camComp = view.get<CameraComponent>(*iter);

@@ -7,6 +7,7 @@
 #include "Utility/Ini.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Utility/EventDispatcher.hpp"
+#include "ECS/Scene.hpp"
 
 namespace SD {
 
@@ -17,6 +18,7 @@ std::filesystem::path SD_CORE_API GetAppDirectory();
     Ref<Window> window;      \
     Ref<Renderer> renderer;  \
     Ref<AssetManager> asset; \
+    Ref<Scene> scene;        \
     Ref<EventDispatcher> dispatcher;
 
 #define SET_APP_VARS                       \
@@ -25,6 +27,7 @@ std::filesystem::path SD_CORE_API GetAppDirectory();
         window = vars.window;              \
         renderer = vars.renderer;          \
         asset = vars.asset;                \
+        scene = vars.scene;                \
         dispatcher = vars.dispatcher;      \
     }
 
@@ -35,6 +38,7 @@ std::filesystem::path SD_CORE_API GetAppDirectory();
         vars.window = window;         \
         vars.renderer = renderer;     \
         vars.asset = asset;           \
+        vars.scene = scene;           \
         vars.dispatcher = dispatcher; \
         return vars;                  \
     }

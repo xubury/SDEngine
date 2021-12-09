@@ -60,6 +60,8 @@ Application::Application(const std::string &title) {
     renderer =
         CreateRef<Renderer>(property.width, property.width, property.msaa);
     dispatcher = CreateRef<EventDispatcher>();
+    scene = CreateRef<Scene>();
+
     m_imguiLayer = CreateLayer<ImGuiLayer>();
     PushOverlay(m_imguiLayer);
 }

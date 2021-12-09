@@ -23,8 +23,6 @@ class ScenePanel : public System {
 
     void OnSizeEvent(const WindowSizeEvent &event);
 
-    void SetScene(Scene *scene);
-
     void SetSelectedEntity(Entity entity);
 
     const Entity &GetSelectedEntity() const;
@@ -46,7 +44,6 @@ class ScenePanel : public System {
     void DrawMaterialsList(const std::vector<Material> &materials,
                            const ImVec2 &size, int *selected);
 
-    Scene *m_scene;
     Entity m_selected_entity;
     Entity m_entity_to_destroy;
     std::unordered_map<entt::entity, int> m_selected_material_id_map;
