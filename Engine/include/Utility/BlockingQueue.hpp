@@ -38,7 +38,7 @@ class BlockingQueue {
             m_condition.wait(lock, [this] { return !m_queue.empty(); });
         }
 
-        T item = m_queue.front();
+        T item = std::move(m_queue.front());
         m_queue.pop();
         return item;
     }

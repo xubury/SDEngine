@@ -26,7 +26,8 @@ set(Utility_Include
     ${Include_Root}/Serialize.hpp
     ${Include_Root}/String.hpp
     ${Include_Root}/Timing.hpp
-    ${Include_Root}/Transform.hpp)
+    ${Include_Root}/Transform.hpp
+    ${Include_Root}/ThreadPool.hpp)
 
 
 set(Utility_Src
@@ -38,7 +39,8 @@ set(Utility_Src
     ${Src_Root}/Random.cpp
     ${Src_Root}/ResourceId.cpp
     ${Src_Root}/Timing.cpp
-    ${Src_Root}/Transform.cpp)
+    ${Src_Root}/Transform.cpp
+    ${Src_Root}/ThreadPool.cpp)
 
 
 add_library(sd-utility ${Utility_Src})
