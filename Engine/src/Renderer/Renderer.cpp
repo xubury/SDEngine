@@ -31,6 +31,7 @@ Renderer::Renderer(int width, int height, int msaa)
 }
 
 void Renderer::InitRenderer2D() {
+    // Initialize quad vao
     std::array<uint32_t, Renderer2DData::MAX_INDICES> quad_indices;
     uint32_t offset = 0;
     for (uint32_t i = 0; i < Renderer2DData::MAX_INDICES; i += 6) {
@@ -48,8 +49,8 @@ void Renderer::InitRenderer2D() {
         quad_indices.data(), quad_indices.size(), BufferIOType::STATIC);
 
     auto quad_vbo = VertexBuffer::Create(
-        m_2d_data.quad_buffers.data(),
-        m_2d_data.quad_buffers.size() * sizeof(Quad), BufferIOType::DYNAMIC);
+        m_2d_data.quad_buffer.data(),
+        m_2d_data.quad_buffer.size() * sizeof(Quad), BufferIOType::DYNAMIC);
 
     VertexBufferLayout layout;
     layout.Push(BufferLayoutType::FLOAT3);  // position
@@ -60,6 +61,18 @@ void Renderer::InitRenderer2D() {
     m_2d_data.quad_vao = VertexArray::Create();
     m_2d_data.quad_vao->AddVertexBuffer(quad_vbo, layout);
     m_2d_data.quad_vao->SetIndexBuffer(quad_ebo);
+
+    // Initialize circle vao
+    auto circle_vbo = VertexBuffer::Create(
+        m_2d_data.circle_buffer.data(),
+        m_2d_data.circle_buffer.size() * sizeof(Circle), BufferIOType::DYNAMIC);
+
+    layout.Clear();
+    layout.Push(BufferLayoutType::FLOAT3);  // world_pos
+    layout.Push(BufferLayoutType::FLOAT3);  // local_pos
+    m_2d_data.circle_vao = VertexArray::Create();
+    m_2d_data.circle_vao->AddVertexBuffer(circle_vbo, layout);
+    m_2d_data.circle_vao->SetIndexBuffer(quad_ebo);
 
     m_2d_data.quad_vertex_pos[0] = {-0.5f, -0.5f, 0.0f, 1.0f};
     m_2d_data.quad_vertex_pos[1] = {0.5f, -0.5f, 0.0f, 1.0f};
@@ -79,6 +92,8 @@ void Renderer::InitRenderer2D() {
 
     m_2d_data.sprite_shader =
         ShaderLibrary::Instance().Load("shaders/sprite.glsl");
+    m_2d_data.circle_shader =
+        ShaderLibrary::Instance().Load("shaders/circle.glsl");
 }
 
 void Renderer::SetCamera(Camera* camera) { m_camera = camera; }
@@ -115,40 +130,62 @@ void Renderer::Begin(Camera& camera) {
 void Renderer::End() { Flush(); }
 
 void Renderer::Flush() {
-    if (m_2d_data.quad_index_cnt == 0) {
-        return;
-    }
-    size_t offset = m_2d_data.quad_buffers_ptr - m_2d_data.quad_buffers.data();
-    glm::vec3 viewPos = m_camera->GetWorldPosition();
-
-    // sort the drawing order to render transparent texture properly.
-    std::sort(m_2d_data.quad_buffers.begin(),
-              m_2d_data.quad_buffers.begin() + offset,
-              [&viewPos](const Quad& lhs, const Quad& rhs) {
-                  return glm::distance2(lhs.GetCenter(), viewPos) >
-                         glm::distance2(rhs.GetCenter(), viewPos);
-              });
-
-    m_2d_data.quad_vao->UpdateBuffer(0, m_2d_data.quad_buffers.data(),
-                                     offset * sizeof(Quad));
-
-    for (uint32_t i = 0; i < m_2d_data.texture_index; ++i) {
-        m_2d_data.sprite_shader->SetTexture(i,
-                                            m_2d_data.texture_slots[i].get());
-    }
-
-    m_2d_data.sprite_shader->Bind();
-    Submit(*m_2d_data.quad_vao, MeshTopology::TRIANGLES,
-           m_2d_data.quad_index_cnt, 0);
-
+    FlushQuads();
+    FlushCircles();
     StartBatch();
+}
+
+void Renderer::FlushQuads() {
+    if (m_2d_data.quad_index_cnt) {
+        size_t offset =
+            m_2d_data.quad_buffer_ptr - m_2d_data.quad_buffer.data();
+        glm::vec3 viewPos = m_camera->GetWorldPosition();
+
+        // sort the drawing order to render transparent texture properly.
+        std::sort(m_2d_data.quad_buffer.begin(),
+                  m_2d_data.quad_buffer.begin() + offset,
+                  [&viewPos](const Quad& lhs, const Quad& rhs) {
+                      return glm::distance2(lhs.GetCenter(), viewPos) >
+                             glm::distance2(rhs.GetCenter(), viewPos);
+                  });
+
+        m_2d_data.quad_vao->UpdateBuffer(0, m_2d_data.quad_buffer.data(),
+                                         offset * sizeof(Quad));
+
+        for (uint32_t i = 0; i < m_2d_data.texture_index; ++i) {
+            m_2d_data.sprite_shader->SetTexture(
+                i, m_2d_data.texture_slots[i].get());
+        }
+
+        m_2d_data.sprite_shader->Bind();
+        Submit(*m_2d_data.quad_vao, MeshTopology::TRIANGLES,
+               m_2d_data.quad_index_cnt, 0);
+    }
+}
+
+void Renderer::FlushCircles() {
+    if (m_2d_data.circle_index_cnt) {
+        size_t offset =
+            m_2d_data.circle_buffer_ptr - m_2d_data.circle_buffer.data();
+
+        m_2d_data.circle_vao->UpdateBuffer(0, m_2d_data.circle_buffer.data(),
+                                           offset * sizeof(Circle));
+
+        m_2d_data.circle_shader->Bind();
+        Submit(*m_2d_data.circle_vao, MeshTopology::TRIANGLES,
+               m_2d_data.circle_index_cnt, 0);
+    }
 }
 
 void Renderer::StartBatch() {
     SetTextOrigin(0, 0);
-    m_2d_data.quad_index_cnt = 0;
     m_2d_data.texture_index = 1;
-    m_2d_data.quad_buffers_ptr = m_2d_data.quad_buffers.data();
+
+    m_2d_data.quad_index_cnt = 0;
+    m_2d_data.quad_buffer_ptr = m_2d_data.quad_buffer.data();
+
+    m_2d_data.circle_index_cnt = 0;
+    m_2d_data.circle_buffer_ptr = m_2d_data.circle_buffer.data();
 }
 
 void Renderer::NextBatch() {
@@ -168,16 +205,16 @@ void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color) {
         NextBatch();
     }
     for (uint32_t i = 0; i < 4; ++i) {
-        m_2d_data.quad_buffers_ptr->vertices[i].position =
+        m_2d_data.quad_buffer_ptr->vertices[i].position =
             transform * m_2d_data.quad_vertex_pos[i];
-        m_2d_data.quad_buffers_ptr->vertices[i].color = color;
-        m_2d_data.quad_buffers_ptr->vertices[i].uv.x =
+        m_2d_data.quad_buffer_ptr->vertices[i].color = color;
+        m_2d_data.quad_buffer_ptr->vertices[i].uv.x =
             m_2d_data.quad_uv[UV_INDEX[i][0]].x;
-        m_2d_data.quad_buffers_ptr->vertices[i].uv.y =
+        m_2d_data.quad_buffer_ptr->vertices[i].uv.y =
             m_2d_data.quad_uv[UV_INDEX[i][0]].y;
-        m_2d_data.quad_buffers_ptr->vertices[i].tex_id = 0;
+        m_2d_data.quad_buffer_ptr->vertices[i].tex_id = 0;
     }
-    ++m_2d_data.quad_buffers_ptr;
+    ++m_2d_data.quad_buffer_ptr;
     m_2d_data.quad_index_cnt += 6;
 }
 
@@ -206,14 +243,14 @@ void Renderer::DrawTexture(const Ref<Texture>& texture,
     }
 
     for (uint32_t i = 0; i < 4; ++i) {
-        m_2d_data.quad_buffers_ptr->vertices[i].position =
+        m_2d_data.quad_buffer_ptr->vertices[i].position =
             transform * m_2d_data.quad_vertex_pos[i];
-        m_2d_data.quad_buffers_ptr->vertices[i].color = color;
-        m_2d_data.quad_buffers_ptr->vertices[i].uv.x = uv[UV_INDEX[i][0]].x;
-        m_2d_data.quad_buffers_ptr->vertices[i].uv.y = uv[UV_INDEX[i][1]].y;
-        m_2d_data.quad_buffers_ptr->vertices[i].tex_id = textureIndex;
+        m_2d_data.quad_buffer_ptr->vertices[i].color = color;
+        m_2d_data.quad_buffer_ptr->vertices[i].uv.x = uv[UV_INDEX[i][0]].x;
+        m_2d_data.quad_buffer_ptr->vertices[i].uv.y = uv[UV_INDEX[i][1]].y;
+        m_2d_data.quad_buffer_ptr->vertices[i].tex_id = textureIndex;
     }
-    ++m_2d_data.quad_buffers_ptr;
+    ++m_2d_data.quad_buffer_ptr;
     m_2d_data.quad_index_cnt += 6;
 }
 
@@ -259,6 +296,20 @@ void Renderer::DrawText(Font& font, const std::string& text, uint8_t pixelSize,
         DrawTexture(ch.glyph, t * offset, ch.uv, color);
         m_2d_data.text_cursor.x += ch.advance;
     }
+}
+
+void Renderer::DrawCircle(const glm::mat4& transform) {
+    if (m_2d_data.circle_index_cnt >= Renderer2DData::MAX_INDICES) {
+        NextBatch();
+    }
+    for (size_t i = 0; i < 4; ++i) {
+        m_2d_data.circle_buffer_ptr->vertices[i].world_pos =
+            transform * m_2d_data.quad_vertex_pos[i];
+        m_2d_data.circle_buffer_ptr->vertices[i].local_pos =
+            m_2d_data.quad_vertex_pos[i];
+    }
+    ++m_2d_data.circle_buffer_ptr;
+    m_2d_data.circle_index_cnt += 6;
 }
 
 void Renderer::RenderToScreen() {
