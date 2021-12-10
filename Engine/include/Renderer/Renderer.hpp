@@ -7,7 +7,7 @@
 #include "Graphics/Shader.hpp"
 #include "Renderer/Mesh.hpp"
 #include "Renderer/Camera.hpp"
-#include "Asset/Font.hpp"
+#include "Renderer/Font.hpp"
 
 namespace SD {
 

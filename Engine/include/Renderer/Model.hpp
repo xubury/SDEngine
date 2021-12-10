@@ -1,13 +1,13 @@
 #ifndef SD_MODEL_HPP
 #define SD_MODEL_HPP
 
-#include "Asset/Export.hpp"
+#include "Renderer/Export.hpp"
 #include "Renderer/Mesh.hpp"
 #include "Renderer/Material.hpp"
 
 namespace SD {
 
-class SD_ASSET_API Model {
+class SD_RENDERER_API Model {
    public:
     Model() = default;
 

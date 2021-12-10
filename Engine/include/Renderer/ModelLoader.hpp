@@ -1,12 +1,12 @@
 #ifndef SD_MODEL_LOADER_HPP
 #define SD_MODEL_LOADER_HPP
 
-#include "Asset/Export.hpp"
+#include "Renderer/Export.hpp"
 #include "Asset/Asset.hpp"
 
 namespace SD {
 
-class SD_ASSET_API ModelLoader : public AssetLoader {
+class SD_RENDERER_API ModelLoader : public AssetLoader {
    public:
     using AssetLoader::AssetLoader;
 

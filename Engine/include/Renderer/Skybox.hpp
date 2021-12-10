@@ -5,7 +5,7 @@
 #include "Renderer/Export.hpp"
 
 #include "Graphics/Texture.hpp"
-#include "Asset/Bitmap.hpp"
+#include "Renderer/Bitmap.hpp"
 
 namespace SD {
 

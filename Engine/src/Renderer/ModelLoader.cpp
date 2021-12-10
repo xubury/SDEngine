@@ -1,6 +1,6 @@
-#include "Asset/ModelLoader.hpp"
-#include "Asset/Model.hpp"
-#include "Asset/Bitmap.hpp"
+#include "Renderer/ModelLoader.hpp"
+#include "Renderer/Model.hpp"
+#include "Renderer/Bitmap.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>

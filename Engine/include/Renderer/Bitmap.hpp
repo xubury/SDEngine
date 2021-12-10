@@ -1,12 +1,12 @@
-#ifndef SD_IMAGE_HPP
-#define SD_IMAGE_HPP
+#ifndef SD_BITMAP_HPP
+#define SD_BITMAP_HPP
 
 #include "Utility/Base.hpp"
-#include "Asset/Export.hpp"
+#include "Renderer/Export.hpp"
 
 namespace SD {
 
-class SD_ASSET_API Bitmap {
+class SD_RENDERER_API Bitmap {
    public:
     Bitmap(uint32_t width, uint32_t height, uint8_t channels);
     Bitmap(uint32_t width, uint32_t height, uint8_t channels, uint8_t *data);
@@ -43,4 +43,4 @@ class SD_ASSET_API Bitmap {
 
 }  // namespace SD
 
-#endif  // SD_IMAGE_HPP
+#endif  // SD_BITMAP_HPP

@@ -1,8 +1,7 @@
 #include "System/SpriteRenderSystem.hpp"
-#include "ECS/Scene.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Asset/Asset.hpp"
-#include "Asset/Bitmap.hpp"
+#include "Renderer/Font.hpp"
+#include "Renderer/Bitmap.hpp"
 
 namespace SD {
 

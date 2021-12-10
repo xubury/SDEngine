@@ -4,13 +4,13 @@
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
 
-#include "Asset/BitmapLoader.hpp"
-#include "Asset/ModelLoader.hpp"
-#include "Asset/FontLoader.hpp"
+#include "Renderer/BitmapLoader.hpp"
+#include "Renderer/ModelLoader.hpp"
+#include "Renderer/FontLoader.hpp"
 
-#include "Asset/Model.hpp"
-#include "Asset/Bitmap.hpp"
-#include "Asset/Font.hpp"
+#include "Renderer/Model.hpp"
+#include "Renderer/Bitmap.hpp"
+#include "Renderer/Font.hpp"
 
 namespace SD {
 
@@ -40,9 +40,6 @@ Application::Application(const std::string &title) {
     property.vsync = ini->GetBoolean("window", "vsync", property.vsync);
 
     SDL(SDL_Init(SDL_INIT_EVERYTHING));
-    int img_flags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
-    SD_CORE_ASSERT((IMG_Init(img_flags) & img_flags) == img_flags,
-                   IMG_GetError());
 
     // Setting up which api to use
     SetGraphicsAPI(GraphicsAPI::OpenGL);
@@ -81,7 +78,6 @@ Application::~Application() {
     while (m_layers.Size()) {
         DestroyLayer(m_layers.Front());
     }
-    IMG_Quit();
     SDL_Quit();
 }
 

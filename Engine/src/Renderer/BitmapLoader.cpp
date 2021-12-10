@@ -1,8 +1,16 @@
-#include "Asset/BitmapLoader.hpp"
+#include "Renderer/BitmapLoader.hpp"
 
 #include <SDL_image.h>
 
 namespace SD {
+
+BitmapLoader::BitmapLoader(AssetManager &manager) : AssetLoader(manager) {
+    int img_flags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
+    SD_CORE_ASSERT((IMG_Init(img_flags) & img_flags) == img_flags,
+                   IMG_GetError());
+}
+
+BitmapLoader::~BitmapLoader() { IMG_Quit(); }
 
 Ref<void> BitmapLoader::LoadAsset(const std::string &path) {
     SDL_Surface *loaded = IMG_Load(path.c_str());
@@ -29,7 +37,7 @@ Ref<void> BitmapLoader::LoadAsset(const std::string &path) {
         }
         SD_CORE_ASSERT(surface && channels > 0, "SDL_ConvertSurface failed!");
         image = CreateRef<Bitmap>(surface->w, surface->h, channels,
-                                 static_cast<uint8_t *>(surface->pixels));
+                                  static_cast<uint8_t *>(surface->pixels));
         SDL_FreeSurface(loaded);
         SDL_FreeSurface(surface);
     }
