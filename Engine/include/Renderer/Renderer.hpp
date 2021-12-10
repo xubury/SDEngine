@@ -56,24 +56,19 @@ struct SD_RENDERER_API Renderer2DData {
     static const uint32_t MAX_TEXTURE_SLOTS = 32;
 
     Ref<VertexArray> quad_vao;
-    Ref<Shader> sprite_shader;
 
     size_t quad_index_cnt = 0;
     std::array<Quad, MAX_QUADS> quad_buffer;
     Quad *quad_buffer_ptr = nullptr;
 
-    std::array<glm::vec4, 4> quad_vertex_pos;
-    std::array<glm::vec2, 2> quad_uv;
-
     uint32_t texture_index = 1;
     std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> texture_slots;
 
     Ref<VertexArray> circle_vao;
-    Ref<Shader> circle_shader;
 
     size_t circle_index_cnt = 0;
     std::array<Circle, MAX_QUADS> circle_buffer;
-    Circle *circle_buffer_ptr;
+    Circle *circle_buffer_ptr = nullptr;
 
     glm::vec2 text_origin;
     glm::vec2 text_cursor;
@@ -93,7 +88,6 @@ class SD_RENDERER_API Renderer {
 
     void StartBatch();
     void Flush();
-    void NextBatch();
 
     void Begin(Camera &camera);
     void Begin(Shader &shader, Camera &camera);
@@ -134,16 +128,25 @@ class SD_RENDERER_API Renderer {
    private:
     void InitRenderer2D();
 
-    void FlushQuads();
+    void StartQuadBatch();
+    void StartCircleBatch();
 
+    void FlushQuads();
     void FlushCircles();
+
+    void NextQuadBatch();
+    void NextCircleBatch();
+
     Camera *m_camera;
 
     Ref<UniformBuffer> m_camera_UBO;
 
-    Renderer2DData m_2d_data;
+    Renderer2DData m_data;
 
     RenderTarget m_target;
+
+    Ref<Shader> m_circle_shader;
+    Ref<Shader> m_sprite_shader;
 };
 
 }  // namespace SD
