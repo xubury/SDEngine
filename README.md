@@ -12,20 +12,12 @@ Simple and Direct Engine
 - cereal
 
 ## TODO
-- [X] ResourceId
-- [X] Asset System based on ResourceId
-- [X] Blocking queue
-- [X] Event bus
-- [X] Ini parser
 - [ ] Profile System
-- [ ] Camera System, how to switch between cameras? like from editor camrea to scene camera?
 - [ ] Log panel
 - [ ] Gui System
 - [ ] Commandline args parser
-- [X] Get EXE directory for windows
-- [ ] Font has some bugs (loading for different size)
 - [ ] Script System
 - [ ] Audio System
 - [ ] Physics
 - [ ] Animation
-- [ ] 2D game test?
+- [ ] 2D game test (cellular automaton seems like a good start)
