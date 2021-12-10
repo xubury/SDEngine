@@ -135,7 +135,7 @@ void Renderer::End() { Flush(); }
 void Renderer::Flush() {
     FlushQuads();
     FlushCircles();
-    StartBatch();
+    StartBatch();  // FIXME: is this needed?
 }
 
 void Renderer::FlushQuads() {
@@ -182,6 +182,9 @@ void Renderer::FlushCircles() {
 
 void Renderer::StartBatch() {
     SetTextOrigin(0, 0);
+    m_2d_data.text_cursor.x = 0;
+    m_2d_data.text_cursor.y = 0;
+
     m_2d_data.texture_index = 1;
 
     m_2d_data.quad_index_cnt = 0;
@@ -197,10 +200,8 @@ void Renderer::NextBatch() {
 }
 
 void Renderer::SetTextOrigin(float x, float y) {
-    m_2d_data.textOrigin.x = x;
-    m_2d_data.textOrigin.y = y;
-    m_2d_data.text_cursor.x = 0;
-    m_2d_data.text_cursor.y = 0;
+    m_2d_data.text_origin.x = x;
+    m_2d_data.text_origin.y = y;
 }
 
 void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color) {
@@ -222,9 +223,8 @@ void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color) {
 }
 
 void Renderer::DrawTexture(const Ref<Texture>& texture,
-                           const glm::mat4& transform,
                            const std::array<glm::vec2, 2>& uv,
-                           const glm::vec4& color) {
+                           const glm::mat4& transform, const glm::vec4& color) {
     if (m_2d_data.quad_index_cnt >= Renderer2DData::MAX_INDICES) {
         NextBatch();
     }
@@ -259,7 +259,7 @@ void Renderer::DrawTexture(const Ref<Texture>& texture,
 
 void Renderer::DrawTexture(const Ref<Texture>& texture,
                            const glm::mat4& transform, const glm::vec4& color) {
-    DrawTexture(texture, transform, m_2d_data.quad_uv, color);
+    DrawTexture(texture, m_2d_data.quad_uv, transform, color);
 }
 
 void Renderer::DrawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
@@ -275,8 +275,8 @@ void Renderer::DrawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
 void Renderer::DrawText(Font& font, const std::string& text, uint8_t pixelSize,
                         const glm::mat4& transform, const glm::vec4& color) {
     glm::mat4 t =
-        glm::translate(glm::mat4(1.0f), glm::vec3(m_2d_data.textOrigin.x,
-                                                  m_2d_data.textOrigin.y, 0)) *
+        glm::translate(glm::mat4(1.0f), glm::vec3(m_2d_data.text_origin.x,
+                                                  m_2d_data.text_origin.y, 0)) *
         transform;
     std::u32string u32str = String::ConvertToUTF32(text);
     for (const auto c : u32str) {
@@ -296,7 +296,7 @@ void Renderer::DrawText(Font& font, const std::string& text, uint8_t pixelSize,
                     m_2d_data.text_cursor.y + ch.bearing.y - ch.size.y * 0.5f,
                     0)) *
             glm::scale(glm::mat4(1.0f), glm::vec3(ch.size.x, ch.size.y, 1.0f));
-        DrawTexture(ch.glyph, t * offset, ch.uv, color);
+        DrawTexture(ch.glyph, ch.uv, t * offset, color);
         m_2d_data.text_cursor.x += ch.advance;
     }
 }

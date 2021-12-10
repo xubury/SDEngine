@@ -75,7 +75,7 @@ struct SD_RENDERER_API Renderer2DData {
     std::array<Circle, MAX_QUADS> circle_buffer;
     Circle *circle_buffer_ptr;
 
-    glm::vec2 textOrigin;
+    glm::vec2 text_origin;
     glm::vec2 text_cursor;
 };
 
@@ -103,8 +103,9 @@ class SD_RENDERER_API Renderer {
 
     void DrawQuad(const glm::mat4 &transform, const glm::vec4 &color);
 
-    void DrawTexture(const Ref<Texture> &texture, const glm::mat4 &transform,
+    void DrawTexture(const Ref<Texture> &texture,
                      const std::array<glm::vec2, 2> &texCoords,
+                     const glm::mat4 &transform,
                      const glm::vec4 &color = glm::vec4(1.0f));
     void DrawTexture(const Ref<Texture> &texture, const glm::mat4 &transform,
                      const glm::vec4 &color = glm::vec4(1.0f));
