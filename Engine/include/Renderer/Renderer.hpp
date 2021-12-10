@@ -35,6 +35,9 @@ struct SD_RENDERER_API Quad {
 struct SD_RENDERER_API CircleVertex {
     glm::vec3 world_pos;
     glm::vec3 local_pos;
+    glm::vec4 color;
+    float thickness;
+    float fade;
 };
 
 struct SD_RENDERER_API Circle {
@@ -114,7 +117,8 @@ class SD_RENDERER_API Renderer {
                   const glm::mat4 &transform,
                   const glm::vec4 &color = glm::vec4(1.0f));
 
-    void DrawCircle(const glm::mat4 &transform);
+    void DrawCircle(const glm::mat4 &transform, const glm::vec4 &color,
+                    float thickness, float fade);
 
     void SetCamera(Camera *camera);
 

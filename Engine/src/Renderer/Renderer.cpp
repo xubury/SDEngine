@@ -70,6 +70,9 @@ void Renderer::InitRenderer2D() {
     layout.Clear();
     layout.Push(BufferLayoutType::FLOAT3);  // world_pos
     layout.Push(BufferLayoutType::FLOAT3);  // local_pos
+    layout.Push(BufferLayoutType::FLOAT4);  // color
+    layout.Push(BufferLayoutType::FLOAT);   // thickness
+    layout.Push(BufferLayoutType::FLOAT);   // fade
     m_2d_data.circle_vao = VertexArray::Create();
     m_2d_data.circle_vao->AddVertexBuffer(circle_vbo, layout);
     m_2d_data.circle_vao->SetIndexBuffer(quad_ebo);
@@ -298,7 +301,8 @@ void Renderer::DrawText(Font& font, const std::string& text, uint8_t pixelSize,
     }
 }
 
-void Renderer::DrawCircle(const glm::mat4& transform) {
+void Renderer::DrawCircle(const glm::mat4& transform, const glm::vec4& color,
+                          float thickness, float fade) {
     if (m_2d_data.circle_index_cnt >= Renderer2DData::MAX_INDICES) {
         NextBatch();
     }
@@ -307,6 +311,9 @@ void Renderer::DrawCircle(const glm::mat4& transform) {
             transform * m_2d_data.quad_vertex_pos[i] * 2.f;
         m_2d_data.circle_buffer_ptr->vertices[i].local_pos =
             m_2d_data.quad_vertex_pos[i] * 2.f;
+        m_2d_data.circle_buffer_ptr->vertices[i].color = color;
+        m_2d_data.circle_buffer_ptr->vertices[i].thickness = thickness;
+        m_2d_data.circle_buffer_ptr->vertices[i].fade = fade;
     }
     ++m_2d_data.circle_buffer_ptr;
     m_2d_data.circle_index_cnt += 6;
