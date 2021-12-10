@@ -30,8 +30,12 @@ struct VertexOutput {
 layout(location = 0) in VertexOutput in_vertex;
 
 void main() {
-    float radius = 5.f;
-    float dist = sqrt(dot(in_vertex.local_pos, in_vertex.local_pos));
+    float fade = 0.05f;
+    float thickness = 0.5f;
+    float distance = 1.0 - length(in_vertex.local_pos);
+    float circle = smoothstep(0.0, fade, distance);
+    circle *= smoothstep(thickness + fade, thickness, distance);
+    if (circle == 0.0) discard;
 
-    frag_color = vec4(1.0);
+    frag_color = vec4(1.0, 1.0f, 1.0f, circle);
 }

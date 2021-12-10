@@ -45,6 +45,7 @@ void VertexBufferLayout::Push(BufferLayoutType type, bool normalized) {
 void VertexBufferLayout::Clear() {
     m_elements.clear();
     m_elements.shrink_to_fit();
+    m_stride = 0;
 }
 
 const std::vector<VertexBufferLayoutElement> &VertexBufferLayout::GetElements()

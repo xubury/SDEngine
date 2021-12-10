@@ -304,9 +304,9 @@ void Renderer::DrawCircle(const glm::mat4& transform) {
     }
     for (size_t i = 0; i < 4; ++i) {
         m_2d_data.circle_buffer_ptr->vertices[i].world_pos =
-            transform * m_2d_data.quad_vertex_pos[i];
+            transform * m_2d_data.quad_vertex_pos[i] * 2.f;
         m_2d_data.circle_buffer_ptr->vertices[i].local_pos =
-            m_2d_data.quad_vertex_pos[i];
+            m_2d_data.quad_vertex_pos[i] * 2.f;
     }
     ++m_2d_data.circle_buffer_ptr;
     m_2d_data.circle_index_cnt += 6;
