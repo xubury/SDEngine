@@ -51,6 +51,36 @@ void ProfileSystem::OnRender() {
     renderer->DrawText(*m_font, "\n中文測試: 你好", FONT_SIZE, glm::mat4(1.0f));
     renderer->DrawText(*m_font, "\n日本語テスト: こんにちは", FONT_SIZE,
                        glm::mat4(1.0f));
+    // Primitive test
+    const int PRIMITIVE_SIZE = 15;
+    renderer->DrawText(*m_font, "\nQuad test: ", FONT_SIZE, glm::mat4(1.0f));
+    glm::vec2 pos = renderer->GetTextCursor();
+    pos.y += FONT_SIZE / 4.f;
+    // quad
+    for (int i = 0; i < 10; ++i) {
+        glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
+        color[i % 3] = 1.0f;
+        renderer->DrawQuad(
+            glm::translate(glm::mat4(1.0f), glm::vec3(pos.x, pos.y, 0)) *
+                glm::scale(glm::mat4(1.f),
+                           glm::vec3(PRIMITIVE_SIZE, PRIMITIVE_SIZE, 1)),
+            color);
+        pos.x += PRIMITIVE_SIZE;
+    }
+    // circle
+    renderer->DrawText(*m_font, "\nCircle test: ", FONT_SIZE, glm::mat4(1.0f));
+    pos = renderer->GetTextCursor();
+    pos.y += FONT_SIZE / 4.f;
+    for (int i = 0; i < 10; ++i) {
+        glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
+        color[i % 3] = 1.0f;
+        renderer->DrawCircle(
+            glm::translate(glm::mat4(1.0f), glm::vec3(pos.x, pos.y, 0)) *
+                glm::scale(glm::mat4(1.f),
+                           glm::vec3(PRIMITIVE_SIZE, PRIMITIVE_SIZE, 1)),
+            color, 1.0f, 0.1f);
+        pos.x += PRIMITIVE_SIZE;
+    }
     renderer->End();
 }
 

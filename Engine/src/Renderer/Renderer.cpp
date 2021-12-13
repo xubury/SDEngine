@@ -164,9 +164,13 @@ void Renderer::StartCircleBatch() {
     m_data.circle_buffer_ptr = m_data.circle_buffer.data();
 }
 
-void Renderer::SetTextOrigin(float x, float y) {
+void Renderer::SetTextOrigin(int x, int y) {
     m_data.text_origin.x = x;
     m_data.text_origin.y = y;
+}
+
+glm::ivec2 Renderer::GetTextCursor() const {
+    return m_data.text_cursor + m_data.text_origin;
 }
 
 void Renderer::Flush() {
@@ -325,7 +329,7 @@ void Renderer::DrawCircle(const glm::mat4& transform, const glm::vec4& color,
     }
     for (size_t i = 0; i < 4; ++i) {
         m_data.circle_buffer_ptr->vertices[i].world_pos =
-            transform * QUAD_VERTEX_POS[i] * 2.f;
+            transform * QUAD_VERTEX_POS[i];
         m_data.circle_buffer_ptr->vertices[i].local_pos =
             QUAD_VERTEX_POS[i] * 2.f;
         m_data.circle_buffer_ptr->vertices[i].color = color;

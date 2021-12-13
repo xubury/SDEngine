@@ -44,10 +44,10 @@ layout(location = 0) in VertexOutput in_vertex;
 void main() {
     float distance = 1.0 - length(in_vertex.local_pos);
     float circle = smoothstep(0.0, in_vertex.fade, distance);
-    if (circle == 0.0) discard;
     circle *= smoothstep(in_vertex.thickness + in_vertex.fade,
                          in_vertex.thickness, distance);
 
+    if (circle == 0.0) discard;
     frag_color = in_vertex.color;
     frag_color.a *= circle;
 }
