@@ -150,6 +150,8 @@ class SD_RENDERER_API Renderer {
     void NextQuadBatch();
     void NextCircleBatch();
 
+    void SetupShaderUBO(Shader &shader);
+
     Camera *m_camera;
 
     Ref<UniformBuffer> m_camera_UBO;

@@ -94,7 +94,8 @@ void Renderer::InitRenderer2D() {
     m_sprite_shader = ShaderLibrary::Instance().Load("shaders/sprite.glsl");
     m_circle_shader = ShaderLibrary::Instance().Load("shaders/circle.glsl");
 
-    StartBatch();
+    SetupShaderUBO(*m_sprite_shader);
+    SetupShaderUBO(*m_circle_shader);
 }
 
 void Renderer::SetCamera(Camera* camera) { m_camera = camera; }
@@ -115,14 +116,17 @@ void Renderer::DrawMesh(const Mesh& mesh) {
                      vao->GetIndexBuffer()->GetCount(), 0);
 }
 
+void Renderer::SetupShaderUBO(Shader& shader) {
+    shader.SetUniformBuffer("Camera", *m_camera_UBO);
+}
+
 void Renderer::Begin(Shader& shader, Camera& camera) {
     CameraData cameraData;
     cameraData.view = camera.GetView();
     cameraData.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&cameraData, sizeof(CameraData));
-    m_sprite_shader->SetUniformBuffer("Camera", *m_camera_UBO);
-    m_circle_shader->SetUniformBuffer("Camera", *m_camera_UBO);
-    shader.SetUniformBuffer("Camera", *m_camera_UBO);
+
+    SetupShaderUBO(shader);
 }
 
 void Renderer::Begin(Camera& camera) {
@@ -130,8 +134,6 @@ void Renderer::Begin(Camera& camera) {
     cameraData.view = camera.GetView();
     cameraData.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&cameraData, sizeof(CameraData));
-    m_sprite_shader->SetUniformBuffer("Camera", *m_camera_UBO);
-    m_circle_shader->SetUniformBuffer("Camera", *m_camera_UBO);
 }
 
 void Renderer::End() {
