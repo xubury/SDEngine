@@ -227,6 +227,13 @@ void Renderer::NextCircleBatch() {
     StartCircleBatch();
 }
 
+void Renderer::DrawQuad(const glm::vec3& pos, const glm::quat& rot,
+                        const glm::vec2& scale, const glm::vec4& color) {
+    DrawQuad(glm::translate(glm::mat4(1.0f), pos) * glm::toMat4(rot) *
+                 glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
+             color);
+}
+
 void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color) {
     if (m_data.quad_index_cnt >= Renderer2DData::MAX_INDICES) {
         NextQuadBatch();
@@ -241,6 +248,17 @@ void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color) {
     }
     ++m_data.quad_buffer_ptr;
     m_data.quad_index_cnt += 6;
+}
+
+void Renderer::DrawTexture(const Ref<Texture>& texture,
+                           const std::array<glm::vec2, 2>& uv,
+                           const glm::vec3& pos, const glm::quat& rot,
+                           const glm::vec2& scale, const glm::vec4& color) {
+    DrawTexture(
+        texture, uv,
+        glm::translate(glm::mat4(1.0f), pos) * glm::toMat4(rot) *
+            glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
+        color);
 }
 
 void Renderer::DrawTexture(const Ref<Texture>& texture,
@@ -278,6 +296,16 @@ void Renderer::DrawTexture(const Ref<Texture>& texture,
     m_data.quad_index_cnt += 6;
 }
 
+void Renderer::DrawTexture(const Ref<Texture>& texture, const glm::vec3& pos,
+                           const glm::quat& rot, const glm::vec2& scale,
+                           const glm::vec4& color) {
+    DrawTexture(
+        texture, QUAD_UV,
+        glm::translate(glm::mat4(1.0f), pos) * glm::toMat4(rot) *
+            glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
+        color);
+}
+
 void Renderer::DrawTexture(const Ref<Texture>& texture,
                            const glm::mat4& transform, const glm::vec4& color) {
     DrawTexture(texture, QUAD_UV, transform, color);
@@ -293,8 +321,9 @@ void Renderer::DrawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
         color);
 }
 
-void Renderer::DrawText(Font& font, const std::string& text, uint8_t pixelSize,
-                        const glm::mat4& transform, const glm::vec4& color) {
+void Renderer::DrawText(const Font& font, const std::string& text,
+                        uint8_t pixelSize, const glm::mat4& transform,
+                        const glm::vec4& color) {
     glm::mat4 t =
         glm::translate(glm::mat4(1.0f), glm::vec3(m_data.text_origin.x,
                                                   m_data.text_origin.y, 0)) *
@@ -320,6 +349,14 @@ void Renderer::DrawText(Font& font, const std::string& text, uint8_t pixelSize,
         DrawTexture(ch.glyph, ch.uv, t * offset, color);
         m_data.text_cursor.x += ch.advance;
     }
+}
+
+void Renderer::DrawCircle(const glm::vec3& pos, const glm::vec2& scale,
+                          const glm::vec4& color, float thickness, float fade) {
+    DrawCircle(
+        glm::translate(glm::mat4(1.0f), pos) *
+            glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
+        color, thickness, fade);
 }
 
 void Renderer::DrawCircle(const glm::mat4& transform, const glm::vec4& color,

@@ -8,7 +8,7 @@ Font::Font(FT_Face face) : m_face(face) {}
 
 Font::~Font() { FT_Done_Face(m_face); }
 
-const Character &Font::GetCharacter(char32_t ch, uint8_t size) {
+const Character &Font::GetCharacter(char32_t ch, uint8_t size) const {
     CharacterId id(ch, size);
     if (m_characters.count(id) == 0) {
         SD_CORE_ASSERT(false, "Error, character not loaded");
@@ -57,10 +57,10 @@ void Font::LoadRangedGlyph(uint8_t size, char32_t start, char32_t end) {
     char *pixels = new char[tex_size * tex_size];
     uint32_t x = 0;
     uint32_t y = 0;
-    auto glyph = Texture::Create(
-        tex_size, tex_size,
-        TextureSpec(1, TextureType::TEX_2D, DataFormat::ALPHA,
-                    DataFormatType::UBYTE));
+    auto glyph =
+        Texture::Create(tex_size, tex_size,
+                        TextureSpec(1, TextureType::TEX_2D, DataFormat::ALPHA,
+                                    DataFormatType::UBYTE));
     for (char32_t ch = start; ch < end; ++ch) {
         if (FT_Load_Char(m_face, ch,
                          FT_LOAD_RENDER | FT_LOAD_FORCE_AUTOHINT |

@@ -60,11 +60,8 @@ void ProfileSystem::OnRender() {
     for (int i = 0; i < 10; ++i) {
         glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
         color[i % 3] = 1.0f;
-        renderer->DrawQuad(
-            glm::translate(glm::mat4(1.0f), glm::vec3(pos.x, pos.y, 0)) *
-                glm::scale(glm::mat4(1.f),
-                           glm::vec3(PRIMITIVE_SIZE, PRIMITIVE_SIZE, 1)),
-            color);
+        renderer->DrawQuad(glm::vec3(pos.x, pos.y, 0), glm::quat(1, 0, 0, 0),
+                           glm::vec3(PRIMITIVE_SIZE, PRIMITIVE_SIZE, 1), color);
         pos.x += PRIMITIVE_SIZE;
     }
     // circle
@@ -74,11 +71,9 @@ void ProfileSystem::OnRender() {
     for (int i = 0; i < 10; ++i) {
         glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
         color[i % 3] = 1.0f;
-        renderer->DrawCircle(
-            glm::translate(glm::mat4(1.0f), glm::vec3(pos.x, pos.y, 0)) *
-                glm::scale(glm::mat4(1.f),
-                           glm::vec3(PRIMITIVE_SIZE, PRIMITIVE_SIZE, 1)),
-            color, 1.0f, 0.1f);
+        renderer->DrawCircle(glm::vec3(pos.x, pos.y, 0),
+                             glm::vec2(PRIMITIVE_SIZE, PRIMITIVE_SIZE), color,
+                             1.0f, 0.1f);
         pos.x += PRIMITIVE_SIZE;
     }
     renderer->End();

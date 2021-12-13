@@ -96,8 +96,6 @@ void EditorLayer::OnRender() {
         float scale = (dist - cam->GetNearZ()) / 20;
         renderer->DrawBillboard(m_light_icon, pos, glm::vec2(scale));
     });
-    renderer->DrawCircle(glm::mat4(1.0f), glm::vec4(1.0f, 0.f, 0.f, 1.0f), 0.8f,
-                         0.1f);
     renderer->End();
     Device::instance().Enable(Operation::DEPTH_TEST);
 }

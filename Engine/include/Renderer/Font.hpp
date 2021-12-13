@@ -50,7 +50,7 @@ class SD_RENDERER_API Font {
     Font(const Font &) = delete;
     Font operator=(const Font &) = delete;
 
-    const Character &GetCharacter(char32_t ch, uint8_t size);
+    const Character &GetCharacter(char32_t ch, uint8_t size) const;
 
     void LoadGlyph(uint8_t size);
 

@@ -96,11 +96,21 @@ class SD_RENDERER_API Renderer {
     void SetTextOrigin(int x, int y);
     glm::ivec2 GetTextCursor() const;
 
+    void DrawQuad(const glm::vec3 &pos, const glm::quat &rot,
+                  const glm::vec2 &scale, const glm::vec4 &color);
     void DrawQuad(const glm::mat4 &transform, const glm::vec4 &color);
 
     void DrawTexture(const Ref<Texture> &texture,
-                     const std::array<glm::vec2, 2> &texCoords,
+                     const std::array<glm::vec2, 2> &uv, const glm::vec3 &pos,
+                     const glm::quat &rot, const glm::vec2 &scale,
+                     const glm::vec4 &color = glm::vec4(1.0f));
+    void DrawTexture(const Ref<Texture> &texture,
+                     const std::array<glm::vec2, 2> &uv,
                      const glm::mat4 &transform,
+                     const glm::vec4 &color = glm::vec4(1.0f));
+
+    void DrawTexture(const Ref<Texture> &texture, const glm::vec3 &pos,
+                     const glm::quat &rot, const glm::vec2 &scale,
                      const glm::vec4 &color = glm::vec4(1.0f));
     void DrawTexture(const Ref<Texture> &texture, const glm::mat4 &transform,
                      const glm::vec4 &color = glm::vec4(1.0f));
@@ -109,10 +119,12 @@ class SD_RENDERER_API Renderer {
                        const glm::vec2 &scale,
                        const glm::vec4 &color = glm::vec4(1.0f));
 
-    void DrawText(Font &font, const std::string &text, uint8_t pixleSize,
+    void DrawText(const Font &font, const std::string &text, uint8_t pixleSize,
                   const glm::mat4 &transform,
                   const glm::vec4 &color = glm::vec4(1.0f));
 
+    void DrawCircle(const glm::vec3 &pos, const glm::vec2 &scale,
+                    const glm::vec4 &color, float thickness, float fade);
     void DrawCircle(const glm::mat4 &transform, const glm::vec4 &color,
                     float thickness, float fade);
 
