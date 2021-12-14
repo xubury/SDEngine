@@ -434,7 +434,7 @@ void Renderer::DrawCircle(const glm::mat4& transform, const glm::vec4& color,
 void Renderer::RenderToScreen() {
     Device::instance().BlitFramebuffer(m_target.GetFramebuffer(), 0, nullptr, 0,
                                        BufferBitMask::COLOR_BUFFER_BIT,
-                                       TextureMagFilter::NEAREST);
+                                       BlitFilter::NEAREST);
 }
 
 }  // namespace SD

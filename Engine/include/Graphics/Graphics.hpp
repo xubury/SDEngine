@@ -50,6 +50,8 @@ enum class DataFormatType { UBYTE, UINT, FLOAT16, FLOAT32 };
 
 enum class Face { FRONT, BACK, BOTH };
 
+enum class BlitFilter { NEAREST, LINEAR };
+
 enum class TextureWrap { EDGE, BORDER, MIRROR, REPEAT, MIRROR_EDGE };
 
 enum class TextureMagFilter { NEAREST, LINEAR };

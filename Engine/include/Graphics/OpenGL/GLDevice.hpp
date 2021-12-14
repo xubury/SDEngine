@@ -39,7 +39,7 @@ class GLDevice : public Device {
 
     void BlitFramebuffer(Framebuffer *src, uint32_t src_attachment,
                          Framebuffer *dst, uint32_t dst_attachment,
-                         BufferBitMask mask, TextureMagFilter filter) override;
+                         BufferBitMask mask, BlitFilter filter) override;
 };
 
 }  // namespace SD

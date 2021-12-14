@@ -55,10 +55,9 @@ class SD_GRAPHICS_API Device {
 
     virtual void ResetShaderState() = 0;
 
-    virtual void BlitFramebuffer(Framebuffer *src, uint32_t src_attchment,
+    virtual void BlitFramebuffer(Framebuffer *src, uint32_t src_attachment,
                                  Framebuffer *dst, uint32_t dst_attachment,
-                                 BufferBitMask mask,
-                                 TextureMagFilter filter) = 0;
+                                 BufferBitMask mask, BlitFilter filter) = 0;
 
    protected:
     Device() = default;

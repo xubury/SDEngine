@@ -109,11 +109,11 @@ void EditorLayer::OnTick(float dt) {
 void EditorLayer::OnImGui() {
     Device::instance().BlitFramebuffer(
         renderer->GetFramebuffer(), 0, m_screen_buffer.get(), 0,
-        BufferBitMask::COLOR_BUFFER_BIT, TextureMagFilter::NEAREST);
+        BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
         Device::instance().BlitFramebuffer(
             m_lighting_system->GetGBuffer(), i, m_debug_gbuffer.get(), i,
-            BufferBitMask::COLOR_BUFFER_BIT, TextureMagFilter::NEAREST);
+            BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
     }
 
     static bool dockspaceOpen = true;

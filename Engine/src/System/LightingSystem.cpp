@@ -192,7 +192,7 @@ void LightingSystem::OnRender() {
 
     Device::instance().BlitFramebuffer(
         m_gbuffer_target.GetFramebuffer(), 0, renderer->GetFramebuffer(), 0,
-        BufferBitMask::DEPTH_BUFFER_BIT, TextureMagFilter::NEAREST);
+        BufferBitMask::DEPTH_BUFFER_BIT, BlitFilter::NEAREST);
 }
 
 void LightingSystem::Clear() {

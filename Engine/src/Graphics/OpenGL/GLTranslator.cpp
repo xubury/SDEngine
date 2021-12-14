@@ -129,8 +129,7 @@ GLenum Translate(DataFormatType format_type) {
     return 0;
 }
 
-GLenum TranslateInternalFormat(DataFormat format,
-                              DataFormatType format_type) {
+GLenum TranslateInternalFormat(DataFormat format, DataFormatType format_type) {
     switch (format) {
         case DataFormat::ALPHA:
         case DataFormat::RED: {
@@ -264,6 +263,16 @@ GLenum Translate(Face face) {
             return GL_BACK;
         case Face::BOTH:
             return GL_FRONT_AND_BACK;
+    }
+    return 0;
+}
+
+GLenum Translate(BlitFilter filter) {
+    switch (filter) {
+        case BlitFilter::NEAREST:
+            return GL_NEAREST;
+        case BlitFilter::LINEAR:
+            return GL_LINEAR;
     }
     return 0;
 }

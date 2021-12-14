@@ -100,7 +100,7 @@ void GLDevice::ResetShaderState() { glUseProgram(0); }
 
 void GLDevice::BlitFramebuffer(Framebuffer *src, uint32_t src_attachment,
                                Framebuffer *dst, uint32_t dst_attachment,
-                               BufferBitMask mask, TextureMagFilter filter) {
+                               BufferBitMask mask, BlitFilter filter) {
     int src_id = src ? src->GetId() : 0;
     int dst_id = dst ? dst->GetId() : 0;
     GLint gl_mask = Translate(mask & BufferBitMask::COLOR_BUFFER_BIT) |
