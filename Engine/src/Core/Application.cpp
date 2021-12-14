@@ -33,7 +33,7 @@ Application::Application(const std::string &title) {
             ini_path);
     }
 
-    property.title = ini->Get("window", "title", title);
+    property.title = title;
     property.width = ini->GetInteger("window", "width", property.width);
     property.height = ini->GetInteger("window", "height", property.height);
     property.msaa = ini->GetInteger("window", "msaa", property.msaa);
@@ -67,7 +67,6 @@ Application::~Application() {
     asset->Save();
 
     glm::ivec2 size = window->GetSize();
-    ini->Set("window", "title", window->GetTitle());
     ini->SetInteger("window", "width", size.x);
     ini->SetInteger("window", "height", size.y);
     ini->SetInteger("window", "msaa", window->GetMSAA());
