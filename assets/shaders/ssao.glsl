@@ -85,7 +85,6 @@ float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
 
 void main() {
     const vec2 tex_size = textureSize(u_position);
-    const vec2 noise_scale = tex_size / 4.f;
     const ivec2 uv = ivec2(in_uv * tex_size);
 
     vec3 random_vec = texture(u_noise, uv / 4.f).xyz;
