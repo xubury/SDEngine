@@ -9,8 +9,11 @@ class GLDevice : public Device {
    public:
     GLDevice();
 
-    void DrawElements(MeshTopology topology, size_t count,
-                      size_t offset) override;
+    void DrawElements(MeshTopology topology, int count, size_t offset) override;
+
+    void DrawArrays(MeshTopology topology, int first, int count) override;
+
+    void SetLineWidth(float width) override;
 
     void SetClearColor(float r, float g, float b, float a) override;
 

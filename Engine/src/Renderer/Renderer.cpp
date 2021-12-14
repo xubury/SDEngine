@@ -37,6 +37,17 @@ Renderer::Renderer(int width, int height, int msaa)
 }
 
 void Renderer::InitRenderer2D() {
+    // Initializing line vao
+    m_data.line_vao = VertexArray::Create();
+    auto line_vbo = VertexBuffer::Create(
+        m_data.line_buffer.data(), m_data.line_buffer.size() * sizeof(Line),
+        BufferIOType::DYNAMIC);
+
+    VertexBufferLayout layout;
+    layout.Push(BufferLayoutType::FLOAT3);
+    layout.Push(BufferLayoutType::FLOAT4);
+    m_data.line_vao->AddVertexBuffer(line_vbo, layout);
+
     // Initialize quad vao
     std::array<uint32_t, Renderer2DData::MAX_INDICES> quad_indices;
     uint32_t offset = 0;
@@ -58,7 +69,7 @@ void Renderer::InitRenderer2D() {
         m_data.quad_buffer.data(), m_data.quad_buffer.size() * sizeof(Quad),
         BufferIOType::DYNAMIC);
 
-    VertexBufferLayout layout;
+    layout.Clear();
     layout.Push(BufferLayoutType::FLOAT3);  // position
     layout.Push(BufferLayoutType::FLOAT4);  // color
     layout.Push(BufferLayoutType::FLOAT2);  // texCoord
@@ -91,9 +102,11 @@ void Renderer::InitRenderer2D() {
     const float color[4] = {1, 1, 1, 1};
     m_data.texture_slots[0]->SetPixels(0, 0, 0, 1, 1, 1, color);
 
+    m_line_shader = ShaderLibrary::Instance().Load("shaders/line.glsl");
     m_sprite_shader = ShaderLibrary::Instance().Load("shaders/sprite.glsl");
     m_circle_shader = ShaderLibrary::Instance().Load("shaders/circle.glsl");
 
+    SetupShaderUBO(*m_line_shader);
     SetupShaderUBO(*m_sprite_shader);
     SetupShaderUBO(*m_circle_shader);
 }
@@ -147,8 +160,14 @@ void Renderer::StartBatch() {
     m_data.text_cursor.x = 0;
     m_data.text_cursor.y = 0;
 
+    StartLineBatch();
     StartQuadBatch();
     StartCircleBatch();
+}
+
+void Renderer::StartLineBatch() {
+    m_data.line_vertex_cnt = 0;
+    m_data.line_buffer_ptr = m_data.line_buffer.data();
 }
 
 void Renderer::StartQuadBatch() {
@@ -176,8 +195,21 @@ glm::ivec2 Renderer::GetTextCursor() const {
 }
 
 void Renderer::Flush() {
+    FlushLines();
     FlushQuads();
     FlushCircles();
+}
+
+void Renderer::FlushLines() {
+    if (m_data.line_vertex_cnt) {
+        size_t offset = m_data.line_buffer_ptr - m_data.line_buffer.data();
+        m_data.line_vao->UpdateBuffer(0, m_data.line_buffer.data(),
+                                      sizeof(Line) * offset);
+        m_line_shader->Bind();
+        m_data.line_vao->Bind();
+        Device::instance().DrawArrays(MeshTopology::LINES, 0,
+                                      m_data.line_vertex_cnt);
+    }
 }
 
 void Renderer::FlushQuads() {
@@ -219,6 +251,11 @@ void Renderer::FlushCircles() {
     }
 }
 
+void Renderer::NextLineBatch() {
+    FlushLines();
+    StartLineBatch();
+}
+
 void Renderer::NextQuadBatch() {
     FlushQuads();
     StartQuadBatch();
@@ -227,6 +264,21 @@ void Renderer::NextQuadBatch() {
 void Renderer::NextCircleBatch() {
     FlushCircles();
     StartCircleBatch();
+}
+
+void Renderer::DrawLine(const glm::vec3& start, const glm::vec3& end,
+                        const glm::vec4& color) {
+    if (m_data.line_vertex_cnt >= Renderer2DData::MAX_LINES_VERTICES) {
+        NextLineBatch();
+    }
+    m_data.line_buffer_ptr->vertices[0].pos = start;
+    m_data.line_buffer_ptr->vertices[0].color = color;
+
+    m_data.line_buffer_ptr->vertices[1].pos = end;
+    m_data.line_buffer_ptr->vertices[1].color = color;
+
+    ++m_data.line_buffer_ptr;
+    m_data.line_vertex_cnt += 2;
 }
 
 void Renderer::DrawQuad(const glm::vec3& pos, const glm::quat& rot,

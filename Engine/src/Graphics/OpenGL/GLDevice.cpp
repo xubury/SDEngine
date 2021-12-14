@@ -46,11 +46,16 @@ GLDevice::GLDevice() {
     Enable(Operation::CULL_FACE);
 }
 
-void GLDevice::DrawElements(MeshTopology topology, size_t count,
-                            size_t offset) {
+void GLDevice::DrawElements(MeshTopology topology, int count, size_t offset) {
     glDrawElements(Translate(topology), count, GL_UNSIGNED_INT,
                    (const void *)offset);
 }
+
+void GLDevice::DrawArrays(MeshTopology topology, int first, int count) {
+    glDrawArrays(Translate(topology), first, count);
+}
+
+void GLDevice::SetLineWidth(float width) { glLineWidth(width); }
 
 void GLDevice::SetClearColor(float r, float g, float b, float a) {
     glClearColor(r, g, b, a);

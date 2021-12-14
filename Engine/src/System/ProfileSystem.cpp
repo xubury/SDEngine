@@ -52,11 +52,24 @@ void ProfileSystem::OnRender() {
     renderer->DrawText(*m_font, "\n日本語テスト: こんにちは", FONT_SIZE,
                        glm::mat4(1.0f));
     // Primitive test
+    // Line
     const int PRIMITIVE_SIZE = 15;
-    renderer->DrawText(*m_font, "\nQuad test: ", FONT_SIZE, glm::mat4(1.0f));
+    renderer->DrawText(*m_font, "\nLine test: ", FONT_SIZE, glm::mat4(1.0f));
     glm::vec2 pos = renderer->GetTextCursor();
     pos.y += FONT_SIZE / 4.f;
+    for (int i = 0; i < 10; ++i) {
+        glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
+        color[i % 3] = 1.0f;
+        renderer->DrawLine(glm::vec3(pos.x + PRIMITIVE_SIZE * i,
+                                     pos.y + i % 2 * PRIMITIVE_SIZE, 0),
+                           glm::vec3(pos.x + PRIMITIVE_SIZE * (i + 1),
+                                     pos.y + (i + 1) % 2 * PRIMITIVE_SIZE, 0),
+                           color);
+    }
     // quad
+    renderer->DrawText(*m_font, "\nQuad test: ", FONT_SIZE, glm::mat4(1.0f));
+    pos = renderer->GetTextCursor();
+    pos.y += FONT_SIZE / 4.f;
     for (int i = 0; i < 10; ++i) {
         glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
         color[i % 3] = 1.0f;

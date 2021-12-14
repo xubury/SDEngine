@@ -15,6 +15,15 @@ class AssetManager;
 
 class Scene;
 
+struct SD_RENDERER_API LineVertex {
+    glm::vec3 pos;
+    glm::vec4 color;
+};
+
+struct SD_RENDERER_API Line {
+    std::array<LineVertex, 2> vertices;
+};
+
 struct SD_RENDERER_API QuadVertex {
     glm::vec3 position;
     glm::vec4 color;
@@ -51,12 +60,17 @@ struct SD_RENDERER_API CameraData {
 
 struct SD_RENDERER_API Renderer2DData {
     static const uint32_t MAX_QUADS = 20000;
-    static const uint32_t MAX_VERTICES = MAX_QUADS * 4;
+    static const uint32_t MAX_LINES = 20000;
+    static const uint32_t MAX_LINES_VERTICES = MAX_LINES * 2;
     static const uint32_t MAX_INDICES = MAX_QUADS * 6;
     static const uint32_t MAX_TEXTURE_SLOTS = 32;
 
-    Ref<VertexArray> quad_vao;
+    Ref<VertexArray> line_vao;
+    size_t line_vertex_cnt = 0;
+    std::array<Line, MAX_LINES> line_buffer;
+    Line *line_buffer_ptr = nullptr;
 
+    Ref<VertexArray> quad_vao;
     size_t quad_index_cnt = 0;
     std::array<Quad, MAX_QUADS> quad_buffer;
     Quad *quad_buffer_ptr = nullptr;
@@ -65,7 +79,6 @@ struct SD_RENDERER_API Renderer2DData {
     std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> texture_slots;
 
     Ref<VertexArray> circle_vao;
-
     size_t circle_index_cnt = 0;
     std::array<Circle, MAX_QUADS> circle_buffer;
     Circle *circle_buffer_ptr = nullptr;
@@ -95,6 +108,9 @@ class SD_RENDERER_API Renderer {
 
     void SetTextOrigin(int x, int y);
     glm::ivec2 GetTextCursor() const;
+
+    void DrawLine(const glm::vec3 &start, const glm::vec3 &end,
+                  const glm::vec4 &color);
 
     void DrawQuad(const glm::vec3 &pos, const glm::quat &rot,
                   const glm::vec2 &scale, const glm::vec4 &color);
@@ -141,12 +157,15 @@ class SD_RENDERER_API Renderer {
    private:
     void InitRenderer2D();
 
+    void StartLineBatch();
     void StartQuadBatch();
     void StartCircleBatch();
 
+    void FlushLines();
     void FlushQuads();
     void FlushCircles();
 
+    void NextLineBatch();
     void NextQuadBatch();
     void NextCircleBatch();
 
@@ -160,6 +179,7 @@ class SD_RENDERER_API Renderer {
 
     RenderTarget m_target;
 
+    Ref<Shader> m_line_shader;
     Ref<Shader> m_circle_shader;
     Ref<Shader> m_sprite_shader;
 };

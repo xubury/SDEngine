@@ -23,8 +23,12 @@ class SD_GRAPHICS_API Device {
 
     Device &operator=(const Device &) = delete;
 
-    virtual void DrawElements(MeshTopology topology, size_t count,
+    virtual void DrawElements(MeshTopology topology, int count,
                               size_t offset) = 0;
+
+    virtual void DrawArrays(MeshTopology topology, int first, int count) = 0;
+
+    virtual void SetLineWidth(float width) = 0;
 
     virtual void SetClearColor(float r, float g, float b, float a) = 0;
 
@@ -53,7 +57,8 @@ class SD_GRAPHICS_API Device {
 
     virtual void BlitFramebuffer(Framebuffer *src, uint32_t src_attchment,
                                  Framebuffer *dst, uint32_t dst_attachment,
-                                 BufferBitMask mask, TextureMagFilter filter) = 0;
+                                 BufferBitMask mask,
+                                 TextureMagFilter filter) = 0;
 
    protected:
     Device() = default;
