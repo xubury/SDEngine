@@ -14,7 +14,7 @@
 
 namespace SD {
 
-const std::string setting_filename = "setting.ini";
+const std::string SETTING_FILENAME = "setting.ini";
 
 Application::Application(const std::string &title) {
     WindowProp property;
@@ -24,7 +24,7 @@ Application::Application(const std::string &title) {
     SD_CORE_INFO("Debug info is output to: {}", debug_path);
 
     ini = CreateRef<Ini>();
-    std::filesystem::path ini_path = GetAppDirectory() / setting_filename;
+    std::filesystem::path ini_path = GetAppDirectory() / SETTING_FILENAME;
     if (std::filesystem::exists(ini_path)) {
         ini->Load(ini_path.string());
     } else {
@@ -72,7 +72,7 @@ Application::~Application() {
     ini->SetInteger("window", "msaa", window->GetMSAA());
     ini->SetBoolean("window", "vsync", window->GetIsVSync());
 
-    ini->Save((GetAppDirectory() / setting_filename).string());
+    ini->Save((GetAppDirectory() / SETTING_FILENAME).string());
 
     while (m_layers.Size()) {
         DestroyLayer(m_layers.Front());
