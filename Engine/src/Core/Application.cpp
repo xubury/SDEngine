@@ -16,7 +16,7 @@ namespace SD {
 
 const std::string SETTING_FILENAME = "setting.ini";
 
-Application::Application(const std::string &title) {
+Application::Application(const std::string &title, GraphicsAPI api) {
     WindowProp property;
 
     std::string debug_path = (GetAppDirectory() / "Debug.txt").string();
@@ -42,7 +42,7 @@ Application::Application(const std::string &title) {
     SDL(SDL_Init(SDL_INIT_EVERYTHING));
 
     // Setting up which api to use
-    SetGraphicsAPI(GraphicsAPI::OpenGL);
+    SetGraphicsAPI(api);
 
     ShaderLibrary::Instance().SetDirectory("assets");
 

@@ -4,7 +4,7 @@ IMPLEMENT_APP(SD::SDEditor);
 
 namespace SD {
 
-SDEditor::SDEditor() : Application("SD Editor") {}
+SDEditor::SDEditor() : Application("SD Editor", GraphicsAPI::OpenGL) {}
 
 void SDEditor::OnStart() {
     int viewport_width = ini->GetInteger("editor", "viewport width", 800);
