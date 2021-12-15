@@ -33,7 +33,10 @@ class SD_UTILITY_API FPSCounter {
     FPSCounter(const FPSCounter &) = delete;
     FPSCounter &operator=(const FPSCounter &) = delete;
 
-    float GetFPS();
+    float GetFPS() const;
+    float GetFrameTime() const;
+
+    void Probe();
 
    private:
     Clock m_clock;

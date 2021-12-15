@@ -39,14 +39,21 @@ void ProfileSystem::OnTick(float) {
 void ProfileSystem::OnRender() {
     if (!m_is_show_message) return;
 
+    m_fps.Probe();
+
+    std::string fps_str =
+        "FPS:" + std::to_string(static_cast<uint32_t>(m_fps.GetFPS()));
+    std::string frame_time_str =
+        "\nFrame Time:" +
+        std::to_string(static_cast<uint32_t>(m_fps.GetFrameTime())) + "ms";
+
     renderer->GetDefaultTarget().Bind();
     renderer->Begin(m_camera);
-    std::string fpsStr =
-        "FPS:" + std::to_string(static_cast<uint32_t>(m_fps.GetFPS()));
 
     renderer->SetTextOrigin(-m_camera.GetNearWidth() / 2.f,
                             m_camera.GetNearHeight() / 2.f - FONT_SIZE);
-    renderer->DrawText(*m_font, fpsStr, FONT_SIZE, glm::mat4(1.0f));
+    renderer->DrawText(*m_font, fps_str, FONT_SIZE, glm::mat4(1.0f));
+    renderer->DrawText(*m_font, frame_time_str, FONT_SIZE, glm::mat4(1.0f));
     renderer->DrawText(*m_font, "\n中文测试: 你好", FONT_SIZE, glm::mat4(1.0f));
     renderer->DrawText(*m_font, "\n中文測試: 你好", FONT_SIZE, glm::mat4(1.0f));
     renderer->DrawText(*m_font, "\n日本語テスト: こんにちは", FONT_SIZE,
@@ -66,7 +73,7 @@ void ProfileSystem::OnRender() {
                                      pos.y + (i + 1) % 2 * PRIMITIVE_SIZE, 0),
                            color);
     }
-    // quad
+    // Quad
     renderer->DrawText(*m_font, "\nQuad test: ", FONT_SIZE, glm::mat4(1.0f));
     pos = renderer->GetTextCursor();
     pos.y += FONT_SIZE / 4.f;
@@ -77,7 +84,7 @@ void ProfileSystem::OnRender() {
                            glm::vec3(PRIMITIVE_SIZE, PRIMITIVE_SIZE, 1), color);
         pos.x += PRIMITIVE_SIZE;
     }
-    // circle
+    // Circle
     renderer->DrawText(*m_font, "\nCircle test: ", FONT_SIZE, glm::mat4(1.0f));
     pos = renderer->GetTextCursor();
     pos.y += FONT_SIZE / 4.f;

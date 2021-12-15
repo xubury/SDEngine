@@ -25,14 +25,19 @@ uint64_t Clock::Restart() {
 
 FPSCounter::FPSCounter(uint8_t capacity) : m_capacity(capacity) {}
 
-float FPSCounter::GetFPS() {
-    float fps = 1000.f / static_cast<float>(m_clock.Restart());
-    m_queue.push_back(fps);
+void FPSCounter::Probe() {
+    float time = static_cast<float>(m_clock.Restart());
+    m_queue.push_back(time);
     if (m_queue.size() > m_capacity) {
         m_queue.pop_front();
     }
+}
 
-    return std::accumulate(m_queue.begin(), m_queue.end(), 0.f) / m_queue.size();
+float FPSCounter::GetFPS() const { return 1000 / GetFrameTime(); }
+
+float FPSCounter::GetFrameTime() const {
+    return std::accumulate(m_queue.begin(), m_queue.end(), 0.f) /
+           m_queue.size();
 }
 
 }  // namespace SD
