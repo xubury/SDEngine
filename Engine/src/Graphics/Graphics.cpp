@@ -2,9 +2,13 @@
 
 namespace SD {
 
-static GraphicsAPI s_api;
+static GraphicsAPI s_api = GraphicsAPI::None;
 
 void SetGraphicsAPI(GraphicsAPI api) {
+    if (s_api != GraphicsAPI::None) {
+        SD_CORE_ERROR("Graphics API already set!");
+        exit(-1);
+    }
     switch (api) {
         case GraphicsAPI::OpenGL:
             SD_CORE_INFO("Using OpenGL as backend..");
