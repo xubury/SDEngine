@@ -11,10 +11,11 @@
 
 namespace SD {
 
-EditorLayer::EditorLayer(int width, int height)
+EditorLayer::EditorLayer(int width, int height, int msaa)
     : Layer("EditorLayer"),
       m_width(width),
       m_height(height),
+      m_msaa(msaa),
       m_is_viewport_focused(false),
       m_is_viewport_hovered(false),
       m_hide(false),
@@ -44,8 +45,7 @@ void EditorLayer::OnInit() {
     // engine logic system
     m_camera_system = CreateSystem<CameraSystem>();
     // normal render systems
-    m_lighting_system =
-        CreateSystem<LightingSystem>(m_width, m_height, window->GetMSAA());
+    m_lighting_system = CreateSystem<LightingSystem>(m_width, m_height, m_msaa);
     m_skybox_system = CreateSystem<SkyboxSystem>();
     m_sprite_system = CreateSystem<SpriteRenderSystem>();
     m_post_process_system = CreateSystem<PostProcessSystem>(m_width, m_height);

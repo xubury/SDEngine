@@ -18,7 +18,7 @@ namespace SD {
 
 class EditorLayer : public Layer {
    public:
-    EditorLayer(int width, int height);
+    EditorLayer(int width, int height, int msaa);
     ~EditorLayer();
 
     void OnInit() override;
@@ -63,6 +63,7 @@ class EditorLayer : public Layer {
 
     int m_width;
     int m_height;
+    int m_msaa;
 
     Ref<Framebuffer> m_debug_gbuffer;
     Ref<Framebuffer> m_screen_buffer;

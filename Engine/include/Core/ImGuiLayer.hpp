@@ -9,7 +9,7 @@ namespace SD {
 
 class SD_CORE_API ImGuiLayer : public Layer {
    public:
-    ImGuiLayer();
+    ImGuiLayer(SDL_Window *window, void *handle);
 
     ~ImGuiLayer();
 
@@ -30,6 +30,8 @@ class SD_CORE_API ImGuiLayer : public Layer {
    private:
     void SetDarkThemeColor();
     ImGuiContext *m_context;
+    SDL_Window *m_window;
+    void *m_handle;
 };
 
 }  // namespace SD

@@ -15,7 +15,8 @@ void SDEditor::OnStart() {
     ImGui::SetCurrentContext(GetImGuiLayer()->GetContext());
 #endif
 
-    m_layer = CreateLayer<EditorLayer>(viewport_width, viewport_height);
+    m_layer = CreateLayer<EditorLayer>(viewport_width, viewport_height,
+                                       GetWindow().GetMSAA());
     PushLayer(m_layer);
 }
 

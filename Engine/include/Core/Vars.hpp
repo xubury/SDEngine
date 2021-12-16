@@ -15,7 +15,6 @@ std::filesystem::path SD_CORE_API GetAppDirectory();
 
 #define APP_VARS             \
     Ref<Ini> ini;            \
-    Ref<Window> window;      \
     Ref<Renderer> renderer;  \
     Ref<AssetManager> asset; \
     Ref<Scene> scene;        \
@@ -24,7 +23,6 @@ std::filesystem::path SD_CORE_API GetAppDirectory();
 #define SET_APP_VARS                       \
     void SetAppVars(const AppVars &vars) { \
         ini = vars.ini;                    \
-        window = vars.window;              \
         renderer = vars.renderer;          \
         asset = vars.asset;                \
         scene = vars.scene;                \
@@ -35,7 +33,6 @@ std::filesystem::path SD_CORE_API GetAppDirectory();
     AppVars MakeAppVars() {           \
         AppVars vars;                 \
         vars.ini = ini;               \
-        vars.window = window;         \
         vars.renderer = renderer;     \
         vars.asset = asset;           \
         vars.scene = scene;           \

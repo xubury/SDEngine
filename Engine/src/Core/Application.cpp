@@ -46,7 +46,7 @@ Application::Application(const std::string &title, GraphicsAPI api) {
 
     ShaderLibrary::Instance().SetDirectory("assets");
 
-    window = Window::Create(property);
+    m_window = Window::Create(property);
 
     asset = CreateRef<AssetManager>();
     asset->SetLoader<Bitmap>(new BitmapLoader(*asset));
@@ -59,18 +59,19 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     dispatcher = CreateRef<EventDispatcher>();
     scene = CreateRef<Scene>();
 
-    m_imguiLayer = CreateLayer<ImGuiLayer>();
+    m_imguiLayer = CreateLayer<ImGuiLayer>(m_window->GetHandle(),
+                                           m_window->GetGraphicsContext());
     PushOverlay(m_imguiLayer);
 }
 
 Application::~Application() {
     asset->Save();
 
-    glm::ivec2 size = window->GetSize();
+    glm::ivec2 size = m_window->GetSize();
     ini->SetInteger("window", "width", size.x);
     ini->SetInteger("window", "height", size.y);
-    ini->SetInteger("window", "msaa", window->GetMSAA());
-    ini->SetBoolean("window", "vsync", window->GetIsVSync());
+    ini->SetInteger("window", "msaa", m_window->GetMSAA());
+    ini->SetBoolean("window", "vsync", m_window->GetIsVSync());
 
     ini->Save((GetAppDirectory() / SETTING_FILENAME).string());
 
@@ -176,8 +177,8 @@ void Application::Run() {
     SDL_Event event;
     float ms_per_frame = 1000.f / min_fps;
     uint32_t ms_elapsed = 0;
-    while (!window->ShouldClose()) {
-        while (window->PollEvent(event)) {
+    while (!m_window->ShouldClose()) {
+        while (m_window->PollEvent(event)) {
             ProcessEvent(event);
         }
         ProcessEvents();
@@ -193,7 +194,7 @@ void Application::Run() {
     }
 }
 
-void Application::Quit() { window->SetShouldClose(true); }
+void Application::Quit() { m_window->SetShouldClose(true); }
 
 void Application::Tick(float dt) {
     for (auto iter = m_layers.rbegin(); iter != m_layers.rend(); ++iter) {
@@ -213,7 +214,7 @@ void Application::Render() {
     }
     m_imguiLayer->End();
 
-    window->SwapBuffer();
+    m_window->SwapBuffer();
 }
 
 }  // namespace SD

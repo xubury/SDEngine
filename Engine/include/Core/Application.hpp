@@ -1,5 +1,5 @@
-#ifndef SD_ENGINE_HPP
-#define SD_ENGINE_HPP
+#ifndef SD_APPLICATION_HPP
+#define SD_APPLICATION_HPP
 
 #include "Core/Vars.hpp"
 #include "Core/Window.hpp"
@@ -12,6 +12,8 @@ namespace SD {
 class SD_CORE_API Application {
    public:
     void Quit();
+
+    Window &GetWindow() { return *m_window; }
 
    protected:
     ImGuiLayer *GetImGuiLayer() const { return m_imguiLayer; }
@@ -70,8 +72,10 @@ class SD_CORE_API Application {
 
     EventStack<Layer *> m_layers;
     ImGuiLayer *m_imguiLayer;
+
+    Ref<Window> m_window;
 };
 
 }  // namespace SD
 
-#endif /* SD_ENGINE_HPP */
+#endif /* SD_APPLICATION_HPP */
