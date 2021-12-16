@@ -16,7 +16,7 @@ class SD_CORE_API Application {
     Window &GetWindow() { return *m_window; }
 
    protected:
-    ImGuiLayer *GetImGuiLayer() const { return m_imguiLayer; }
+    ImGuiLayer *GetImGuiLayer() const { return m_imgui; }
 
     template <typename T>
     T *GetLayer(const std::string &name) {
@@ -71,7 +71,7 @@ class SD_CORE_API Application {
     void Render();
 
     EventStack<Layer *> m_layers;
-    ImGuiLayer *m_imguiLayer;
+    ImGuiLayer *m_imgui;
 
     Ref<Window> m_window;
 };

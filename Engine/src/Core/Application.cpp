@@ -59,9 +59,9 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     dispatcher = CreateRef<EventDispatcher>();
     scene = CreateRef<Scene>();
 
-    m_imguiLayer = CreateLayer<ImGuiLayer>(m_window->GetHandle(),
-                                           m_window->GetGraphicsContext());
-    PushOverlay(m_imguiLayer);
+    m_imgui = CreateLayer<ImGuiLayer>(m_window->GetHandle(),
+                                      m_window->GetGraphicsContext());
+    PushOverlay(m_imgui);
 }
 
 Application::~Application() {
@@ -208,11 +208,11 @@ void Application::Render() {
         layer->OnRender();
     }
 
-    m_imguiLayer->Begin();
+    m_imgui->Begin();
     for (auto &layer : m_layers) {
         layer->OnImGui();
     }
-    m_imguiLayer->End();
+    m_imgui->End();
 
     m_window->SwapBuffer();
 }
