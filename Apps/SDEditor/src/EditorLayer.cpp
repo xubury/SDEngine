@@ -32,6 +32,7 @@ EditorLayer::~EditorLayer() {
     DestroySystem(m_skybox_system);
     DestroySystem(m_sprite_system);
     DestroySystem(m_post_process_system);
+    DestroySystem(m_tile_map_system);
     DestroySystem(m_profile_system);
 }
 
@@ -49,6 +50,7 @@ void EditorLayer::OnInit() {
     m_skybox_system = CreateSystem<SkyboxSystem>();
     m_sprite_system = CreateSystem<SpriteRenderSystem>();
     m_post_process_system = CreateSystem<PostProcessSystem>(m_width, m_height);
+    m_tile_map_system = CreateSystem<TileMapSystem>(m_width, m_height);
     m_profile_system = CreateSystem<ProfileSystem>(m_width, m_height);
 
     auto image = asset->LoadAndGet<Bitmap>("icons/light.png");
@@ -69,6 +71,7 @@ void EditorLayer::OnInit() {
     PushSystem(m_lighting_system);
     PushSystem(m_sprite_system);
     PushSystem(m_post_process_system);
+    PushSystem(m_tile_map_system);
     PushSystem(m_profile_system);
 }
 
@@ -96,6 +99,7 @@ void EditorLayer::OnRender() {
         float scale = (dist - cam->GetNearZ()) / 20;
         renderer->DrawBillboard(m_light_icon, pos, glm::vec2(scale));
     });
+
     renderer->End();
     Device::instance().Enable(Operation::DEPTH_TEST);
 }

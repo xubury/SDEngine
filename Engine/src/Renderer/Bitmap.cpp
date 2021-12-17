@@ -4,7 +4,7 @@ namespace SD {
 
 Bitmap::Bitmap(uint32_t width, uint32_t height, uint8_t channels)
     : m_width(width), m_height(height), m_channels(channels) {
-    m_data = static_cast<uint8_t *>(malloc(GetPixelsSize()));
+    m_data = static_cast<uint8_t *>(calloc(GetPixelsSize(), 1));
 }
 
 Bitmap::Bitmap(uint32_t width, uint32_t height, uint8_t channels, uint8_t *data)

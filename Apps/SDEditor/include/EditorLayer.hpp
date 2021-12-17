@@ -13,6 +13,7 @@
 #include "System/ProfileSystem.hpp"
 #include "System/PostProcessSystem.hpp"
 #include "System/SpriteRenderSystem.hpp"
+#include "System/TileMapSystem.hpp"
 
 namespace SD {
 
@@ -45,6 +46,7 @@ class EditorLayer : public Layer {
     int GetViewportHeight() const { return m_height; }
 
     void SetViewportBufferSize(uint32_t width, uint32_t height);
+
    private:
     void ProcessDialog();
 
@@ -60,6 +62,7 @@ class EditorLayer : public Layer {
     SpriteRenderSystem *m_sprite_system;
     PostProcessSystem *m_post_process_system;
     ProfileSystem *m_profile_system;
+    TileMapSystem *m_tile_map_system;
 
     int m_width;
     int m_height;
