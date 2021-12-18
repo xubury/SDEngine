@@ -12,7 +12,7 @@ class SD_GRAPHICS_API Device {
    public:
     static Ref<Device> Create();
 
-    static Device &instance() {
+    static Device &Instance() {
         static Ref<Device> s_instance = Device::Create();
         return *s_instance;
     }

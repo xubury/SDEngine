@@ -12,8 +12,8 @@ RenderTarget::RenderTarget(int x, int y, int width, int height)
       m_framebuffer(Framebuffer::Create()) {}
 
 void RenderTarget::Bind() {
-    Device::instance().SetFramebuffer(GetFramebuffer());
-    Device::instance().SetViewport(GetX(), GetY(), GetWidth(), GetHeight());
+    Device::Instance().SetFramebuffer(GetFramebuffer());
+    Device::Instance().SetViewport(GetX(), GetY(), GetWidth(), GetHeight());
 }
 
 void RenderTarget::CreateFramebuffer() {

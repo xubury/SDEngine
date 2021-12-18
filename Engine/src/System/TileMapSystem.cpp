@@ -39,11 +39,11 @@ void TileMapSystem::OnPush() {
 void TileMapSystem::OnPop() { dispatcher->RemoveHandler(m_size_handler); }
 
 void TileMapSystem::OnRender() {
-    Device::instance().Disable(Operation::DEPTH_TEST);
+    Device::Instance().Disable(Operation::DEPTH_TEST);
     renderer->GetDefaultTarget().Bind();
     renderer->Begin(m_camera);
     Ref<Texture> tex = m_tile_map.GetTexture();
-    renderer->DrawTexture(tex, glm::vec3(0), glm::quat(1, 0, 0, 0),
+    renderer->DrawTexture(tex, glm::vec3(0, 0, -1), glm::quat(1, 0, 0, 0),
                           glm::vec2(tex->GetWidth(), tex->GetHeight()));
     renderer->DrawTexture(m_tile_map.GetOutline(),
                           {glm::vec2{0, MAP_SIZE.y / GRID_SIZE.y},
@@ -51,7 +51,7 @@ void TileMapSystem::OnRender() {
                           glm::vec3(0), glm::quat(1, 0, 0, 0),
                           glm::vec2(tex->GetWidth(), tex->GetHeight()));
     renderer->End();
-    Device::instance().Enable(Operation::DEPTH_TEST);
+    Device::Instance().Enable(Operation::DEPTH_TEST);
 }
 
 }  // namespace SD

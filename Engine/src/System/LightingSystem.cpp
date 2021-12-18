@@ -181,38 +181,38 @@ void LightingSystem::OnRender() {
 
     Clear();
     RenderShadowMap();
-    Device::instance().Disable(Operation::BLEND);
+    Device::Instance().Disable(Operation::BLEND);
     RenderGBuffer();
     if (m_ssao_state) {
         RenderSSAO();
     }
     RenderDeferred();
-    Device::instance().Enable(Operation::BLEND);
+    Device::Instance().Enable(Operation::BLEND);
     RenderEmissive();
 
-    Device::instance().BlitFramebuffer(
+    Device::Instance().BlitFramebuffer(
         m_gbuffer_target.GetFramebuffer(), 0, renderer->GetFramebuffer(), 0,
         BufferBitMask::DEPTH_BUFFER_BIT, BlitFilter::NEAREST);
 }
 
 void LightingSystem::Clear() {
-    Device::instance().ResetShaderState();
+    Device::Instance().ResetShaderState();
 
-    Device::instance().SetClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    Device::instance().SetFramebuffer(m_ssao_target.GetFramebuffer());
-    Device::instance().Clear(BufferBitMask::COLOR_BUFFER_BIT);
-    Device::instance().SetFramebuffer(m_ssao_blur_target.GetFramebuffer());
-    Device::instance().Clear(BufferBitMask::COLOR_BUFFER_BIT);
+    Device::Instance().SetClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    Device::Instance().SetFramebuffer(m_ssao_target.GetFramebuffer());
+    Device::Instance().Clear(BufferBitMask::COLOR_BUFFER_BIT);
+    Device::Instance().SetFramebuffer(m_ssao_blur_target.GetFramebuffer());
+    Device::Instance().Clear(BufferBitMask::COLOR_BUFFER_BIT);
 
-    Device::instance().SetClearColor(0.f, 0.f, 0.f, 0.f);
+    Device::Instance().SetClearColor(0.f, 0.f, 0.f, 0.f);
     // clear the last lighting pass' result
     for (int i = 0; i < 2; ++i) {
-        Device::instance().SetFramebuffer(m_light_target[i].GetFramebuffer());
-        Device::instance().Clear(BufferBitMask::COLOR_BUFFER_BIT);
+        Device::Instance().SetFramebuffer(m_light_target[i].GetFramebuffer());
+        Device::Instance().Clear(BufferBitMask::COLOR_BUFFER_BIT);
     }
 
-    Device::instance().SetFramebuffer(m_gbuffer_target.GetFramebuffer());
-    Device::instance().Clear(BufferBitMask::COLOR_BUFFER_BIT |
+    Device::Instance().SetFramebuffer(m_gbuffer_target.GetFramebuffer());
+    Device::Instance().Clear(BufferBitMask::COLOR_BUFFER_BIT |
                              BufferBitMask::DEPTH_BUFFER_BIT);
     uint32_t id = static_cast<uint32_t>(Entity::INVALID_ID);
     m_gbuffer_target.GetFramebuffer()->ClearAttachment(
@@ -222,7 +222,7 @@ void LightingSystem::Clear() {
 void LightingSystem::RenderShadowMap() {
     auto lightView = scene->view<TransformComponent, LightComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
-    Device::instance().SetCullFace(Face::FRONT);
+    Device::Instance().SetCullFace(Face::FRONT);
     m_shadow_shader->Bind();
     lightView.each([this, &modelView](const TransformComponent &transformComp,
                                       LightComponent &lightComp) {
@@ -248,7 +248,7 @@ void LightingSystem::RenderShadowMap() {
             }
         });
     });
-    Device::instance().SetCullFace(Face::BACK);
+    Device::Instance().SetCullFace(Face::BACK);
 }
 
 void LightingSystem::RenderSSAO() {

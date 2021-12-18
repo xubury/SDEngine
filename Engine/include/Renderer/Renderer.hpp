@@ -182,6 +182,8 @@ class SD_RENDERER_API Renderer {
     Ref<Shader> m_line_shader;
     Ref<Shader> m_circle_shader;
     Ref<Shader> m_sprite_shader;
+
+    CameraData m_camera_data;
 };
 
 }  // namespace SD

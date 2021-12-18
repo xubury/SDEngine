@@ -21,9 +21,9 @@ Renderer::Renderer(int width, int height, int msaa)
                                          BufferIOType::DYNAMIC);
 
     if (msaa > 1) {
-        Device::instance().Enable(Operation::MULTISAMPLE);
+        Device::Instance().Enable(Operation::MULTISAMPLE);
     } else {
-        Device::instance().Disable(Operation::MULTISAMPLE);
+        Device::Instance().Disable(Operation::MULTISAMPLE);
     }
     InitRenderer2D();
 
@@ -118,11 +118,11 @@ Camera* Renderer::GetCamera() { return m_camera; }
 void Renderer::Submit(const VertexArray& vao, MeshTopology topology,
                       size_t count, size_t offset) {
     vao.Bind();
-    Device::instance().DrawElements(topology, count, offset);
+    Device::Instance().DrawElements(topology, count, offset);
 }
 
 void Renderer::DrawMesh(const Mesh& mesh) {
-    Device::instance().SetPolygonMode(mesh.GetPolygonMode(), Face::BOTH);
+    Device::Instance().SetPolygonMode(mesh.GetPolygonMode(), Face::BOTH);
     VertexArray* vao = mesh.GetVertexArray();
     SD_CORE_ASSERT(vao, "Invalid mesh!");
     Renderer::Submit(*vao, mesh.GetTopology(),
@@ -134,19 +134,17 @@ void Renderer::SetupShaderUBO(Shader& shader) {
 }
 
 void Renderer::Begin(Shader& shader, Camera& camera) {
-    CameraData cameraData;
-    cameraData.view = camera.GetView();
-    cameraData.projection = camera.GetProjection();
-    m_camera_UBO->UpdateData(&cameraData, sizeof(CameraData));
+    m_camera_data.view = camera.GetView();
+    m_camera_data.projection = camera.GetProjection();
+    m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
 
     SetupShaderUBO(shader);
 }
 
 void Renderer::Begin(Camera& camera) {
-    CameraData cameraData;
-    cameraData.view = camera.GetView();
-    cameraData.projection = camera.GetProjection();
-    m_camera_UBO->UpdateData(&cameraData, sizeof(CameraData));
+    m_camera_data.view = camera.GetView();
+    m_camera_data.projection = camera.GetProjection();
+    m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
 }
 
 void Renderer::End() {
@@ -207,7 +205,7 @@ void Renderer::FlushLines() {
                                       sizeof(Line) * offset);
         m_line_shader->Bind();
         m_data.line_vao->Bind();
-        Device::instance().DrawArrays(MeshTopology::LINES, 0,
+        Device::Instance().DrawArrays(MeshTopology::LINES, 0,
                                       m_data.line_vertex_cnt);
     }
 }
@@ -215,7 +213,7 @@ void Renderer::FlushLines() {
 void Renderer::FlushQuads() {
     if (m_data.quad_index_cnt) {
         size_t offset = m_data.quad_buffer_ptr - m_data.quad_buffer.data();
-        glm::vec3 viewPos = m_camera->GetWorldPosition();
+        glm::vec3 viewPos = -m_camera_data.view[3];
 
         // sort the drawing order to render transparent texture properly.
         std::sort(m_data.quad_buffer.begin(),
@@ -432,7 +430,7 @@ void Renderer::DrawCircle(const glm::mat4& transform, const glm::vec4& color,
 }
 
 void Renderer::RenderToScreen() {
-    Device::instance().BlitFramebuffer(m_target.GetFramebuffer(), 0, nullptr, 0,
+    Device::Instance().BlitFramebuffer(m_target.GetFramebuffer(), 0, nullptr, 0,
                                        BufferBitMask::COLOR_BUFFER_BIT,
                                        BlitFilter::NEAREST);
 }

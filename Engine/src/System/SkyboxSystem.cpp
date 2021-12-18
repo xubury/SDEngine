@@ -48,8 +48,8 @@ void SkyboxSystem::OnRender() {
     m_skyboxShader->SetMat4("u_projection", projection);
 
     m_skyboxShader->Bind();
-    Device::instance().SetDepthfunc(DepthFunc::LESS_EQUAL);
-    Device::instance().SetCullFace(Face::FRONT);
+    Device::Instance().SetDepthfunc(DepthFunc::LESS_EQUAL);
+    Device::Instance().SetCullFace(Face::FRONT);
 
     auto skyboxView = scene->view<SkyboxComponent>();
     auto iter = skyboxView.begin();
@@ -75,8 +75,8 @@ void SkyboxSystem::OnRender() {
     renderer->GetDefaultTarget().Bind();
     renderer->Submit(*m_skybox, MeshTopology::TRIANGLES,
                      m_skybox->GetIndexBuffer()->GetCount(), 0);
-    Device::instance().SetCullFace(Face::BACK);
-    Device::instance().SetDepthfunc(DepthFunc::LESS);
+    Device::Instance().SetCullFace(Face::BACK);
+    Device::Instance().SetDepthfunc(DepthFunc::LESS);
 }
 
 }  // namespace SD

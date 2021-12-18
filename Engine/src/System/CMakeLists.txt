@@ -40,7 +40,8 @@ target_link_libraries(sd-system
     sd-ecs 
     sd-utility
     sd-core
-    sd-asset)
+    sd-asset
+    sd-tilemap)
 
 target_include_directories(sd-system
     PUBLIC

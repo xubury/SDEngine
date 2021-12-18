@@ -66,15 +66,15 @@ void PostProcessSystem::OnPop() {
 }
 
 void PostProcessSystem::OnRender() {
-    Device::instance().SetDepthMask(false);
-    Device::instance().BlitFramebuffer(
+    Device::Instance().SetDepthMask(false);
+    Device::Instance().BlitFramebuffer(
         renderer->GetFramebuffer(), 0, m_post_target.GetFramebuffer(), 0,
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::LINEAR);
     if (m_is_bloom) {
         RenderBlur();
     }
     RenderPost();
-    Device::instance().SetDepthMask(true);
+    Device::Instance().SetDepthMask(true);
 }
 
 void PostProcessSystem::OnSizeEvent(const WindowSizeEvent &event) {

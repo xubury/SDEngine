@@ -25,7 +25,7 @@ void ImGuiLayer::Begin() {
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
     ImGuizmo::BeginFrame();
-    Device::instance().SetFramebuffer(nullptr);
+    Device::Instance().SetFramebuffer(nullptr);
 }
 
 void ImGuiLayer::End() {
