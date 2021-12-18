@@ -5,11 +5,7 @@
 namespace SD {
 
 RenderTarget::RenderTarget(int x, int y, int width, int height)
-    : m_x(x),
-      m_y(y),
-      m_width(width),
-      m_height(height),
-      m_framebuffer(Framebuffer::Create()) {}
+    : m_x(x), m_y(y), m_width(width), m_height(height) {}
 
 void RenderTarget::Bind() {
     Device::Instance().SetFramebuffer(GetFramebuffer());
@@ -17,6 +13,8 @@ void RenderTarget::Bind() {
 }
 
 void RenderTarget::CreateFramebuffer() {
+    m_framebuffer = Framebuffer::Create();
+
     std::vector<uint32_t> colors;
     for (const auto &spec : m_texture_specs) {
         m_framebuffer->AttachTexture(Texture::Create(m_width, m_height, spec));
@@ -45,8 +43,9 @@ void RenderTarget::AddRenderbuffer(const RenderbufferSpec &spec) {
 }
 
 void RenderTarget::Clear() {
-    m_framebuffer = Framebuffer::Create();
+    m_framebuffer = nullptr;
     m_texture_specs.clear();
+    m_renderbuffer_specs.clear();
 }
 
 int RenderTarget::GetX() const { return m_x; }
@@ -61,7 +60,6 @@ void RenderTarget::Resize(int width, int height) {
     if (m_width != width || m_height != height) {
         m_width = width;
         m_height = height;
-        m_framebuffer = Framebuffer::Create();
         CreateFramebuffer();
     }
 }

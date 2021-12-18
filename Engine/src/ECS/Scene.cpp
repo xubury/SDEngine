@@ -75,4 +75,8 @@ void Scene::RefreshEntityChildTranforms(Entity &entity) {
     }
 }
 
+void Scene::SetCamera(Camera *camera) { m_camera = camera; }
+
+Camera *Scene::GetCamera() { return m_camera; }
+
 }  // namespace SD

@@ -16,7 +16,7 @@ void SpriteRenderSystem::OnRender() {
     auto textView = scene->view<TransformComponent, TextComponent>();
 
     renderer->GetDefaultTarget().Bind();
-    renderer->Begin(*renderer->GetCamera());
+    renderer->Begin(*scene->GetCamera());
     textView.each([this](const TransformComponent &transformComp,
                          const TextComponent &textComp) {
         renderer->SetTextOrigin(0, 0);

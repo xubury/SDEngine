@@ -111,10 +111,6 @@ void Renderer::InitRenderer2D() {
     SetupShaderUBO(*m_circle_shader);
 }
 
-void Renderer::SetCamera(Camera* camera) { m_camera = camera; }
-
-Camera* Renderer::GetCamera() { return m_camera; }
-
 void Renderer::Submit(const VertexArray& vao, MeshTopology topology,
                       size_t count, size_t offset) {
     vao.Bind();
@@ -368,7 +364,7 @@ void Renderer::DrawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
     DrawTexture(
         texture,
         glm::translate(glm::mat4(1.0f), pos) *
-            glm::toMat4(m_camera->GetWorldRotation()) *
+            glm::mat4(glm::transpose(glm::mat3(m_camera_data.view))) *
             glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
         color);
 }

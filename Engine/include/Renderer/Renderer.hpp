@@ -144,10 +144,6 @@ class SD_RENDERER_API Renderer {
     void DrawCircle(const glm::mat4 &transform, const glm::vec4 &color,
                     float thickness, float fade);
 
-    void SetCamera(Camera *camera);
-
-    Camera *GetCamera();
-
     void RenderToScreen();
 
     Framebuffer *GetFramebuffer() { return m_target.GetFramebuffer(); }
@@ -170,8 +166,6 @@ class SD_RENDERER_API Renderer {
     void NextCircleBatch();
 
     void SetupShaderUBO(Shader &shader);
-
-    Camera *m_camera;
 
     Ref<UniformBuffer> m_camera_UBO;
 

@@ -177,7 +177,7 @@ void LightingSystem::OnSizeEvent(const WindowSizeEvent &event) {
 }
 
 void LightingSystem::OnRender() {
-    SD_CORE_ASSERT(renderer->GetCamera(), "No camera is set!");
+    SD_CORE_ASSERT(scene->GetCamera(), "No camera is set!");
 
     Clear();
     RenderShadowMap();
@@ -232,7 +232,7 @@ void LightingSystem::RenderShadowMap() {
         light.GetRenderTarget().Bind();
         light.GetRenderTarget().GetFramebuffer()->ClearDepth();
         light.ComputeLightSpaceMatrix(transformComp.transform,
-                                      renderer->GetCamera());
+                                      scene->GetCamera());
         m_shadow_shader->SetMat4("u_projection_view",
                                  light.GetProjectionView());
 
@@ -255,7 +255,7 @@ void LightingSystem::RenderSSAO() {
     m_ssao_target.Bind();
     m_ssao_shader->Bind();
 
-    renderer->Begin(*m_ssao_shader, *renderer->GetCamera());
+    renderer->Begin(*m_ssao_shader, *scene->GetCamera());
     m_ssao_shader->SetFloat("u_radius", m_ssao_radius);
     m_ssao_shader->SetFloat("u_bias", m_ssao_bias);
     m_ssao_shader->SetUint("u_power", m_ssao_power);
@@ -292,7 +292,7 @@ void LightingSystem::RenderDeferred() {
     auto lightView = scene->view<TransformComponent, LightComponent>();
 
     m_deferred_shader->Bind();
-    renderer->Begin(*m_deferred_shader, *renderer->GetCamera());
+    renderer->Begin(*m_deferred_shader, *scene->GetCamera());
     m_deferred_shader->SetTexture(
         "u_position",
         m_gbuffer_target.GetTexture(GeometryBufferType::G_POSITION));
@@ -351,7 +351,7 @@ void LightingSystem::RenderGBuffer() {
 
     m_gbuffer_target.Bind();
 
-    renderer->Begin(*m_gbuffer_shader, *renderer->GetCamera());
+    renderer->Begin(*m_gbuffer_shader, *scene->GetCamera());
 
     m_gbuffer_shader->Bind();
     terrainView.each([this](const entt::entity &entity,

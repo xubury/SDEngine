@@ -79,13 +79,13 @@ void EditorCameraSystem::Rotate(float yaw, float pitch) {
 
 void EditorCameraSystem::ActiveEditorCam(bool active) {
     if (active) {
-        renderer->SetCamera(&m_camera);
+        scene->SetCamera(&m_camera);
     } else {
         auto view = scene->view<CameraComponent>();
         auto iter = view.begin();
         if (iter != view.end()) {
             auto &camComp = view.get<CameraComponent>(*iter);
-            renderer->SetCamera(&camComp.camera);
+            scene->SetCamera(&camComp.camera);
         }
     }
 }

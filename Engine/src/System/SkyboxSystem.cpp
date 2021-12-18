@@ -42,8 +42,8 @@ void SkyboxSystem::OnPush() {}
 void SkyboxSystem::OnPop() {}
 
 void SkyboxSystem::OnRender() {
-    glm::vec3 pos = renderer->GetCamera()->GetWorldPosition();
-    glm::mat4 projection = renderer->GetCamera()->GetViewPorjection() *
+    glm::vec3 pos = scene->GetCamera()->GetWorldPosition();
+    glm::mat4 projection = scene->GetCamera()->GetViewPorjection() *
                            glm::translate(glm::mat4(1.0f), pos);
     m_skyboxShader->SetMat4("u_projection", projection);
 

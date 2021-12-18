@@ -89,7 +89,7 @@ void EditorLayer::OnRender() {
     if (m_hide) return;
 
     Device::Instance().Disable(Operation::DEPTH_TEST);
-    Camera *cam = renderer->GetCamera();
+    Camera *cam = scene->GetCamera();
     renderer->Begin(*cam);
     auto lightView = scene->view<LightComponent, TransformComponent>();
     lightView.each([this, &cam](const LightComponent &,
@@ -114,7 +114,7 @@ void EditorLayer::OnTick(float dt) {
     pos =
         GetApp().GetWindow().MapScreenToClip(renderer->GetDefaultTarget(), pos);
     if (m_is_viewport_hovered) {
-        SD_TRACE("{}", pos);
+        // SD_TRACE("{}", pos);
     }
 }
 
@@ -293,7 +293,7 @@ void EditorLayer::OnImGui() {
         ImGuizmo::SetDrawlist();
         Entity &entity = m_scene_panel->GetSelectedEntity();
         if (entity) {
-            Camera *cam = renderer->GetCamera();
+            Camera *cam = scene->GetCamera();
             ImGuizmo::SetOrthographic(cam->GetCameraType() ==
                                       CameraType::ORTHOGRAPHIC);
             const glm::mat4 &view = cam->GetView();

@@ -24,9 +24,14 @@ class SD_ECS_API Scene : public entt::registry {
 
     void Save(const std::string &filePath);
 
+    void SetCamera(Camera *camera);
+
+    Camera *GetCamera();
+
    private:
     void RefreshEntityChildTranforms(Entity &entity);
     void RefreshLight(Entity &entity);
+    Camera *m_camera;
 };
 
 }  // namespace SD
