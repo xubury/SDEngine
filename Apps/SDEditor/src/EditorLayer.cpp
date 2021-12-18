@@ -108,6 +108,14 @@ void EditorLayer::OnTick(float dt) {
     for (auto &system : GetSystems()) {
         system->OnTick(dt);
     }
+    glm::vec2 pos = Input::GetMouseCoord();
+    pos.x = pos.x - m_viewport_bounds[0].x;
+    pos.y = pos.y - m_viewport_bounds[0].y;
+    pos =
+        GetApp().GetWindow().MapScreenToClip(renderer->GetDefaultTarget(), pos);
+    if (m_is_viewport_hovered) {
+        SD_TRACE("{}", pos);
+    }
 }
 
 void EditorLayer::OnImGui() {
