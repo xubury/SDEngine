@@ -28,6 +28,7 @@ endif()
 target_link_libraries(sd-imgui
     PUBLIC
     sd-utility
+    sd-graphics
     PRIVATE
     SDL2::SDL2)
 
