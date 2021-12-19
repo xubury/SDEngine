@@ -13,7 +13,7 @@ namespace SD {
 
 class SD_TILE_MAP_API TileMap {
    public:
-    TileMap(const glm::ivec2 &size, const glm::ivec2 &grid_size);
+    TileMap(const glm::ivec2 &grid_cnt, float grid_size);
 
     Ref<Texture> GetTexture() { return m_map; }
 
@@ -25,9 +25,13 @@ class SD_TILE_MAP_API TileMap {
 
     Tile &At(const glm::ivec2 &pos);
 
+    glm::ivec2 MapWorldToTile(const glm::vec2 &world);
+    glm::vec2 MapTileToWorld(const glm::ivec2 &tile);
+
    private:
-    glm::ivec2 m_size;
-    glm::ivec2 m_grid_size;
+    glm::ivec2 m_grid_cnt;
+    float m_grid_size;
+    glm::vec2 m_center;
 
     std::vector<Tile> m_tiles;
 

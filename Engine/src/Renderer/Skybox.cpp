@@ -4,9 +4,8 @@ namespace SD {
 
 Skybox::Skybox() : m_valid_mask(0) {}
 
-void Skybox::SetFace(CubeMapFace face, Bitmap &bitmap) {
-    DataFormat format =
-        bitmap.HasAlpha() ? DataFormat::RGBA : DataFormat::RGB;
+void Skybox::SetFace(CubeMapFace face, const Bitmap &bitmap) {
+    DataFormat format = bitmap.HasAlpha() ? DataFormat::RGBA : DataFormat::RGB;
     if (m_texture == nullptr || m_width != bitmap.Width() ||
         m_height != bitmap.Height() || format != m_format) {
         m_width = bitmap.Width();

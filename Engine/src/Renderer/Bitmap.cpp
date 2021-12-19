@@ -54,8 +54,20 @@ void Bitmap::SetPixels(uint32_t x, uint32_t y, uint32_t width, uint32_t height,
     const size_t pitch = width * m_channels;
     for (; height > 0; --height) {
         std::copy(value + (height - 1) * pitch, value + height * pitch,
-                  m_data + (x + (y + height) * m_width) * m_channels);
+                  m_data + (x + (y + height - 1) * m_width) * m_channels);
     }
+}
+
+void Bitmap::Flip() {
+    const size_t pitch = m_width * m_channels;
+    uint8_t *tmp = new uint8_t[pitch];
+    for (uint32_t y = 0; y < m_height / 2; ++y) {
+        std::copy(m_data + y * pitch, m_data + (y + 1) * pitch, tmp);
+        std::copy(m_data + (m_height - y - 1) * pitch,
+                  m_data + (m_height - y) * pitch, m_data + y * pitch);
+        std::copy(tmp, tmp + pitch, m_data + (m_height - y - 1) * pitch);
+    }
+    delete[] tmp;
 }
 
 }  // namespace SD

@@ -1,4 +1,5 @@
 #include "Renderer/Font.hpp"
+#include "Renderer/Bitmap.hpp"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
@@ -54,13 +55,14 @@ void Font::LoadRangedGlyph(uint8_t size, char32_t start, char32_t end) {
     uint32_t tex_size = 1;
     while (tex_size < MAX_DIM) tex_size <<= 1;
 
-    char *pixels = new char[tex_size * tex_size];
+    Bitmap bmp(tex_size, tex_size, 1);
     uint32_t x = 0;
     uint32_t y = 0;
     auto glyph =
         Texture::Create(tex_size, tex_size,
                         TextureSpec(1, TextureType::TEX_2D, DataFormat::ALPHA,
                                     DataFormatType::UBYTE));
+    bool flip = GetGraphicsAPI() == GraphicsAPI::OpenGL;
     for (char32_t ch = start; ch < end; ++ch) {
         if (FT_Load_Char(m_face, ch,
                          FT_LOAD_RENDER | FT_LOAD_FORCE_AUTOHINT |
@@ -69,35 +71,41 @@ void Font::LoadRangedGlyph(uint8_t size, char32_t start, char32_t end) {
             continue;
         }
 
-        FT_Bitmap *bmp = &m_face->glyph->bitmap;
-        if (x + bmp->width >= tex_size) {
+        FT_Bitmap *ft_bmp = &m_face->glyph->bitmap;
+        if (x + ft_bmp->width >= tex_size) {
             x = 0;
             y += HEIGHT + 1;
         }
 
-        for (uint32_t row = 0; row < bmp->rows; ++row) {
-            std::copy(bmp->buffer + row * bmp->pitch,
-                      bmp->buffer + (row + 1) * bmp->pitch,
-                      pixels + (y + row) * tex_size + x);
+        for (uint32_t row = 0; row < ft_bmp->rows; ++row) {
+            if (flip) {
+                bmp.SetPixels(
+                    x, y + row, ft_bmp->width, 1,
+                    ft_bmp->buffer + (ft_bmp->rows - 1 - row) * ft_bmp->pitch);
+
+            } else {
+                bmp.SetPixels(x, y + row, ft_bmp->width, 1,
+                              ft_bmp->buffer + row * ft_bmp->pitch);
+            }
         }
 
         CharacterId id(ch, size);
         Character &c = m_characters[id];
         c.bearing =
             glm::ivec2(m_face->glyph->bitmap_left, m_face->glyph->bitmap_top);
-        c.size = glm::ivec2(bmp->width, bmp->rows);
+        c.size = glm::ivec2(ft_bmp->width, ft_bmp->rows);
         c.advance = m_face->glyph->advance.x >> 6;
 
         c.uv[0] = glm::vec2(static_cast<float>(x) / tex_size,
-                            static_cast<float>(y + bmp->rows) / tex_size);
-        c.uv[1] = glm::vec2(static_cast<float>(x + bmp->width) / tex_size,
                             static_cast<float>(y) / tex_size);
+        c.uv[1] = glm::vec2(static_cast<float>(x + ft_bmp->width) / tex_size,
+                            static_cast<float>(y + ft_bmp->rows) / tex_size);
         c.glyph = glyph;
 
-        x += bmp->width + 1;
+        x += ft_bmp->width + 1;
     }
-    glyph->SetPixels(0, 0, 0, tex_size, tex_size, 1, pixels);
-    delete[] pixels;
+
+    glyph->SetPixels(0, 0, 0, tex_size, tex_size, 1, bmp.Data());
 }
 
 }  // namespace SD

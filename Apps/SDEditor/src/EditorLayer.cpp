@@ -108,13 +108,14 @@ void EditorLayer::OnTick(float dt) {
     for (auto &system : GetSystems()) {
         system->OnTick(dt);
     }
-    glm::vec2 pos = Input::GetMouseCoord();
-    pos.x = pos.x - m_viewport_bounds[0].x;
-    pos.y = pos.y - m_viewport_bounds[0].y;
-    pos =
-        GetApp().GetWindow().MapScreenToClip(renderer->GetDefaultTarget(), pos);
-    if (m_is_viewport_hovered) {
-        // SD_TRACE("{}", pos);
+    if (m_is_viewport_hovered && Input::IsMousePressed(MouseButton::LEFT)) {
+        glm::vec2 pos = Input::GetMouseCoord();
+        pos -= m_viewport_bounds[0];
+        SD_TRACE("Screen:{}", pos);
+        pos = GetApp().GetWindow().MapScreenToClip(renderer->GetDefaultTarget(),
+                                                   pos);
+        SD_TRACE("Clip:{}", pos);
+        m_tile_map_system->SetCoordinate(pos);
     }
 }
 
@@ -248,16 +249,14 @@ void EditorLayer::OnImGui() {
     {
         ImVec2 wsize = ImGui::GetContentRegionAvail();
         for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-            ImGui::DrawTexture(*m_debug_gbuffer->GetTexture(i), wsize,
-                               ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::DrawTexture(*m_debug_gbuffer->GetTexture(i), wsize);
         }
     }
     ImGui::End();
     ImGui::Begin("SSAO");
     {
         ImVec2 wsize = ImGui::GetContentRegionAvail();
-        ImGui::DrawTexture(*m_lighting_system->GetSSAO(), wsize, ImVec2(0, 1),
-                           ImVec2(1, 0));
+        ImGui::DrawTexture(*m_lighting_system->GetSSAO(), wsize);
     }
     ImGui::End();
 
@@ -285,8 +284,7 @@ void EditorLayer::OnImGui() {
         }
         m_is_viewport_focused = ImGui::IsWindowFocused();
         m_is_viewport_hovered = ImGui::IsWindowHovered();
-        ImGui::DrawTexture(*m_screen_buffer->GetTexture(), wsize, ImVec2(0, 1),
-                           ImVec2(1, 0));
+        ImGui::DrawTexture(*m_screen_buffer->GetTexture(), wsize);
         ImGuizmo::SetRect(m_viewport_bounds[0].x, m_viewport_bounds[0].y,
                           m_viewport_bounds[1].x - m_viewport_bounds[0].x,
                           m_viewport_bounds[1].y - m_viewport_bounds[0].y);

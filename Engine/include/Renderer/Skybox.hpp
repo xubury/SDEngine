@@ -13,7 +13,7 @@ class SD_RENDERER_API Skybox {
    public:
     Skybox();
 
-    void SetFace(CubeMapFace face, Bitmap &bitmap);
+    void SetFace(CubeMapFace face, const Bitmap &bitmap);
     Texture *GetTexture() { return m_texture.get(); }
 
     bool Valid() const;

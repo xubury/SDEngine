@@ -1,8 +1,8 @@
 #include "System/TileMapSystem.hpp"
 #include "Core/Input.hpp"
 
-const glm::ivec2 MAP_SIZE(640, 480);
-const glm::ivec2 GRID_SIZE(40, 40);
+const glm::ivec2 MAP_SIZE(16, 10);
+const float GRID_SIZE = 40;
 
 namespace SD {
 
@@ -12,6 +12,7 @@ TileMapSystem::TileMapSystem(int width, int height)
       m_camera(CameraType::ORTHOGRAPHIC, glm::radians(45.f), width, height, 0.f,
                1000.f) {
     m_tile_map.Set(glm::ivec2(3, 2), Tile());
+    m_tile_map.Set(glm::ivec2(0, 0), Tile());
 }
 
 void TileMapSystem::OnTick(float) {
@@ -45,13 +46,19 @@ void TileMapSystem::OnRender() {
     Ref<Texture> tex = m_tile_map.GetTexture();
     renderer->DrawTexture(tex, glm::vec3(0, 0, -1), glm::quat(1, 0, 0, 0),
                           glm::vec2(tex->GetWidth(), tex->GetHeight()));
-    renderer->DrawTexture(m_tile_map.GetOutline(),
-                          {glm::vec2{0, MAP_SIZE.y / GRID_SIZE.y},
-                           glm::vec2(MAP_SIZE.x / GRID_SIZE.x, 0)},
+    renderer->DrawTexture(m_tile_map.GetOutline(), {glm::vec2(0), MAP_SIZE},
                           glm::vec3(0), glm::quat(1, 0, 0, 0),
                           glm::vec2(tex->GetWidth(), tex->GetHeight()));
+    renderer->DrawQuad(glm::vec3(0), glm::quat(1, 0, 0, 0), glm::vec2(10, 10),
+                       glm::vec4(1, 0, 0, 1));
     renderer->End();
     Device::Instance().Enable(Operation::DEPTH_TEST);
+}
+
+void TileMapSystem::SetCoordinate(const glm::vec2 &pos) {
+    glm::vec2 world = m_camera.MapClipToWorld(pos);
+    glm::ivec2 tile = m_tile_map.MapWorldToTile(world);
+    SD_TRACE("{}", tile);
 }
 
 }  // namespace SD

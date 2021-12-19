@@ -9,8 +9,8 @@ namespace SD {
 const static std::array<glm::vec4, 4> QUAD_VERTEX_POS = {
     glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f), glm::vec4(0.5f, -0.5f, 0.0f, 1.0f),
     glm::vec4(0.5f, 0.5f, 0.0f, 1.0f), glm::vec4(-0.5f, 0.5f, 0.0f, 1.0f)};
-const static std::array<glm::vec2, 2> QUAD_UV = {glm::vec2(0, 1),
-                                                 glm::vec2(1, 0)};
+const static std::array<glm::vec2, 2> QUAD_UV = {glm::vec2(0, 0),
+                                                 glm::vec2(1, 1)};
 
 const static uint8_t UV_INDEX[][2] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
 

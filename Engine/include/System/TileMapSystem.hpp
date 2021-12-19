@@ -17,6 +17,8 @@ class SD_SYSTEM_API TileMapSystem : public System {
     void OnPop() override;
     void OnRender() override;
 
+    void SetCoordinate(const glm::vec2 &pos);
+
    private:
     TileMap m_tile_map;
 
