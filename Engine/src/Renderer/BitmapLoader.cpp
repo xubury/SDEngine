@@ -41,10 +41,6 @@ Ref<void> BitmapLoader::LoadAsset(const std::string &path) {
                                   static_cast<uint8_t *>(surface->pixels));
         SDL_FreeSurface(loaded);
         SDL_FreeSurface(surface);
-
-        if (GetGraphicsAPI() == GraphicsAPI::OpenGL) {
-            image->Flip();
-        }
     }
 
     return image;

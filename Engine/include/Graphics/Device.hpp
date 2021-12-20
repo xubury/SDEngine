@@ -37,7 +37,7 @@ class SD_GRAPHICS_API Device {
                             BufferBitMask::DEPTH_BUFFER_BIT |
                             BufferBitMask::STENCIL_BUFFER_BIT) = 0;
 
-    virtual void SetViewport(int x, int y, int width, int height) = 0;
+    virtual void SetViewport(const Viewport &viewport) = 0;
 
     virtual void SetFramebuffer(Framebuffer *framebuffer) = 0;
 
@@ -58,6 +58,8 @@ class SD_GRAPHICS_API Device {
     virtual void BlitFramebuffer(Framebuffer *src, uint32_t src_attachment,
                                  Framebuffer *dst, uint32_t dst_attachment,
                                  BufferBitMask mask, BlitFilter filter) = 0;
+
+    virtual const glm::ivec2 GetUVIndex(int index) const = 0;
 
    protected:
     Device() = default;

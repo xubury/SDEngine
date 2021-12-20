@@ -58,9 +58,6 @@ glm::ivec2 TileMap::MapWorldToTile(const glm::vec2 &world) {
     glm::vec2 tile;
     tile.x = (world.x + m_center.x) / m_grid_size;
     tile.y = (m_center.y - world.y) / m_grid_size;
-    SD_TRACE("world:{}", world);
-    SD_TRACE("tile:{}", tile);
-    SD_TRACE("center:{}", m_center);
     return tile;
 }
 

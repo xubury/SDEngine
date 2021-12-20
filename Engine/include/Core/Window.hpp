@@ -47,10 +47,6 @@ class SD_CORE_API Window {
 
     std::string GetTitle() const;
 
-    glm::vec2 MapScreenToClip(const RenderTarget &target,
-                              const glm::ivec2 &pos) const;
-    glm::ivec2 MapClipToScreen(const RenderTarget &target,
-                               const glm::vec2 &pos) const;
 
    protected:
     Window() = default;

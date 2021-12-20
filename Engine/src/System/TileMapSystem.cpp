@@ -41,8 +41,7 @@ void TileMapSystem::OnPop() { dispatcher->RemoveHandler(m_size_handler); }
 
 void TileMapSystem::OnRender() {
     Device::Instance().Disable(Operation::DEPTH_TEST);
-    renderer->GetDefaultTarget().Bind();
-    renderer->Begin(m_camera);
+    renderer->Begin(renderer->GetDefaultTarget(), m_camera);
     Ref<Texture> tex = m_tile_map.GetTexture();
     renderer->DrawTexture(tex, glm::vec3(0, 0, -1), glm::quat(1, 0, 0, 0),
                           glm::vec2(tex->GetWidth(), tex->GetHeight()));
@@ -58,7 +57,8 @@ void TileMapSystem::OnRender() {
 void TileMapSystem::SetCoordinate(const glm::vec2 &pos) {
     glm::vec2 world = m_camera.MapClipToWorld(pos);
     glm::ivec2 tile = m_tile_map.MapWorldToTile(world);
-    SD_TRACE("{}", tile);
+    SD_TRACE("world:{}", world);
+    SD_TRACE("tile:{}", tile);
 }
 
 }  // namespace SD

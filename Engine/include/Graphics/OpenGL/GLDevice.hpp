@@ -19,7 +19,7 @@ class GLDevice : public Device {
 
     void Clear(BufferBitMask bit) override;
 
-    void SetViewport(int x, int y, int width, int height) override;
+    void SetViewport(const Viewport &viewport) override;
 
     void SetFramebuffer(Framebuffer *framebuffer) override;
 
@@ -40,6 +40,8 @@ class GLDevice : public Device {
     void BlitFramebuffer(Framebuffer *src, uint32_t src_attachment,
                          Framebuffer *dst, uint32_t dst_attachment,
                          BufferBitMask mask, BlitFilter filter) override;
+
+    const glm::ivec2 GetUVIndex(int index) const override;
 };
 
 }  // namespace SD

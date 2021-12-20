@@ -4,13 +4,8 @@
 
 namespace SD {
 
-RenderTarget::RenderTarget(int x, int y, int width, int height)
-    : m_x(x), m_y(y), m_width(width), m_height(height) {}
-
-void RenderTarget::Bind() {
-    Device::Instance().SetFramebuffer(GetFramebuffer());
-    Device::Instance().SetViewport(GetX(), GetY(), GetWidth(), GetHeight());
-}
+RenderTarget::RenderTarget(int width, int height)
+    : m_width(width), m_height(height), m_viewport(0, 0, width, height) {}
 
 void RenderTarget::CreateFramebuffer() {
     m_framebuffer = Framebuffer::Create();
@@ -48,10 +43,6 @@ void RenderTarget::Clear() {
     m_renderbuffer_specs.clear();
 }
 
-int RenderTarget::GetX() const { return m_x; }
-
-int RenderTarget::GetY() const { return m_y; }
-
 int RenderTarget::GetWidth() const { return m_width; }
 
 int RenderTarget::GetHeight() const { return m_height; }
@@ -60,13 +51,9 @@ void RenderTarget::Resize(int width, int height) {
     if (m_width != width || m_height != height) {
         m_width = width;
         m_height = height;
+        m_viewport.SetSize(0, 0, width, height);
         CreateFramebuffer();
     }
-}
-
-void RenderTarget::SetOrigin(int x, int y) {
-    m_x = x;
-    m_y = y;
 }
 
 const Framebuffer *RenderTarget::GetFramebuffer() const {

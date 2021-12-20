@@ -80,17 +80,12 @@ void EditorLayer::OnPush() {}
 void EditorLayer::OnPop() {}
 
 void EditorLayer::OnRender() {
-    renderer->GetDefaultTarget().Bind();
-    Device::Instance().Clear();
     for (auto &system : GetSystems()) {
         system->OnRender();
     }
-
-    if (m_hide) return;
-
     Device::Instance().Disable(Operation::DEPTH_TEST);
     Camera *cam = scene->GetCamera();
-    renderer->Begin(*cam);
+    renderer->Begin(renderer->GetDefaultTarget(), *cam);
     auto lightView = scene->view<LightComponent, TransformComponent>();
     lightView.each([this, &cam](const LightComponent &,
                                 const TransformComponent &transComp) {
@@ -102,24 +97,6 @@ void EditorLayer::OnRender() {
 
     renderer->End();
     Device::Instance().Enable(Operation::DEPTH_TEST);
-}
-
-void EditorLayer::OnTick(float dt) {
-    for (auto &system : GetSystems()) {
-        system->OnTick(dt);
-    }
-    if (m_is_viewport_hovered && Input::IsMousePressed(MouseButton::LEFT)) {
-        glm::vec2 pos = Input::GetMouseCoord();
-        pos -= m_viewport_bounds[0];
-        SD_TRACE("Screen:{}", pos);
-        pos = GetApp().GetWindow().MapScreenToClip(renderer->GetDefaultTarget(),
-                                                   pos);
-        SD_TRACE("Clip:{}", pos);
-        m_tile_map_system->SetCoordinate(pos);
-    }
-}
-
-void EditorLayer::OnImGui() {
     Device::Instance().BlitFramebuffer(
         renderer->GetFramebuffer(), 0, m_screen_buffer.get(), 0,
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
@@ -128,6 +105,30 @@ void EditorLayer::OnImGui() {
             m_lighting_system->GetGBuffer(), i, m_debug_gbuffer.get(), i,
             BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
     }
+    renderer->RenderToScreen();
+
+    if (m_hide) return;
+}
+
+void EditorLayer::OnTick(float dt) {
+    for (auto &system : GetSystems()) {
+        system->OnTick(dt);
+    }
+    if (m_is_viewport_hovered && Input::IsMousePressed(MouseButton::LEFT)) {
+        glm::vec2 pos = Input::GetMouseCoord();
+        if (!m_hide) {
+            // pos -= m_viewport_bounds[0];
+            pos = m_viewport.MapScreenToClip(pos);
+        } else {
+            pos =
+                renderer->GetDefaultTarget().GetViewport().MapScreenToClip(pos);
+        }
+        m_tile_map_system->SetCoordinate(pos);
+    }
+}
+
+void EditorLayer::OnImGui() {
+    if (m_hide) return;
 
     static bool dockspaceOpen = true;
     static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
@@ -266,10 +267,10 @@ void EditorLayer::OnImGui() {
         auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
         auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
         auto viewportOffset = ImGui::GetWindowPos();
-        m_viewport_bounds[0] = {viewportMinRegion.x + viewportOffset.x,
-                                viewportMinRegion.y + viewportOffset.y};
-        m_viewport_bounds[1] = {viewportMaxRegion.x + viewportOffset.x,
-                                viewportMaxRegion.y + viewportOffset.y};
+        m_viewport.SetRect(viewportMinRegion.x + viewportOffset.x,
+                           viewportMinRegion.y + viewportOffset.y,
+                           viewportMaxRegion.x + viewportOffset.x,
+                           viewportMaxRegion.y + viewportOffset.y);
         if (m_width != wsize.x || m_height != wsize.y) {
             if (wsize.x > 0 && wsize.y > 0) {
                 SetViewportBufferSize(wsize.x, wsize.y);
@@ -285,9 +286,8 @@ void EditorLayer::OnImGui() {
         m_is_viewport_focused = ImGui::IsWindowFocused();
         m_is_viewport_hovered = ImGui::IsWindowHovered();
         ImGui::DrawTexture(*m_screen_buffer->GetTexture(), wsize);
-        ImGuizmo::SetRect(m_viewport_bounds[0].x, m_viewport_bounds[0].y,
-                          m_viewport_bounds[1].x - m_viewport_bounds[0].x,
-                          m_viewport_bounds[1].y - m_viewport_bounds[0].y);
+        ImGuizmo::SetRect(m_viewport.GetLeft(), m_viewport.GetTop(),
+                          m_viewport.GetWidth(), m_viewport.GetHeight());
         ImGuizmo::SetDrawlist();
         Entity &entity = m_scene_panel->GetSelectedEntity();
         if (entity) {
@@ -307,22 +307,19 @@ void EditorLayer::OnImGui() {
                 tc.transform.SetWorldTransform(transform);
             }
         }
-        auto [mouseX, mouseY] = ImGui::GetMousePos();
-        mouseX -= m_viewport_bounds[0].x;
-        mouseY -= m_viewport_bounds[0].y;
-        glm::vec2 viewport_size = m_viewport_bounds[1] - m_viewport_bounds[0];
         if (!ImGuizmo::IsUsing() && ImGui::IsMouseDown(0) &&
             m_is_viewport_hovered) {
+            auto [mouseX, mouseY] = ImGui::GetMousePos();
+            mouseX -= m_viewport.GetLeft();
+            mouseY = m_viewport.GetHeight() - mouseY + m_viewport.GetTop();
             entt::entity entity = Entity::INVALID_ID;
-            int x = mouseX;
-            int y = viewport_size.y - mouseY;
             auto entity_tex =
                 m_debug_gbuffer->GetTexture(GeometryBufferType::G_ENTITY_ID);
             // out of bound check
-            if (x > 0 && y > 0 && x < entity_tex->GetWidth() &&
-                y < entity_tex->GetHeight()) {
-                entity_tex->ReadPixels(0, x, y, 0, 1, 1, 1, sizeof(entity),
-                                       &entity);
+            if (mouseX > 0 && mouseY > 0 && mouseX < entity_tex->GetWidth() &&
+                mouseY < entity_tex->GetHeight()) {
+                entity_tex->ReadPixels(0, mouseX, mouseY, 0, 1, 1, 1,
+                                       sizeof(entity), &entity);
             }
             if (entity != Entity::INVALID_ID) {
                 m_scene_panel->SetSelectedEntity({entity, scene.get()});

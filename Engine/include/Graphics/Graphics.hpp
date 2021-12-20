@@ -151,6 +151,36 @@ void SD_GRAPHICS_API SetGraphicsAPI(GraphicsAPI api);
 
 GraphicsAPI SD_GRAPHICS_API GetGraphicsAPI();
 
+class SD_GRAPHICS_API Viewport {
+   public:
+    Viewport() = default;
+    Viewport(int x, int y, int width, int height) {
+        SetSize(x, y, width, height);
+    }
+
+    int GetLeft() const;
+
+    int GetBottom() const;
+    int GetTop() const;
+
+    int GetWidth() const { return m_width; }
+    int GetHeight() const { return m_height; }
+
+    void SetSize(int x, int y, int width, int height);
+    void SetRect(int left, int top, int right, int bottom);
+    glm::vec2 MapScreenToClip(const glm::ivec2 &screen) const;
+    glm::ivec2 MapClipToScreen(const glm::vec2 &clip) const;
+
+    static int window_width;
+    static int window_height;
+
+   private:
+    int m_left;
+    int m_top;
+    int m_width;
+    int m_height;
+};
+
 }  // namespace SD
 
 #endif /* SD_GRAPHICS_HPP */

@@ -68,8 +68,8 @@ void GLTexture::SetPixels(int x, int y, int z, int width, int height, int depth,
                           const void *data) {
     switch (m_type) {
         case TextureType::TEX_2D:
-            glTextureSubImage2D(gl_id, 0, x, m_height - height - y, width,
-                                height, gl_format, gl_format_type, data);
+            glTextureSubImage2D(gl_id, 0, x, y, width, height, gl_format,
+                                gl_format_type, data);
             break;
         case TextureType::TEX_2D_MULTISAMPLE:
             SD_CORE_ASSERT(false,
@@ -77,8 +77,8 @@ void GLTexture::SetPixels(int x, int y, int z, int width, int height, int depth,
             break;
         case TextureType::TEX_3D:
         case TextureType::TEX_CUBE:
-            glTextureSubImage3D(gl_id, 0, x, m_height - height - y, z, width,
-                                height, depth, gl_format, gl_format_type, data);
+            glTextureSubImage3D(gl_id, 0, x, y, z, width, height, depth,
+                                gl_format, gl_format_type, data);
             break;
     }
     if (m_mipmap_levels > 1) glGenerateTextureMipmap(gl_id);

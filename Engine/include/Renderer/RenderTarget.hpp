@@ -12,7 +12,7 @@ namespace SD {
 
 class SD_RENDERER_API RenderTarget {
    public:
-    RenderTarget(int x, int y, int width, int height);
+    RenderTarget(int width, int height);
 
     RenderTarget(const RenderTarget &) = delete;
     RenderTarget &operator=(const RenderTarget &) = delete;
@@ -20,8 +20,6 @@ class SD_RENDERER_API RenderTarget {
     RenderTarget &operator=(RenderTarget &&) = default;
 
     ~RenderTarget() = default;
-
-    void Bind();
 
     void CreateFramebuffer();
     Framebuffer *GetFramebuffer();
@@ -34,22 +32,22 @@ class SD_RENDERER_API RenderTarget {
 
     void Clear();
 
-    void SetOrigin(int x, int y);
-    int GetX() const;
-    int GetY() const;
     int GetWidth() const;
     int GetHeight() const;
     void Resize(int width, int height);
 
+    Viewport GetViewport() const { return m_viewport; }
+    void SetViewport(const Viewport &viewport) { m_viewport = viewport; }
+
    private:
-    int m_x;
-    int m_y;
     int m_width;
     int m_height;
     Ref<Framebuffer> m_framebuffer;
 
     std::vector<TextureSpec> m_texture_specs;
     std::vector<RenderbufferSpec> m_renderbuffer_specs;
+
+    Viewport m_viewport;
 };
 
 }  // namespace SD

@@ -5,6 +5,8 @@
 #include "Utility/Base.hpp"
 #include "Utility/Transform.hpp"
 
+#include "Graphics/Graphics.hpp"
+
 namespace SD {
 
 enum class CameraType { ORTHOGRAPHIC, PERSPECTIVE };
@@ -77,8 +79,8 @@ class SD_RENDERER_API Camera {
     void SetCameraType(CameraType type);
     CameraType GetCameraType() const;
 
-    SERIALIZE(m_type, m_position, m_rotation, m_fov, m_width, m_height,
-              m_near_z, m_far_z)
+    SERIALIZE(m_type, m_position, m_rotation, m_fov, m_near_width,
+              m_near_height, m_near_z, m_far_z)
    private:
     glm::mat4 m_view;
     glm::mat4 m_projection;
@@ -88,8 +90,8 @@ class SD_RENDERER_API Camera {
     glm::quat m_rotation;
 
     float m_fov;
-    float m_width;
-    float m_height;
+    float m_near_width;
+    float m_near_height;
     float m_near_z;
     float m_far_z;
 

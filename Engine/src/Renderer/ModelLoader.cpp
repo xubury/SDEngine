@@ -169,7 +169,7 @@ Ref<void> ModelLoader::LoadAsset(const std::string &path) {
     SD_CORE_TRACE("Loading model form: {}...", path);
 
     Assimp::Importer importer;
-    uint32_t importFlags = aiProcess_Triangulate;
+    uint32_t importFlags = aiProcess_Triangulate | aiProcess_FlipUVs;
     const aiScene *scene = importer.ReadFile(path, importFlags);
     if (scene == nullptr) {
         SD_CORE_ERROR("Model loading failed: {}", importer.GetErrorString());

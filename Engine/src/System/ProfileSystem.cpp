@@ -47,12 +47,10 @@ void ProfileSystem::OnRender() {
         "\nFrame Time:" +
         std::to_string(static_cast<uint32_t>(m_fps.GetFrameTime())) + "ms";
 
-    renderer->GetDefaultTarget().Bind();
-    Device::Instance().Clear(BufferBitMask::DEPTH_BUFFER_BIT);
-    renderer->Begin(m_camera);
+    renderer->Begin(renderer->GetDefaultTarget(), m_camera);
+    renderer->SetTextOrigin(-m_camera.GetNearWidth() / 2,
+                            m_camera.GetNearHeight() / 2 - FONT_SIZE);
 
-    renderer->SetTextOrigin(-m_camera.GetNearWidth() / 2.f,
-                            m_camera.GetNearHeight() / 2.f - FONT_SIZE);
     renderer->DrawText(*m_font, fps_str, FONT_SIZE, glm::mat4(1.0f));
     renderer->DrawText(*m_font, frame_time_str, FONT_SIZE, glm::mat4(1.0f));
     renderer->DrawText(*m_font, "\n中文测试: 你好", FONT_SIZE, glm::mat4(1.0f));

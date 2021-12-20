@@ -67,9 +67,10 @@ void GLDevice::Clear(BufferBitMask bit) {
             Translate(bit & BufferBitMask::STENCIL_BUFFER_BIT));
 }
 
-void GLDevice::SetViewport(int x, int y, int width, int height) {
+void GLDevice::SetViewport(const Viewport &viewport) {
     // opengl define viewport origin at bottom-left
-    glViewport(x, y, width, height);
+    glViewport(viewport.GetLeft(), viewport.GetBottom(), viewport.GetWidth(),
+               viewport.GetHeight());
 }
 
 void GLDevice::SetFramebuffer(Framebuffer *framebuffer) {
@@ -117,6 +118,11 @@ void GLDevice::BlitFramebuffer(Framebuffer *src, uint32_t src_attachment,
     glBlitNamedFramebuffer(src_id, dst_id, 0, 0, texture->GetWidth(),
                            texture->GetHeight(), 0, 0, texture->GetWidth(),
                            texture->GetHeight(), gl_mask, gl_filter);
+}
+
+const glm::ivec2 GLDevice::GetUVIndex(int index) const {
+    const glm::ivec2 UV_INDEX[4] = {{0, 1}, {1, 1}, {1, 0}, {0, 0}};
+    return UV_INDEX[index];
 }
 
 }  // namespace SD

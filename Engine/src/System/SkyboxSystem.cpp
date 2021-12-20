@@ -84,9 +84,10 @@ void SkyboxSystem::OnRender() {
         m_skyboxShader->SetTexture("skybox", skybox.skybox.GetTexture());
     }
 
-    renderer->GetDefaultTarget().Bind();
+    renderer->Begin(renderer->GetDefaultTarget());
     renderer->Submit(*m_skybox, MeshTopology::TRIANGLES,
                      m_skybox->GetIndexBuffer()->GetCount(), 0);
+    renderer->End();
     Device::Instance().SetCullFace(Face::BACK);
     Device::Instance().SetDepthfunc(DepthFunc::LESS);
 }

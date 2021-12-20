@@ -5,8 +5,7 @@
 
 namespace SD {
 
-SpriteRenderSystem::SpriteRenderSystem()
-    : System("SpriteRenderSystem") {}
+SpriteRenderSystem::SpriteRenderSystem() : System("SpriteRenderSystem") {}
 
 void SpriteRenderSystem::OnPush() {}
 
@@ -15,8 +14,7 @@ void SpriteRenderSystem::OnPop() {}
 void SpriteRenderSystem::OnRender() {
     auto textView = scene->view<TransformComponent, TextComponent>();
 
-    renderer->GetDefaultTarget().Bind();
-    renderer->Begin(*scene->GetCamera());
+    renderer->Begin(renderer->GetDefaultTarget(), *scene->GetCamera());
     textView.each([this](const TransformComponent &transformComp,
                          const TextComponent &textComp) {
         renderer->SetTextOrigin(0, 0);

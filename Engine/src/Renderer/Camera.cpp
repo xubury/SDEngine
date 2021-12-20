@@ -11,16 +11,16 @@ Camera::Camera(CameraType type, float fov, float width, float height,
       m_position(0.f),
       m_rotation(1.f, 0.f, 0.f, 0.f),
       m_fov(fov),
-      m_width(width),
-      m_height(height),
+      m_near_width(width),
+      m_near_height(height),
       m_near_z(near_z),
       m_far_z(far_z),
       m_view_outdated(true),
       m_projection_outdated(true) {}
 
 void Camera::Resize(float width, float height) {
-    m_width = width;
-    m_height = height;
+    m_near_width = width;
+    m_near_height = height;
     m_projection_outdated = true;
 }
 
@@ -81,12 +81,12 @@ void Camera::SetWorldTransform(const glm::mat4 &transform) {
 
 void Camera::UpdateProjection() {
     if (m_type == CameraType::ORTHOGRAPHIC) {
-        m_projection =
-            glm::ortho(-m_width / 2.f, m_width / 2.f, -m_height / 2.f,
-                       m_height / 2.f, m_near_z, m_far_z);
+        m_projection = glm::ortho(-m_near_width / 2.f, m_near_width / 2.f,
+                                  -m_near_height / 2.f, m_near_height / 2.f,
+                                  m_near_z, m_far_z);
     } else if (m_type == CameraType::PERSPECTIVE) {
-        m_projection =
-            glm::perspective(m_fov, m_width / m_height, m_near_z, m_far_z);
+        m_projection = glm::perspective(m_fov, m_near_width / m_near_height,
+                                        m_near_z, m_far_z);
     } else {
         SD_CORE_ASSERT(false, "Invalid camera type!");
     }
@@ -131,19 +131,17 @@ void Camera::UpdateView() {
     m_view_outdated = false;
 }
 
-glm::vec3 Camera::MapClipToWorld(const glm::vec2 &pos) const {
-    glm::mat4 projectionView = GetViewPorjection();
-    glm::vec4 worldPos =
-        glm::inverse(projectionView) * glm::vec4(pos, 0.f, 1.0f);
-    worldPos /= worldPos.w;
-    return worldPos;
+glm::vec3 Camera::MapClipToWorld(const glm::vec2 &clip) const {
+    glm::vec4 world(clip, 0, 1.0f);
+    world = glm::inverse(GetViewPorjection()) * world;
+    world /= world.w;
+    return world;
 }
 
-glm::vec3 Camera::MapWorldToClip(const glm::vec3 &pos) const {
-    glm::mat4 projectionView = GetViewPorjection();
-    glm::vec4 clipPos = projectionView * glm::vec4(pos, 1.0f);
-    clipPos /= clipPos.w;
-    return clipPos;
+glm::vec3 Camera::MapWorldToClip(const glm::vec3 &world) const {
+    glm::vec4 clip = GetViewPorjection() * glm::vec4(world, 1.0f);
+    clip /= clip.w;
+    return clip;
 }
 
 void Camera::SetFOV(float fov) {
@@ -153,20 +151,20 @@ void Camera::SetFOV(float fov) {
 float Camera::GetFOV() const { return m_fov; }
 
 void Camera::SetNearWidth(float width) {
-    m_width = width;
+    m_near_width = width;
     m_projection_outdated = true;
 }
 void Camera::SetNearHeight(float height) {
-    m_height = height;
+    m_near_height = height;
     m_projection_outdated = true;
 }
 
 float Camera::GetNearWidth() const {
     switch (m_type) {
         case CameraType::PERSPECTIVE:
-            return GetNearHeight() * m_width / m_height;
+            return GetNearHeight() * m_near_width / m_near_height;
         default:
-            return m_width;
+            return m_near_width;
     }
 }
 
@@ -175,16 +173,16 @@ float Camera::GetNearHeight() const {
         case CameraType::PERSPECTIVE:
             return std::tan(m_fov / 2.f) * m_near_z * 2.f;
         default:
-            return m_height;
+            return m_near_height;
     }
 }
 
 float Camera::GetFarWidth() const {
     switch (m_type) {
         case CameraType::PERSPECTIVE:
-            return GetFarHeight() * m_width / m_height;
+            return GetFarHeight() * m_near_width / m_near_height;
         default:
-            return m_width;
+            return m_near_width;
     }
 }
 
@@ -193,7 +191,7 @@ float Camera::GetFarHeight() const {
         case CameraType::PERSPECTIVE:
             return std::tan(m_fov / 2.f) * m_far_z * 2.f;
         default:
-            return m_height;
+            return m_near_height;
     }
 }
 void Camera::SetNearZ(float near_z) {

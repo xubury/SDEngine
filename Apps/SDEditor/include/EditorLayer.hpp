@@ -71,7 +71,7 @@ class EditorLayer : public Layer {
     Ref<Framebuffer> m_debug_gbuffer;
     Ref<Framebuffer> m_screen_buffer;
 
-    glm::vec2 m_viewport_bounds[2];
+    Viewport m_viewport;
     bool m_is_viewport_focused;
     bool m_is_viewport_hovered;
 

@@ -62,7 +62,6 @@ void Font::LoadRangedGlyph(uint8_t size, char32_t start, char32_t end) {
         Texture::Create(tex_size, tex_size,
                         TextureSpec(1, TextureType::TEX_2D, DataFormat::ALPHA,
                                     DataFormatType::UBYTE));
-    bool flip = GetGraphicsAPI() == GraphicsAPI::OpenGL;
     for (char32_t ch = start; ch < end; ++ch) {
         if (FT_Load_Char(m_face, ch,
                          FT_LOAD_RENDER | FT_LOAD_FORCE_AUTOHINT |
@@ -78,15 +77,8 @@ void Font::LoadRangedGlyph(uint8_t size, char32_t start, char32_t end) {
         }
 
         for (uint32_t row = 0; row < ft_bmp->rows; ++row) {
-            if (flip) {
-                bmp.SetPixels(
-                    x, y + row, ft_bmp->width, 1,
-                    ft_bmp->buffer + (ft_bmp->rows - 1 - row) * ft_bmp->pitch);
-
-            } else {
-                bmp.SetPixels(x, y + row, ft_bmp->width, 1,
-                              ft_bmp->buffer + row * ft_bmp->pitch);
-            }
+            bmp.SetPixels(x, y + row, ft_bmp->width, 1,
+                          ft_bmp->buffer + row * ft_bmp->pitch);
         }
 
         CharacterId id(ch, size);

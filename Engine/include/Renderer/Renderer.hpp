@@ -102,8 +102,9 @@ class SD_RENDERER_API Renderer {
     void StartBatch();
     void Flush();
 
-    void Begin(Camera &camera);
-    void Begin(Shader &shader, Camera &camera);
+    void Begin(RenderTarget &target);
+    void Begin(RenderTarget &target, Camera &camera);
+    void Begin(RenderTarget &target, Shader &shader, Camera &camera);
     void End();
 
     void SetTextOrigin(int x, int y);

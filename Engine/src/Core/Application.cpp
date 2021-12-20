@@ -55,7 +55,8 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     asset->Load("assets");
 
     renderer =
-        CreateRef<Renderer>(property.width, property.width, property.msaa);
+        CreateRef<Renderer>(property.width, property.height, property.msaa);
+
     dispatcher = CreateRef<EventDispatcher>();
     scene = CreateRef<Scene>();
 
@@ -149,6 +150,8 @@ void Application::ProcessEvent(const SDL_Event &sdl_event) {
                     event.type = EventType::WINDOW_RESIZED;
                     event.window_size.width = sdl_event.window.data1;
                     event.window_size.height = sdl_event.window.data2;
+                    Viewport::window_width = event.window_size.width;
+                    Viewport::window_height = event.window_size.height;
                 } break;
             }
         } break;

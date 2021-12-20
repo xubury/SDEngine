@@ -34,7 +34,6 @@ class SD_RENDERER_API Bitmap {
     void SetPixels(uint32_t x, uint32_t y, uint32_t width, uint32_t height,
                    uint8_t *value);
 
-    void Flip();
    private:
     uint32_t m_width;
     uint32_t m_height;

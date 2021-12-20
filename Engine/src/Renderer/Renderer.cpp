@@ -12,10 +12,7 @@ const static std::array<glm::vec4, 4> QUAD_VERTEX_POS = {
 const static std::array<glm::vec2, 2> QUAD_UV = {glm::vec2(0, 0),
                                                  glm::vec2(1, 1)};
 
-const static uint8_t UV_INDEX[][2] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
-
-Renderer::Renderer(int width, int height, int msaa)
-    : m_target(0, 0, width, height) {
+Renderer::Renderer(int width, int height, int msaa) : m_target(width, height) {
     SD_CORE_TRACE("Initializing Renderer");
     m_camera_UBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
                                          BufferIOType::DYNAMIC);
@@ -129,7 +126,14 @@ void Renderer::SetupShaderUBO(Shader& shader) {
     shader.SetUniformBuffer("Camera", *m_camera_UBO);
 }
 
-void Renderer::Begin(Shader& shader, Camera& camera) {
+void Renderer::Begin(RenderTarget& target) {
+    Device::Instance().SetFramebuffer(target.GetFramebuffer());
+    Device::Instance().SetViewport(target.GetViewport());
+}
+
+void Renderer::Begin(RenderTarget& target, Shader& shader, Camera& camera) {
+    Device::Instance().SetFramebuffer(target.GetFramebuffer());
+    Device::Instance().SetViewport(target.GetViewport());
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
@@ -137,7 +141,9 @@ void Renderer::Begin(Shader& shader, Camera& camera) {
     SetupShaderUBO(shader);
 }
 
-void Renderer::Begin(Camera& camera) {
+void Renderer::Begin(RenderTarget& target, Camera& camera) {
+    Device::Instance().SetFramebuffer(target.GetFramebuffer());
+    Device::Instance().SetViewport(target.GetViewport());
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
@@ -287,11 +293,12 @@ void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color) {
         NextQuadBatch();
     }
     for (uint32_t i = 0; i < 4; ++i) {
+        glm::ivec2 uv_index = Device::Instance().GetUVIndex(i);
         m_data.quad_buffer_ptr->vertices[i].position =
             transform * QUAD_VERTEX_POS[i];
         m_data.quad_buffer_ptr->vertices[i].color = color;
-        m_data.quad_buffer_ptr->vertices[i].uv.x = QUAD_UV[UV_INDEX[i][0]].x;
-        m_data.quad_buffer_ptr->vertices[i].uv.y = QUAD_UV[UV_INDEX[i][0]].y;
+        m_data.quad_buffer_ptr->vertices[i].uv.x = QUAD_UV[uv_index.x].x;
+        m_data.quad_buffer_ptr->vertices[i].uv.y = QUAD_UV[uv_index.y].y;
         m_data.quad_buffer_ptr->vertices[i].tex_id = 0;
     }
     ++m_data.quad_buffer_ptr;
@@ -333,11 +340,12 @@ void Renderer::DrawTexture(const Ref<Texture>& texture,
     }
 
     for (uint32_t i = 0; i < 4; ++i) {
+        glm::ivec2 uv_index = Device::Instance().GetUVIndex(i);
         m_data.quad_buffer_ptr->vertices[i].position =
             transform * QUAD_VERTEX_POS[i];
         m_data.quad_buffer_ptr->vertices[i].color = color;
-        m_data.quad_buffer_ptr->vertices[i].uv.x = uv[UV_INDEX[i][0]].x;
-        m_data.quad_buffer_ptr->vertices[i].uv.y = uv[UV_INDEX[i][1]].y;
+        m_data.quad_buffer_ptr->vertices[i].uv.x = uv[uv_index.x].x;
+        m_data.quad_buffer_ptr->vertices[i].uv.y = uv[uv_index.y].y;
         m_data.quad_buffer_ptr->vertices[i].tex_id = textureIndex;
     }
     ++m_data.quad_buffer_ptr;
@@ -426,9 +434,14 @@ void Renderer::DrawCircle(const glm::mat4& transform, const glm::vec4& color,
 }
 
 void Renderer::RenderToScreen() {
+    Device::Instance().SetFramebuffer(nullptr);
+    Device::Instance().Clear();
     Device::Instance().BlitFramebuffer(m_target.GetFramebuffer(), 0, nullptr, 0,
                                        BufferBitMask::COLOR_BUFFER_BIT,
                                        BlitFilter::NEAREST);
+    const float rgba[4] = {0, 0, 0, 0};
+    m_target.GetFramebuffer()->ClearAttachment(0, rgba);
+    m_target.GetFramebuffer()->ClearDepth();
 }
 
 }  // namespace SD

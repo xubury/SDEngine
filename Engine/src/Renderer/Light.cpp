@@ -6,7 +6,7 @@ const int SHADOW_MAP_WIDTH = 8192;
 const int SHADOW_MAP_HEIGHT = 8192;
 
 Light::Light()
-    : m_shadow_target(0, 0, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT),
+    : m_shadow_target(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT),
       m_is_cast_shadow(false),
       m_is_directional(false),
       m_ambient(1.0f),
