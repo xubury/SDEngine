@@ -25,6 +25,8 @@ class SD_SYSTEM_API TileMapSystem : public System {
     Camera m_camera;
 
     HandlerRegistration m_size_handler;
+
+    glm::ivec2 m_active_tile;
 };
 
 }  // namespace SD

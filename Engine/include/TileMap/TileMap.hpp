@@ -28,8 +28,10 @@ class SD_TILE_MAP_API TileMap {
     glm::ivec2 MapWorldToTile(const glm::vec2 &world);
     glm::vec2 MapTileToWorld(const glm::ivec2 &tile);
 
+    bool IsInBound(const glm::ivec2 &pos) const;
+
    private:
-    glm::ivec2 m_grid_cnt;
+    glm::ivec2 m_tile_cnt;
     float m_grid_size;
     glm::vec2 m_center;
 

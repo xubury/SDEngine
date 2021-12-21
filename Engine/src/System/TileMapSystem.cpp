@@ -10,10 +10,7 @@ TileMapSystem::TileMapSystem(int width, int height)
     : System("TileMapSystem"),
       m_tile_map(MAP_SIZE, GRID_SIZE),
       m_camera(CameraType::ORTHOGRAPHIC, glm::radians(45.f), width, height, 0.f,
-               1000.f) {
-    m_tile_map.Set(glm::ivec2(3, 2), Tile());
-    m_tile_map.Set(glm::ivec2(0, 0), Tile());
-}
+               1000.f) {}
 
 void TileMapSystem::OnTick(float) {
     if (Input::IsKeyDown(Keycode::W)) {
@@ -58,8 +55,10 @@ void TileMapSystem::OnRender() {
 void TileMapSystem::SetCoordinate(const glm::vec2 &pos) {
     glm::vec2 world = m_camera.MapClipToWorld(pos);
     glm::ivec2 tile = m_tile_map.MapWorldToTile(world);
-    SD_TRACE("world:{}", world);
-    SD_TRACE("tile:{}", tile);
+    if (m_tile_map.IsInBound(tile)) {
+        m_tile_map.Set(tile, Tile());
+    }
+    m_active_tile = tile;
 }
 
 }  // namespace SD

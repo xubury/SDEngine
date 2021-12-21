@@ -1,10 +1,11 @@
 #include "TileMap/TileMap.hpp"
+#include "TileMap/Tile.hpp"
 
 namespace SD {
 
 TileMap::TileMap(const glm::ivec2 &grid_cnt, float grid_size)
-    : m_grid_cnt(grid_cnt), m_grid_size(grid_size) {
-    glm::vec2 size = glm::vec2(m_grid_cnt) * m_grid_size;
+    : m_tile_cnt(grid_cnt), m_grid_size(grid_size) {
+    glm::vec2 size = glm::vec2(m_tile_cnt) * m_grid_size;
     m_center = size / 2.f;
     void *data = malloc(size.x * size.y * 4);
     memset(data, 0xff, size.x * size.y * 4);
@@ -30,6 +31,8 @@ TileMap::TileMap(const glm::ivec2 &grid_cnt, float grid_size)
                          m_grid_size - outline_thickness * 2, 1, data);
 
     free(data);
+
+    m_tiles.resize(m_tile_cnt.x * m_tile_cnt.y);
 }
 
 void TileMap::Set(const glm::ivec2 &pos, const Tile &tile) {
@@ -47,11 +50,11 @@ void TileMap::Set(const glm::ivec2 &pos, const Tile &tile) {
 }
 
 const Tile &TileMap::Get(const glm::ivec2 &pos) const {
-    return m_tiles[pos.x + pos.y * m_grid_cnt.x];
+    return m_tiles[pos.x + pos.y * m_tile_cnt.x];
 }
 
 Tile &TileMap::At(const glm::ivec2 &pos) {
-    return m_tiles[pos.x + pos.y * m_grid_cnt.x];
+    return m_tiles[pos.x + pos.y * m_tile_cnt.x];
 }
 
 glm::ivec2 TileMap::MapWorldToTile(const glm::vec2 &world) {
@@ -66,6 +69,11 @@ glm::vec2 TileMap::MapTileToWorld(const glm::ivec2 &tile) {
     world.x = tile.x * m_grid_size - m_center.x;
     world.y = m_center.y - tile.y * m_grid_size;
     return world;
+}
+
+bool TileMap::IsInBound(const glm::ivec2 &pos) const {
+    return pos.x >= 0 && pos.y >= 0 && pos.x < m_tile_cnt.x &&
+           pos.y < m_tile_cnt.y;
 }
 
 }  // namespace SD
