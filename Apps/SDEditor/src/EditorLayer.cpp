@@ -85,24 +85,25 @@ void EditorLayer::OnRender() {
     for (auto &system : GetSystems()) {
         system->OnRender();
     }
-    device->Disable(Operation::DEPTH_TEST);
-
-    device->SetTarget(renderer->GetDefaultTarget());
-    Camera *cam = scene->GetCamera();
-    renderer->Begin(*cam);
-    auto lightView = scene->view<LightComponent, TransformComponent>();
-    lightView.each([this, &cam](const LightComponent &,
-                                const TransformComponent &transComp) {
-        glm::vec3 pos = transComp.transform.GetWorldPosition();
-        float dist = glm::distance(pos, cam->GetWorldPosition());
-        float scale = (dist - cam->GetNearZ()) / 20;
-        renderer->DrawBillboard(m_light_icon, pos, glm::vec2(scale));
-    });
-
-    renderer->End();
-    device->Enable(Operation::DEPTH_TEST);
     if (m_hide) {
         renderer->RenderToScreen();
+    } else {
+        device->Disable(Operation::DEPTH_TEST);
+
+        device->SetTarget(renderer->GetDefaultTarget());
+        Camera *cam = scene->GetCamera();
+        renderer->Begin(*cam);
+        auto lightView = scene->view<LightComponent, TransformComponent>();
+        lightView.each([this, &cam](const LightComponent &,
+                                    const TransformComponent &transComp) {
+            glm::vec3 pos = transComp.transform.GetWorldPosition();
+            float dist = glm::distance(pos, cam->GetWorldPosition());
+            float scale = (dist - cam->GetNearZ()) / 20;
+            renderer->DrawBillboard(m_light_icon, pos, glm::vec2(scale));
+        });
+
+        renderer->End();
+        device->Enable(Operation::DEPTH_TEST);
     }
 }
 
@@ -276,14 +277,7 @@ void EditorLayer::OnImGui() {
                 SetViewportSize(viewportMinRegion.x + viewportOffset.x,
                                 viewportMinRegion.y + viewportOffset.y, wsize.x,
                                 wsize.y);
-                WindowSizeEvent event;
-                event.width = wsize.x;
-                event.height = wsize.y;
-                dispatcher->PublishEvent(event);
             }
-
-            m_width = wsize.x;
-            m_height = wsize.y;
         }
         m_is_viewport_focused = ImGui::IsWindowFocused();
         m_is_viewport_hovered = ImGui::IsWindowHovered();
@@ -344,6 +338,7 @@ void EditorLayer::Hide() {
     m_hide = true;
     SetIsBlockEvent(false);
     m_editor_camera_system->ActiveEditorCam(false);
+    SetViewportSize(0, 0, device->GetWidth(), device->GetHeight());
 }
 
 void EditorLayer::Show() {
@@ -355,6 +350,11 @@ void EditorLayer::Show() {
 void EditorLayer::OnEventProcess(const Event &event) {
     if (event.type == EventType::MOUSE_MOTION) {
         dispatcher->PublishEvent(event.mouse_motion);
+    } else if (event.type == EventType::WINDOW_RESIZED) {
+        if (m_hide) {
+            SetViewportSize(0, 0, event.window_size.width,
+                            event.window_size.height);
+        }
     } else if (event.type == EventType::KEY) {
         dispatcher->PublishEvent(event.key);
 
@@ -411,6 +411,10 @@ void EditorLayer::OnEventsProcess() {}
 
 void EditorLayer::SetViewportSize(uint32_t left, uint32_t top, uint32_t width,
                                   uint32_t height) {
+    WindowSizeEvent event;
+    event.width = width;
+    event.height = height;
+    dispatcher->PublishEvent(event);
     m_viewport.SetSize(left, top, width, height);
     renderer->GetDefaultTarget().Resize(width, height);
     m_screen_buffer = Framebuffer::Create();
@@ -428,6 +432,9 @@ void EditorLayer::SetViewportSize(uint32_t left, uint32_t top, uint32_t width,
                 GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
                 TextureMagFilter::NEAREST, TextureMinFilter::NEAREST)));
     }
+
+    m_width = width;
+    m_height = height;
 }
 
 void EditorLayer::NewScene() { scene->clear(); }
