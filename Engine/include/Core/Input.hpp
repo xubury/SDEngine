@@ -20,9 +20,6 @@ class SD_CORE_API Input {
 
     static glm::vec2 GetMouseCoord();
 
-   private:
-    friend class Application;
-
     static void Tick();
 
     static void SetKeyState(Keycode keycode, bool state);

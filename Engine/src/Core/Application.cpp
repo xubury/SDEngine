@@ -60,8 +60,7 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     dispatcher = CreateRef<EventDispatcher>();
     scene = CreateRef<Scene>();
 
-    m_imgui = CreateLayer<ImGuiLayer>(m_window->GetHandle(),
-                                      m_window->GetGraphicsContext());
+    m_imgui = CreateLayer<ImGuiLayer>(m_window.get());
     PushOverlay(m_imgui);
 }
 
@@ -104,60 +103,9 @@ void Application::DestroyLayer(Layer *layer) {
     delete layer;
 }
 
-void Application::ProcessEvent(const SDL_Event &sdl_event) {
-    if (sdl_event.type == SDL_QUIT) {
+void Application::ProcessEvent(const Event &event) {
+    if (event.type == EventType::APP_QUIT) {
         Quit();
-    }
-    Event event;
-    switch (sdl_event.type) {
-        case SDL_MOUSEMOTION: {
-            event.type = EventType::MOUSE_MOTION;
-            event.mouse_motion.x = sdl_event.motion.x;
-            event.mouse_motion.y = sdl_event.motion.y;
-            event.mouse_motion.x_rel = sdl_event.motion.xrel;
-            event.mouse_motion.y_rel = sdl_event.motion.yrel;
-            Input::SetMouseCoord(event.mouse_motion.x, event.mouse_motion.y);
-        } break;
-        case SDL_MOUSEBUTTONDOWN:
-        case SDL_MOUSEBUTTONUP: {
-            event.type = EventType::MOUSE_BUTTON;
-            event.mouse_button.button =
-                static_cast<MouseButton>(sdl_event.button.button);
-            event.mouse_button.x = sdl_event.button.x;
-            event.mouse_button.y = sdl_event.button.y;
-            event.mouse_button.clicks = sdl_event.button.clicks;
-            event.mouse_button.state = sdl_event.button.state;
-            Input::SetMouseButtonState(event.mouse_button.button,
-                                       event.mouse_button.state);
-        } break;
-        case SDL_MOUSEWHEEL: {
-            event.type = EventType::MOUSE_WHEEL_SCROLLED;
-            event.mouse_wheel.x = sdl_event.wheel.x;
-            event.mouse_wheel.y = sdl_event.wheel.y;
-        } break;
-        case SDL_KEYDOWN:
-        case SDL_KEYUP: {
-            event.type = EventType::KEY;
-            event.key.keycode = static_cast<Keycode>(sdl_event.key.keysym.sym);
-            event.key.mod = sdl_event.key.keysym.mod;
-            event.key.state = sdl_event.key.state;
-            Input::SetKeyState(event.key.keycode, event.key.state);
-        } break;
-        case SDL_WINDOWEVENT: {
-            switch (sdl_event.window.event) {
-                case SDL_WINDOWEVENT_RESIZED:
-                case SDL_WINDOWEVENT_SIZE_CHANGED: {
-                    event.type = EventType::WINDOW_RESIZED;
-                    event.window_size.width = sdl_event.window.data1;
-                    event.window_size.height = sdl_event.window.data2;
-                } break;
-            }
-        } break;
-        case SDL_TEXTINPUT: {
-            event.type = EventType::TEXT_INPUT;
-            std::copy(std::begin(sdl_event.text.text),
-                      std::end(sdl_event.text.text), event.text_input.text);
-        } break;
     }
     for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {
         (*layer)->OnEventProcess(event);
@@ -175,7 +123,7 @@ void Application::ProcessEvents() {
 void Application::Run() {
     Clock clock;
     float min_fps = 30;
-    SDL_Event event;
+    Event event;
     float ms_per_frame = 1000.f / min_fps;
     uint32_t ms_elapsed = 0;
     while (!m_window->ShouldClose()) {

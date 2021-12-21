@@ -63,7 +63,7 @@ class SD_CORE_API Application {
 
     void Run();
 
-    void ProcessEvent(const SDL_Event &event);
+    void ProcessEvent(const Event &event);
 
     void ProcessEvents();
 

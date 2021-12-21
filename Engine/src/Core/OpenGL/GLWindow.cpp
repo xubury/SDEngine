@@ -47,4 +47,28 @@ uint8_t GLWindow::GetMSAA() const {
 
 bool GLWindow::GetIsVSync() const { return SDL_GL_GetSwapInterval() == 1; }
 
+glm::ivec2 GLWindow::GetSize() const {
+    glm::ivec2 size;
+    SDL_GetWindowSize(m_window, &size.x, &size.y);
+    return size;
+}
+
+int GLWindow::GetWidth() const {
+    int width = 0;
+    SDL_GetWindowSize(m_window, &width, nullptr);
+    return width;
+}
+
+int GLWindow::GetHeight() const {
+    int height = 0;
+    SDL_GetWindowSize(m_window, nullptr, &height);
+    return height;
+}
+
+void *GLWindow::GetHandle() const { return static_cast<void *>(m_window); }
+
+std::string GLWindow::GetTitle() const { return SDL_GetWindowTitle(m_window); }
+
+void GLWindow::SwapBuffer() { SDL_GL_SwapWindow(m_window); }
+
 }  // namespace SD

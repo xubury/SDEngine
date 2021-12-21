@@ -45,6 +45,7 @@ struct TextInputEvent {
 
 enum class EventType {
     UNKNOWN = 0,
+    APP_QUIT,
     WINDOW_RESIZED,
     KEY,
     MOUSE_MOTION,

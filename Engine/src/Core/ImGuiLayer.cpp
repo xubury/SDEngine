@@ -6,8 +6,8 @@
 
 namespace SD {
 
-ImGuiLayer::ImGuiLayer(SDL_Window* window, void* handle)
-    : Layer("ImGuiLayer"), m_window(window), m_handle(handle) {}
+ImGuiLayer::ImGuiLayer(Window* window)
+    : Layer("ImGuiLayer"), m_window(window) {}
 
 ImGuiLayer::~ImGuiLayer() {
     ImGui_ImplOpenGL3_Shutdown();
@@ -64,7 +64,9 @@ void ImGuiLayer::OnInit() {
     // Setup Platform/Renderer backends
     switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
-            ImGui_ImplSDL2_InitForOpenGL(m_window, m_handle);
+            ImGui_ImplSDL2_InitForOpenGL(
+                static_cast<SDL_Window*>(m_window->GetHandle()),
+                m_window->GetGraphicsContext());
             ImGui_ImplOpenGL3_Init("#version 450");
             break;
         default:

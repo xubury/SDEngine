@@ -3,13 +3,11 @@
 
 #include "Utility/Base.hpp"
 #include "Core/Export.hpp"
+#include "Core/Event.hpp"
 #include "Graphics/Context.hpp"
 
 #include <glm/glm.hpp>
 #include <string>
-
-union SDL_Event;
-struct SDL_Window;
 
 namespace SD {
 
@@ -29,38 +27,33 @@ class SD_CORE_API Window : public Context {
    public:
     static Ref<Window> Create(const WindowProp &property);
 
-    virtual ~Window();
+    virtual ~Window() = default;
 
     Window(const Window &) = delete;
     Window &operator=(const Window &) = delete;
 
-    glm::ivec2 GetSize() const override;
-    int GetWidth() const override;
-    int GetHeight() const override;
-
-    SDL_Window *GetHandle();
+    virtual void *GetHandle() const = 0;
 
     virtual void *GetGraphicsContext() = 0;
 
     virtual bool GetIsVSync() const = 0;
 
-    std::string GetTitle() const;
+    virtual std::string GetTitle() const = 0;
 
    protected:
     Window() = default;
 
-    SDL_Window *m_window;
-
    private:
     friend class Application;
 
-    void SwapBuffer();
-    bool PollEvent(SDL_Event &event);
+    virtual void SwapBuffer() = 0;
+
+    bool PollEvent(Event &event);
 
     bool ShouldClose();
     void SetShouldClose(bool shouldClose);
 
-    bool m_shouldClose;
+    bool m_should_close;
 };
 
 }  // namespace SD
