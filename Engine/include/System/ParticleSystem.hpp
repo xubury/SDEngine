@@ -2,9 +2,7 @@
 #define SD_PARTICLE_SYSTEM_HPP
 
 #include "System/Export.hpp"
-#include "Utility/Export.hpp"
 #include "Core/System.hpp"
-#include "Renderer/RenderTarget.hpp"
 #include "Renderer/Camera.hpp"
 
 #include <glm/glm.hpp>

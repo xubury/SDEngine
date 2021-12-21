@@ -7,34 +7,22 @@ namespace SD {
 SkyboxSystem::SkyboxSystem() : System("SkyboxSystem") {
     const float skybox_vertices[] = {
         // front
-        -1.0, -1.0, 1.0, 
-        1.0, -1.0, 1.0, 
-        1.0, 1.0, 1.0,
-        -1.0, 1.0, 1.0,
+        -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
         // back
-        -1.0, -1.0, -1.0,
-        1.0, -1.0, -1.0,
-        1.0, 1.0, -1.0,
-        -1.0, 1.0, -1.0};
+        -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0};
 
     const uint32_t skybox_indices[] = {// front
-                                       0, 1, 2, 
-                                       2, 3, 0,
+                                       0, 1, 2, 2, 3, 0,
                                        // right
-                                       1, 5, 6,
-                                       6, 2, 1,
+                                       1, 5, 6, 6, 2, 1,
                                        // back
-                                       7, 6, 5,
-                                       5, 4, 7,
+                                       7, 6, 5, 5, 4, 7,
                                        // left
-                                       4, 0, 3,
-                                       3, 7, 4,
+                                       4, 0, 3, 3, 7, 4,
                                        // bottom
-                                       4, 5, 1,
-                                       1, 0, 4,
+                                       4, 5, 1, 1, 0, 4,
                                        // top
-                                       3, 2, 6,
-                                       6, 7, 3};
+                                       3, 2, 6, 6, 7, 3};
     m_skybox = VertexArray::Create();
     VertexBufferLayout layout;
     layout.Push(BufferLayoutType::FLOAT3);
@@ -60,8 +48,8 @@ void SkyboxSystem::OnRender() {
     m_skyboxShader->SetMat4("u_projection", projection);
 
     m_skyboxShader->Bind();
-    Device::Instance().SetDepthfunc(DepthFunc::LESS_EQUAL);
-    Device::Instance().SetCullFace(Face::FRONT);
+    device->SetDepthfunc(DepthFunc::LESS_EQUAL);
+    device->SetCullFace(Face::FRONT);
 
     auto skyboxView = scene->view<SkyboxComponent>();
     auto iter = skyboxView.begin();
@@ -84,12 +72,11 @@ void SkyboxSystem::OnRender() {
         m_skyboxShader->SetTexture("skybox", skybox.skybox.GetTexture());
     }
 
-    renderer->Begin(renderer->GetDefaultTarget());
+    device->SetTarget(renderer->GetDefaultTarget());
     renderer->Submit(*m_skybox, MeshTopology::TRIANGLES,
                      m_skybox->GetIndexBuffer()->GetCount(), 0);
-    renderer->End();
-    Device::Instance().SetCullFace(Face::BACK);
-    Device::Instance().SetDepthfunc(DepthFunc::LESS);
+    device->SetCullFace(Face::BACK);
+    device->SetDepthfunc(DepthFunc::LESS);
 }
 
 }  // namespace SD

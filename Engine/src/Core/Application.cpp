@@ -48,14 +48,14 @@ Application::Application(const std::string &title, GraphicsAPI api) {
 
     m_window = Window::Create(property);
 
+    device = Device::Create(m_window.get());
     asset = CreateRef<AssetManager>();
     asset->SetLoader<Bitmap>(new BitmapLoader(*asset));
     asset->SetLoader<Model>(new ModelLoader(*asset));
     asset->SetLoader<Font>(new FontLoader(*asset));
     asset->Load("assets");
 
-    renderer =
-        CreateRef<Renderer>(property.width, property.height, property.msaa);
+    renderer = CreateRef<Renderer>(device.get());
 
     dispatcher = CreateRef<EventDispatcher>();
     scene = CreateRef<Scene>();
@@ -150,8 +150,6 @@ void Application::ProcessEvent(const SDL_Event &sdl_event) {
                     event.type = EventType::WINDOW_RESIZED;
                     event.window_size.width = sdl_event.window.data1;
                     event.window_size.height = sdl_event.window.data2;
-                    Viewport::window_width = event.window_size.width;
-                    Viewport::window_height = event.window_size.height;
                 } break;
             }
         } break;

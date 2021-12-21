@@ -37,7 +37,7 @@ EditorLayer::~EditorLayer() {
 }
 
 void EditorLayer::OnInit() {
-    SetViewportBufferSize(m_width, m_height);
+    SetViewportSize(0, 0, m_width, m_height);
     // editor related system
     m_scene_panel = CreateSystem<ScenePanel>();
     m_editor_camera_system =
@@ -80,12 +80,16 @@ void EditorLayer::OnPush() {}
 void EditorLayer::OnPop() {}
 
 void EditorLayer::OnRender() {
+    device->SetFramebuffer(renderer->GetFramebuffer());
+    device->Clear();
     for (auto &system : GetSystems()) {
         system->OnRender();
     }
-    Device::Instance().Disable(Operation::DEPTH_TEST);
+    device->Disable(Operation::DEPTH_TEST);
+
+    device->SetTarget(renderer->GetDefaultTarget());
     Camera *cam = scene->GetCamera();
-    renderer->Begin(renderer->GetDefaultTarget(), *cam);
+    renderer->Begin(*cam);
     auto lightView = scene->view<LightComponent, TransformComponent>();
     lightView.each([this, &cam](const LightComponent &,
                                 const TransformComponent &transComp) {
@@ -96,18 +100,10 @@ void EditorLayer::OnRender() {
     });
 
     renderer->End();
-    Device::Instance().Enable(Operation::DEPTH_TEST);
-    Device::Instance().BlitFramebuffer(
-        renderer->GetFramebuffer(), 0, m_screen_buffer.get(), 0,
-        BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
-    for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-        Device::Instance().BlitFramebuffer(
-            m_lighting_system->GetGBuffer(), i, m_debug_gbuffer.get(), i,
-            BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
+    device->Enable(Operation::DEPTH_TEST);
+    if (m_hide) {
+        renderer->RenderToScreen();
     }
-    renderer->RenderToScreen();
-
-    if (m_hide) return;
 }
 
 void EditorLayer::OnTick(float dt) {
@@ -117,11 +113,11 @@ void EditorLayer::OnTick(float dt) {
     if (m_is_viewport_hovered && Input::IsMousePressed(MouseButton::LEFT)) {
         glm::vec2 pos = Input::GetMouseCoord();
         if (!m_hide) {
-            // pos -= m_viewport_bounds[0];
             pos = m_viewport.MapScreenToClip(pos);
         } else {
-            pos =
-                renderer->GetDefaultTarget().GetViewport().MapScreenToClip(pos);
+            const auto &viewport =
+                device->GetViewport(renderer->GetDefaultTarget());
+            pos = viewport.MapScreenToClip(pos);
         }
         m_tile_map_system->SetCoordinate(pos);
     }
@@ -129,6 +125,15 @@ void EditorLayer::OnTick(float dt) {
 
 void EditorLayer::OnImGui() {
     if (m_hide) return;
+
+    device->BlitFramebuffer(
+        renderer->GetFramebuffer(), 0, m_screen_buffer.get(), 0,
+        BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
+    for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
+        device->BlitFramebuffer(
+            m_lighting_system->GetGBuffer(), i, m_debug_gbuffer.get(), i,
+            BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
+    }
 
     static bool dockspaceOpen = true;
     static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
@@ -265,15 +270,12 @@ void EditorLayer::OnImGui() {
     {
         ImVec2 wsize = ImGui::GetContentRegionAvail();
         auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
-        auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
         auto viewportOffset = ImGui::GetWindowPos();
-        m_viewport.SetRect(viewportMinRegion.x + viewportOffset.x,
-                           viewportMinRegion.y + viewportOffset.y,
-                           viewportMaxRegion.x + viewportOffset.x,
-                           viewportMaxRegion.y + viewportOffset.y);
         if (m_width != wsize.x || m_height != wsize.y) {
             if (wsize.x > 0 && wsize.y > 0) {
-                SetViewportBufferSize(wsize.x, wsize.y);
+                SetViewportSize(viewportMinRegion.x + viewportOffset.x,
+                                viewportMinRegion.y + viewportOffset.y, wsize.x,
+                                wsize.y);
                 WindowSizeEvent event;
                 event.width = wsize.x;
                 event.height = wsize.y;
@@ -407,7 +409,9 @@ void EditorLayer::OnEventProcess(const Event &event) {
 
 void EditorLayer::OnEventsProcess() {}
 
-void EditorLayer::SetViewportBufferSize(uint32_t width, uint32_t height) {
+void EditorLayer::SetViewportSize(uint32_t left, uint32_t top, uint32_t width,
+                                  uint32_t height) {
+    m_viewport.SetSize(left, top, width, height);
     renderer->GetDefaultTarget().Resize(width, height);
     m_screen_buffer = Framebuffer::Create();
     m_screen_buffer->AttachTexture(Texture::Create(

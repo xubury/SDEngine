@@ -66,15 +66,15 @@ void PostProcessSystem::OnPop() {
 }
 
 void PostProcessSystem::OnRender() {
-    Device::Instance().SetDepthMask(false);
-    Device::Instance().BlitFramebuffer(
+    device->SetDepthMask(false);
+    device->BlitFramebuffer(
         renderer->GetFramebuffer(), 0, m_post_target.GetFramebuffer(), 0,
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::LINEAR);
     if (m_is_bloom) {
         RenderBlur();
     }
     RenderPost();
-    Device::Instance().SetDepthMask(true);
+    device->SetDepthMask(true);
 }
 
 void PostProcessSystem::OnSizeEvent(const WindowSizeEvent &event) {
@@ -91,7 +91,7 @@ void PostProcessSystem::RenderBlur() {
     for (int i = 0; i < amount; ++i) {
         const int inputId = horizontal;
         const int outputId = !horizontal;
-        renderer->Begin(m_blur_target[outputId]);
+        device->SetTarget(m_blur_target[outputId]);
         m_blur_result = m_blur_target[outputId].GetTexture();
         m_blur_shader->SetBool("u_horizontal", horizontal);
         m_blur_shader->SetTexture("u_image",
@@ -99,13 +99,12 @@ void PostProcessSystem::RenderBlur() {
                                          : m_blur_target[inputId].GetTexture());
         renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
                          m_quad->GetIndexBuffer()->GetCount(), 0);
-        renderer->End();
         horizontal = !horizontal;
     }
 }
 
 void PostProcessSystem::RenderPost() {
-    renderer->Begin(renderer->GetDefaultTarget());
+    device->SetTarget(renderer->GetDefaultTarget());
     m_post_shader->SetBool("u_bloom", m_is_bloom);
     m_post_shader->SetFloat("u_bloomFactor", m_bloom_factor);
     m_post_shader->SetTexture("u_blur", m_blur_result);
@@ -118,7 +117,6 @@ void PostProcessSystem::RenderPost() {
     m_post_shader->Bind();
     renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
-    renderer->End();
 }
 
 void PostProcessSystem::SetExposure(float exposure) { m_exposure = exposure; }

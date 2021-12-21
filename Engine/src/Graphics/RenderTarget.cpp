@@ -1,11 +1,9 @@
-#include "Renderer/RenderTarget.hpp"
-#include "Renderer/Renderer.hpp"
-#include "Graphics/Device.hpp"
+#include "Graphics/RenderTarget.hpp"
 
 namespace SD {
 
 RenderTarget::RenderTarget(int width, int height)
-    : m_width(width), m_height(height), m_viewport(0, 0, width, height) {}
+    : m_width(width), m_height(height) {}
 
 void RenderTarget::CreateFramebuffer() {
     m_framebuffer = Framebuffer::Create();
@@ -51,7 +49,6 @@ void RenderTarget::Resize(int width, int height) {
     if (m_width != width || m_height != height) {
         m_width = width;
         m_height = height;
-        m_viewport.SetSize(0, 0, width, height);
         CreateFramebuffer();
     }
 }

@@ -154,25 +154,17 @@ GraphicsAPI SD_GRAPHICS_API GetGraphicsAPI();
 class SD_GRAPHICS_API Viewport {
    public:
     Viewport() = default;
-    Viewport(int x, int y, int width, int height) {
-        SetSize(x, y, width, height);
-    }
+    Viewport(int left, int top, int width, int height);
 
     int GetLeft() const;
-
-    int GetBottom() const;
     int GetTop() const;
 
-    int GetWidth() const { return m_width; }
-    int GetHeight() const { return m_height; }
+    int GetWidth() const;
+    int GetHeight() const;
 
-    void SetSize(int x, int y, int width, int height);
-    void SetRect(int left, int top, int right, int bottom);
+    void SetSize(int left, int top, int width, int height);
     glm::vec2 MapScreenToClip(const glm::ivec2 &screen) const;
     glm::ivec2 MapClipToScreen(const glm::vec2 &clip) const;
-
-    static int window_width;
-    static int window_height;
 
    private:
     int m_left;

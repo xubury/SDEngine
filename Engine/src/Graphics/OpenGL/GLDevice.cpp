@@ -28,7 +28,7 @@ static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
 }
 #endif
 
-GLDevice::GLDevice() {
+GLDevice::GLDevice(Context *context) : Device(context) {
 #ifdef DEBUG_BUILD
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -44,6 +44,12 @@ GLDevice::GLDevice() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     Enable(Operation::CULL_FACE);
+
+    if (context->GetMSAA() > 1) {
+        Enable(Operation::MULTISAMPLE);
+    } else {
+        Disable(Operation::MULTISAMPLE);
+    }
 }
 
 void GLDevice::DrawElements(MeshTopology topology, int count, size_t offset) {
@@ -67,15 +73,22 @@ void GLDevice::Clear(BufferBitMask bit) {
             Translate(bit & BufferBitMask::STENCIL_BUFFER_BIT));
 }
 
+Viewport GLDevice::GetViewport(const RenderTarget &target) {
+    return Viewport(0, m_context->GetHeight() - target.GetHeight(),
+                    target.GetWidth(), target.GetHeight());
+}
+
 void GLDevice::SetViewport(const Viewport &viewport) {
     // opengl define viewport origin at bottom-left
-    glViewport(viewport.GetLeft(), viewport.GetBottom(), viewport.GetWidth(),
-               viewport.GetHeight());
+    glViewport(
+        viewport.GetLeft(),
+        m_context->GetHeight() - viewport.GetHeight() - viewport.GetTop(),
+        viewport.GetWidth(), viewport.GetHeight());
 }
 
 void GLDevice::SetFramebuffer(Framebuffer *framebuffer) {
     if (framebuffer) {
-        framebuffer->Bind();
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->GetId());
     } else {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }

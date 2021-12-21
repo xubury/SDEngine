@@ -2,7 +2,7 @@
 #define SD_RENDER_TARGET_HPP
 
 #include "Utility/Base.hpp"
-#include "Renderer/Export.hpp"
+#include "Graphics/Export.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/Framebuffer.hpp"
 #include <vector>
@@ -10,8 +10,9 @@
 
 namespace SD {
 
-class SD_RENDERER_API RenderTarget {
+class SD_GRAPHICS_API RenderTarget {
    public:
+    RenderTarget() = default;
     RenderTarget(int width, int height);
 
     RenderTarget(const RenderTarget &) = delete;
@@ -36,9 +37,6 @@ class SD_RENDERER_API RenderTarget {
     int GetHeight() const;
     void Resize(int width, int height);
 
-    Viewport GetViewport() const { return m_viewport; }
-    void SetViewport(const Viewport &viewport) { m_viewport = viewport; }
-
    private:
     int m_width;
     int m_height;
@@ -46,8 +44,6 @@ class SD_RENDERER_API RenderTarget {
 
     std::vector<TextureSpec> m_texture_specs;
     std::vector<RenderbufferSpec> m_renderbuffer_specs;
-
-    Viewport m_viewport;
 };
 
 }  // namespace SD

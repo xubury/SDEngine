@@ -30,31 +30,23 @@ const std::string GetFaceName(CubeMapFace face) {
     return name.at(face);
 }
 
-int Viewport::window_height = 0;
-int Viewport::window_width = 0;
+Viewport::Viewport(int left, int top, int width, int height)
+    : m_left(left), m_top(top), m_width(width), m_height(height) {
+}
 
 int Viewport::GetLeft() const { return m_left; }
 
-int Viewport::GetBottom() const { return window_height - m_height - GetTop(); }
-
 int Viewport::GetTop() const { return m_top; }
 
-void Viewport::SetSize(int x, int y, int width, int height) {
-    m_width = width;
-    m_height = height;
-    m_left = x;
-    if (GetGraphicsAPI() == GraphicsAPI::OpenGL) {
-        m_top = window_height - height - y;
-    } else {
-        m_top = y;
-    }
-}
+int Viewport::GetWidth() const { return m_width; }
 
-void Viewport::SetRect(int left, int top, int right, int bottom) {
+int Viewport::GetHeight() const { return m_height; }
+
+void Viewport::SetSize(int left, int top, int width, int height) {
     m_left = left;
     m_top = top;
-    m_width = right - left;
-    m_height = bottom - top;
+    m_width = width;
+    m_height = height;
 }
 
 glm::vec2 Viewport::MapScreenToClip(const glm::ivec2 &screen) const {

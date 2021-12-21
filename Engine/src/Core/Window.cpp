@@ -2,7 +2,6 @@
 #include "Core/SDL.hpp"
 #include "Core/OpenGL/GLWindow.hpp"
 #include "Graphics/Graphics.hpp"
-#include "Renderer/RenderTarget.hpp"
 
 namespace SD {
 
@@ -38,10 +37,22 @@ bool Window::ShouldClose() { return m_shouldClose; }
 
 void Window::SetShouldClose(bool shouldClose) { m_shouldClose = shouldClose; }
 
-glm::ivec2 Window::GetSize() {
+glm::ivec2 Window::GetSize() const {
     glm::ivec2 size;
     SDL_GetWindowSize(m_window, &size.x, &size.y);
     return size;
+}
+
+int Window::GetWidth() const {
+    int width = 0;
+    SDL_GetWindowSize(m_window, &width, nullptr);
+    return width;
+}
+
+int Window::GetHeight() const {
+    int height = 0;
+    SDL_GetWindowSize(m_window, nullptr, &height);
+    return height;
 }
 
 SDL_Window *Window::GetHandle() { return m_window; }

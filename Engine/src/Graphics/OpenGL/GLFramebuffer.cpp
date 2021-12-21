@@ -70,8 +70,6 @@ void GLFramebuffer::SetDrawable(
     }
 }
 
-void GLFramebuffer::Bind() { glBindFramebuffer(GL_FRAMEBUFFER, m_id); }
-
 void GLFramebuffer::ReadPixels(uint32_t attachment_id, int level, int x, int y,
                                int z, int w, int h, int d, size_t size,
                                void *data) const {

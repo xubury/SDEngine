@@ -12,26 +12,25 @@ const static std::array<glm::vec4, 4> QUAD_VERTEX_POS = {
 const static std::array<glm::vec2, 2> QUAD_UV = {glm::vec2(0, 0),
                                                  glm::vec2(1, 1)};
 
-Renderer::Renderer(int width, int height, int msaa) : m_target(width, height) {
+Renderer::Renderer(Device* device) : m_device(device) {
     SD_CORE_TRACE("Initializing Renderer");
     m_camera_UBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
                                          BufferIOType::DYNAMIC);
 
-    if (msaa > 1) {
-        Device::Instance().Enable(Operation::MULTISAMPLE);
-    } else {
-        Device::Instance().Disable(Operation::MULTISAMPLE);
-    }
     InitRenderer2D();
 
-    m_target.AddTexture(TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE,
-                                    DataFormat::RGBA, DataFormatType::UBYTE,
-                                    TextureWrap::EDGE));
-    m_target.AddTexture(TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE,
-                                    DataFormat::DEPTH, DataFormatType::FLOAT16,
-                                    TextureWrap::EDGE));
+    glm::ivec2 size = device->GetSize();
+    m_target.Resize(size.x, size.y);
+    m_target.AddTexture(TextureSpec(
+        m_device->GetMSAA(), TextureType::TEX_2D_MULTISAMPLE, DataFormat::RGBA,
+        DataFormatType::UBYTE, TextureWrap::EDGE));
+    m_target.AddTexture(TextureSpec(
+        m_device->GetMSAA(), TextureType::TEX_2D_MULTISAMPLE, DataFormat::DEPTH,
+        DataFormatType::FLOAT16, TextureWrap::EDGE));
     m_target.CreateFramebuffer();
 }
+
+Renderer::~Renderer() { SD_CORE_TRACE("Deleting Renderer"); }
 
 void Renderer::InitRenderer2D() {
     // Initializing line vao
@@ -111,11 +110,11 @@ void Renderer::InitRenderer2D() {
 void Renderer::Submit(const VertexArray& vao, MeshTopology topology,
                       size_t count, size_t offset) {
     vao.Bind();
-    Device::Instance().DrawElements(topology, count, offset);
+    m_device->DrawElements(topology, count, offset);
 }
 
 void Renderer::DrawMesh(const Mesh& mesh) {
-    Device::Instance().SetPolygonMode(mesh.GetPolygonMode(), Face::BOTH);
+    m_device->SetPolygonMode(mesh.GetPolygonMode(), Face::BOTH);
     VertexArray* vao = mesh.GetVertexArray();
     SD_CORE_ASSERT(vao, "Invalid mesh!");
     Renderer::Submit(*vao, mesh.GetTopology(),
@@ -126,14 +125,7 @@ void Renderer::SetupShaderUBO(Shader& shader) {
     shader.SetUniformBuffer("Camera", *m_camera_UBO);
 }
 
-void Renderer::Begin(RenderTarget& target) {
-    Device::Instance().SetFramebuffer(target.GetFramebuffer());
-    Device::Instance().SetViewport(target.GetViewport());
-}
-
-void Renderer::Begin(RenderTarget& target, Shader& shader, Camera& camera) {
-    Device::Instance().SetFramebuffer(target.GetFramebuffer());
-    Device::Instance().SetViewport(target.GetViewport());
+void Renderer::Begin(Shader& shader, Camera& camera) {
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
@@ -141,9 +133,7 @@ void Renderer::Begin(RenderTarget& target, Shader& shader, Camera& camera) {
     SetupShaderUBO(shader);
 }
 
-void Renderer::Begin(RenderTarget& target, Camera& camera) {
-    Device::Instance().SetFramebuffer(target.GetFramebuffer());
-    Device::Instance().SetViewport(target.GetViewport());
+void Renderer::Begin(Camera& camera) {
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
@@ -207,8 +197,7 @@ void Renderer::FlushLines() {
                                       sizeof(Line) * offset);
         m_line_shader->Bind();
         m_data.line_vao->Bind();
-        Device::Instance().DrawArrays(MeshTopology::LINES, 0,
-                                      m_data.line_vertex_cnt);
+        m_device->DrawArrays(MeshTopology::LINES, 0, m_data.line_vertex_cnt);
     }
 }
 
@@ -293,7 +282,7 @@ void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color) {
         NextQuadBatch();
     }
     for (uint32_t i = 0; i < 4; ++i) {
-        glm::ivec2 uv_index = Device::Instance().GetUVIndex(i);
+        glm::ivec2 uv_index = m_device->GetUVIndex(i);
         m_data.quad_buffer_ptr->vertices[i].position =
             transform * QUAD_VERTEX_POS[i];
         m_data.quad_buffer_ptr->vertices[i].color = color;
@@ -340,7 +329,7 @@ void Renderer::DrawTexture(const Ref<Texture>& texture,
     }
 
     for (uint32_t i = 0; i < 4; ++i) {
-        glm::ivec2 uv_index = Device::Instance().GetUVIndex(i);
+        glm::ivec2 uv_index = m_device->GetUVIndex(i);
         m_data.quad_buffer_ptr->vertices[i].position =
             transform * QUAD_VERTEX_POS[i];
         m_data.quad_buffer_ptr->vertices[i].color = color;
@@ -434,14 +423,11 @@ void Renderer::DrawCircle(const glm::mat4& transform, const glm::vec4& color,
 }
 
 void Renderer::RenderToScreen() {
-    Device::Instance().SetFramebuffer(nullptr);
-    Device::Instance().Clear();
-    Device::Instance().BlitFramebuffer(m_target.GetFramebuffer(), 0, nullptr, 0,
-                                       BufferBitMask::COLOR_BUFFER_BIT,
-                                       BlitFilter::NEAREST);
-    const float rgba[4] = {0, 0, 0, 0};
-    m_target.GetFramebuffer()->ClearAttachment(0, rgba);
-    m_target.GetFramebuffer()->ClearDepth();
+    m_device->SetFramebuffer(nullptr);
+    m_device->Clear();
+    m_device->BlitFramebuffer(m_target.GetFramebuffer(), 0, nullptr, 0,
+                              BufferBitMask::COLOR_BUFFER_BIT,
+                              BlitFilter::NEAREST);
 }
 
 }  // namespace SD

@@ -26,8 +26,6 @@ class GLFramebuffer : public Framebuffer {
                     int w, int h, int d, size_t size,
                     void *data) const override;
 
-    void Bind() override;
-
     void ClearDepth(const float depth) override;
 
     void ClearAttachment(uint32_t attachment_id, const int *value) override;

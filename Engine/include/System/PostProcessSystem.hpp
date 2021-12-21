@@ -2,9 +2,9 @@
 #define SD_POST_PROCESS_SYSTEM_HPP
 
 #include "System/Export.hpp"
-#include "Graphics/VertexArray.hpp"
 #include "Core/System.hpp"
-#include "Renderer/RenderTarget.hpp"
+#include "Graphics/VertexArray.hpp"
+#include "Graphics/RenderTarget.hpp"
 #include "Graphics/Shader.hpp"
 
 namespace SD {

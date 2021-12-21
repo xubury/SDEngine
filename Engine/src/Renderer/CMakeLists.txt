@@ -12,7 +12,6 @@ set(Renderer_Include
     ${Include_Root}/Export.hpp
     ${Include_Root}/Light.hpp
     ${Include_Root}/Renderer.hpp
-    ${Include_Root}/RenderTarget.hpp
     ${Include_Root}/Skybox.hpp
     ${Include_Root}/Terrain.hpp
     ${Include_Root}/Font.hpp
@@ -28,7 +27,6 @@ set(Renderer_Src
     ${Src_Root}/Camera.cpp
     ${Src_Root}/Light.cpp
     ${Src_Root}/Renderer.cpp
-    ${Src_Root}/RenderTarget.cpp
     ${Src_Root}/Skybox.cpp
     ${Src_Root}/Terrain.cpp
     ${Src_Root}/Font.cpp

@@ -14,7 +14,8 @@ void SpriteRenderSystem::OnPop() {}
 void SpriteRenderSystem::OnRender() {
     auto textView = scene->view<TransformComponent, TextComponent>();
 
-    renderer->Begin(renderer->GetDefaultTarget(), *scene->GetCamera());
+    device->SetTarget(renderer->GetDefaultTarget());
+    renderer->Begin(*scene->GetCamera());
     textView.each([this](const TransformComponent &transformComp,
                          const TextComponent &textComp) {
         renderer->SetTextOrigin(0, 0);

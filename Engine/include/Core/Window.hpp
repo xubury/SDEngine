@@ -3,6 +3,7 @@
 
 #include "Utility/Base.hpp"
 #include "Core/Export.hpp"
+#include "Graphics/Context.hpp"
 
 #include <glm/glm.hpp>
 #include <string>
@@ -24,9 +25,7 @@ struct SD_CORE_API WindowProp {
     WindowProp();
 };
 
-class RenderTarget;
-
-class SD_CORE_API Window {
+class SD_CORE_API Window : public Context {
    public:
     static Ref<Window> Create(const WindowProp &property);
 
@@ -35,18 +34,17 @@ class SD_CORE_API Window {
     Window(const Window &) = delete;
     Window &operator=(const Window &) = delete;
 
-    glm::ivec2 GetSize();
+    glm::ivec2 GetSize() const override;
+    int GetWidth() const override;
+    int GetHeight() const override;
 
     SDL_Window *GetHandle();
 
     virtual void *GetGraphicsContext() = 0;
 
-    virtual uint8_t GetMSAA() const = 0;
-
     virtual bool GetIsVSync() const = 0;
 
     std::string GetTitle() const;
-
 
    protected:
     Window() = default;

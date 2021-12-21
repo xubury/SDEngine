@@ -42,8 +42,6 @@ class SD_GRAPHICS_API Framebuffer {
     virtual Texture *GetTexture(uint32_t attachment_id = 0) = 0;
     virtual const Texture *GetTexture(uint32_t attachment_id = 0) const = 0;
 
-    virtual void Bind() = 0;
-
    protected:
     Framebuffer() = default;
 };

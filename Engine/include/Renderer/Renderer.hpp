@@ -1,8 +1,8 @@
 #ifndef SD_RENDERER_HPP
 #define SD_RENDERER_HPP
 
-#include "Renderer/RenderTarget.hpp"
 #include "Graphics/Graphics.hpp"
+#include "Graphics/RenderTarget.hpp"
 #include "Graphics/Device.hpp"
 #include "Graphics/Shader.hpp"
 #include "Renderer/Mesh.hpp"
@@ -89,8 +89,8 @@ struct SD_RENDERER_API Renderer2DData {
 
 class SD_RENDERER_API Renderer {
    public:
-    Renderer(int width, int height, int msaa);
-    ~Renderer() { SD_CORE_TRACE("Deleting Renderer"); }
+    Renderer(Device *device);
+    ~Renderer();
     Renderer(const Renderer &) = delete;
     Renderer &operator=(const Renderer &) = delete;
 
@@ -102,9 +102,8 @@ class SD_RENDERER_API Renderer {
     void StartBatch();
     void Flush();
 
-    void Begin(RenderTarget &target);
-    void Begin(RenderTarget &target, Camera &camera);
-    void Begin(RenderTarget &target, Shader &shader, Camera &camera);
+    void Begin(Camera &camera);
+    void Begin(Shader &shader, Camera &camera);
     void End();
 
     void SetTextOrigin(int x, int y);
@@ -167,6 +166,8 @@ class SD_RENDERER_API Renderer {
     void NextCircleBatch();
 
     void SetupShaderUBO(Shader &shader);
+
+    Device *m_device;
 
     Ref<UniformBuffer> m_camera_UBO;
 

@@ -7,7 +7,7 @@ namespace SD {
 
 class GLDevice : public Device {
    public:
-    GLDevice();
+    GLDevice(Context *context);
 
     void DrawElements(MeshTopology topology, int count, size_t offset) override;
 
@@ -18,6 +18,8 @@ class GLDevice : public Device {
     void SetClearColor(float r, float g, float b, float a) override;
 
     void Clear(BufferBitMask bit) override;
+
+    Viewport GetViewport(const RenderTarget &target) override;
 
     void SetViewport(const Viewport &viewport) override;
 

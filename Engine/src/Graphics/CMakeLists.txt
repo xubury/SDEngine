@@ -32,6 +32,7 @@ set(Graphics_Include
     ${Include_Root}/Device.hpp
     ${Include_Root}/Framebuffer.hpp
     ${Include_Root}/Renderbuffer.hpp
+    ${Include_Root}/RenderTarget.hpp
     ${Include_Root}/Graphics.hpp
     ${Include_Root}/Shader.hpp
     ${Include_Root}/Texture.hpp
@@ -45,6 +46,7 @@ set(Graphics_Src
     ${Src_Root}/Device.cpp
     ${Src_Root}/Framebuffer.cpp
     ${Src_Root}/Renderbuffer.cpp
+    ${Src_Root}/RenderTarget.cpp
     ${Src_Root}/Graphics.cpp
     ${Src_Root}/Shader.cpp
     ${Src_Root}/Texture.cpp

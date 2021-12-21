@@ -47,7 +47,8 @@ void ProfileSystem::OnRender() {
         "\nFrame Time:" +
         std::to_string(static_cast<uint32_t>(m_fps.GetFrameTime())) + "ms";
 
-    renderer->Begin(renderer->GetDefaultTarget(), m_camera);
+    device->SetTarget(renderer->GetDefaultTarget());
+    renderer->Begin(m_camera);
     renderer->SetTextOrigin(-m_camera.GetNearWidth() / 2,
                             m_camera.GetNearHeight() / 2 - FONT_SIZE);
 

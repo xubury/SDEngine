@@ -2,7 +2,9 @@
 #define SD_DEVICE_HPP
 
 #include "Utility/Base.hpp"
+#include "Graphics/RenderTarget.hpp"
 #include "Graphics/Graphics.hpp"
+#include "Graphics/Context.hpp"
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/Framebuffer.hpp"
 
@@ -10,12 +12,7 @@ namespace SD {
 
 class SD_GRAPHICS_API Device {
    public:
-    static Ref<Device> Create();
-
-    static Device &Instance() {
-        static Ref<Device> s_instance = Device::Create();
-        return *s_instance;
-    }
+    static Ref<Device> Create(Context *context);
 
     virtual ~Device() = default;
 
@@ -37,7 +34,11 @@ class SD_GRAPHICS_API Device {
                             BufferBitMask::DEPTH_BUFFER_BIT |
                             BufferBitMask::STENCIL_BUFFER_BIT) = 0;
 
+    void SetTarget(RenderTarget &target);
+
     virtual void SetViewport(const Viewport &viewport) = 0;
+
+    virtual Viewport GetViewport(const RenderTarget &target) = 0;
 
     virtual void SetFramebuffer(Framebuffer *framebuffer) = 0;
 
@@ -61,8 +62,16 @@ class SD_GRAPHICS_API Device {
 
     virtual const glm::ivec2 GetUVIndex(int index) const = 0;
 
+    glm::ivec2 GetSize() const;
+    int GetWidth() const;
+    int GetHeight() const;
+
+    uint8_t GetMSAA() const;
+
    protected:
-    Device() = default;
+    Device(Context *context);
+
+    Context *m_context;
 };
 
 }  // namespace SD

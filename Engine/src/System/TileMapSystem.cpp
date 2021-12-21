@@ -40,8 +40,9 @@ void TileMapSystem::OnPush() {
 void TileMapSystem::OnPop() { dispatcher->RemoveHandler(m_size_handler); }
 
 void TileMapSystem::OnRender() {
-    Device::Instance().Disable(Operation::DEPTH_TEST);
-    renderer->Begin(renderer->GetDefaultTarget(), m_camera);
+    device->SetTarget(renderer->GetDefaultTarget());
+    device->Disable(Operation::DEPTH_TEST);
+    renderer->Begin(m_camera);
     Ref<Texture> tex = m_tile_map.GetTexture();
     renderer->DrawTexture(tex, glm::vec3(0, 0, -1), glm::quat(1, 0, 0, 0),
                           glm::vec2(tex->GetWidth(), tex->GetHeight()));
@@ -51,7 +52,7 @@ void TileMapSystem::OnRender() {
     renderer->DrawQuad(glm::vec3(0), glm::quat(1, 0, 0, 0), glm::vec2(10, 10),
                        glm::vec4(1, 0, 0, 1));
     renderer->End();
-    Device::Instance().Enable(Operation::DEPTH_TEST);
+    device->Enable(Operation::DEPTH_TEST);
 }
 
 void TileMapSystem::SetCoordinate(const glm::vec2 &pos) {
