@@ -204,16 +204,6 @@ void Renderer::FlushLines() {
 void Renderer::FlushQuads() {
     if (m_data.quad_index_cnt) {
         size_t offset = m_data.quad_buffer_ptr - m_data.quad_buffer.data();
-        glm::vec3 viewPos = -m_camera_data.view[3];
-
-        // sort the drawing order to render transparent texture properly.
-        std::sort(m_data.quad_buffer.begin(),
-                  m_data.quad_buffer.begin() + offset,
-                  [&viewPos](const Quad& lhs, const Quad& rhs) {
-                      return glm::distance2(lhs.GetCenter(), viewPos) >
-                             glm::distance2(rhs.GetCenter(), viewPos);
-                  });
-
         m_data.quad_vao->UpdateBuffer(0, m_data.quad_buffer.data(),
                                       offset * sizeof(Quad));
 

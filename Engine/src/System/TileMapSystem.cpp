@@ -1,7 +1,5 @@
 #include "System/TileMapSystem.hpp"
 #include "Core/Input.hpp"
-#include "ImGui/ImGuiWidget.hpp"
-#include "ImGui/FileDialog.hpp"
 
 const int TILE_SIZE = 40;
 
@@ -33,21 +31,19 @@ void TileMapSystem::OnPop() {}
 void TileMapSystem::OnImGui() {
     ImGui::Begin("TileMap System");
     {
-        static bool fileDialogOpen = false;
-        static ImFileDialogInfo fileDialogInfo;
-        std::string path = asset->GetAssetPath(m_map_id);
+        std::string path = m_fileDialogInfo.result_path.string();
         ImGui::InputText("##Path", path.data(), path.size(),
                          ImGuiInputTextFlags_ReadOnly);
         ImGui::SameLine();
         if (ImGui::Button("Open")) {
-            fileDialogOpen = true;
-            fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
-            fileDialogInfo.title = "Open File";
-            fileDialogInfo.file_name = "";
-            fileDialogInfo.directory_path = asset->GetRootPath();
+            m_fileDialogOpen = true;
+            m_fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
+            m_fileDialogInfo.title = "Open File";
+            m_fileDialogInfo.file_name = "";
+            m_fileDialogInfo.directory_path = asset->GetRootPath();
         }
-        if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
-            auto bmp = asset->LoadAndGet<Bitmap>(fileDialogInfo.result_path);
+        if (ImGui::FileDialog(&m_fileDialogOpen, &m_fileDialogInfo)) {
+            auto bmp = asset->LoadAndGet<Bitmap>(m_fileDialogInfo.result_path);
             m_map.SetTileMap(*bmp);
         }
         int size = m_map.GetTileSize();
@@ -59,18 +55,19 @@ void TileMapSystem::OnImGui() {
         auto texture = m_map.GetTexture();
 
         if (texture) {
-            int tile_size = m_map.GetTileSize();
-            ImVec2 texture_size =
-                ImVec2(texture->GetWidth(), texture->GetHeight());
-            int cols = std::ceil(texture_size.x / tile_size);
-            int rows = std::ceil(texture_size.y / tile_size);
+            ImVec2 wsize = ImGui::GetContentRegionAvail();
+            wsize.y = wsize.x * texture->GetHeight() / texture->GetWidth();
+            float tile_size =
+                m_map.GetTileSize() * wsize.x / texture->GetWidth();
+            int cols = std::ceil(wsize.x / tile_size);
+            int rows = std::ceil(wsize.y / tile_size);
             ImDrawList *DrawList = ImGui::GetWindowDrawList();
             ImGuiWindow *window = ImGui::GetCurrentWindow();
 
             ImRect bb(window->DC.CursorPos,
                       ImVec2(window->DC.CursorPos.x + cols * tile_size,
                              window->DC.CursorPos.y + rows * tile_size));
-            ImGui::DrawTexture(*texture, texture_size);
+            ImGui::DrawTexture(*texture, wsize);
             for (int i = 0; i <= cols; ++i) {
                 DrawList->AddLine(ImVec2(bb.Min.x + i * tile_size, bb.Min.y),
                                   ImVec2(bb.Min.x + i * tile_size, bb.Max.y),
@@ -84,7 +81,9 @@ void TileMapSystem::OnImGui() {
             if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0)) {
                 auto [mouse_x, mouse_y] = ImGui::GetMousePos();
                 auto [top, left] = bb.GetTL();
-                m_tile.Set(m_map, glm::vec2(mouse_x - top, mouse_y - left));
+                glm::vec2 uv = glm::vec2(mouse_x - top, mouse_y - left);
+                uv = uv / wsize.x * static_cast<float>(texture->GetWidth());
+                m_tile.Set(m_map, uv);
             }
         }
     }
@@ -94,7 +93,6 @@ void TileMapSystem::OnImGui() {
 void TileMapSystem::OnRender() {
     device->SetTarget(renderer->GetDefaultTarget());
     renderer->Begin(*scene->GetCamera());
-    device->Disable(Operation::DEPTH_TEST);
 
     for (auto &[pos, tile] : m_contents) {
         renderer->DrawTexture(tile.GetTileMapTexture(), tile.GetTileMapUV(),
@@ -106,10 +104,7 @@ void TileMapSystem::OnRender() {
     renderer->DrawTexture(m_outline, {glm::vec2(0), TILE_CNT},
                           glm::vec3(-TILE_SIZE / 2.f, -TILE_SIZE / 2.f, 0),
                           glm::quat(1, 0, 0, 0), TILE_CNT * TILE_SIZE);
-    renderer->DrawQuad(glm::vec3(0), glm::quat(1, 0, 0, 0), glm::vec2(10, 10),
-                       glm::vec4(1, 0, 0, 1));
     renderer->End();
-    device->Enable(Operation::DEPTH_TEST);
 }
 
 void TileMapSystem::Add(const glm::vec2 &world) {

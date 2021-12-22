@@ -5,6 +5,8 @@
 #include "Core/System.hpp"
 #include "TileMap/TileMap.hpp"
 #include "TileMap/Tile.hpp"
+#include "ImGui/ImGuiWidget.hpp"
+#include "ImGui/FileDialog.hpp"
 
 namespace SD {
 
@@ -30,9 +32,11 @@ class SD_SYSTEM_API TileMapSystem : public System {
 
     std::vector<std::pair<glm::ivec2, Tile>> m_contents;
 
-    ResourceId m_map_id;
     TileMap m_map;
     Tile m_tile;
+
+    bool m_fileDialogOpen;
+    ImFileDialogInfo m_fileDialogInfo;
 };
 
 }  // namespace SD
