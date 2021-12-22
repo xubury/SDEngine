@@ -2,8 +2,8 @@
 #define SD_TILE_MAP_HPP
 
 #include "TileMap/Export.hpp"
-#include "TileMap/Tile.hpp"
 
+#include "Renderer/Bitmap.hpp"
 #include "Graphics/Texture.hpp"
 
 #include <glm/glm.hpp>
@@ -13,32 +13,18 @@ namespace SD {
 
 class SD_TILE_MAP_API TileMap {
    public:
-    TileMap(const glm::ivec2 &grid_cnt, float grid_size);
+    TileMap() = default;
 
-    Ref<Texture> GetTexture() { return m_map; }
+    void SetTileSize(int tile_size) { m_tile_size = tile_size; }
+    int GetTileSize() const { return m_tile_size; }
 
-    Ref<Texture> GetOutline() { return m_outline; }
-
-    void Set(const glm::ivec2 &pos, const Tile &tile);
-
-    const Tile &Get(const glm::ivec2 &pos) const;
-
-    Tile &At(const glm::ivec2 &pos);
-
-    glm::ivec2 MapWorldToTile(const glm::vec2 &world);
-    glm::vec2 MapTileToWorld(const glm::ivec2 &tile);
-
-    bool IsInBound(const glm::ivec2 &pos) const;
+    void SetTileMap(const Bitmap &bitmap);
+    const Ref<Texture> GetTexture() const { return m_map; }
 
    private:
-    glm::ivec2 m_tile_cnt;
-    float m_grid_size;
-    glm::vec2 m_center;
-
-    std::vector<Tile> m_tiles;
+    int m_tile_size{50};
 
     Ref<Texture> m_map;
-    Ref<Texture> m_outline;
 };
 
 };  // namespace SD

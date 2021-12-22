@@ -144,6 +144,21 @@ glm::vec3 Camera::MapWorldToClip(const glm::vec3 &world) const {
     return clip;
 }
 
+Math::Ray Camera::ComputeCameraRay(const glm::vec2 &clip) const {
+    glm::vec4 near(clip, m_near_z, 1.0f);
+    glm::vec4 far(clip, m_far_z, 1.0f);
+    glm::mat4 inv_pv = glm::inverse(GetViewPorjection());
+
+    near = inv_pv * near;
+    near /= near.w;
+
+    far = inv_pv * far;
+    far /= far.w;
+
+    Math::Ray ray(near, far - near);
+    return ray;
+}
+
 void Camera::SetFOV(float fov) {
     m_fov = fov;
     m_projection_outdated = true;

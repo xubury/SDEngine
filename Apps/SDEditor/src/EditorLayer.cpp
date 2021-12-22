@@ -50,7 +50,7 @@ void EditorLayer::OnInit() {
     m_skybox_system = CreateSystem<SkyboxSystem>();
     m_sprite_system = CreateSystem<SpriteRenderSystem>();
     m_post_process_system = CreateSystem<PostProcessSystem>(m_width, m_height);
-    m_tile_map_system = CreateSystem<TileMapSystem>(m_width, m_height);
+    m_tile_map_system = CreateSystem<TileMapSystem>();
     m_profile_system = CreateSystem<ProfileSystem>(m_width, m_height);
 
     auto image = asset->LoadAndGet<Bitmap>("icons/light.png");
@@ -112,15 +112,13 @@ void EditorLayer::OnTick(float dt) {
         system->OnTick(dt);
     }
     if (m_is_viewport_hovered && Input::IsMousePressed(MouseButton::LEFT)) {
-        glm::vec2 pos = Input::GetMouseCoord();
-        if (!m_hide) {
-            pos = m_viewport.MapScreenToClip(pos);
-        } else {
-            const auto &viewport =
-                device->GetViewport(renderer->GetDefaultTarget());
-            pos = viewport.MapScreenToClip(pos);
+        glm::vec2 clip = m_viewport.MapScreenToClip(Input::GetMouseCoord());
+        Math::Ray ray = scene->GetCamera()->ComputeCameraRay(clip);
+        Math::Plane plane(glm::vec3(0, 0, 1), glm::vec3(0));
+        glm::vec3 world;
+        if (Math::IntersectRayPlane(ray, plane, world)) {
+            m_tile_map_system->Add(world);
         }
-        m_tile_map_system->SetCoordinate(pos);
     }
 }
 
@@ -281,7 +279,8 @@ void EditorLayer::OnImGui() {
         }
         m_is_viewport_focused = ImGui::IsWindowFocused();
         m_is_viewport_hovered = ImGui::IsWindowHovered();
-        ImGui::DrawTexture(*m_screen_buffer->GetTexture(), wsize);
+        ImGui::DrawTexture(*m_screen_buffer->GetTexture(), wsize, ImVec2(0, 1),
+                           ImVec2(1, 0));
         ImGuizmo::SetRect(m_viewport.GetLeft(), m_viewport.GetTop(),
                           m_viewport.GetWidth(), m_viewport.GetHeight());
         ImGuizmo::SetDrawlist();
@@ -308,17 +307,18 @@ void EditorLayer::OnImGui() {
             auto [mouseX, mouseY] = ImGui::GetMousePos();
             mouseX -= m_viewport.GetLeft();
             mouseY = m_viewport.GetHeight() - mouseY + m_viewport.GetTop();
-            entt::entity entity = Entity::INVALID_ID;
+            entt::entity entity_id = Entity::INVALID_ID;
             auto entity_tex =
                 m_debug_gbuffer->GetTexture(GeometryBufferType::G_ENTITY_ID);
             // out of bound check
             if (mouseX > 0 && mouseY > 0 && mouseX < entity_tex->GetWidth() &&
                 mouseY < entity_tex->GetHeight()) {
                 entity_tex->ReadPixels(0, mouseX, mouseY, 0, 1, 1, 1,
-                                       sizeof(entity), &entity);
+                                       sizeof(entity_id), &entity_id);
             }
-            if (entity != Entity::INVALID_ID) {
-                m_scene_panel->SetSelectedEntity({entity, scene.get()});
+            if (entity_id != Entity::INVALID_ID) {
+                Entity entity(entity_id, scene.get());
+                m_scene_panel->SetSelectedEntity(entity);
             }
         }
     }

@@ -12,6 +12,20 @@ namespace Math {
 
 constexpr float PI = 3.14159265358979323846;
 
+struct SD_UTILITY_API Ray {
+    Ray(const glm::vec3 &origin, const glm::vec3 &direction)
+        : origin(origin), direction(direction) {}
+    glm::vec3 origin;
+    glm::vec3 direction;
+};
+
+struct SD_UTILITY_API Plane {
+    Plane(const glm::vec3 &normal, const glm::vec3 &point)
+        : normal(normal), point(point) {}
+    glm::vec3 normal;
+    glm::vec3 point;
+};
+
 template <typename T>
 inline T Lerp(T a, T b, float f) {
     return a + f * (b - a);
@@ -36,12 +50,22 @@ inline void BaryCentric(const glm::vec<L, T, Q> &a, const glm::vec<L, T, Q> &b,
     u = 1.0f - v - w;
 }
 
-}  // namespace Math
+inline bool IntersectRayPlane(const Ray &ray, const Plane &plane,
+                              glm::vec3 &world) {
+    float numer = glm::dot(plane.normal, ray.origin) -
+                  glm::dot(plane.normal, plane.point);
+    float denom = glm::dot(plane.normal, ray.direction);
 
-struct SD_UTILITY_API Ray {
-    glm::vec3 origin;
-    glm::vec3 direction;
-};
+    // orthogonal, can't intercect
+    if (std::fabs(denom) < std::numeric_limits<float>::epsilon()) {
+        return false;
+    }
+
+    world = -numer / denom * ray.direction + ray.origin;
+    return true;
+}
+
+}  // namespace Math
 
 struct SD_UTILITY_API Rect {
     float x;

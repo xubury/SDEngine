@@ -5,6 +5,7 @@
 #include "Core/Export.hpp"
 #include "Core/Keyboard.hpp"
 #include "Core/Mouse.hpp"
+#include "ECS/Entity.hpp"
 
 namespace SD {
 

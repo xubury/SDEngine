@@ -4,29 +4,35 @@
 #include "System/Export.hpp"
 #include "Core/System.hpp"
 #include "TileMap/TileMap.hpp"
+#include "TileMap/Tile.hpp"
 
 namespace SD {
 
 class SD_SYSTEM_API TileMapSystem : public System {
    public:
-    TileMapSystem(int width, int height);
+    TileMapSystem();
 
     void OnTick(float dt) override;
 
     void OnPush() override;
     void OnPop() override;
+
+    void OnImGui() override;
     void OnRender() override;
 
-    void SetCoordinate(const glm::vec2 &pos);
+    void Add(const glm::vec2 &pos);
+
+    glm::ivec2 MapWorldToTile(const glm::vec2 &world);
+    glm::vec2 MapTileToWorld(const glm::ivec2 &tile);
 
    private:
-    TileMap m_tile_map;
+    Ref<Texture> m_outline;
 
-    Camera m_camera;
+    std::vector<std::pair<glm::ivec2, Tile>> m_contents;
 
-    HandlerRegistration m_size_handler;
-
-    glm::ivec2 m_active_tile;
+    ResourceId m_map_id;
+    TileMap m_map;
+    Tile m_tile;
 };
 
 }  // namespace SD

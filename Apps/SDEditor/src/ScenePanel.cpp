@@ -120,7 +120,7 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
     bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(entt::entity)entity,
                                     flags, "%s", tag.c_str());
     if (ImGui::IsItemClicked(0)) {
-        m_selected_entity = entity;
+        SetSelectedEntity(entity);
     }
 
     if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {

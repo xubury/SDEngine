@@ -8,6 +8,7 @@
 #include "ImGui/FileDialog.hpp"
 #include "ECS/Component.hpp"
 #include "ImGuizmo.h"
+#include "TileMap/Tile.hpp"
 
 namespace SD {
 

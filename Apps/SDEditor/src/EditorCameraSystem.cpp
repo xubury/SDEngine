@@ -14,7 +14,9 @@ EditorCameraSystem::EditorCameraSystem(uint32_t width, uint32_t height)
       m_mouse_smooth_movement(0),
       m_mouse_movement(0),
       m_camera(CameraType::PERSPECTIVE, glm::radians(45.f), m_width, m_height,
-               0.1f, 1000.f) {}
+               0.1f, 1000.f) {
+    m_camera.SetWorldPosition(glm::vec3(0, 0, 1));
+}
 
 void EditorCameraSystem::OnInit() { ActiveEditorCam(true); }
 
@@ -43,10 +45,18 @@ void EditorCameraSystem::OnSizeEvent(const WindowSizeEvent &event) {
 
 void EditorCameraSystem::OnTick(float dt) {
     if (Input::IsKeyDown(Keycode::W)) {
-        m_camera.TranslateWorld(-m_camera.GetWorldFront());
+        if (m_camera.GetCameraType() == CameraType::ORTHOGRAPHIC) {
+            m_camera.TranslateWorld(m_camera.GetWorldUp());
+        } else {
+            m_camera.TranslateWorld(-m_camera.GetWorldFront());
+        }
     }
     if (Input::IsKeyDown(Keycode::S)) {
-        m_camera.TranslateWorld(m_camera.GetWorldFront());
+        if (m_camera.GetCameraType() == CameraType::ORTHOGRAPHIC) {
+            m_camera.TranslateWorld(-m_camera.GetWorldUp());
+        } else {
+            m_camera.TranslateWorld(m_camera.GetWorldFront());
+        }
     }
     if (Input::IsKeyDown(Keycode::A)) {
         m_camera.TranslateWorld(-m_camera.GetWorldRight());

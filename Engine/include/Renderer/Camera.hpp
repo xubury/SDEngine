@@ -4,6 +4,7 @@
 #include "Renderer/Export.hpp"
 #include "Utility/Base.hpp"
 #include "Utility/Transform.hpp"
+#include "Utility/Math.hpp"
 
 #include "Graphics/Graphics.hpp"
 
@@ -57,6 +58,7 @@ class SD_RENDERER_API Camera {
 
     glm::vec3 MapClipToWorld(const glm::vec2 &pos) const;
     glm::vec3 MapWorldToClip(const glm::vec3 &pos) const;
+    Math::Ray ComputeCameraRay(const glm::vec2 &clip) const;
 
     void SetFOV(float fov);
     float GetFOV() const;
