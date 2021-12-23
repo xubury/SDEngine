@@ -1,10 +1,12 @@
 #include "EditorCameraSystem.hpp"
 #include "Core/Input.hpp"
+#include "ImGui/ImGuiWidget.hpp"
 
 namespace SD {
 
 const float ROTATION_SPEED = 0.1;
 const float SMOOTHNESS = 10;
+const float MAX_FAR_Z = 1000;
 
 EditorCameraSystem::EditorCameraSystem(uint32_t width, uint32_t height)
     : System("EditorCameraSystem"),
@@ -14,7 +16,7 @@ EditorCameraSystem::EditorCameraSystem(uint32_t width, uint32_t height)
       m_mouse_smooth_movement(0),
       m_mouse_movement(0),
       m_camera(CameraType::PERSPECTIVE, glm::radians(45.f), m_width, m_height,
-               0.1f, 1000.f) {
+               0.1f, MAX_FAR_Z) {
     m_camera.SetWorldPosition(glm::vec3(0, 0, 1));
 }
 
@@ -43,26 +45,56 @@ void EditorCameraSystem::OnSizeEvent(const WindowSizeEvent &event) {
     m_camera.Resize(event.width, event.height);
 }
 
-void EditorCameraSystem::OnTick(float dt) {
-    if (Input::IsKeyDown(Keycode::W)) {
-        if (m_camera.GetCameraType() == CameraType::ORTHOGRAPHIC) {
-            m_camera.TranslateWorld(m_camera.GetWorldUp());
-        } else {
-            m_camera.TranslateWorld(-m_camera.GetWorldFront());
+void EditorCameraSystem::OnImGui() {
+    ImGui::Begin("Camera Sysetm");
+    {
+        CameraType type = m_camera.GetCameraType();
+        if (ImGui::RadioButton("Perspective", reinterpret_cast<int *>(&type),
+                               static_cast<int>(CameraType::PERSPECTIVE))) {
+            m_camera.SetCameraType(type);
+        }
+        ImGui::SameLine();
+        if (ImGui::RadioButton("Ortho", reinterpret_cast<int *>(&type),
+                               static_cast<int>(CameraType::ORTHOGRAPHIC))) {
+            m_camera.SetCameraType(type);
+        }
+        float fov = m_camera.GetFOV();
+        ImGui::Text("Field of view");
+        if (ImGui::SliderAngle("##FOV", &fov, 1.0f, 89.f)) {
+            m_camera.SetFOV(fov);
+        }
+        float near_z = m_camera.GetNearZ();
+        float far_z = m_camera.GetFarZ();
+        ImGui::Text("Near Z");
+        if (ImGui::SliderFloat("##Near Z", &near_z, 1e-3, far_z)) {
+            m_camera.SetNearZ(near_z);
+        }
+        ImGui::Text("Far Z");
+        if (ImGui::SliderFloat("##Far Z", &far_z, near_z, MAX_FAR_Z)) {
+            m_camera.SetFarZ(far_z);
         }
     }
+    ImGui::End();
+}
+
+void EditorCameraSystem::OnTick(float dt) {
+    if (Input::IsKeyDown(Keycode::W)) {
+        m_camera.TranslateWorld(-m_camera.GetWorldFront());
+    }
     if (Input::IsKeyDown(Keycode::S)) {
-        if (m_camera.GetCameraType() == CameraType::ORTHOGRAPHIC) {
-            m_camera.TranslateWorld(-m_camera.GetWorldUp());
-        } else {
-            m_camera.TranslateWorld(m_camera.GetWorldFront());
-        }
+        m_camera.TranslateWorld(m_camera.GetWorldFront());
     }
     if (Input::IsKeyDown(Keycode::A)) {
         m_camera.TranslateWorld(-m_camera.GetWorldRight());
     }
     if (Input::IsKeyDown(Keycode::D)) {
         m_camera.TranslateWorld(m_camera.GetWorldRight());
+    }
+    if (Input::IsKeyDown(Keycode::LSHIFT)) {
+        m_camera.TranslateWorld(m_camera.GetWorldUp());
+    }
+    if (Input::IsKeyDown(Keycode::LCTRL)) {
+        m_camera.TranslateWorld(-m_camera.GetWorldUp());
     }
     m_mouse_smooth_movement =
         glm::mix(m_mouse_smooth_movement, m_mouse_movement, dt * SMOOTHNESS);

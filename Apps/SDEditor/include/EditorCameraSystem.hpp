@@ -16,6 +16,8 @@ class EditorCameraSystem : public System {
 
     void OnPop() override;
 
+    void OnImGui() override;
+
     void OnTick(float dt) override;
 
     void OnSizeEvent(const WindowSizeEvent &event);

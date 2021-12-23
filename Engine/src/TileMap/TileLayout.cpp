@@ -6,7 +6,7 @@ const int DEFAULT_TILE_SIZE = 20;
 
 const int GRID_TEXTURE_SIZE = 100;
 
-const int LINE_WIDTH = 1;
+const int LINE_WIDTH = 10;
 
 TileLayout::TileLayout() : m_tile_size(DEFAULT_TILE_SIZE) {
     m_grid_texture =
@@ -16,7 +16,7 @@ TileLayout::TileLayout() : m_tile_size(DEFAULT_TILE_SIZE) {
     size_t pixel_size =
         4 * m_grid_texture->GetWidth() * m_grid_texture->GetHeight();
     void *data = malloc(pixel_size);
-    memset(data, 0x77, pixel_size);
+    memset(data, 0xff, pixel_size);
     m_grid_texture->SetPixels(0, 0, 0, m_grid_texture->GetWidth(),
                               m_grid_texture->GetHeight(), 1, data);
     memset(data, 0x00, pixel_size);

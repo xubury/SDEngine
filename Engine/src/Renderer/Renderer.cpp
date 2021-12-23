@@ -346,6 +346,18 @@ void Renderer::DrawTexture(const Ref<Texture>& texture,
     DrawTexture(texture, QUAD_UV, transform, color);
 }
 
+void Renderer::DrawBillboard(const Ref<Texture>& texture,
+                             const std::array<glm::vec2, 2>& uv,
+                             const glm::vec3& pos, const glm::vec2& scale,
+                             const glm::vec4& color) {
+    DrawTexture(
+        texture, uv,
+        glm::translate(glm::mat4(1.0f), pos) *
+            glm::mat4(glm::transpose(glm::mat3(m_camera_data.view))) *
+            glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
+        color);
+}
+
 void Renderer::DrawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
                              const glm::vec2& scale, const glm::vec4& color) {
     DrawTexture(
