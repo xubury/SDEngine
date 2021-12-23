@@ -4,6 +4,7 @@
 #include "System/Export.hpp"
 #include "Core/System.hpp"
 #include "TileMap/TileMap.hpp"
+#include "TileMap/TileLayout.hpp"
 #include "TileMap/Tile.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGui/FileDialog.hpp"
@@ -22,18 +23,18 @@ class SD_SYSTEM_API TileMapSystem : public System {
     void OnImGui() override;
     void OnRender() override;
 
-    void Add(const glm::vec2 &pos);
+    void AddSelectTileToWorld();
 
-    glm::ivec2 MapWorldToTile(const glm::vec2 &world);
-    glm::vec2 MapTileToWorld(const glm::ivec2 &tile);
+    void SetActivePos(const glm::vec2 &world);
 
    private:
-    Ref<Texture> m_outline;
-
-    std::vector<std::pair<glm::ivec2, Tile>> m_contents;
+    TileLayout m_layout;
 
     TileMap m_map;
-    Tile m_tile;
+    Tile m_selected_tile;
+    bool m_has_select{false};
+
+    glm::ivec2 m_active_tile_pos;
 
     bool m_fileDialogOpen;
     ImFileDialogInfo m_fileDialogInfo;

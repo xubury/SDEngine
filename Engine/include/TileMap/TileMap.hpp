@@ -6,23 +6,23 @@
 #include "Renderer/Bitmap.hpp"
 #include "Graphics/Texture.hpp"
 
-#include <glm/glm.hpp>
-#include <vector>
-
 namespace SD {
 
 class SD_TILE_MAP_API TileMap {
    public:
     TileMap() = default;
 
-    void SetTileSize(int tile_size) { m_tile_size = tile_size; }
-    int GetTileSize() const { return m_tile_size; }
+    void SetTileSize(const glm::ivec2 &tile_size) { m_tile_size = tile_size; }
+    glm::ivec2 GetTileSize() const { return m_tile_size; }
 
     void SetTileMap(const Bitmap &bitmap);
+
     const Ref<Texture> GetTexture() const { return m_map; }
 
+    std::array<glm::vec2, 2> GetTileUVs(const glm::vec2 &texture_pos) const;
+
    private:
-    int m_tile_size{50};
+    glm::ivec2 m_tile_size{50, 50};
 
     Ref<Texture> m_map;
 };

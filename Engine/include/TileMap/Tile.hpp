@@ -2,24 +2,24 @@
 #define SD_TILE_HPP
 
 #include "TileMap/Export.hpp"
-#include "TileMap/TileMap.hpp"
+#include "Graphics/Texture.hpp"
 
 namespace SD {
 
 class SD_TILE_MAP_API Tile {
    public:
-    Tile() : m_texture(nullptr){};
+    Tile() = default;
+    Tile(const Ref<Texture> &texture, const std::array<glm::vec2, 2> &uvs);
 
-    bool Valid() const { return m_texture != nullptr; }
-    void Set(const TileMap &map, const glm::vec2 &pos);
+    void Set(const Ref<Texture> &texture, const std::array<glm::vec2, 2> &uvs);
 
-    std::array<glm::vec2, 2> GetTileMapUV() const;
+    std::array<glm::vec2, 2> GetUVs() const { return m_uvs; }
 
-    const Ref<Texture> GetTileMapTexture() const { return m_texture; }
+    const Ref<Texture> GetTexture() const { return m_texture; }
 
    private:
     Ref<Texture> m_texture;
-    std::array<glm::vec2, 2> m_uv;
+    std::array<glm::vec2, 2> m_uvs;
 };
 
 }  // namespace SD

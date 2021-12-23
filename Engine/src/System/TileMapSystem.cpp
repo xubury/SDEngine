@@ -1,26 +1,9 @@
 #include "System/TileMapSystem.hpp"
 #include "Core/Input.hpp"
 
-const int TILE_SIZE = 40;
-
 namespace SD {
 
-TileMapSystem::TileMapSystem() : System("TileMapSystem") {
-    int outline_thickness = std::max<int>(0.05f * TILE_SIZE, 1);
-    void *data = malloc(TILE_SIZE * TILE_SIZE * 4);
-    memset(data, 0x77, TILE_SIZE * TILE_SIZE * 4);
-    m_outline =
-        Texture::Create(TILE_SIZE, TILE_SIZE,
-                        TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
-                                    DataFormatType::UBYTE));
-    m_outline->SetPixels(0, 0, 0, TILE_SIZE, TILE_SIZE, 1, data);
-    memset(data, 0x00, TILE_SIZE * TILE_SIZE * 4);
-    m_outline->SetPixels(outline_thickness, outline_thickness, 0,
-                         TILE_SIZE - outline_thickness * 2,
-                         TILE_SIZE - outline_thickness * 2, 1, data);
-
-    free(data);
-}
+TileMapSystem::TileMapSystem() : System("TileMapSystem") {}
 
 void TileMapSystem::OnTick(float) {}
 
@@ -46,44 +29,61 @@ void TileMapSystem::OnImGui() {
             auto bmp = asset->LoadAndGet<Bitmap>(m_fileDialogInfo.result_path);
             m_map.SetTileMap(*bmp);
         }
-        int size = m_map.GetTileSize();
+        glm::ivec2 size = m_map.GetTileSize();
         ImGui::TextUnformatted("Tile Size:");
-        if (ImGui::InputInt("##Size", &size)) {
+        if (ImGui::InputInt2("##Size", &size.x)) {
             m_map.SetTileSize(size);
+            m_has_select = false;
         }
 
         auto texture = m_map.GetTexture();
 
         if (texture) {
             ImVec2 wsize = ImGui::GetContentRegionAvail();
-            wsize.y = wsize.x * texture->GetHeight() / texture->GetWidth();
-            float tile_size =
-                m_map.GetTileSize() * wsize.x / texture->GetWidth();
-            int cols = std::ceil(wsize.x / tile_size);
-            int rows = std::ceil(wsize.y / tile_size);
+            float aspect = wsize.x / texture->GetWidth();
+            wsize.y = texture->GetHeight() * aspect;
+            glm::vec2 tile_size = glm::vec2(m_map.GetTileSize()) * aspect;
+
+            int cols = std::ceil(wsize.x / tile_size.x);
+            int rows = std::ceil(wsize.y / tile_size.y);
             ImDrawList *DrawList = ImGui::GetWindowDrawList();
             ImGuiWindow *window = ImGui::GetCurrentWindow();
 
             ImRect bb(window->DC.CursorPos,
-                      ImVec2(window->DC.CursorPos.x + cols * tile_size,
-                             window->DC.CursorPos.y + rows * tile_size));
+                      ImVec2(window->DC.CursorPos.x + cols * tile_size.x,
+                             window->DC.CursorPos.y + rows * tile_size.y));
             ImGui::DrawTexture(*texture, wsize);
             for (int i = 0; i <= cols; ++i) {
-                DrawList->AddLine(ImVec2(bb.Min.x + i * tile_size, bb.Min.y),
-                                  ImVec2(bb.Min.x + i * tile_size, bb.Max.y),
+                DrawList->AddLine(ImVec2(bb.Min.x + i * tile_size.x, bb.Min.y),
+                                  ImVec2(bb.Min.x + i * tile_size.x, bb.Max.y),
                                   ImGui::GetColorU32(ImGuiCol_TextDisabled));
             }
             for (int i = 0; i <= rows; ++i) {
-                DrawList->AddLine(ImVec2(bb.Min.x, bb.Min.y + i * tile_size),
-                                  ImVec2(bb.Max.x, bb.Min.y + i * tile_size),
+                DrawList->AddLine(ImVec2(bb.Min.x, bb.Min.y + i * tile_size.y),
+                                  ImVec2(bb.Max.x, bb.Min.y + i * tile_size.y),
                                   ImGui::GetColorU32(ImGuiCol_TextDisabled));
             }
             if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0)) {
                 auto [mouse_x, mouse_y] = ImGui::GetMousePos();
                 auto [top, left] = bb.GetTL();
-                glm::vec2 uv = glm::vec2(mouse_x - top, mouse_y - left);
-                uv = uv / wsize.x * static_cast<float>(texture->GetWidth());
-                m_tile.Set(m_map, uv);
+                auto image_pos =
+                    glm::vec2(mouse_x - top, mouse_y - left) / aspect;
+                m_selected_tile =
+                    Tile(m_map.GetTexture(), m_map.GetTileUVs(image_pos));
+                m_has_select = true;
+            }
+            if (m_has_select) {
+                const ImU32 COLOR = 0xff00ff00;
+                const float THICKNESS = 2.f;
+                auto [left, top] = bb.GetTL();
+                auto uvs = m_selected_tile.GetUVs();
+                ImRect active_grid(
+                    ImVec2(left + uvs[0].x * wsize.x, top + uvs[0].y * wsize.y),
+                    ImVec2(left + uvs[1].x * wsize.x,
+                           top + uvs[1].y * wsize.y));
+                DrawList->AddQuad(active_grid.GetTL(), active_grid.GetTR(),
+                                  active_grid.GetBR(), active_grid.GetBL(),
+                                  COLOR, THICKNESS);
             }
         }
     }
@@ -91,41 +91,37 @@ void TileMapSystem::OnImGui() {
 }
 
 void TileMapSystem::OnRender() {
+    const glm::ivec2 TILE_SIZE = m_layout.GetTileSize();
     device->SetTarget(renderer->GetDefaultTarget());
-    renderer->Begin(*scene->GetCamera());
 
-    for (auto &[pos, tile] : m_contents) {
-        renderer->DrawTexture(tile.GetTileMapTexture(), tile.GetTileMapUV(),
-                              glm::vec3(MapTileToWorld(pos), -1.f),
-                              glm::quat(1, 0, 0, 0),
-                              glm::vec2(TILE_SIZE, TILE_SIZE));
+    renderer->Begin(*scene->GetCamera());
+    if (m_has_select) {
+        renderer->DrawTexture(
+            m_selected_tile.GetTexture(), m_selected_tile.GetUVs(),
+            glm::vec3(m_layout.MapTileToWorld(m_active_tile_pos), -1.f),
+            glm::quat(1, 0, 0, 0), TILE_SIZE);
+    }
+    for (auto &[pos, tile] : m_layout.GetTiles()) {
+        renderer->DrawTexture(tile.GetTexture(), tile.GetUVs(),
+                              glm::vec3(m_layout.MapTileToWorld(pos), -1.f),
+                              glm::quat(1, 0, 0, 0), TILE_SIZE);
     }
     const glm::ivec2 TILE_CNT(100, 100);
-    renderer->DrawTexture(m_outline, {glm::vec2(0), TILE_CNT},
-                          glm::vec3(-TILE_SIZE / 2.f, -TILE_SIZE / 2.f, 0),
+    renderer->DrawTexture(m_layout.GetGridTexture(), {glm::vec2(0), TILE_CNT},
+                          glm::vec3(-TILE_SIZE.x / 2.f, -TILE_SIZE.y / 2.f, 0),
                           glm::quat(1, 0, 0, 0), TILE_CNT * TILE_SIZE);
     renderer->End();
 }
 
-void TileMapSystem::Add(const glm::vec2 &world) {
-    glm::vec2 tile_pos = MapWorldToTile(world);
-    SD_TRACE("add tile at: {}, world:{}", tile_pos, world);
-    if (m_tile.Valid()) {
-        m_contents.emplace_back(tile_pos, m_tile);
+void TileMapSystem::SetActivePos(const glm::vec2 &world) {
+    m_active_tile_pos = m_layout.MapWorldToTile(world);
+}
+
+void TileMapSystem::AddSelectTileToWorld() {
+    if (m_has_select) {
+        SD_TRACE("add tile at: {}", m_active_tile_pos);
+        m_layout.Set(m_active_tile_pos, m_selected_tile);
     }
 }
 
-glm::ivec2 TileMapSystem::MapWorldToTile(const glm::vec2 &world) {
-    glm::vec2 tile;
-    tile.x = std::ceil(world.x / TILE_SIZE - 0.5f);
-    tile.y = std::ceil(world.y / TILE_SIZE - 0.5f);
-    return tile;
-}
-
-glm::vec2 TileMapSystem::MapTileToWorld(const glm::ivec2 &tile) {
-    glm::vec2 world;
-    world.x = tile.x * TILE_SIZE;
-    world.y = tile.y * TILE_SIZE;
-    return world;
-}
 }  // namespace SD

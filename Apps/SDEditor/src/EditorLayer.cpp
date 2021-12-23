@@ -111,13 +111,16 @@ void EditorLayer::OnTick(float dt) {
     for (auto &system : GetSystems()) {
         system->OnTick(dt);
     }
-    if (m_is_viewport_hovered && Input::IsMousePressed(MouseButton::LEFT)) {
+    if (m_is_viewport_hovered) {
         glm::vec2 clip = m_viewport.MapScreenToClip(Input::GetMouseCoord());
         Math::Ray ray = scene->GetCamera()->ComputeCameraRay(clip);
         Math::Plane plane(glm::vec3(0, 0, 1), glm::vec3(0));
         glm::vec3 world;
         if (Math::IntersectRayPlane(ray, plane, world)) {
-            m_tile_map_system->Add(world);
+            m_tile_map_system->SetActivePos(world);
+        }
+        if (Input::IsMousePressed(MouseButton::LEFT)) {
+            m_tile_map_system->AddSelectTileToWorld();
         }
     }
 }
