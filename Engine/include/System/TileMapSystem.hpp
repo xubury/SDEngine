@@ -38,6 +38,8 @@ class SD_SYSTEM_API TileMapSystem : public System {
 
     bool m_fileDialogOpen;
     ImFileDialogInfo m_fileDialogInfo;
+
+    bool m_draw_outline{true};
 };
 
 }  // namespace SD

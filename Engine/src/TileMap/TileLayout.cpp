@@ -9,20 +9,20 @@ const int GRID_TEXTURE_SIZE = 100;
 const int LINE_WIDTH = 10;
 
 TileLayout::TileLayout() : m_tile_size(DEFAULT_TILE_SIZE) {
-    m_grid_texture =
+    m_outline_texture =
         Texture::Create(GRID_TEXTURE_SIZE, GRID_TEXTURE_SIZE,
                         TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
                                     DataFormatType::UBYTE));
     size_t pixel_size =
-        4 * m_grid_texture->GetWidth() * m_grid_texture->GetHeight();
+        4 * m_outline_texture->GetWidth() * m_outline_texture->GetHeight();
     void *data = malloc(pixel_size);
     memset(data, 0xff, pixel_size);
-    m_grid_texture->SetPixels(0, 0, 0, m_grid_texture->GetWidth(),
-                              m_grid_texture->GetHeight(), 1, data);
+    m_outline_texture->SetPixels(0, 0, 0, m_outline_texture->GetWidth(),
+                              m_outline_texture->GetHeight(), 1, data);
     memset(data, 0x00, pixel_size);
-    m_grid_texture->SetPixels(
-        LINE_WIDTH, LINE_WIDTH, 0, m_grid_texture->GetWidth() - LINE_WIDTH * 2,
-        m_grid_texture->GetHeight() - LINE_WIDTH * 2, 1, data);
+    m_outline_texture->SetPixels(
+        LINE_WIDTH, LINE_WIDTH, 0, m_outline_texture->GetWidth() - LINE_WIDTH * 2,
+        m_outline_texture->GetHeight() - LINE_WIDTH * 2, 1, data);
 
     free(data);
 }

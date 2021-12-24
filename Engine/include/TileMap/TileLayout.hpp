@@ -31,7 +31,7 @@ class SD_TILE_MAP_API TileLayout {
         return m_tiles;
     }
 
-    const Ref<Texture> GetGridTexture() const { return m_grid_texture; }
+    const Ref<Texture> GetOutlineTexture() const { return m_outline_texture; }
 
     glm::ivec2 MapWorldToTile(const glm::vec2 &world) const;
     glm::vec2 MapTileToWorld(const glm::ivec2 &tile) const;
@@ -39,7 +39,7 @@ class SD_TILE_MAP_API TileLayout {
    private:
     glm::ivec2 m_tile_size;
     std::unordered_map<glm::ivec2, Tile> m_tiles;
-    Ref<Texture> m_grid_texture;
+    Ref<Texture> m_outline_texture;
 };
 
 }  // namespace SD

@@ -14,6 +14,7 @@ void TileMapSystem::OnPop() {}
 void TileMapSystem::OnImGui() {
     ImGui::Begin("TileMap System");
     {
+        ImGui::Checkbox("Outline", &m_draw_outline);
         std::string path = m_fileDialogInfo.result_path.string();
         ImGui::InputText("##Path", path.data(), path.size(),
                          ImGuiInputTextFlags_ReadOnly);
@@ -109,17 +110,24 @@ void TileMapSystem::OnRender() {
                               glm::vec3(m_layout.MapTileToWorld(pos), -1.f),
                               glm::quat(1.0f, 0.f, 0.f, 0.f), TILE_SIZE);
     }
-    int render_width = renderer->GetDefaultTarget().GetWidth();
-    int render_height = renderer->GetDefaultTarget().GetHeight();
-    const glm::ivec2 TILE_CNT(render_width * TILE_SIZE.x,
-                              render_height * TILE_SIZE.y);
-    const glm::vec3 pos = scene->GetCamera()->GetWorldPosition();
-    glm::vec2 uv_origin(pos.x / TILE_SIZE.x, -pos.y / TILE_SIZE.y);
-    renderer->DrawTexture(
-        m_layout.GetGridTexture(), {uv_origin, glm::vec2(TILE_CNT) + uv_origin},
-        glm::vec3(-TILE_SIZE.x / 2.f + pos.x, -TILE_SIZE.y / 2.f + pos.y, 0.f),
-        glm::quat(1.0f, 0.f, 0.f, 0.f), TILE_CNT * TILE_SIZE,
-        glm::vec4(1, 1, 1, 0.7));
+    if (m_draw_outline) {
+        renderer->DrawTexture(
+            m_layout.GetOutlineTexture(), {glm::vec2(0), glm::vec2(1)},
+            glm::vec3(m_layout.MapTileToWorld(m_active_tile_pos), 0.f),
+            glm::quat(1.0f, 0.f, 0.f, 0.f), TILE_SIZE, glm::vec4(0, 1, 0, 1));
+        int render_width = renderer->GetDefaultTarget().GetWidth();
+        int render_height = renderer->GetDefaultTarget().GetHeight();
+        const glm::ivec2 TILE_CNT(render_width * TILE_SIZE.x,
+                                  render_height * TILE_SIZE.y);
+        const glm::vec3 pos = scene->GetCamera()->GetWorldPosition();
+        glm::vec2 uv_origin(pos.x / TILE_SIZE.x, -pos.y / TILE_SIZE.y);
+        renderer->DrawTexture(m_layout.GetOutlineTexture(),
+                              {uv_origin, glm::vec2(TILE_CNT) + uv_origin},
+                              glm::vec3(-TILE_SIZE.x / 2.f + pos.x,
+                                        -TILE_SIZE.y / 2.f + pos.y, 0.f),
+                              glm::quat(1.0f, 0.f, 0.f, 0.f),
+                              TILE_CNT * TILE_SIZE, glm::vec4(1, 1, 1, 0.7));
+    }
     renderer->End();
 }
 
