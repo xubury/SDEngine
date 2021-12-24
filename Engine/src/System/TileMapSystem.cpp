@@ -66,6 +66,7 @@ void TileMapSystem::OnImGui() {
 void TileMapSystem::OnRender() {
     const glm::ivec2 TILE_SIZE = m_layout.GetTileSize();
     device->SetTarget(renderer->GetDefaultTarget());
+    device->Disable(SD::Operation::DEPTH_TEST);
     renderer->Begin(*scene->GetCamera());
 
     if (m_selected_sprite.Valid()) {
@@ -83,14 +84,11 @@ void TileMapSystem::OnRender() {
         RenderOutline();
     }
     renderer->End();
+    device->Enable(SD::Operation::DEPTH_TEST);
 }
 
 void TileMapSystem::RenderOutline() {
     const glm::ivec2 TILE_SIZE = m_layout.GetTileSize();
-    renderer->DrawTexture(
-        m_layout.GetOutlineTexture(), {glm::vec2(0), glm::vec2(1)},
-        glm::vec3(m_layout.MapTileToWorld(m_select_tile_pos), 0),
-        glm::quat(1.0f, 0.f, 0.f, 0.f), TILE_SIZE, glm::vec4(0, 1, 0, 1));
 
     int render_width = renderer->GetDefaultTarget().GetWidth();
     int render_height = renderer->GetDefaultTarget().GetHeight();
@@ -104,6 +102,10 @@ void TileMapSystem::RenderOutline() {
         glm::vec3(-TILE_SIZE.x / 2.f + pos.x, -TILE_SIZE.y / 2.f + pos.y, 0),
         glm::quat(1.0f, 0.f, 0.f, 0.f), TILE_CNT * TILE_SIZE,
         glm::vec4(1, 1, 1, 0.7));
+    renderer->DrawTexture(
+        m_layout.GetOutlineTexture(), {glm::vec2(0), glm::vec2(1)},
+        glm::vec3(m_layout.MapTileToWorld(m_select_tile_pos), 0),
+        glm::quat(1.0f, 0.f, 0.f, 0.f), TILE_SIZE, glm::vec4(0, 1, 0, 1));
 }
 
 void TileMapSystem::SelectWorldPos(const glm::vec2 &world) {
