@@ -117,10 +117,10 @@ void EditorLayer::OnTick(float dt) {
         Math::Plane plane(glm::vec3(0, 0, 1), glm::vec3(0));
         glm::vec3 world;
         if (Math::IntersectRayPlane(ray, plane, world)) {
-            m_tile_map_system->SetActivePos(world);
+            m_tile_map_system->SelectWorldPos(world);
         }
         if (Input::IsMousePressed(MouseButton::LEFT)) {
-            m_tile_map_system->AddSelectTileToWorld();
+            m_tile_map_system->ApplyActionAtPos();
         }
     }
 }

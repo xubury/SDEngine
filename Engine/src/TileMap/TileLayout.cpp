@@ -18,29 +18,32 @@ TileLayout::TileLayout() : m_tile_size(DEFAULT_TILE_SIZE) {
     void *data = malloc(pixel_size);
     memset(data, 0xff, pixel_size);
     m_outline_texture->SetPixels(0, 0, 0, m_outline_texture->GetWidth(),
-                              m_outline_texture->GetHeight(), 1, data);
+                                 m_outline_texture->GetHeight(), 1, data);
     memset(data, 0x00, pixel_size);
     m_outline_texture->SetPixels(
-        LINE_WIDTH, LINE_WIDTH, 0, m_outline_texture->GetWidth() - LINE_WIDTH * 2,
+        LINE_WIDTH, LINE_WIDTH, 0,
+        m_outline_texture->GetWidth() - LINE_WIDTH * 2,
         m_outline_texture->GetHeight() - LINE_WIDTH * 2, 1, data);
 
     free(data);
 }
 
-void TileLayout::Set(const glm::ivec2 &pos, const Tile &tile) {
-    if (HasTile(pos)) {
-        Clear(pos);
+void TileLayout::SetSprite(const glm::ivec2 &pos, const Sprite &sprite) {
+    if (HasSprite(pos)) {
+        ClearSprite(pos);
     }
-    m_tiles.emplace(pos, tile);
+    m_sprites.emplace(pos, sprite);
 }
 
-Tile &TileLayout::Get(const glm::ivec2 &pos) { return m_tiles.at(pos); }
-
-bool TileLayout::HasTile(const glm::ivec2 &pos) const {
-    return m_tiles.count(pos);
+Sprite &TileLayout::GetSprite(const glm::ivec2 &pos) {
+    return m_sprites.at(pos);
 }
 
-void TileLayout::Clear(const glm::ivec2 &pos) { m_tiles.erase(pos); }
+bool TileLayout::HasSprite(const glm::ivec2 &pos) const {
+    return m_sprites.count(pos);
+}
+
+void TileLayout::ClearSprite(const glm::ivec2 &pos) { m_sprites.erase(pos); }
 
 glm::ivec2 TileLayout::MapWorldToTile(const glm::vec2 &world) const {
     glm::vec2 tile;

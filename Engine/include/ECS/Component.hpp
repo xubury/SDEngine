@@ -91,6 +91,13 @@ struct SD_ECS_API SkyboxComponent {
     SERIALIZE(id)
 };
 
+struct SD_ECS_API SpriteComponent {
+    ResourceId id;
+    std::array<glm::vec2, 2> uvs;
+
+    SERIALIZE(id, uvs)
+};
+
 }  // namespace SD
 
 #endif /* SD_COMPONENT_HPP */

@@ -15,7 +15,7 @@ class SD_TILE_MAP_API TileMap {
     void SetTileSize(const glm::ivec2 &tile_size) { m_tile_size = tile_size; }
     glm::ivec2 GetTileSize() const { return m_tile_size; }
 
-    void SetTileMap(const Bitmap &bitmap);
+    void SetTexture(const Ref<Texture> &texture);
 
     const Ref<Texture> GetTexture() const { return m_map; }
 

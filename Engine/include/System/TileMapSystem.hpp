@@ -5,13 +5,14 @@
 #include "Core/System.hpp"
 #include "TileMap/TileMap.hpp"
 #include "TileMap/TileLayout.hpp"
-#include "TileMap/Tile.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGui/FileDialog.hpp"
 
 namespace SD {
 
 class SD_SYSTEM_API TileMapSystem : public System {
+    enum Operation { ADD_SPRITE, CLEAR_SPRITE };
+
    public:
     TileMapSystem();
 
@@ -23,23 +24,28 @@ class SD_SYSTEM_API TileMapSystem : public System {
     void OnImGui() override;
     void OnRender() override;
 
-    void AddSelectTileToWorld();
+    void SelectWorldPos(const glm::vec2 &world);
 
-    void SetActivePos(const glm::vec2 &world);
+    void ApplyActionAtPos();
 
    private:
+    void RenderOutline();
+
     TileLayout m_layout;
 
     TileMap m_map;
-    Tile m_selected_tile;
-    bool m_has_select{false};
+    ResourceId m_map_id;
 
-    glm::ivec2 m_active_tile_pos;
+    Sprite m_selected_sprite;
+
+    glm::ivec2 m_select_tile_pos;
 
     bool m_fileDialogOpen;
     ImFileDialogInfo m_fileDialogInfo;
 
     bool m_draw_outline{true};
+
+    Operation m_operation;
 };
 
 }  // namespace SD
