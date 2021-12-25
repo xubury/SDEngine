@@ -44,8 +44,10 @@ void TileMapSystem::OnImGui() {
             auto bitmap = asset->Get<Bitmap>(m_map_id);
             auto texture = Texture::Create(
                 bitmap->Width(), bitmap->Height(),
-                TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
-                            DataFormatType::UBYTE, TextureWrap::EDGE));
+                TextureSpec(
+                    1, TextureType::TEX_2D,
+                    bitmap->HasAlpha() ? DataFormat::RGBA : DataFormat::RGB,
+                    DataFormatType::UBYTE, TextureWrap::EDGE));
             texture->SetPixels(0, 0, 0, bitmap->Width(), bitmap->Height(), 1,
                                bitmap->Data());
             m_map.SetTexture(texture);

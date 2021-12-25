@@ -100,8 +100,8 @@ bool DrawTileMap(const SD::TileMap &tilemap, std::array<glm::vec2, 2> &uvs) {
         wsize.y = texture->GetHeight() * aspect;
         glm::vec2 tile_size = glm::vec2(tilemap.GetTileSize()) * aspect;
 
-        int cols = std::ceil(wsize.x / tile_size.x);
-        int rows = std::ceil(wsize.y / tile_size.y);
+        int cols = std::floor(wsize.x / tile_size.x);
+        int rows = std::floor(wsize.y / tile_size.y);
         ImDrawList *DrawList = ImGui::GetWindowDrawList();
         ImGuiWindow *window = ImGui::GetCurrentWindow();
 
