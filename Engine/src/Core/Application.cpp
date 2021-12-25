@@ -7,6 +7,7 @@
 #include "Renderer/BitmapLoader.hpp"
 #include "Renderer/ModelLoader.hpp"
 #include "Renderer/FontLoader.hpp"
+#include "Renderer/SkyboxLoader.hpp"
 
 #include "Renderer/Model.hpp"
 #include "Renderer/Bitmap.hpp"
@@ -53,6 +54,7 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     asset->SetLoader<Bitmap>(new BitmapLoader(*asset));
     asset->SetLoader<Model>(new ModelLoader(*asset));
     asset->SetLoader<Font>(new FontLoader(*asset));
+    asset->SetLoader<Skybox>(new SkyboxLoader(*asset));
     asset->Load("assets");
 
     renderer = CreateRef<Renderer>(device.get());

@@ -24,7 +24,6 @@ class SD_RENDERER_API Skybox {
     uint32_t m_width;
     uint32_t m_height;
     DataFormat m_format;
-    uint8_t m_valid_mask;
 };
 
 }  // namespace SD

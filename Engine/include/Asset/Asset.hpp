@@ -131,6 +131,7 @@ class SD_ASSET_API AssetManager {
             m_resources.at(id).GetResource());
     }
 
+    // Return relative path
     std::string GetAssetPath(ResourceId id) {
         if (m_resources.count(id) == 0) {
             return "";

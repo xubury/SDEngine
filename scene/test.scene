@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <cereal>
-	<value0>8</value0>
+	<value0>7</value0>
 	<value1>4294967295</value1>
 	<value2>0</value2>
 	<value3>1</value3>
@@ -9,121 +9,218 @@
 	<value6>4</value6>
 	<value7>5</value7>
 	<value8>6</value8>
-	<value9>7</value9>
-	<value10>0</value10>
-	<value11>
+	<value9>0</value9>
+	<value10>
 		<value0>
-			<value0>4684238446652410215</value0>
+			<value0>4404132048618664069</value0>
 		</value0>
-	</value11>
-	<value12>1</value12>
-	<value13>
+	</value10>
+	<value11>1</value11>
+	<value12>
 		<value0>
-			<value0>15294383108797263472</value0>
+			<value0>8836438293459014901</value0>
 		</value0>
-	</value13>
-	<value14>2</value14>
-	<value15>
+	</value12>
+	<value13>2</value13>
+	<value14>
 		<value0>
-			<value0>10299293822164603290</value0>
+			<value0>15185083784757116895</value0>
 		</value0>
-	</value15>
-	<value16>3</value16>
-	<value17>
+	</value14>
+	<value15>3</value15>
+	<value16>
 		<value0>
-			<value0>4446888881142135781</value0>
+			<value0>6583096781405440359</value0>
 		</value0>
-	</value17>
-	<value18>4</value18>
-	<value19>
+	</value16>
+	<value17>4</value17>
+	<value18>
 		<value0>
-			<value0>4170244196805813738</value0>
+			<value0>1401196566165810048</value0>
 		</value0>
-	</value19>
-	<value20>5</value20>
-	<value21>
+	</value18>
+	<value19>5</value19>
+	<value20>
 		<value0>
-			<value0>16763053971633412257</value0>
+			<value0>13778175677445269619</value0>
 		</value0>
-	</value21>
-	<value22>6</value22>
+	</value20>
+	<value21>6</value21>
+	<value22>0</value22>
 	<value23>
-		<value0>
-			<value0>6419471201223719302</value0>
-		</value0>
+		<value0>4294967295</value0>
+		<value1 size="dynamic"/>
 	</value23>
-	<value24>7</value24>
-	<value25>0</value25>
-	<value26>
+	<value24>1</value24>
+	<value25>
 		<value0>4294967295</value0>
 		<value1 size="dynamic"/>
-	</value26>
-	<value27>1</value27>
-	<value28>
+	</value25>
+	<value26>2</value26>
+	<value27>
 		<value0>4294967295</value0>
 		<value1 size="dynamic"/>
-	</value28>
-	<value29>2</value29>
-	<value30>
+	</value27>
+	<value28>3</value28>
+	<value29>
+		<value0>4294967295</value0>
+		<value1 size="dynamic">
+			<value0>4</value0>
+		</value1>
+	</value29>
+	<value30>4</value30>
+	<value31>
+		<value0>3</value0>
+		<value1 size="dynamic"/>
+	</value31>
+	<value32>5</value32>
+	<value33>
 		<value0>4294967295</value0>
 		<value1 size="dynamic"/>
-	</value30>
-	<value31>3</value31>
-	<value32>
-		<value0>4294967295</value0>
-		<value1 size="dynamic"/>
-	</value32>
-	<value33>4</value33>
-	<value34>
-		<value0>4294967295</value0>
-		<value1 size="dynamic"/>
-	</value34>
-	<value35>5</value35>
+	</value33>
+	<value34>6</value34>
+	<value35>0</value35>
 	<value36>
-		<value0>4294967295</value0>
-		<value1 size="dynamic"/>
+		<value0>cube</value0>
 	</value36>
-	<value37>6</value37>
+	<value37>1</value37>
 	<value38>
-		<value0>4294967295</value0>
-		<value1 size="dynamic"/>
-	</value38>
-	<value39>7</value39>
-	<value40>0</value40>
-	<value41>
-		<value0>skybox</value0>
-	</value41>
-	<value42>1</value42>
-	<value43>
-		<value0>ground</value0>
-	</value43>
-	<value44>2</value44>
-	<value45>
 		<value0>light</value0>
-	</value45>
-	<value46>3</value46>
-	<value47>
-		<value0>cylinder</value0>
-	</value47>
-	<value48>4</value48>
-	<value49>
+	</value38>
+	<value39>2</value39>
+	<value40>
 		<value0>wall</value0>
-	</value49>
-	<value50>5</value50>
-	<value51>
+	</value40>
+	<value41>3</value41>
+	<value42>
 		<value0>sphere</value0>
+	</value42>
+	<value43>4</value43>
+	<value44>
+		<value0>cylinder</value0>
+	</value44>
+	<value45>5</value45>
+	<value46>
+		<value0>cube</value0>
+	</value46>
+	<value47>6</value47>
+	<value48>0</value48>
+	<value49>
+		<value0>
+			<value0>
+				<value0>0</value0>
+				<value1>0</value1>
+				<value2>0</value2>
+			</value0>
+			<value1>
+				<value0>0</value0>
+				<value1>0</value1>
+				<value2>0</value2>
+				<value3>1</value3>
+			</value1>
+			<value2>
+				<value0>25</value0>
+				<value1>1</value1>
+				<value2>25</value2>
+			</value2>
+			<value3>
+				<value0>0</value0>
+				<value1>0</value1>
+				<value2>0</value2>
+			</value3>
+			<value4>
+				<value0>0</value0>
+				<value1>0</value1>
+				<value2>0</value2>
+				<value3>1</value3>
+			</value4>
+			<value5>
+				<value0>25</value0>
+				<value1>1</value1>
+				<value2>25</value2>
+			</value5>
+		</value0>
+	</value49>
+	<value50>1</value50>
+	<value51>
+		<value0>
+			<value0>
+				<value0>0</value0>
+				<value1>2.9188556671142578</value1>
+				<value2>0</value2>
+			</value0>
+			<value1>
+				<value0>0.28340917825698853</value0>
+				<value1>0.11460878700017929</value1>
+				<value2>-0.034136265516281128</value2>
+				<value3>0.95151394605636597</value3>
+			</value1>
+			<value2>
+				<value0>1.0000139474868774</value0>
+				<value1>1.0000103712081909</value1>
+				<value2>1.0000022649765015</value2>
+			</value2>
+			<value3>
+				<value0>0</value0>
+				<value1>2.9188556671142578</value1>
+				<value2>0</value2>
+			</value3>
+			<value4>
+				<value0>0.28340917825698853</value0>
+				<value1>0.11460878700017929</value1>
+				<value2>-0.034136265516281128</value2>
+				<value3>0.95151394605636597</value3>
+			</value4>
+			<value5>
+				<value0>1.0000139474868774</value0>
+				<value1>1.0000103712081909</value1>
+				<value2>1.0000022649765015</value2>
+			</value5>
+		</value0>
 	</value51>
-	<value52>6</value52>
+	<value52>2</value52>
 	<value53>
-		<value0>point light</value0>
+		<value0>
+			<value0>
+				<value0>13</value0>
+				<value1>6.25</value1>
+				<value2>0</value2>
+			</value0>
+			<value1>
+				<value0>0</value0>
+				<value1>0</value1>
+				<value2>0</value2>
+				<value3>1</value3>
+			</value1>
+			<value2>
+				<value0>1</value0>
+				<value1>13.5</value1>
+				<value2>25</value2>
+			</value2>
+			<value3>
+				<value0>13</value0>
+				<value1>6.25</value1>
+				<value2>0</value2>
+			</value3>
+			<value4>
+				<value0>0</value0>
+				<value1>0</value1>
+				<value2>0</value2>
+				<value3>1</value3>
+			</value4>
+			<value5>
+				<value0>1</value0>
+				<value1>13.5</value1>
+				<value2>25</value2>
+			</value5>
+		</value0>
 	</value53>
-	<value54>7</value54>
-	<value55>0</value55>
-	<value56>
+	<value54>3</value54>
+	<value55>
 		<value0>
 			<value0>
 				<value0>0</value0>
-				<value1>0</value1>
+				<value1>4.1036710739135742</value1>
 				<value2>0</value2>
 			</value0>
 			<value1>
@@ -139,7 +236,7 @@
 			</value2>
 			<value3>
 				<value0>0</value0>
-				<value1>0</value1>
+				<value1>4.1036710739135742</value1>
 				<value2>0</value2>
 			</value3>
 			<value4>
@@ -154,14 +251,14 @@
 				<value2>1</value2>
 			</value5>
 		</value0>
-	</value56>
-	<value57>1</value57>
-	<value58>
+	</value55>
+	<value56>4</value56>
+	<value57>
 		<value0>
 			<value0>
-				<value0>0</value0>
-				<value1>0</value1>
-				<value2>0</value2>
+				<value0>-0.15879559516906738</value0>
+				<value1>2.5572552680969238</value1>
+				<value2>0.052950859069824219</value2>
 			</value0>
 			<value1>
 				<value0>0</value0>
@@ -170,14 +267,14 @@
 				<value3>1</value3>
 			</value1>
 			<value2>
-				<value0>50</value0>
+				<value0>1</value0>
 				<value1>1</value1>
-				<value2>50</value2>
+				<value2>1</value2>
 			</value2>
 			<value3>
-				<value0>0</value0>
-				<value1>0</value1>
-				<value2>0</value2>
+				<value0>-0.15879559516906738</value0>
+				<value1>-1.5464158058166504</value1>
+				<value2>0.052950859069824219</value2>
 			</value3>
 			<value4>
 				<value0>0</value0>
@@ -186,250 +283,113 @@
 				<value3>1</value3>
 			</value4>
 			<value5>
-				<value0>50</value0>
+				<value0>1</value0>
 				<value1>1</value1>
-				<value2>50</value2>
+				<value2>1</value2>
 			</value5>
 		</value0>
-	</value58>
-	<value59>2</value59>
-	<value60>
+	</value57>
+	<value58>5</value58>
+	<value59>
 		<value0>
 			<value0>
-				<value0>0</value0>
-				<value1>10.099637985229492</value1>
-				<value2>0</value2>
+				<value0>-0.10658496618270874</value0>
+				<value1>3.1533081531524658</value1>
+				<value2>-3.0780377388000488</value2>
 			</value0>
 			<value1>
-				<value0>0.22729860246181488</value0>
-				<value1>0.2030370682477951</value1>
-				<value2>-0.064130291342735291</value2>
-				<value3>0.95026236772537231</value3>
+				<value0>0</value0>
+				<value1>0</value1>
+				<value2>0</value2>
+				<value3>1</value3>
 			</value1>
 			<value2>
-				<value0>0.99999630451202393</value0>
-				<value1>0.99999886751174927</value1>
-				<value2>0.99999886751174927</value2>
+				<value0>1.9099999666213989</value0>
+				<value1>1.9099999666213989</value1>
+				<value2>1.9099999666213989</value2>
 			</value2>
 			<value3>
-				<value0>0</value0>
-				<value1>10.099637985229492</value1>
-				<value2>0</value2>
+				<value0>-0.10658496618270874</value0>
+				<value1>3.1533081531524658</value1>
+				<value2>-3.0780377388000488</value2>
 			</value3>
 			<value4>
-				<value0>0.22729860246181488</value0>
-				<value1>0.2030370682477951</value1>
-				<value2>-0.064130291342735291</value2>
-				<value3>0.95026236772537231</value3>
+				<value0>0</value0>
+				<value1>0</value1>
+				<value2>0</value2>
+				<value3>1</value3>
 			</value4>
 			<value5>
-				<value0>0.99999630451202393</value0>
-				<value1>0.99999886751174927</value1>
-				<value2>0.99999886751174927</value2>
+				<value0>1.9099999666213989</value0>
+				<value1>1.9099999666213989</value1>
+				<value2>1.9099999666213989</value2>
 			</value5>
 		</value0>
-	</value60>
-	<value61>3</value61>
+	</value59>
+	<value60>5</value60>
+	<value61>0</value61>
 	<value62>
 		<value0>
-			<value0>
-				<value0>-2.4956786632537842</value0>
-				<value1>4.8544464111328125</value1>
-				<value2>0</value2>
-			</value0>
-			<value1>
-				<value0>0</value0>
-				<value1>0</value1>
-				<value2>0</value2>
-				<value3>1</value3>
-			</value1>
-			<value2>
-				<value0>2.869999885559082</value0>
-				<value1>2.869999885559082</value1>
-				<value2>2.869999885559082</value2>
-			</value2>
-			<value3>
-				<value0>-2.4956786632537842</value0>
-				<value1>4.8544464111328125</value1>
-				<value2>0</value2>
-			</value3>
-			<value4>
-				<value0>0</value0>
-				<value1>0</value1>
-				<value2>0</value2>
-				<value3>1</value3>
-			</value4>
-			<value5>
-				<value0>2.869999885559082</value0>
-				<value1>2.869999885559082</value1>
-				<value2>2.869999885559082</value2>
-			</value5>
+			<value0>16761591641320154716</value0>
 		</value0>
+		<value1>
+			<value0>1</value0>
+			<value1>0.94980692863464355</value1>
+			<value2>0</value2>
+		</value1>
 	</value62>
-	<value63>4</value63>
+	<value63>2</value63>
 	<value64>
-		<value0>
-			<value0>
-				<value0>25.5</value0>
-				<value1>12</value1>
-				<value2>0</value2>
-			</value0>
-			<value1>
-				<value0>0</value0>
-				<value1>0</value1>
-				<value2>0</value2>
-				<value3>1</value3>
-			</value1>
-			<value2>
-				<value0>1</value0>
-				<value1>25</value1>
-				<value2>50</value2>
-			</value2>
-			<value3>
-				<value0>25.5</value0>
-				<value1>12</value1>
-				<value2>0</value2>
-			</value3>
-			<value4>
-				<value0>0</value0>
-				<value1>0</value1>
-				<value2>0</value2>
-				<value3>1</value3>
-			</value4>
-			<value5>
-				<value0>1</value0>
-				<value1>25</value1>
-				<value2>50</value2>
-			</value5>
-		</value0>
-	</value64>
-	<value65>5</value65>
-	<value66>
-		<value0>
-			<value0>
-				<value0>-0.51522421836853027</value0>
-				<value1>7.11187744140625</value1>
-				<value2>-5.5308189392089844</value2>
-			</value0>
-			<value1>
-				<value0>0</value0>
-				<value1>0</value1>
-				<value2>0</value2>
-				<value3>1</value3>
-			</value1>
-			<value2>
-				<value0>3.2699999809265137</value0>
-				<value1>3.2699999809265137</value1>
-				<value2>3.2699999809265137</value2>
-			</value2>
-			<value3>
-				<value0>-0.51522421836853027</value0>
-				<value1>7.11187744140625</value1>
-				<value2>-5.5308189392089844</value2>
-			</value3>
-			<value4>
-				<value0>0</value0>
-				<value1>0</value1>
-				<value2>0</value2>
-				<value3>1</value3>
-			</value4>
-			<value5>
-				<value0>3.2699999809265137</value0>
-				<value1>3.2699999809265137</value1>
-				<value2>3.2699999809265137</value2>
-			</value5>
-		</value0>
-	</value66>
-	<value67>6</value67>
-	<value68>
-		<value0>
-			<value0>
-				<value0>-2.7772855758666992</value0>
-				<value1>3.6622936725616455</value1>
-				<value2>-4.8961324691772461</value2>
-			</value0>
-			<value1>
-				<value0>0</value0>
-				<value1>0</value1>
-				<value2>0</value2>
-				<value3>1</value3>
-			</value1>
-			<value2>
-				<value0>1</value0>
-				<value1>1</value1>
-				<value2>1</value2>
-			</value2>
-			<value3>
-				<value0>-2.7772855758666992</value0>
-				<value1>3.6622936725616455</value1>
-				<value2>-4.8961324691772461</value2>
-			</value3>
-			<value4>
-				<value0>0</value0>
-				<value1>0</value1>
-				<value2>0</value2>
-				<value3>1</value3>
-			</value4>
-			<value5>
-				<value0>1</value0>
-				<value1>1</value1>
-				<value2>1</value2>
-			</value5>
-		</value0>
-	</value68>
-	<value69>4</value69>
-	<value70>1</value70>
-	<value71>
 		<value0>
 			<value0>16761591641320154716</value0>
 		</value0>
 		<value1>
 			<value0>0</value0>
-			<value1>0.66152870655059814</value1>
-			<value2>0.99613898992538452</value2>
+			<value1>0.98069500923156738</value1>
+			<value2>0.08330206573009491</value2>
 		</value1>
-	</value71>
-	<value72>3</value72>
-	<value73>
+	</value64>
+	<value65>3</value65>
+	<value66>
+		<value0>
+			<value0>4571639932902628648</value0>
+		</value0>
+		<value1>
+			<value0>0.99227797985076904</value0>
+			<value1>0</value1>
+			<value2>0</value2>
+		</value1>
+	</value66>
+	<value67>4</value67>
+	<value68>
 		<value0>
 			<value0>2932611220513301185</value0>
 		</value0>
 		<value1>
 			<value0>1</value0>
-			<value1>0</value1>
-			<value2>0</value2>
+			<value1>1</value1>
+			<value2>1</value2>
 		</value1>
-	</value73>
-	<value74>4</value74>
-	<value75>
+	</value68>
+	<value69>5</value69>
+	<value70>
 		<value0>
 			<value0>16761591641320154716</value0>
 		</value0>
 		<value1>
-			<value0>0.95383203029632568</value0>
-			<value1>0.99613898992538452</value1>
-			<value2>0</value2>
+			<value0>0.41516402363777161</value0>
+			<value1>0.030530303716659546</value1>
+			<value2>0.98841696977615356</value2>
 		</value1>
-	</value75>
-	<value76>5</value76>
-	<value77>
-		<value0>
-			<value0>4571639932902628648</value0>
-		</value0>
-		<value1>
-			<value0>0.14671826362609863</value0>
-			<value1>1</value1>
-			<value2>0</value2>
-		</value1>
-	</value77>
-	<value78>2</value78>
-	<value79>2</value79>
-	<value80>
+	</value70>
+	<value71>1</value71>
+	<value72>1</value72>
+	<value73>
 		<value0>
 			<value0>
-				<value0>0.40540540218353271</value0>
-				<value1>0.40540540218353271</value1>
-				<value2>0.40540540218353271</value2>
+				<value0>0.27413129806518555</value0>
+				<value1>0.27413129806518555</value1>
+				<value2>0.27413129806518555</value2>
 			</value0>
 			<value1>
 				<value0>1</value0>
@@ -437,9 +397,9 @@
 				<value2>1</value2>
 			</value1>
 			<value2>
-				<value0>1</value0>
-				<value1>1</value1>
-				<value2>1</value2>
+				<value0>0.98841696977615356</value0>
+				<value1>0.98841696977615356</value1>
+				<value2>0.98841696977615356</value2>
 			</value2>
 			<value3>0.43633231520652771</value3>
 			<value4>0.61086523532867432</value4>
@@ -449,59 +409,8 @@
 			<value8>true</value8>
 			<value9>true</value9>
 		</value0>
-	</value80>
-	<value81>6</value81>
-	<value82>
-		<value0>
-			<value0>
-				<value0>1</value0>
-				<value1>1</value1>
-				<value2>1</value2>
-			</value0>
-			<value1>
-				<value0>1</value0>
-				<value1>1</value1>
-				<value2>1</value2>
-			</value1>
-			<value2>
-				<value0>1</value0>
-				<value1>1</value1>
-				<value2>1</value2>
-			</value2>
-			<value3>0.43633231520652771</value3>
-			<value4>0.61086523532867432</value4>
-			<value5>1</value5>
-			<value6>0.090000003576278687</value6>
-			<value7>0.032000001519918442</value7>
-			<value8>false</value8>
-			<value9>true</value9>
-		</value0>
-	</value82>
-	<value83>0</value83>
-	<value84>0</value84>
-	<value85>1</value85>
-	<value86>0</value86>
-	<value87>
-		<value0>
-			<value0>
-				<value0>7311925013490871294</value0>
-			</value0>
-			<value1>
-				<value0>7918193134361227220</value0>
-			</value1>
-			<value2>
-				<value0>6678468497285403450</value0>
-			</value2>
-			<value3>
-				<value0>15002346429173761657</value0>
-			</value3>
-			<value4>
-				<value0>4718177578972506912</value0>
-			</value4>
-			<value5>
-				<value0>7974549799737745501</value0>
-			</value5>
-		</value0>
-	</value87>
+	</value73>
+	<value74>0</value74>
+	<value75>0</value75>
 </cereal>
 

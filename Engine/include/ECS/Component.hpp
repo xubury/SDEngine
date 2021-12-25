@@ -83,14 +83,6 @@ struct SD_ECS_API CameraComponent {
     SERIALIZE(camera)
 };
 
-struct SD_ECS_API SkyboxComponent {
-    std::array<ResourceId, 6> id;
-
-    Skybox skybox;
-
-    SERIALIZE(id)
-};
-
 struct SD_ECS_API SpriteComponent {
     ResourceId id;
     std::array<glm::vec2, 2> uvs;

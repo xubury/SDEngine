@@ -82,6 +82,9 @@ bool Window::PollEvent(Event &event) {
             std::copy(std::begin(sdl_event.text.text),
                       std::end(sdl_event.text.text), event.text_input.text);
         } break;
+        case SDL_QUIT: {
+            event.type = EventType::APP_QUIT;
+        } break;
     }
     return true;
 }

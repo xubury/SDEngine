@@ -22,14 +22,6 @@ void SetGraphicsAPI(GraphicsAPI api) {
 
 GraphicsAPI GetGraphicsAPI() { return s_api; }
 
-const std::string GetFaceName(CubeMapFace face) {
-    static const std::unordered_map<CubeMapFace, std::string> name = {
-        {CubeMapFace::RIGHT, "Right"}, {CubeMapFace::LEFT, "Left"},
-        {CubeMapFace::TOP, "Top"},     {CubeMapFace::BOTTOM, "Bottom"},
-        {CubeMapFace::FRONT, "Front"}, {CubeMapFace::BACK, "Back"}};
-    return name.at(face);
-}
-
 Viewport::Viewport(int left, int top, int width, int height)
     : m_left(left), m_top(top), m_width(width), m_height(height) {
 }

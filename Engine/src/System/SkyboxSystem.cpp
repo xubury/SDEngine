@@ -23,23 +23,47 @@ SkyboxSystem::SkyboxSystem() : System("SkyboxSystem") {
                                        4, 5, 1, 1, 0, 4,
                                        // top
                                        3, 2, 6, 6, 7, 3};
-    m_skybox = VertexArray::Create();
+    m_box_vao = VertexArray::Create();
     VertexBufferLayout layout;
     layout.Push(BufferLayoutType::FLOAT3);
     auto vbo = VertexBuffer::Create(skybox_vertices, sizeof(skybox_vertices),
                                     BufferIOType::STATIC);
     auto ibo = IndexBuffer::Create(skybox_indices, 36, BufferIOType::STATIC);
-    m_skybox->AddVertexBuffer(vbo, layout);
-    m_skybox->SetIndexBuffer(ibo);
+    m_box_vao->AddVertexBuffer(vbo, layout);
+    m_box_vao->SetIndexBuffer(ibo);
 }
 
 void SkyboxSystem::OnInit() {
     m_skyboxShader = ShaderLibrary::Instance().Load("shaders/skybox.glsl");
+    m_skybox_id = asset->LoadAsset<Skybox>("skybox/test.skybox");
 }
 
 void SkyboxSystem::OnPush() {}
 
 void SkyboxSystem::OnPop() {}
+
+void SkyboxSystem::OnImGui() {
+    ImGui::Begin("Skybox System");
+    {
+        std::string path = asset->GetAssetPath(m_skybox_id);
+        ImGui::TextUnformatted("Skybox Path:");
+        ImGui::InputText("##Path", path.data(), path.size(),
+                         ImGuiInputTextFlags_ReadOnly);
+        ImGui::SameLine();
+        if (ImGui::Button("Open")) {
+            m_file_dialog_open = true;
+            m_file_dialog_info.type = ImGuiFileDialogType::OPEN_FILE;
+            m_file_dialog_info.title = "Open File";
+            m_file_dialog_info.file_name = "";
+            m_file_dialog_info.directory_path = asset->GetRootPath();
+        }
+        if (ImGui::FileDialog(&m_file_dialog_open, &m_file_dialog_info)) {
+            m_skybox_id =
+                asset->LoadAsset<Skybox>(m_file_dialog_info.result_path);
+        }
+    }
+    ImGui::End();
+}
 
 void SkyboxSystem::OnRender() {
     glm::vec3 pos = scene->GetCamera()->GetWorldPosition();
@@ -50,31 +74,14 @@ void SkyboxSystem::OnRender() {
     m_skyboxShader->Bind();
     device->SetDepthfunc(DepthFunc::LESS_EQUAL);
     device->SetCullFace(Face::FRONT);
-
-    auto skyboxView = scene->view<SkyboxComponent>();
-    auto iter = skyboxView.begin();
-    if (iter != skyboxView.end()) {
-        auto &skybox = skyboxView.get<SkyboxComponent>(*iter);
-        // check if all face are valid
-        if (!skybox.skybox.Valid()) {
-            for (CubeMapFace face = static_cast<CubeMapFace>(0);
-                 face < CubeMapFace::NUMS; ++face) {
-                // load invalid face
-                if (!skybox.skybox.Valid(face)) {
-                    auto bitmap =
-                        asset->Get<Bitmap>(skybox.id[static_cast<int>(face)]);
-                    if (bitmap) {
-                        skybox.skybox.SetFace(face, *bitmap);
-                    }
-                }
-            }
-        }
-        m_skyboxShader->SetTexture("skybox", skybox.skybox.GetTexture());
+    auto skybox = asset->Get<Skybox>(m_skybox_id);
+    if (skybox) {
+        m_skyboxShader->SetTexture("skybox", skybox->GetTexture());
     }
 
     device->SetTarget(renderer->GetDefaultTarget());
-    renderer->Submit(*m_skybox, MeshTopology::TRIANGLES,
-                     m_skybox->GetIndexBuffer()->GetCount(), 0);
+    renderer->Submit(*m_box_vao, MeshTopology::TRIANGLES,
+                     m_box_vao->GetIndexBuffer()->GetCount(), 0);
     device->SetCullFace(Face::BACK);
     device->SetDepthfunc(DepthFunc::LESS);
 }

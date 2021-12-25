@@ -3,7 +3,8 @@
 
 namespace SD {
 
-TileMapSystem::TileMapSystem() : System("TileMapSystem") {}
+TileMapSystem::TileMapSystem()
+    : System("TileMapSystem"), m_operation(Operation::ADD_SPRITE) {}
 
 void TileMapSystem::OnTick(float) {}
 

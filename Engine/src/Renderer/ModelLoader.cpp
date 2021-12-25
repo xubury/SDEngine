@@ -150,8 +150,7 @@ static std::vector<MaterialSpec> processAiMaterials(
             SD_CORE_ERROR("[processAiMaterial] Assimp GetTexture error!");
             continue;
         }
-        std::string path = (directory / texturePath.C_Str()).string();
-        auto image = manager->LoadAndGet<Bitmap>(path);
+        auto image = manager->LoadAndGet<Bitmap>(directory / texturePath.C_Str());
         specs.emplace_back(
             image, ConvertAssimpTextureType(aiTextureType(type)),
             TextureSpec(1, TextureType::TEX_2D,

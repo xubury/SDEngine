@@ -262,12 +262,6 @@ void ScenePanel::DrawComponents(Entity &entity) {
                 SD_CORE_WARN("This entity already has the Camera Component!");
             ImGui::CloseCurrentPopup();
         }
-        if (ImGui::MenuItem("Skybox")) {
-            if (!m_selected_entity.HasComponent<SkyboxComponent>())
-                m_selected_entity.AddComponent<SkyboxComponent>();
-            else
-                SD_CORE_WARN("This entity already has the skybox component");
-        }
 
         ImGui::EndPopup();
     }
@@ -462,43 +456,6 @@ void ScenePanel::DrawComponents(Entity &entity) {
             ImGui::Text("Far Z");
             if (ImGui::SliderFloat("##Far Z", &far_z, near_z, 1000)) {
                 cameraComp.camera.SetFarZ(far_z);
-            }
-        });
-
-    DrawComponent<SkyboxComponent>(
-        "Skybox", entity, [&](SkyboxComponent &skyboxComp) {
-            static CubeMapFace selected = static_cast<CubeMapFace>(0);
-            if (ImGui::BeginCombo("##Skybox", GetFaceName(selected).c_str())) {
-                for (CubeMapFace face = static_cast<CubeMapFace>(0);
-                     face < CubeMapFace::NUMS; ++face) {
-                    const bool is_selected = (selected == face);
-                    if (ImGui::Selectable(GetFaceName(face).c_str(),
-                                          is_selected))
-                        selected = face;
-
-                    if (is_selected) ImGui::SetItemDefaultFocus();
-                }
-                ImGui::EndCombo();
-            }
-            static bool fileDialogOpen = false;
-            static ImFileDialogInfo fileDialogInfo;
-            int index = static_cast<int>(selected);
-            std::string path = asset->GetAssetPath(skyboxComp.id[index]);
-            ImGui::InputText("##Path", path.data(), path.size(),
-                             ImGuiInputTextFlags_ReadOnly);
-            ImGui::SameLine();
-            if (ImGui::Button("Open")) {
-                fileDialogOpen = true;
-                fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
-                fileDialogInfo.title = "Open File";
-                fileDialogInfo.file_name = "";
-                fileDialogInfo.directory_path = asset->GetRootPath();
-            }
-            if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
-                skyboxComp.id[index] =
-                    asset->LoadAsset<Bitmap>(fileDialogInfo.result_path);
-                auto image = asset->Get<Bitmap>(skyboxComp.id[index]);
-                skyboxComp.skybox.SetFace(selected, *image);
             }
         });
 }

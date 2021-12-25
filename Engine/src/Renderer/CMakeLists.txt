@@ -22,7 +22,8 @@ set(Renderer_Include
     ${Include_Root}/Bitmap.hpp
     ${Include_Root}/BitmapLoader.hpp
     ${Include_Root}/FontLoader.hpp
-    ${Include_Root}/ModelLoader.hpp)
+    ${Include_Root}/ModelLoader.hpp
+    ${Include_Root}/SkyboxLoader.hpp)
 
 set(Renderer_Src
     ${Src_Root}/Camera.cpp
@@ -38,7 +39,8 @@ set(Renderer_Src
     ${Src_Root}/Bitmap.cpp
     ${Src_Root}/FontLoader.cpp
     ${Src_Root}/BitmapLoader.cpp
-    ${Src_Root}/ModelLoader.cpp)
+    ${Src_Root}/ModelLoader.cpp
+    ${Src_Root}/SkyboxLoader.cpp)
 
 add_library(sd-renderer ${Renderer_Src})
 

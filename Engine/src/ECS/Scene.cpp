@@ -34,7 +34,7 @@ void Scene::Load(const std::string &filePath) {
         .entities(archive)
         .component<IdComponent, EntityDataComponent, TagComponent,
                    TransformComponent, ModelComponent, LightComponent,
-                   TextComponent, CameraComponent, SkyboxComponent>(archive);
+                   TextComponent, CameraComponent>(archive);
     Refresh();
 }
 
@@ -45,7 +45,7 @@ void Scene::Save(const std::string &filePath) {
         .entities(archive)
         .component<IdComponent, EntityDataComponent, TagComponent,
                    TransformComponent, ModelComponent, LightComponent,
-                   TextComponent, CameraComponent, SkyboxComponent>(archive);
+                   TextComponent, CameraComponent>(archive);
 }
 
 void Scene::RefreshLight(Entity &entity) {
