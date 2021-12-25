@@ -31,7 +31,10 @@ void AssetManager::Cache(const ResourceId &id) {
     }
     Ref<void> resource = m_loaders.at(type)->LoadAsset(full_path);
     SD_CORE_ASSERT(resource, "Invalid asset!");
-    m_resources.at(id).SetResource(resource);
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        m_resources.at(id).SetResource(resource);
+    }
 }
 
 void AssetManager::Load(const std::filesystem::path &path) {

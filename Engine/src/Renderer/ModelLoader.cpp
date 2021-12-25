@@ -2,6 +2,8 @@
 #include "Renderer/Model.hpp"
 #include "Renderer/Bitmap.hpp"
 
+#include "Utility/ThreadPool.hpp"
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -117,38 +119,48 @@ static inline MaterialType ConvertAssimpTextureType(aiTextureType textureType) {
     }
 }
 
-static void processAiMaterial(AssetManager &manager,
-                              const std::filesystem::path &directory,
-                              Material &material,
-                              const aiMaterial *assimpMaterial,
-                              aiTextureType assimpType) {
-    uint32_t count = assimpMaterial->GetTextureCount(assimpType);
-    if (count < 1) {
-        return;
-    } else if (count > 1) {
-        SD_CORE_WARN(
-            "[processAiMaterial] Cannot handle multiple texture of same type!");
-    }
+struct MaterialSpec {
+    Ref<Bitmap> image;
+    MaterialType type;
+    TextureSpec texture_spec;
+    MaterialSpec(const Ref<Bitmap> &image, const MaterialType &type,
+                 const TextureSpec &texture_spec)
+        : image(image), type(type), texture_spec(texture_spec) {}
+};
 
-    aiString texturePath;
-    aiTextureMapMode map_mode = aiTextureMapMode::aiTextureMapMode_Wrap;
-    if (assimpMaterial->GetTexture(assimpType, 0, &texturePath, nullptr,
-                                   nullptr, nullptr, nullptr,
-                                   &map_mode) != AI_SUCCESS) {
-        SD_CORE_ERROR("[processAiMaterial] Assimp GetTexture error!");
-        return;
+static std::vector<MaterialSpec> processAiMaterials(
+    AssetManager *manager, const std::filesystem::path &directory,
+    const aiMaterial *assimpMaterial) {
+    std::vector<MaterialSpec> specs;
+    for (int type = 1; type < aiTextureType_SHININESS; ++type) {
+        uint32_t count = assimpMaterial->GetTextureCount(aiTextureType(type));
+        if (count < 1) {
+            continue;
+        } else if (count > 1) {
+            SD_CORE_WARN(
+                "[processAiMaterial] Cannot handle multiple texture of same "
+                "type!");
+        }
+
+        aiString texturePath;
+        aiTextureMapMode map_mode = aiTextureMapMode::aiTextureMapMode_Wrap;
+        if (assimpMaterial->GetTexture(aiTextureType(type), 0, &texturePath,
+                                       nullptr, nullptr, nullptr, nullptr,
+                                       &map_mode) != AI_SUCCESS) {
+            SD_CORE_ERROR("[processAiMaterial] Assimp GetTexture error!");
+            continue;
+        }
+        std::string path = (directory / texturePath.C_Str()).string();
+        auto image = manager->LoadAndGet<Bitmap>(path);
+        specs.emplace_back(
+            image, ConvertAssimpTextureType(aiTextureType(type)),
+            TextureSpec(1, TextureType::TEX_2D,
+                        image->HasAlpha() ? DataFormat::RGBA : DataFormat::RGB,
+                        DataFormatType::UBYTE, ConvertAssimpMapMode(map_mode),
+                        TextureMagFilter::LINEAR,
+                        TextureMinFilter::LINEAR_LINEAR));
     }
-    std::string path = (directory / texturePath.C_Str()).string();
-    auto image = manager.LoadAndGet<Bitmap>(path);
-    auto texture = Texture::Create(
-        image->Width(), image->Height(),
-        TextureSpec(1, TextureType::TEX_2D,
-                    image->HasAlpha() ? DataFormat::RGBA : DataFormat::RGB,
-                    DataFormatType::UBYTE, ConvertAssimpMapMode(map_mode),
-                    TextureMagFilter::LINEAR, TextureMinFilter::LINEAR_LINEAR));
-    texture->SetPixels(0, 0, 0, image->Width(), image->Height(), 1,
-                       image->Data());
-    material.SetTexture(ConvertAssimpTextureType(assimpType), texture);
+    return specs;
 }
 
 static void processNode(const aiScene *scene, const aiNode *node,
@@ -178,14 +190,22 @@ Ref<void> ModelLoader::LoadAsset(const std::string &path) {
 
     processNode(scene, scene->mRootNode, model);
     std::filesystem::path directory = std::filesystem::path(path).parent_path();
+    ThreadPool pool(std::thread::hardware_concurrency());
+    std::vector<std::future<std::vector<MaterialSpec>>> results;
     for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
+        results.emplace_back(pool.Queue(processAiMaterials, &Manager(),
+                                        directory, scene->mMaterials[i]));
+    }
+    for (auto &&result : results) {
         Material material;
-        // TODO: other texture type not implement yet
-        for (int type = 1; type < aiTextureType_SHININESS; ++type) {
-            processAiMaterial(Manager(), directory, material,
-                              scene->mMaterials[i], aiTextureType(type));
+        for (auto &&spec : result.get()) {
+            auto texture = Texture::Create(
+                spec.image->Width(), spec.image->Height(), spec.texture_spec);
+            texture->SetPixels(0, 0, 0, spec.image->Width(),
+                               spec.image->Height(), 1, spec.image->Data());
+            material.SetTexture(spec.type, texture);
         }
-        model->AddMaterial(std::move(material));
+        model->AddMaterial(material);
     }
 
     return model;

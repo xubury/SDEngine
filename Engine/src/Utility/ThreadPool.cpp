@@ -2,17 +2,15 @@
 
 namespace SD {
 
-ThreadPool::ThreadPool(size_t threads) : m_workers(threads), m_stop(false) {}
-
-void ThreadPool::Run() {
-    for (auto &worker : m_workers) {
-        worker = std::thread([this]() {
+ThreadPool::ThreadPool(size_t threads) : m_stop(false) {
+    for (size_t i = 0; i < threads; ++i) {
+        m_workers.emplace_back([this] {
             while (true) {
                 std::packaged_task<void()> task;
                 {
                     std::unique_lock<std::mutex> lock(m_mutex);
                     m_condition.wait(
-                        lock, [this] { return m_stop || m_tasks.empty(); });
+                        lock, [this] { return m_stop || !m_tasks.empty(); });
                     if (m_stop && m_tasks.empty()) {
                         return;
                     }

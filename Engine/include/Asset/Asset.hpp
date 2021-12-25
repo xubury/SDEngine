@@ -109,8 +109,11 @@ class SD_ASSET_API AssetManager {
         if (HasId(rel_path)) {
             id = m_id_map.at(rel_path);
         } else {
-            m_id_map.emplace(rel_path, id);
-            m_resources[id] = Asset(type, rel_path);
+            {
+                std::lock_guard<std::mutex> lock(m_mutex);
+                m_id_map.emplace(rel_path, id);
+                m_resources[id] = Asset(type, rel_path);
+            }
             Cache(id);
         }
         return id;
@@ -148,6 +151,7 @@ class SD_ASSET_API AssetManager {
     std::unordered_map<ResourceId, Asset> m_resources;
     std::unordered_map<size_t, AssetLoader *> m_loaders;
     std::filesystem::path m_directory;
+    std::mutex m_mutex;
 };
 
 };  // namespace SD

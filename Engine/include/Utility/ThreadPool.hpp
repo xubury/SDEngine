@@ -18,7 +18,6 @@ class SD_UTILITY_API ThreadPool {
     template <typename F, typename... ARGS>
     decltype(auto) Queue(F&& f, ARGS&&... args);
 
-    void Run();
     void Shutdown();
    private:
     std::vector<std::thread> m_workers;
