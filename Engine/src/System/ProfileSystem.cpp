@@ -38,11 +38,10 @@ void ProfileSystem::OnRender() {
 
     m_fps.Probe();
 
-    std::string fps_str =
-        "FPS:" + std::to_string(static_cast<uint32_t>(m_fps.GetFPS()));
-    std::string frame_time_str =
-        "\nFrame Time:" +
-        std::to_string(static_cast<uint32_t>(m_fps.GetFrameTime())) + "ms";
+    std::string fps_str;
+    fps_str.resize(255);
+    snprintf(fps_str.data(), fps_str.size(), "FPS: %.2f(%.2f ms)",
+             m_fps.GetFPS(), m_fps.GetFrameTime());
 
     device->SetTarget(renderer->GetDefaultTarget());
     renderer->Begin(m_camera);
@@ -51,7 +50,6 @@ void ProfileSystem::OnRender() {
         m_camera.GetNearHeight() / 2 - m_font->GetPixelHeight());
 
     renderer->DrawText(*m_font, fps_str, glm::mat4(1.0f));
-    renderer->DrawText(*m_font, frame_time_str, glm::mat4(1.0f));
     renderer->DrawText(*m_font, "\n中文测试: 你好", glm::mat4(1.0f));
     renderer->DrawText(*m_font, "\n中文測試: 你好", glm::mat4(1.0f));
     renderer->DrawText(*m_font, "\n日本語テスト: こんにちは", glm::mat4(1.0f));
