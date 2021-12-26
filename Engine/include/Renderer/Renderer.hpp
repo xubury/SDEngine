@@ -139,7 +139,7 @@ class SD_RENDERER_API Renderer {
                        const glm::vec2 &scale,
                        const glm::vec4 &color = glm::vec4(1.0f));
 
-    void DrawText(const Font &font, const std::string &text, uint8_t pixleSize,
+    void DrawText(const Font &font, const std::string &text,
                   const glm::mat4 &transform,
                   const glm::vec4 &color = glm::vec4(1.0f));
 

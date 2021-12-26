@@ -66,11 +66,10 @@ struct SD_ECS_API LightComponent {
 
 struct SD_ECS_API TextComponent {
     ResourceId id;
-    uint8_t pixel_size = 20;
     glm::vec4 color = glm::vec4(1);
     std::string text;
 
-    SERIALIZE(id, pixel_size, color, text)
+    SERIALIZE(id, color, text)
 };
 
 struct SD_ECS_API CameraComponent {

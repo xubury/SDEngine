@@ -67,7 +67,8 @@ class SD_ASSET_API AssetManager {
    private:
     void Clear();
 
-    void Cache(const ResourceId &id);
+    void Cache(const ResourceId &id, AssetLoader *loader,
+               const std::string &rel_path);
 
    public:
     AssetManager();
@@ -103,7 +104,6 @@ class SD_ASSET_API AssetManager {
         SD_CORE_ASSERT(valid(), "AssetManager's root path is invalid!");
         // generate a random id
         ResourceId id;
-        size_t type = GetAssetType<ASSET>();
         std::filesystem::path full_path = GetAbsolutePath(path);
         std::string rel_path = GetRelativePath(full_path).generic_string();
         // check if the relative path has id
@@ -111,12 +111,13 @@ class SD_ASSET_API AssetManager {
             std::shared_lock<std::shared_mutex> lock(m_mutex);
             id = m_id_map.at(rel_path);
         } else {
+            size_t type = GetAssetType<ASSET>();
+            Cache(id, GetLoader<ASSET>(), rel_path);
             {
                 std::unique_lock<std::shared_mutex> lock(m_mutex);
                 m_id_map.emplace(rel_path, id);
                 m_resources[id] = Asset(type, rel_path);
             }
-            Cache(id);
         }
         return id;
     }
@@ -132,7 +133,7 @@ class SD_ASSET_API AssetManager {
             return nullptr;
         }
         if (!HasCached(id)) {
-            Cache(id);
+            Cache(id, GetLoader<ASSET>(), GetAssetPath(id));
         }
         std::shared_lock<std::shared_mutex> lock(m_mutex);
         return std::static_pointer_cast<ASSET>(
@@ -152,6 +153,13 @@ class SD_ASSET_API AssetManager {
     Ref<ASSET> LoadAndGet(const std::filesystem::path &path) {
         auto id = LoadAsset<ASSET>(path);
         return Get<ASSET>(id);
+    }
+
+    template <typename ASSET>
+    AssetLoader *GetLoader() {
+        size_t type = GetAssetType<ASSET>();
+        SD_CORE_ASSERT(m_loaders.count(type), "Loader not set up correctly!");
+        return m_loaders.at(type);
     }
 
     void Validate();

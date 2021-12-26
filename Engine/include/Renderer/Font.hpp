@@ -8,8 +8,6 @@
 #include <glm/glm.hpp>
 #include <unordered_set>
 
-typedef struct FT_FaceRec_ *FT_Face;
-
 namespace SD {
 
 struct SD_RENDERER_API Character {
@@ -21,47 +19,23 @@ struct SD_RENDERER_API Character {
     uint32_t advance;
 };
 
-struct SD_RENDERER_API CharacterId {
-    CharacterId() = default;
-    CharacterId(char32_t ch, uint8_t size) : ch(ch), size(size) {}
-    bool operator<(const CharacterId &rhs) const {
-        return ch < rhs.ch && size < rhs.size;
-    }
-    bool operator==(const CharacterId &rhs) const {
-        return ch == rhs.ch && size == rhs.size;
-    }
-    char32_t ch;
-    uint8_t size;
-};
-
-struct SD_RENDERER_API CharacterHash {
-    std::size_t operator()(const CharacterId &chId) const {
-        auto h1 = std::hash<char32_t>{}(chId.ch);
-        auto h2 = std::hash<int>{}(chId.size);
-        return h1 ^ h2;
-    }
-};
-
 class SD_RENDERER_API Font {
    public:
-    Font(FT_Face face);
-    ~Font();
+    Font(uint32_t pixel_height);
+    ~Font() = default;
 
     Font(const Font &) = delete;
     Font operator=(const Font &) = delete;
 
-    const Character &GetCharacter(char32_t ch, uint8_t size) const;
+    uint32_t GetPixelHeight() const { return m_pixel_height; }
+    const Character &GetCharacter(char32_t ch) const;
 
-    void LoadGlyph(uint8_t size);
+    void SetCharacter(char32_t utf32, const Character &ch);
+    void SetCharacter(char32_t utf32, Character &&ch);
 
    private:
-    void LoadRangedGlyph(uint8_t size, char32_t start, char32_t end);
-
-    FT_Face m_face;
-
-    std::unordered_map<CharacterId, Character, CharacterHash> m_characters;
-
-    std::unordered_set<uint8_t> m_font_atlas;
+    uint32_t m_pixel_height;
+    std::unordered_map<char32_t, Character> m_characters;
 };
 
 }  // namespace SD

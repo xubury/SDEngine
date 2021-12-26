@@ -369,8 +369,7 @@ void Renderer::DrawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
 }
 
 void Renderer::DrawText(const Font& font, const std::string& text,
-                        uint8_t pixelSize, const glm::mat4& transform,
-                        const glm::vec4& color) {
+                        const glm::mat4& transform, const glm::vec4& color) {
     glm::mat4 t =
         glm::translate(glm::mat4(1.0f), glm::vec3(m_data.text_origin.x,
                                                   m_data.text_origin.y, 0)) *
@@ -379,12 +378,12 @@ void Renderer::DrawText(const Font& font, const std::string& text,
     for (const auto c : u32str) {
         if (c == '\n') {
             m_data.text_cursor.x = 0;
-            m_data.text_cursor.y -= pixelSize;
+            m_data.text_cursor.y -= font.GetPixelHeight();
             continue;
         } else if (c <= 128 && std::iscntrl(c)) {
             continue;
         }
-        const Character& ch = font.GetCharacter(c, pixelSize);
+        const Character& ch = font.GetCharacter(c);
         glm::mat4 offset =
             glm::translate(
                 glm::mat4(1.0f),

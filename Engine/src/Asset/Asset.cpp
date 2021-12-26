@@ -25,20 +25,17 @@ void AssetManager::Clear() {
     m_resources.clear();
 }
 
-void AssetManager::Cache(const ResourceId &id) {
-    std::shared_lock<std::shared_mutex> shared_lock(m_mutex);
-    std::string rel_path = m_resources.at(id).GetPath();
+void AssetManager::Cache(const ResourceId &id, AssetLoader *loader,
+                         const std::string &rel_path) {
     std::string full_path = GetAbsolutePath(rel_path).string();
-    size_t type = m_resources.at(id).GetLoaderType();
-    if (m_loaders.count(type) == 0) {
-        throw Exception("Loader not set up correctly!");
-    }
-    shared_lock.unlock();
 
-    Ref<void> resource = m_loaders.at(type)->LoadAsset(full_path);
-    SD_CORE_ASSERT(resource, "Invalid asset!");
-    std::lock_guard<std::shared_mutex> lock(m_mutex);
-    m_resources.at(id).SetResource(resource);
+    Ref<void> resource = loader->LoadAsset(full_path);
+    if (resource) {
+        std::lock_guard<std::shared_mutex> lock(m_mutex);
+        m_resources.at(id).SetResource(resource);
+    } else {
+        throw Exception("Invalid asset!");
+    }
 }
 
 void AssetManager::Load(const std::filesystem::path &path) {

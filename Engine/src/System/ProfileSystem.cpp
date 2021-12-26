@@ -5,8 +5,6 @@
 
 namespace SD {
 
-const uint8_t FONT_SIZE = 20;
-
 const uint32_t FPS_CAPACITY = 50;
 
 ProfileSystem::ProfileSystem(int width, int height)
@@ -17,8 +15,7 @@ ProfileSystem::ProfileSystem(int width, int height)
       m_is_show_message(true) {}
 
 void ProfileSystem::OnInit() {
-    m_font = asset->LoadAndGet<Font>("fonts/msyh.ttc");
-    m_font->LoadGlyph(FONT_SIZE);
+    m_font = asset->LoadAndGet<Font>("fonts/default.font");
 }
 
 void ProfileSystem::OnPush() {
@@ -49,21 +46,21 @@ void ProfileSystem::OnRender() {
 
     device->SetTarget(renderer->GetDefaultTarget());
     renderer->Begin(m_camera);
-    renderer->SetTextOrigin(-m_camera.GetNearWidth() / 2,
-                            m_camera.GetNearHeight() / 2 - FONT_SIZE);
+    renderer->SetTextOrigin(
+        -m_camera.GetNearWidth() / 2,
+        m_camera.GetNearHeight() / 2 - m_font->GetPixelHeight());
 
-    renderer->DrawText(*m_font, fps_str, FONT_SIZE, glm::mat4(1.0f));
-    renderer->DrawText(*m_font, frame_time_str, FONT_SIZE, glm::mat4(1.0f));
-    renderer->DrawText(*m_font, "\n中文测试: 你好", FONT_SIZE, glm::mat4(1.0f));
-    renderer->DrawText(*m_font, "\n中文測試: 你好", FONT_SIZE, glm::mat4(1.0f));
-    renderer->DrawText(*m_font, "\n日本語テスト: こんにちは", FONT_SIZE,
-                       glm::mat4(1.0f));
+    renderer->DrawText(*m_font, fps_str, glm::mat4(1.0f));
+    renderer->DrawText(*m_font, frame_time_str, glm::mat4(1.0f));
+    renderer->DrawText(*m_font, "\n中文测试: 你好", glm::mat4(1.0f));
+    renderer->DrawText(*m_font, "\n中文測試: 你好", glm::mat4(1.0f));
+    renderer->DrawText(*m_font, "\n日本語テスト: こんにちは", glm::mat4(1.0f));
     // Primitive test
     // Line
     const int PRIMITIVE_SIZE = 15;
-    renderer->DrawText(*m_font, "\nLine test: ", FONT_SIZE, glm::mat4(1.0f));
+    renderer->DrawText(*m_font, "\nLine test: ", glm::mat4(1.0f));
     glm::vec2 pos = renderer->GetTextCursor();
-    pos.y += FONT_SIZE / 4.f;
+    pos.y += m_font->GetPixelHeight() / 4.f;
     for (int i = 0; i < 10; ++i) {
         glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
         color[i % 3] = 1.0f;
@@ -74,9 +71,9 @@ void ProfileSystem::OnRender() {
                            color);
     }
     // Quad
-    renderer->DrawText(*m_font, "\nQuad test: ", FONT_SIZE, glm::mat4(1.0f));
+    renderer->DrawText(*m_font, "\nQuad test: ", glm::mat4(1.0f));
     pos = renderer->GetTextCursor();
-    pos.y += FONT_SIZE / 4.f;
+    pos.y += m_font->GetPixelHeight() / 4.f;
     for (int i = 0; i < 10; ++i) {
         glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
         color[i % 3] = 1.0f;
@@ -85,9 +82,9 @@ void ProfileSystem::OnRender() {
         pos.x += PRIMITIVE_SIZE;
     }
     // Circle
-    renderer->DrawText(*m_font, "\nCircle test: ", FONT_SIZE, glm::mat4(1.0f));
+    renderer->DrawText(*m_font, "\nCircle test: ", glm::mat4(1.0f));
     pos = renderer->GetTextCursor();
-    pos.y += FONT_SIZE / 4.f;
+    pos.y += m_font->GetPixelHeight() / 4.f;
     for (int i = 0; i < 10; ++i) {
         glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
         color[i % 3] = 1.0f;

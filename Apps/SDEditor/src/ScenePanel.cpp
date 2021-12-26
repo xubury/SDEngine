@@ -408,7 +408,12 @@ void ScenePanel::DrawComponents(Entity &entity) {
             fileDialogInfo.directory_path = asset->GetRootPath();
         }
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
-            textComp.id = asset->LoadAsset<Font>(fileDialogInfo.result_path);
+            try {
+                ResourceId id =
+                    asset->LoadAsset<Font>(fileDialogInfo.result_path);
+                textComp.id = id;
+            } catch (const Exception &e) {
+            }
         }
         ImGui::Text("Text Content:");
         static char buffer[256];
@@ -416,17 +421,8 @@ void ScenePanel::DrawComponents(Entity &entity) {
         if (ImGui::InputText("##TextEdit", buffer, sizeof(buffer))) {
             textComp.text = buffer;
         }
-        ImGui::Text("Pixel Size");
-        int pixel_size = textComp.pixel_size;
-        if (ImGui::InputInt("##PixelSize", &pixel_size)) {
-            textComp.pixel_size = std::clamp(pixel_size, 1, 100);
-        }
         ImGui::Text("Color");
         ImGui::ColorEdit4("##TextColor", &textComp.color[0]);
-        auto font = asset->Get<Font>(textComp.id);
-        if (font) {
-            font->LoadGlyph(pixel_size);
-        }
     });
     DrawComponent<CameraComponent>(
         "Camera", entity, [&](CameraComponent &cameraComp) {
