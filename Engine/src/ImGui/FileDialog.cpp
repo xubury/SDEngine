@@ -56,7 +56,8 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
     ImGui::PushID(dialogInfo);
     ImGui::SetNextWindowSize(ImVec2(740.0f, 410.0f), ImGuiCond_FirstUseEver);
 
-    if (ImGui::Begin(dialogInfo->title.c_str(), open)) {
+    ImGui::OpenPopup(dialogInfo->title.c_str());
+    if (ImGui::BeginPopupModal(dialogInfo->title.c_str(), open)) {
         if ((dialogInfo->current_files.empty() &&
              dialogInfo->current_directories.empty()) ||
             dialogInfo->refresh_info)
@@ -392,9 +393,9 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
                 }
             }
         }
+        ImGui::EndPopup();
     }
 
-    ImGui::End();
     ImGui::PopID();
 
     return complete;
