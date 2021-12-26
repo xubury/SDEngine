@@ -5,9 +5,9 @@
 namespace SD {
 
 const std::unordered_map<std::string, CubeMapFace> SKYBOX_NAME_MAP = {
-    {"Right", CubeMapFace::RIGHT}, {"Left", CubeMapFace::LEFT},
-    {"Top", CubeMapFace::TOP},     {"Bottom", CubeMapFace::BOTTOM},
-    {"Front", CubeMapFace::FRONT}, {"Back", CubeMapFace::BACK}};
+    {"right", CubeMapFace::RIGHT}, {"left", CubeMapFace::LEFT},
+    {"top", CubeMapFace::TOP},     {"bottom", CubeMapFace::BOTTOM},
+    {"front", CubeMapFace::FRONT}, {"back", CubeMapFace::BACK}};
 
 inline Exception GetException(size_t line_number, const std::string& msg) {
     return Exception(fmt::format("Line {}: {}", line_number, msg));
@@ -45,6 +45,7 @@ void SkyboxLoader::ParseStream(std::istream& stream,
             throw GetException(line_number, "Invalid line");
         std::string face_name = (line.substr(0, sep_pos));
         String::Trim(face_name);
+        String::ToLower(face_name);
         if (SKYBOX_NAME_MAP.count(face_name) == 0) {
             throw GetException(line_number, "Invalid face name");
         }

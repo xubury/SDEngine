@@ -54,7 +54,7 @@ void ImGuiLayer::OnInit() {
     //                              pixel_size, nullptr,
     //                              io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
     io.Fonts->AddFontFromFileTTF(
-        "assets/fonts/wqy-microhei.ttc", pixel_size, nullptr,
+        "assets/fonts/msyh.ttc", pixel_size, nullptr,
         io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
 
     // Setup Dear ImGui style

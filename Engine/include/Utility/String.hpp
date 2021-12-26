@@ -28,6 +28,10 @@ inline void Trim(std::string &s) {
     TrimRight(s);
 }
 
+inline void ToLower(std::string &str) {
+    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+}
+
 inline std::u16string ConvertToUTF16(const std::string &str) {
     typedef std::codecvt_utf8_utf16<char16_t> convert_type;
     std::wstring_convert<convert_type, char16_t> converter;
