@@ -202,56 +202,6 @@ void EditorLayer::OnImGui() {
         ImGui::EndMenuBar();
     }
 
-    ImGui::Begin("Render Settings");
-    {
-        float exposure = m_post_process_system->GetExposure();
-        ImGui::TextUnformatted("Exposure");
-        if (ImGui::SliderFloat("##Exposure", &exposure, 0, 10)) {
-            m_post_process_system->SetExposure(exposure);
-        }
-
-        bool isBloom = m_post_process_system->GetBloom();
-        if (ImGui::Checkbox("Bloom", &isBloom)) {
-            m_post_process_system->SetBloom(isBloom);
-        }
-
-        float bloom = m_post_process_system->GetBloomFactor();
-        ImGui::TextUnformatted("Bloom Factor");
-        if (ImGui::SliderFloat("##Bloom Factor", &bloom, 0.1, 1)) {
-            m_post_process_system->SetBloomFactor(bloom);
-        }
-
-        float gamma = m_post_process_system->GetGammaCorrection();
-        ImGui::TextUnformatted("Gamma Correction");
-        if (ImGui::SliderFloat("##Gamma Correction", &gamma, 0.1, 3)) {
-            m_post_process_system->SetGammaCorrection(gamma);
-        }
-
-        bool ssao_state = m_lighting_system->GetSSAOState();
-        if (ImGui::Checkbox("SSAO", &ssao_state)) {
-            m_lighting_system->SetSSAOState(ssao_state);
-        }
-
-        int ssao_power = m_lighting_system->GetSSAOPower();
-        ImGui::TextUnformatted("SSAO Power");
-        if (ImGui::SliderInt("##SSAO Power", &ssao_power, 1, 32)) {
-            m_lighting_system->SetSSAOPower(ssao_power);
-        }
-
-        float ssao_radius = m_lighting_system->GetSSAORadius();
-        ImGui::TextUnformatted("SSAO Radius");
-        if (ImGui::SliderFloat("##SSAO Radius", &ssao_radius, 0.1, 30)) {
-            m_lighting_system->SetSSAORadius(ssao_radius);
-        }
-
-        float ssao_bias = m_lighting_system->GetSSAOBias();
-        ImGui::TextUnformatted("SSAO Bias");
-        if (ImGui::SliderFloat("##SSAO Bias", &ssao_bias, 0.01, 2)) {
-            m_lighting_system->SetSSAOBias(ssao_bias);
-        }
-    }
-    ImGui::End();
-
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
     ImGui::Begin("GBuffer");
     {

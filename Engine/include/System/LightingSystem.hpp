@@ -33,6 +33,8 @@ class SD_SYSTEM_API LightingSystem : public System {
 
     void OnPop() override;
 
+    void OnImGui() override;
+
     void OnRender() override;
 
     void OnSizeEvent(const WindowSizeEvent &event);
@@ -88,7 +90,7 @@ class SD_SYSTEM_API LightingSystem : public System {
     bool m_ssao_state;
     float m_ssao_radius;
     float m_ssao_bias;
-    uint8_t m_ssao_power;
+    int m_ssao_power;
     Ref<Texture> m_ssao_noise;
     std::vector<glm::vec3> m_ssao_kernel;
 

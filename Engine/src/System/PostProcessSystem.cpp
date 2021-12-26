@@ -1,5 +1,6 @@
 #include "System/PostProcessSystem.hpp"
 #include "Renderer/Renderer.hpp"
+#include "ImGui/ImGuiWidget.hpp"
 
 namespace SD {
 
@@ -63,6 +64,21 @@ void PostProcessSystem::OnPop() {
     ini->SetFloat("post process", "exposure", m_exposure);
     ini->SetFloat("post process", "gamma correction", m_gamma_correction);
     dispatcher->RemoveHandler(m_size_handler);
+}
+
+void PostProcessSystem::OnImGui() {
+    ImGui::Begin("PostProcess System");
+    {
+        ImGui::TextUnformatted("Exposure");
+        ImGui::SliderFloat("##Exposure", &m_exposure, 0, 10);
+        ImGui::Checkbox("Bloom", &m_is_bloom);
+        ImGui::TextUnformatted("Bloom Factor");
+        ImGui::SliderFloat("##Bloom Factor", &m_bloom_factor, 0.1, 1);
+
+        ImGui::TextUnformatted("Gamma Correction");
+        ImGui::SliderFloat("##Gamma Correction", &m_gamma_correction, 0.1, 3);
+    }
+    ImGui::End();
 }
 
 void PostProcessSystem::OnRender() {

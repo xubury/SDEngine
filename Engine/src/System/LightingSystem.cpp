@@ -4,6 +4,7 @@
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
 #include "Utility/Random.hpp"
+#include "ImGui/ImGuiWidget.hpp"
 
 namespace SD {
 
@@ -174,6 +175,20 @@ void LightingSystem::OnSizeEvent(const WindowSizeEvent &event) {
     m_gbuffer_target.Resize(event.width, event.height);
     m_ssao_target.Resize(event.width, event.height);
     m_ssao_blur_target.Resize(event.width, event.height);
+}
+
+void LightingSystem::OnImGui() {
+    ImGui::Begin("Lighting System");
+    {
+        ImGui::Checkbox("SSAO", &m_ssao_state);
+        ImGui::TextUnformatted("SSAO Power");
+        ImGui::SliderInt("##SSAO Power", &m_ssao_power, 1, 32);
+        ImGui::TextUnformatted("SSAO Radius");
+        ImGui::SliderFloat("##SSAO Radius", &m_ssao_radius, 0.1, 30);
+        ImGui::TextUnformatted("SSAO Bias");
+        ImGui::SliderFloat("##SSAO Bias", &m_ssao_bias, 0.01, 2);
+    }
+    ImGui::End();
 }
 
 void LightingSystem::OnRender() {

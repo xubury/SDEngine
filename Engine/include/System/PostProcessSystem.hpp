@@ -19,6 +19,8 @@ class SD_SYSTEM_API PostProcessSystem : public System {
 
     void OnPop() override;
 
+    void OnImGui() override;
+
     void OnRender() override;
 
     void OnSizeEvent(const WindowSizeEvent &event);
