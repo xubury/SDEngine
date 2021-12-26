@@ -1,5 +1,6 @@
 #include "Renderer/SkyboxLoader.hpp"
 #include "Utility/String.hpp"
+#include "Utility/ThreadPool.hpp"
 
 namespace SD {
 
@@ -26,10 +27,17 @@ Ref<void> SkyboxLoader::LoadAsset(const std::string& path) {
     return skybox;
 }
 
+struct SkybosSpec {
+    Ref<Bitmap> image;
+    CubeMapFace face;
+};
+
 void SkyboxLoader::ParseStream(std::istream& stream,
                                const std::filesystem::path& directory,
                                Skybox& skybox) {
     int line_number = 0;
+    ThreadPool pool(std::thread::hardware_concurrency());
+    std::vector<std::future<SkybosSpec>> results;
     for (std::string line; std::getline(stream, line); ++line_number) {
         String::Trim(line);
         size_t sep_pos = line.find_first_of('=');
@@ -43,12 +51,18 @@ void SkyboxLoader::ParseStream(std::istream& stream,
         CubeMapFace face = SKYBOX_NAME_MAP.at(face_name);
         std::string path = line.substr(sep_pos + 1);
         String::Trim(path);
-        Ref<Bitmap> bitmap = Manager().LoadAndGet<Bitmap>(directory / path);
-        if (bitmap) {
-            skybox.SetFace(face, *bitmap);
-        } else {
-            throw GetException(line_number, "Invalid image path");
-        }
+        results.emplace_back(pool.Queue(
+            [this, full_path = directory / path, face, line_number]() {
+                Ref<Bitmap> bitmap = Manager().LoadAndGet<Bitmap>(full_path);
+                if (!bitmap) {
+                    throw GetException(line_number, "Invalid image path");
+                }
+                return SkybosSpec{bitmap, face};
+            }));
+    }
+    for (auto&& result : results) {
+        auto&& spec = result.get();
+        skybox.SetFace(spec.face, *spec.image);
     }
 }
 

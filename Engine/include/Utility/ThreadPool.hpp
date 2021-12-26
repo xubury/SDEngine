@@ -12,13 +12,12 @@ namespace SD {
 
 class SD_UTILITY_API ThreadPool {
    public:
-    ThreadPool(size_t threads);
+    ThreadPool(uint32_t threads);
     ~ThreadPool();
 
     template <typename F, typename... ARGS>
     decltype(auto) Queue(F&& f, ARGS&&... args);
 
-    void Shutdown();
    private:
     std::vector<std::thread> m_workers;
     std::queue<std::packaged_task<void()>> m_tasks;

@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <typeinfo>
 #include <filesystem>
+#include <shared_mutex>
 
 namespace SD {
 
@@ -107,10 +108,11 @@ class SD_ASSET_API AssetManager {
         std::string rel_path = GetRelativePath(full_path).generic_string();
         // check if the relative path has id
         if (HasId(rel_path)) {
+            std::shared_lock<std::shared_mutex> lock(m_mutex);
             id = m_id_map.at(rel_path);
         } else {
             {
-                std::lock_guard<std::mutex> lock(m_mutex);
+                std::unique_lock<std::shared_mutex> lock(m_mutex);
                 m_id_map.emplace(rel_path, id);
                 m_resources[id] = Asset(type, rel_path);
             }
@@ -119,23 +121,30 @@ class SD_ASSET_API AssetManager {
         return id;
     }
 
+    bool Has(ResourceId id) {
+        std::shared_lock<std::shared_mutex> lock(m_mutex);
+        return m_resources.count(id) == 0;
+    }
+
     template <typename ASSET>
     Ref<ASSET> Get(ResourceId id) {
-        if (m_resources.count(id) == 0) {
+        if (Has(id)) {
             return nullptr;
         }
         if (!HasCached(id)) {
             Cache(id);
         }
+        std::shared_lock<std::shared_mutex> lock(m_mutex);
         return std::static_pointer_cast<ASSET>(
             m_resources.at(id).GetResource());
     }
 
     // Return relative path
     std::string GetAssetPath(ResourceId id) {
-        if (m_resources.count(id) == 0) {
+        if (Has(id)) {
             return "";
         }
+        std::shared_lock<std::shared_mutex> lock(m_mutex);
         return m_resources.at(id).GetPath();
     }
 
@@ -152,7 +161,7 @@ class SD_ASSET_API AssetManager {
     std::unordered_map<ResourceId, Asset> m_resources;
     std::unordered_map<size_t, AssetLoader *> m_loaders;
     std::filesystem::path m_directory;
-    std::mutex m_mutex;
+    mutable std::shared_mutex m_mutex;
 };
 
 };  // namespace SD

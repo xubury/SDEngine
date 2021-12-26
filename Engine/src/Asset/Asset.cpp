@@ -13,28 +13,32 @@ AssetManager::AssetManager() { SD_CORE_TRACE("Initalizing AssetManager"); }
 
 AssetManager::~AssetManager() {
     SD_CORE_TRACE("Deleting AssetManager");
-    m_id_map.clear();
-    m_resources.clear();
+    Clear();
     for (const auto &[id, loader] : m_loaders) {
         delete loader;
     }
 }
 
-void AssetManager::Clear() { m_resources.clear(); }
+void AssetManager::Clear() {
+    std::lock_guard<std::shared_mutex> lock(m_mutex);
+    m_id_map.clear();
+    m_resources.clear();
+}
 
 void AssetManager::Cache(const ResourceId &id) {
+    std::shared_lock<std::shared_mutex> shared_lock(m_mutex);
     std::string rel_path = m_resources.at(id).GetPath();
     std::string full_path = GetAbsolutePath(rel_path).string();
     size_t type = m_resources.at(id).GetLoaderType();
     if (m_loaders.count(type) == 0) {
         throw Exception("Loader not set up correctly!");
     }
+    shared_lock.unlock();
+
     Ref<void> resource = m_loaders.at(type)->LoadAsset(full_path);
     SD_CORE_ASSERT(resource, "Invalid asset!");
-    {
-        std::lock_guard<std::mutex> lock(m_mutex);
-        m_resources.at(id).SetResource(resource);
-    }
+    std::lock_guard<std::shared_mutex> lock(m_mutex);
+    m_resources.at(id).SetResource(resource);
 }
 
 void AssetManager::Load(const std::filesystem::path &path) {
@@ -59,6 +63,7 @@ void AssetManager::Load(const std::filesystem::path &path) {
 }
 
 void AssetManager::Save() {
+    std::shared_lock<std::shared_mutex> shared_lock(m_mutex);
     std::ofstream os(m_directory / ASSET_FILE, std::ios::binary);
     cereal::XMLOutputArchive archive(os);
     // To have order in serialized data
@@ -87,15 +92,18 @@ std::filesystem::path AssetManager::GetAbsolutePath(
 }
 
 bool AssetManager::HasId(const std::string &path) const {
+    std::shared_lock<std::shared_mutex> lock(m_mutex);
     return m_id_map.count(path);
 }
 
 bool AssetManager::HasCached(const ResourceId &id) const {
+    std::shared_lock<std::shared_mutex> lock(m_mutex);
     return m_resources.at(id).GetResource() != nullptr;
 }
 
 void AssetManager::Validate() {
     // remove asset that no longer exists.
+    std::lock_guard<std::shared_mutex> lock(m_mutex);
     auto iter = m_id_map.begin();
     while (iter != m_id_map.end()) {
         if (!std::filesystem::exists(GetAbsolutePath(iter->first))) {

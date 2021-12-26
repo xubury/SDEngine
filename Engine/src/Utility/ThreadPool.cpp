@@ -2,8 +2,8 @@
 
 namespace SD {
 
-ThreadPool::ThreadPool(size_t threads) : m_stop(false) {
-    for (size_t i = 0; i < threads; ++i) {
+ThreadPool::ThreadPool(uint32_t threads) : m_stop(false) {
+    for (uint32_t i = 0; i < threads; ++i) {
         m_workers.emplace_back([this] {
             while (true) {
                 std::packaged_task<void()> task;
@@ -24,7 +24,7 @@ ThreadPool::ThreadPool(size_t threads) : m_stop(false) {
     }
 }
 
-void ThreadPool::Shutdown() {
+ThreadPool::~ThreadPool() {
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         m_stop = true;
@@ -33,10 +33,6 @@ void ThreadPool::Shutdown() {
     for (auto &worker : m_workers) {
         worker.join();
     }
-}
-
-ThreadPool::~ThreadPool() {
-    if (!m_stop) Shutdown();
 }
 
 }  // namespace SD
