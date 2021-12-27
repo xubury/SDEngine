@@ -30,6 +30,7 @@ set(Graphics_Include
     ${Include_Root}/Buffer.hpp
     ${Include_Root}/BufferLayout.hpp
     ${Include_Root}/Device.hpp
+    ${Include_Root}/Export.hpp
     ${Include_Root}/Framebuffer.hpp
     ${Include_Root}/Renderbuffer.hpp
     ${Include_Root}/RenderTarget.hpp

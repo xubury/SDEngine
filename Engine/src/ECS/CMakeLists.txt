@@ -3,6 +3,7 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/ECS)
 
 set(ECS_Include
     ${Include_Root}/Component.hpp
+    ${Include_Root}/Export.hpp
     ${Include_Root}/Entity.hpp
     ${Include_Root}/Scene.hpp)
 

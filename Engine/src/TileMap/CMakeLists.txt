@@ -2,6 +2,7 @@ set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/TileMap)
 set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/TileMap)
 
 set(TileMap_Include
+    ${Include_Root}/Export.hpp
     ${Include_Root}/TileLayout.hpp
     ${Include_Root}/TileMap.hpp)
 

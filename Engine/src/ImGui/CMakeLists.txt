@@ -5,6 +5,7 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/ImGui)
 
 set(ImGui_Include
     ${Include_Root}/FileDialog.hpp
+    ${Include_Root}/Export.hpp
     ${Include_Root}/ImGuiWidget.hpp)
 
 set(ImGui_Src

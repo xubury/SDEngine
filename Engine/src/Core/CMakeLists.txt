@@ -13,6 +13,7 @@ set(OpenGL_Src
 set(Core_Include
     ${OpenGL_Include}
     ${Include_Root}/Application.hpp
+    ${Include_Root}/Export.hpp
     ${Include_Root}/Window.hpp
     ${Include_Root}/System.hpp
     ${Include_Root}/Keyboard.hpp
