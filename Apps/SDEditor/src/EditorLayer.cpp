@@ -444,8 +444,10 @@ void EditorLayer::DrawViewport() {
                 tc.transform.SetWorldTransform(transform);
             }
         }
+        // FIXME:2D mode doesn;t have a gbuffer, so reading entity id won't
+        // work.
         if (!ImGuizmo::IsUsing() && ImGui::IsMouseDown(0) &&
-            m_is_viewport_hovered) {
+            m_is_viewport_hovered && m_mode == EditorMode::THREE_DIMENSIONAL) {
             auto [mouseX, mouseY] = ImGui::GetMousePos();
             mouseX -= m_viewport.GetLeft();
             mouseY = m_viewport.GetHeight() - mouseY + m_viewport.GetTop();
