@@ -89,7 +89,7 @@ class SD_ASSET_API AssetManager {
 
     bool HasCached(const ResourceId &id) const;
 
-    bool valid() const { return std::filesystem::exists(m_directory); }
+    bool Valid() const { return std::filesystem::exists(m_directory); }
 
     template <typename ASSET>
     void SetLoader(AssetLoader *loader) {
@@ -97,20 +97,18 @@ class SD_ASSET_API AssetManager {
         m_loaders[type] = loader;
     }
 
-    AssetLoader *getLoader(size_t id) { return m_loaders[id]; }
-
     template <typename ASSET>
     ResourceId LoadAsset(const std::filesystem::path &path) {
-        SD_CORE_ASSERT(valid(), "AssetManager's root path is invalid!");
-        // generate a random id
-        ResourceId id;
+        SD_CORE_ASSERT(Valid(), "AssetManager's root path is invalid!");
         std::filesystem::path full_path = GetAbsolutePath(path);
         std::string rel_path = GetRelativePath(full_path).generic_string();
         // check if the relative path has id
         if (HasId(rel_path)) {
             std::shared_lock<std::shared_mutex> lock(m_mutex);
-            id = m_id_map.at(rel_path);
+            return m_id_map.at(rel_path);
         } else {
+            // generate a random id
+            ResourceId id;
             size_t type = GetAssetType<ASSET>();
             Cache(id, GetLoader<ASSET>(), rel_path);
             {
@@ -118,8 +116,8 @@ class SD_ASSET_API AssetManager {
                 m_id_map.emplace(rel_path, id);
                 m_resources[id] = Asset(type, rel_path);
             }
+            return id;
         }
-        return id;
     }
 
     bool Has(ResourceId id) {
