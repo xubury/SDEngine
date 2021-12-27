@@ -28,13 +28,21 @@ EditorLayer::EditorLayer(int width, int height, int msaa)
 EditorLayer::~EditorLayer() {
     DestroySystem(m_scene_panel);
     DestroySystem(m_editor_camera_system);
-    DestroySystem(m_camera_system);
-    DestroySystem(m_lighting_system);
-    DestroySystem(m_skybox_system);
-    DestroySystem(m_sprite_system);
-    DestroySystem(m_post_process_system);
-    DestroySystem(m_tile_map_system);
-    DestroySystem(m_profile_system);
+    if (m_mode == EditorMode::THREE_DIMENSIONAL) {
+        DestroySystem(m_camera_system);
+        DestroySystem(m_lighting_system);
+        DestroySystem(m_skybox_system);
+        DestroySystem(m_sprite_system);
+        DestroySystem(m_post_process_system);
+        DestroySystem(m_profile_system);
+    } else {
+        DestroySystem(m_camera_system);
+        DestroySystem(m_skybox_system);
+        DestroySystem(m_sprite_system);
+        DestroySystem(m_post_process_system);
+        DestroySystem(m_tile_map_system);
+        DestroySystem(m_profile_system);
+    }
 }
 
 void EditorLayer::OnInit() {
@@ -43,16 +51,6 @@ void EditorLayer::OnInit() {
     m_scene_panel = CreateSystem<ScenePanel>();
     m_editor_camera_system =
         CreateSystem<EditorCameraSystem>(m_width, m_height);
-
-    // engine logic system
-    m_camera_system = CreateSystem<CameraSystem>();
-    // normal render systems
-    m_lighting_system = CreateSystem<LightingSystem>(m_width, m_height, m_msaa);
-    m_skybox_system = CreateSystem<SkyboxSystem>();
-    m_sprite_system = CreateSystem<SpriteRenderSystem>();
-    m_post_process_system = CreateSystem<PostProcessSystem>(m_width, m_height);
-    m_tile_map_system = CreateSystem<TileMapSystem>();
-    m_profile_system = CreateSystem<ProfileSystem>(m_width, m_height);
 
     auto image = asset->LoadAndGet<Bitmap>("icons/light.png");
 
@@ -71,16 +69,36 @@ void EditorLayer::OnInit() {
 void EditorLayer::PushSystems() {
     SD_CORE_ASSERT(m_mode != EditorMode::NONE, "Error editor mode!");
     if (m_mode == EditorMode::THREE_DIMENSIONAL) {
+        // engine logic system
+        m_camera_system = CreateSystem<CameraSystem>();
+        // normal render systems
+        m_lighting_system =
+            CreateSystem<LightingSystem>(m_width, m_height, m_msaa);
+        m_skybox_system = CreateSystem<SkyboxSystem>();
+        m_sprite_system = CreateSystem<SpriteRenderSystem>();
+        m_post_process_system =
+            CreateSystem<PostProcessSystem>(m_width, m_height);
+        m_profile_system = CreateSystem<ProfileSystem>(m_width, m_height);
+
         PushSystem(m_camera_system);
         PushSystem(m_lighting_system);
         PushSystem(m_skybox_system);
         PushSystem(m_sprite_system);
         PushSystem(m_post_process_system);
-        PushSystem(m_tile_map_system);
         PushSystem(m_profile_system);
 
         m_editor_camera_system->AllowRotate(true);
     } else {
+        // engine logic system
+        m_camera_system = CreateSystem<CameraSystem>();
+        // normal render systems
+        m_skybox_system = CreateSystem<SkyboxSystem>();
+        m_sprite_system = CreateSystem<SpriteRenderSystem>();
+        m_post_process_system =
+            CreateSystem<PostProcessSystem>(m_width, m_height);
+        m_tile_map_system = CreateSystem<TileMapSystem>();
+        m_profile_system = CreateSystem<ProfileSystem>(m_width, m_height);
+
         PushSystem(m_camera_system);
         PushSystem(m_skybox_system);
         PushSystem(m_sprite_system);
@@ -128,7 +146,7 @@ void EditorLayer::OnTick(float dt) {
     for (auto &system : GetSystems()) {
         system->OnTick(dt);
     }
-    if (m_is_viewport_hovered) {
+    if (m_is_viewport_hovered && m_mode == EditorMode::TWO_DIMENSIONAL) {
         glm::vec2 clip = m_viewport.MapScreenToClip(Input::GetMouseCoord());
         Math::Ray ray = scene->GetCamera()->ComputeCameraRay(clip);
         Math::Plane plane(glm::vec3(0, 0, 1), glm::vec3(0));
