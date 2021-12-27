@@ -5,9 +5,6 @@
 #include "Renderer/Export.hpp"
 #include "Graphics/Texture.hpp"
 
-#include <glm/glm.hpp>
-#include <unordered_set>
-
 namespace SD {
 
 struct SD_RENDERER_API Character {

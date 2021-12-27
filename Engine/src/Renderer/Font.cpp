@@ -1,7 +1,5 @@
 #include "Renderer/Font.hpp"
 #include "Renderer/Bitmap.hpp"
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 namespace SD {
 
