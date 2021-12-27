@@ -78,10 +78,12 @@ void EditorCameraSystem::OnImGui() {
 }
 
 void EditorCameraSystem::OnTick(float dt) {
-    if (Input::IsKeyDown(Keycode::W)) {
+    if (Input::IsKeyDown(Keycode::W) &&
+        m_camera.GetCameraType() == CameraType::PERSPECTIVE) {
         m_camera.TranslateWorld(-m_camera.GetWorldFront());
     }
-    if (Input::IsKeyDown(Keycode::S)) {
+    if (Input::IsKeyDown(Keycode::S) &&
+        m_camera.GetCameraType() == CameraType::PERSPECTIVE) {
         m_camera.TranslateWorld(m_camera.GetWorldFront());
     }
     if (Input::IsKeyDown(Keycode::A)) {
