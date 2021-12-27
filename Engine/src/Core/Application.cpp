@@ -8,10 +8,12 @@
 #include "Renderer/ModelLoader.hpp"
 #include "Renderer/FontLoader.hpp"
 #include "Renderer/SkyboxLoader.hpp"
+#include "Renderer/SpriteLoader.hpp"
 
 #include "Renderer/Model.hpp"
 #include "Renderer/Bitmap.hpp"
 #include "Renderer/Font.hpp"
+#include "Renderer/Sprite.hpp"
 
 namespace SD {
 
@@ -55,6 +57,7 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     asset->SetLoader<Model>(new ModelLoader(*asset));
     asset->SetLoader<Font>(new FontLoader(*asset));
     asset->SetLoader<Skybox>(new SkyboxLoader(*asset));
+    asset->SetLoader<Sprite>(new SpriteLoader(*asset));
     asset->Load("assets");
 
     renderer = CreateRef<Renderer>(device.get());

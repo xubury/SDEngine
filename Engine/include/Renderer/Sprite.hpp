@@ -8,7 +8,6 @@ namespace SD {
 
 class SD_RENDERER_API Sprite {
    public:
-    Sprite() = default;
     Sprite(const Ref<Texture> &texture, const std::array<glm::vec2, 2> &uvs);
 
     void Set(const Ref<Texture> &texture, const std::array<glm::vec2, 2> &uvs);
@@ -18,8 +17,6 @@ class SD_RENDERER_API Sprite {
     const std::array<glm::vec2, 2> &GetUVs() const { return m_uvs; }
 
     const Ref<Texture> GetTexture() const { return m_texture; }
-
-    bool Valid() const { return m_texture != nullptr; }
 
    private:
     Ref<Texture> m_texture;

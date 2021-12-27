@@ -7,7 +7,6 @@ set(TileMap_Include
     ${Include_Root}/TileMap.hpp)
 
 set(TileMap_Src
-    ${Src_Root}/TileLayout.cpp
     ${Src_Root}/TileMap.cpp)
 
 add_library(sd-tilemap ${TileMap_Src})
@@ -26,7 +25,8 @@ endif()
 target_link_libraries(sd-tilemap
     PUBLIC
     sd-graphics
-    sd-renderer)
+    sd-renderer
+    sd-asset)
 
 target_include_directories(sd-tilemap
     PUBLIC

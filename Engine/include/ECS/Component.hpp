@@ -84,9 +84,8 @@ struct SD_ECS_API CameraComponent {
 
 struct SD_ECS_API SpriteComponent {
     ResourceId id;
-    std::array<glm::vec2, 2> uvs;
 
-    SERIALIZE(id, uvs)
+    SERIALIZE(id)
 };
 
 }  // namespace SD

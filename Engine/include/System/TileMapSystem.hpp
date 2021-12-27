@@ -11,7 +11,7 @@
 namespace SD {
 
 class SD_SYSTEM_API TileMapSystem : public System {
-    enum Operation { ADD_SPRITE, CLEAR_SPRITE };
+    enum Operation { ADD_ENTITY, REMOVE_ENTITY };
 
    public:
     TileMapSystem();
@@ -31,12 +31,14 @@ class SD_SYSTEM_API TileMapSystem : public System {
    private:
     void RenderOutline();
 
-    TileLayout m_layout;
+    TileLayout<Entity> m_layout;
+
+    Ref<Texture> m_outline_texture;
 
     TileMap m_map;
-    ResourceId m_map_id;
 
-    Sprite m_selected_sprite;
+    ResourceId m_sprite_id;
+    Ref<Sprite> m_selected_sprite;
 
     glm::ivec2 m_select_tile_pos;
 

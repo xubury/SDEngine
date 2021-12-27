@@ -25,17 +25,14 @@ void AssetManager::Clear() {
     m_resources.clear();
 }
 
-void AssetManager::Cache(const ResourceId &id, AssetLoader *loader,
-                         const std::string &rel_path) {
+Ref<void> AssetManager::Cache(size_t type, const std::string &rel_path) {
     std::string full_path = GetAbsolutePath(rel_path).string();
-
-    Ref<void> resource = loader->LoadAsset(full_path);
-    if (resource) {
-        std::lock_guard<std::shared_mutex> lock(m_mutex);
-        m_resources.at(id).SetResource(resource);
-    } else {
+    Ref<void> resource = m_loaders.at(type)->LoadAsset(full_path);
+    if (!resource) {
         throw Exception("Invalid asset!");
+    } else {
     }
+    return resource;
 }
 
 void AssetManager::Load(const std::filesystem::path &path) {
@@ -91,11 +88,6 @@ std::filesystem::path AssetManager::GetAbsolutePath(
 bool AssetManager::HasId(const std::string &path) const {
     std::shared_lock<std::shared_mutex> lock(m_mutex);
     return m_id_map.count(path);
-}
-
-bool AssetManager::HasCached(const ResourceId &id) const {
-    std::shared_lock<std::shared_mutex> lock(m_mutex);
-    return m_resources.at(id).GetResource() != nullptr;
 }
 
 void AssetManager::Validate() {

@@ -67,8 +67,7 @@ class SD_ASSET_API AssetManager {
    private:
     void Clear();
 
-    void Cache(const ResourceId &id, AssetLoader *loader,
-               const std::string &rel_path);
+    Ref<void> Cache(size_t type, const std::string &rel_path);
 
    public:
     AssetManager();
@@ -86,8 +85,6 @@ class SD_ASSET_API AssetManager {
         const std::filesystem::path &path) const;
 
     bool HasId(const std::string &path) const;
-
-    bool HasCached(const ResourceId &id) const;
 
     bool Valid() const { return std::filesystem::exists(m_directory); }
 
@@ -110,40 +107,39 @@ class SD_ASSET_API AssetManager {
             // generate a random id
             ResourceId id;
             size_t type = GetAssetType<ASSET>();
-            Cache(id, GetLoader<ASSET>(), rel_path);
+            Ref<void> resource = Cache(type, rel_path);
             {
                 std::lock_guard<std::shared_mutex> lock(m_mutex);
                 m_id_map.emplace(rel_path, id);
-                m_resources[id] = Asset(type, rel_path);
+                m_resources.emplace(id, Asset(type, rel_path));
+                m_resources.at(id).SetResource(resource);
             }
             return id;
         }
     }
 
-    bool Has(ResourceId id) {
-        std::shared_lock<std::shared_mutex> lock(m_mutex);
-        return m_resources.count(id) == 0;
-    }
-
     template <typename ASSET>
     Ref<ASSET> Get(ResourceId id) {
-        if (Has(id)) {
+        std::shared_lock<std::shared_mutex> lock(m_mutex);
+        if (m_resources.count(id) == 0) {
             return nullptr;
         }
-        if (!HasCached(id)) {
-            Cache(id, GetLoader<ASSET>(), GetAssetPath(id));
+        Ref<void> res = m_resources.at(id).GetResource();
+        lock.unlock();
+        if (res == nullptr) {
+            res = Cache(GetAssetType<ASSET>(), GetAssetPath(id));
+            std::unique_lock<std::shared_mutex> lock(m_mutex);
+            m_resources.at(id).SetResource(res);
         }
-        std::shared_lock<std::shared_mutex> lock(m_mutex);
-        return std::static_pointer_cast<ASSET>(
-            m_resources.at(id).GetResource());
+        return std::static_pointer_cast<ASSET>(res);
     }
 
     // Return relative path
     std::string GetAssetPath(ResourceId id) {
-        if (Has(id)) {
+        std::shared_lock<std::shared_mutex> lock(m_mutex);
+        if (m_resources.count(id) == 0) {
             return "";
         }
-        std::shared_lock<std::shared_mutex> lock(m_mutex);
         return m_resources.at(id).GetPath();
     }
 
