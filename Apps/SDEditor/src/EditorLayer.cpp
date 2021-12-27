@@ -188,8 +188,7 @@ void EditorLayer::OnImGui() {
     if (m_quitting) {
         ImGui::OpenPopup("Quit?");
     }
-    if (ImGui::BeginPopupModal("Quit?", NULL,
-                               ImGuiWindowFlags_AlwaysAutoResize)) {
+    if (ImGui::BeginCenterPopupModal("Quit?")) {
         ImGui::TextUnformatted("Are you sure you want to quit?");
         if (ImGui::Button("Yes")) {
             GetApp().Quit();
@@ -206,8 +205,7 @@ void EditorLayer::OnImGui() {
     if (!m_quitting && m_mode == EditorMode::NONE) {
         ImGui::OpenPopup("Select Editor Mode");
     }
-    if (ImGui::BeginPopupModal("Select Editor Mode", NULL,
-                               ImGuiWindowFlags_AlwaysAutoResize)) {
+    if (ImGui::BeginCenterPopupModal("Select Editor Mode")) {
         static int mode = EditorMode::TWO_DIMENSIONAL;
         ImGui::TextUnformatted("Please select an editor mode(2D/3D):");
         ImGui::TextUnformatted("Mode:");

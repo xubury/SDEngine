@@ -55,6 +55,8 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
 
     ImGui::PushID(dialogInfo);
     ImGui::SetNextWindowSize(ImVec2(740.0f, 410.0f), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
+                            ImGuiCond_FirstUseEver, ImVec2(0.5f, 0.5f));
 
     ImGui::OpenPopup(dialogInfo->title.c_str());
     if (ImGui::BeginPopupModal(dialogInfo->title.c_str(), open)) {

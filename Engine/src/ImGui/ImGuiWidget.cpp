@@ -144,4 +144,13 @@ bool DrawTileMap(const SD::TileMap &tilemap, std::array<glm::vec2, 2> &uvs) {
     return selected;
 }
 
+bool BeginCenterPopupModal(const char *name, bool *p_open,
+                           ImGuiWindowFlags flags) {
+    ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
+                            ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+    return ImGui::BeginPopupModal(
+        name, p_open,
+        flags | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+}
+
 }  // namespace ImGui
