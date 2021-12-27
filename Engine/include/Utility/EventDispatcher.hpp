@@ -111,7 +111,7 @@ class EventDispatcher {
 
     template <typename CALLBACK>
     void SafeUniqueAccess(CALLBACK&& callback) {
-        std::unique_lock<MutexType> lock(m_mutex);
+        std::lock_guard<MutexType> lock(m_mutex);
         callback();
     }
 
