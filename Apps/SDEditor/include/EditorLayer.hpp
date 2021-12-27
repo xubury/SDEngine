@@ -17,6 +17,8 @@
 
 namespace SD {
 
+enum EditorMode { NONE, TWO_DIMENSIONAL, THREE_DIMENSIONAL };
+
 class EditorLayer : public Layer {
    public:
     EditorLayer(int width, int height, int msaa);
@@ -51,9 +53,21 @@ class EditorLayer : public Layer {
    private:
     void ProcessDialog();
 
+    void PushSystems();
+
+    void MenuBar();
+
+    void DrawViewport();
+
+    void DebugLighting();
+
     void Hide();
 
     void Show();
+
+    void Quit();
+
+    EditorMode m_mode{NONE};
 
     ScenePanel *m_scene_panel;
     EditorCameraSystem *m_editor_camera_system;
@@ -77,6 +91,7 @@ class EditorLayer : public Layer {
     bool m_is_viewport_hovered;
 
     bool m_hide;
+    bool m_quitting;
 
     bool m_load_scene_open;
     bool m_save_scene_open;

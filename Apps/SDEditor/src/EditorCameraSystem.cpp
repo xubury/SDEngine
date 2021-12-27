@@ -98,8 +98,10 @@ void EditorCameraSystem::OnTick(float dt) {
     }
     m_mouse_smooth_movement =
         glm::mix(m_mouse_smooth_movement, m_mouse_movement, dt * SMOOTHNESS);
-    Rotate(-m_mouse_smooth_movement.x * ROTATION_SPEED,
-           -m_mouse_smooth_movement.y * ROTATION_SPEED);
+    if (m_allow_rotate) {
+        Rotate(-m_mouse_smooth_movement.x * ROTATION_SPEED,
+               -m_mouse_smooth_movement.y * ROTATION_SPEED);
+    }
     m_mouse_movement.x = 0;
     m_mouse_movement.y = 0;
 }

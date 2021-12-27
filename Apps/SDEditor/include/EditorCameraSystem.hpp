@@ -27,6 +27,8 @@ class EditorCameraSystem : public System {
 
     void ActiveEditorCam(bool active);
 
+    void AllowRotate(bool enable) { m_allow_rotate = enable; }
+
    private:
     HandlerRegistration m_key_handler;
     HandlerRegistration m_size_handler;
@@ -40,6 +42,8 @@ class EditorCameraSystem : public System {
     glm::vec2 m_mouse_movement;
 
     Camera m_camera;
+
+    bool m_allow_rotate{false};
 };
 
 }  // namespace SD

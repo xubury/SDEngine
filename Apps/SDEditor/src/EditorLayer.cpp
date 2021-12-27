@@ -19,6 +19,7 @@ EditorLayer::EditorLayer(int width, int height, int msaa)
       m_is_viewport_focused(false),
       m_is_viewport_hovered(false),
       m_hide(false),
+      m_quitting(false),
       m_load_scene_open(false),
       m_save_scene_open(false) {
     ImGuizmo::SetGizmoSizeClipSpace(0.2);
@@ -63,16 +64,32 @@ void EditorLayer::OnInit() {
                     TextureMagFilter::LINEAR, TextureMinFilter::LINEAR));
     m_light_icon->SetPixels(0, 0, 0, image->Width(), image->Height(), 1,
                             image->Data());
-
     PushSystem(m_scene_panel);
     PushSystem(m_editor_camera_system);
-    PushSystem(m_camera_system);
-    PushSystem(m_skybox_system);
-    PushSystem(m_lighting_system);
-    PushSystem(m_sprite_system);
-    PushSystem(m_post_process_system);
-    PushSystem(m_tile_map_system);
-    PushSystem(m_profile_system);
+}
+
+void EditorLayer::PushSystems() {
+    SD_CORE_ASSERT(m_mode != EditorMode::NONE, "Error editor mode!");
+    if (m_mode == EditorMode::THREE_DIMENSIONAL) {
+        PushSystem(m_camera_system);
+        PushSystem(m_lighting_system);
+        PushSystem(m_skybox_system);
+        PushSystem(m_sprite_system);
+        PushSystem(m_post_process_system);
+        PushSystem(m_tile_map_system);
+        PushSystem(m_profile_system);
+
+        m_editor_camera_system->AllowRotate(true);
+    } else {
+        PushSystem(m_camera_system);
+        PushSystem(m_skybox_system);
+        PushSystem(m_sprite_system);
+        PushSystem(m_post_process_system);
+        PushSystem(m_tile_map_system);
+        PushSystem(m_profile_system);
+
+        m_editor_camera_system->AllowRotate(false);
+    }
 }
 
 void EditorLayer::OnPush() {}
@@ -126,17 +143,6 @@ void EditorLayer::OnTick(float dt) {
 }
 
 void EditorLayer::OnImGui() {
-    if (m_hide) return;
-
-    device->BlitFramebuffer(
-        renderer->GetFramebuffer(), 0, m_screen_buffer.get(), 0,
-        BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
-    for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-        device->BlitFramebuffer(
-            m_lighting_system->GetGBuffer(), i, m_debug_gbuffer.get(), i,
-            BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
-    }
-
     static bool dockspaceOpen = true;
     static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
     static bool fullScreen = true;
@@ -179,112 +185,61 @@ void EditorLayer::OnImGui() {
 
     style.WindowMinSize.x = minWinSizeX;
 
-    if (ImGui::BeginMenuBar()) {
-        if (ImGui::BeginMenu("File")) {
-            if (ImGui::MenuItem("New Scene", "Ctrl+N")) {
-                NewScene();
-            }
-
-            if (ImGui::MenuItem("Load Scene...", "Ctrl+L")) {
-                OpenLoadSceneDialog();
-            }
-
-            if (ImGui::MenuItem("Save Scene As...", "Ctrl+Shift+S")) {
-                OpenSaveSceneDialog();
-            }
-
-            if (ImGui::MenuItem("Exit", "Esc")) {
-                GetApp().Quit();
-            }
-            ImGui::EndMenu();
+    if (m_quitting) {
+        ImGui::OpenPopup("Quit?");
+    }
+    if (ImGui::BeginPopupModal("Quit?", NULL,
+                               ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::TextUnformatted("Are you sure you want to quit?");
+        if (ImGui::Button("Yes")) {
+            GetApp().Quit();
+            ImGui::CloseCurrentPopup();
         }
-
-        ImGui::EndMenuBar();
+        ImGui::SameLine();
+        if (ImGui::Button("No")) {
+            m_quitting = false;
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
     }
 
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
-    ImGui::Begin("GBuffer");
-    {
-        ImVec2 wsize = ImGui::GetContentRegionAvail();
-        for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-            ImGui::DrawTexture(*m_debug_gbuffer->GetTexture(i), wsize);
-        }
+    if (!m_quitting && m_mode == EditorMode::NONE) {
+        ImGui::OpenPopup("Select Editor Mode");
     }
-    ImGui::End();
-    ImGui::Begin("SSAO");
-    {
-        ImVec2 wsize = ImGui::GetContentRegionAvail();
-        ImGui::DrawTexture(*m_lighting_system->GetSSAO(), wsize);
+    if (ImGui::BeginPopupModal("Select Editor Mode", NULL,
+                               ImGuiWindowFlags_AlwaysAutoResize)) {
+        static int mode = EditorMode::TWO_DIMENSIONAL;
+        ImGui::TextUnformatted("Please select an editor mode(2D/3D):");
+        ImGui::TextUnformatted("Mode:");
+        ImGui::SameLine();
+        ImGui::RadioButton("2D", &mode, EditorMode::TWO_DIMENSIONAL);
+        ImGui::SameLine();
+        ImGui::RadioButton("3D", &mode, EditorMode::THREE_DIMENSIONAL);
+        if (ImGui::Button("OK")) {
+            if (mode != EditorMode::NONE) {
+                m_mode = static_cast<EditorMode>(mode);
+                PushSystems();
+                ImGui::CloseCurrentPopup();
+            }
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Quit")) {
+            Quit();
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
     }
-    ImGui::End();
-
-    ImGui::Begin("Scene");
-    {
-        ImVec2 wsize = ImGui::GetContentRegionAvail();
-        auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
-        auto viewportOffset = ImGui::GetWindowPos();
-        if (m_width != wsize.x || m_height != wsize.y) {
-            if (wsize.x > 0 && wsize.y > 0) {
-                SetViewportSize(viewportMinRegion.x + viewportOffset.x,
-                                viewportMinRegion.y + viewportOffset.y, wsize.x,
-                                wsize.y);
-            }
-        }
-        m_is_viewport_focused = ImGui::IsWindowFocused();
-        m_is_viewport_hovered = ImGui::IsWindowHovered();
-        ImGui::DrawTexture(*m_screen_buffer->GetTexture(), wsize, ImVec2(0, 1),
-                           ImVec2(1, 0));
-        ImGuizmo::SetRect(m_viewport.GetLeft(), m_viewport.GetTop(),
-                          m_viewport.GetWidth(), m_viewport.GetHeight());
-        ImGuizmo::SetDrawlist();
-        Entity &entity = m_scene_panel->GetSelectedEntity();
-        if (entity) {
-            Camera *cam = scene->GetCamera();
-            ImGuizmo::SetOrthographic(cam->GetCameraType() ==
-                                      CameraType::ORTHOGRAPHIC);
-            const glm::mat4 &view = cam->GetView();
-            const glm::mat4 &projection = cam->GetProjection();
-
-            auto &tc = entity.GetComponent<TransformComponent>();
-            glm::mat4 transform = tc.transform.GetWorldTransform();
-            if (ImGuizmo::Manipulate(
-                    glm::value_ptr(view), glm::value_ptr(projection),
-                    m_scene_panel->GetGizmoOperation(),
-                    m_scene_panel->GetGizmoMode(), glm::value_ptr(transform),
-                    nullptr, nullptr)) {
-                tc.transform.SetWorldTransform(transform);
-            }
-        }
-        if (!ImGuizmo::IsUsing() && ImGui::IsMouseDown(0) &&
-            m_is_viewport_hovered) {
-            auto [mouseX, mouseY] = ImGui::GetMousePos();
-            mouseX -= m_viewport.GetLeft();
-            mouseY = m_viewport.GetHeight() - mouseY + m_viewport.GetTop();
-            entt::entity entity_id = Entity::INVALID_ID;
-            auto entity_tex =
-                m_debug_gbuffer->GetTexture(GeometryBufferType::G_ENTITY_ID);
-            // out of bound check
-            if (mouseX > 0 && mouseY > 0 && mouseX < entity_tex->GetWidth() &&
-                mouseY < entity_tex->GetHeight()) {
-                entity_tex->ReadPixels(0, mouseX, mouseY, 0, 1, 1, 1,
-                                       sizeof(entity_id), &entity_id);
-            }
-            if (entity_id != Entity::INVALID_ID) {
-                Entity entity(entity_id, scene.get());
-                m_scene_panel->SetSelectedEntity(entity);
-            }
-        }
+    if (!m_hide) {
+        MenuBar();
+        DrawViewport();
+        DebugLighting();
+        ProcessDialog();
     }
-    ImGui::End();
-    ImGui::PopStyleVar();
-
-    ImGui::End();
-
-    ProcessDialog();
 
     for (auto &system : GetSystems()) {
         system->OnImGui();
     }
+    ImGui::End();
 }
 
 void EditorLayer::Hide() {
@@ -299,6 +254,8 @@ void EditorLayer::Show() {
     SetIsBlockEvent(true);
     m_editor_camera_system->ActiveEditorCam(true);
 }
+
+void EditorLayer::Quit() { m_quitting = true; }
 
 void EditorLayer::OnEventProcess(const Event &event) {
     if (event.type == EventType::MOUSE_MOTION) {
@@ -344,7 +301,7 @@ void EditorLayer::OnEventProcess(const Event &event) {
                 }
             } break;
             case Keycode::ESCAPE: {
-                GetApp().Quit();
+                Quit();
             } break;
             case Keycode::T: {
                 if (IsKeyModActive(event.key.mod, Keymod::LSHIFT)) {
@@ -417,6 +374,123 @@ void EditorLayer::ProcessDialog() {
     }
     if (ImGui::FileDialog(&m_save_scene_open, &m_file_dialog_info)) {
         scene->Save(m_file_dialog_info.result_path.string());
+    }
+}
+
+void EditorLayer::MenuBar() {
+    if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("New Scene", "Ctrl+N")) {
+                NewScene();
+            }
+
+            if (ImGui::MenuItem("Load Scene...", "Ctrl+L")) {
+                OpenLoadSceneDialog();
+            }
+
+            if (ImGui::MenuItem("Save Scene As...", "Ctrl+Shift+S")) {
+                OpenSaveSceneDialog();
+            }
+
+            if (ImGui::MenuItem("Exit", "Esc")) {
+                Quit();
+            }
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMenuBar();
+    }
+}
+
+void EditorLayer::DrawViewport() {
+    device->BlitFramebuffer(
+        renderer->GetFramebuffer(), 0, m_screen_buffer.get(), 0,
+        BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
+    ImGui::Begin("Scene");
+    {
+        ImVec2 wsize = ImGui::GetContentRegionAvail();
+        auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+        auto viewportOffset = ImGui::GetWindowPos();
+        if (m_width != wsize.x || m_height != wsize.y) {
+            if (wsize.x > 0 && wsize.y > 0) {
+                SetViewportSize(viewportMinRegion.x + viewportOffset.x,
+                                viewportMinRegion.y + viewportOffset.y, wsize.x,
+                                wsize.y);
+            }
+        }
+        m_is_viewport_focused = ImGui::IsWindowFocused();
+        m_is_viewport_hovered = ImGui::IsWindowHovered();
+        ImGui::DrawTexture(*m_screen_buffer->GetTexture(), wsize, ImVec2(0, 1),
+                           ImVec2(1, 0));
+        ImGuizmo::SetRect(m_viewport.GetLeft(), m_viewport.GetTop(),
+                          m_viewport.GetWidth(), m_viewport.GetHeight());
+        ImGuizmo::SetDrawlist();
+        Entity &entity = m_scene_panel->GetSelectedEntity();
+        if (entity) {
+            Camera *cam = scene->GetCamera();
+            ImGuizmo::SetOrthographic(cam->GetCameraType() ==
+                                      CameraType::ORTHOGRAPHIC);
+            const glm::mat4 &view = cam->GetView();
+            const glm::mat4 &projection = cam->GetProjection();
+
+            auto &tc = entity.GetComponent<TransformComponent>();
+            glm::mat4 transform = tc.transform.GetWorldTransform();
+            if (ImGuizmo::Manipulate(
+                    glm::value_ptr(view), glm::value_ptr(projection),
+                    m_scene_panel->GetGizmoOperation(),
+                    m_scene_panel->GetGizmoMode(), glm::value_ptr(transform),
+                    nullptr, nullptr)) {
+                tc.transform.SetWorldTransform(transform);
+            }
+        }
+        if (!ImGuizmo::IsUsing() && ImGui::IsMouseDown(0) &&
+            m_is_viewport_hovered) {
+            auto [mouseX, mouseY] = ImGui::GetMousePos();
+            mouseX -= m_viewport.GetLeft();
+            mouseY = m_viewport.GetHeight() - mouseY + m_viewport.GetTop();
+            entt::entity entity_id = Entity::INVALID_ID;
+            auto entity_tex =
+                m_debug_gbuffer->GetTexture(GeometryBufferType::G_ENTITY_ID);
+            // out of bound check
+            if (mouseX > 0 && mouseY > 0 && mouseX < entity_tex->GetWidth() &&
+                mouseY < entity_tex->GetHeight()) {
+                entity_tex->ReadPixels(0, mouseX, mouseY, 0, 1, 1, 1,
+                                       sizeof(entity_id), &entity_id);
+            }
+            if (entity_id != Entity::INVALID_ID) {
+                Entity entity(entity_id, scene.get());
+                m_scene_panel->SetSelectedEntity(entity);
+            }
+        }
+    }
+    ImGui::End();
+    ImGui::PopStyleVar();
+}
+
+void EditorLayer::DebugLighting() {
+    if (m_mode == THREE_DIMENSIONAL) {
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
+        for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
+            device->BlitFramebuffer(
+                m_lighting_system->GetGBuffer(), i, m_debug_gbuffer.get(), i,
+                BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
+        }
+        ImGui::Begin("GBuffer");
+        {
+            ImVec2 wsize = ImGui::GetContentRegionAvail();
+            for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
+                ImGui::DrawTexture(*m_debug_gbuffer->GetTexture(i), wsize);
+            }
+        }
+        ImGui::End();
+        ImGui::Begin("SSAO");
+        {
+            ImVec2 wsize = ImGui::GetContentRegionAvail();
+            ImGui::DrawTexture(*m_lighting_system->GetSSAO(), wsize);
+        }
+        ImGui::End();
+        ImGui::PopStyleVar();
     }
 }
 
