@@ -38,8 +38,6 @@ class EditorLayer : public Layer {
 
     void OnEventProcess(const Event &event) override;
 
-    void OnEventsProcess() override;
-
     void NewScene();
     void OpenLoadSceneDialog();
     void OpenSaveSceneDialog();

@@ -38,8 +38,6 @@ class SD_CORE_API Layer {
 
     virtual void OnEventProcess(const Event &) {}
 
-    virtual void OnEventsProcess() {}
-
     void SetIsBlockEvent(bool is_block) { m_is_block_event = is_block; }
     bool IsBlockEvent() const { return m_is_block_event; }
 

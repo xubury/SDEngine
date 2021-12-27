@@ -105,13 +105,6 @@ void Application::ProcessEvent(const Event &event) {
     }
 }
 
-void Application::ProcessEvents() {
-    for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {
-        (*layer)->OnEventsProcess();
-        if ((*layer)->IsBlockEvent()) break;
-    }
-}
-
 void Application::Run() {
     Clock clock;
     float min_fps = 30;
@@ -122,7 +115,6 @@ void Application::Run() {
         while (m_window->PollEvent(event)) {
             ProcessEvent(event);
         }
-        ProcessEvents();
 
         ms_elapsed = clock.Restart();
         while (ms_elapsed > ms_per_frame) {

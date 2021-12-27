@@ -315,8 +315,6 @@ void EditorLayer::OnEventProcess(const Event &event) {
     }
 }
 
-void EditorLayer::OnEventsProcess() {}
-
 void EditorLayer::SetViewportSize(uint32_t left, uint32_t top, uint32_t width,
                                   uint32_t height) {
     WindowSizeEvent event;
@@ -480,14 +478,16 @@ void EditorLayer::DebugLighting() {
         {
             ImVec2 wsize = ImGui::GetContentRegionAvail();
             for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-                ImGui::DrawTexture(*m_debug_gbuffer->GetTexture(i), wsize);
+                ImGui::DrawTexture(*m_debug_gbuffer->GetTexture(i), wsize,
+                                   ImVec2(0, 1), ImVec2(1, 0));
             }
         }
         ImGui::End();
         ImGui::Begin("SSAO");
         {
             ImVec2 wsize = ImGui::GetContentRegionAvail();
-            ImGui::DrawTexture(*m_lighting_system->GetSSAO(), wsize);
+            ImGui::DrawTexture(*m_lighting_system->GetSSAO(), wsize,
+                               ImVec2(0, 1), ImVec2(1, 0));
         }
         ImGui::End();
         ImGui::PopStyleVar();

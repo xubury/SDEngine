@@ -63,8 +63,6 @@ class SD_CORE_API Application {
 
     void ProcessEvent(const Event &event);
 
-    void ProcessEvents();
-
     void Tick(float dt);
     void Render();
 
