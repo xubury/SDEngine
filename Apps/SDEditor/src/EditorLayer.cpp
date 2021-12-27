@@ -25,25 +25,7 @@ EditorLayer::EditorLayer(int width, int height, int msaa)
     ImGuizmo::SetGizmoSizeClipSpace(0.2);
 }
 
-EditorLayer::~EditorLayer() {
-    DestroySystem(m_scene_panel);
-    DestroySystem(m_editor_camera_system);
-    if (m_mode == EditorMode::THREE_DIMENSIONAL) {
-        DestroySystem(m_camera_system);
-        DestroySystem(m_lighting_system);
-        DestroySystem(m_skybox_system);
-        DestroySystem(m_sprite_system);
-        DestroySystem(m_post_process_system);
-        DestroySystem(m_profile_system);
-    } else {
-        DestroySystem(m_camera_system);
-        DestroySystem(m_skybox_system);
-        DestroySystem(m_sprite_system);
-        DestroySystem(m_post_process_system);
-        DestroySystem(m_tile_map_system);
-        DestroySystem(m_profile_system);
-    }
-}
+EditorLayer::~EditorLayer() {}
 
 void EditorLayer::OnInit() {
     SetViewportSize(0, 0, m_width, m_height);

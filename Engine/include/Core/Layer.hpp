@@ -44,42 +44,25 @@ class SD_CORE_API Layer {
     bool IsBlockEvent() const { return m_is_block_event; }
 
     template <typename T, typename... ARGS>
-    T *CreateSystem(ARGS &&...args) {
-        T *system = new T(std::forward<ARGS>(args)...);
+    Ref<T> CreateSystem(ARGS &&...args) {
+        Ref<T> system = CreateRef<T>(std::forward<ARGS>(args)...);
         system->SetAppVars(MakeAppVars());
         system->OnInit();
         return system;
     }
 
-    void PushSystem(System *system) {
+    void PushSystem(const Ref<System> &system) {
         system->OnPush();
         m_systems.Push(system);
     }
 
-    template <typename SYSTEM>
-    SYSTEM *GetSystem(const std::string &name) {
-        for (auto iter = m_systems.begin(); iter != m_systems.end(); ++iter) {
-            if ((*iter)->GetName() == name) {
-                return dynamic_cast<SYSTEM *>(*iter);
-            }
-        }
-        return nullptr;
-    }
-
-    void PopSystem(System *system) {
+    void PopSystem(const Ref<System> &system) {
         system->OnPop();
         m_systems.Pop(system);
     }
 
-    void DestroySystem(System *system) {
-        if (m_systems.Has(system)) {
-            PopSystem(system);
-        }
-        delete system;
-    }
-
-    const EventStack<System *> &GetSystems() const { return m_systems; }
-    EventStack<System *> &GetSystems() { return m_systems; }
+    const EventStack<Ref<System>> &GetSystems() const { return m_systems; }
+    EventStack<Ref<System>> &GetSystems() { return m_systems; }
 
     const std::string &GetName() const { return m_name; }
 
@@ -93,7 +76,7 @@ class SD_CORE_API Layer {
     SET_APP_VARS;
     std::string m_name;
     bool m_is_block_event;
-    EventStack<System *> m_systems;
+    EventStack<Ref<System>> m_systems;
 };
 
 }  // namespace SD

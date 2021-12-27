@@ -23,8 +23,6 @@ void SDEditor::OnStart() {
 void SDEditor::OnExit() {
     ini->SetInteger("editor", "viewport width", m_layer->GetViewportWidth());
     ini->SetInteger("editor", "viewport height", m_layer->GetViewportHeight());
-
-    DestroyLayer(m_layer);
 }
 
 }  // namespace SD

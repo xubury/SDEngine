@@ -77,32 +77,22 @@ Application::~Application() {
 
     ini->Save((GetAppDirectory() / SETTING_FILENAME).string());
 
-    while (m_layers.Size()) {
-        DestroyLayer(m_layers.Front());
-    }
     SDL_Quit();
 }
 
-void Application::PushLayer(Layer *layer) {
+void Application::PushLayer(const Ref<Layer> &layer) {
     layer->OnPush();
     m_layers.Push(layer);
 }
 
-void Application::PushOverlay(Layer *layer) {
+void Application::PushOverlay(const Ref<Layer> &layer) {
     layer->OnPush();
     m_layers.PushOverlay(layer);
 }
 
-void Application::PopLayer(Layer *layer) {
+void Application::PopLayer(const Ref<Layer> &layer) {
     layer->OnPop();
     m_layers.Pop(layer);
-}
-
-void Application::DestroyLayer(Layer *layer) {
-    if (m_layers.Has(layer)) {
-        PopLayer(layer);
-    }
-    delete layer;
 }
 
 void Application::ProcessEvent(const Event &event) {

@@ -16,7 +16,7 @@ class SD_CORE_API Application {
     Window &GetWindow() { return *m_window; }
 
    protected:
-    ImGuiLayer *GetImGuiLayer() const { return m_imgui; }
+    ImGuiLayer *GetImGuiLayer() const { return m_imgui.get(); }
 
     template <typename T>
     T *GetLayer(const std::string &name) {
@@ -30,20 +30,18 @@ class SD_CORE_API Application {
     }
 
     template <typename T, typename... ARGS>
-    T *CreateLayer(ARGS &&...args) {
-        T *layer = new T(std::forward<ARGS>(args)...);
+    Ref<T> CreateLayer(ARGS &&...args) {
+        Ref<T> layer = CreateRef<T>(std::forward<ARGS>(args)...);
         layer->SetAppVars(MakeAppVars());
         layer->OnInit();
         return layer;
     }
 
-    void PushLayer(Layer *layer);
+    void PushLayer(const Ref<Layer> &layer);
 
-    void PushOverlay(Layer *layer);
+    void PushOverlay(const Ref<Layer> &layer);
 
-    void PopLayer(Layer *layer);
-
-    void DestroyLayer(Layer *layer);
+    void PopLayer(const Ref<Layer> &layer);
 
     Application(const std::string &title, GraphicsAPI api);
     virtual ~Application();
@@ -70,8 +68,8 @@ class SD_CORE_API Application {
     void Tick(float dt);
     void Render();
 
-    EventStack<Layer *> m_layers;
-    ImGuiLayer *m_imgui;
+    EventStack<Ref<Layer>> m_layers;
+    Ref<ImGuiLayer> m_imgui;
 
     Ref<Window> m_window;
 };
