@@ -24,20 +24,7 @@ void ScenePanel::OnSizeEvent(const WindowSizeEvent &event) {
     m_height = event.height;
 }
 
-void ScenePanel::Reset() {
-    m_selected_entity = {};
-    m_selected_material_id_map.clear();
-}
-
-void ScenePanel::SetSelectedEntity(Entity entity) {
-    m_selected_entity = entity;
-}
-
-const Entity &ScenePanel::GetSelectedEntity() const {
-    return m_selected_entity;
-}
-
-Entity &ScenePanel::GetSelectedEntity() { return m_selected_entity; }
+void ScenePanel::Reset() { m_selected_material_id_map.clear(); }
 
 ImGuizmo::MODE ScenePanel::GetGizmoMode() const { return m_gizmo_mode; }
 
@@ -58,12 +45,13 @@ void ScenePanel::OnImGui() {
 
     if (m_entity_to_destroy) {
         m_entity_to_destroy.Destroy();
-        if (m_selected_entity == m_entity_to_destroy) m_selected_entity = {};
+        if (scene->GetSelectedEntity() == m_entity_to_destroy)
+            scene->ResetSelectedEntity();
         m_entity_to_destroy = {};
     }
 
     if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-        m_selected_entity = {};
+        scene->ResetSelectedEntity();
 
     // Right-click on blank space
     if (ImGui::BeginPopupContextWindow(0, 1, false)) {
@@ -96,8 +84,9 @@ void ScenePanel::OnImGui() {
     ImGui::End();
 
     ImGui::Begin("Properties");
-    if (m_selected_entity) {
-        DrawComponents(m_selected_entity);
+    Entity entity = scene->GetSelectedEntity();
+    if (entity) {
+        DrawComponents(entity);
     }
 
     ImGui::End();
@@ -115,12 +104,14 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
         ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_SpanAvailWidth;
 
     ImGuiTreeNodeFlags flags = data.children.empty() ? leaf_flags : base_flags;
-    flags |= ((m_selected_entity == entity) ? ImGuiTreeNodeFlags_Selected : 0) |
-             ImGuiTreeNodeFlags_OpenOnArrow;
+    flags |=
+        ((scene->GetSelectedEntity() == entity) ? ImGuiTreeNodeFlags_Selected
+                                                : 0) |
+        ImGuiTreeNodeFlags_OpenOnArrow;
     bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(entt::entity)entity,
                                     flags, "%s", tag.c_str());
     if (ImGui::IsItemClicked(0)) {
-        SetSelectedEntity(entity);
+        scene->SetSelectedEntity(entity);
     }
 
     if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
@@ -141,7 +132,7 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
     }
 
     if (ImGui::BeginPopupContextItem()) {
-        m_selected_entity = entity;
+        scene->SetSelectedEntity(entity);
         if (ImGui::MenuItem("Delete Entity")) {
             m_entity_to_destroy = entity;
         }
@@ -226,40 +217,47 @@ void ScenePanel::DrawComponents(Entity &entity) {
 
     if (ImGui::BeginPopup("AddComponent")) {
         if (ImGui::MenuItem("Model")) {
-            if (!m_selected_entity.HasComponent<ModelComponent>())
-                m_selected_entity.AddComponent<ModelComponent>();
+            if (!entity.HasComponent<ModelComponent>())
+                entity.AddComponent<ModelComponent>();
             else
                 SD_CORE_WARN("This entity already has the Model Component!");
             ImGui::CloseCurrentPopup();
         }
         if (ImGui::MenuItem("Terrain")) {
-            if (!m_selected_entity.HasComponent<TerrainComponent>())
-                m_selected_entity.AddComponent<TerrainComponent>();
+            if (!entity.HasComponent<TerrainComponent>())
+                entity.AddComponent<TerrainComponent>();
             else
                 SD_CORE_WARN("This entity already has the Terrain Component!");
             ImGui::CloseCurrentPopup();
         }
         if (ImGui::MenuItem("Light")) {
-            if (!m_selected_entity.HasComponent<LightComponent>())
-                m_selected_entity.AddComponent<LightComponent>();
+            if (!entity.HasComponent<LightComponent>())
+                entity.AddComponent<LightComponent>();
             else
                 SD_CORE_WARN("This entity already has the Light Component!");
             ImGui::CloseCurrentPopup();
         }
         if (ImGui::MenuItem("Text")) {
-            if (!m_selected_entity.HasComponent<TextComponent>())
-                m_selected_entity.AddComponent<TextComponent>();
+            if (!entity.HasComponent<TextComponent>())
+                entity.AddComponent<TextComponent>();
             else
                 SD_CORE_WARN("This entity already has the Text Component!");
             ImGui::CloseCurrentPopup();
         }
         if (ImGui::MenuItem("Camera")) {
-            if (!m_selected_entity.HasComponent<CameraComponent>())
-                m_selected_entity.AddComponent<CameraComponent>(
+            if (!entity.HasComponent<CameraComponent>())
+                entity.AddComponent<CameraComponent>(
                     CameraType::PERSPECTIVE, glm::radians(45.f), m_width,
                     m_height, 0.1f, 1000.f);
             else
                 SD_CORE_WARN("This entity already has the Camera Component!");
+            ImGui::CloseCurrentPopup();
+        }
+        if (ImGui::MenuItem("Tile Map")) {
+            if (!entity.HasComponent<TileMapComponent>())
+                entity.AddComponent<TileMapComponent>();
+            else
+                SD_CORE_WARN("This entity already has the Tile Map Component!");
             ImGui::CloseCurrentPopup();
         }
 
@@ -454,6 +452,8 @@ void ScenePanel::DrawComponents(Entity &entity) {
                 cameraComp.camera.SetFarZ(far_z);
             }
         });
+    DrawComponent<TileMapComponent>("Tile Map", entity,
+                                    [&](TileMapComponent &) {});
 }
 
 void ScenePanel::DrawMaterialsList(const std::vector<Material> &materials,

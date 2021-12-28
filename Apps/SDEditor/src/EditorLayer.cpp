@@ -128,18 +128,6 @@ void EditorLayer::OnTick(float dt) {
     for (auto &system : GetSystems()) {
         system->OnTick(dt);
     }
-    if (m_is_viewport_hovered && m_mode == EditorMode::TWO_DIMENSIONAL) {
-        glm::vec2 clip = m_viewport.MapScreenToClip(Input::GetMouseCoord());
-        Math::Ray ray = scene->GetCamera()->ComputeCameraRay(clip);
-        Math::Plane plane(glm::vec3(0, 0, 1), glm::vec3(0));
-        glm::vec3 world;
-        if (Math::IntersectRayPlane(ray, plane, world)) {
-            m_tile_map_system->SelectWorldPos(world);
-        }
-        if (Input::IsMousePressed(MouseButton::LEFT)) {
-            m_tile_map_system->ApplyActionAtPos();
-        }
-    }
 }
 
 void EditorLayer::OnImGui() {
@@ -422,7 +410,12 @@ void EditorLayer::DrawViewport() {
         ImGuizmo::SetRect(m_viewport.GetLeft(), m_viewport.GetTop(),
                           m_viewport.GetWidth(), m_viewport.GetHeight());
         ImGuizmo::SetDrawlist();
-        Entity &entity = m_scene_panel->GetSelectedEntity();
+
+        if (m_tile_map_system) {
+            m_tile_map_system->SetViewport(m_viewport);
+        }
+
+        Entity entity = scene->GetSelectedEntity();
         if (entity) {
             Camera *cam = scene->GetCamera();
             ImGuizmo::SetOrthographic(cam->GetCameraType() ==
@@ -457,8 +450,7 @@ void EditorLayer::DrawViewport() {
                                        sizeof(entity_id), &entity_id);
             }
             if (entity_id != Entity::INVALID_ID) {
-                Entity entity(entity_id, scene.get());
-                m_scene_panel->SetSelectedEntity(entity);
+                scene->SetSelectedEntity(entity_id);
             }
         }
     }

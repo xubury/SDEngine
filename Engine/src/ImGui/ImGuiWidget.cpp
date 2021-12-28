@@ -91,55 +91,60 @@ void DrawTexture(const SD::Texture &texture, const ImVec2 &size,
     ImGui::Image((void *)(intptr_t)texture.GetId(), size, uv0, uv1);
 }
 
-bool DrawTileMap(const SD::TileMap &tilemap, std::array<glm::vec2, 2> &uvs) {
-    auto texture = tilemap.GetTexture();
+bool DrawTileMap(const SD::Texture &texture, const glm::vec2 &tile_size,
+                 std::array<glm::vec2, 2> &uvs) {
     bool selected = false;
-    if (texture) {
-        ImVec2 wsize = ImGui::GetContentRegionAvail();
-        float aspect = wsize.x / texture->GetWidth();
-        wsize.y = texture->GetHeight() * aspect;
-        glm::vec2 tile_size = glm::vec2(tilemap.GetTileSize()) * aspect;
+    ImVec2 wsize = ImGui::GetContentRegionAvail();
+    float aspect = wsize.x / texture.GetWidth();
+    wsize.y = texture.GetHeight() * aspect;
+    glm::vec2 scaled_tile_size = glm::vec2(tile_size) * aspect;
 
-        int cols = std::floor(wsize.x / tile_size.x);
-        int rows = std::floor(wsize.y / tile_size.y);
-        ImDrawList *DrawList = ImGui::GetWindowDrawList();
-        ImGuiWindow *window = ImGui::GetCurrentWindow();
+    int cols = std::floor(wsize.x / scaled_tile_size.x);
+    int rows = std::floor(wsize.y / scaled_tile_size.y);
+    ImDrawList *DrawList = ImGui::GetWindowDrawList();
+    ImGuiWindow *window = ImGui::GetCurrentWindow();
 
-        ImRect bb(window->DC.CursorPos,
-                  ImVec2(window->DC.CursorPos.x + cols * tile_size.x,
-                         window->DC.CursorPos.y + rows * tile_size.y));
-        ImGui::DrawTexture(*texture, wsize);
-        for (int i = 0; i <= cols; ++i) {
-            DrawList->AddLine(ImVec2(bb.Min.x + i * tile_size.x, bb.Min.y),
-                              ImVec2(bb.Min.x + i * tile_size.x, bb.Max.y),
-                              ImGui::GetColorU32(ImGuiCol_TextDisabled));
+    ImRect bb(window->DC.CursorPos,
+              ImVec2(window->DC.CursorPos.x + cols * scaled_tile_size.x,
+                     window->DC.CursorPos.y + rows * scaled_tile_size.y));
+    ImGui::DrawTexture(texture, wsize);
+    for (int i = 0; i <= cols; ++i) {
+        DrawList->AddLine(ImVec2(bb.Min.x + i * scaled_tile_size.x, bb.Min.y),
+                          ImVec2(bb.Min.x + i * scaled_tile_size.x, bb.Max.y),
+                          ImGui::GetColorU32(ImGuiCol_TextDisabled));
+    }
+    for (int i = 0; i <= rows; ++i) {
+        DrawList->AddLine(ImVec2(bb.Min.x, bb.Min.y + i * scaled_tile_size.y),
+                          ImVec2(bb.Max.x, bb.Min.y + i * scaled_tile_size.y),
+                          ImGui::GetColorU32(ImGuiCol_TextDisabled));
+    }
+    auto [left, top] = bb.GetTL();
+    if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0)) {
+        auto [mouse_x, mouse_y] = ImGui::GetMousePos();
+        auto image_pos = glm::vec2(mouse_x - left, mouse_y - top) / aspect;
+        if (image_pos.x >= 0 && image_pos.y >= 0 &&
+            image_pos.x < texture.GetWidth() &&
+            image_pos.y < texture.GetHeight()) {
+            uvs[0] = glm::floor(image_pos / glm::vec2(tile_size));
+            uvs[1] = uvs[0] + glm::vec2(1.f);
+
+            uvs[0].x = uvs[0].x * tile_size.x / texture.GetWidth();
+            uvs[0].y = uvs[0].y * tile_size.y / texture.GetHeight();
+
+            uvs[1].x = uvs[1].x * tile_size.x / texture.GetWidth();
+            uvs[1].y = uvs[1].y * tile_size.y / texture.GetHeight();
+            selected = true;
         }
-        for (int i = 0; i <= rows; ++i) {
-            DrawList->AddLine(ImVec2(bb.Min.x, bb.Min.y + i * tile_size.y),
-                              ImVec2(bb.Max.x, bb.Min.y + i * tile_size.y),
-                              ImGui::GetColorU32(ImGuiCol_TextDisabled));
-        }
-        auto [left, top] = bb.GetTL();
-        if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0)) {
-            auto [mouse_x, mouse_y] = ImGui::GetMousePos();
-            auto image_pos = glm::vec2(mouse_x - left, mouse_y - top) / aspect;
-            if (image_pos.x >= 0 && image_pos.y >= 0 &&
-                image_pos.x < texture->GetWidth() &&
-                image_pos.y < texture->GetHeight()) {
-                uvs = tilemap.GetTileUVs(image_pos);
-                selected = true;
-            }
-        }
-        ImRect active_grid(
-            ImVec2(left + uvs[0].x * wsize.x, top + uvs[0].y * wsize.y),
-            ImVec2(left + uvs[1].x * wsize.x, top + uvs[1].y * wsize.y));
-        if (bb.Contains(active_grid)) {
-            const ImU32 COLOR = 0xff00ff00;
-            const float THICKNESS = 2.f;
-            DrawList->AddQuad(active_grid.GetTL(), active_grid.GetTR(),
-                              active_grid.GetBR(), active_grid.GetBL(), COLOR,
-                              THICKNESS);
-        }
+    }
+    ImRect active_grid(
+        ImVec2(left + uvs[0].x * wsize.x, top + uvs[0].y * wsize.y),
+        ImVec2(left + uvs[1].x * wsize.x, top + uvs[1].y * wsize.y));
+    if (bb.Contains(active_grid)) {
+        const ImU32 COLOR = 0xff00ff00;
+        const float THICKNESS = 2.f;
+        DrawList->AddQuad(active_grid.GetTL(), active_grid.GetTR(),
+                          active_grid.GetBR(), active_grid.GetBL(), COLOR,
+                          THICKNESS);
     }
     return selected;
 }

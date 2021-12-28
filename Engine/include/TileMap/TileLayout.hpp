@@ -19,6 +19,7 @@ namespace SD {
 template <typename TILE>
 class SD_TILE_MAP_API TileLayout {
    public:
+    TileLayout() : m_tile_size(25, 25) {}
     TileLayout(const glm::ivec2 &tile_size) : m_tile_size(tile_size) {}
 
     bool Add(const glm::ivec2 &pos, const TILE &tile) {

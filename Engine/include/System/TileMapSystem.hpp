@@ -24,20 +24,17 @@ class SD_SYSTEM_API TileMapSystem : public System {
     void OnImGui() override;
     void OnRender() override;
 
-    void SelectWorldPos(const glm::vec2 &world);
-
-    void ApplyActionAtPos();
+    void SetViewport(const Viewport &viewport) { m_viewport = viewport; }
 
    private:
+    Viewport m_viewport;
     void RenderOutline();
 
     Ref<Texture> m_outline_texture;
 
-    ResourceId m_map_id;
-    Ref<TileMap> m_map;
-
     std::array<glm::vec2, 2> m_brush_uvs;
     Ref<Texture> m_brush;
+    ResourceId m_brush_id;
 
     glm::ivec2 m_select_tile_pos;
 

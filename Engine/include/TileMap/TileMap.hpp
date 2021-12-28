@@ -6,26 +6,25 @@
 
 #include "Graphics/Texture.hpp"
 
+#include "Utility/ResourceId.hpp"
+
 namespace SD {
 
 class SD_TILE_MAP_API TileMap {
    public:
-    TileMap() : m_layout(glm::ivec2(30, 30)){};
-
-    void SetTileSize(const glm::ivec2 &tile_size) { m_tile_size = tile_size; }
-    glm::ivec2 GetTileSize() const { return m_tile_size; }
+    TileMap() = default;
 
     void SetTexture(const Ref<Texture> &texture);
 
     const Ref<Texture> GetTexture() const { return m_map; }
 
-    std::array<glm::vec2, 2> GetTileUVs(const glm::vec2 &texture_pos) const;
-
     TileLayout<std::array<glm::vec2, 2>> &GetLayout() { return m_layout; }
+    const TileLayout<std::array<glm::vec2, 2>> &GetLayout() const {
+        return m_layout;
+    }
 
+    SERIALIZE(m_layout)
    private:
-    glm::ivec2 m_tile_size{50, 50};
-
     Ref<Texture> m_map;
     TileLayout<std::array<glm::vec2, 2>> m_layout;
 };

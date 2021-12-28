@@ -9,6 +9,8 @@
 
 namespace SD {
 
+Scene::Scene() : m_selected_entity(Entity::INVALID_ID) {}
+
 Entity Scene::CreateEntity(const std::string &name) {
     Entity entity(create(), this);
     entity.AddComponent<IdComponent>();
@@ -36,7 +38,7 @@ void Scene::Load(const std::string &filePath) {
         .entities(archive)
         .component<IdComponent, EntityDataComponent, TagComponent,
                    TransformComponent, ModelComponent, LightComponent,
-                   TextComponent, CameraComponent>(archive);
+                   TextComponent, CameraComponent, TileMapComponent>(archive);
     Refresh();
 }
 
@@ -47,7 +49,7 @@ void Scene::Save(const std::string &filePath) {
         .entities(archive)
         .component<IdComponent, EntityDataComponent, TagComponent,
                    TransformComponent, ModelComponent, LightComponent,
-                   TextComponent, CameraComponent>(archive);
+                   TextComponent, CameraComponent, TileMapComponent>(archive);
 }
 
 void Scene::RefreshLight(Entity &entity) {
@@ -80,5 +82,9 @@ void Scene::RefreshEntityChildTranforms(Entity &entity) {
 void Scene::SetCamera(Camera *camera) { m_camera = camera; }
 
 Camera *Scene::GetCamera() { return m_camera; }
+
+Entity Scene::GetSelectedEntity() { return {m_selected_entity, this}; }
+
+void Scene::ResetSelectedEntity() { m_selected_entity = Entity::INVALID_ID; }
 
 }  // namespace SD

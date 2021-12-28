@@ -22,7 +22,8 @@ void IMGUI_API DrawTexture(const SD::Texture &texture, const ImVec2 &size,
                            const ImVec2 &uv0 = ImVec2(0, 0),
                            const ImVec2 &uv1 = ImVec2(1, 1));
 
-bool IMGUI_API DrawTileMap(const SD::TileMap &tilemap,
+bool IMGUI_API DrawTileMap(const SD::Texture &tilemap,
+                           const glm::vec2 &tile_size,
                            std::array<glm::vec2, 2> &uvs);
 
 bool IMGUI_API BeginCenterPopupModal(const char *name, bool *p_open = nullptr,
