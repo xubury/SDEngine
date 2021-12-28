@@ -8,13 +8,13 @@
 	<value5>0</value5>
 	<value6>
 		<value0>
-			<value0>6362558529457634263</value0>
+			<value0>6263545726604759509</value0>
 		</value0>
 	</value6>
 	<value7>1</value7>
 	<value8>
 		<value0>
-			<value0>14558119026976227695</value0>
+			<value0>17485449940186089139</value0>
 		</value0>
 	</value8>
 	<value9>2</value9>
@@ -53,9 +53,9 @@
 				<value3>1</value3>
 			</value1>
 			<value2>
-				<value0>0.25999999046325684</value0>
-				<value1>0.25999999046325684</value1>
-				<value2>0.25999999046325684</value2>
+				<value0>0.27000001072883606</value0>
+				<value1>0.26999998092651367</value1>
+				<value2>0.26999998092651367</value2>
 			</value2>
 			<value3>
 				<value0>0</value0>
@@ -69,9 +69,9 @@
 				<value3>1</value3>
 			</value4>
 			<value5>
-				<value0>0.25999999046325684</value0>
-				<value1>0.25999999046325684</value1>
-				<value2>0.25999999046325684</value2>
+				<value0>0.27000001072883606</value0>
+				<value1>0.26999998092651367</value1>
+				<value2>0.26999998092651367</value2>
 			</value5>
 		</value0>
 	</value21>
@@ -84,15 +84,15 @@
 				<value2>0</value2>
 			</value0>
 			<value1>
-				<value0>0.71005982160568237</value0>
+				<value0>0.72161036729812622</value0>
 				<value1>0</value1>
 				<value2>0</value2>
-				<value3>0.70414131879806519</value3>
+				<value3>0.69229942560195923</value3>
 			</value1>
 			<value2>
 				<value0>1</value0>
-				<value1>1.0000003576278687</value1>
-				<value2>1.0000003576278687</value2>
+				<value1>1.0000005960464478</value1>
+				<value2>1.0000005960464478</value2>
 			</value2>
 			<value3>
 				<value0>0</value0>
@@ -100,15 +100,15 @@
 				<value2>0</value2>
 			</value3>
 			<value4>
-				<value0>0.71005982160568237</value0>
+				<value0>0.72161036729812622</value0>
 				<value1>0</value1>
 				<value2>0</value2>
-				<value3>0.70414131879806519</value3>
+				<value3>0.69229942560195923</value3>
 			</value4>
 			<value5>
 				<value0>1</value0>
-				<value1>1.0000003576278687</value1>
-				<value2>1.0000003576278687</value2>
+				<value1>1.0000005960464478</value1>
+				<value2>1.0000005960464478</value2>
 			</value5>
 		</value0>
 	</value23>
@@ -116,7 +116,7 @@
 	<value25>0</value25>
 	<value26>
 		<value0>
-			<value0>2287928433169434691</value0>
+			<value0>12743406075111486338</value0>
 		</value0>
 		<value1>
 			<value0>0</value0>
@@ -129,9 +129,9 @@
 	<value29>
 		<value0>
 			<value0>
-				<value0>0.33976835012435913</value0>
-				<value1>0.33976835012435913</value1>
-				<value2>0.33976835012435913</value2>
+				<value0>0.16988414525985718</value0>
+				<value1>0.16398084163665771</value1>
+				<value2>0.16398084163665771</value2>
 			</value0>
 			<value1>
 				<value0>1</value0>

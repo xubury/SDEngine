@@ -3,6 +3,8 @@
 #include "ECS/Component.hpp"
 #include "Utility/Serialize.hpp"
 #include "Asset/Asset.hpp"
+#include "TileMap/TileMap.hpp"
+
 #include <stack>
 
 namespace SD {

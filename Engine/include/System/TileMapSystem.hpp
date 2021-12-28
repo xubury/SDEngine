@@ -4,6 +4,7 @@
 #include "System/Export.hpp"
 #include "Core/System.hpp"
 #include "TileMap/TileMap.hpp"
+#include "TileMap/Sprite.hpp"
 #include "TileMap/TileLayout.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGui/FileDialog.hpp"
@@ -31,14 +32,14 @@ class SD_SYSTEM_API TileMapSystem : public System {
    private:
     void RenderOutline();
 
-    TileLayout<Entity> m_layout;
+    TileLayout<Sprite> m_layout;
 
     Ref<Texture> m_outline_texture;
 
-    TileMap m_map;
+    ResourceId m_map_id;
+    Ref<TileMap> m_map;
 
-    ResourceId m_sprite_id;
-    Ref<Sprite> m_selected_sprite;
+    Sprite m_selected_sprite;
 
     glm::ivec2 m_select_tile_pos;
 

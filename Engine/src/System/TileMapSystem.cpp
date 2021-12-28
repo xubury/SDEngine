@@ -45,12 +45,17 @@ void TileMapSystem::OnImGui() {
     ImGui::Begin("TileMap System");
     {
         ImGui::Checkbox("Outline", &m_draw_outline);
-        ImGui::RadioButton("Add Sprite", reinterpret_cast<int *>(&m_operation),
-                           Operation::ADD_ENTITY);
+        if (ImGui::RadioButton("Add Sprite",
+                               reinterpret_cast<int *>(&m_operation),
+                               Operation::ADD_ENTITY)) {
+            m_selected_sprite.SetTexture(m_map->GetTexture());
+        }
         ImGui::SameLine();
-        ImGui::RadioButton("Clear Sprite",
-                           reinterpret_cast<int *>(&m_operation),
-                           Operation::REMOVE_ENTITY);
+        if (ImGui::RadioButton("Clear Sprite",
+                               reinterpret_cast<int *>(&m_operation),
+                               Operation::REMOVE_ENTITY)) {
+            m_selected_sprite.SetTexture(nullptr);
+        }
         std::string path = m_fileDialogInfo.result_path.string();
         ImGui::InputText("##Path", path.data(), path.size(),
                          ImGuiInputTextFlags_ReadOnly);
@@ -63,21 +68,21 @@ void TileMapSystem::OnImGui() {
             m_fileDialogInfo.directory_path = asset->GetRootPath();
         }
         if (ImGui::FileDialog(&m_fileDialogOpen, &m_fileDialogInfo)) {
-            m_sprite_id =
-                asset->LoadAsset<Sprite>(m_fileDialogInfo.result_path);
-            m_selected_sprite = asset->Get<Sprite>(m_sprite_id);
-            m_map.SetTexture(asset->Get<Sprite>(m_sprite_id)->GetTexture());
+            m_map_id = asset->LoadAsset<TileMap>(m_fileDialogInfo.result_path);
+            m_map = asset->Get<TileMap>(m_map_id);
+            m_selected_sprite.SetUVs(m_map->GetTileUVs(glm::vec2(0)));
+            m_selected_sprite.SetTexture(m_map->GetTexture());
         }
-        glm::ivec2 size = m_map.GetTileSize();
-        ImGui::TextUnformatted("Tile Size:");
-        if (ImGui::InputInt2("##Size", &size.x)) {
-            m_map.SetTileSize(size);
-        }
+        if (m_map) {
+            glm::ivec2 size = m_map->GetTileSize();
+            ImGui::TextUnformatted("Tile Size:");
+            if (ImGui::InputInt2("##Size", &size.x)) {
+                m_map->SetTileSize(size);
+            }
 
-        if (m_selected_sprite) {
-            std::array<glm::vec2, 2> uvs = m_selected_sprite->GetUVs();
-            if (ImGui::DrawTileMap(m_map, uvs)) {
-                m_selected_sprite->Set(m_map.GetTexture(), uvs);
+            std::array<glm::vec2, 2> uvs = m_selected_sprite.GetUVs();
+            if (ImGui::DrawTileMap(*m_map, uvs)) {
+                m_selected_sprite.SetUVs(uvs);
             }
         }
     }
@@ -90,23 +95,17 @@ void TileMapSystem::OnRender() {
     device->Disable(SD::Operation::DEPTH_TEST);
     renderer->Begin(*scene->GetCamera());
 
-    if (m_selected_sprite) {
+    if (m_selected_sprite.GetTexture()) {
         renderer->DrawTexture(
-            m_selected_sprite->GetTexture(), m_selected_sprite->GetUVs(),
+            m_selected_sprite.GetTexture(), m_selected_sprite.GetUVs(),
             glm::vec3(m_layout.MapTileToWorld(m_select_tile_pos), 0.f),
             glm::quat(1.0f, 0.f, 0.f, 0.f), TILE_SIZE);
     }
-    auto sprite_view = scene->view<TransformComponent, SpriteComponent>();
-    sprite_view.each([this, &TILE_SIZE](
-                         const TransformComponent &transform_comp,
-                         const SpriteComponent &sprite_comp) {
-        Ref<Sprite> sprite = asset->Get<Sprite>(sprite_comp.id);
-        if (sprite) {
-            renderer->DrawTexture(sprite->GetTexture(), sprite->GetUVs(),
-                                  transform_comp.transform.GetWorldPosition(),
-                                  glm::quat(1, 0, 0, 0), TILE_SIZE);
-        }
-    });
+    for (const auto &[pos, sprite] : m_layout.GetTiles()) {
+        renderer->DrawTexture(sprite.GetTexture(), sprite.GetUVs(),
+                              glm::vec3(m_layout.MapTileToWorld(pos), 0),
+                              glm::quat(1, 0, 0, 0), TILE_SIZE);
+    }
     if (m_draw_outline) {
         RenderOutline();
     }
@@ -151,23 +150,17 @@ void TileMapSystem::SelectWorldPos(const glm::vec2 &world) {
 void TileMapSystem::ApplyActionAtPos() {
     switch (m_operation) {
         case Operation::ADD_ENTITY: {
-            SD_TRACE("add tile at: {}", m_select_tile_pos);
-            if (m_layout.Has(m_select_tile_pos)) {
-                m_layout.Get(m_select_tile_pos).Destroy();
+            if (m_selected_sprite.GetTexture()) {
+                SD_TRACE("add tile at: {}", m_select_tile_pos);
+                if (m_layout.Has(m_select_tile_pos)) {
+                    m_layout.Clear(m_select_tile_pos);
+                }
+                m_layout.Add(m_select_tile_pos, m_selected_sprite);
             }
-            Entity entity = scene->CreateEntity("Tile");
-            m_layout.Add(m_select_tile_pos, entity);
-            glm::vec3 pos(m_layout.MapTileToWorld(m_select_tile_pos), 0);
-            entity.GetComponent<TransformComponent>()
-                .transform.SetWorldPosition(pos);
-            SpriteComponent &sprite_comp =
-                entity.AddComponent<SpriteComponent>();
-            sprite_comp.id = m_sprite_id;
         } break;
         case Operation::REMOVE_ENTITY: {
             SD_TRACE("clear tile at: {}", m_select_tile_pos);
             if (m_layout.Has(m_select_tile_pos)) {
-                m_layout.Get(m_select_tile_pos).Destroy();
                 m_layout.Clear(m_select_tile_pos);
             }
         } break;

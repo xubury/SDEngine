@@ -95,7 +95,14 @@ void AssetManager::Validate() {
     std::lock_guard<std::shared_mutex> lock(m_mutex);
     auto iter = m_id_map.begin();
     while (iter != m_id_map.end()) {
-        if (!std::filesystem::exists(GetAbsolutePath(iter->first))) {
+        size_t sep_pos = iter->first.find_first_of('@');
+        if (sep_pos == std::string::npos) {
+            iter = m_id_map.erase(iter);
+            SD_CORE_WARN("Invalid id map");
+            continue;
+        }
+        std::string path = iter->first.substr(sep_pos + 1);
+        if (!std::filesystem::exists(GetAbsolutePath(path))) {
             iter = m_id_map.erase(iter);
         } else {
             ++iter;

@@ -82,12 +82,6 @@ struct SD_ECS_API CameraComponent {
     SERIALIZE(camera)
 };
 
-struct SD_ECS_API SpriteComponent {
-    ResourceId id;
-
-    SERIALIZE(id)
-};
-
 }  // namespace SD
 
 #endif /* SD_COMPONENT_HPP */

@@ -20,7 +20,7 @@ class SD_ECS_API Scene : public entt::registry {
 
     void Refresh();
 
-    void Load(const std::string &filePath);
+    void Load( const std::string &filePath);
 
     void Save(const std::string &filePath);
 

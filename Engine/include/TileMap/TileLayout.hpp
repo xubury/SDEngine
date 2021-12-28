@@ -2,9 +2,9 @@
 #define SD_TILE_LAYOUT_HPP
 
 #include "TileMap/Export.hpp"
-#include "Renderer/Sprite.hpp"
-#include "Graphics/Texture.hpp"
+#include "Utility/Serialize.hpp"
 
+#include <glm/glm.hpp>
 #include <unordered_map>
 
 template <>
@@ -48,6 +48,7 @@ class SD_TILE_MAP_API TileLayout {
         return world;
     }
 
+    SERIALIZE(m_tile_size, m_tiles)
    private:
     glm::ivec2 m_tile_size;
     std::unordered_map<glm::ivec2, TILE> m_tiles;

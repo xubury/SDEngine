@@ -4,10 +4,14 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/TileMap)
 set(TileMap_Include
     ${Include_Root}/Export.hpp
     ${Include_Root}/TileLayout.hpp
-    ${Include_Root}/TileMap.hpp)
+    ${Include_Root}/Sprite.hpp
+    ${Include_Root}/TileMap.hpp
+    ${Include_Root}/TileMapLoader.hpp)
 
 set(TileMap_Src
-    ${Src_Root}/TileMap.cpp)
+    ${Src_Root}/Sprite.cpp
+    ${Src_Root}/TileMap.cpp
+    ${Src_Root}/TileMapLoader.cpp)
 
 add_library(sd-tilemap ${TileMap_Src})
 

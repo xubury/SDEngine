@@ -93,16 +93,23 @@ class SD_ASSET_API AssetManager {
         size_t type = GetAssetType<ASSET>();
         m_loaders[type] = loader;
     }
+    template<typename ASSET>
+    std::string PathId(const std::string &str) {
+        std::string ret =  typeid(ASSET).name();
+        ret = ret + "@" + str;
+        return ret;
+    }
 
     template <typename ASSET>
     ResourceId LoadAsset(const std::filesystem::path &path) {
         SD_CORE_ASSERT(Valid(), "AssetManager's root path is invalid!");
         std::filesystem::path full_path = GetAbsolutePath(path);
         std::string rel_path = GetRelativePath(full_path).generic_string();
+        std::string path_id = PathId<ASSET>(rel_path);
         // check if the relative path has id
-        if (HasId(rel_path)) {
+        if (HasId(path_id)) {
             std::shared_lock<std::shared_mutex> lock(m_mutex);
-            return m_id_map.at(rel_path);
+            return m_id_map.at(path_id);
         } else {
             // generate a random id
             ResourceId id;
@@ -110,7 +117,7 @@ class SD_ASSET_API AssetManager {
             Ref<void> resource = Cache(type, rel_path);
             {
                 std::lock_guard<std::shared_mutex> lock(m_mutex);
-                m_id_map.emplace(rel_path, id);
+                m_id_map.emplace(path_id, id);
                 m_resources.emplace(id, Asset(type, rel_path));
                 m_resources.at(id).SetResource(resource);
             }
