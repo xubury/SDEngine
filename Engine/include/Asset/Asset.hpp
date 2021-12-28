@@ -93,23 +93,17 @@ class SD_ASSET_API AssetManager {
         size_t type = GetAssetType<ASSET>();
         m_loaders[type] = loader;
     }
-    template<typename ASSET>
-    std::string PathId(const std::string &str) {
-        std::string ret =  typeid(ASSET).name();
-        ret = ret + "@" + str;
-        return ret;
-    }
 
     template <typename ASSET>
     ResourceId LoadAsset(const std::filesystem::path &path) {
         SD_CORE_ASSERT(Valid(), "AssetManager's root path is invalid!");
         std::filesystem::path full_path = GetAbsolutePath(path);
         std::string rel_path = GetRelativePath(full_path).generic_string();
-        std::string path_id = PathId<ASSET>(rel_path);
+        std::string string_id = GetStringId<ASSET>(rel_path);
         // check if the relative path has id
-        if (HasId(path_id)) {
+        if (HasId(string_id)) {
             std::shared_lock<std::shared_mutex> lock(m_mutex);
-            return m_id_map.at(path_id);
+            return m_id_map.at(string_id);
         } else {
             // generate a random id
             ResourceId id;
@@ -117,7 +111,7 @@ class SD_ASSET_API AssetManager {
             Ref<void> resource = Cache(type, rel_path);
             {
                 std::lock_guard<std::shared_mutex> lock(m_mutex);
-                m_id_map.emplace(path_id, id);
+                m_id_map.emplace(string_id, id);
                 m_resources.emplace(id, Asset(type, rel_path));
                 m_resources.at(id).SetResource(resource);
             }
@@ -171,6 +165,23 @@ class SD_ASSET_API AssetManager {
     std::unordered_map<size_t, AssetLoader *> m_loaders;
     std::filesystem::path m_directory;
     mutable std::shared_mutex m_mutex;
+
+    template <typename ASSET>
+    std::string GetStringId(const std::string &str) {
+        std::string ret = typeid(ASSET).name();
+        ret = ret + "@" + str;
+        return ret;
+    }
+
+    std::string GetPathFromId(const std::string &str) {
+        size_t sep_pos = str.find_first_of('@');
+        if (sep_pos == std::string::npos) {
+            SD_CORE_WARN("Invalid id map");
+            return "";
+        }
+        std::string path = str.substr(sep_pos + 1);
+        return path;
+    }
 };
 
 };  // namespace SD

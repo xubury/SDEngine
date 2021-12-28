@@ -45,9 +45,10 @@ Ref<void> FontLoader::LoadAsset(const std::string &path) {
     Ini ini;
     try {
         ini.Load(path);
-        std::string font_path = std::filesystem::path(path).parent_path() /
-                                ini.Get("Font", "path", path);
-        if (FT_New_Face(m_ft, font_path.c_str(), 0, &m_face)) {
+        std::filesystem::path font_path =
+            std::filesystem::path(path).parent_path() /
+            ini.Get("Font", "path", path);
+        if (FT_New_Face(m_ft, font_path.string().c_str(), 0, &m_face)) {
             SD_CORE_ERROR("Failed to load font {}!", font_path);
         } else {
             uint32_t pixel_height =
