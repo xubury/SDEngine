@@ -1,21 +1,13 @@
-#include "TileMap/TileMapLoader.hpp"
-#include "TileMap/TileMap.hpp"
+#include "Renderer/SpriteLoader.hpp"
+#include "Renderer/Sprite.hpp"
 #include "Renderer/Bitmap.hpp"
 #include "Utility/String.hpp"
 
 namespace SD {
 
-inline int GetValue(const std::string& str) {
-    const char* value = str.c_str();
-    char* end;
-    long n = strtol(value, &end, 0);
-    if (end <= value) throw Exception("Invalid size");
-    return n;
-}
-
-Ref<void> TileMapLoader::LoadAsset(const std::string& path) {
+Ref<void> SpriteLoader::LoadAsset(const std::string& path) {
     Ref<Bitmap> bitmap = Manager().LoadAndGet<Bitmap>(path);
-    Ref<TileMap> tilemap = CreateRef<TileMap>();
+    Ref<Sprite> sprite = CreateRef<Sprite>();
     if (bitmap == nullptr) throw Exception("Invalid image");
     auto texture = Texture::Create(
         bitmap->Width(), bitmap->Height(),
@@ -24,8 +16,8 @@ Ref<void> TileMapLoader::LoadAsset(const std::string& path) {
                     DataFormatType::UBYTE, TextureWrap::EDGE));
     texture->SetPixels(0, 0, 0, bitmap->Width(), bitmap->Height(), 1,
                        bitmap->Data());
-    tilemap->SetTexture(texture);
-    return tilemap;
+    sprite->SetTexture(texture);
+    return sprite;
 }
 
 }  // namespace SD

@@ -1,7 +1,6 @@
 #ifndef SD_TILE_LAYOUT_HPP
 #define SD_TILE_LAYOUT_HPP
 
-#include "TileMap/Export.hpp"
 #include "Utility/Serialize.hpp"
 
 #include <glm/glm.hpp>
@@ -17,7 +16,7 @@ struct std::hash<glm::ivec2> {
 namespace SD {
 
 template <typename TILE>
-class SD_TILE_MAP_API TileLayout {
+class TileLayout {
    public:
     TileLayout() : m_tile_size(25, 25) {}
     TileLayout(const glm::ivec2 &tile_size) : m_tile_size(tile_size) {}

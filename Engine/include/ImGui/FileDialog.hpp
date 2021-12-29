@@ -12,7 +12,7 @@
 enum class ImGuiFileDialogType { OPEN_FILE, SAVE_FILE, TYPE_COUNT = 2 };
 
 struct IMGUI_API ImFileDialogInfo {
-    std::string title;
+    std::string title{"File Dialog"};
     std::filesystem::path file_extension;
     ImGuiFileDialogType type;
 

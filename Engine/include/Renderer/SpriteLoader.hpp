@@ -1,12 +1,12 @@
-#ifndef SD_TILE_MAP_LOADER_HPP
-#define SD_TILE_MAP_LOADER_HPP
+#ifndef SD_SPRITE_LOADER_HPP
+#define SD_SPRITE_LOADER_HPP
 
-#include "TileMap//Export.hpp"
+#include "Renderer/Export.hpp"
 #include "Asset/Asset.hpp"
 
 namespace SD {
 
-class SD_TILE_MAP_API TileMapLoader : public AssetLoader {
+class SD_RENDERER_API SpriteLoader : public AssetLoader {
    public:
     using AssetLoader::AssetLoader;
 

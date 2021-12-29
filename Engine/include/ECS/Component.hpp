@@ -12,7 +12,8 @@
 #include "Renderer/Terrain.hpp"
 #include "Renderer/Light.hpp"
 #include "Renderer/Skybox.hpp"
-#include "TileMap/TileMap.hpp"
+#include "TileMap/Tile.hpp"
+#include "TileMap/TileLayout.hpp"
 
 #include "entt/entt.hpp"
 
@@ -84,9 +85,8 @@ struct SD_ECS_API CameraComponent {
 };
 
 struct SD_ECS_API TileMapComponent {
-    TileMap map;
-
-    SERIALIZE(map)
+    TileLayout<Tile> tiles;
+    SERIALIZE(tiles)
 };
 
 }  // namespace SD

@@ -85,8 +85,6 @@ class EditorLayer : public Layer {
     Ref<Framebuffer> m_screen_buffer;
 
     Viewport m_viewport;
-    bool m_is_viewport_focused;
-    bool m_is_viewport_hovered;
 
     bool m_hide;
     bool m_quitting;
@@ -95,7 +93,7 @@ class EditorLayer : public Layer {
     bool m_save_scene_open;
     ImFileDialogInfo m_file_dialog_info;
 
-    Ref<Texture> m_light_icon;
+    Ref<Sprite> m_light_icon;
 };
 
 }  // namespace SD

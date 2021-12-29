@@ -11,7 +11,12 @@ const int GRID_TEXTURE_SIZE = 100;
 const int LINE_WIDTH = 10;
 
 TileMapSystem::TileMapSystem()
-    : System("TileMapSystem"), m_operation(Operation::ADD_ENTITY) {
+    : System("TileMapSystem"),
+      m_viewport(nullptr),
+      m_sprite_id(0),
+      m_file_dialog_open(false),
+      m_draw_outline(true),
+      m_operation(Operation::ADD_ENTITY) {
     m_outline_texture =
         Texture::Create(GRID_TEXTURE_SIZE, GRID_TEXTURE_SIZE,
                         TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
@@ -33,10 +38,9 @@ TileMapSystem::TileMapSystem()
 
 void TileMapSystem::OnTick(float) {
     Entity entity = scene->GetSelectedEntity();
-    if (entity && entity.HasComponent<TileMapComponent>()) {
-        auto &map =
-            scene->GetSelectedEntity().GetComponent<TileMapComponent>().map;
-        glm::vec2 clip = m_viewport.MapScreenToClip(Input::GetMouseCoord());
+    if (m_viewport && m_viewport->IsHover() && m_viewport->IsFocus() &&
+        entity && entity.HasComponent<TileMapComponent>()) {
+        glm::vec2 clip = m_viewport->MapScreenToClip(Input::GetMouseCoord());
         if (std::abs(clip.x) > 1 || std::abs(clip.y) > 1) {
             return;
         }
@@ -44,7 +48,9 @@ void TileMapSystem::OnTick(float) {
         Math::Plane plane(glm::vec3(0, 0, 1), glm::vec3(0));
         glm::vec3 world;
         if (Math::IntersectRayPlane(ray, plane, world)) {
-            auto &layout = map.GetLayout();
+            auto &layout = scene->GetSelectedEntity()
+                               .GetComponent<TileMapComponent>()
+                               .tiles;
             m_select_tile_pos = layout.MapWorldToTile(world);
             if (Input::IsMousePressed(MouseButton::LEFT)) {
                 switch (m_operation) {
@@ -53,8 +59,7 @@ void TileMapSystem::OnTick(float) {
                         if (layout.Has(m_select_tile_pos)) {
                             layout.Clear(m_select_tile_pos);
                         }
-                        layout.Add(m_select_tile_pos, m_brush_uvs);
-                        map.SetTexture(m_brush);
+                        layout.Add(m_select_tile_pos, m_brush);
                     } break;
                     case Operation::REMOVE_ENTITY: {
                         SD_TRACE("clear tile at: {}", m_select_tile_pos);
@@ -79,88 +84,71 @@ void TileMapSystem::OnImGui() {
         if (ImGui::RadioButton("Add Sprite",
                                reinterpret_cast<int *>(&m_operation),
                                Operation::ADD_ENTITY)) {
+            m_brush.sprite_id = m_sprite_id;
         }
         ImGui::SameLine();
         if (ImGui::RadioButton("Clear Sprite",
                                reinterpret_cast<int *>(&m_operation),
                                Operation::REMOVE_ENTITY)) {
+            m_brush.sprite_id = 0;
         }
         std::string path = m_fileDialogInfo.result_path.string();
         ImGui::InputText("##Path", path.data(), path.size(),
                          ImGuiInputTextFlags_ReadOnly);
         ImGui::SameLine();
         if (ImGui::Button("Open")) {
-            m_fileDialogOpen = true;
+            m_file_dialog_open = true;
             m_fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
             m_fileDialogInfo.title = "Open File";
             m_fileDialogInfo.file_name = "";
             m_fileDialogInfo.directory_path = asset->GetRootPath();
         }
-        if (ImGui::FileDialog(&m_fileDialogOpen, &m_fileDialogInfo)) {
-            auto bitmap =
-                asset->LoadAndGet<Bitmap>(m_fileDialogInfo.result_path);
-            if (bitmap) {
-                m_brush = Texture::Create(
-                    bitmap->Width(), bitmap->Height(),
-                    TextureSpec(
-                        1, TextureType::TEX_2D,
-                        bitmap->HasAlpha() ? DataFormat::RGBA : DataFormat::RGB,
-                        DataFormatType::UBYTE, TextureWrap::EDGE));
-                m_brush->SetPixels(0, 0, 0, bitmap->Width(), bitmap->Height(),
-                                   1, bitmap->Data());
+        if (ImGui::FileDialog(&m_file_dialog_open, &m_fileDialogInfo)) {
+            m_sprite_id =
+                asset->LoadAsset<Sprite>(m_fileDialogInfo.result_path);
+            if (m_operation == Operation::ADD_ENTITY) {
+                m_brush.sprite_id = m_sprite_id;
             }
         }
 
-        if (m_brush) {
-            static glm::ivec2 size(50);
-            ImGui::TextUnformatted("Tile Size:");
-            ImGui::InputInt2("##Size", &size.x);
-            ImGui::DrawTileMap(*m_brush, size, m_brush_uvs);
+        auto sprite = asset->Get<Sprite>(m_sprite_id);
+        if (sprite) {
+            ImGui::DrawTileTexture(*sprite->GetTexture(), m_brush.uvs);
         }
     }
     ImGui::End();
 }
 
 void TileMapSystem::OnRender() {
-    if (!scene->GetSelectedEntity()) {
-        return;
-    }
-    if (!scene->GetSelectedEntity().HasComponent<TileMapComponent>()) {
-        return;
-    }
-    auto &map = scene->GetSelectedEntity().GetComponent<TileMapComponent>().map;
-    auto &layout = map.GetLayout();
-    const glm::ivec2 TILE_SIZE = layout.GetTileSize();
     device->SetTarget(renderer->GetDefaultTarget());
     device->Disable(SD::Operation::DEPTH_TEST);
     renderer->Begin(*scene->GetCamera());
 
-    if (m_brush) {
-        renderer->DrawTexture(
-            m_brush, m_brush_uvs,
-            glm::vec3(layout.MapTileToWorld(m_select_tile_pos), 0.f),
-            glm::quat(1.0f, 0.f, 0.f, 0.f), TILE_SIZE);
-    }
+    // draw brush & outline
+    Entity entity = scene->GetSelectedEntity();
+    if (entity && entity.HasComponent<TileMapComponent>()) {
+        auto &layout = entity.GetComponent<TileMapComponent>().tiles;
+        const glm::ivec2 TILE_SIZE = layout.GetTileSize();
 
-    auto tilemap_comp = scene->view<TileMapComponent>();
-    tilemap_comp.each([this](const TileMapComponent &tilemap_comp) {
-        auto &layout = tilemap_comp.map.GetLayout();
-        for (const auto &[pos, uv] : layout.GetTiles()) {
-            renderer->DrawTexture(tilemap_comp.map.GetTexture(), uv,
-                                  glm::vec3(layout.MapTileToWorld(pos), 0),
-                                  glm::quat(1, 0, 0, 0), layout.GetTileSize());
+        auto sprite = asset->Get<Sprite>(m_brush.sprite_id);
+        if (sprite) {
+            renderer->DrawTexture(
+                sprite->GetTexture(), m_brush.uvs,
+                glm::vec3(layout.MapTileToWorld(m_select_tile_pos), 0.f),
+                glm::quat(1.0f, 0.f, 0.f, 0.f), TILE_SIZE);
         }
-    });
-    if (m_draw_outline) {
-        RenderOutline();
+
+        if (m_draw_outline) {
+            RenderOutline();
+        }
     }
     renderer->End();
     device->Enable(SD::Operation::DEPTH_TEST);
 }
 
 void TileMapSystem::RenderOutline() {
-    auto &map = scene->GetSelectedEntity().GetComponent<TileMapComponent>().map;
-    auto &layout = map.GetLayout();
+    auto &layout =
+        scene->GetSelectedEntity().GetComponent<TileMapComponent>().tiles;
     int render_width = renderer->GetDefaultTarget().GetWidth();
     int render_height = renderer->GetDefaultTarget().GetHeight();
     const glm::ivec2 TILE_SIZE = layout.GetTileSize();

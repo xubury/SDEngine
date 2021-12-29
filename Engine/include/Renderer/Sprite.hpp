@@ -1,29 +1,27 @@
 #ifndef SD_SPRITE_HPP
 #define SD_SPRITE_HPP
 
-#include "TileMap/Export.hpp"
+#include "Renderer/Export.hpp"
 #include "Graphics/Texture.hpp"
 #include "Utility/Serialize.hpp"
 
 namespace SD {
 
-class SD_TILE_MAP_API Sprite {
+class SD_RENDERER_API Sprite {
    public:
-    Sprite() = default;
-    Sprite(const Ref<Texture> &texture, const std::array<glm::vec2, 2> &uvs);
-
-    void SetUVs(const std::array<glm::vec2, 2> &uvs);
+    Sprite()
+        : m_texture(Texture::Create(
+              1, 1,
+              TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
+                          DataFormatType::UBYTE))){};
+    Sprite(const Ref<Texture> &texture);
 
     void SetTexture(const Ref<Texture> &texture) { m_texture = texture; }
 
-    const std::array<glm::vec2, 2> &GetUVs() const { return m_uvs; }
-
     const Ref<Texture> GetTexture() const { return m_texture; }
 
-    SERIALIZE(m_uvs)
    private:
     Ref<Texture> m_texture;
-    std::array<glm::vec2, 2> m_uvs;
 };
 
 }  // namespace SD

@@ -16,8 +16,6 @@ EditorLayer::EditorLayer(int width, int height, int msaa)
       m_width(width),
       m_height(height),
       m_msaa(msaa),
-      m_is_viewport_focused(false),
-      m_is_viewport_hovered(false),
       m_hide(false),
       m_quitting(false),
       m_load_scene_open(false),
@@ -34,16 +32,8 @@ void EditorLayer::OnInit() {
     m_editor_camera_system =
         CreateSystem<EditorCameraSystem>(m_width, m_height);
 
-    auto image = asset->LoadAndGet<Bitmap>("icons/light.png");
+    m_light_icon = asset->LoadAndGet<Sprite>("icons/light.png");
 
-    m_light_icon = Texture::Create(
-        image->Width(), image->Height(),
-        TextureSpec(1, TextureType::TEX_2D,
-                    image->HasAlpha() ? DataFormat::RGBA : DataFormat::RGB,
-                    DataFormatType::UBYTE, TextureWrap::EDGE,
-                    TextureMagFilter::LINEAR, TextureMinFilter::LINEAR));
-    m_light_icon->SetPixels(0, 0, 0, image->Width(), image->Height(), 1,
-                            image->Data());
     PushSystem(m_scene_panel);
     PushSystem(m_editor_camera_system);
 }
@@ -116,7 +106,8 @@ void EditorLayer::OnRender() {
             glm::vec3 pos = transComp.transform.GetWorldPosition();
             float dist = glm::distance(pos, cam->GetWorldPosition());
             float scale = (dist - cam->GetNearZ()) / 20;
-            renderer->DrawBillboard(m_light_icon, pos, glm::vec2(scale));
+            renderer->DrawBillboard(m_light_icon->GetTexture(), pos,
+                                    glm::vec2(scale));
         });
 
         renderer->End();
@@ -403,8 +394,8 @@ void EditorLayer::DrawViewport() {
                                 wsize.y);
             }
         }
-        m_is_viewport_focused = ImGui::IsWindowFocused();
-        m_is_viewport_hovered = ImGui::IsWindowHovered();
+        m_viewport.SetFocus(ImGui::IsWindowFocused());
+        m_viewport.SetHover(ImGui::IsWindowHovered());
         ImGui::DrawTexture(*m_screen_buffer->GetTexture(), wsize, ImVec2(0, 1),
                            ImVec2(1, 0));
         ImGuizmo::SetRect(m_viewport.GetLeft(), m_viewport.GetTop(),
@@ -412,7 +403,7 @@ void EditorLayer::DrawViewport() {
         ImGuizmo::SetDrawlist();
 
         if (m_tile_map_system) {
-            m_tile_map_system->SetViewport(m_viewport);
+            m_tile_map_system->SetViewport(&m_viewport);
         }
 
         Entity entity = scene->GetSelectedEntity();
@@ -436,7 +427,8 @@ void EditorLayer::DrawViewport() {
         // FIXME:2D mode doesn;t have a gbuffer, so reading entity id won't
         // work.
         if (!ImGuizmo::IsUsing() && ImGui::IsMouseDown(0) &&
-            m_is_viewport_hovered && m_mode == EditorMode::THREE_DIMENSIONAL) {
+            m_viewport.IsFocus() && m_viewport.IsHover() &&
+            m_mode == EditorMode::THREE_DIMENSIONAL) {
             auto [mouseX, mouseY] = ImGui::GetMousePos();
             mouseX -= m_viewport.GetLeft();
             mouseY = m_viewport.GetHeight() - mouseY + m_viewport.GetTop();

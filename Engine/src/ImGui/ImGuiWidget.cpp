@@ -91,8 +91,12 @@ void DrawTexture(const SD::Texture &texture, const ImVec2 &size,
     ImGui::Image((void *)(intptr_t)texture.GetId(), size, uv0, uv1);
 }
 
-bool DrawTileMap(const SD::Texture &texture, const glm::vec2 &tile_size,
-                 std::array<glm::vec2, 2> &uvs) {
+bool DrawTileTexture(const SD::Texture &texture,
+                     std::array<glm::vec2, 2> &uvs) {
+    static glm::ivec2 tile_size(50);
+    ImGui::TextUnformatted("Tile Size:");
+    ImGui::InputInt2("##Size", &tile_size.x);
+
     bool selected = false;
     ImVec2 wsize = ImGui::GetContentRegionAvail();
     float aspect = wsize.x / texture.GetWidth();
