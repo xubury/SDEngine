@@ -3,8 +3,8 @@
 
 namespace SD {
 
-const glm::vec4 COLOR_RED(1, 0, 0, 1);
-const glm::vec4 COLOR_GREEN(0, 1, 0, 1);
+const glm::vec4 COLOR_RED(1, 0, 0, 0.5);
+const glm::vec4 COLOR_GREEN(0, 1, 0, 0.5);
 
 const int GRID_TEXTURE_SIZE = 100;
 
@@ -13,7 +13,6 @@ const int LINE_WIDTH = 10;
 TileMapSystem::TileMapSystem()
     : System("TileMapSystem"),
       m_viewport(nullptr),
-      m_sprite_id(0),
       m_file_dialog_open(false),
       m_draw_outline(true),
       m_operation(Operation::ADD_ENTITY) {
@@ -55,32 +54,30 @@ void TileMapSystem::OnTick(float) {
             if (Input::IsMousePressed(MouseButton::LEFT)) {
                 switch (m_operation) {
                     case Operation::ADD_ENTITY: {
-                        float x_step = (m_brush.uvs[1].x - m_brush.uvs[0].x) /
-                                       m_brush.cnt.x;
-                        float y_step = (m_brush.uvs[1].y - m_brush.uvs[0].y) /
-                                       m_brush.cnt.y;
-                        for (int x = 0; x < m_brush.cnt.x; ++x) {
-                            for (int y = 0; y < m_brush.cnt.y; ++y) {
-                                std::array<glm::vec2, 2> uvs;
-                                uvs[0] = m_brush.uvs[0] +
-                                         glm::vec2(x * x_step, y * y_step);
-                                uvs[1] = m_brush.uvs[0] +
-                                         glm::vec2((x + 1) * x_step,
-                                                   (y + 1) * y_step);
+                        auto tile_uvs = m_brush.ComputeTileUV();
+                        for (int y = 0; y < m_brush.count.y; ++y) {
+                            for (int x = 0; x < m_brush.count.x; ++x) {
                                 glm::ivec2 pos(m_select_tile_pos.x + x,
                                                m_select_tile_pos.y + y);
                                 SD_TRACE("add tile at: {}", pos);
                                 if (layout.Has(pos)) {
                                     layout.Clear(pos);
                                 }
-                                layout.Add(pos, {m_sprite_id, uvs});
+                                layout.Add(pos,
+                                           {m_brush.sprite_id, tile_uvs[y][x]});
                             }
                         }
                     } break;
                     case Operation::REMOVE_ENTITY: {
-                        SD_TRACE("clear tile at: {}", m_select_tile_pos);
-                        if (layout.Has(m_select_tile_pos)) {
-                            layout.Clear(m_select_tile_pos);
+                        for (int y = 0; y < m_brush.count.y; ++y) {
+                            for (int x = 0; x < m_brush.count.x; ++x) {
+                                glm::ivec2 pos(m_select_tile_pos.x + x,
+                                               m_select_tile_pos.y + y);
+                                if (layout.Has(pos)) {
+                                    SD_TRACE("clear tile at: {}", pos);
+                                    layout.Clear(pos);
+                                }
+                            }
                         }
                     } break;
                 }
@@ -100,13 +97,11 @@ void TileMapSystem::OnImGui() {
         if (ImGui::RadioButton("Add Sprite",
                                reinterpret_cast<int *>(&m_operation),
                                Operation::ADD_ENTITY)) {
-            m_brush.sprite = asset->Get<Sprite>(m_sprite_id);
         }
         ImGui::SameLine();
         if (ImGui::RadioButton("Clear Sprite",
                                reinterpret_cast<int *>(&m_operation),
                                Operation::REMOVE_ENTITY)) {
-            m_brush.sprite = nullptr;
         }
         std::string path = m_fileDialogInfo.result_path.string();
         ImGui::InputText("##Path", path.data(), path.size(),
@@ -120,16 +115,14 @@ void TileMapSystem::OnImGui() {
             m_fileDialogInfo.directory_path = asset->GetRootPath();
         }
         if (ImGui::FileDialog(&m_file_dialog_open, &m_fileDialogInfo)) {
-            m_sprite_id =
+            m_brush.sprite_id =
                 asset->LoadAsset<Sprite>(m_fileDialogInfo.result_path);
-            if (m_operation == Operation::ADD_ENTITY) {
-                m_brush.sprite = asset->Get<Sprite>(m_sprite_id);
-            }
         }
 
-        if (m_brush.sprite) {
-            ImGui::DrawTileTexture(*m_brush.sprite->GetTexture(), m_brush.uvs,
-                                   m_brush.cnt);
+        auto sprite = asset->Get<Sprite>(m_brush.sprite_id);
+        if (sprite) {
+            ImGui::DrawTileTexture(*sprite->GetTexture(), m_brush.uvs,
+                                   m_brush.count);
         }
     }
     ImGui::End();
@@ -146,58 +139,56 @@ void TileMapSystem::OnRender() {
         auto &layout = entity.GetComponent<TileMapComponent>().tiles;
         const glm::ivec2 TILE_SIZE = layout.GetTileSize();
 
-        if (m_brush.sprite) {
-            const glm::vec2 BRUSH_SIZE = TILE_SIZE * m_brush.cnt;
-            glm::vec2 pos = layout.MapTileToWorld(m_select_tile_pos);
-            pos.x += BRUSH_SIZE.x / 2 - TILE_SIZE.x / 2.f;
-            pos.y -= BRUSH_SIZE.y / 2 - TILE_SIZE.y / 2.f;
-            renderer->DrawTexture(m_brush.sprite->GetTexture(), m_brush.uvs,
-                                  glm::vec3(pos, 0.f),
-                                  glm::quat(1.0f, 0.f, 0.f, 0.f), BRUSH_SIZE);
+        const glm::vec2 BRUSH_SIZE = TILE_SIZE * m_brush.count;
+        glm::vec2 select_pos = layout.MapTileToWorld(m_select_tile_pos);
+        select_pos.x += BRUSH_SIZE.x / 2 - TILE_SIZE.x / 2.f;
+        select_pos.y -= BRUSH_SIZE.y / 2 - TILE_SIZE.y / 2.f;
+        if (m_operation != Operation::REMOVE_ENTITY) {
+            auto sprite = asset->Get<Sprite>(m_brush.sprite_id);
+            if (sprite) {
+                renderer->DrawTexture(sprite->GetTexture(), m_brush.uvs,
+                                      glm::vec3(select_pos, 0.f),
+                                      glm::quat(1.0f, 0.f, 0.f, 0.f),
+                                      BRUSH_SIZE);
+            }
         }
 
         if (m_draw_outline) {
-            RenderOutline();
+            int render_width = renderer->GetDefaultTarget().GetWidth();
+            int render_height = renderer->GetDefaultTarget().GetHeight();
+            const glm::ivec2 TILE_CNT(std::ceil(render_width / TILE_SIZE.x),
+                                      std::ceil(render_height / TILE_SIZE.y));
+            const glm::vec2 TEX_SIZE = TILE_CNT * TILE_SIZE;
+
+            const glm::vec3 cam_pos = scene->GetCamera()->GetWorldPosition();
+            glm::vec2 uv_origin(cam_pos.x / TILE_SIZE.x,
+                                -cam_pos.y / TILE_SIZE.y);
+            renderer->DrawTexture(
+                m_outline_texture, {uv_origin, glm::vec2(TILE_CNT) + uv_origin},
+                glm::vec3(TEX_SIZE.x / 2.f + cam_pos.x - TILE_SIZE.x / 2.f -
+                              TILE_SIZE.x * std::ceil(TILE_CNT.x / 2.f),
+                          -TEX_SIZE.y / 2.f + cam_pos.y + TILE_SIZE.y / 2.f +
+                              TILE_SIZE.y * std::ceil(TILE_CNT.y / 2.f),
+                          0),
+                glm::quat(1.0f, 0.f, 0.f, 0.f), TEX_SIZE,
+                glm::vec4(1, 1, 1, 0.7));
+            // Draw selection
+            glm::vec4 select_color(1.0);
+            switch (m_operation) {
+                case Operation::ADD_ENTITY: {
+                    select_color = COLOR_GREEN;
+                } break;
+                case Operation::REMOVE_ENTITY: {
+                    select_color = COLOR_RED;
+                } break;
+            }
+            renderer->DrawQuad(glm::vec3(select_pos, 0.f),
+                               glm::quat(1.0f, 0.f, 0.f, 0.f), BRUSH_SIZE,
+                               select_color);
         }
     }
     renderer->End();
     device->Enable(SD::Operation::DEPTH_TEST);
-}
-
-void TileMapSystem::RenderOutline() {
-    auto &layout =
-        scene->GetSelectedEntity().GetComponent<TileMapComponent>().tiles;
-    int render_width = renderer->GetDefaultTarget().GetWidth();
-    int render_height = renderer->GetDefaultTarget().GetHeight();
-    const glm::ivec2 TILE_SIZE = layout.GetTileSize();
-    const glm::ivec2 TILE_CNT(std::ceil(render_width / TILE_SIZE.x),
-                              std::ceil(render_height / TILE_SIZE.y));
-    const glm::vec2 TEX_SIZE = TILE_CNT * TILE_SIZE;
-
-    const glm::vec3 pos = scene->GetCamera()->GetWorldPosition();
-    glm::vec2 uv_origin(pos.x / TILE_SIZE.x, -pos.y / TILE_SIZE.y);
-    renderer->DrawTexture(
-        m_outline_texture, {uv_origin, glm::vec2(TILE_CNT) + uv_origin},
-        glm::vec3(TEX_SIZE.x / 2.f + pos.x - TILE_SIZE.x / 2.f -
-                      TILE_SIZE.x * std::ceil(TILE_CNT.x / 2.f),
-                  -TEX_SIZE.y / 2.f + pos.y + TILE_SIZE.y / 2.f +
-                      TILE_SIZE.y * std::ceil(TILE_CNT.y / 2.f),
-                  0),
-        glm::quat(1.0f, 0.f, 0.f, 0.f), TEX_SIZE, glm::vec4(1, 1, 1, 0.7));
-    // Draw selection
-    glm::vec4 select_color(1.0);
-    switch (m_operation) {
-        case Operation::ADD_ENTITY: {
-            select_color = COLOR_GREEN;
-        } break;
-        case Operation::REMOVE_ENTITY: {
-            select_color = COLOR_RED;
-        } break;
-    }
-    renderer->DrawTexture(
-        m_outline_texture, {glm::vec2(0), glm::vec2(1)},
-        glm::vec3(layout.MapTileToWorld(m_select_tile_pos), 0),
-        glm::quat(1.0f, 0.f, 0.f, 0.f), TILE_SIZE, select_color);
 }
 
 }  // namespace SD

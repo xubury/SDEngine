@@ -167,13 +167,11 @@ bool DrawTileTexture(const SD::Texture &texture, std::array<glm::vec2, 2> &uvs,
                     uvs[1].y = first_uvs[1].y;
                 }
                 selected_cnt =
-                    (uvs[1] - uvs[0]) *
-                    glm::vec2(texture.GetWidth(), texture.GetHeight()) /
-                    glm::vec2(tile_size);
+                    glm::round((uvs[1] - uvs[0]) * glm::vec2(cols, rows));
             }
         }
     }
-    ImRect active_grid(
+    const ImRect active_grid(
         ImVec2(left + uvs[0].x * wsize.x, top + uvs[0].y * wsize.y),
         ImVec2(left + uvs[1].x * wsize.x, top + uvs[1].y * wsize.y));
     if (bb.Contains(active_grid)) {
