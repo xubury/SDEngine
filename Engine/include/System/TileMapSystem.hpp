@@ -10,6 +10,13 @@
 
 namespace SD {
 
+class SD_SYSTEM_API Brush {
+   public:
+    Ref<Sprite> sprite;
+    std::array<glm::vec2, 2> uvs;
+    glm::ivec2 cnt;
+};
+
 class SD_SYSTEM_API TileMapSystem : public System {
     enum Operation { ADD_ENTITY, REMOVE_ENTITY };
 
@@ -33,7 +40,7 @@ class SD_SYSTEM_API TileMapSystem : public System {
     Ref<Texture> m_outline_texture;
 
     ResourceId m_sprite_id;
-    Tile m_brush;
+    Brush m_brush;
 
     glm::ivec2 m_select_tile_pos;
 

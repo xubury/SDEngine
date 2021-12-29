@@ -38,13 +38,13 @@ class TileLayout {
     glm::ivec2 MapWorldToTile(const glm::vec2 &world) const {
         glm::vec2 tile;
         tile.x = std::ceil(world.x / m_tile_size.x - 0.5f);
-        tile.y = std::ceil(world.y / m_tile_size.y - 0.5f);
+        tile.y = std::ceil(-world.y / m_tile_size.y - 0.5f);
         return tile;
     }
     glm::vec2 MapTileToWorld(const glm::ivec2 &tile) const {
         glm::vec2 world;
         world.x = tile.x * m_tile_size.x;
-        world.y = tile.y * m_tile_size.y;
+        world.y = -tile.y * m_tile_size.y;
         return world;
     }
 

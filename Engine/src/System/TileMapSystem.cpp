@@ -55,11 +55,27 @@ void TileMapSystem::OnTick(float) {
             if (Input::IsMousePressed(MouseButton::LEFT)) {
                 switch (m_operation) {
                     case Operation::ADD_ENTITY: {
-                        SD_TRACE("add tile at: {}", m_select_tile_pos);
-                        if (layout.Has(m_select_tile_pos)) {
-                            layout.Clear(m_select_tile_pos);
+                        float x_step = (m_brush.uvs[1].x - m_brush.uvs[0].x) /
+                                       m_brush.cnt.x;
+                        float y_step = (m_brush.uvs[1].y - m_brush.uvs[0].y) /
+                                       m_brush.cnt.y;
+                        for (int x = 0; x < m_brush.cnt.x; ++x) {
+                            for (int y = 0; y < m_brush.cnt.y; ++y) {
+                                std::array<glm::vec2, 2> uvs;
+                                uvs[0] = m_brush.uvs[0] +
+                                         glm::vec2(x * x_step, y * y_step);
+                                uvs[1] = m_brush.uvs[0] +
+                                         glm::vec2((x + 1) * x_step,
+                                                   (y + 1) * y_step);
+                                glm::ivec2 pos(m_select_tile_pos.x + x,
+                                               m_select_tile_pos.y + y);
+                                SD_TRACE("add tile at: {}", pos);
+                                if (layout.Has(pos)) {
+                                    layout.Clear(pos);
+                                }
+                                layout.Add(pos, {m_sprite_id, uvs});
+                            }
                         }
-                        layout.Add(m_select_tile_pos, m_brush);
                     } break;
                     case Operation::REMOVE_ENTITY: {
                         SD_TRACE("clear tile at: {}", m_select_tile_pos);
@@ -84,13 +100,13 @@ void TileMapSystem::OnImGui() {
         if (ImGui::RadioButton("Add Sprite",
                                reinterpret_cast<int *>(&m_operation),
                                Operation::ADD_ENTITY)) {
-            m_brush.sprite_id = m_sprite_id;
+            m_brush.sprite = asset->Get<Sprite>(m_sprite_id);
         }
         ImGui::SameLine();
         if (ImGui::RadioButton("Clear Sprite",
                                reinterpret_cast<int *>(&m_operation),
                                Operation::REMOVE_ENTITY)) {
-            m_brush.sprite_id = 0;
+            m_brush.sprite = nullptr;
         }
         std::string path = m_fileDialogInfo.result_path.string();
         ImGui::InputText("##Path", path.data(), path.size(),
@@ -107,13 +123,13 @@ void TileMapSystem::OnImGui() {
             m_sprite_id =
                 asset->LoadAsset<Sprite>(m_fileDialogInfo.result_path);
             if (m_operation == Operation::ADD_ENTITY) {
-                m_brush.sprite_id = m_sprite_id;
+                m_brush.sprite = asset->Get<Sprite>(m_sprite_id);
             }
         }
 
-        auto sprite = asset->Get<Sprite>(m_sprite_id);
-        if (sprite) {
-            ImGui::DrawTileTexture(*sprite->GetTexture(), m_brush.uvs);
+        if (m_brush.sprite) {
+            ImGui::DrawTileTexture(*m_brush.sprite->GetTexture(), m_brush.uvs,
+                                   m_brush.cnt);
         }
     }
     ImGui::End();
@@ -130,12 +146,14 @@ void TileMapSystem::OnRender() {
         auto &layout = entity.GetComponent<TileMapComponent>().tiles;
         const glm::ivec2 TILE_SIZE = layout.GetTileSize();
 
-        auto sprite = asset->Get<Sprite>(m_brush.sprite_id);
-        if (sprite) {
-            renderer->DrawTexture(
-                sprite->GetTexture(), m_brush.uvs,
-                glm::vec3(layout.MapTileToWorld(m_select_tile_pos), 0.f),
-                glm::quat(1.0f, 0.f, 0.f, 0.f), TILE_SIZE);
+        if (m_brush.sprite) {
+            const glm::vec2 BRUSH_SIZE = TILE_SIZE * m_brush.cnt;
+            glm::vec2 pos = layout.MapTileToWorld(m_select_tile_pos);
+            pos.x += BRUSH_SIZE.x / 2 - TILE_SIZE.x / 2.f;
+            pos.y -= BRUSH_SIZE.y / 2 - TILE_SIZE.y / 2.f;
+            renderer->DrawTexture(m_brush.sprite->GetTexture(), m_brush.uvs,
+                                  glm::vec3(pos, 0.f),
+                                  glm::quat(1.0f, 0.f, 0.f, 0.f), BRUSH_SIZE);
         }
 
         if (m_draw_outline) {

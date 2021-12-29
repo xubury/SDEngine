@@ -91,13 +91,12 @@ void DrawTexture(const SD::Texture &texture, const ImVec2 &size,
     ImGui::Image((void *)(intptr_t)texture.GetId(), size, uv0, uv1);
 }
 
-bool DrawTileTexture(const SD::Texture &texture,
-                     std::array<glm::vec2, 2> &uvs) {
+bool DrawTileTexture(const SD::Texture &texture, std::array<glm::vec2, 2> &uvs,
+                     glm::ivec2 &selected_cnt) {
     static glm::ivec2 tile_size(50);
     ImGui::TextUnformatted("Tile Size:");
     ImGui::InputInt2("##Size", &tile_size.x);
 
-    bool selected = false;
     ImVec2 wsize = ImGui::GetContentRegionAvail();
     float aspect = wsize.x / texture.GetWidth();
     wsize.y = texture.GetHeight() * aspect;
@@ -123,21 +122,55 @@ bool DrawTileTexture(const SD::Texture &texture,
                           ImGui::GetColorU32(ImGuiCol_TextDisabled));
     }
     auto [left, top] = bb.GetTL();
-    if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0)) {
+    if (ImGui::IsWindowHovered()) {
         auto [mouse_x, mouse_y] = ImGui::GetMousePos();
         auto image_pos = glm::vec2(mouse_x - left, mouse_y - top) / aspect;
-        if (image_pos.x >= 0 && image_pos.y >= 0 &&
-            image_pos.x < texture.GetWidth() &&
-            image_pos.y < texture.GetHeight()) {
-            uvs[0] = glm::floor(image_pos / glm::vec2(tile_size));
-            uvs[1] = uvs[0] + glm::vec2(1.f);
+        static std::array<glm::vec2, 2> first_uvs;
+        if (ImGui::IsMouseClicked(0)) {
+            if (image_pos.x >= 0 && image_pos.y >= 0 &&
+                image_pos.x < texture.GetWidth() &&
+                image_pos.y < texture.GetHeight()) {
+                uvs[0] = glm::floor(image_pos / glm::vec2(tile_size));
+                uvs[1] = uvs[0] + glm::vec2(1.f);
 
-            uvs[0].x = uvs[0].x * tile_size.x / texture.GetWidth();
-            uvs[0].y = uvs[0].y * tile_size.y / texture.GetHeight();
+                uvs[0].x = uvs[0].x * tile_size.x / texture.GetWidth();
+                uvs[0].y = uvs[0].y * tile_size.y / texture.GetHeight();
 
-            uvs[1].x = uvs[1].x * tile_size.x / texture.GetWidth();
-            uvs[1].y = uvs[1].y * tile_size.y / texture.GetHeight();
-            selected = true;
+                uvs[1].x = uvs[1].x * tile_size.x / texture.GetWidth();
+                uvs[1].y = uvs[1].y * tile_size.y / texture.GetHeight();
+                first_uvs = uvs;
+                selected_cnt.x = 1;
+                selected_cnt.y = 1;
+            }
+        }
+        if (ImGui::IsMouseDown(0)) {
+            if (image_pos.x >= 0 && image_pos.y >= 0 &&
+                image_pos.x < texture.GetWidth() &&
+                image_pos.y < texture.GetHeight()) {
+                uvs[0] = glm::floor(image_pos / glm::vec2(tile_size));
+                uvs[1] = uvs[0] + glm::vec2(1.f);
+
+                uvs[0].x = uvs[0].x * tile_size.x / texture.GetWidth();
+                uvs[0].y = uvs[0].y * tile_size.y / texture.GetHeight();
+
+                uvs[1].x = uvs[1].x * tile_size.x / texture.GetWidth();
+                uvs[1].y = uvs[1].y * tile_size.y / texture.GetHeight();
+
+                if (uvs[1].x > first_uvs[0].x) {
+                    uvs[0].x = first_uvs[0].x;
+                } else {
+                    uvs[1].x = first_uvs[1].x;
+                }
+                if (uvs[1].y > first_uvs[0].y) {
+                    uvs[0].y = first_uvs[0].y;
+                } else {
+                    uvs[1].y = first_uvs[1].y;
+                }
+                selected_cnt =
+                    (uvs[1] - uvs[0]) *
+                    glm::vec2(texture.GetWidth(), texture.GetHeight()) /
+                    glm::vec2(tile_size);
+            }
         }
     }
     ImRect active_grid(
@@ -150,7 +183,7 @@ bool DrawTileTexture(const SD::Texture &texture,
                           active_grid.GetBR(), active_grid.GetBL(), COLOR,
                           THICKNESS);
     }
-    return selected;
+    return selected_cnt.x > 0 && selected_cnt.y > 0;
 }
 
 bool BeginCenterPopupModal(const char *name, bool *p_open,
