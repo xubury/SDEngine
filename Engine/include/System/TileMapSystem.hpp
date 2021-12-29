@@ -48,6 +48,8 @@ class SD_SYSTEM_API TileMapSystem : public System {
     void SetViewport(const Viewport *viewport) { m_viewport = viewport; }
 
    private:
+    void ApplyAction(TileLayout<Tile> &layout);
+
     const Viewport *m_viewport;
 
     Ref<Texture> m_outline_texture;

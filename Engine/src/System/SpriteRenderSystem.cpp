@@ -27,19 +27,36 @@ void SpriteRenderSystem::OnRender() {
                                textComp.color);
         }
     });
+    renderer->End();
 
     // draw tile map
+    device->Disable(SD::Operation::DEPTH_TEST);
+    renderer->Begin(*scene->GetCamera());
     auto tilemap_comp = scene->view<TileMapComponent>();
+    scene->sort<TileMapComponent>(
+        [](const TileMapComponent &lhs, const TileMapComponent &rhs) {
+            if (lhs.tiles.GetPriority() < rhs.tiles.GetPriority()) {
+                return true;
+            } else if (lhs.tiles.GetPriority() > rhs.tiles.GetPriority()) {
+                return false;
+            } else {
+                return lhs.tiles.GetZ() < rhs.tiles.GetZ();
+            }
+        });
     tilemap_comp.each([this](const TileMapComponent &tilemap_comp) {
         auto &layout = tilemap_comp.tiles;
+        if (!layout.GetVisible()) {
+            return;
+        }
         for (const auto &[pos, tile] : layout.GetTiles()) {
             renderer->DrawTexture(
                 asset->Get<Sprite>(tile.sprite_id)->GetTexture(), tile.uvs,
-                glm::vec3(layout.MapTileToWorld(pos), 0), glm::quat(1, 0, 0, 0),
+                layout.MapTileToWorld(pos), glm::quat(1, 0, 0, 0),
                 layout.GetTileSize());
         }
     });
     renderer->End();
+    device->Enable(SD::Operation::DEPTH_TEST);
 }
 
 }  // namespace SD

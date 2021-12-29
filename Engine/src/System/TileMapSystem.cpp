@@ -7,8 +7,7 @@ const glm::vec4 COLOR_RED(1, 0, 0, 0.5);
 const glm::vec4 COLOR_GREEN(0, 1, 0, 0.5);
 
 const int GRID_TEXTURE_SIZE = 100;
-
-const int LINE_WIDTH = 10;
+const int LINE_WIDTH = 5;
 
 TileMapSystem::TileMapSystem()
     : System("TileMapSystem"),
@@ -43,43 +42,17 @@ void TileMapSystem::OnTick(float) {
         if (std::abs(clip.x) > 1 || std::abs(clip.y) > 1) {
             return;
         }
-        Math::Ray ray = scene->GetCamera()->ComputeCameraRay(clip);
-        Math::Plane plane(glm::vec3(0, 0, 1), glm::vec3(0));
-        glm::vec3 world;
-        if (Math::IntersectRayPlane(ray, plane, world)) {
-            auto &layout = scene->GetSelectedEntity()
-                               .GetComponent<TileMapComponent>()
-                               .tiles;
-            m_select_tile_pos = layout.MapWorldToTile(world);
-            if (Input::IsMousePressed(MouseButton::LEFT)) {
-                switch (m_operation) {
-                    case Operation::ADD_ENTITY: {
-                        auto tile_uvs = m_brush.ComputeTileUV();
-                        for (int y = 0; y < m_brush.count.y; ++y) {
-                            for (int x = 0; x < m_brush.count.x; ++x) {
-                                glm::ivec2 pos(m_select_tile_pos.x + x,
-                                               m_select_tile_pos.y + y);
-                                SD_TRACE("add tile at: {}", pos);
-                                if (layout.Has(pos)) {
-                                    layout.Clear(pos);
-                                }
-                                layout.Add(pos,
-                                           {m_brush.sprite_id, tile_uvs[y][x]});
-                            }
-                        }
-                    } break;
-                    case Operation::REMOVE_ENTITY: {
-                        for (int y = 0; y < m_brush.count.y; ++y) {
-                            for (int x = 0; x < m_brush.count.x; ++x) {
-                                glm::ivec2 pos(m_select_tile_pos.x + x,
-                                               m_select_tile_pos.y + y);
-                                if (layout.Has(pos)) {
-                                    SD_TRACE("clear tile at: {}", pos);
-                                    layout.Clear(pos);
-                                }
-                            }
-                        }
-                    } break;
+        auto &layout =
+            scene->GetSelectedEntity().GetComponent<TileMapComponent>().tiles;
+        if (layout.GetVisible()) {
+            Math::Ray ray = scene->GetCamera()->ComputeCameraRay(clip);
+            Math::Plane plane(glm::vec3(0, 0, 1),
+                              glm::vec3(0, 0, layout.GetZ()));
+            glm::vec3 world;
+            if (Math::IntersectRayPlane(ray, plane, world)) {
+                m_select_tile_pos = layout.MapWorldToTile(world);
+                if (Input::IsMousePressed(MouseButton::LEFT)) {
+                    ApplyAction(layout);
                 }
             }
         }
@@ -140,24 +113,24 @@ void TileMapSystem::OnRender() {
         const glm::ivec2 TILE_SIZE = layout.GetTileSize();
 
         const glm::vec2 BRUSH_SIZE = TILE_SIZE * m_brush.count;
-        glm::vec2 select_pos = layout.MapTileToWorld(m_select_tile_pos);
+        glm::vec3 select_pos = layout.MapTileToWorld(m_select_tile_pos);
         select_pos.x += BRUSH_SIZE.x / 2 - TILE_SIZE.x / 2.f;
         select_pos.y -= BRUSH_SIZE.y / 2 - TILE_SIZE.y / 2.f;
         if (m_operation != Operation::REMOVE_ENTITY) {
             auto sprite = asset->Get<Sprite>(m_brush.sprite_id);
             if (sprite) {
-                renderer->DrawTexture(sprite->GetTexture(), m_brush.uvs,
-                                      glm::vec3(select_pos, 0.f),
-                                      glm::quat(1.0f, 0.f, 0.f, 0.f),
-                                      BRUSH_SIZE);
+                renderer->DrawTexture(
+                    sprite->GetTexture(), m_brush.uvs, select_pos,
+                    glm::quat(1.0f, 0.f, 0.f, 0.f), BRUSH_SIZE);
             }
         }
 
         if (m_draw_outline) {
             int render_width = renderer->GetDefaultTarget().GetWidth();
             int render_height = renderer->GetDefaultTarget().GetHeight();
-            const glm::ivec2 TILE_CNT(std::ceil(render_width / TILE_SIZE.x),
-                                      std::ceil(render_height / TILE_SIZE.y));
+            const glm::ivec2 TILE_CNT(
+                std::ceil(static_cast<float>(render_width) / TILE_SIZE.x) + 1,
+                std::ceil(static_cast<float>(render_height) / TILE_SIZE.y) + 1);
             const glm::vec2 TEX_SIZE = TILE_CNT * TILE_SIZE;
 
             const glm::vec3 cam_pos = scene->GetCamera()->GetWorldPosition();
@@ -166,29 +139,59 @@ void TileMapSystem::OnRender() {
             renderer->DrawTexture(
                 m_outline_texture, {uv_origin, glm::vec2(TILE_CNT) + uv_origin},
                 glm::vec3(TEX_SIZE.x / 2.f + cam_pos.x - TILE_SIZE.x / 2.f -
-                              TILE_SIZE.x * std::ceil(TILE_CNT.x / 2.f),
+                              TILE_SIZE.x * std::floor(TILE_CNT.x / 2.f),
                           -TEX_SIZE.y / 2.f + cam_pos.y + TILE_SIZE.y / 2.f +
-                              TILE_SIZE.y * std::ceil(TILE_CNT.y / 2.f),
-                          0),
+                              TILE_SIZE.y * std::floor(TILE_CNT.y / 2.f),
+                          layout.GetZ()),
                 glm::quat(1.0f, 0.f, 0.f, 0.f), TEX_SIZE,
                 glm::vec4(1, 1, 1, 0.7));
-            // Draw selection
-            glm::vec4 select_color(1.0);
-            switch (m_operation) {
-                case Operation::ADD_ENTITY: {
-                    select_color = COLOR_GREEN;
-                } break;
-                case Operation::REMOVE_ENTITY: {
-                    select_color = COLOR_RED;
-                } break;
-            }
-            renderer->DrawQuad(glm::vec3(select_pos, 0.f),
-                               glm::quat(1.0f, 0.f, 0.f, 0.f), BRUSH_SIZE,
-                               select_color);
         }
+        // Draw selection
+        glm::vec4 select_color(1.0);
+        switch (m_operation) {
+            case Operation::ADD_ENTITY: {
+                select_color = COLOR_GREEN;
+            } break;
+            case Operation::REMOVE_ENTITY: {
+                select_color = COLOR_RED;
+            } break;
+        }
+        renderer->DrawQuad(select_pos, glm::quat(1.0f, 0.f, 0.f, 0.f),
+                           BRUSH_SIZE, select_color);
     }
     renderer->End();
     device->Enable(SD::Operation::DEPTH_TEST);
+}
+
+void TileMapSystem::ApplyAction(TileLayout<Tile> &layout) {
+    switch (m_operation) {
+        case Operation::ADD_ENTITY: {
+            auto tile_uvs = m_brush.ComputeTileUV();
+            for (int y = 0; y < m_brush.count.y; ++y) {
+                for (int x = 0; x < m_brush.count.x; ++x) {
+                    glm::ivec2 pos(m_select_tile_pos.x + x,
+                                   m_select_tile_pos.y + y);
+                    SD_TRACE("add tile at: {}", pos);
+                    if (layout.Has(pos)) {
+                        layout.Clear(pos);
+                    }
+                    layout.Add(pos, {m_brush.sprite_id, tile_uvs[y][x]});
+                }
+            }
+        } break;
+        case Operation::REMOVE_ENTITY: {
+            for (int y = 0; y < m_brush.count.y; ++y) {
+                for (int x = 0; x < m_brush.count.x; ++x) {
+                    glm::ivec2 pos(m_select_tile_pos.x + x,
+                                   m_select_tile_pos.y + y);
+                    if (layout.Has(pos)) {
+                        SD_TRACE("clear tile at: {}", pos);
+                        layout.Clear(pos);
+                    }
+                }
+            }
+        } break;
+    }
 }
 
 }  // namespace SD

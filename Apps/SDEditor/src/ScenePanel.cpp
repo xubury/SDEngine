@@ -452,8 +452,29 @@ void ScenePanel::DrawComponents(Entity &entity) {
                 cameraComp.camera.SetFarZ(far_z);
             }
         });
-    DrawComponent<TileMapComponent>("Tile Map", entity,
-                                    [&](TileMapComponent &) {});
+    DrawComponent<TileMapComponent>(
+        "Tile Map", entity, [&](TileMapComponent &tile_map_comp) {
+            glm::ivec2 tile_size = tile_map_comp.tiles.GetTileSize();
+            ImGui::TextUnformatted("Tile Size:");
+            if (ImGui::InputInt2("##Size", &tile_size.x)) {
+                tile_map_comp.tiles.SetTileSize(tile_size);
+            }
+            int priority = tile_map_comp.tiles.GetPriority();
+            ImGui::TextUnformatted("Priority Level:");
+            if (ImGui::InputInt("##PriorityLevel", &priority)) {
+                tile_map_comp.tiles.SetPriority(priority);
+            }
+            int z = tile_map_comp.tiles.GetZ();
+            ImGui::TextUnformatted("Z Level:");
+            if (ImGui::InputInt("##ZLevel", &z)) {
+                tile_map_comp.tiles.SetZ(z);
+            }
+            bool visible = tile_map_comp.tiles.GetVisible();
+            ImGui::TextUnformatted("Visible:");
+            if (ImGui::Checkbox("##MapVisible", &visible)) {
+                tile_map_comp.tiles.SetVisible(visible);
+            }
+        });
 }
 
 void ScenePanel::DrawMaterialsList(const std::vector<Material> &materials,

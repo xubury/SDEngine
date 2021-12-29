@@ -18,7 +18,8 @@ namespace SD {
 template <typename TILE>
 class TileLayout {
    public:
-    TileLayout() : m_tile_size(25, 25) {}
+    TileLayout()
+        : m_tile_size(25, 25), m_z(0), m_priority(0), m_visible(true) {}
     TileLayout(const glm::ivec2 &tile_size) : m_tile_size(tile_size) {}
 
     bool Add(const glm::ivec2 &pos, const TILE &tile) {
@@ -41,17 +42,30 @@ class TileLayout {
         tile.y = std::ceil(-world.y / m_tile_size.y - 0.5f);
         return tile;
     }
-    glm::vec2 MapTileToWorld(const glm::ivec2 &tile) const {
-        glm::vec2 world;
+    glm::vec3 MapTileToWorld(const glm::ivec2 &tile) const {
+        glm::vec3 world;
         world.x = tile.x * m_tile_size.x;
         world.y = -tile.y * m_tile_size.y;
+        world.z = m_z;
         return world;
     }
 
-    SERIALIZE(m_tile_size, m_tiles)
+    void SetZ(int z) { m_z = z; }
+    int GetZ() const { return m_z; }
+
+    void SetPriority(int priority) { m_priority = priority; }
+    int GetPriority() const { return m_priority; }
+
+    void SetVisible(bool visible) { m_visible = visible; }
+    bool GetVisible() const { return m_visible; }
+
+    SERIALIZE(m_tile_size, m_tiles, m_z, m_priority, m_visible)
    private:
     glm::ivec2 m_tile_size;
     std::unordered_map<glm::ivec2, TILE> m_tiles;
+    int m_z;
+    int m_priority;
+    bool m_visible;
 };
 
 }  // namespace SD
