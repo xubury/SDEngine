@@ -92,15 +92,15 @@ void DrawTexture(const SD::Texture &texture, const ImVec2 &size,
 }
 
 bool DrawTileTexture(const SD::Texture &texture, std::array<glm::vec2, 2> &uvs,
-                     glm::ivec2 &selected_cnt) {
+                     glm::ivec2 &selected_cnt, glm::ivec2 &pivot) {
     static glm::ivec2 tile_size(50);
     ImGui::TextUnformatted("Tile Size:");
     ImGui::InputInt2("##Size", &tile_size.x);
 
     ImVec2 wsize = ImGui::GetContentRegionAvail();
-    float aspect = wsize.x / texture.GetWidth();
-    wsize.y = texture.GetHeight() * aspect;
-    glm::vec2 scaled_tile_size = glm::vec2(tile_size) * aspect;
+    const float ASPECT = wsize.x / texture.GetWidth();
+    wsize.y = texture.GetHeight() * ASPECT;
+    const glm::vec2 scaled_tile_size = glm::vec2(tile_size) * ASPECT;
 
     int cols = std::floor(wsize.x / scaled_tile_size.x);
     int rows = std::floor(wsize.y / scaled_tile_size.y);
@@ -124,12 +124,12 @@ bool DrawTileTexture(const SD::Texture &texture, std::array<glm::vec2, 2> &uvs,
     auto [left, top] = bb.GetTL();
     if (ImGui::IsWindowHovered()) {
         auto [mouse_x, mouse_y] = ImGui::GetMousePos();
-        auto image_pos = glm::vec2(mouse_x - left, mouse_y - top) / aspect;
+        auto image_pos = glm::vec2(mouse_x - left, mouse_y - top) / ASPECT;
         static std::array<glm::vec2, 2> first_uvs;
-        if (ImGui::IsMouseClicked(0)) {
-            if (image_pos.x >= 0 && image_pos.y >= 0 &&
-                image_pos.x < texture.GetWidth() &&
-                image_pos.y < texture.GetHeight()) {
+        if (image_pos.x >= 0 && image_pos.y >= 0 &&
+            image_pos.x < texture.GetWidth() &&
+            image_pos.y < texture.GetHeight()) {
+            if (ImGui::IsMouseClicked(0)) {
                 uvs[0] = glm::floor(image_pos / glm::vec2(tile_size));
                 uvs[1] = uvs[0] + glm::vec2(1.f);
 
@@ -139,14 +139,17 @@ bool DrawTileTexture(const SD::Texture &texture, std::array<glm::vec2, 2> &uvs,
                 uvs[1].x = uvs[1].x * tile_size.x / texture.GetWidth();
                 uvs[1].y = uvs[1].y * tile_size.y / texture.GetHeight();
                 first_uvs = uvs;
+
+                pivot = glm::ivec2(0, 0);
+
                 selected_cnt.x = 1;
                 selected_cnt.y = 1;
+            } else if (ImGui::IsMouseClicked(1)) {
+                pivot = glm::floor(image_pos / glm::vec2(tile_size));
+                pivot.x -= std::round(uvs[0].x * cols);
+                pivot.y -= std::round(uvs[0].y * rows);
             }
-        }
-        if (ImGui::IsMouseDown(0)) {
-            if (image_pos.x >= 0 && image_pos.y >= 0 &&
-                image_pos.x < texture.GetWidth() &&
-                image_pos.y < texture.GetHeight()) {
+            if (ImGui::IsMouseDown(0)) {
                 uvs[0] = glm::floor(image_pos / glm::vec2(tile_size));
                 uvs[1] = uvs[0] + glm::vec2(1.f);
 
@@ -175,11 +178,25 @@ bool DrawTileTexture(const SD::Texture &texture, std::array<glm::vec2, 2> &uvs,
         ImVec2(left + uvs[0].x * wsize.x, top + uvs[0].y * wsize.y),
         ImVec2(left + uvs[1].x * wsize.x, top + uvs[1].y * wsize.y));
     if (bb.Contains(active_grid)) {
-        const ImU32 COLOR = 0xff00ff00;
+        const ImU32 GRID_COLOR = 0xff00ff00;
+        const ImU32 PIVOT_COLOR = 0x770000ff;
         const float THICKNESS = 2.f;
+        const float PIVOT_SIZE = 0.8f;
         DrawList->AddQuad(active_grid.GetTL(), active_grid.GetTR(),
-                          active_grid.GetBR(), active_grid.GetBL(), COLOR,
+                          active_grid.GetBR(), active_grid.GetBL(), GRID_COLOR,
                           THICKNESS);
+        const ImRect pivot_grid(
+            ImVec2((pivot.x + 1 - PIVOT_SIZE) * scaled_tile_size.x +
+                       active_grid.GetTL().x,
+                   (pivot.y + 1 - PIVOT_SIZE) * scaled_tile_size.y +
+                       active_grid.GetTL().y),
+            ImVec2((pivot.x + PIVOT_SIZE) * scaled_tile_size.x +
+                       active_grid.GetTL().x,
+                   (pivot.y + PIVOT_SIZE) * scaled_tile_size.y +
+                       active_grid.GetTL().y));
+        DrawList->AddQuadFilled(pivot_grid.GetTL(), pivot_grid.GetTR(),
+                                pivot_grid.GetBR(), pivot_grid.GetBL(),
+                                PIVOT_COLOR);
     }
     return selected_cnt.x > 0 && selected_cnt.y > 0;
 }

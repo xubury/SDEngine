@@ -79,6 +79,7 @@ void EditorLayer::PushSystems() {
         PushSystem(m_profile_system);
 
         m_editor_camera_system->AllowRotate(false);
+        m_tile_map_system->SetViewport(&m_viewport);
     }
 }
 
@@ -395,16 +396,12 @@ void EditorLayer::DrawViewport() {
             }
         }
         m_viewport.SetFocus(ImGui::IsWindowFocused());
-        m_viewport.SetHover(ImGui::IsWindowHovered());
+        m_viewport.SetHover(ImGui::IsWindowHovered() && !ImGuizmo::IsOver());
         ImGui::DrawTexture(*m_screen_buffer->GetTexture(), wsize, ImVec2(0, 1),
                            ImVec2(1, 0));
         ImGuizmo::SetRect(m_viewport.GetLeft(), m_viewport.GetTop(),
                           m_viewport.GetWidth(), m_viewport.GetHeight());
         ImGuizmo::SetDrawlist();
-
-        if (m_tile_map_system) {
-            m_tile_map_system->SetViewport(&m_viewport);
-        }
 
         Entity entity = scene->GetSelectedEntity();
         if (entity) {
@@ -426,8 +423,7 @@ void EditorLayer::DrawViewport() {
         }
         // FIXME:2D mode doesn;t have a gbuffer, so reading entity id won't
         // work.
-        if (!ImGuizmo::IsUsing() && ImGui::IsMouseDown(0) &&
-            m_viewport.IsFocus() && m_viewport.IsHover() &&
+        if (ImGui::IsMouseDown(0) && m_viewport.IsHover() &&
             m_mode == EditorMode::THREE_DIMENSIONAL) {
             auto [mouseX, mouseY] = ImGui::GetMousePos();
             mouseX -= m_viewport.GetLeft();

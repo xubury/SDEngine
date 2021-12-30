@@ -34,11 +34,18 @@ TileMapSystem::TileMapSystem()
     free(data);
 }
 
-void TileMapSystem::OnTick(float) {
+void TileMapSystem::OnTick(float) {}
+
+void TileMapSystem::OnPush() {}
+
+void TileMapSystem::OnPop() {}
+
+void TileMapSystem::OnImGui() {
     Entity entity = scene->GetSelectedEntity();
-    if (m_viewport && m_viewport->IsHover() && m_viewport->IsFocus() &&
-        entity && entity.HasComponent<TileMapComponent>()) {
-        glm::vec2 clip = m_viewport->MapScreenToClip(Input::GetMouseCoord());
+    if (m_viewport && m_viewport->IsHover() && entity &&
+        entity.HasComponent<TileMapComponent>()) {
+        glm::vec2 clip = m_viewport->MapScreenToClip(
+            glm::ivec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y));
         if (std::abs(clip.x) > 1 || std::abs(clip.y) > 1) {
             return;
         }
@@ -56,19 +63,12 @@ void TileMapSystem::OnTick(float) {
                 m_select_tile_pos = layout.MapWorldToTile(world, &transform);
             }
         }
-        if (Input::IsMousePressed(MouseButton::LEFT)) {
+        if (ImGui::IsMouseClicked(0)) {
             ApplyAction(layout);
-        } else if (Input::IsMousePressed(MouseButton::RIGHT)) {
+        } else if (ImGui::IsMouseClicked(1)) {
             m_operation = Operation::NONE;
         }
     }
-}
-
-void TileMapSystem::OnPush() {}
-
-void TileMapSystem::OnPop() {}
-
-void TileMapSystem::OnImGui() {
     ImGui::Begin("TileMap System");
     {
         ImGui::Checkbox("Outline", &m_draw_outline);
@@ -101,7 +101,7 @@ void TileMapSystem::OnImGui() {
         auto sprite = asset->Get<Sprite>(m_brush.sprite_id);
         if (sprite) {
             ImGui::DrawTileTexture(*sprite->GetTexture(), m_brush.uvs,
-                                   m_brush.count);
+                                   m_brush.count, m_brush.pivot);
         }
     }
     ImGui::End();
@@ -121,6 +121,8 @@ void TileMapSystem::OnRender() {
 
         const glm::vec2 BRUSH_SIZE = TILE_SIZE * m_brush.count;
         glm::vec3 select_pos(m_select_tile_pos, 0);
+        select_pos.x -= m_brush.pivot.x;
+        select_pos.y += m_brush.pivot.y;
         glm::vec3 offset(BRUSH_SIZE.x / 2 - TILE_SIZE.x / 2.f,
                          -BRUSH_SIZE.y / 2 + TILE_SIZE.y / 2.f, 0);
         select_pos = layout.MapTileToWorld(select_pos, &transform) +
@@ -182,24 +184,24 @@ void TileMapSystem::ApplyAction(TileLayout<Tile> &layout) {
         default: {
         } break;
         case Operation::ADD_ENTITY: {
-            auto tile_uvs = m_brush.ComputeTileUV();
+            auto tile_output = m_brush.ComputeOutput();
             for (int y = 0; y < m_brush.count.y; ++y) {
                 for (int x = 0; x < m_brush.count.x; ++x) {
-                    glm::ivec2 pos(m_select_tile_pos.x + x,
-                                   m_select_tile_pos.y - y);
+                    glm::ivec2 pos(m_select_tile_pos.x + (x - m_brush.pivot.x),
+                                   m_select_tile_pos.y - (y - m_brush.pivot.y));
                     SD_TRACE("add tile at: {}", pos);
                     if (layout.Has(pos)) {
                         layout.Clear(pos);
                     }
-                    layout.Add(pos, {m_brush.sprite_id, tile_uvs[y][x]});
+                    layout.Add(pos, tile_output[y][x]);
                 }
             }
         } break;
         case Operation::REMOVE_ENTITY: {
             for (int y = 0; y < m_brush.count.y; ++y) {
                 for (int x = 0; x < m_brush.count.x; ++x) {
-                    glm::ivec2 pos(m_select_tile_pos.x + x,
-                                   m_select_tile_pos.y + y);
+                    glm::ivec2 pos(m_select_tile_pos.x + (x - m_brush.pivot.x),
+                                   m_select_tile_pos.y - (y - m_brush.pivot.y));
                     if (layout.Has(pos)) {
                         SD_TRACE("clear tile at: {}", pos);
                         layout.Clear(pos);
