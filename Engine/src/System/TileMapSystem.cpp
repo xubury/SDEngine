@@ -91,6 +91,7 @@ void TileMapSystem::OnImGui() {
             m_fileDialogInfo.title = "Open File";
             m_fileDialogInfo.file_name = "";
             m_fileDialogInfo.directory_path = asset->GetRootPath();
+            m_fileDialogInfo.regex_match = IMG_FILTER;
         }
         if (ImGui::FileDialog(&m_file_dialog_open, &m_fileDialogInfo)) {
             m_brush.sprite_id =

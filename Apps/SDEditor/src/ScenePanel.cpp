@@ -402,6 +402,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
             fileDialogOpen = true;
             fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
             fileDialogInfo.title = "Open File";
+            fileDialogInfo.regex_match = FONT_FILTER;
             fileDialogInfo.file_name = "";
             fileDialogInfo.directory_path = asset->GetRootPath();
         }

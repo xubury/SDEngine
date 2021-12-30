@@ -329,7 +329,7 @@ void EditorLayer::OpenLoadSceneDialog() {
     m_file_dialog_info.type = ImGuiFileDialogType::OPEN_FILE;
     m_file_dialog_info.title = "Load Scene";
     m_file_dialog_info.file_name = "";
-    m_file_dialog_info.file_extension = ".scene";
+    m_file_dialog_info.regex_match = SCENE_FILTER;
     m_file_dialog_info.directory_path = std::filesystem::current_path();
 }
 
@@ -338,7 +338,7 @@ void EditorLayer::OpenSaveSceneDialog() {
     m_file_dialog_info.type = ImGuiFileDialogType::SAVE_FILE;
     m_file_dialog_info.title = "Save Scene";
     m_file_dialog_info.file_name = "test.scene";
-    m_file_dialog_info.file_extension = ".scene";
+    m_file_dialog_info.regex_match = SCENE_FILTER;
     m_file_dialog_info.directory_path = std::filesystem::current_path();
 }
 

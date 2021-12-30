@@ -26,8 +26,8 @@ static void RefreshInfo(ImFileDialogInfo* dialogInfo) {
         if (entry.is_directory()) {
             dialogInfo->current_directories.push_back(entry);
         } else {
-            if (dialogInfo->file_extension.empty() ||
-                entry.path().extension() == dialogInfo->file_extension) {
+            if (std::regex_match(entry.path().string(),
+                                 dialogInfo->regex_match)) {
                 dialogInfo->current_files.push_back(entry);
             }
         }

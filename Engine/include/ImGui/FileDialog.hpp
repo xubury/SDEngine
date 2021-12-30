@@ -8,12 +8,18 @@
 #include <filesystem>
 #include <vector>
 #include <algorithm>
+#include <regex>
 
 enum class ImGuiFileDialogType { OPEN_FILE, SAVE_FILE, TYPE_COUNT = 2 };
 
+// TODO: model filter?
+const std::regex IMG_FILTER("(.*\\.jpg)|(.*\\.png)|(.*\\.tif)|(.*\\.bmp)");
+const std::regex SCENE_FILTER(".*\\.scene");
+const std::regex FONT_FILTER(".*\\.font");
+
 struct IMGUI_API ImFileDialogInfo {
     std::string title{"File Dialog"};
-    std::filesystem::path file_extension;
+    std::regex regex_match{"(.*)"};
     ImGuiFileDialogType type;
 
     std::filesystem::path file_name;
