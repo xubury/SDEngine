@@ -108,6 +108,9 @@ void Transform::AddChild(Transform *child) {
     }
     child->m_parent = this;
     m_children.emplace(child);
+    child->UpdateLocalScale();
+    child->UpdateLocalRotation();
+    child->UpdateLocalPosition();
 }
 
 void Transform::RemoveChild(Transform *child) {
@@ -123,6 +126,9 @@ void Transform::RemoveChild(Transform *child) {
 
     child->m_parent = nullptr;
     m_children.erase(child);
+    child->UpdateLocalScale();
+    child->UpdateLocalRotation();
+    child->UpdateLocalPosition();
 }
 
 void Transform::TranslateLocal(const glm::vec3 &t) {
