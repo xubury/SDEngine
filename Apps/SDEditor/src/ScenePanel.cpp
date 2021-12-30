@@ -464,11 +464,6 @@ void ScenePanel::DrawComponents(Entity &entity) {
             if (ImGui::InputInt("##PriorityLevel", &priority)) {
                 tile_map_comp.tiles.SetPriority(priority);
             }
-            int z = tile_map_comp.tiles.GetZ();
-            ImGui::TextUnformatted("Z Level:");
-            if (ImGui::InputInt("##ZLevel", &z)) {
-                tile_map_comp.tiles.SetZ(z);
-            }
             bool visible = tile_map_comp.tiles.GetVisible();
             ImGui::TextUnformatted("Visible:");
             if (ImGui::Checkbox("##MapVisible", &visible)) {

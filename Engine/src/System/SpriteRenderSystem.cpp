@@ -32,18 +32,25 @@ void SpriteRenderSystem::OnRender() {
     // draw tile map
     device->Disable(SD::Operation::DEPTH_TEST);
     renderer->Begin(*scene->GetCamera());
-    auto tilemap_comp = scene->view<TileMapComponent>();
-    scene->sort<TileMapComponent>(
-        [](const TileMapComponent &lhs, const TileMapComponent &rhs) {
-            if (lhs.tiles.GetPriority() < rhs.tiles.GetPriority()) {
-                return true;
-            } else if (lhs.tiles.GetPriority() > rhs.tiles.GetPriority()) {
-                return false;
-            } else {
-                return lhs.tiles.GetZ() < rhs.tiles.GetZ();
-            }
-        });
-    tilemap_comp.each([this](const TileMapComponent &tilemap_comp) {
+    auto tilemap_comp = scene->view<TileMapComponent, TransformComponent>();
+    scene->sort<TileMapComponent>([this](const entt::entity lhs,
+                                         const entt::entity rhs) {
+        auto l_z =
+            scene->get<TransformComponent>(lhs).transform.GetWorldPosition().z;
+        auto r_z =
+            scene->get<TransformComponent>(rhs).transform.GetWorldPosition().z;
+        auto l_p = scene->get<TileMapComponent>(lhs).tiles.GetPriority();
+        auto r_p = scene->get<TileMapComponent>(rhs).tiles.GetPriority();
+        if (l_z < r_z) {
+            return true;
+        } else if (l_z > r_z) {
+            return false;
+        } else {
+            return l_p < r_p;
+        }
+    });
+    tilemap_comp.each([this](const TileMapComponent &tilemap_comp,
+                             const TransformComponent &transform_comp) {
         auto &layout = tilemap_comp.tiles;
         if (!layout.GetVisible()) {
             return;
@@ -51,8 +58,8 @@ void SpriteRenderSystem::OnRender() {
         for (const auto &[pos, tile] : layout.GetTiles()) {
             renderer->DrawTexture(
                 asset->Get<Sprite>(tile.sprite_id)->GetTexture(), tile.uvs,
-                layout.MapTileToWorld(pos), glm::quat(1, 0, 0, 0),
-                layout.GetTileSize());
+                layout.MapTileToWorld(pos, &transform_comp.transform),
+                glm::quat(1, 0, 0, 0), layout.GetTileSize());
         }
     });
     renderer->End();

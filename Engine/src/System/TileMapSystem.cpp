@@ -14,7 +14,7 @@ TileMapSystem::TileMapSystem()
       m_viewport(nullptr),
       m_file_dialog_open(false),
       m_draw_outline(true),
-      m_operation(Operation::ADD_ENTITY) {
+      m_operation(Operation::NONE) {
     m_outline_texture =
         Texture::Create(GRID_TEXTURE_SIZE, GRID_TEXTURE_SIZE,
                         TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
@@ -44,13 +44,16 @@ void TileMapSystem::OnTick(float) {
         }
         auto &layout =
             scene->GetSelectedEntity().GetComponent<TileMapComponent>().tiles;
+        auto &transform = scene->GetSelectedEntity()
+                              .GetComponent<TransformComponent>()
+                              .transform;
         if (layout.GetVisible()) {
             Math::Ray ray = scene->GetCamera()->ComputeCameraRay(clip);
-            Math::Plane plane(glm::vec3(0, 0, 1),
-                              glm::vec3(0, 0, layout.GetZ()));
+            Math::Plane plane(transform.GetWorldFront(),
+                              transform.GetWorldPosition());
             glm::vec3 world;
             if (Math::IntersectRayPlane(ray, plane, world)) {
-                m_select_tile_pos = layout.MapWorldToTile(world);
+                m_select_tile_pos = layout.MapWorldToTile(world, &transform);
                 if (Input::IsMousePressed(MouseButton::LEFT)) {
                     ApplyAction(layout);
                 }
@@ -67,15 +70,15 @@ void TileMapSystem::OnImGui() {
     ImGui::Begin("TileMap System");
     {
         ImGui::Checkbox("Outline", &m_draw_outline);
-        if (ImGui::RadioButton("Add Sprite",
-                               reinterpret_cast<int *>(&m_operation),
-                               Operation::ADD_ENTITY)) {
-        }
+        ImGui::RadioButton("None", reinterpret_cast<int *>(&m_operation),
+                           Operation::NONE);
         ImGui::SameLine();
-        if (ImGui::RadioButton("Clear Sprite",
-                               reinterpret_cast<int *>(&m_operation),
-                               Operation::REMOVE_ENTITY)) {
-        }
+        ImGui::RadioButton("Add Sprite", reinterpret_cast<int *>(&m_operation),
+                           Operation::ADD_ENTITY);
+        ImGui::SameLine();
+        ImGui::RadioButton("Clear Sprite",
+                           reinterpret_cast<int *>(&m_operation),
+                           Operation::REMOVE_ENTITY);
         std::string path = m_fileDialogInfo.result_path.string();
         ImGui::InputText("##Path", path.data(), path.size(),
                          ImGuiInputTextFlags_ReadOnly);
@@ -110,13 +113,15 @@ void TileMapSystem::OnRender() {
     Entity entity = scene->GetSelectedEntity();
     if (entity && entity.HasComponent<TileMapComponent>()) {
         auto &layout = entity.GetComponent<TileMapComponent>().tiles;
+        auto &transform = entity.GetComponent<TransformComponent>().transform;
         const glm::ivec2 TILE_SIZE = layout.GetTileSize();
 
         const glm::vec2 BRUSH_SIZE = TILE_SIZE * m_brush.count;
-        glm::vec3 select_pos = layout.MapTileToWorld(m_select_tile_pos);
+        glm::vec3 select_pos =
+            layout.MapTileToWorld(m_select_tile_pos, &transform);
         select_pos.x += BRUSH_SIZE.x / 2 - TILE_SIZE.x / 2.f;
         select_pos.y -= BRUSH_SIZE.y / 2 - TILE_SIZE.y / 2.f;
-        if (m_operation != Operation::REMOVE_ENTITY) {
+        if (m_operation == Operation::ADD_ENTITY) {
             auto sprite = asset->Get<Sprite>(m_brush.sprite_id);
             if (sprite) {
                 renderer->DrawTexture(
@@ -134,21 +139,23 @@ void TileMapSystem::OnRender() {
             const glm::vec2 TEX_SIZE = TILE_CNT * TILE_SIZE;
 
             const glm::vec3 cam_pos = scene->GetCamera()->GetWorldPosition();
-            glm::vec2 uv_origin(cam_pos.x / TILE_SIZE.x,
-                                -cam_pos.y / TILE_SIZE.y);
+            const glm::vec3 pos = transform.GetWorldPosition();
+            glm::vec2 uv_origin((cam_pos.x - pos.x) / TILE_SIZE.x,
+                                -(cam_pos.y - pos.y) / TILE_SIZE.y);
             renderer->DrawTexture(
                 m_outline_texture, {uv_origin, glm::vec2(TILE_CNT) + uv_origin},
                 glm::vec3(TEX_SIZE.x / 2.f + cam_pos.x - TILE_SIZE.x / 2.f -
                               TILE_SIZE.x * std::floor(TILE_CNT.x / 2.f),
                           -TEX_SIZE.y / 2.f + cam_pos.y + TILE_SIZE.y / 2.f +
                               TILE_SIZE.y * std::floor(TILE_CNT.y / 2.f),
-                          layout.GetZ()),
-                glm::quat(1.0f, 0.f, 0.f, 0.f), TEX_SIZE,
+                          pos.z),
+                transform.GetWorldRotation(), TEX_SIZE,
                 glm::vec4(1, 1, 1, 0.7));
         }
         // Draw selection
         glm::vec4 select_color(1.0);
         switch (m_operation) {
+            case Operation::NONE:
             case Operation::ADD_ENTITY: {
                 select_color = COLOR_GREEN;
             } break;
@@ -156,8 +163,10 @@ void TileMapSystem::OnRender() {
                 select_color = COLOR_RED;
             } break;
         }
-        renderer->DrawQuad(select_pos, glm::quat(1.0f, 0.f, 0.f, 0.f),
-                           BRUSH_SIZE, select_color);
+        if (m_operation != Operation::NONE) {
+            renderer->DrawQuad(select_pos, glm::quat(1.0f, 0.f, 0.f, 0.f),
+                               BRUSH_SIZE, select_color);
+        }
     }
     renderer->End();
     device->Enable(SD::Operation::DEPTH_TEST);
@@ -165,6 +174,8 @@ void TileMapSystem::OnRender() {
 
 void TileMapSystem::ApplyAction(TileLayout<Tile> &layout) {
     switch (m_operation) {
+        default: {
+        } break;
         case Operation::ADD_ENTITY: {
             auto tile_uvs = m_brush.ComputeTileUV();
             for (int y = 0; y < m_brush.count.y; ++y) {

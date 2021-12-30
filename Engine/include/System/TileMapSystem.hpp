@@ -32,7 +32,7 @@ class SD_SYSTEM_API TileBrush {
 };
 
 class SD_SYSTEM_API TileMapSystem : public System {
-    enum Operation { ADD_ENTITY, REMOVE_ENTITY };
+    enum Operation { NONE, ADD_ENTITY, REMOVE_ENTITY };
 
    public:
     TileMapSystem();
