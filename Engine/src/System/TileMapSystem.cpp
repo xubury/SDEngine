@@ -54,10 +54,12 @@ void TileMapSystem::OnTick(float) {
             glm::vec3 world;
             if (Math::IntersectRayPlane(ray, plane, world)) {
                 m_select_tile_pos = layout.MapWorldToTile(world, &transform);
-                if (Input::IsMousePressed(MouseButton::LEFT)) {
-                    ApplyAction(layout);
-                }
             }
+        }
+        if (Input::IsMousePressed(MouseButton::LEFT)) {
+            ApplyAction(layout);
+        } else if (Input::IsMousePressed(MouseButton::RIGHT)) {
+            m_operation = Operation::NONE;
         }
     }
 }
@@ -117,16 +119,17 @@ void TileMapSystem::OnRender() {
         const glm::ivec2 TILE_SIZE = layout.GetTileSize();
 
         const glm::vec2 BRUSH_SIZE = TILE_SIZE * m_brush.count;
-        glm::vec3 select_pos =
-            layout.MapTileToWorld(m_select_tile_pos, &transform);
-        select_pos.x += BRUSH_SIZE.x / 2 - TILE_SIZE.x / 2.f;
-        select_pos.y -= BRUSH_SIZE.y / 2 - TILE_SIZE.y / 2.f;
+        glm::vec3 select_pos(m_select_tile_pos, 0);
+        glm::vec3 offset(BRUSH_SIZE.x / 2 - TILE_SIZE.x / 2.f,
+                         -BRUSH_SIZE.y / 2 + TILE_SIZE.y / 2.f, 0);
+        select_pos = layout.MapTileToWorld(select_pos, &transform) +
+                     transform.ToWorldVector(offset);
         if (m_operation == Operation::ADD_ENTITY) {
             auto sprite = asset->Get<Sprite>(m_brush.sprite_id);
             if (sprite) {
-                renderer->DrawTexture(
-                    sprite->GetTexture(), m_brush.uvs, select_pos,
-                    glm::quat(1.0f, 0.f, 0.f, 0.f), BRUSH_SIZE);
+                renderer->DrawTexture(sprite->GetTexture(), m_brush.uvs,
+                                      select_pos, transform.GetWorldRotation(),
+                                      BRUSH_SIZE);
             }
         }
 
@@ -139,18 +142,19 @@ void TileMapSystem::OnRender() {
             const glm::vec2 TEX_SIZE = TILE_CNT * TILE_SIZE;
 
             const glm::vec3 cam_pos = scene->GetCamera()->GetWorldPosition();
-            const glm::vec3 pos = transform.GetWorldPosition();
-            glm::vec2 uv_origin((cam_pos.x - pos.x) / TILE_SIZE.x,
-                                -(cam_pos.y - pos.y) / TILE_SIZE.y);
-            renderer->DrawTexture(
-                m_outline_texture, {uv_origin, glm::vec2(TILE_CNT) + uv_origin},
-                glm::vec3(TEX_SIZE.x / 2.f + cam_pos.x - TILE_SIZE.x / 2.f -
-                              TILE_SIZE.x * std::floor(TILE_CNT.x / 2.f),
-                          -TEX_SIZE.y / 2.f + cam_pos.y + TILE_SIZE.y / 2.f +
-                              TILE_SIZE.y * std::floor(TILE_CNT.y / 2.f),
-                          pos.z),
-                transform.GetWorldRotation(), TEX_SIZE,
-                glm::vec4(1, 1, 1, 0.7));
+            glm::vec2 uv_origin(cam_pos.x / TILE_SIZE.x,
+                                -cam_pos.y / TILE_SIZE.y);
+            const glm::vec3 outline_pos(
+                TEX_SIZE.x / 2.f + cam_pos.x - TILE_SIZE.x / 2.f -
+                    TILE_SIZE.x * std::floor(TILE_CNT.x / 2.f),
+                -TEX_SIZE.y / 2.f + cam_pos.y + TILE_SIZE.y / 2.f +
+                    TILE_SIZE.y * std::floor(TILE_CNT.y / 2.f),
+                0);
+            renderer->DrawTexture(m_outline_texture,
+                                  {uv_origin, glm::vec2(TILE_CNT) + uv_origin},
+                                  transform.ToWorldSpace(outline_pos),
+                                  transform.GetWorldRotation(), TEX_SIZE,
+                                  glm::vec4(1, 1, 1, 0.7));
         }
         // Draw selection
         glm::vec4 select_color(1.0);
@@ -164,7 +168,7 @@ void TileMapSystem::OnRender() {
             } break;
         }
         if (m_operation != Operation::NONE) {
-            renderer->DrawQuad(select_pos, glm::quat(1.0f, 0.f, 0.f, 0.f),
+            renderer->DrawQuad(select_pos, transform.GetWorldRotation(),
                                BRUSH_SIZE, select_color);
         }
     }
@@ -181,7 +185,7 @@ void TileMapSystem::ApplyAction(TileLayout<Tile> &layout) {
             for (int y = 0; y < m_brush.count.y; ++y) {
                 for (int x = 0; x < m_brush.count.x; ++x) {
                     glm::ivec2 pos(m_select_tile_pos.x + x,
-                                   m_select_tile_pos.y + y);
+                                   m_select_tile_pos.y - y);
                     SD_TRACE("add tile at: {}", pos);
                     if (layout.Has(pos)) {
                         layout.Clear(pos);

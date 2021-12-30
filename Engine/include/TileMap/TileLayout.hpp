@@ -43,10 +43,10 @@ class TileLayout {
             const glm::vec3 local = transform->ToLocalSpace(world);
 
             tile.x = std::ceil(local.x / m_tile_size.x - 0.5f);
-            tile.y = std::ceil(-local.y / m_tile_size.y - 0.5f);
+            tile.y = std::ceil(local.y / m_tile_size.y - 0.5f);
         } else {
             tile.x = std::ceil(world.x / m_tile_size.x - 0.5f);
-            tile.y = std::ceil(-world.y / m_tile_size.y - 0.5f);
+            tile.y = std::ceil(world.y / m_tile_size.y - 0.5f);
         }
         return tile;
     }
@@ -55,7 +55,7 @@ class TileLayout {
                              const Transform *transform = nullptr) const {
         glm::vec3 world(0);
         world.x = tile.x * m_tile_size.x;
-        world.y = -tile.y * m_tile_size.y;
+        world.y = tile.y * m_tile_size.y;
         if (transform) {
             world = transform->ToWorldSpace(world);
         }

@@ -59,7 +59,8 @@ void SpriteRenderSystem::OnRender() {
             renderer->DrawTexture(
                 asset->Get<Sprite>(tile.sprite_id)->GetTexture(), tile.uvs,
                 layout.MapTileToWorld(pos, &transform_comp.transform),
-                glm::quat(1, 0, 0, 0), layout.GetTileSize());
+                transform_comp.transform.GetWorldRotation(),
+                layout.GetTileSize());
         }
     });
     renderer->End();
