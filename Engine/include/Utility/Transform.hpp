@@ -33,9 +33,9 @@ class SD_UTILITY_API Transform {
     glm::vec3 GetUp() const;
     glm::vec3 GetFront() const;
 
-    glm::vec3 GlobalToLocal(const glm::vec3& global) const;
-    glm::vec3 LocalToGlobal(const glm::vec3& local) const;
-    glm::vec3 WorldToLocalVector(const glm::vec3& global_vec) const;
+    glm::vec3 WorldToLocal(const glm::vec3& world) const;
+    glm::vec3 LocalToWorld(const glm::vec3& local) const;
+    glm::vec3 WorldToLocalVector(const glm::vec3& world_vec) const;
     glm::vec3 LocalToWorldVector(const glm::vec3& local_vec) const;
 
     SERIALIZE(m_position, m_rotation, m_scale)

@@ -39,7 +39,7 @@ class SD_SYSTEM_API TileBrush {
                 layout.Add(pos, child);
                 auto &comp = child.AddComponent<SpriteComponent>();
                 child.GetComponent<TransformComponent>().SetWorldPosition(
-                    layout.TileToGlobal(pos, &transform.GetWorldTransform()));
+                    layout.TileToWorld(pos, &transform.GetWorldTransform()));
                 comp.id = sprite_id;
                 comp.uvs[0] = uvs[0] + glm::vec2(x * x_step, y * y_step);
                 comp.uvs[1] =

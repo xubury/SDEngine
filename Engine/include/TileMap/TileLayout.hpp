@@ -40,7 +40,7 @@ class TileLayout {
                             const Transform *transform = nullptr) const {
         glm::vec2 tile;
         if (transform) {
-            const glm::vec3 local = transform->GlobalToLocal(global);
+            const glm::vec3 local = transform->WorldToLocal(global);
 
             tile.x = std::ceil(local.x / m_tile_size.x - 0.5f);
             tile.y = std::ceil(local.y / m_tile_size.y - 0.5f);
@@ -51,13 +51,13 @@ class TileLayout {
         return tile;
     }
 
-    glm::vec3 TileToGlobal(const glm::ivec2 &tile,
-                           const Transform *transform = nullptr) const {
+    glm::vec3 TileToWorld(const glm::ivec2 &tile,
+                          const Transform *transform = nullptr) const {
         glm::vec3 global(0);
         global.x = tile.x * m_tile_size.x;
         global.y = tile.y * m_tile_size.y;
         if (transform) {
-            global = transform->LocalToGlobal(global);
+            global = transform->LocalToWorld(global);
         }
         return global;
     }

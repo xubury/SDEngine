@@ -60,8 +60,8 @@ void TileMapSystem::OnImGui() {
                               transform.GetWorldPosition());
             glm::vec3 world;
             if (Math::IntersectRayPlane(ray, plane, world)) {
-                m_brush.select_pos = layout.GlobalToTile(
-                    world, &transform.GetWorldTransform());
+                m_brush.select_pos =
+                    layout.GlobalToTile(world, &transform.GetWorldTransform());
             }
             if (ImGui::IsMouseClicked(0)) {
                 ApplyAction(entity);
@@ -127,7 +127,7 @@ void TileMapSystem::OnRender() {
         glm::vec3 offset(BRUSH_SIZE.x / 2 - TILE_SIZE.x / 2.f,
                          -BRUSH_SIZE.y / 2 + TILE_SIZE.y / 2.f, 0);
         select_pos =
-            layout.TileToGlobal(select_pos, &transform.GetWorldTransform()) +
+            layout.TileToWorld(select_pos, &transform.GetWorldTransform()) +
             transform.GetWorldTransform().LocalToWorldVector(offset);
         if (m_operation == Operation::ADD_ENTITY) {
             auto sprite = asset->Get<Sprite>(m_brush.sprite_id);
@@ -157,7 +157,7 @@ void TileMapSystem::OnRender() {
                 0);
             renderer->DrawTexture(
                 m_outline_texture, {uv_origin, glm::vec2(TILE_CNT) + uv_origin},
-                transform.GetWorldTransform().LocalToGlobal(outline_pos),
+                transform.GetWorldTransform().LocalToWorld(outline_pos),
                 transform.GetWorldRotation(), TEX_SIZE,
                 glm::vec4(1, 1, 1, 0.7));
         }
