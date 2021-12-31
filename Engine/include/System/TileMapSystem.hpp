@@ -23,6 +23,7 @@ class SD_SYSTEM_API TileBrush {
             return;
         }
         auto &layout = parent.GetComponent<TileLayoutComponent>().layout;
+        auto &transform = parent.GetComponent<TransformComponent>();
         float x_step = (uvs[1].x - uvs[0].x) / count.x;
         float y_step = (uvs[1].y - uvs[0].y) / count.y;
         for (int y = 0; y < count.y; ++y) {
@@ -37,8 +38,8 @@ class SD_SYSTEM_API TileBrush {
                 Entity child = parent.CreateChild("Tile");
                 layout.Add(pos, child);
                 auto &comp = child.AddComponent<SpriteComponent>();
-                child.GetComponent<TransformComponent>().SetLocalPosition(
-                    layout.MapTileToWorld(pos));
+                child.GetComponent<TransformComponent>().SetWorldPosition(
+                    layout.TileToGlobal(pos, &transform.GetWorldTransform()));
                 comp.id = sprite_id;
                 comp.uvs[0] = uvs[0] + glm::vec2(x * x_step, y * y_step);
                 comp.uvs[1] =

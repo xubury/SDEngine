@@ -63,7 +63,17 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     renderer = CreateRef<Renderer>(device.get());
 
     dispatcher = CreateRef<EventDispatcher>();
+
     scene = CreateRef<Scene>();
+    scene->RegisterComponent<IdComponent>();
+    scene->RegisterComponent<TagComponent>();
+    scene->RegisterComponent<TransformComponent>();
+    scene->RegisterComponent<ModelComponent>();
+    scene->RegisterComponent<LightComponent>();
+    scene->RegisterComponent<TextComponent>();
+    scene->RegisterComponent<CameraComponent>();
+    scene->RegisterComponent<SpriteComponent>();
+    scene->RegisterComponent<TileLayoutComponent>();
 
     m_imgui = CreateLayer<ImGuiLayer>(m_window.get());
     PushOverlay(m_imgui);

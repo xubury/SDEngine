@@ -31,13 +31,13 @@ void TerrainSystem::UpdateAllTerrains() {
         const Transform &transform = transformComp.GetWorldTransform();
         for (uint32_t z = 0; z < vertexCount - 1; ++z) {
             for (uint32_t x = 0; x < vertexCount - 1; ++x) {
-                glm::vec3 f00 = transform.ToWorldSpace(
+                glm::vec3 f00 = transform.LocalToGlobal(
                     vertices[x + z * vertexCount].position);
-                glm::vec3 f01 = transform.ToWorldSpace(
+                glm::vec3 f01 = transform.LocalToGlobal(
                     vertices[x + 1 + z * vertexCount].position);
-                glm::vec3 f10 = transform.ToWorldSpace(
+                glm::vec3 f10 = transform.LocalToGlobal(
                     vertices[x + (z + 1) * vertexCount].position);
-                glm::vec3 f11 = transform.ToWorldSpace(
+                glm::vec3 f11 = transform.LocalToGlobal(
                     vertices[x + 1 + (z + 1) * vertexCount].position);
                 glm::vec3 center = (f00 + f11) * 0.5f;
                 glm::vec3 size = f11 - f00;
@@ -74,12 +74,12 @@ void TerrainSystem::UpdateTerrain(entt::entity id) {
     for (uint32_t z = 0; z < vertexCount - 1; ++z) {
         for (uint32_t x = 0; x < vertexCount - 1; ++x) {
             glm::vec3 f00 =
-                transform.ToWorldSpace(vertices[x + z * vertexCount].position);
-            glm::vec3 f01 = transform.ToWorldSpace(
+                transform.LocalToGlobal(vertices[x + z * vertexCount].position);
+            glm::vec3 f01 = transform.LocalToGlobal(
                 vertices[x + 1 + z * vertexCount].position);
-            glm::vec3 f10 = transform.ToWorldSpace(
+            glm::vec3 f10 = transform.LocalToGlobal(
                 vertices[x + (z + 1) * vertexCount].position);
-            glm::vec3 f11 = transform.ToWorldSpace(
+            glm::vec3 f11 = transform.LocalToGlobal(
                 vertices[x + 1 + (z + 1) * vertexCount].position);
             glm::vec3 center = (f00 + f11) * 0.5f;
             glm::vec3 size = f11 - f00;

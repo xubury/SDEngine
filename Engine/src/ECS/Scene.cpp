@@ -8,7 +8,11 @@
 
 namespace SD {
 
-Scene::Scene() : m_selected_entity(Entity::INVALID_ID) {}
+Scene::Scene() : m_selected_entity(Entity::INVALID_ID) {
+    on_construct<TransformComponent>()
+        .connect<&Scene::OnTransformComponentAdded>(this);
+    on_construct<LightComponent>().connect<&Scene::OnLightComponentAdded>(this);
+}
 
 Entity Scene::CreateEntity(const std::string &name) {
     Entity entity(create(), this);
@@ -18,43 +22,36 @@ Entity Scene::CreateEntity(const std::string &name) {
     return entity;
 }
 
-void Scene::Refresh() {
-    auto ecs_data = view<TransformComponent>();
-
-    for (auto entity_id : ecs_data) {
-        Entity entity(entity_id, this);
-        RefreshLight(entity);
+void Scene::Save(const std::string &filePath) {
+    std::ofstream os(filePath, std::ios::binary);
+    cereal::PortableBinaryOutputArchive archive(os);
+    entt::snapshot loader{*this};
+    loader.entities(archive);
+    for (auto &func : m_serialize_functions) {
+        func.second.first(loader, archive);
     }
 }
 
 void Scene::Load(const std::string &filePath) {
     clear();
     std::ifstream is(filePath, std::ios::binary);
-    cereal::XMLInputArchive archive(is);
-    entt::snapshot_loader{*this}
-        .entities(archive)
-        .component<IdComponent, TagComponent, TransformComponent,
-                   ModelComponent, LightComponent, TextComponent,
-                   CameraComponent, TileLayoutComponent>(archive);
-    Refresh();
+    cereal::PortableBinaryInputArchive archive(is);
+    entt::snapshot_loader loader{*this};
+    loader.entities(archive);
+    for (auto &func : m_serialize_functions) {
+        func.second.second(loader, archive);
+    }
 }
 
-void Scene::Save(const std::string &filePath) {
-    std::ofstream os(filePath, std::ios::binary);
-    cereal::XMLOutputArchive archive(os);
-    entt::snapshot{*this}
-        .entities(archive)
-        .component<IdComponent, TagComponent, TransformComponent,
-                   ModelComponent, LightComponent, TextComponent,
-                   CameraComponent, TileLayoutComponent>(archive);
+void Scene::OnTransformComponentAdded(entt::registry &reg, entt::entity ent) {
+    auto &data = reg.get<TransformComponent>(ent);
+    data.ecs = this;
 }
 
-void Scene::RefreshLight(Entity &entity) {
-    if (entity.HasComponent<LightComponent>()) {
-        auto &lightComp = entity.GetComponent<LightComponent>();
-        if (lightComp.light.IsCastShadow()) {
-            lightComp.light.CreateShadowMap();
-        }
+void Scene::OnLightComponentAdded(entt::registry &reg, entt::entity ent) {
+    auto &lightComp = reg.get<LightComponent>(ent);
+    if (lightComp.light.IsCastShadow()) {
+        lightComp.light.CreateShadowMap();
     }
 }
 

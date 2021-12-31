@@ -36,30 +36,30 @@ class TileLayout {
         return m_tiles;
     }
 
-    glm::ivec2 MapWorldToTile(const glm::vec3 &world,
-                              const Transform *transform = nullptr) const {
+    glm::ivec2 GlobalToTile(const glm::vec3 &global,
+                            const Transform *transform = nullptr) const {
         glm::vec2 tile;
         if (transform) {
-            const glm::vec3 local = transform->ToLocalSpace(world);
+            const glm::vec3 local = transform->GlobalToLocal(global);
 
             tile.x = std::ceil(local.x / m_tile_size.x - 0.5f);
             tile.y = std::ceil(local.y / m_tile_size.y - 0.5f);
         } else {
-            tile.x = std::ceil(world.x / m_tile_size.x - 0.5f);
-            tile.y = std::ceil(world.y / m_tile_size.y - 0.5f);
+            tile.x = std::ceil(global.x / m_tile_size.x - 0.5f);
+            tile.y = std::ceil(global.y / m_tile_size.y - 0.5f);
         }
         return tile;
     }
 
-    glm::vec3 MapTileToWorld(const glm::ivec2 &tile,
-                             const Transform *transform = nullptr) const {
-        glm::vec3 world(0);
-        world.x = tile.x * m_tile_size.x;
-        world.y = tile.y * m_tile_size.y;
+    glm::vec3 TileToGlobal(const glm::ivec2 &tile,
+                           const Transform *transform = nullptr) const {
+        glm::vec3 global(0);
+        global.x = tile.x * m_tile_size.x;
+        global.y = tile.y * m_tile_size.y;
         if (transform) {
-            world = transform->ToWorldSpace(world);
+            global = transform->LocalToGlobal(global);
         }
-        return world;
+        return global;
     }
 
     void SetVisible(bool visible) { m_visible = visible; }

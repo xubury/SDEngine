@@ -11,6 +11,7 @@
 #include <cereal/types/memory.hpp>
 #include <cereal/archives/binary.hpp>
 #include <cereal/archives/xml.hpp>
+#include <cereal/archives/portable_binary.hpp>
 
 #define SERIALIZE(...)                 \
     template <typename Archive>        \

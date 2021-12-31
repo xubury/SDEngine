@@ -118,20 +118,20 @@ glm::vec3 Transform::GetFront() const {
     return m_rotation * glm::vec3(0.f, 0.f, 1.f);
 }
 
-glm::vec3 Transform::ToLocalSpace(const glm::vec3 &world) const {
+glm::vec3 Transform::GlobalToLocal(const glm::vec3 &global) const {
     glm::mat3 rotation = glm::toMat3(GetRotation());
-    return glm::transpose(rotation) * (world - GetPosition());
+    return glm::transpose(rotation) * (global - GetPosition());
 }
 
-glm::vec3 Transform::ToWorldSpace(const glm::vec3 &local) const {
+glm::vec3 Transform::LocalToGlobal(const glm::vec3 &local) const {
     return GetRotation() * local + GetPosition();
 }
 
-glm::vec3 Transform::ToLocalVector(const glm::vec3 &world_vec) const {
-    return glm::transpose(glm::toMat3(GetRotation())) * world_vec;
+glm::vec3 Transform::WorldToLocalVector(const glm::vec3 &global_vec) const {
+    return glm::transpose(glm::toMat3(GetRotation())) * global_vec;
 }
 
-glm::vec3 Transform::ToWorldVector(const glm::vec3 &local_vec) const {
+glm::vec3 Transform::LocalToWorldVector(const glm::vec3 &local_vec) const {
     return GetRotation() * local_vec;
 }
 

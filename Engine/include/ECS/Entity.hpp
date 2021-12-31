@@ -47,12 +47,6 @@ class SD_ECS_API Entity {
 
     bool operator<(const Entity &other) const;
 
-    template <typename T>
-    void OnComponentAdded(T &component);
-
-    template <typename>
-    void OnComponentAdded(TransformComponent &trans_comp);
-
     Scene *GetScene() { return m_scene; }
 
    private:
@@ -64,7 +58,6 @@ template <typename T, typename... Args>
 T &Entity::AddComponent(Args &&...args) {
     SD_CORE_ASSERT(!HasComponent<T>(), "Entity already has this component!");
     T &component = m_scene->emplace<T>(m_handle, std::forward<Args>(args)...);
-    OnComponentAdded<T>(component);
     return component;
 }
 
@@ -89,15 +82,6 @@ template <typename T>
 const T &Entity::GetComponent() const {
     SD_CORE_ASSERT(HasComponent<T>(), "Entity does not have this component!");
     return m_scene->get<T>(m_handle);
-}
-
-template <typename T>
-void Entity::OnComponentAdded(T &) {}
-
-template <typename>
-void Entity::OnComponentAdded(TransformComponent &trans_comp) {
-    SD_TRACE("on add");
-    trans_comp.ecs = m_scene;
 }
 
 }  // namespace SD
