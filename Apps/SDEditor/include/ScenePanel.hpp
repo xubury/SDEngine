@@ -39,6 +39,7 @@ class ScenePanel : public System {
     void DrawMaterialsList(const std::vector<Material> &materials,
                            const ImVec2 &size, int *selected);
 
+    Entity m_selected_entity;
     Entity m_entity_to_destroy;
     std::unordered_map<entt::entity, int> m_selected_material_id_map;
 
@@ -49,6 +50,7 @@ class ScenePanel : public System {
     uint32_t m_height;
 
     HandlerRegistration m_size_handler;
+    HandlerRegistration m_entity_select_handler;
 };
 
 }  // namespace SD

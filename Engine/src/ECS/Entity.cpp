@@ -3,7 +3,7 @@
 
 namespace SD {
 
-const entt::entity Entity::INVALID_ID = entt::entity(-1);
+const entt::entity Entity::INVALID_ID = entt::null;
 
 Entity::Entity() : m_handle(entt::null), m_scene(nullptr) {}
 
@@ -51,7 +51,6 @@ void Entity::RemoveChild(Entity &child) {
     }
     child.GetComponent<TransformComponent>().parent = Entity();
 }
-
 
 Entity::operator bool() const {
     return m_handle != entt::null && m_scene != nullptr;

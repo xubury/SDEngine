@@ -37,7 +37,8 @@ struct SD_ECS_API TransformComponent {
     std::set<entt::entity> children;
     entt::entity parent;
     entt::registry* ecs{nullptr};
-    TransformComponent() : parent(entt::null) {}
+
+    TransformComponent();
 
     void SetLocalPosition(const glm::vec3& position);
     void SetLocalRotation(const glm::quat& rotation);
@@ -67,10 +68,10 @@ struct SD_ECS_API TransformComponent {
     glm::vec3 GetWorldUp() const;
     glm::vec3 GetWorldFront() const;
 
-    SERIALIZE(parent, children, local_transform, world_transform)
+    SERIALIZE(parent, children, m_local_transform, m_world_transform)
    private:
-    Transform world_transform;
-    Transform local_transform;
+    Transform m_world_transform;
+    Transform m_local_transform;
 
     void UpdateGlobalPosition();
     void UpdateGlobalRotation();
@@ -124,7 +125,7 @@ struct SD_ECS_API SpriteComponent {
     glm::vec2 size;
     int priority;
 
-    SERIALIZE(id, uvs)
+    SERIALIZE(id, uvs, size, priority)
 };
 
 struct SD_ECS_API TileLayoutComponent {

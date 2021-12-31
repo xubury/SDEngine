@@ -59,8 +59,4 @@ void Scene::SetCamera(Camera *camera) { m_camera = camera; }
 
 Camera *Scene::GetCamera() { return m_camera; }
 
-Entity Scene::GetSelectedEntity() { return {m_selected_entity, this}; }
-
-void Scene::ResetSelectedEntity() { m_selected_entity = Entity::INVALID_ID; }
-
 }  // namespace SD

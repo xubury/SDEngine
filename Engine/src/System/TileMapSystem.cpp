@@ -36,38 +36,37 @@ TileMapSystem::TileMapSystem()
 
 void TileMapSystem::OnTick(float) {}
 
-void TileMapSystem::OnPush() {}
+void TileMapSystem::OnPush() {
+    m_entity_select_handler = dispatcher->Register<EntitySelectEvent>(
+        [this](const EntitySelectEvent &e) {
+            m_brush.target = {e.entity_id, e.scene};
+        });
+}
 
 void TileMapSystem::OnPop() {}
 
 void TileMapSystem::OnImGui() {
-    Entity entity = scene->GetSelectedEntity();
-    if (m_viewport && m_viewport->IsHover() && entity &&
-        entity.HasComponent<TileLayoutComponent>()) {
+    if (m_viewport && m_viewport->IsHover() && m_brush.target &&
+        m_brush.target.HasComponent<TileLayoutComponent>()) {
         glm::vec2 clip = m_viewport->MapScreenToClip(
             glm::ivec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y));
         if (std::abs(clip.x) > 1 || std::abs(clip.y) > 1) {
             return;
         }
-        auto &layout = scene->GetSelectedEntity()
-                           .GetComponent<TileLayoutComponent>()
-                           .layout;
-        auto &transform =
-            scene->GetSelectedEntity().GetComponent<TransformComponent>();
-        if (layout.GetVisible()) {
-            Math::Ray ray = scene->GetCamera()->ComputeCameraRay(clip);
-            Math::Plane plane(transform.GetWorldFront(),
-                              transform.GetWorldPosition());
-            glm::vec3 world;
-            if (Math::IntersectRayPlane(ray, plane, world)) {
-                m_brush.select_pos =
-                    layout.GlobalToTile(world, &transform.GetWorldTransform());
+        m_brush.SetRay(scene->GetCamera()->ComputeCameraRay(clip));
+        if (ImGui::IsMouseClicked(0)) {
+            switch (m_operation) {
+                default: {
+                } break;
+                case Operation::ADD_ENTITY: {
+                    m_brush.Output();
+                } break;
+                case Operation::REMOVE_ENTITY: {
+                    m_brush.Clear();
+                } break;
             }
-            if (ImGui::IsMouseClicked(0)) {
-                ApplyAction(entity);
-            } else if (ImGui::IsMouseClicked(1)) {
-                m_operation = Operation::NONE;
-            }
+        } else if (ImGui::IsMouseClicked(1)) {
+            m_operation = Operation::NONE;
         }
     }
     ImGui::Begin("TileMap System");
@@ -99,6 +98,12 @@ void TileMapSystem::OnImGui() {
                 asset->LoadAsset<Sprite>(m_fileDialogInfo.result_path);
         }
 
+        int priority = m_brush.GetPriority();
+        ImGui::TextUnformatted("Prioirty");
+        if (ImGui::InputInt("##Priority", &priority)) {
+            m_brush.SetPriority(priority);
+        }
+
         auto sprite = asset->Get<Sprite>(m_brush.sprite_id);
         if (sprite) {
             ImGui::DrawTileTexture(*sprite->GetTexture(), m_brush.uvs,
@@ -114,16 +119,14 @@ void TileMapSystem::OnRender() {
     renderer->Begin(*scene->GetCamera());
 
     // draw brush & outline
-    Entity entity = scene->GetSelectedEntity();
+    const Entity &entity = m_brush.target;
     if (entity && entity.HasComponent<TileLayoutComponent>()) {
         auto &layout = entity.GetComponent<TileLayoutComponent>().layout;
         auto &transform = entity.GetComponent<TransformComponent>();
         const glm::ivec2 TILE_SIZE = layout.GetTileSize();
 
         const glm::vec2 BRUSH_SIZE = TILE_SIZE * m_brush.count;
-        glm::vec3 select_pos(m_brush.select_pos, 0);
-        select_pos.x -= m_brush.pivot.x;
-        select_pos.y += m_brush.pivot.y;
+        glm::vec3 select_pos(m_brush.GetSelectTilePos(), 0);
         glm::vec3 offset(BRUSH_SIZE.x / 2 - TILE_SIZE.x / 2.f,
                          -BRUSH_SIZE.y / 2 + TILE_SIZE.y / 2.f, 0);
         select_pos =
@@ -179,19 +182,6 @@ void TileMapSystem::OnRender() {
     }
     renderer->End();
     device->Enable(SD::Operation::DEPTH_TEST);
-}
-
-void TileMapSystem::ApplyAction(Entity &entity) {
-    switch (m_operation) {
-        default: {
-        } break;
-        case Operation::ADD_ENTITY: {
-            m_brush.Output(entity);
-        } break;
-        case Operation::REMOVE_ENTITY: {
-            m_brush.Clear(entity);
-        } break;
-    }
 }
 
 }  // namespace SD

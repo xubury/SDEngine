@@ -15,6 +15,10 @@ ScenePanel::ScenePanel()
 
 void ScenePanel::OnPush() {
     m_size_handler = dispatcher->Register(this, &ScenePanel::OnSizeEvent);
+    m_entity_select_handler = dispatcher->Register<EntitySelectEvent>(
+        [this](const EntitySelectEvent &e) {
+            this->m_selected_entity = {e.entity_id, e.scene};
+        });
 }
 
 void ScenePanel::OnPop() { dispatcher->RemoveHandler(m_size_handler); }
@@ -44,14 +48,14 @@ void ScenePanel::OnImGui() {
     });
 
     if (m_entity_to_destroy) {
+        if (m_selected_entity == m_entity_to_destroy)
+            dispatcher->PublishEvent(EntitySelectEvent());
         m_entity_to_destroy.Destroy();
-        if (scene->GetSelectedEntity() == m_entity_to_destroy)
-            scene->ResetSelectedEntity();
         m_entity_to_destroy = {};
     }
 
     if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-        scene->ResetSelectedEntity();
+        dispatcher->PublishEvent(EntitySelectEvent());
 
     // Right-click on blank space
     if (ImGui::BeginPopupContextWindow(0, 1, false)) {
@@ -84,16 +88,15 @@ void ScenePanel::OnImGui() {
     ImGui::End();
 
     ImGui::Begin("Properties");
-    Entity entity = scene->GetSelectedEntity();
-    if (entity) {
-        DrawComponents(entity);
+    if (m_selected_entity) {
+        DrawComponents(m_selected_entity);
     }
 
     ImGui::End();
 }
 
 void ScenePanel::DrawEntityNode(Entity &entity) {
-    TransformComponent &data = entity.GetComponent<TransformComponent>();
+    auto &data = entity.GetComponent<TransformComponent>();
 
     auto &tag = entity.GetComponent<TagComponent>().tag;
 
@@ -104,14 +107,12 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
         ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_SpanAvailWidth;
 
     ImGuiTreeNodeFlags flags = data.children.empty() ? leaf_flags : base_flags;
-    flags |=
-        ((scene->GetSelectedEntity() == entity) ? ImGuiTreeNodeFlags_Selected
-                                                : 0) |
-        ImGuiTreeNodeFlags_OpenOnArrow;
+    flags |= ((m_selected_entity == entity) ? ImGuiTreeNodeFlags_Selected : 0) |
+             ImGuiTreeNodeFlags_OpenOnArrow;
     bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(entt::entity)entity,
                                     flags, "%s", tag.c_str());
     if (ImGui::IsItemClicked(0)) {
-        scene->SetSelectedEntity(entity);
+        dispatcher->PublishEvent(EntitySelectEvent{entity, entity.GetScene()});
     }
 
     if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
@@ -121,7 +122,6 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
         ImGui::TextUnformatted(entity.GetComponent<TagComponent>().tag.c_str());
         ImGui::EndDragDropSource();
     }
-
     if (ImGui::BeginDragDropTarget()) {
         if (const ImGuiPayload *payload =
                 ImGui::AcceptDragDropPayload(ECS_MOVEENTITY)) {
@@ -132,7 +132,8 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
     }
 
     if (ImGui::BeginPopupContextItem()) {
-        scene->SetSelectedEntity(entity);
+        dispatcher->PublishEvent(
+            EntitySelectEvent{m_selected_entity, m_selected_entity.GetScene()});
         if (ImGui::MenuItem("Delete Entity")) {
             m_entity_to_destroy = entity;
         }
@@ -252,11 +253,12 @@ void ScenePanel::DrawComponents(Entity &entity) {
                 SD_CORE_WARN("This entity already has the Camera Component!");
             ImGui::CloseCurrentPopup();
         }
-        if (ImGui::MenuItem("Tile Map")) {
+        if (ImGui::MenuItem("Tile Layout")) {
             if (!entity.HasComponent<TileLayoutComponent>())
                 entity.AddComponent<TileLayoutComponent>();
             else
-                SD_CORE_WARN("This entity already has the Tile Map Component!");
+                SD_CORE_WARN(
+                    "This entity already has the Tile Layout Component!");
             ImGui::CloseCurrentPopup();
         }
 
@@ -452,17 +454,17 @@ void ScenePanel::DrawComponents(Entity &entity) {
                 cameraComp.camera.SetFarZ(far_z);
             }
         });
+    DrawComponent<SpriteComponent>(
+        "Sprite", entity, [&](SpriteComponent &sprite_comp) {
+            ImGui::TextUnformatted("Prioirty");
+            ImGui::InputInt("##Priority", &sprite_comp.priority);
+        });
     DrawComponent<TileLayoutComponent>(
-        "Tile Map", entity, [&](TileLayoutComponent &tile_map_comp) {
+        "Tile Layout", entity, [&](TileLayoutComponent &tile_map_comp) {
             glm::ivec2 tile_size = tile_map_comp.layout.GetTileSize();
             ImGui::TextUnformatted("Tile Size:");
             if (ImGui::InputInt2("##Size", &tile_size.x)) {
                 tile_map_comp.layout.SetTileSize(tile_size);
-            }
-            bool visible = tile_map_comp.layout.GetVisible();
-            ImGui::TextUnformatted("Visible:");
-            if (ImGui::Checkbox("##MapVisible", &visible)) {
-                tile_map_comp.layout.SetVisible(visible);
             }
         });
 }

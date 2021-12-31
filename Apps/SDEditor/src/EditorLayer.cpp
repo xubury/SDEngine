@@ -83,7 +83,12 @@ void EditorLayer::PushSystems() {
     }
 }
 
-void EditorLayer::OnPush() {}
+void EditorLayer::OnPush() {
+    m_entity_select_handler = dispatcher->Register<EntitySelectEvent>(
+        [this](const EntitySelectEvent &e) {
+            m_selected_entity = {e.entity_id, e.scene};
+        });
+}
 
 void EditorLayer::OnPop() {}
 
@@ -403,15 +408,14 @@ void EditorLayer::DrawViewport() {
                           m_viewport.GetWidth(), m_viewport.GetHeight());
         ImGuizmo::SetDrawlist();
 
-        Entity entity = scene->GetSelectedEntity();
-        if (entity) {
+        if (m_selected_entity) {
             Camera *cam = scene->GetCamera();
             ImGuizmo::SetOrthographic(cam->GetCameraType() ==
                                       CameraType::ORTHOGRAPHIC);
             const glm::mat4 &view = cam->GetView();
             const glm::mat4 &projection = cam->GetProjection();
 
-            auto &tc = entity.GetComponent<TransformComponent>();
+            auto &tc = m_selected_entity.GetComponent<TransformComponent>();
             glm::mat4 transform = tc.GetWorldTransform().GetMatrix();
             if (ImGuizmo::Manipulate(
                     glm::value_ptr(view), glm::value_ptr(projection),
@@ -438,7 +442,8 @@ void EditorLayer::DrawViewport() {
                                        sizeof(entity_id), &entity_id);
             }
             if (entity_id != Entity::INVALID_ID) {
-                scene->SetSelectedEntity(entity_id);
+                dispatcher->PublishEvent(
+                    EntitySelectEvent{entity_id, scene.get()});
             }
         }
     }

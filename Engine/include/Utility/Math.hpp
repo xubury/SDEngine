@@ -13,6 +13,7 @@ namespace Math {
 constexpr float PI = 3.14159265358979323846;
 
 struct SD_UTILITY_API Ray {
+    Ray() = default;
     Ray(const glm::vec3 &origin, const glm::vec3 &direction)
         : origin(origin), direction(direction) {}
     glm::vec3 origin;

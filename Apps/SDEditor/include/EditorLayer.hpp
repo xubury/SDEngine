@@ -94,6 +94,10 @@ class EditorLayer : public Layer {
     ImFileDialogInfo m_file_dialog_info;
 
     Ref<Sprite> m_light_icon;
+
+    Entity m_selected_entity;
+
+    HandlerRegistration m_entity_select_handler;
 };
 
 }  // namespace SD

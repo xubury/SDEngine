@@ -39,10 +39,6 @@ class SD_ECS_API Scene : public entt::registry {
 
     Camera *GetCamera();
 
-    void SetSelectedEntity(entt::entity entity) { m_selected_entity = entity; }
-    Entity GetSelectedEntity();
-    void ResetSelectedEntity();
-
     // Registering a component enables serialization as well as duplication
     // functionality in & out editor.
     template <typename T>
@@ -77,6 +73,11 @@ class SD_ECS_API Scene : public entt::registry {
     std::unordered_map<entt::id_type, std::pair<ComponentSerializeFunction,
                                                 ComponentDeserializeFunction>>
         m_serialize_functions;
+};
+
+struct EntitySelectEvent {
+    entt::entity entity_id;
+    Scene *scene;
 };
 
 }  // namespace SD
