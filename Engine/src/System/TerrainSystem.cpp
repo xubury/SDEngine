@@ -28,7 +28,7 @@ void TerrainSystem::UpdateAllTerrains() {
         const uint32_t vertexCount = terrain.GetVertexCount();
         m_terrainGrids[entity].assign(vertexCount - 1,
                                       std::vector<Collidable>(vertexCount - 1));
-        const Transform &transform = transformComp.transform;
+        const Transform &transform = transformComp.GetWorldTransform();
         for (uint32_t z = 0; z < vertexCount - 1; ++z) {
             for (uint32_t x = 0; x < vertexCount - 1; ++x) {
                 glm::vec3 f00 = transform.ToWorldSpace(
@@ -70,7 +70,7 @@ void TerrainSystem::UpdateTerrain(entt::entity id) {
     uint32_t vertexCount = terrain.GetVertexCount();
     m_terrainGrids[id].assign(vertexCount,
                               std::vector<Collidable>(vertexCount - 1));
-    const Transform &transform = transformComp.transform;
+    const Transform &transform = transformComp.GetWorldTransform();
     for (uint32_t z = 0; z < vertexCount - 1; ++z) {
         for (uint32_t x = 0; x < vertexCount - 1; ++x) {
             glm::vec3 f00 =

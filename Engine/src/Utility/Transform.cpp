@@ -79,301 +79,60 @@ bool Decompose(const glm::mat4 &transform, glm::vec3 &translation,
 }
 
 Transform::Transform()
-    : m_position(0.f),
-      m_rotation(1.f, 0.f, 0.f, 0.f),
-      m_scale(1.0f),
-      m_local_position(0.f),
-      m_local_rotation(1.f, 0.f, 0.f, 0.f),
-      m_local_scale(1.0f),
-      m_parent(nullptr) {}
+    : m_position(0.f), m_rotation(1.f, 0.f, 0.f, 0.f), m_scale(1.0f) {}
 
-Transform *Transform::GetParent() { return m_parent; }
-
-const Transform *Transform::GetParent() const { return m_parent; }
-
-std::set<Transform *> &Transform::GetChildren() { return m_children; }
-
-const std::set<Transform *> &Transform::GetChildren() const {
-    return m_children;
-}
-
-void Transform::AddChild(Transform *child) {
-    if (child == nullptr) {
-        SD_CORE_ERROR("[Transform::AddChild] Tried to add a null child");
-        return;
-    }
-    if (child == this) {
-        SD_CORE_ERROR("[Transform::AddChild] Tried to add its own as child");
-        return;
-    }
-    child->m_parent = this;
-    m_children.emplace(child);
-    child->UpdateLocalScale();
-    child->UpdateLocalRotation();
-    child->UpdateLocalPosition();
-}
-
-void Transform::RemoveChild(Transform *child) {
-    if (m_children.find(child) == m_children.end()) {
-        SD_CORE_ERROR(
-            "[Transform::RemoveChild] Tried to remove a non-existent child");
-        return;
-    }
-    if (child == nullptr) {
-        SD_CORE_ERROR("[Transform::RemoveChild] Tried to remove a null child");
-        return;
-    }
-
-    child->m_parent = nullptr;
-    m_children.erase(child);
-    child->UpdateLocalScale();
-    child->UpdateLocalRotation();
-    child->UpdateLocalPosition();
-}
-
-void Transform::TranslateLocal(const glm::vec3 &t) {
-    m_position += GetWorldRotation() * t;
-    UpdateLocalPosition();
-    for (Transform *child : m_children) {
-        child->UpdateGlobalPosition();
-    }
-}
-
-void Transform::TranslateWorld(const glm::vec3 &t) {
-    m_position += t;
-    UpdateLocalPosition();
-    for (Transform *child : m_children) {
-        child->UpdateGlobalPosition();
-    }
-}
-
-void Transform::RotateLocal(const glm::quat &rotation) {
-    m_rotation = GetWorldRotation() * rotation;
-    UpdateLocalRotation();
-    for (Transform *child : m_children) {
-        child->UpdateGlobalRotation();
-    }
-}
-
-void Transform::RotateWorld(const glm::quat &rotation) {
-    m_rotation = rotation * GetWorldRotation();
-    UpdateLocalRotation();
-    for (Transform *child : m_children) {
-        child->UpdateGlobalRotation();
-    }
-}
-
-void Transform::SetLocalPosition(const glm::vec3 &position) {
-    m_local_position = position;
-    UpdateGlobalPosition();
-    for (Transform *child : m_children) {
-        child->UpdateGlobalPosition();
-    }
-}
-
-void Transform::SetLocalRotation(const glm::quat &rotation) {
-    m_local_rotation = rotation;
-    UpdateGlobalRotation();
-    for (Transform *child : m_children) {
-        child->UpdateGlobalRotation();
-
-        child->UpdateGlobalPosition();
-    }
-}
-
-void Transform::SetLocalScale(const glm::vec3 &scale) {
-    m_local_scale = scale;
-    UpdateGlobalScale();
-    for (Transform *child : m_children) {
-        child->UpdateGlobalScale();
-
-        child->UpdateGlobalPosition();
-    }
-}
-
-void Transform::SetLocalTransform(const glm::mat4 &transform) {
-    Decompose(transform, m_local_position, m_local_rotation, m_local_scale);
-    UpdateGlobalScale();
-    UpdateGlobalRotation();
-    UpdateGlobalPosition();
-    for (Transform *child : m_children) {
-        child->UpdateGlobalScale();
-        child->UpdateGlobalRotation();
-        child->UpdateGlobalPosition();
-    }
-}
-
-glm::vec3 Transform::GetLocalPosition() const { return m_local_position; }
-
-glm::quat Transform::GetLocalRotation() const { return m_local_rotation; }
-
-glm::vec3 Transform::GetLocalScale() const { return m_local_scale; }
-
-glm::mat4 Transform::GetLocalTransform() const {
-    return glm::translate(glm::mat4(1.0f), m_local_position) *
-           glm::toMat4(m_local_rotation) *
-           glm::scale(glm::mat4(1.0f), m_local_scale);
-}
-
-void Transform::SetWorldPosition(const glm::vec3 &position) {
+void Transform::SetPosition(const glm::vec3 &position) {
     m_position = position;
-    UpdateLocalPosition();
-    for (Transform *child : m_children) {
-        child->UpdateGlobalPosition();
-    }
 }
 
-void Transform::SetWorldRotation(const glm::quat &rotation) {
+void Transform::SetRotation(const glm::quat &rotation) {
     m_rotation = rotation;
-    UpdateLocalRotation();
-    for (Transform *child : m_children) {
-        child->UpdateGlobalRotation();
-
-        child->UpdateGlobalPosition();
-    }
 }
 
-void Transform::SetWorldScale(const glm::vec3 &scale) {
-    m_scale = scale;
-    UpdateLocalScale();
-    for (Transform *child : m_children) {
-        child->UpdateGlobalScale();
+void Transform::SetScale(const glm::vec3 &scale) { m_scale = scale; }
 
-        child->UpdateGlobalPosition();
-    }
-}
-
-void Transform::SetWorldTransform(const glm::mat4 &transform) {
+void Transform::SetTransform(const glm::mat4 &transform) {
     Decompose(transform, m_position, m_rotation, m_scale);
-    UpdateLocalPosition();
-    UpdateLocalRotation();
-    UpdateLocalScale();
-    for (Transform *child : m_children) {
-        child->UpdateGlobalPosition();
-        child->UpdateGlobalRotation();
-        child->UpdateGlobalScale();
-    }
 }
 
-glm::vec3 Transform::GetWorldPosition() const { return m_position; }
+glm::vec3 Transform::GetPosition() const { return m_position; }
 
-glm::quat Transform::GetWorldRotation() const { return m_rotation; }
+glm::quat Transform::GetRotation() const { return m_rotation; }
 
-glm::vec3 Transform::GetWorldScale() const { return m_scale; }
+glm::vec3 Transform::GetScale() const { return m_scale; }
 
-glm::mat4 Transform::GetWorldTransform() const {
+glm::mat4 Transform::GetMatrix() const {
     return glm::translate(glm::mat4(1.0f), m_position) *
            glm::toMat4(m_rotation) * glm::scale(glm::mat4(1.0f), m_scale);
 }
 
-glm::vec3 Transform::GetLocalRight() const {
-    return m_local_rotation * glm::vec3(1.f, 0.f, 0.f);
-}
-
-glm::vec3 Transform::GetLocalUp() const {
-    return m_local_rotation * glm::vec3(0.f, 1.f, 0.f);
-}
-
-glm::vec3 Transform::GetLocalFront() const {
-    return m_local_rotation * glm::vec3(0.f, 0.f, 1.f);
-}
-
-glm::vec3 Transform::GetWorldRight() const {
+glm::vec3 Transform::GetRight() const {
     return m_rotation * glm::vec3(1.f, 0.f, 0.f);
 }
 
-glm::vec3 Transform::GetWorldUp() const {
+glm::vec3 Transform::GetUp() const {
     return m_rotation * glm::vec3(0.f, 1.f, 0.f);
 }
 
-glm::vec3 Transform::GetWorldFront() const {
+glm::vec3 Transform::GetFront() const {
     return m_rotation * glm::vec3(0.f, 0.f, 1.f);
 }
 
 glm::vec3 Transform::ToLocalSpace(const glm::vec3 &world) const {
-    glm::mat3 rotation = glm::toMat3(GetWorldRotation());
-    return glm::transpose(rotation) * (world - GetLocalPosition());
+    glm::mat3 rotation = glm::toMat3(GetRotation());
+    return glm::transpose(rotation) * (world - GetPosition());
 }
 
 glm::vec3 Transform::ToWorldSpace(const glm::vec3 &local) const {
-    return GetWorldRotation() * local + GetWorldPosition();
+    return GetRotation() * local + GetPosition();
 }
 
 glm::vec3 Transform::ToLocalVector(const glm::vec3 &world_vec) const {
-    return glm::transpose(glm::toMat3(GetWorldRotation())) * world_vec;
+    return glm::transpose(glm::toMat3(GetRotation())) * world_vec;
 }
 
 glm::vec3 Transform::ToWorldVector(const glm::vec3 &local_vec) const {
-    return GetWorldRotation() * local_vec;
-}
-
-void Transform::UpdateGlobalPosition() {
-    if (m_parent == nullptr)
-        m_position = m_local_position;
-    else {
-        glm::mat4 global = m_parent->GetWorldTransform() * GetLocalTransform();
-        m_position = global[3];
-    }
-    for (Transform *child : m_children) {
-        child->UpdateGlobalPosition();
-    }
-}
-
-void Transform::UpdateGlobalRotation() {
-    if (m_parent == nullptr)
-        m_rotation = m_local_rotation;
-    else {
-        glm::mat4 global =
-            glm::mat4(m_parent->m_rotation) * glm::toMat4(GetLocalRotation());
-        m_rotation = glm::quat(global);
-    }
-    for (Transform *child : m_children) {
-        child->UpdateGlobalRotation();
-    }
-}
-
-void Transform::UpdateGlobalScale() {
-    if (m_parent == nullptr)
-        m_scale = m_local_scale;
-    else {
-        glm::mat4 global = glm::scale(glm::mat4(1.0f), m_parent->m_scale) *
-                           glm::scale(glm::mat4(1.0f), m_local_scale);
-        m_scale = glm::vec3(global[0][0], global[1][1], global[2][2]);
-    }
-    for (Transform *child : m_children) {
-        child->UpdateGlobalScale();
-    }
-}
-
-void Transform::UpdateLocalPosition() {
-    if (m_parent == nullptr)
-        m_local_position = m_position;
-    else {
-        glm::mat4 global =
-            glm::inverse(m_parent->GetWorldTransform()) * GetWorldTransform();
-        m_local_position = global[3];
-    }
-}
-
-void Transform::UpdateLocalRotation() {
-    if (m_parent == nullptr)
-        m_local_rotation = m_rotation;
-    else {
-        glm::mat4 global = glm::inverse(glm::toMat4(m_parent->m_rotation)) *
-                           glm::toMat4(GetWorldRotation());
-        m_local_rotation = glm::quat(global);
-    }
-}
-
-void Transform::UpdateLocalScale() {
-    if (m_parent == nullptr)
-        m_local_scale = m_scale;
-    else {
-        glm::mat4 global =
-            glm::inverse(glm::scale(glm::mat4(1.0f), m_parent->m_scale)) *
-            glm::scale(glm::mat4(1.0f), m_scale);
-        m_local_scale = glm::vec3(global[0][0], global[1][1], global[2][2]);
-    }
+    return GetRotation() * local_vec;
 }
 
 }  // namespace SD

@@ -246,7 +246,7 @@ void LightingSystem::RenderShadowMap() {
 
         device->SetTarget(light.GetRenderTarget());
         light.GetRenderTarget().GetFramebuffer()->ClearDepth();
-        light.ComputeLightSpaceMatrix(transformComp.transform,
+        light.ComputeLightSpaceMatrix(transformComp.GetWorldTransform(),
                                       scene->GetCamera());
         m_shadow_shader->SetMat4("u_projection_view",
                                  light.GetProjectionView());
@@ -255,7 +255,7 @@ void LightingSystem::RenderShadowMap() {
                               const ModelComponent &modelComp) {
             auto model = asset->Get<Model>(modelComp.id);
             m_shadow_shader->SetMat4(
-                "u_model", transformComp.transform.GetWorldTransform());
+                "u_model", transformComp.GetWorldTransform().GetMatrix());
             if (model) {
                 for (const auto &mesh : model->GetMeshes()) {
                     renderer->DrawMesh(mesh);
@@ -330,14 +330,12 @@ void LightingSystem::RenderDeferred() {
         const Light &light = lightComp.light;
         m_deferred_shader->SetTexture("u_lighting",
                                       m_light_target[input_id].GetTexture());
-        const Transform &transform = transformComp.transform;
-        m_deferred_shader->SetVec3("u_light.direction",
-                                   transform.GetWorldFront());
+        const Transform &transform = transformComp.GetWorldTransform();
+        m_deferred_shader->SetVec3("u_light.direction", transform.GetFront());
         m_deferred_shader->SetVec3("u_light.ambient", light.GetAmbient());
         m_deferred_shader->SetVec3("u_light.diffuse", light.GetDiffuse());
         m_deferred_shader->SetVec3("u_light.specular", light.GetSpecular());
-        m_deferred_shader->SetVec3("u_light.position",
-                                   transform.GetWorldPosition());
+        m_deferred_shader->SetVec3("u_light.position", transform.GetPosition());
         m_deferred_shader->SetFloat("u_light.cutoff",
                                     glm::cos(light.GetCutoff()));
         m_deferred_shader->SetFloat("u_light.outer_cutoff",
@@ -372,8 +370,8 @@ void LightingSystem::RenderGBuffer() {
     terrainView.each([this](const entt::entity &entity,
                             const TransformComponent &transformComp,
                             const TerrainComponent &terrainComp) {
-        m_gbuffer_shader->SetMat4("u_model",
-                                  transformComp.transform.GetWorldTransform());
+        m_gbuffer_shader->SetMat4(
+            "u_model", transformComp.GetWorldTransform().GetMatrix());
         m_gbuffer_shader->SetUint("u_entity_id", static_cast<uint32_t>(entity));
         auto &terrain = terrainComp.terrain;
         auto &material = terrain.GetMaterial();
@@ -391,8 +389,8 @@ void LightingSystem::RenderGBuffer() {
     modelView.each([this](const entt::entity &entity,
                           const TransformComponent &transformComp,
                           const ModelComponent &modelComp) {
-        m_gbuffer_shader->SetMat4("u_model",
-                                  transformComp.transform.GetWorldTransform());
+        m_gbuffer_shader->SetMat4(
+            "u_model", transformComp.GetWorldTransform().GetMatrix());
         m_gbuffer_shader->SetUint("u_entity_id", static_cast<uint32_t>(entity));
         m_gbuffer_shader->SetVec3("u_color", modelComp.color);
         auto model = asset->Get<Model>(modelComp.id);

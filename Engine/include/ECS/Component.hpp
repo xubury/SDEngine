@@ -25,14 +25,6 @@ struct SD_ECS_API IdComponent {
     SERIALIZE(id)
 };
 
-struct SD_ECS_API EntityDataComponent {
-    std::set<entt::entity> children;
-    entt::entity parent;
-    EntityDataComponent() : parent(entt::null) {}
-
-    SERIALIZE(parent, children)
-};
-
 struct SD_ECS_API TagComponent {
     std::string tag;
     TagComponent() = default;
@@ -42,9 +34,51 @@ struct SD_ECS_API TagComponent {
 };
 
 struct SD_ECS_API TransformComponent {
-    Transform transform;
+    std::set<entt::entity> children;
+    entt::entity parent;
+    entt::registry* ecs{nullptr};
+    TransformComponent() : parent(entt::null) {}
 
-    SERIALIZE(transform)
+    void SetLocalPosition(const glm::vec3& position);
+    void SetLocalRotation(const glm::quat& rotation);
+    void SetLocalScale(const glm::vec3& scale);
+    void SetLocalTransform(const glm::mat4& transform);
+
+    glm::vec3 GetLocalPosition() const;
+    glm::quat GetLocalRotation() const;
+    glm::vec3 GetLocalScale() const;
+    const Transform& GetLocalTransform() const;
+
+    void SetWorldPosition(const glm::vec3& position);
+    void SetWorldRotation(const glm::quat& rotation);
+    void SetWorldScale(const glm::vec3& scale);
+    void SetWorldTransform(const glm::mat4& transform);
+
+    glm::vec3 GetWorldPosition() const;
+    glm::quat GetWorldRotation() const;
+    glm::vec3 GetWorldScale() const;
+    const Transform& GetWorldTransform() const;
+
+    glm::vec3 GetLocalRight() const;
+    glm::vec3 GetLocalUp() const;
+    glm::vec3 GetLocalFront() const;
+
+    glm::vec3 GetWorldRight() const;
+    glm::vec3 GetWorldUp() const;
+    glm::vec3 GetWorldFront() const;
+
+    SERIALIZE(parent, children, local_transform, world_transform)
+   private:
+    Transform world_transform;
+    Transform local_transform;
+
+    void UpdateGlobalPosition();
+    void UpdateGlobalRotation();
+    void UpdateGlobalScale();
+
+    void UpdateLocalPosition();
+    void UpdateLocalRotation();
+    void UpdateLocalScale();
 };
 
 struct SD_ECS_API ModelComponent {

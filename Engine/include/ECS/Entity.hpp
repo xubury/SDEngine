@@ -50,6 +50,9 @@ class SD_ECS_API Entity {
     template <typename T>
     void OnComponentAdded(T &component);
 
+    template <typename>
+    void OnComponentAdded(TransformComponent &trans_comp);
+
     Scene *GetScene() { return m_scene; }
 
    private:
@@ -90,6 +93,12 @@ const T &Entity::GetComponent() const {
 
 template <typename T>
 void Entity::OnComponentAdded(T &) {}
+
+template <typename>
+void Entity::OnComponentAdded(TransformComponent &trans_comp) {
+    SD_TRACE("on add");
+    trans_comp.ecs = m_scene;
+}
 
 }  // namespace SD
 

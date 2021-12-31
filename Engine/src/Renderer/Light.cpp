@@ -96,15 +96,15 @@ void Light::ComputeLightSpaceMatrix(const Transform &transform,
         glm::vec3 size = max - min;
         glm::vec3 center = (max + min) / 2.f;
         center.z -= size.z / 2.f;
-        pos = transform.GetWorldRotation() * center;
+        pos = transform.GetRotation() * center;
         projection = glm::ortho(-size.x / 2.f, size.x / 2.f, -size.y / 2.f,
                                 size.y / 2.f, 0.f, size.z);
     } else {
-        pos = transform.GetWorldPosition();
+        pos = transform.GetPosition();
         projection = glm::perspective(m_outer_cutoff * 2, 1.f, 1.f, 1000.f);
     }
-    const glm::vec3 &up = transform.GetWorldUp();
-    const glm::vec3 &front = transform.GetWorldFront();
+    const glm::vec3 &up = transform.GetUp();
+    const glm::vec3 &front = transform.GetFront();
     const glm::mat4 view = glm::lookAt(pos, pos + front, up);
     m_projection_view = projection * view;
 }
@@ -114,7 +114,7 @@ void Light::ComputeBoundingBox(const Transform &transform, const Camera &camera,
     min = glm::vec3(std::numeric_limits<float>::max());
     max = glm::vec3(std::numeric_limits<float>::lowest());
     const glm::mat3 &rot_inv =
-        glm::transpose(glm::mat3(transform.GetWorldRotation()));
+        glm::transpose(glm::mat3(transform.GetRotation()));
     const glm::mat3 &cam_to_light =
         rot_inv * glm::mat3(camera.GetWorldRotation());
     const float near_z = camera.GetNearZ();

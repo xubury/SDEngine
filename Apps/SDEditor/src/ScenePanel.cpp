@@ -36,7 +36,7 @@ void ScenePanel::OnImGui() {
     scene->each([&](auto entityID) {
         Entity entity{entityID, scene.get()};
 
-        EntityDataComponent &data = entity.GetComponent<EntityDataComponent>();
+        TransformComponent &data = entity.GetComponent<TransformComponent>();
         Entity parent(data.parent, scene.get());
         if (!parent) {
             DrawEntityNode(entity);
@@ -72,7 +72,7 @@ void ScenePanel::OnImGui() {
             IM_ASSERT(payload->DataSize == sizeof(Entity));
             Entity entity = *(Entity *)payload->Data;
 
-            Entity parent(entity.GetComponent<EntityDataComponent>().parent,
+            Entity parent(entity.GetComponent<TransformComponent>().parent,
                           scene.get());
             if (parent) {
                 parent.RemoveChild(entity);
@@ -93,7 +93,7 @@ void ScenePanel::OnImGui() {
 }
 
 void ScenePanel::DrawEntityNode(Entity &entity) {
-    EntityDataComponent &data = entity.GetComponent<EntityDataComponent>();
+    TransformComponent &data = entity.GetComponent<TransformComponent>();
 
     auto &tag = entity.GetComponent<TagComponent>().tag;
 
@@ -282,20 +282,20 @@ void ScenePanel::DrawComponents(Entity &entity) {
             ImGui::SameLine();
             ImGui::RadioButton("Scale", reinterpret_cast<int *>(&m_gizmo_op),
                                ImGuizmo::SCALE);
-            glm::vec3 position = component.transform.GetWorldPosition();
+            glm::vec3 position = component.GetWorldPosition();
             if (ImGui::DrawVec3Control("Translation", position)) {
-                component.transform.SetWorldPosition(position);
+                component.SetWorldPosition(position);
             }
 
-            glm::vec3 rotation = glm::degrees(
-                glm::eulerAngles(component.transform.GetWorldRotation()));
+            glm::vec3 rotation =
+                glm::degrees(glm::eulerAngles(component.GetWorldRotation()));
             if (ImGui::DrawVec3Control("Rotation", rotation)) {
-                component.transform.SetWorldRotation(glm::radians(rotation));
+                component.SetWorldRotation(glm::radians(rotation));
             }
 
-            glm::vec3 scale = component.transform.GetWorldScale();
+            glm::vec3 scale = component.GetWorldScale();
             if (ImGui::DrawVec3Control("Scale", scale, 1.0f)) {
-                component.transform.SetWorldScale(scale);
+                component.SetWorldScale(scale);
             }
         },
         false);

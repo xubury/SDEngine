@@ -15,16 +15,14 @@ Entity Scene::CreateEntity(const std::string &name) {
     entity.AddComponent<IdComponent>();
     entity.AddComponent<TagComponent>(name);
     entity.AddComponent<TransformComponent>();
-    entity.AddComponent<EntityDataComponent>();
     return entity;
 }
 
 void Scene::Refresh() {
-    auto ecs_data = view<EntityDataComponent>();
+    auto ecs_data = view<TransformComponent>();
 
     for (auto entity_id : ecs_data) {
         Entity entity(entity_id, this);
-        RefreshEntityChildTranforms(entity);
         RefreshLight(entity);
     }
 }
@@ -35,9 +33,9 @@ void Scene::Load(const std::string &filePath) {
     cereal::XMLInputArchive archive(is);
     entt::snapshot_loader{*this}
         .entities(archive)
-        .component<IdComponent, EntityDataComponent, TagComponent,
-                   TransformComponent, ModelComponent, LightComponent,
-                   TextComponent, CameraComponent, TileLayoutComponent>(archive);
+        .component<IdComponent, TagComponent, TransformComponent,
+                   ModelComponent, LightComponent, TextComponent,
+                   CameraComponent, TileLayoutComponent>(archive);
     Refresh();
 }
 
@@ -46,9 +44,9 @@ void Scene::Save(const std::string &filePath) {
     cereal::XMLOutputArchive archive(os);
     entt::snapshot{*this}
         .entities(archive)
-        .component<IdComponent, EntityDataComponent, TagComponent,
-                   TransformComponent, ModelComponent, LightComponent,
-                   TextComponent, CameraComponent, TileLayoutComponent>(archive);
+        .component<IdComponent, TagComponent, TransformComponent,
+                   ModelComponent, LightComponent, TextComponent,
+                   CameraComponent, TileLayoutComponent>(archive);
 }
 
 void Scene::RefreshLight(Entity &entity) {
@@ -57,24 +55,6 @@ void Scene::RefreshLight(Entity &entity) {
         if (lightComp.light.IsCastShadow()) {
             lightComp.light.CreateShadowMap();
         }
-    }
-}
-
-void Scene::RefreshEntityChildTranforms(Entity &entity) {
-    EntityDataComponent &data = entity.GetComponent<EntityDataComponent>();
-    Transform &transform = entity.GetComponent<TransformComponent>().transform;
-    transform.GetChildren().clear();
-    Entity parent(data.parent, this);
-    if (parent) {
-        parent.GetComponent<TransformComponent>().transform.AddChild(
-            &transform);
-    }
-
-    for (entt::entity childId : data.children) {
-        Entity child(childId, this);
-        entity.GetComponent<TransformComponent>().transform.AddChild(
-            &child.GetComponent<TransformComponent>().transform);
-        RefreshEntityChildTranforms(child);
     }
 }
 

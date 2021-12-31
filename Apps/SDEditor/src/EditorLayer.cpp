@@ -104,7 +104,7 @@ void EditorLayer::OnRender() {
         auto lightView = scene->view<LightComponent, TransformComponent>();
         lightView.each([this, &cam](const LightComponent &,
                                     const TransformComponent &transComp) {
-            glm::vec3 pos = transComp.transform.GetWorldPosition();
+            glm::vec3 pos = transComp.GetWorldPosition();
             float dist = glm::distance(pos, cam->GetWorldPosition());
             float scale = (dist - cam->GetNearZ()) / 20;
             renderer->DrawBillboard(m_light_icon->GetTexture(), pos,
@@ -412,13 +412,13 @@ void EditorLayer::DrawViewport() {
             const glm::mat4 &projection = cam->GetProjection();
 
             auto &tc = entity.GetComponent<TransformComponent>();
-            glm::mat4 transform = tc.transform.GetWorldTransform();
+            glm::mat4 transform = tc.GetWorldTransform().GetMatrix();
             if (ImGuizmo::Manipulate(
                     glm::value_ptr(view), glm::value_ptr(projection),
                     m_scene_panel->GetGizmoOperation(),
                     m_scene_panel->GetGizmoMode(), glm::value_ptr(transform),
                     nullptr, nullptr)) {
-                tc.transform.SetWorldTransform(transform);
+                tc.SetWorldTransform(transform);
             }
         }
         // FIXME:2D mode doesn;t have a gbuffer, so reading entity id won't

@@ -52,16 +52,16 @@ void TileMapSystem::OnImGui() {
         auto &layout = scene->GetSelectedEntity()
                            .GetComponent<TileLayoutComponent>()
                            .layout;
-        auto &transform = scene->GetSelectedEntity()
-                              .GetComponent<TransformComponent>()
-                              .transform;
+        auto &transform =
+            scene->GetSelectedEntity().GetComponent<TransformComponent>();
         if (layout.GetVisible()) {
             Math::Ray ray = scene->GetCamera()->ComputeCameraRay(clip);
             Math::Plane plane(transform.GetWorldFront(),
                               transform.GetWorldPosition());
             glm::vec3 world;
             if (Math::IntersectRayPlane(ray, plane, world)) {
-                m_brush.select_pos = layout.MapWorldToTile(world, &transform);
+                m_brush.select_pos = layout.MapWorldToTile(
+                    world, &transform.GetWorldTransform());
             }
             if (ImGui::IsMouseClicked(0)) {
                 ApplyAction(entity);
@@ -117,7 +117,7 @@ void TileMapSystem::OnRender() {
     Entity entity = scene->GetSelectedEntity();
     if (entity && entity.HasComponent<TileLayoutComponent>()) {
         auto &layout = entity.GetComponent<TileLayoutComponent>().layout;
-        auto &transform = entity.GetComponent<TransformComponent>().transform;
+        auto &transform = entity.GetComponent<TransformComponent>();
         const glm::ivec2 TILE_SIZE = layout.GetTileSize();
 
         const glm::vec2 BRUSH_SIZE = TILE_SIZE * m_brush.count;
@@ -126,8 +126,9 @@ void TileMapSystem::OnRender() {
         select_pos.y += m_brush.pivot.y;
         glm::vec3 offset(BRUSH_SIZE.x / 2 - TILE_SIZE.x / 2.f,
                          -BRUSH_SIZE.y / 2 + TILE_SIZE.y / 2.f, 0);
-        select_pos = layout.MapTileToWorld(select_pos, &transform) +
-                     transform.ToWorldVector(offset);
+        select_pos =
+            layout.MapTileToWorld(select_pos, &transform.GetWorldTransform()) +
+            transform.GetWorldTransform().ToWorldVector(offset);
         if (m_operation == Operation::ADD_ENTITY) {
             auto sprite = asset->Get<Sprite>(m_brush.sprite_id);
             if (sprite) {
@@ -154,11 +155,11 @@ void TileMapSystem::OnRender() {
                 -TEX_SIZE.y / 2.f + cam_pos.y + TILE_SIZE.y / 2.f +
                     TILE_SIZE.y * std::floor(TILE_CNT.y / 2.f),
                 0);
-            renderer->DrawTexture(m_outline_texture,
-                                  {uv_origin, glm::vec2(TILE_CNT) + uv_origin},
-                                  transform.ToWorldSpace(outline_pos),
-                                  transform.GetWorldRotation(), TEX_SIZE,
-                                  glm::vec4(1, 1, 1, 0.7));
+            renderer->DrawTexture(
+                m_outline_texture, {uv_origin, glm::vec2(TILE_CNT) + uv_origin},
+                transform.GetWorldTransform().ToWorldSpace(outline_pos),
+                transform.GetWorldRotation(), TEX_SIZE,
+                glm::vec4(1, 1, 1, 0.7));
         }
         // Draw selection
         glm::vec4 select_color(1.0);

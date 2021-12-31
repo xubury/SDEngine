@@ -33,7 +33,6 @@ class SD_ECS_API Scene : public entt::registry {
     void ResetSelectedEntity();
 
    private:
-    void RefreshEntityChildTranforms(Entity &entity);
     void RefreshLight(Entity &entity);
     Camera *m_camera;
     entt::entity m_selected_entity;
