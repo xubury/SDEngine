@@ -99,11 +99,11 @@ const std::set<Transform *> &Transform::GetChildren() const {
 
 void Transform::AddChild(Transform *child) {
     if (child == nullptr) {
-        SD_CORE_ERROR("[Transform::addChild] Tried to add a null child");
+        SD_CORE_ERROR("[Transform::AddChild] Tried to add a null child");
         return;
     }
     if (child == this) {
-        SD_CORE_ERROR("[Transform::addChild] Tried to add its own as child");
+        SD_CORE_ERROR("[Transform::AddChild] Tried to add its own as child");
         return;
     }
     child->m_parent = this;
@@ -116,11 +116,11 @@ void Transform::AddChild(Transform *child) {
 void Transform::RemoveChild(Transform *child) {
     if (m_children.find(child) == m_children.end()) {
         SD_CORE_ERROR(
-            "[Transform::removeChild] Tried to remove a non-existent child");
+            "[Transform::RemoveChild] Tried to remove a non-existent child");
         return;
     }
     if (child == nullptr) {
-        SD_CORE_ERROR("[Transform::removeChild] Tried to remove a null child");
+        SD_CORE_ERROR("[Transform::RemoveChild] Tried to remove a null child");
         return;
     }
 

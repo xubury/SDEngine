@@ -17,19 +17,54 @@ class SD_SYSTEM_API TileBrush {
     std::array<glm::vec2, 2> uvs{glm::vec2{0, 0}, glm::vec2{0, 0}};
     glm::ivec2 count{0, 0};
     glm::ivec2 pivot{0, 0};
-    BrushOutput ComputeOutput() {
+    glm::ivec2 select_pos;
+    void Output(Entity &parent) {
+        if (!parent.HasComponent<TileLayoutComponent>()) {
+            return;
+        }
+        auto &layout = parent.GetComponent<TileLayoutComponent>().layout;
         float x_step = (uvs[1].x - uvs[0].x) / count.x;
         float y_step = (uvs[1].y - uvs[0].y) / count.y;
-        BrushOutput ret(count.y, std::vector<Tile>(count.x));
         for (int y = 0; y < count.y; ++y) {
             for (int x = 0; x < count.x; ++x) {
-                ret[y][x].sprite_id = sprite_id;
-                ret[y][x].uvs[0] = uvs[0] + glm::vec2(x * x_step, y * y_step);
-                ret[y][x].uvs[1] =
+                glm::ivec2 pos(select_pos.x + (x - pivot.x),
+                               select_pos.y - (y - pivot.y));
+                if (layout.Has(pos)) {
+                    Entity child(layout.Get(pos), parent.GetScene());
+                    child.Destroy();
+                    layout.Clear(pos);
+                }
+                Entity child = parent.CreateChild("Tile");
+                layout.Add(pos, child);
+                auto &comp = child.AddComponent<SpriteComponent>();
+                auto &transform =
+                    child.GetComponent<TransformComponent>().transform;
+                transform.SetLocalPosition(layout.MapTileToWorld(pos));
+                comp.id = sprite_id;
+                comp.uvs[0] = uvs[0] + glm::vec2(x * x_step, y * y_step);
+                comp.uvs[1] =
                     uvs[0] + glm::vec2((x + 1) * x_step, (y + 1) * y_step);
+                comp.size = layout.GetTileSize();
             }
         }
-        return ret;
+    }
+
+    void Clear(Entity &parent) {
+        if (!parent.HasComponent<TileLayoutComponent>()) {
+            return;
+        }
+        auto &layout = parent.GetComponent<TileLayoutComponent>().layout;
+        for (int y = 0; y < count.y; ++y) {
+            for (int x = 0; x < count.x; ++x) {
+                glm::ivec2 pos(select_pos.x + (x - pivot.x),
+                               select_pos.y - (y - pivot.y));
+                if (layout.Has(pos)) {
+                    Entity child(layout.Get(pos), parent.GetScene());
+                    child.Destroy();
+                    layout.Clear(pos);
+                }
+            }
+        }
     }
 };
 
@@ -50,15 +85,13 @@ class SD_SYSTEM_API TileMapSystem : public System {
     void SetViewport(const Viewport *viewport) { m_viewport = viewport; }
 
    private:
-    void ApplyAction(TileLayout<Tile> &layout);
+    void ApplyAction(Entity &entity);
 
     const Viewport *m_viewport;
 
     Ref<Texture> m_outline_texture;
 
     TileBrush m_brush;
-
-    glm::ivec2 m_select_tile_pos;
 
     bool m_file_dialog_open;
     ImFileDialogInfo m_fileDialogInfo;

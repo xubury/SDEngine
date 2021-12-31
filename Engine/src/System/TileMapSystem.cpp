@@ -43,14 +43,15 @@ void TileMapSystem::OnPop() {}
 void TileMapSystem::OnImGui() {
     Entity entity = scene->GetSelectedEntity();
     if (m_viewport && m_viewport->IsHover() && entity &&
-        entity.HasComponent<TileMapComponent>()) {
+        entity.HasComponent<TileLayoutComponent>()) {
         glm::vec2 clip = m_viewport->MapScreenToClip(
             glm::ivec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y));
         if (std::abs(clip.x) > 1 || std::abs(clip.y) > 1) {
             return;
         }
-        auto &layout =
-            scene->GetSelectedEntity().GetComponent<TileMapComponent>().tiles;
+        auto &layout = scene->GetSelectedEntity()
+                           .GetComponent<TileLayoutComponent>()
+                           .layout;
         auto &transform = scene->GetSelectedEntity()
                               .GetComponent<TransformComponent>()
                               .transform;
@@ -60,13 +61,13 @@ void TileMapSystem::OnImGui() {
                               transform.GetWorldPosition());
             glm::vec3 world;
             if (Math::IntersectRayPlane(ray, plane, world)) {
-                m_select_tile_pos = layout.MapWorldToTile(world, &transform);
+                m_brush.select_pos = layout.MapWorldToTile(world, &transform);
             }
-        }
-        if (ImGui::IsMouseClicked(0)) {
-            ApplyAction(layout);
-        } else if (ImGui::IsMouseClicked(1)) {
-            m_operation = Operation::NONE;
+            if (ImGui::IsMouseClicked(0)) {
+                ApplyAction(entity);
+            } else if (ImGui::IsMouseClicked(1)) {
+                m_operation = Operation::NONE;
+            }
         }
     }
     ImGui::Begin("TileMap System");
@@ -114,13 +115,13 @@ void TileMapSystem::OnRender() {
 
     // draw brush & outline
     Entity entity = scene->GetSelectedEntity();
-    if (entity && entity.HasComponent<TileMapComponent>()) {
-        auto &layout = entity.GetComponent<TileMapComponent>().tiles;
+    if (entity && entity.HasComponent<TileLayoutComponent>()) {
+        auto &layout = entity.GetComponent<TileLayoutComponent>().layout;
         auto &transform = entity.GetComponent<TransformComponent>().transform;
         const glm::ivec2 TILE_SIZE = layout.GetTileSize();
 
         const glm::vec2 BRUSH_SIZE = TILE_SIZE * m_brush.count;
-        glm::vec3 select_pos(m_select_tile_pos, 0);
+        glm::vec3 select_pos(m_brush.select_pos, 0);
         select_pos.x -= m_brush.pivot.x;
         select_pos.y += m_brush.pivot.y;
         glm::vec3 offset(BRUSH_SIZE.x / 2 - TILE_SIZE.x / 2.f,
@@ -179,35 +180,15 @@ void TileMapSystem::OnRender() {
     device->Enable(SD::Operation::DEPTH_TEST);
 }
 
-void TileMapSystem::ApplyAction(TileLayout<Tile> &layout) {
+void TileMapSystem::ApplyAction(Entity &entity) {
     switch (m_operation) {
         default: {
         } break;
         case Operation::ADD_ENTITY: {
-            auto tile_output = m_brush.ComputeOutput();
-            for (int y = 0; y < m_brush.count.y; ++y) {
-                for (int x = 0; x < m_brush.count.x; ++x) {
-                    glm::ivec2 pos(m_select_tile_pos.x + (x - m_brush.pivot.x),
-                                   m_select_tile_pos.y - (y - m_brush.pivot.y));
-                    SD_TRACE("add tile at: {}", pos);
-                    if (layout.Has(pos)) {
-                        layout.Clear(pos);
-                    }
-                    layout.Add(pos, tile_output[y][x]);
-                }
-            }
+            m_brush.Output(entity);
         } break;
         case Operation::REMOVE_ENTITY: {
-            for (int y = 0; y < m_brush.count.y; ++y) {
-                for (int x = 0; x < m_brush.count.x; ++x) {
-                    glm::ivec2 pos(m_select_tile_pos.x + (x - m_brush.pivot.x),
-                                   m_select_tile_pos.y - (y - m_brush.pivot.y));
-                    if (layout.Has(pos)) {
-                        SD_TRACE("clear tile at: {}", pos);
-                        layout.Clear(pos);
-                    }
-                }
-            }
+            m_brush.Clear(entity);
         } break;
     }
 }

@@ -84,9 +84,18 @@ struct SD_ECS_API CameraComponent {
     SERIALIZE(camera)
 };
 
-struct SD_ECS_API TileMapComponent {
-    TileLayout<Tile> tiles;
-    SERIALIZE(tiles)
+struct SD_ECS_API SpriteComponent {
+    ResourceId id;
+    std::array<glm::vec2, 2> uvs;
+    glm::vec2 size;
+    int priority;
+
+    SERIALIZE(id, uvs)
+};
+
+struct SD_ECS_API TileLayoutComponent {
+    TileLayout<entt::entity> layout;
+    SERIALIZE(layout)
 };
 
 }  // namespace SD

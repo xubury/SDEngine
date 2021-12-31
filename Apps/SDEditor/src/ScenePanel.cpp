@@ -137,8 +137,7 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
             m_entity_to_destroy = entity;
         }
         if (ImGui::MenuItem("Create Empty Entity")) {
-            Entity newEntity = scene->CreateEntity("Empty Entity");
-            entity.AddChild(newEntity);
+            entity.CreateChild("Empty Entity");
         }
 
         ImGui::EndPopup();
@@ -254,8 +253,8 @@ void ScenePanel::DrawComponents(Entity &entity) {
             ImGui::CloseCurrentPopup();
         }
         if (ImGui::MenuItem("Tile Map")) {
-            if (!entity.HasComponent<TileMapComponent>())
-                entity.AddComponent<TileMapComponent>();
+            if (!entity.HasComponent<TileLayoutComponent>())
+                entity.AddComponent<TileLayoutComponent>();
             else
                 SD_CORE_WARN("This entity already has the Tile Map Component!");
             ImGui::CloseCurrentPopup();
@@ -453,22 +452,17 @@ void ScenePanel::DrawComponents(Entity &entity) {
                 cameraComp.camera.SetFarZ(far_z);
             }
         });
-    DrawComponent<TileMapComponent>(
-        "Tile Map", entity, [&](TileMapComponent &tile_map_comp) {
-            glm::ivec2 tile_size = tile_map_comp.tiles.GetTileSize();
+    DrawComponent<TileLayoutComponent>(
+        "Tile Map", entity, [&](TileLayoutComponent &tile_map_comp) {
+            glm::ivec2 tile_size = tile_map_comp.layout.GetTileSize();
             ImGui::TextUnformatted("Tile Size:");
             if (ImGui::InputInt2("##Size", &tile_size.x)) {
-                tile_map_comp.tiles.SetTileSize(tile_size);
+                tile_map_comp.layout.SetTileSize(tile_size);
             }
-            int priority = tile_map_comp.tiles.GetPriority();
-            ImGui::TextUnformatted("Priority Level:");
-            if (ImGui::InputInt("##PriorityLevel", &priority)) {
-                tile_map_comp.tiles.SetPriority(priority);
-            }
-            bool visible = tile_map_comp.tiles.GetVisible();
+            bool visible = tile_map_comp.layout.GetVisible();
             ImGui::TextUnformatted("Visible:");
             if (ImGui::Checkbox("##MapVisible", &visible)) {
-                tile_map_comp.tiles.SetVisible(visible);
+                tile_map_comp.layout.SetVisible(visible);
             }
         });
 }

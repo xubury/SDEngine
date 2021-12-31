@@ -19,7 +19,7 @@ namespace SD {
 template <typename TILE>
 class TileLayout {
    public:
-    TileLayout() : m_tile_size(25, 25), m_priority(0), m_visible(true) {}
+    TileLayout() : m_tile_size(25, 25), m_visible(true) {}
     TileLayout(const glm::ivec2 &tile_size) : m_tile_size(tile_size) {}
 
     bool Add(const glm::ivec2 &pos, const TILE &tile) {
@@ -62,17 +62,13 @@ class TileLayout {
         return world;
     }
 
-    void SetPriority(int priority) { m_priority = priority; }
-    int GetPriority() const { return m_priority; }
-
     void SetVisible(bool visible) { m_visible = visible; }
     bool GetVisible() const { return m_visible; }
 
-    SERIALIZE(m_tile_size, m_tiles, m_priority, m_visible)
+    SERIALIZE(m_tile_size, m_tiles, m_visible)
    private:
     glm::ivec2 m_tile_size;
     std::unordered_map<glm::ivec2, TILE> m_tiles;
-    int m_priority;
     bool m_visible;
 };
 

@@ -18,6 +18,8 @@ class SD_ECS_API Entity {
 
     void Destroy(bool is_root = true);
 
+    Entity CreateChild(const std::string &name);
+
     void AddChild(Entity &child);
 
     void RemoveChild(Entity &child);
@@ -47,6 +49,8 @@ class SD_ECS_API Entity {
 
     template <typename T>
     void OnComponentAdded(T &component);
+
+    Scene *GetScene() { return m_scene; }
 
    private:
     entt::entity m_handle;

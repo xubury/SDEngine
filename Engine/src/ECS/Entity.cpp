@@ -22,6 +22,12 @@ void Entity::Destroy(bool is_root) {
     m_scene->destroy(*this);
 }
 
+Entity Entity::CreateChild(const std::string &name) {
+    Entity child = m_scene->CreateEntity(name);
+    AddChild(child);
+    return child;
+}
+
 void Entity::AddChild(Entity &child) {
     if (*this == child) return;
     auto &parent_data = GetComponent<EntityDataComponent>();
@@ -32,7 +38,7 @@ void Entity::AddChild(Entity &child) {
         &child.GetComponent<TransformComponent>().transform;
     Transform *parent_transform = &GetComponent<TransformComponent>().transform;
 
-    Entity old_parent(child_data.parent, m_scene);
+    Entity old_parent(child_data.parent, child.m_scene);
     if (old_parent) {
         old_parent.RemoveChild(child);
     }
@@ -43,8 +49,9 @@ void Entity::AddChild(Entity &child) {
 
 void Entity::RemoveChild(Entity &child) {
     auto &children = GetComponent<EntityDataComponent>().children;
-    if (children.find(child) != children.end()) {
-        children.erase(child);
+    auto iter = children.find(child);
+    if (iter != children.end()) {
+        children.erase(iter);
         Transform *childTransform =
             &child.GetComponent<TransformComponent>().transform;
         GetComponent<TransformComponent>().transform.RemoveChild(
