@@ -34,8 +34,9 @@ void GLVertexArray::AddVertexBuffer(const Ref<VertexBuffer> &buffer,
                                           Translate(element.type),
                                           element.normalized, offset);
                 break;
-            case BufferLayoutType::UCHAR:
+            case BufferLayoutType::UBYTE:
             case BufferLayoutType::UINT:
+            case BufferLayoutType::INT:
                 glVertexArrayAttribIFormat(m_id, m_attrib_id, element.count,
                                            Translate(element.type), offset);
 

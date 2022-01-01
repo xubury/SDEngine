@@ -35,7 +35,7 @@ DataFormatType GetTextureFormatType(GeometryBufferType type) {
         case GeometryBufferType::G_EMISSIVE:
             return DataFormatType::UBYTE;
         case GeometryBufferType::G_ENTITY_ID:
-            return DataFormatType::UINT;
+            return DataFormatType::INT;
         default:
             SD_CORE_WARN("Unknown GBuffer!");
             return DataFormatType::UBYTE;
@@ -206,6 +206,11 @@ void LightingSystem::OnRender() {
     RenderEmissive();
 
     device->BlitFramebuffer(
+        m_gbuffer_target.GetFramebuffer(), G_ENTITY_ID,
+        renderer->GetFramebuffer(), 1,
+        BufferBitMask::COLOR_BUFFER_BIT | BufferBitMask::DEPTH_BUFFER_BIT,
+        BlitFilter::NEAREST);
+    device->BlitFramebuffer(
         m_gbuffer_target.GetFramebuffer(), 0, renderer->GetFramebuffer(), 0,
         BufferBitMask::DEPTH_BUFFER_BIT, BlitFilter::NEAREST);
 }
@@ -372,7 +377,7 @@ void LightingSystem::RenderGBuffer() {
                             const TerrainComponent &terrainComp) {
         m_gbuffer_shader->SetMat4(
             "u_model", transformComp.GetWorldTransform().GetMatrix());
-        m_gbuffer_shader->SetUint("u_entity_id", static_cast<uint32_t>(entity));
+        m_gbuffer_shader->SetInt("u_entity_id", static_cast<int32_t>(entity));
         auto &terrain = terrainComp.terrain;
         auto &material = terrain.GetMaterial();
         m_gbuffer_shader->SetTexture(
@@ -391,7 +396,7 @@ void LightingSystem::RenderGBuffer() {
                           const ModelComponent &modelComp) {
         m_gbuffer_shader->SetMat4(
             "u_model", transformComp.GetWorldTransform().GetMatrix());
-        m_gbuffer_shader->SetUint("u_entity_id", static_cast<uint32_t>(entity));
+        m_gbuffer_shader->SetInt("u_entity_id", static_cast<int32_t>(entity));
         m_gbuffer_shader->SetVec3("u_color", modelComp.color);
         auto model = asset->Get<Model>(modelComp.id);
         if (model) {

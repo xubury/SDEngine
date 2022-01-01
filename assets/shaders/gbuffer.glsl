@@ -42,14 +42,14 @@ struct VertexOutput {
 uniform Material u_material;
 
 uniform vec3 u_color;
-uniform uint u_entity_id;
+uniform int u_entity_id;
 
 layout(location = 0) out vec3 g_position;
 layout(location = 1) out vec3 g_normal;
 layout(location = 2) out vec4 g_albedo;
 layout(location = 3) out vec3 g_ambient;
 layout(location = 4) out vec3 g_emissive;
-layout(location = 5) out uint g_entity_id;
+layout(location = 5) out int g_entity_id;
 
 layout(location = 0) in VertexOutput in_vertex;
 

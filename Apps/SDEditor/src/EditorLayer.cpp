@@ -95,6 +95,8 @@ void EditorLayer::OnPop() {}
 void EditorLayer::OnRender() {
     device->SetFramebuffer(renderer->GetFramebuffer());
     device->Clear();
+    renderer->GetFramebuffer()->ClearAttachment(
+        1, reinterpret_cast<const int *>(&entt::null));
     for (auto &system : GetSystems()) {
         system->OnRender();
     }
@@ -314,6 +316,11 @@ void EditorLayer::SetViewportSize(uint32_t left, uint32_t top, uint32_t width,
         TextureSpec(1, TextureType::TEX_2D, DataFormat::RGB,
                     DataFormatType::UBYTE, TextureWrap::EDGE,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST)));
+    m_screen_buffer->AttachTexture(Texture::Create(
+        width, height,
+        TextureSpec(1, TextureType::TEX_2D, DataFormat::RED,
+                    DataFormatType::INT, TextureWrap::EDGE,
+                    TextureMagFilter::NEAREST, TextureMinFilter::NEAREST)));
     m_debug_gbuffer = Framebuffer::Create();
     for (int i = 0; i <= GeometryBufferType::G_ENTITY_ID; ++i) {
         m_debug_gbuffer->AttachTexture(Texture::Create(
@@ -394,6 +401,10 @@ void EditorLayer::DrawViewport() {
     device->BlitFramebuffer(
         renderer->GetFramebuffer(), 0, m_screen_buffer.get(), 0,
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
+    device->BlitFramebuffer(
+        renderer->GetFramebuffer(), 1, m_screen_buffer.get(), 1,
+        BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
+
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
     ImGui::Begin("Scene");
     {
@@ -432,21 +443,22 @@ void EditorLayer::DrawViewport() {
                 tc.SetWorldTransform(transform);
             }
         }
-        // FIXME:2D mode doesn;t have a gbuffer, so reading entity id won't
-        // work.
-        if (ImGui::IsMouseDown(0) && m_viewport.IsHover() &&
-            m_mode == EditorMode::THREE_DIMENSIONAL) {
+        if (ImGui::IsMouseDown(0) && m_viewport.IsHover()) {
             auto [mouseX, mouseY] = ImGui::GetMousePos();
             mouseX -= m_viewport.GetLeft();
             mouseY = m_viewport.GetHeight() - mouseY + m_viewport.GetTop();
             entt::entity entity_id = entt::null;
-            auto entity_tex =
-                m_debug_gbuffer->GetTexture(GeometryBufferType::G_ENTITY_ID);
+            auto entity_tex = m_screen_buffer->GetTexture(1);
             // out of bound check
             if (mouseX > 0 && mouseY > 0 && mouseX < entity_tex->GetWidth() &&
                 mouseY < entity_tex->GetHeight()) {
+                m_debug_gbuffer->ReadPixels(G_ENTITY_ID, 0, mouseX, mouseY, 0,
+                                            1, 1, 1, sizeof(entity_id),
+                                            &entity_id);
+                SD_TRACE("gbuffer id:{}", entity_id);
                 entity_tex->ReadPixels(0, mouseX, mouseY, 0, 1, 1, 1,
                                        sizeof(entity_id), &entity_id);
+                SD_TRACE("id:{}", entity_id);
             }
             if (entity_id != entt::null) {
                 dispatcher->PublishEvent(

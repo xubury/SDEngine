@@ -46,7 +46,7 @@ enum class TextureType { TEX_2D, TEX_2D_MULTISAMPLE, TEX_3D, TEX_CUBE };
 
 enum class DataFormat { ALPHA, RED, RG, RGB, RGBA, DEPTH, DEPTH_STENCIL };
 
-enum class DataFormatType { UBYTE, UINT, FLOAT16, FLOAT32 };
+enum class DataFormatType { UBYTE, UINT, INT, FLOAT16, FLOAT32 };
 
 enum class Face { FRONT, BACK, BOTH };
 
@@ -65,7 +65,7 @@ enum class TextureMinFilter {
     LINEAR_LINEAR,
 };
 
-enum class BufferLayoutType { UCHAR, UINT, FLOAT, FLOAT2, FLOAT3, FLOAT4 };
+enum class BufferLayoutType { UBYTE, UINT, INT, FLOAT, FLOAT2, FLOAT3, FLOAT4 };
 
 enum class BufferIOType { STATIC, DYNAMIC };
 

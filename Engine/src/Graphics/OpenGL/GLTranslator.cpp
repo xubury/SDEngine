@@ -11,7 +11,9 @@ GLenum Translate(BufferLayoutType data_type) {
             return GL_FLOAT;
         case BufferLayoutType::UINT:
             return GL_UNSIGNED_INT;
-        case BufferLayoutType::UCHAR:
+        case BufferLayoutType::INT:
+            return GL_INT;
+        case BufferLayoutType::UBYTE:
             return GL_UNSIGNED_BYTE;
     }
     return 0;
@@ -77,6 +79,7 @@ GLenum TranslateFormat(DataFormat format, DataFormatType format_type) {
         case DataFormat::ALPHA:
         case DataFormat::RED: {
             switch (format_type) {
+                case DataFormatType::INT:
                 case DataFormatType::UINT:
                     return GL_RED_INTEGER;
                 default:
@@ -85,6 +88,7 @@ GLenum TranslateFormat(DataFormat format, DataFormatType format_type) {
         } break;
         case DataFormat::RG: {
             switch (format_type) {
+                case DataFormatType::INT:
                 case DataFormatType::UINT:
                     return GL_RG_INTEGER;
                 default:
@@ -93,6 +97,7 @@ GLenum TranslateFormat(DataFormat format, DataFormatType format_type) {
         } break;
         case DataFormat::RGB: {
             switch (format_type) {
+                case DataFormatType::INT:
                 case DataFormatType::UINT:
                     return GL_RGB_INTEGER;
                 default:
@@ -101,6 +106,7 @@ GLenum TranslateFormat(DataFormat format, DataFormatType format_type) {
         } break;
         case DataFormat::RGBA: {
             switch (format_type) {
+                case DataFormatType::INT:
                 case DataFormatType::UINT:
                     return GL_RGBA_INTEGER;
                 default:
@@ -121,6 +127,8 @@ GLenum Translate(DataFormatType format_type) {
             return GL_UNSIGNED_BYTE;
         case DataFormatType::UINT:
             return GL_UNSIGNED_INT;
+        case DataFormatType::INT:
+            return GL_INT;
         case DataFormatType::FLOAT16:
         case DataFormatType::FLOAT32:
             return GL_FLOAT;
@@ -138,6 +146,8 @@ GLenum TranslateInternalFormat(DataFormat format, DataFormatType format_type) {
                     return GL_R8;
                 case DataFormatType::UINT:
                     return GL_R32UI;
+                case DataFormatType::INT:
+                    return GL_R32I;
                 case DataFormatType::FLOAT16:
                     return GL_R16F;
                 case DataFormatType::FLOAT32:
@@ -151,6 +161,8 @@ GLenum TranslateInternalFormat(DataFormat format, DataFormatType format_type) {
                     return GL_RG8;
                 case DataFormatType::UINT:
                     return GL_RG32UI;
+                case DataFormatType::INT:
+                    return GL_RG32I;
                 case DataFormatType::FLOAT16:
                     return GL_RG16F;
                 case DataFormatType::FLOAT32:
@@ -164,6 +176,8 @@ GLenum TranslateInternalFormat(DataFormat format, DataFormatType format_type) {
                     return GL_RGB8;
                 case DataFormatType::UINT:
                     return GL_RGB32UI;
+                case DataFormatType::INT:
+                    return GL_RGB32I;
                 case DataFormatType::FLOAT16:
                     return GL_RGB16F;
                 case DataFormatType::FLOAT32:
@@ -177,6 +191,8 @@ GLenum TranslateInternalFormat(DataFormat format, DataFormatType format_type) {
                     return GL_RGBA8;
                 case DataFormatType::UINT:
                     return GL_RGBA32UI;
+                case DataFormatType::INT:
+                    return GL_RGBA32I;
                 case DataFormatType::FLOAT16:
                     return GL_RGBA16F;
                 case DataFormatType::FLOAT32:

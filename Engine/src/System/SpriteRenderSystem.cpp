@@ -17,14 +17,15 @@ void SpriteRenderSystem::OnRender() {
 
     device->SetTarget(renderer->GetDefaultTarget());
     renderer->Begin(*scene->GetCamera());
-    textView.each([this](const TransformComponent &transformComp,
+    textView.each([this](entt::entity entity_id,
+                         const TransformComponent &transformComp,
                          const TextComponent &textComp) {
         renderer->SetTextOrigin(0, 0);
         auto font = asset->Get<Font>(textComp.id);
         if (font) {
             renderer->DrawText(*font, textComp.text,
                                transformComp.GetWorldTransform().GetMatrix(),
-                               textComp.color);
+                               textComp.color, static_cast<int>(entity_id));
         }
     });
     renderer->End();
@@ -47,12 +48,15 @@ void SpriteRenderSystem::OnRender() {
                 return l_p < r_p;
             }
         });
-    tilemap_comp.each([this](const SpriteComponent &sprite_comp,
+    tilemap_comp.each([this](entt::entity entity_id,
+                             const SpriteComponent &sprite_comp,
                              const TransformComponent &transform_comp) {
-        renderer->DrawTexture(
-            asset->Get<Sprite>(sprite_comp.id)->GetTexture(), sprite_comp.uvs,
-            transform_comp.GetWorldPosition(),
-            transform_comp.GetWorldRotation(), sprite_comp.size);
+        int id = static_cast<int>(entity_id);
+        renderer->DrawTexture(asset->Get<Sprite>(sprite_comp.id)->GetTexture(),
+                              sprite_comp.uvs,
+                              transform_comp.GetWorldPosition(),
+                              transform_comp.GetWorldRotation(),
+                              sprite_comp.size, glm::vec4(1.0f), id);
     });
     renderer->End();
     device->Enable(SD::Operation::DEPTH_TEST);

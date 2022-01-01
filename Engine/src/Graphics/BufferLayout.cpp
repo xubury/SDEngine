@@ -4,9 +4,10 @@ namespace SD {
 
 uint32_t GetBufferDataSize(BufferLayoutType type) {
     switch (type) {
-        case BufferLayoutType::UCHAR:
+        case BufferLayoutType::UBYTE:
             return 1;
         case BufferLayoutType::UINT:
+        case BufferLayoutType::INT:
         case BufferLayoutType::FLOAT:
             return 4;
         case BufferLayoutType::FLOAT2:
@@ -20,8 +21,9 @@ uint32_t GetBufferDataSize(BufferLayoutType type) {
 }
 uint32_t GetComponentCount(BufferLayoutType type) {
     switch (type) {
-        case BufferLayoutType::UCHAR:
+        case BufferLayoutType::UBYTE:
         case BufferLayoutType::UINT:
+        case BufferLayoutType::INT:
         case BufferLayoutType::FLOAT:
             return 1;
         case BufferLayoutType::FLOAT2:

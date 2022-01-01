@@ -95,9 +95,16 @@ void TileMapSystem::OnImGui() {
         }
 
         int priority = m_brush.GetPriority();
-        ImGui::TextUnformatted("Prioirty");
+        ImGui::TextUnformatted("Brush Prioirty");
+        ImGui::SameLine();
         if (ImGui::InputInt("##Priority", &priority)) {
             m_brush.SetPriority(priority);
+        }
+        glm::ivec2 size = m_brush.canvas.GetTileSize();
+        ImGui::TextUnformatted("Cavnas Tile Size:");
+        ImGui::SameLine();
+        if (ImGui::InputInt2("##Canvas Tile Size", &size.x)) {
+            m_brush.canvas.SetTileSize(size);
         }
 
         auto sprite = asset->Get<Sprite>(m_brush.sprite_id);
