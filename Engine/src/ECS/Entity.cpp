@@ -23,12 +23,6 @@ void Entity::Destroy(bool is_root) {
     m_scene->destroy(*this);
 }
 
-Entity Entity::CreateChild(const std::string &name) {
-    Entity child = m_scene->CreateEntity(name);
-    AddChild(child);
-    return child;
-}
-
 void Entity::AddChild(Entity &child) {
     if (*this == child) return;
     auto &parent_data = GetComponent<TransformComponent>();

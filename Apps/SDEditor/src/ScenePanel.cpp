@@ -138,7 +138,8 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
             m_entity_to_destroy = entity;
         }
         if (ImGui::MenuItem("Create Empty Entity")) {
-            entity.CreateChild("Empty Entity");
+           Entity child = scene->CreateEntity("Empty Entity");
+           entity.AddChild(child);
         }
 
         ImGui::EndPopup();
@@ -251,14 +252,6 @@ void ScenePanel::DrawComponents(Entity &entity) {
                     m_height, 0.1f, 1000.f);
             else
                 SD_CORE_WARN("This entity already has the Camera Component!");
-            ImGui::CloseCurrentPopup();
-        }
-        if (ImGui::MenuItem("Tile Layout")) {
-            if (!entity.HasComponent<TileLayoutComponent>())
-                entity.AddComponent<TileLayoutComponent>();
-            else
-                SD_CORE_WARN(
-                    "This entity already has the Tile Layout Component!");
             ImGui::CloseCurrentPopup();
         }
 
@@ -458,14 +451,6 @@ void ScenePanel::DrawComponents(Entity &entity) {
         "Sprite", entity, [&](SpriteComponent &sprite_comp) {
             ImGui::TextUnformatted("Prioirty");
             ImGui::InputInt("##Priority", &sprite_comp.priority);
-        });
-    DrawComponent<TileLayoutComponent>(
-        "Tile Layout", entity, [&](TileLayoutComponent &tile_map_comp) {
-            glm::ivec2 tile_size = tile_map_comp.layout.GetTileSize();
-            ImGui::TextUnformatted("Tile Size:");
-            if (ImGui::InputInt2("##Size", &tile_size.x)) {
-                tile_map_comp.layout.SetTileSize(tile_size);
-            }
         });
 }
 

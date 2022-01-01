@@ -102,8 +102,8 @@ bool DrawTileTexture(const SD::Texture &texture, std::array<glm::vec2, 2> &uvs,
     wsize.y = texture.GetHeight() * ASPECT;
     const glm::vec2 scaled_tile_size = glm::vec2(tile_size) * ASPECT;
 
-    int cols = std::floor(wsize.x / scaled_tile_size.x);
-    int rows = std::floor(wsize.y / scaled_tile_size.y);
+    int cols = std::ceil(wsize.x / scaled_tile_size.x);
+    int rows = std::ceil(wsize.y / scaled_tile_size.y);
     ImDrawList *DrawList = ImGui::GetWindowDrawList();
     ImGuiWindow *window = ImGui::GetCurrentWindow();
 
@@ -146,8 +146,10 @@ bool DrawTileTexture(const SD::Texture &texture, std::array<glm::vec2, 2> &uvs,
                 selected_cnt.y = 1;
             } else if (ImGui::IsMouseClicked(1)) {
                 pivot = glm::floor(image_pos / glm::vec2(tile_size));
-                pivot.x -= std::round(uvs[0].x * cols);
-                pivot.y -= std::round(uvs[0].y * rows);
+                pivot.x -=
+                    std::floor(uvs[0].x * texture.GetWidth() / tile_size.x);
+                pivot.y -=
+                    std::floor(uvs[0].y * texture.GetHeight() / tile_size.y);
             }
             if (ImGui::IsMouseDown(0)) {
                 uvs[0] = glm::floor(image_pos / glm::vec2(tile_size));

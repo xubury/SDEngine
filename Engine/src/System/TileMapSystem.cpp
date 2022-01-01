@@ -36,18 +36,14 @@ TileMapSystem::TileMapSystem()
 
 void TileMapSystem::OnTick(float) {}
 
-void TileMapSystem::OnPush() {
-    m_entity_select_handler = dispatcher->Register<EntitySelectEvent>(
-        [this](const EntitySelectEvent &e) {
-            m_brush.target = {e.entity_id, e.scene};
-        });
-}
+void TileMapSystem::OnInit() { m_brush.scene = scene.get(); }
+
+void TileMapSystem::OnPush() {}
 
 void TileMapSystem::OnPop() {}
 
 void TileMapSystem::OnImGui() {
-    if (m_viewport && m_viewport->IsHover() && m_brush.target &&
-        m_brush.target.HasComponent<TileLayoutComponent>()) {
+    if (m_viewport && m_viewport->IsHover()) {
         glm::vec2 clip = m_viewport->MapScreenToClip(
             glm::ivec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y));
         if (std::abs(clip.x) > 1 || std::abs(clip.y) > 1) {
@@ -119,50 +115,17 @@ void TileMapSystem::OnRender() {
     renderer->Begin(*scene->GetCamera());
 
     // draw brush & outline
-    const Entity &entity = m_brush.target;
-    if (entity && entity.HasComponent<TileLayoutComponent>()) {
-        auto &layout = entity.GetComponent<TileLayoutComponent>().layout;
-        auto &transform = entity.GetComponent<TransformComponent>();
-        const glm::ivec2 TILE_SIZE = layout.GetTileSize();
+    const glm::ivec2 TILE_SIZE = m_brush.canvas.GetTileSize();
 
-        const glm::vec2 BRUSH_SIZE = TILE_SIZE * m_brush.count;
-        glm::vec3 select_pos(m_brush.GetSelectTilePos(), 0);
-        glm::vec3 offset(BRUSH_SIZE.x / 2 - TILE_SIZE.x / 2.f,
-                         -BRUSH_SIZE.y / 2 + TILE_SIZE.y / 2.f, 0);
-        select_pos =
-            layout.TileToWorld(select_pos, &transform.GetWorldTransform()) +
-            transform.GetWorldTransform().LocalToWorldVector(offset);
+    const glm::vec2 BRUSH_SIZE = TILE_SIZE * m_brush.count;
+    glm::vec3 world;
+    if (m_brush.GetSelectPos(world)) {
         if (m_operation == Operation::ADD_ENTITY) {
             auto sprite = asset->Get<Sprite>(m_brush.sprite_id);
             if (sprite) {
-                renderer->DrawTexture(sprite->GetTexture(), m_brush.uvs,
-                                      select_pos, transform.GetWorldRotation(),
-                                      BRUSH_SIZE);
+                renderer->DrawTexture(sprite->GetTexture(), m_brush.uvs, world,
+                                      glm::quat(), BRUSH_SIZE);
             }
-        }
-
-        if (m_draw_outline) {
-            int render_width = renderer->GetDefaultTarget().GetWidth();
-            int render_height = renderer->GetDefaultTarget().GetHeight();
-            const glm::ivec2 TILE_CNT(
-                std::ceil(static_cast<float>(render_width) / TILE_SIZE.x) + 1,
-                std::ceil(static_cast<float>(render_height) / TILE_SIZE.y) + 1);
-            const glm::vec2 TEX_SIZE = TILE_CNT * TILE_SIZE;
-
-            const glm::vec3 cam_pos = scene->GetCamera()->GetWorldPosition();
-            glm::vec2 uv_origin(cam_pos.x / TILE_SIZE.x,
-                                -cam_pos.y / TILE_SIZE.y);
-            const glm::vec3 outline_pos(
-                TEX_SIZE.x / 2.f + cam_pos.x - TILE_SIZE.x / 2.f -
-                    TILE_SIZE.x * std::floor(TILE_CNT.x / 2.f),
-                -TEX_SIZE.y / 2.f + cam_pos.y + TILE_SIZE.y / 2.f +
-                    TILE_SIZE.y * std::floor(TILE_CNT.y / 2.f),
-                0);
-            renderer->DrawTexture(
-                m_outline_texture, {uv_origin, glm::vec2(TILE_CNT) + uv_origin},
-                transform.GetWorldTransform().LocalToWorld(outline_pos),
-                transform.GetWorldRotation(), TEX_SIZE,
-                glm::vec4(1, 1, 1, 0.7));
         }
         // Draw selection
         glm::vec4 select_color(1.0);
@@ -176,9 +139,29 @@ void TileMapSystem::OnRender() {
             } break;
         }
         if (m_operation != Operation::NONE) {
-            renderer->DrawQuad(select_pos, transform.GetWorldRotation(),
-                               BRUSH_SIZE, select_color);
+            renderer->DrawQuad(world, glm::quat(), BRUSH_SIZE, select_color);
         }
+    }
+
+    if (m_draw_outline) {
+        int render_width = renderer->GetDefaultTarget().GetWidth();
+        int render_height = renderer->GetDefaultTarget().GetHeight();
+        const glm::ivec2 TILE_CNT(
+            std::ceil(static_cast<float>(render_width) / TILE_SIZE.x) + 1,
+            std::ceil(static_cast<float>(render_height) / TILE_SIZE.y) + 1);
+        const glm::vec2 TEX_SIZE = TILE_CNT * TILE_SIZE;
+
+        const glm::vec3 cam_pos = scene->GetCamera()->GetWorldPosition();
+        glm::vec2 uv_origin(cam_pos.x / TILE_SIZE.x, -cam_pos.y / TILE_SIZE.y);
+        const glm::vec3 outline_pos(
+            TEX_SIZE.x / 2.f + cam_pos.x - TILE_SIZE.x / 2.f -
+                TILE_SIZE.x * std::floor(TILE_CNT.x / 2.f),
+            -TEX_SIZE.y / 2.f + cam_pos.y + TILE_SIZE.y / 2.f +
+                TILE_SIZE.y * std::floor(TILE_CNT.y / 2.f),
+            0);
+        renderer->DrawTexture(
+            m_outline_texture, {uv_origin, glm::vec2(TILE_CNT) + uv_origin},
+            outline_pos, glm::quat(), TEX_SIZE, glm::vec4(1, 1, 1, 0.7));
     }
     renderer->End();
     device->Enable(SD::Operation::DEPTH_TEST);

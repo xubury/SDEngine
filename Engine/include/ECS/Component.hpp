@@ -12,8 +12,6 @@
 #include "Renderer/Terrain.hpp"
 #include "Renderer/Light.hpp"
 #include "Renderer/Skybox.hpp"
-#include "TileMap/Tile.hpp"
-#include "TileMap/TileLayout.hpp"
 
 #include "entt/entt.hpp"
 
@@ -34,6 +32,10 @@ struct SD_ECS_API TagComponent {
 };
 
 struct SD_ECS_API TransformComponent {
+    void OnComponentAdded(entt::registry& reg, entt::entity ent) {
+        auto& data = reg.get<TransformComponent>(ent);
+        data.ecs = &reg;
+    }
     std::set<entt::entity> children;
     entt::entity parent;
     entt::registry* ecs{nullptr};
@@ -128,10 +130,24 @@ struct SD_ECS_API SpriteComponent {
     SERIALIZE(id, uvs, size, priority)
 };
 
-struct SD_ECS_API TileLayoutComponent {
-    TileLayout<entt::entity> layout;
-    SERIALIZE(layout)
-};
+template <typename T>
+void OnComponentAdded(entt::registry&, entt::entity) {}
+
+template <>
+inline void OnComponentAdded<TransformComponent>(entt::registry& reg,
+                                                 entt::entity ent) {
+    auto& data = reg.get<TransformComponent>(ent);
+    data.ecs = &reg;
+}
+
+template <>
+inline void OnComponentAdded<LightComponent>(entt::registry& reg,
+                                             entt::entity ent) {
+    auto& lightComp = reg.get<LightComponent>(ent);
+    if (lightComp.light.IsCastShadow()) {
+        lightComp.light.CreateShadowMap();
+    }
+}
 
 }  // namespace SD
 

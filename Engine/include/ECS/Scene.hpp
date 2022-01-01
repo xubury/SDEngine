@@ -50,10 +50,8 @@ class SD_ECS_API Scene : public entt::registry {
             m_serialize_functions[id]
                 .second.template connect<&Scene::DeserializeComponent<T>>(this);
         }
+        on_construct<T>().template connect<&OnComponentAdded<T>>();
     }
-
-    void OnTransformComponentAdded(entt::registry &reg, entt::entity ent);
-    void OnLightComponentAdded(entt::registry &reg, entt::entity ent);
 
    private:
     template <typename T>

@@ -8,11 +8,7 @@
 
 namespace SD {
 
-Scene::Scene() : m_selected_entity(Entity::INVALID_ID) {
-    on_construct<TransformComponent>()
-        .connect<&Scene::OnTransformComponentAdded>(this);
-    on_construct<LightComponent>().connect<&Scene::OnLightComponentAdded>(this);
-}
+Scene::Scene() : m_selected_entity(Entity::INVALID_ID) {}
 
 Entity Scene::CreateEntity(const std::string &name) {
     Entity entity(create(), this);
@@ -40,18 +36,6 @@ void Scene::Load(const std::string &filePath) {
     loader.entities(archive);
     for (auto &func : m_serialize_functions) {
         func.second.second(loader, archive);
-    }
-}
-
-void Scene::OnTransformComponentAdded(entt::registry &reg, entt::entity ent) {
-    auto &data = reg.get<TransformComponent>(ent);
-    data.ecs = this;
-}
-
-void Scene::OnLightComponentAdded(entt::registry &reg, entt::entity ent) {
-    auto &lightComp = reg.get<LightComponent>(ent);
-    if (lightComp.light.IsCastShadow()) {
-        lightComp.light.CreateShadowMap();
     }
 }
 
