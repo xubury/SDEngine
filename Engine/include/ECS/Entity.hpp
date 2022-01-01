@@ -9,9 +9,6 @@ namespace SD {
 
 class SD_ECS_API Entity {
    public:
-    static const entt::entity INVALID_ID;
-
-   public:
     Entity();
 
     Entity(entt::entity handle, Scene *scene);

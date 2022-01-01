@@ -350,11 +350,18 @@ void EditorLayer::OpenSaveSceneDialog() {
 
 void EditorLayer::ProcessDialog() {
     if (ImGui::FileDialog(&m_load_scene_open, &m_file_dialog_info)) {
-        scene->Load(m_file_dialog_info.result_path.string());
+        scene->clear();
+        std::ifstream is(m_file_dialog_info.result_path.string(),
+                         std::ios::binary);
+        cereal::PortableBinaryInputArchive archive(is);
+        scene->Deserialize(archive);
         m_scene_panel->Reset();
     }
     if (ImGui::FileDialog(&m_save_scene_open, &m_file_dialog_info)) {
-        scene->Save(m_file_dialog_info.result_path.string());
+        std::ofstream os(m_file_dialog_info.result_path.string(),
+                         std::ios::binary);
+        cereal::PortableBinaryOutputArchive archive(os);
+        scene->Serialize(archive);
     }
 }
 
@@ -432,7 +439,7 @@ void EditorLayer::DrawViewport() {
             auto [mouseX, mouseY] = ImGui::GetMousePos();
             mouseX -= m_viewport.GetLeft();
             mouseY = m_viewport.GetHeight() - mouseY + m_viewport.GetTop();
-            entt::entity entity_id = Entity::INVALID_ID;
+            entt::entity entity_id = entt::null;
             auto entity_tex =
                 m_debug_gbuffer->GetTexture(GeometryBufferType::G_ENTITY_ID);
             // out of bound check
@@ -441,7 +448,7 @@ void EditorLayer::DrawViewport() {
                 entity_tex->ReadPixels(0, mouseX, mouseY, 0, 1, 1, 1,
                                        sizeof(entity_id), &entity_id);
             }
-            if (entity_id != Entity::INVALID_ID) {
+            if (entity_id != entt::null) {
                 dispatcher->PublishEvent(
                     EntitySelectEvent{entity_id, scene.get()});
             }

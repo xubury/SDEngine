@@ -3,8 +3,6 @@
 
 namespace SD {
 
-const entt::entity Entity::INVALID_ID = entt::null;
-
 Entity::Entity() : m_handle(entt::null), m_scene(nullptr) {}
 
 Entity::Entity(entt::entity handle, Scene *scene)

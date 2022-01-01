@@ -8,7 +8,7 @@
 
 namespace SD {
 
-Scene::Scene() : m_selected_entity(Entity::INVALID_ID) {}
+Scene::Scene() : m_selected_entity(entt::null) {}
 
 Entity Scene::CreateEntity(const std::string &name) {
     Entity entity(create(), this);
@@ -18,9 +18,7 @@ Entity Scene::CreateEntity(const std::string &name) {
     return entity;
 }
 
-void Scene::Save(const std::string &filePath) {
-    std::ofstream os(filePath, std::ios::binary);
-    cereal::PortableBinaryOutputArchive archive(os);
+void Scene::Serialize(cereal::PortableBinaryOutputArchive &archive) {
     entt::snapshot loader{*this};
     loader.entities(archive);
     for (auto &func : m_serialize_functions) {
@@ -28,10 +26,7 @@ void Scene::Save(const std::string &filePath) {
     }
 }
 
-void Scene::Load(const std::string &filePath) {
-    clear();
-    std::ifstream is(filePath, std::ios::binary);
-    cereal::PortableBinaryInputArchive archive(is);
+void Scene::Deserialize(cereal::PortableBinaryInputArchive &archive) {
     entt::snapshot_loader loader{*this};
     loader.entities(archive);
     for (auto &func : m_serialize_functions) {

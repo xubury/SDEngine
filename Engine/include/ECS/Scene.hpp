@@ -31,9 +31,9 @@ class SD_ECS_API Scene : public entt::registry {
 
     Entity CreateEntity(const std::string &name);
 
-    void Load(const std::string &filePath);
+    void Serialize(cereal::PortableBinaryOutputArchive &archive);
 
-    void Save(const std::string &filePath);
+    void Deserialize(cereal::PortableBinaryInputArchive &archive);
 
     void SetCamera(Camera *camera);
 

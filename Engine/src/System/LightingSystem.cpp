@@ -229,7 +229,7 @@ void LightingSystem::Clear() {
     device->SetFramebuffer(m_gbuffer_target.GetFramebuffer());
     device->Clear(BufferBitMask::COLOR_BUFFER_BIT |
                   BufferBitMask::DEPTH_BUFFER_BIT);
-    uint32_t id = static_cast<uint32_t>(Entity::INVALID_ID);
+    uint32_t id = static_cast<uint32_t>(entt::null);
     m_gbuffer_target.GetFramebuffer()->ClearAttachment(
         GeometryBufferType::G_ENTITY_ID, &id);
 }
