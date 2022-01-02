@@ -6,8 +6,7 @@ const int SHADOW_MAP_WIDTH = 8192;
 const int SHADOW_MAP_HEIGHT = 8192;
 
 Light::Light()
-    : m_shadow_target(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT),
-      m_is_cast_shadow(false),
+    : m_is_cast_shadow(false),
       m_is_directional(false),
       m_ambient(1.0f),
       m_diffuse(1.0f),
@@ -69,19 +68,17 @@ float Light::GetQuadratic() const { return m_quadratic; }
 
 void Light::CreateShadowMap() {
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    m_shadow_target.AddTexture(
+    m_shadow_map = Framebuffer::Create(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
+    m_shadow_map->Attach(
         TextureSpec(1, TextureType::TEX_2D, DataFormat::DEPTH,
                     DataFormatType::FLOAT16, TextureWrap::BORDER,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
-    m_shadow_target.CreateFramebuffer();
-    m_shadow_target.GetTexture()->SetBorderColor(&color);
+    m_shadow_map->GetTexture()->SetBorderColor(&color);
 }
 
-void Light::DestroyShadowMap() { m_shadow_target.Clear(); }
+void Light::DestroyShadowMap() { m_shadow_map.reset(); }
 
-Texture *Light::GetShadowMap() const {
-    return m_is_cast_shadow ? m_shadow_target.GetTexture() : nullptr;
-}
+Framebuffer *Light::GetShadowMap() const { return m_shadow_map.get(); }
 
 void Light::ComputeLightSpaceMatrix(const Transform &transform,
                                     const Camera *camera) {

@@ -12,7 +12,7 @@ namespace SD {
 
 class SD_GRAPHICS_API Framebuffer {
    public:
-    static Ref<Framebuffer> Create();
+    static Ref<Framebuffer> Create(int width, int height);
 
     virtual ~Framebuffer() = default;
 
@@ -24,9 +24,9 @@ class SD_GRAPHICS_API Framebuffer {
     virtual int GetWidth() const = 0;
     virtual int GetHeight() const = 0;
 
-    virtual void AttachTexture(const Ref<Texture> &texture) = 0;
+    virtual void Attach(const TextureSpec &spec) = 0;
 
-    virtual void AttachRenderbuffer(const Ref<Renderbuffer> &renderbuffer) = 0;
+    virtual void Attach(const RenderbufferSpec &renderbuffer) = 0;
 
     virtual void ReadPixels(uint32_t attachment_id, int level, int x, int y,
                             int z, int w, int h, int d, size_t size,

@@ -25,11 +25,7 @@ class SD_SYSTEM_API TileMapSystem : public System {
     void OnImGui() override;
     void OnRender() override;
 
-    void SetViewport(const Viewport *viewport) { m_viewport = viewport; }
-
    private:
-    const Viewport *m_viewport;
-
     Ref<Texture> m_outline_texture;
 
     TileBrush m_brush;

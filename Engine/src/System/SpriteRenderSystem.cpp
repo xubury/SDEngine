@@ -31,7 +31,7 @@ void SpriteRenderSystem::OnRender() {
     renderer->End();
 
     // draw tile map
-    device->Disable(SD::Operation::DEPTH_TEST);
+    device->SetDepthMask(false);
     renderer->Begin(*scene->GetCamera());
     auto tilemap_comp = scene->view<SpriteComponent, TransformComponent>();
     scene->sort<SpriteComponent>(
@@ -59,7 +59,7 @@ void SpriteRenderSystem::OnRender() {
                               sprite_comp.size, glm::vec4(1.0f), id);
     });
     renderer->End();
-    device->Enable(SD::Operation::DEPTH_TEST);
+    device->SetDepthMask(true);
 }
 
 }  // namespace SD

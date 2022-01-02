@@ -44,8 +44,7 @@ void EditorLayer::PushSystems() {
         // engine logic system
         m_camera_system = CreateSystem<CameraSystem>();
         // normal render systems
-        m_lighting_system =
-            CreateSystem<LightingSystem>(m_width, m_height, m_msaa);
+        m_lighting_system = CreateSystem<LightingSystem>(m_width, m_height);
         m_skybox_system = CreateSystem<SkyboxSystem>();
         m_sprite_system = CreateSystem<SpriteRenderSystem>();
         m_post_process_system =
@@ -54,8 +53,8 @@ void EditorLayer::PushSystems() {
 
         PushSystem(m_camera_system);
         PushSystem(m_lighting_system);
-        PushSystem(m_skybox_system);
         PushSystem(m_sprite_system);
+        PushSystem(m_skybox_system);
         PushSystem(m_post_process_system);
         PushSystem(m_profile_system);
 
@@ -79,7 +78,6 @@ void EditorLayer::PushSystems() {
         PushSystem(m_profile_system);
 
         m_editor_camera_system->AllowRotate(false);
-        m_tile_map_system->SetViewport(&m_viewport);
     }
 }
 
@@ -307,27 +305,23 @@ void EditorLayer::SetViewportSize(uint32_t left, uint32_t top, uint32_t width,
     event.width = width;
     event.height = height;
     dispatcher->PublishEvent(event);
-    m_viewport.SetSize(left, top, width, height);
+    renderer->GetViewport().SetSize(left, top, width, height);
     renderer->GetDefaultTarget().SetSize(width, height);
-    m_screen_buffer = Framebuffer::Create();
-    m_screen_buffer->AttachTexture(Texture::Create(
-        width, height,
+    m_screen_buffer = Framebuffer::Create(width, height);
+    m_screen_buffer->Attach(
         TextureSpec(1, TextureType::TEX_2D, DataFormat::RGB,
                     DataFormatType::UBYTE, TextureWrap::EDGE,
-                    TextureMagFilter::NEAREST, TextureMinFilter::NEAREST)));
-    m_screen_buffer->AttachTexture(Texture::Create(
-        width, height,
-        TextureSpec(1, TextureType::TEX_2D, DataFormat::RED,
-                    DataFormatType::INT, TextureWrap::EDGE,
-                    TextureMagFilter::NEAREST, TextureMinFilter::NEAREST)));
-    m_debug_gbuffer = Framebuffer::Create();
+                    TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
+    m_screen_buffer->Attach(TextureSpec(1, TextureType::TEX_2D, DataFormat::RED,
+                                        DataFormatType::INT, TextureWrap::EDGE,
+                                        TextureMagFilter::NEAREST,
+                                        TextureMinFilter::NEAREST));
+    m_debug_gbuffer = Framebuffer::Create(width, height);
     for (int i = 0; i <= GeometryBufferType::G_ENTITY_ID; ++i) {
-        m_debug_gbuffer->AttachTexture(Texture::Create(
-            width, height,
-            TextureSpec(
-                1, TextureType::TEX_2D, GetTextureFormat(GeometryBufferType(i)),
-                GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
-                TextureMagFilter::NEAREST, TextureMinFilter::NEAREST)));
+        m_debug_gbuffer->Attach(TextureSpec(
+            1, TextureType::TEX_2D, GetTextureFormat(GeometryBufferType(i)),
+            GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
+            TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     }
 
     m_width = width;
@@ -427,12 +421,15 @@ void EditorLayer::DrawViewport() {
                                 wsize.y);
             }
         }
-        m_viewport.SetFocus(ImGui::IsWindowFocused());
-        m_viewport.SetHover(ImGui::IsWindowHovered() && !ImGuizmo::IsOver());
+        renderer->GetViewport().SetFocus(ImGui::IsWindowFocused());
+        renderer->GetViewport().SetHover(ImGui::IsWindowHovered() &&
+                                         !ImGuizmo::IsOver());
         ImGui::DrawTexture(*m_screen_buffer->GetTexture(), wsize, ImVec2(0, 1),
                            ImVec2(1, 0));
-        ImGuizmo::SetRect(m_viewport.GetLeft(), m_viewport.GetTop(),
-                          m_viewport.GetWidth(), m_viewport.GetHeight());
+        ImGuizmo::SetRect(renderer->GetViewport().GetLeft(),
+                          renderer->GetViewport().GetTop(),
+                          renderer->GetViewport().GetWidth(),
+                          renderer->GetViewport().GetHeight());
         ImGuizmo::SetDrawlist();
 
         if (m_selected_entity) {
@@ -452,10 +449,11 @@ void EditorLayer::DrawViewport() {
                 tc.SetWorldTransform(transform);
             }
         }
-        if (ImGui::IsMouseDown(0) && m_viewport.IsHover()) {
+        if (ImGui::IsMouseDown(0) && renderer->GetViewport().IsHover()) {
             auto [mouseX, mouseY] = ImGui::GetMousePos();
-            mouseX -= m_viewport.GetLeft();
-            mouseY = m_viewport.GetHeight() - mouseY + m_viewport.GetTop();
+            mouseX -= renderer->GetViewport().GetLeft();
+            mouseY = renderer->GetViewport().GetHeight() - mouseY +
+                     renderer->GetViewport().GetTop();
             entt::entity entity_id = entt::null;
             auto entity_tex = m_screen_buffer->GetTexture(1);
             // out of bound check

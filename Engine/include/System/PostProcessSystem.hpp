@@ -41,14 +41,18 @@ class SD_SYSTEM_API PostProcessSystem : public System {
     void RenderBlur();
     void RenderPost();
 
+    void InitBuffers();
+
+    int m_width;
+    int m_height;
     Ref<Shader> m_post_shader;
 
     Ref<Shader> m_blur_shader;
 
-    RenderTarget m_blur_target[2];
+    Ref<Framebuffer> m_blur_buffer[2];
     Texture *m_blur_result;
 
-    RenderTarget m_post_target;
+    Ref<Framebuffer> m_post_buffer;
 
     Ref<VertexArray> m_quad;
 

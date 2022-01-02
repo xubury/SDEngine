@@ -3,11 +3,11 @@
 
 namespace SD {
 
-Ref<Framebuffer> Framebuffer::Create() {
+Ref<Framebuffer> Framebuffer::Create(int width, int height) {
     Ref<Framebuffer> frameBuffer;
     switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
-            frameBuffer = CreateRef<GLFramebuffer>();
+            frameBuffer = CreateRef<GLFramebuffer>(width, height);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");

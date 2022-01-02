@@ -446,12 +446,10 @@ void Renderer::DrawCircle(const glm::mat4& transform, const glm::vec4& color,
 
 void Renderer::RenderToScreen() {
     m_device->ReadBuffer(m_target.GetFramebuffer(), 0);
-    m_device->DrawBuffer(nullptr, 0);
     m_device->BlitFramebuffer(
         m_target.GetFramebuffer(), 0, 0, m_target.GetWidth(),
         m_target.GetHeight(), nullptr, 0, 0, m_target.GetWidth(),
-        m_target.GetHeight(),
-        BufferBitMask::COLOR_BUFFER_BIT | BufferBitMask::DEPTH_BUFFER_BIT,
+        m_target.GetHeight(), BufferBitMask::COLOR_BUFFER_BIT,
         BlitFilter::NEAREST);
 }
 

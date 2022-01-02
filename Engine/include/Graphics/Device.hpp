@@ -38,8 +38,6 @@ class SD_GRAPHICS_API Device {
 
     virtual void SetViewport(const Viewport &viewport) = 0;
 
-    virtual Viewport GetViewport(const RenderTarget &target) = 0;
-
     virtual void SetFramebuffer(Framebuffer *framebuffer) = 0;
 
     virtual void SetPolygonMode(PolygonMode mode, Face face) = 0;

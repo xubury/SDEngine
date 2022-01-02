@@ -1,6 +1,7 @@
 #include "Graphics/OpenGL/GLDevice.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
 #include "Graphics/Texture.hpp"
+#include "Graphics/OpenGL/GLFramebuffer.hpp"
 #include <GL/glew.h>
 
 namespace SD {
@@ -73,11 +74,6 @@ void GLDevice::Clear(BufferBitMask bit) {
             Translate(bit & BufferBitMask::STENCIL_BUFFER_BIT));
 }
 
-Viewport GLDevice::GetViewport(const RenderTarget &target) {
-    return Viewport(0, m_context->GetHeight() - target.GetHeight(),
-                    target.GetWidth(), target.GetHeight());
-}
-
 void GLDevice::SetViewport(const Viewport &viewport) {
     // opengl define viewport origin at bottom-left
     glViewport(
@@ -89,8 +85,20 @@ void GLDevice::SetViewport(const Viewport &viewport) {
 void GLDevice::SetFramebuffer(Framebuffer *framebuffer) {
     if (framebuffer) {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->GetId());
+        glViewport(0, 0, framebuffer->GetWidth(), framebuffer->GetHeight());
+        if (glCheckNamedFramebufferStatus(framebuffer->GetId(),
+                                          GL_FRAMEBUFFER) !=
+            GL_FRAMEBUFFER_COMPLETE) {
+            SD_CORE_ERROR("FrameBuffer is not complete!");
+        }
+        GLFramebuffer *glfb = dynamic_cast<GLFramebuffer *>(framebuffer);
+        const auto &drawables = glfb->GetDrawables();
+        glNamedFramebufferDrawBuffers(glfb->GetId(), drawables.size(),
+                                      drawables.data());
+
     } else {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, m_context->GetWidth(), m_context->GetHeight());
     }
 }
 

@@ -11,7 +11,7 @@ class GLTexture;
 
 class GLFramebuffer : public Framebuffer {
    public:
-    GLFramebuffer();
+    GLFramebuffer(int width, int height);
     virtual ~GLFramebuffer();
 
     uint32_t GetId() const override { return m_id; }
@@ -19,9 +19,9 @@ class GLFramebuffer : public Framebuffer {
     int GetWidth() const override { return m_width; }
     int GetHeight() const override { return m_height; }
 
-    void AttachTexture(const Ref<Texture> &texture) override;
+    void Attach(const TextureSpec &spec) override;
 
-    void AttachRenderbuffer(const Ref<Renderbuffer> &renderbuffer) override;
+    void Attach(const RenderbufferSpec &renderbuffer) override;
 
     void ReadPixels(uint32_t attachment_id, int level, int x, int y, int z,
                     int w, int h, int d, size_t size,
@@ -37,12 +37,15 @@ class GLFramebuffer : public Framebuffer {
     Texture *GetTexture(uint32_t attachment_id) override;
     const Texture *GetTexture(uint32_t attachment_id) const override;
 
+    const std::vector<GLenum> &GetDrawables() const { return m_drawables; }
+
    private:
     GLuint m_id;
     int m_width;
     int m_height;
     uint32_t m_texture_cnt;
     std::vector<Ref<void>> m_attachments;
+    std::vector<GLenum> m_drawables;
 };
 
 }  // namespace SD

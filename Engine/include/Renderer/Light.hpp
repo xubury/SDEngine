@@ -51,9 +51,7 @@ class SD_RENDERER_API Light {
     void ComputeLightSpaceMatrix(const Transform &transform,
                                  const Camera *camera);
 
-    Texture *GetShadowMap() const;
-
-    RenderTarget &GetRenderTarget() { return m_shadow_target; };
+    Framebuffer *GetShadowMap() const;
 
     SERIALIZE(m_ambient, m_diffuse, m_specular, m_cutoff, m_outer_cutoff,
               m_constant, m_linear, m_quadratic, m_is_directional,
@@ -63,7 +61,7 @@ class SD_RENDERER_API Light {
     static void ComputeBoundingBox(const Transform &transform,
                                    const Camera &camera, glm::vec3 &min,
                                    glm::vec3 &max);
-    RenderTarget m_shadow_target;
+    Ref<Framebuffer> m_shadow_map;
     glm::mat4 m_projection_view;
 
     bool m_is_cast_shadow;

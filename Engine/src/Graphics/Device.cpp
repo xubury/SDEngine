@@ -20,9 +20,6 @@ Device::Device(Context *context) : m_context(context) {}
 
 void Device::SetTarget(RenderTarget &target) {
     SetFramebuffer(target.GetFramebuffer());
-    SetViewport(GetViewport(target));
-    const auto &drawables = target.GetDrawables();
-    DrawBuffers(target.GetFramebuffer(), drawables.size(), drawables.data());
 }
 
 glm::ivec2 Device::GetSize() const { return m_context->GetSize(); }

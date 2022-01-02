@@ -6,23 +6,13 @@ RenderTarget::RenderTarget(int width, int height)
     : m_width(width), m_height(height) {}
 
 void RenderTarget::CreateFramebuffer() {
-    m_framebuffer = Framebuffer::Create();
-    m_drawables.clear();
+    m_framebuffer = Framebuffer::Create(m_width, m_height);
 
     for (const auto &spec : m_texture_specs) {
-        m_framebuffer->AttachTexture(Texture::Create(m_width, m_height, spec));
-        if (spec.format != DataFormat::DEPTH &&
-            spec.format != DataFormat::DEPTH_STENCIL) {
-            m_drawables.push_back(m_drawables.size());
-        }
+        m_framebuffer->Attach(spec);
     }
     for (const auto &spec : m_renderbuffer_specs) {
-        m_framebuffer->AttachRenderbuffer(
-            Renderbuffer::Create(m_width, m_height, spec));
-        if (spec.format != DataFormat::DEPTH &&
-            spec.format != DataFormat::DEPTH_STENCIL) {
-            m_drawables.push_back(m_drawables.size());
-        }
+        m_framebuffer->Attach(spec);
     }
 }
 

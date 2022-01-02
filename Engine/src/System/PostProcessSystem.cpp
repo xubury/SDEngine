@@ -6,24 +6,13 @@ namespace SD {
 
 PostProcessSystem::PostProcessSystem(int width, int height)
     : System("PostProcessSystem"),
-      m_blur_target{{width, height}, {width, height}},
+      m_width(width),
+      m_height(height),
       m_blur_result(nullptr),
-      m_post_target(width, height),
       m_is_bloom(true),
       m_bloom_factor(1.0f),
       m_exposure(1.2),
       m_gamma_correction(1.2) {
-    for (int i = 0; i < 2; ++i) {
-        m_blur_target[i].AddTexture(
-            TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
-                        DataFormatType::FLOAT16, TextureWrap::EDGE));
-        m_blur_target[i].CreateFramebuffer();
-    }
-    m_post_target.AddTexture(
-        TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
-                    DataFormatType::FLOAT16, TextureWrap::EDGE));
-    m_post_target.CreateFramebuffer();
-
     const float quadVertices[] = {
         -1.0f, -1.0f, 0.f, 0.f,  0.f,   // bottom left
         1.0f,  -1.0f, 0.f, 1.0f, 0.f,   // bottom right
@@ -45,6 +34,20 @@ PostProcessSystem::PostProcessSystem(int width, int height)
 void PostProcessSystem::OnInit() {
     m_blur_shader = ShaderLibrary::Instance().Load("shaders/blur.glsl");
     m_post_shader = ShaderLibrary::Instance().Load("shaders/post_process.glsl");
+    InitBuffers();
+}
+
+void PostProcessSystem::InitBuffers() {
+    for (int i = 0; i < 2; ++i) {
+        m_blur_buffer[i] = Framebuffer::Create(m_width, m_height);
+        m_blur_buffer[i]->Attach(
+            TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
+                        DataFormatType::FLOAT16, TextureWrap::EDGE));
+    }
+    m_post_buffer = Framebuffer::Create(m_width, m_height);
+    m_post_buffer->Attach(
+        TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
+                    DataFormatType::FLOAT16, TextureWrap::EDGE));
 }
 
 void PostProcessSystem::OnPush() {
@@ -84,13 +87,12 @@ void PostProcessSystem::OnImGui() {
 void PostProcessSystem::OnRender() {
     device->SetDepthMask(false);
     device->ReadBuffer(renderer->GetFramebuffer(), 0);
-    device->DrawBuffer(m_post_target.GetFramebuffer(), 0);
+    device->DrawBuffer(m_post_buffer.get(), 0);
     device->BlitFramebuffer(
         renderer->GetFramebuffer(), 0, 0,
         renderer->GetFramebuffer()->GetWidth(),
-        renderer->GetFramebuffer()->GetHeight(), m_post_target.GetFramebuffer(),
-        0, 0, m_post_target.GetFramebuffer()->GetWidth(),
-        m_post_target.GetFramebuffer()->GetHeight(),
+        renderer->GetFramebuffer()->GetHeight(), m_post_buffer.get(), 0, 0,
+        m_post_buffer->GetWidth(), m_post_buffer->GetHeight(),
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
     if (m_is_bloom) {
         RenderBlur();
@@ -100,10 +102,9 @@ void PostProcessSystem::OnRender() {
 }
 
 void PostProcessSystem::OnSizeEvent(const WindowSizeEvent &event) {
-    for (int i = 0; i < 2; ++i) {
-        m_blur_target[i].SetSize(event.width, event.height);
-    }
-    m_post_target.SetSize(event.width, event.height);
+    m_width = event.width;
+    m_height = event.height;
+    InitBuffers();
 }
 
 void PostProcessSystem::RenderBlur() {
@@ -113,12 +114,12 @@ void PostProcessSystem::RenderBlur() {
     for (int i = 0; i < amount; ++i) {
         const int inputId = horizontal;
         const int outputId = !horizontal;
-        device->SetTarget(m_blur_target[outputId]);
-        m_blur_result = m_blur_target[outputId].GetTexture();
+        device->SetFramebuffer(m_blur_buffer[outputId].get());
+        m_blur_result = m_blur_buffer[outputId]->GetTexture();
         m_blur_shader->SetBool("u_horizontal", horizontal);
-        m_blur_shader->SetTexture("u_image",
-                                  i == 0 ? m_post_target.GetTexture()
-                                         : m_blur_target[inputId].GetTexture());
+        m_blur_shader->SetTexture(
+            "u_image", i == 0 ? m_post_buffer->GetTexture()
+                              : m_blur_buffer[inputId]->GetTexture());
         renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
                          m_quad->GetIndexBuffer()->GetCount(), 0);
         horizontal = !horizontal;
@@ -131,7 +132,7 @@ void PostProcessSystem::RenderPost() {
     m_post_shader->SetFloat("u_bloomFactor", m_bloom_factor);
     m_post_shader->SetTexture("u_blur", m_blur_result);
 
-    m_post_shader->SetTexture("u_lighting", m_post_target.GetTexture());
+    m_post_shader->SetTexture("u_lighting", m_post_buffer->GetTexture());
     m_post_shader->SetFloat("u_exposure", m_exposure);
 
     m_post_shader->SetFloat("u_gamma", m_gamma_correction);

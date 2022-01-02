@@ -37,8 +37,6 @@ class SD_GRAPHICS_API RenderTarget {
     int GetHeight() const;
     void SetSize(int width, int height);
 
-    const std::vector<int> &GetDrawables() const { return m_drawables; }
-
    private:
     int m_width;
     int m_height;
@@ -46,7 +44,6 @@ class SD_GRAPHICS_API RenderTarget {
 
     std::vector<TextureSpec> m_texture_specs;
     std::vector<RenderbufferSpec> m_renderbuffer_specs;
-    std::vector<int> m_drawables;
 };
 
 }  // namespace SD

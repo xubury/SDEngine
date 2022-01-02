@@ -166,6 +166,8 @@ class SD_RENDERER_API Renderer {
 
     RenderTarget &GetDefaultTarget() { return m_target; }
 
+    Viewport &GetViewport() { return m_viewport; }
+
    private:
     void InitRenderer2D();
 
@@ -190,6 +192,7 @@ class SD_RENDERER_API Renderer {
     Renderer2DData m_data;
 
     RenderTarget m_target;
+    Viewport m_viewport;
 
     Ref<Shader> m_line_shader;
     Ref<Shader> m_circle_shader;

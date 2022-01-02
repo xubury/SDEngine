@@ -19,8 +19,6 @@ class GLDevice : public Device {
 
     void Clear(BufferBitMask bit) override;
 
-    Viewport GetViewport(const RenderTarget &target) override;
-
     void SetViewport(const Viewport &viewport) override;
 
     void SetFramebuffer(Framebuffer *framebuffer) override;

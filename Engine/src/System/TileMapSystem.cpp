@@ -11,7 +11,6 @@ const int LINE_WIDTH = 5;
 
 TileMapSystem::TileMapSystem()
     : System("TileMapSystem"),
-      m_viewport(nullptr),
       m_file_dialog_open(false),
       m_draw_outline(true),
       m_operation(Operation::NONE) {
@@ -43,8 +42,8 @@ void TileMapSystem::OnPush() {}
 void TileMapSystem::OnPop() {}
 
 void TileMapSystem::OnImGui() {
-    if (m_viewport && m_viewport->IsHover()) {
-        glm::vec2 clip = m_viewport->MapScreenToClip(
+    if (renderer->GetViewport().IsHover()) {
+        glm::vec2 clip = renderer->GetViewport().MapScreenToClip(
             glm::ivec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y));
         if (std::abs(clip.x) > 1 || std::abs(clip.y) > 1) {
             return;

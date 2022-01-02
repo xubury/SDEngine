@@ -25,7 +25,7 @@ DataFormatType SD_SYSTEM_API GetTextureFormatType(GeometryBufferType type);
 
 class SD_SYSTEM_API LightingSystem : public System {
    public:
-    LightingSystem(int width, int height, int samples);
+    LightingSystem(int width, int height);
 
     void OnInit() override;
 
@@ -39,9 +39,9 @@ class SD_SYSTEM_API LightingSystem : public System {
 
     void OnSizeEvent(const WindowSizeEvent &event);
 
-    Framebuffer *GetGBuffer() { return m_gbuffer_target.GetFramebuffer(); }
+    Framebuffer *GetGBuffer() { return m_gbuffer.get(); }
 
-    Texture *GetSSAO() { return m_ssao_blur_target.GetTexture(); }
+    Texture *GetSSAO() { return m_ssao_blur_buffer->GetTexture(); }
 
     void SetSSAOState(bool ssao_state) { m_ssao_state = ssao_state; }
     bool GetSSAOState() const { return m_ssao_state; }
@@ -58,7 +58,8 @@ class SD_SYSTEM_API LightingSystem : public System {
    private:
     void InitShaders();
     void InitSSAO();
-    void InitLighting(int samples);
+    void InitSSAOKernel();
+    void InitLighting();
 
     void Clear();
 
@@ -71,21 +72,25 @@ class SD_SYSTEM_API LightingSystem : public System {
 
     void RenderEmissive();
 
-    RenderTarget &GetLightingTarget() { return m_light_target[0]; };
+    Ref<Framebuffer> GetLightingBuffer() { return m_light_buffer[0]; };
+
+    int m_width;
+    int m_height;
+
     Ref<Shader> m_shadow_shader;
 
     Ref<Shader> m_emssive_shader;
 
     Ref<Shader> m_deferred_shader;
-    RenderTarget m_light_target[2];
+    Ref<Framebuffer> m_light_buffer[2];
 
     Ref<Shader> m_gbuffer_shader;
-    RenderTarget m_gbuffer_target;
+    Ref<Framebuffer> m_gbuffer;
 
     Ref<Shader> m_ssao_shader;
-    RenderTarget m_ssao_target;
+    Ref<Framebuffer> m_ssao_buffer;
     Ref<Shader> m_ssao_blur_shader;
-    RenderTarget m_ssao_blur_target;
+    Ref<Framebuffer> m_ssao_blur_buffer;
 
     bool m_ssao_state;
     float m_ssao_radius;
