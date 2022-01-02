@@ -86,11 +86,6 @@ void GLDevice::SetFramebuffer(Framebuffer *framebuffer) {
     if (framebuffer) {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->GetId());
         glViewport(0, 0, framebuffer->GetWidth(), framebuffer->GetHeight());
-        if (glCheckNamedFramebufferStatus(framebuffer->GetId(),
-                                          GL_FRAMEBUFFER) !=
-            GL_FRAMEBUFFER_COMPLETE) {
-            SD_CORE_ERROR("FrameBuffer is not complete!");
-        }
         GLFramebuffer *glfb = dynamic_cast<GLFramebuffer *>(framebuffer);
         const auto &drawables = glfb->GetDrawables();
         glNamedFramebufferDrawBuffers(glfb->GetId(), drawables.size(),
