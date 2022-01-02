@@ -112,27 +112,51 @@ void GLDevice::SetDepthfunc(DepthFunc depth_func) {
 
 void GLDevice::ResetShaderState() { glUseProgram(0); }
 
-void GLDevice::BlitFramebuffer(Framebuffer *src, uint32_t src_attachment,
-                               Framebuffer *dst, uint32_t dst_attachment,
-                               BufferBitMask mask, BlitFilter filter) {
+void GLDevice::DrawBuffer(Framebuffer *fb, int buf) {
+    if (fb) {
+        glNamedFramebufferDrawBuffer(fb->GetId(), GL_COLOR_ATTACHMENT0 + buf);
+    } else {
+        glNamedFramebufferDrawBuffer(0, GL_FRONT_LEFT + buf);
+    }
+}
+
+void GLDevice::DrawBuffers(Framebuffer *fb, int n, const int *buf) {
+    std::vector<GLenum> glbuf(n);
+    if (fb) {
+        std::generate(glbuf.begin(), glbuf.end(), [i = 0, buf]() mutable {
+            return buf[i++] + GL_COLOR_ATTACHMENT0;
+        });
+        glNamedFramebufferDrawBuffers(fb->GetId(), n, glbuf.data());
+    } else {
+        std::generate(glbuf.begin(), glbuf.end(), [i = 0, buf]() mutable {
+            return buf[i++] + GL_FRONT_LEFT;
+        });
+        glNamedFramebufferDrawBuffers(0, n, glbuf.data());
+    }
+}
+
+void GLDevice::ReadBuffer(Framebuffer *fb, int buf) {
+    if (fb) {
+        glNamedFramebufferReadBuffer(fb->GetId(), GL_COLOR_ATTACHMENT0 + buf);
+    } else {
+        glNamedFramebufferReadBuffer(0, GL_FRONT_LEFT + buf);
+    }
+}
+
+void GLDevice::BlitFramebuffer(Framebuffer *src, int src_x, int src_y,
+                               int src_width, int src_height, Framebuffer *dst,
+                               int dst_x, int dst_y, int dst_width,
+                               int dst_height, BufferBitMask mask,
+                               BlitFilter filter) {
     int src_id = src ? src->GetId() : 0;
     int dst_id = dst ? dst->GetId() : 0;
     GLint gl_mask = Translate(mask & BufferBitMask::COLOR_BUFFER_BIT) |
                     Translate(mask & BufferBitMask::DEPTH_BUFFER_BIT) |
                     Translate(mask & BufferBitMask::STENCIL_BUFFER_BIT);
     GLenum gl_filter = Translate(filter);
-    if ((gl_mask & GL_COLOR_BUFFER_BIT) == GL_COLOR_BUFFER_BIT) {
-        GLenum src_mode = GL_COLOR_ATTACHMENT0 + src_attachment;
-        GLenum dst_mode = GL_COLOR_ATTACHMENT0 + dst_attachment;
-        glNamedFramebufferReadBuffer(src_id, src ? src_mode : GL_BACK);
-        glNamedFramebufferDrawBuffer(dst_id, dst ? dst_mode : GL_BACK);
-    }
-    Texture *texture =
-        src ? src->GetTexture(src_attachment) : dst->GetTexture(dst_attachment);
-    SD_CORE_ASSERT(texture != nullptr, "Invalid framebuffer");
-    glBlitNamedFramebuffer(src_id, dst_id, 0, 0, texture->GetWidth(),
-                           texture->GetHeight(), 0, 0, texture->GetWidth(),
-                           texture->GetHeight(), gl_mask, gl_filter);
+    glBlitNamedFramebuffer(src_id, dst_id, src_x, src_y, src_width, src_height,
+                           dst_x, dst_y, dst_width, dst_height, gl_mask,
+                           gl_filter);
 }
 
 const glm::ivec2 GLDevice::GetUVIndex(int index) const {

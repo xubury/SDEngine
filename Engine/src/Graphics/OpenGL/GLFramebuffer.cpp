@@ -4,7 +4,8 @@
 
 namespace SD {
 
-GLFramebuffer::GLFramebuffer() : m_id(0), m_texture_cnt(0) {
+GLFramebuffer::GLFramebuffer()
+    : m_id(0), m_width(0), m_height(0), m_texture_cnt(0) {
     glCreateFramebuffers(1, &m_id);
 }
 
@@ -29,6 +30,8 @@ void GLFramebuffer::AttachTexture(const Ref<Texture> &texture) {
     }
     m_attachments.emplace_back(texture);
     glNamedFramebufferTexture(m_id, attachment, texture->GetId(), 0);
+    m_width = texture->GetWidth();
+    m_height = texture->GetHeight();
 }
 
 void GLFramebuffer::AttachRenderbuffer(const Ref<Renderbuffer> &renderbuffer) {
@@ -51,23 +54,12 @@ void GLFramebuffer::AttachRenderbuffer(const Ref<Renderbuffer> &renderbuffer) {
     m_attachments.emplace_back(renderbuffer);
     glNamedFramebufferRenderbuffer(m_id, attachment, GL_RENDERBUFFER,
                                    renderbuffer->GetId());
-}
-
-void GLFramebuffer::SetDrawable(
-    const std::vector<uint32_t> &color_attachments) {
-    if (color_attachments.empty()) {
-        glNamedFramebufferDrawBuffer(m_id, GL_NONE);
-    } else {
-        std::vector<GLenum> gl_attchments;
-        for (const auto i : color_attachments) {
-            gl_attchments.emplace_back(GL_COLOR_ATTACHMENT0 + i);
-        }
-        glNamedFramebufferDrawBuffers(m_id, gl_attchments.size(),
-                                      gl_attchments.data());
-    }
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        SD_CORE_ERROR("FrameBuffer is not complete!");
-    }
+    // if (glCheckNamedFramebufferStatus(m_id, GL_FRAMEBUFFER) !=
+    //     GL_FRAMEBUFFER_COMPLETE) {
+    //     SD_CORE_ERROR("FrameBuffer is not complete!");
+    // }
+    m_width = renderbuffer->GetWidth();
+    m_height = renderbuffer->GetHeight();
 }
 
 void GLFramebuffer::ReadPixels(uint32_t attachment_id, int level, int x, int y,

@@ -21,11 +21,12 @@ class SD_GRAPHICS_API Framebuffer {
 
     virtual uint32_t GetId() const = 0;
 
+    virtual int GetWidth() const = 0;
+    virtual int GetHeight() const = 0;
+
     virtual void AttachTexture(const Ref<Texture> &texture) = 0;
 
     virtual void AttachRenderbuffer(const Ref<Renderbuffer> &renderbuffer) = 0;
-
-    virtual void SetDrawable(const std::vector<uint32_t> &color_attchments) = 0;
 
     virtual void ReadPixels(uint32_t attachment_id, int level, int x, int y,
                             int z, int w, int h, int d, size_t size,

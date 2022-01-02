@@ -83,9 +83,15 @@ void PostProcessSystem::OnImGui() {
 
 void PostProcessSystem::OnRender() {
     device->SetDepthMask(false);
+    device->ReadBuffer(renderer->GetFramebuffer(), 0);
+    device->DrawBuffer(m_post_target.GetFramebuffer(), 0);
     device->BlitFramebuffer(
-        renderer->GetFramebuffer(), 0, m_post_target.GetFramebuffer(), 0,
-        BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::LINEAR);
+        renderer->GetFramebuffer(), 0, 0,
+        renderer->GetFramebuffer()->GetWidth(),
+        renderer->GetFramebuffer()->GetHeight(), m_post_target.GetFramebuffer(),
+        0, 0, m_post_target.GetFramebuffer()->GetWidth(),
+        m_post_target.GetFramebuffer()->GetHeight(),
+        BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
     if (m_is_bloom) {
         RenderBlur();
     }
@@ -95,9 +101,9 @@ void PostProcessSystem::OnRender() {
 
 void PostProcessSystem::OnSizeEvent(const WindowSizeEvent &event) {
     for (int i = 0; i < 2; ++i) {
-        m_blur_target[i].Resize(event.width, event.height);
+        m_blur_target[i].SetSize(event.width, event.height);
     }
-    m_post_target.Resize(event.width, event.height);
+    m_post_target.SetSize(event.width, event.height);
 }
 
 void PostProcessSystem::RenderBlur() {

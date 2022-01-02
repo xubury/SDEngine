@@ -170,11 +170,11 @@ void LightingSystem::InitLighting(int samples) {
 
 void LightingSystem::OnSizeEvent(const WindowSizeEvent &event) {
     for (int i = 0; i < 2; ++i) {
-        m_light_target[i].Resize(event.width, event.height);
+        m_light_target[i].SetSize(event.width, event.height);
     }
-    m_gbuffer_target.Resize(event.width, event.height);
-    m_ssao_target.Resize(event.width, event.height);
-    m_ssao_blur_target.Resize(event.width, event.height);
+    m_gbuffer_target.SetSize(event.width, event.height);
+    m_ssao_target.SetSize(event.width, event.height);
+    m_ssao_blur_target.SetSize(event.width, event.height);
 }
 
 void LightingSystem::OnImGui() {
@@ -205,14 +205,17 @@ void LightingSystem::OnRender() {
     device->Enable(Operation::BLEND);
     RenderEmissive();
 
+    device->ReadBuffer(m_gbuffer_target.GetFramebuffer(), G_ENTITY_ID);
+    device->DrawBuffer(renderer->GetFramebuffer(), 1);
     device->BlitFramebuffer(
-        m_gbuffer_target.GetFramebuffer(), G_ENTITY_ID,
-        renderer->GetFramebuffer(), 1,
+        m_gbuffer_target.GetFramebuffer(), 0, 0,
+        m_gbuffer_target.GetFramebuffer()->GetWidth(),
+        m_gbuffer_target.GetFramebuffer()->GetHeight(),
+        renderer->GetFramebuffer(), 0, 0,
+        renderer->GetFramebuffer()->GetWidth(),
+        renderer->GetFramebuffer()->GetHeight(),
         BufferBitMask::COLOR_BUFFER_BIT | BufferBitMask::DEPTH_BUFFER_BIT,
         BlitFilter::NEAREST);
-    device->BlitFramebuffer(
-        m_gbuffer_target.GetFramebuffer(), 0, renderer->GetFramebuffer(), 0,
-        BufferBitMask::DEPTH_BUFFER_BIT, BlitFilter::NEAREST);
 }
 
 void LightingSystem::Clear() {

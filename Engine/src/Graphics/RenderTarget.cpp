@@ -7,13 +7,13 @@ RenderTarget::RenderTarget(int width, int height)
 
 void RenderTarget::CreateFramebuffer() {
     m_framebuffer = Framebuffer::Create();
+    m_drawables.clear();
 
-    std::vector<uint32_t> colors;
     for (const auto &spec : m_texture_specs) {
         m_framebuffer->AttachTexture(Texture::Create(m_width, m_height, spec));
         if (spec.format != DataFormat::DEPTH &&
             spec.format != DataFormat::DEPTH_STENCIL) {
-            colors.push_back(colors.size());
+            m_drawables.push_back(m_drawables.size());
         }
     }
     for (const auto &spec : m_renderbuffer_specs) {
@@ -21,10 +21,9 @@ void RenderTarget::CreateFramebuffer() {
             Renderbuffer::Create(m_width, m_height, spec));
         if (spec.format != DataFormat::DEPTH &&
             spec.format != DataFormat::DEPTH_STENCIL) {
-            colors.push_back(colors.size());
+            m_drawables.push_back(m_drawables.size());
         }
     }
-    m_framebuffer->SetDrawable(colors);
 }
 
 void RenderTarget::AddTexture(const TextureSpec &spec) {
@@ -45,7 +44,7 @@ int RenderTarget::GetWidth() const { return m_width; }
 
 int RenderTarget::GetHeight() const { return m_height; }
 
-void RenderTarget::Resize(int width, int height) {
+void RenderTarget::SetSize(int width, int height) {
     if (m_width != width || m_height != height) {
         m_width = width;
         m_height = height;

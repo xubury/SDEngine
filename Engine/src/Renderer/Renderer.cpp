@@ -20,7 +20,7 @@ Renderer::Renderer(Device* device) : m_device(device) {
     InitRenderer2D();
 
     glm::ivec2 size = device->GetSize();
-    m_target.Resize(size.x, size.y);
+    m_target.SetSize(size.x, size.y);
     m_target.AddTexture(
         TextureSpec(m_device->GetMSAA(), TextureType::TEX_2D_MULTISAMPLE,
                     DataFormat::RGBA, DataFormatType::UBYTE, TextureWrap::EDGE,
@@ -445,11 +445,14 @@ void Renderer::DrawCircle(const glm::mat4& transform, const glm::vec4& color,
 }
 
 void Renderer::RenderToScreen() {
-    m_device->SetFramebuffer(nullptr);
-    m_device->Clear();
-    m_device->BlitFramebuffer(m_target.GetFramebuffer(), 0, nullptr, 0,
-                              BufferBitMask::COLOR_BUFFER_BIT,
-                              BlitFilter::NEAREST);
+    m_device->ReadBuffer(m_target.GetFramebuffer(), 0);
+    m_device->DrawBuffer(nullptr, 0);
+    m_device->BlitFramebuffer(
+        m_target.GetFramebuffer(), 0, 0, m_target.GetWidth(),
+        m_target.GetHeight(), nullptr, 0, 0, m_target.GetWidth(),
+        m_target.GetHeight(),
+        BufferBitMask::COLOR_BUFFER_BIT | BufferBitMask::DEPTH_BUFFER_BIT,
+        BlitFilter::NEAREST);
 }
 
 }  // namespace SD

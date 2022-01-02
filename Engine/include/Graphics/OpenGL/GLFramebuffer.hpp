@@ -16,11 +16,12 @@ class GLFramebuffer : public Framebuffer {
 
     uint32_t GetId() const override { return m_id; }
 
+    int GetWidth() const override { return m_width; }
+    int GetHeight() const override { return m_height; }
+
     void AttachTexture(const Ref<Texture> &texture) override;
 
     void AttachRenderbuffer(const Ref<Renderbuffer> &renderbuffer) override;
-
-    void SetDrawable(const std::vector<uint32_t> &color_attchements) override;
 
     void ReadPixels(uint32_t attachment_id, int level, int x, int y, int z,
                     int w, int h, int d, size_t size,
@@ -38,6 +39,8 @@ class GLFramebuffer : public Framebuffer {
 
    private:
     GLuint m_id;
+    int m_width;
+    int m_height;
     uint32_t m_texture_cnt;
     std::vector<Ref<void>> m_attachments;
 };

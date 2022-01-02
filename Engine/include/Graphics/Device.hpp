@@ -56,8 +56,15 @@ class SD_GRAPHICS_API Device {
 
     virtual void ResetShaderState() = 0;
 
-    virtual void BlitFramebuffer(Framebuffer *src, uint32_t src_attachment,
-                                 Framebuffer *dst, uint32_t dst_attachment,
+    virtual void DrawBuffer(Framebuffer *fb, int buf) = 0;
+    virtual void DrawBuffers(Framebuffer *fb, int n, const int *buf) = 0;
+
+    virtual void ReadBuffer(Framebuffer *fb, int buf) = 0;
+
+    virtual void BlitFramebuffer(Framebuffer *src, int src_x, int src_y,
+                                 int src_width, int src_height,
+                                 Framebuffer *dst, int dst_x, int dst_y,
+                                 int dst_width, int dst_height,
                                  BufferBitMask mask, BlitFilter filter) = 0;
 
     virtual const glm::ivec2 GetUVIndex(int index) const = 0;
