@@ -70,11 +70,6 @@ struct SD_ECS_API TransformComponent {
     glm::vec3 GetWorldUp() const;
     glm::vec3 GetWorldFront() const;
 
-    SERIALIZE(parent, children, m_local_transform, m_world_transform)
-   private:
-    Transform m_world_transform;
-    Transform m_local_transform;
-
     void UpdateGlobalPosition();
     void UpdateGlobalRotation();
     void UpdateGlobalScale();
@@ -82,6 +77,11 @@ struct SD_ECS_API TransformComponent {
     void UpdateLocalPosition();
     void UpdateLocalRotation();
     void UpdateLocalScale();
+
+    SERIALIZE(parent, children, m_local_transform, m_world_transform)
+   private:
+    Transform m_world_transform;
+    Transform m_local_transform;
 };
 
 struct SD_ECS_API ModelComponent {

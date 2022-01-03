@@ -33,6 +33,9 @@ void Entity::AddChild(Entity &child) {
     }
     parent_data.children.emplace(child);
     child_data.parent = *this;
+    child_data.UpdateLocalPosition();
+    child_data.UpdateLocalRotation();
+    child_data.UpdateLocalScale();
 }
 
 void Entity::RemoveChild(Entity &child) {
@@ -41,7 +44,11 @@ void Entity::RemoveChild(Entity &child) {
     if (iter != children.end()) {
         children.erase(iter);
     }
-    child.GetComponent<TransformComponent>().parent = Entity();
+    auto &child_data = child.GetComponent<TransformComponent>();
+    child_data.parent = Entity();
+    child_data.UpdateLocalPosition();
+    child_data.UpdateLocalRotation();
+    child_data.UpdateLocalScale();
 }
 
 Entity::operator bool() const {
