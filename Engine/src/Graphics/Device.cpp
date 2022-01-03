@@ -18,10 +18,6 @@ Ref<Device> Device::Create(Context *context) {
 
 Device::Device(Context *context) : m_context(context) {}
 
-void Device::SetTarget(RenderTarget &target) {
-    SetFramebuffer(target.GetFramebuffer());
-}
-
 glm::ivec2 Device::GetSize() const { return m_context->GetSize(); }
 
 int Device::GetWidth() const { return m_context->GetWidth(); }
@@ -29,5 +25,18 @@ int Device::GetWidth() const { return m_context->GetWidth(); }
 int Device::GetHeight() const { return m_context->GetHeight(); }
 
 uint8_t Device::GetMSAA() const { return m_context->GetMSAA(); }
+
+void Device::Reset() {
+    SetShader(nullptr);
+    SetFramebuffer(nullptr);
+    Enable(Operation::DEPTH_TEST);
+
+    Enable(Operation::CULL_FACE);
+    SetCullFace(Face::BACK);
+
+    Enable(Operation::BLEND);
+
+    SetDepthMask(true);
+}
 
 }  // namespace SD

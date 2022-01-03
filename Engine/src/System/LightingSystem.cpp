@@ -193,7 +193,6 @@ void LightingSystem::OnImGui() {
 void LightingSystem::OnRender() {
     SD_CORE_ASSERT(scene->GetCamera(), "No camera is set!");
 
-    Clear();
     RenderShadowMap();
     device->Disable(Operation::BLEND);
     RenderGBuffer();
@@ -215,32 +214,11 @@ void LightingSystem::OnRender() {
         BlitFilter::NEAREST);
 }
 
-void LightingSystem::Clear() {
-    device->SetClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    device->SetFramebuffer(m_ssao_buffer.get());
-    device->Clear(BufferBitMask::COLOR_BUFFER_BIT);
-    device->SetFramebuffer(m_ssao_blur_buffer.get());
-    device->Clear(BufferBitMask::COLOR_BUFFER_BIT);
-
-    device->SetClearColor(0.f, 0.f, 0.f, 0.f);
-    // clear the last lighting pass' result
-    for (int i = 0; i < 2; ++i) {
-        device->SetFramebuffer(m_light_buffer[i].get());
-        device->Clear(BufferBitMask::COLOR_BUFFER_BIT);
-    }
-
-    device->SetFramebuffer(m_gbuffer.get());
-    device->Clear(BufferBitMask::COLOR_BUFFER_BIT |
-                  BufferBitMask::DEPTH_BUFFER_BIT);
-    uint32_t id = static_cast<uint32_t>(entt::null);
-    m_gbuffer->ClearAttachment(GeometryBufferType::G_ENTITY_ID, &id);
-}
-
 void LightingSystem::RenderShadowMap() {
     auto lightView = scene->view<TransformComponent, LightComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
     device->SetCullFace(Face::FRONT);
-    m_shadow_shader->Bind();
+    device->SetShader(m_shadow_shader.get());
     lightView.each([this, &modelView](const TransformComponent &transformComp,
                                       LightComponent &lightComp) {
         Light &light = lightComp.light;
@@ -270,9 +248,10 @@ void LightingSystem::RenderShadowMap() {
 }
 
 void LightingSystem::RenderSSAO() {
-    m_ssao_shader->Bind();
+    const float CLEAR_VALUE = 1.0f;
 
     device->SetFramebuffer(m_ssao_buffer.get());
+    m_ssao_buffer->ClearAttachment(0, &CLEAR_VALUE);
     renderer->Begin(*m_ssao_shader, *scene->GetCamera());
     m_ssao_shader->SetFloat("u_radius", m_ssao_radius);
     m_ssao_shader->SetFloat("u_bias", m_ssao_bias);
@@ -282,26 +261,28 @@ void LightingSystem::RenderSSAO() {
     m_ssao_shader->SetTexture(
         "u_normal", m_gbuffer->GetTexture(GeometryBufferType::G_NORMAL));
     m_ssao_shader->SetTexture("u_noise", m_ssao_noise.get());
+    device->SetShader(m_ssao_shader.get());
     renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
     renderer->End();
 
     // blur
     device->SetFramebuffer(m_ssao_blur_buffer.get());
-    m_ssao_blur_shader->Bind();
+    m_ssao_buffer->ClearAttachment(0, &CLEAR_VALUE);
     m_ssao_blur_shader->SetTexture("u_ssao", m_ssao_buffer->GetTexture());
+    device->SetShader(m_ssao_blur_shader.get());
     renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
 }
 
 void LightingSystem::RenderEmissive() {
-    device->SetTarget(renderer->GetDefaultTarget());
+    device->SetFramebuffer(renderer->GetFramebuffer());
     device->DrawBuffer(renderer->GetFramebuffer(), 0);
-    m_emssive_shader->Bind();
     m_emssive_shader->SetTexture("u_lighting",
                                  GetLightingBuffer()->GetTexture());
     m_emssive_shader->SetTexture(
         "u_emissive", m_gbuffer->GetTexture(GeometryBufferType::G_EMISSIVE));
+    device->SetShader(m_emssive_shader.get());
     renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
 }
@@ -309,7 +290,13 @@ void LightingSystem::RenderEmissive() {
 void LightingSystem::RenderDeferred() {
     auto lightView = scene->view<TransformComponent, LightComponent>();
 
-    m_deferred_shader->Bind();
+    device->SetShader(m_deferred_shader.get());
+    // clear the last lighting pass' result
+    for (int i = 0; i < 2; ++i) {
+        device->SetFramebuffer(m_light_buffer[i].get());
+        device->Clear(BufferBitMask::COLOR_BUFFER_BIT);
+    }
+
     m_deferred_shader->SetTexture(
         "u_position", m_gbuffer->GetTexture(GeometryBufferType::G_POSITION));
     m_deferred_shader->SetTexture(
@@ -364,13 +351,18 @@ void LightingSystem::RenderDeferred() {
 }
 
 void LightingSystem::RenderGBuffer() {
+    device->SetFramebuffer(m_gbuffer.get());
+    device->Clear(BufferBitMask::COLOR_BUFFER_BIT |
+                  BufferBitMask::DEPTH_BUFFER_BIT);
+    uint32_t id = static_cast<uint32_t>(entt::null);
+    m_gbuffer->ClearAttachment(GeometryBufferType::G_ENTITY_ID, &id);
+
     auto terrainView = scene->view<TransformComponent, TerrainComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
-    device->SetFramebuffer(m_gbuffer.get());
     renderer->Begin(*m_gbuffer_shader, *scene->GetCamera());
+    device->SetShader(m_gbuffer_shader.get());
 
-    m_gbuffer_shader->Bind();
     terrainView.each([this](const entt::entity &entity,
                             const TransformComponent &transformComp,
                             const TerrainComponent &terrainComp) {

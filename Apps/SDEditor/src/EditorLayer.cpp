@@ -101,11 +101,14 @@ void EditorLayer::OnRender() {
         system->OnRender();
     }
     if (m_hide) {
-        renderer->RenderToScreen();
+        // render to default buffer
+        device->SetFramebuffer(nullptr);
+        device->Clear();
+        device->BlitToScreen(renderer->GetDefaultTarget());
     } else {
         device->Disable(Operation::DEPTH_TEST);
 
-        device->SetTarget(renderer->GetDefaultTarget());
+        device->SetFramebuffer(renderer->GetFramebuffer());
         Camera *cam = scene->GetCamera();
         renderer->Begin(*cam);
         auto lightView = scene->view<LightComponent, TransformComponent>();
@@ -307,8 +310,7 @@ void EditorLayer::SetViewportSize(uint32_t left, uint32_t top, uint32_t width,
     event.width = width;
     event.height = height;
     dispatcher->PublishEvent(event);
-    renderer->GetViewport().SetSize(left, top, width, height);
-    renderer->GetDefaultTarget().SetSize(width, height);
+    renderer->GetDefaultTarget().SetSize(left, top, width, height);
     m_screen_buffer = Framebuffer::Create(width, height);
     m_screen_buffer->Attach(
         TextureSpec(1, TextureType::TEX_2D, DataFormat::RGB,
@@ -393,6 +395,8 @@ void EditorLayer::MenuBar() {
 }
 
 void EditorLayer::DrawViewport() {
+    auto &viewport = renderer->GetDefaultTarget().GetViewport();
+
     device->ReadBuffer(renderer->GetFramebuffer(), 0);
     device->DrawBuffer(m_screen_buffer.get(), 0);
     device->BlitFramebuffer(
@@ -423,15 +427,12 @@ void EditorLayer::DrawViewport() {
                                 wsize.y);
             }
         }
-        renderer->GetViewport().SetFocus(ImGui::IsWindowFocused());
-        renderer->GetViewport().SetHover(ImGui::IsWindowHovered() &&
-                                         !ImGuizmo::IsOver());
+        viewport.SetFocus(ImGui::IsWindowFocused());
+        viewport.SetHover(ImGui::IsWindowHovered() && !ImGuizmo::IsOver());
         ImGui::DrawTexture(*m_screen_buffer->GetTexture(), wsize, ImVec2(0, 1),
                            ImVec2(1, 0));
-        ImGuizmo::SetRect(renderer->GetViewport().GetLeft(),
-                          renderer->GetViewport().GetTop(),
-                          renderer->GetViewport().GetWidth(),
-                          renderer->GetViewport().GetHeight());
+        ImGuizmo::SetRect(viewport.GetLeft(), viewport.GetTop(),
+                          viewport.GetWidth(), viewport.GetHeight());
         ImGuizmo::SetDrawlist();
 
         if (m_selected_entity) {
@@ -451,11 +452,10 @@ void EditorLayer::DrawViewport() {
                 tc.SetWorldTransform(transform);
             }
         }
-        if (ImGui::IsMouseDown(0) && renderer->GetViewport().IsHover()) {
+        if (ImGui::IsMouseDown(0) && viewport.IsHover()) {
             auto [mouseX, mouseY] = ImGui::GetMousePos();
-            mouseX -= renderer->GetViewport().GetLeft();
-            mouseY = renderer->GetViewport().GetHeight() - mouseY +
-                     renderer->GetViewport().GetTop();
+            mouseX -= viewport.GetLeft();
+            mouseY = viewport.GetHeight() - mouseY + viewport.GetTop();
             entt::entity entity_id = entt::null;
             auto entity_tex = m_screen_buffer->GetTexture(1);
             // out of bound check

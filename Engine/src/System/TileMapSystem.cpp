@@ -42,8 +42,9 @@ void TileMapSystem::OnPush() {}
 void TileMapSystem::OnPop() {}
 
 void TileMapSystem::OnImGui() {
-    if (renderer->GetViewport().IsHover()) {
-        glm::vec2 clip = renderer->GetViewport().MapScreenToClip(
+    const auto &viewport = renderer->GetDefaultTarget().GetViewport();
+    if (viewport.IsHover()) {
+        glm::vec2 clip = viewport.MapScreenToClip(
             glm::ivec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y));
         if (std::abs(clip.x) > 1 || std::abs(clip.y) > 1) {
             return;
@@ -116,7 +117,7 @@ void TileMapSystem::OnImGui() {
 }
 
 void TileMapSystem::OnRender() {
-    device->SetTarget(renderer->GetDefaultTarget());
+    device->SetFramebuffer(renderer->GetFramebuffer());
     device->DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
     device->Disable(SD::Operation::DEPTH_TEST);
     renderer->Begin(*scene->GetCamera());

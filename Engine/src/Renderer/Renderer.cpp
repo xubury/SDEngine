@@ -20,7 +20,7 @@ Renderer::Renderer(Device* device) : m_device(device) {
     InitRenderer2D();
 
     glm::ivec2 size = device->GetSize();
-    m_target.SetSize(size.x, size.y);
+    m_target.SetSize(0, 0, size.x, size.y);
     m_target.AddTexture(
         TextureSpec(m_device->GetMSAA(), TextureType::TEX_2D_MULTISAMPLE,
                     DataFormat::RGBA, DataFormatType::UBYTE, TextureWrap::EDGE,
@@ -203,7 +203,7 @@ void Renderer::FlushLines() {
         size_t offset = m_data.line_buffer_ptr - m_data.line_buffer.data();
         m_data.line_vao->UpdateBuffer(0, m_data.line_buffer.data(),
                                       sizeof(Line) * offset);
-        m_line_shader->Bind();
+        m_device->SetShader(m_line_shader.get());
         m_data.line_vao->Bind();
         m_device->DrawArrays(MeshTopology::LINES, 0, m_data.line_vertex_cnt);
     }
@@ -219,7 +219,7 @@ void Renderer::FlushQuads() {
             m_sprite_shader->SetTexture(i, m_data.texture_slots[i].get());
         }
 
-        m_sprite_shader->Bind();
+        m_device->SetShader(m_sprite_shader.get());
         Submit(*m_data.quad_vao, MeshTopology::TRIANGLES, m_data.quad_index_cnt,
                0);
     }
@@ -232,7 +232,7 @@ void Renderer::FlushCircles() {
         m_data.circle_vao->UpdateBuffer(0, m_data.circle_buffer.data(),
                                         offset * sizeof(Circle));
 
-        m_circle_shader->Bind();
+        m_device->SetShader(m_circle_shader.get());
         Submit(*m_data.circle_vao, MeshTopology::TRIANGLES,
                m_data.circle_index_cnt, 0);
     }
@@ -442,15 +442,6 @@ void Renderer::DrawCircle(const glm::mat4& transform, const glm::vec4& color,
     }
     ++m_data.circle_buffer_ptr;
     m_data.circle_index_cnt += 6;
-}
-
-void Renderer::RenderToScreen() {
-    m_device->ReadBuffer(m_target.GetFramebuffer(), 0);
-    m_device->BlitFramebuffer(
-        m_target.GetFramebuffer(), 0, 0, m_target.GetWidth(),
-        m_target.GetHeight(), nullptr, 0, 0, m_target.GetWidth(),
-        m_target.GetHeight(), BufferBitMask::COLOR_BUFFER_BIT,
-        BlitFilter::NEAREST);
 }
 
 }  // namespace SD

@@ -6,6 +6,7 @@
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Context.hpp"
 #include "Graphics/VertexArray.hpp"
+#include "Graphics/Shader.hpp"
 #include "Graphics/Framebuffer.hpp"
 
 namespace SD {
@@ -34,7 +35,7 @@ class SD_GRAPHICS_API Device {
                             BufferBitMask::DEPTH_BUFFER_BIT |
                             BufferBitMask::STENCIL_BUFFER_BIT) = 0;
 
-    void SetTarget(RenderTarget &target);
+    virtual void SetShader(Shader *shader) = 0;
 
     virtual void SetViewport(const Viewport &viewport) = 0;
 
@@ -55,13 +56,15 @@ class SD_GRAPHICS_API Device {
     virtual void DrawBuffer(Framebuffer *fb, int buf) = 0;
     virtual void DrawBuffers(Framebuffer *fb, int n, const int *buf) = 0;
 
-    virtual void ReadBuffer(Framebuffer *fb, int buf) = 0;
+    virtual void ReadBuffer(const Framebuffer *fb, int buf) = 0;
 
-    virtual void BlitFramebuffer(Framebuffer *src, int src_x, int src_y,
+    virtual void BlitFramebuffer(const Framebuffer *src, int src_x, int src_y,
                                  int src_width, int src_height,
                                  Framebuffer *dst, int dst_x, int dst_y,
                                  int dst_width, int dst_height,
                                  BufferBitMask mask, BlitFilter filter) = 0;
+
+    virtual void BlitToScreen(const RenderTarget &target) = 0;
 
     virtual const glm::ivec2 GetUVIndex(int index) const = 0;
 
@@ -70,6 +73,8 @@ class SD_GRAPHICS_API Device {
     int GetHeight() const;
 
     uint8_t GetMSAA() const;
+
+    void Reset();
 
    protected:
     Device(Context *context);

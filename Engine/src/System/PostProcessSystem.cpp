@@ -110,7 +110,7 @@ void PostProcessSystem::OnSizeEvent(const WindowSizeEvent &event) {
 void PostProcessSystem::RenderBlur() {
     const int amount = 10;
     bool horizontal = true;
-    m_blur_shader->Bind();
+    device->SetShader(m_blur_shader.get());
     for (int i = 0; i < amount; ++i) {
         const int inputId = horizontal;
         const int outputId = !horizontal;
@@ -127,7 +127,7 @@ void PostProcessSystem::RenderBlur() {
 }
 
 void PostProcessSystem::RenderPost() {
-    device->SetTarget(renderer->GetDefaultTarget());
+    device->SetFramebuffer(renderer->GetFramebuffer());
     device->DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
     m_post_shader->SetBool("u_bloom", m_is_bloom);
     m_post_shader->SetFloat("u_bloomFactor", m_bloom_factor);
@@ -138,7 +138,7 @@ void PostProcessSystem::RenderPost() {
 
     m_post_shader->SetFloat("u_gamma", m_gamma_correction);
 
-    m_post_shader->Bind();
+    device->SetShader(m_post_shader.get());
     renderer->Submit(*m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
 }

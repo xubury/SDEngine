@@ -75,7 +75,7 @@ void GLShader::LinkShaders() {
     DestroyShaders();
 }
 
-void GLShader::Bind() { glUseProgram(m_id); }
+uint32_t GLShader::GetId() const { return m_id; }
 
 void GLShader::CheckCompileErrors(uint32_t shader, const std::string& type) {
     int success;
@@ -166,7 +166,7 @@ void GLShader::SetUniformBuffer(const std::string& name,
         glUniformBlockBinding(m_id, index, buffer.GetBindingPoint());
 }
 
-uint32_t GLShader::GetUint(const std::string& name) {
+uint32_t GLShader::GetUint(const std::string& name) const {
     uint32_t value = 0;
     glGetUniformuiv(m_id, glGetUniformLocation(m_id, name.c_str()), &value);
     return value;

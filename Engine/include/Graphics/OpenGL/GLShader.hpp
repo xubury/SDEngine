@@ -23,7 +23,7 @@ class SD_GRAPHICS_API GLShader : public Shader {
 
     void LinkShaders() override;
 
-    void Bind() override;
+    uint32_t GetId() const override;
 
     void SetBool(const std::string& name, bool value) override;
 
@@ -50,7 +50,7 @@ class SD_GRAPHICS_API GLShader : public Shader {
     void SetUniformBuffer(const std::string& name,
                           const UniformBuffer& buffer) override;
 
-    uint32_t GetUint(const std::string &name) override;
+    uint32_t GetUint(const std::string& name) const override;
 
    private:
     static void CheckCompileErrors(uint32_t shader, const std::string& type);

@@ -31,7 +31,7 @@ class SD_GRAPHICS_API Shader {
 
     virtual void LinkShaders() = 0;
 
-    virtual void Bind() = 0;
+    virtual uint32_t GetId() const = 0;
 
     virtual void SetBool(const std::string& name, bool value) = 0;
 
@@ -58,7 +58,7 @@ class SD_GRAPHICS_API Shader {
     virtual void SetUniformBuffer(const std::string& name,
                                   const UniformBuffer& buffer) = 0;
 
-    virtual uint32_t GetUint(const std::string& name) = 0;
+    virtual uint32_t GetUint(const std::string& name) const = 0;
 
    protected:
     Shader() = default;

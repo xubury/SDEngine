@@ -35,11 +35,13 @@ class SD_GRAPHICS_API RenderTarget {
 
     int GetWidth() const;
     int GetHeight() const;
-    void SetSize(int width, int height);
+    void SetSize(int left, int top, int width, int height);
+
+    const Viewport &GetViewport() const { return m_viewport; }
+    Viewport &GetViewport() { return m_viewport; }
 
    private:
-    int m_width;
-    int m_height;
+    Viewport m_viewport;
     Ref<Framebuffer> m_framebuffer;
 
     std::vector<TextureSpec> m_texture_specs;

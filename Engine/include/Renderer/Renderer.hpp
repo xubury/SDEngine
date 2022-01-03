@@ -161,13 +161,9 @@ class SD_RENDERER_API Renderer {
     void DrawCircle(const glm::mat4 &transform, const glm::vec4 &color,
                     float thickness, float fade, uint32_t entity_id = -1);
 
-    void RenderToScreen();
-
     Framebuffer *GetFramebuffer() { return m_target.GetFramebuffer(); }
 
     RenderTarget &GetDefaultTarget() { return m_target; }
-
-    Viewport &GetViewport() { return m_viewport; }
 
    private:
     void InitRenderer2D();
@@ -193,7 +189,6 @@ class SD_RENDERER_API Renderer {
     Renderer2DData m_data;
 
     RenderTarget m_target;
-    Viewport m_viewport;
 
     Ref<Shader> m_line_shader;
     Ref<Shader> m_circle_shader;

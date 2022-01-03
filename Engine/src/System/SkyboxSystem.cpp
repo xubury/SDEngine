@@ -71,7 +71,7 @@ void SkyboxSystem::OnRender() {
                            glm::translate(glm::mat4(1.0f), pos);
     m_skyboxShader->SetMat4("u_projection", projection);
 
-    m_skyboxShader->Bind();
+    device->SetShader(m_skyboxShader.get());
     device->SetDepthfunc(DepthFunc::LESS_EQUAL);
     device->SetCullFace(Face::FRONT);
     auto skybox = asset->Get<Skybox>(m_skybox_id);
@@ -79,7 +79,7 @@ void SkyboxSystem::OnRender() {
         m_skyboxShader->SetTexture("skybox", skybox->GetTexture());
     }
 
-    device->SetTarget(renderer->GetDefaultTarget());
+    device->SetFramebuffer(renderer->GetFramebuffer());
     device->DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
     renderer->Submit(*m_box_vao, MeshTopology::TRIANGLES,
                      m_box_vao->GetIndexBuffer()->GetCount(), 0);

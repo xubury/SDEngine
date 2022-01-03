@@ -69,9 +69,18 @@ void GLDevice::SetClearColor(float r, float g, float b, float a) {
 }
 
 void GLDevice::Clear(BufferBitMask bit) {
+    // glUseProgram(0);
     glClear(Translate(bit & BufferBitMask::COLOR_BUFFER_BIT) |
             Translate(bit & BufferBitMask::DEPTH_BUFFER_BIT) |
             Translate(bit & BufferBitMask::STENCIL_BUFFER_BIT));
+}
+
+void GLDevice::SetShader(Shader *shader) {
+    if (shader) {
+        glUseProgram(shader->GetId());
+    } else {
+        glUseProgram(0);
+    }
 }
 
 void GLDevice::SetViewport(const Viewport &viewport) {
@@ -136,7 +145,7 @@ void GLDevice::DrawBuffers(Framebuffer *fb, int n, const int *buf) {
     }
 }
 
-void GLDevice::ReadBuffer(Framebuffer *fb, int buf) {
+void GLDevice::ReadBuffer(const Framebuffer *fb, int buf) {
     if (fb) {
         glNamedFramebufferReadBuffer(fb->GetId(), GL_COLOR_ATTACHMENT0 + buf);
     } else {
@@ -144,7 +153,7 @@ void GLDevice::ReadBuffer(Framebuffer *fb, int buf) {
     }
 }
 
-void GLDevice::BlitFramebuffer(Framebuffer *src, int src_x, int src_y,
+void GLDevice::BlitFramebuffer(const Framebuffer *src, int src_x, int src_y,
                                int src_width, int src_height, Framebuffer *dst,
                                int dst_x, int dst_y, int dst_width,
                                int dst_height, BufferBitMask mask,
@@ -158,6 +167,17 @@ void GLDevice::BlitFramebuffer(Framebuffer *src, int src_x, int src_y,
     glBlitNamedFramebuffer(src_id, dst_id, src_x, src_y, src_width, src_height,
                            dst_x, dst_y, dst_width, dst_height, gl_mask,
                            gl_filter);
+}
+
+void GLDevice::BlitToScreen(const RenderTarget &target) {
+    ReadBuffer(target.GetFramebuffer(), 0);
+    const auto &viewport = target.GetViewport();
+    int bottom = GetHeight() - viewport.GetHeight() - viewport.GetTop();
+    BlitFramebuffer(target.GetFramebuffer(), 0, 0, viewport.GetWidth(),
+                    viewport.GetHeight(), nullptr, viewport.GetLeft(), bottom,
+                    viewport.GetWidth() + viewport.GetLeft(),
+                    viewport.GetHeight() + bottom,
+                    BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::LINEAR);
 }
 
 const glm::ivec2 GLDevice::GetUVIndex(int index) const {

@@ -43,7 +43,7 @@ void ProfileSystem::OnRender() {
     snprintf(fps_str.data(), fps_str.size(), "FPS: %.2f(%.2f ms)",
              m_fps.GetFPS(), m_fps.GetFrameTime());
 
-    device->SetTarget(renderer->GetDefaultTarget());
+    device->SetFramebuffer(renderer->GetFramebuffer());
     device->DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
     renderer->Begin(m_camera);
     renderer->SetTextOrigin(

@@ -61,8 +61,6 @@ class SD_SYSTEM_API LightingSystem : public System {
     void InitSSAOKernel();
     void InitLighting();
 
-    void Clear();
-
     void RenderShadowMap();
     void RenderGBuffer();
 

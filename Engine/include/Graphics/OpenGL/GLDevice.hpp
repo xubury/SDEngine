@@ -19,6 +19,8 @@ class GLDevice : public Device {
 
     void Clear(BufferBitMask bit) override;
 
+    void SetShader(Shader *shader) override;
+
     void SetViewport(const Viewport &viewport) override;
 
     void SetFramebuffer(Framebuffer *framebuffer) override;
@@ -39,12 +41,14 @@ class GLDevice : public Device {
 
     void DrawBuffers(Framebuffer *fb, int n, const int *buf) override;
 
-    void ReadBuffer(Framebuffer *fb, int buf) override;
+    void ReadBuffer(const Framebuffer *fb, int buf) override;
 
-    void BlitFramebuffer(Framebuffer *src, int src_x, int src_y, int src_width,
+    void BlitFramebuffer(const Framebuffer *src, int src_x, int src_y, int src_width,
                          int src_height, Framebuffer *dst, int dst_x, int dst_y,
                          int dst_width, int dst_height, BufferBitMask mask,
                          BlitFilter filter) override;
+
+    void BlitToScreen(const RenderTarget &target) override;
 
     const glm::ivec2 GetUVIndex(int index) const override;
 };
