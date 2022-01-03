@@ -80,6 +80,7 @@ void SkyboxSystem::OnRender() {
     }
 
     device->SetTarget(renderer->GetDefaultTarget());
+    device->DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
     renderer->Submit(*m_box_vao, MeshTopology::TRIANGLES,
                      m_box_vao->GetIndexBuffer()->GetCount(), 0);
     device->SetCullFace(Face::BACK);

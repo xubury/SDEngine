@@ -27,7 +27,7 @@ Renderer::Renderer(Device* device) : m_device(device) {
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     m_target.AddTexture(
         TextureSpec(m_device->GetMSAA(), TextureType::TEX_2D_MULTISAMPLE,
-                    DataFormat::RED, DataFormatType::INT, TextureWrap::EDGE,
+                    DataFormat::RED, DataFormatType::UINT, TextureWrap::EDGE,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     m_target.AddTexture(TextureSpec(
         m_device->GetMSAA(), TextureType::TEX_2D_MULTISAMPLE, DataFormat::DEPTH,
@@ -47,7 +47,7 @@ void Renderer::InitRenderer2D() {
     VertexBufferLayout layout;
     layout.Push(BufferLayoutType::FLOAT3);
     layout.Push(BufferLayoutType::FLOAT4);
-    layout.Push(BufferLayoutType::INT);  // entity index
+    layout.Push(BufferLayoutType::UINT);  // entity index
     m_data.line_vao->AddVertexBuffer(line_vbo, layout);
 
     // Initialize quad vao
@@ -76,7 +76,7 @@ void Renderer::InitRenderer2D() {
     layout.Push(BufferLayoutType::FLOAT4);  // color
     layout.Push(BufferLayoutType::FLOAT2);  // texCoord
     layout.Push(BufferLayoutType::INT);     // texIndex
-    layout.Push(BufferLayoutType::INT);     // entity index
+    layout.Push(BufferLayoutType::UINT);    // entity index
 
     m_data.quad_vao = VertexArray::Create();
     m_data.quad_vao->AddVertexBuffer(quad_vbo, layout);
@@ -93,7 +93,7 @@ void Renderer::InitRenderer2D() {
     layout.Push(BufferLayoutType::FLOAT4);  // color
     layout.Push(BufferLayoutType::FLOAT);   // thickness
     layout.Push(BufferLayoutType::FLOAT);   // fade
-    layout.Push(BufferLayoutType::INT);     // entity index
+    layout.Push(BufferLayoutType::UINT);    // entity index
     m_data.circle_vao = VertexArray::Create();
     m_data.circle_vao->AddVertexBuffer(circle_vbo, layout);
     m_data.circle_vao->SetIndexBuffer(quad_ebo);
@@ -254,7 +254,7 @@ void Renderer::NextCircleBatch() {
 }
 
 void Renderer::DrawLine(const glm::vec3& start, const glm::vec3& end,
-                        const glm::vec4& color, int entity_id) {
+                        const glm::vec4& color, uint32_t entity_id) {
     if (m_data.line_vertex_cnt >= Renderer2DData::MAX_LINES_VERTICES) {
         NextLineBatch();
     }
@@ -272,14 +272,14 @@ void Renderer::DrawLine(const glm::vec3& start, const glm::vec3& end,
 
 void Renderer::DrawQuad(const glm::vec3& pos, const glm::quat& rot,
                         const glm::vec2& scale, const glm::vec4& color,
-                        int entity_id) {
+                        uint32_t entity_id) {
     DrawQuad(glm::translate(glm::mat4(1.0f), pos) * glm::toMat4(rot) *
                  glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
              color, entity_id);
 }
 
 void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color,
-                        int entity_id) {
+                        uint32_t entity_id) {
     if (m_data.quad_index_cnt >= Renderer2DData::MAX_INDICES) {
         NextQuadBatch();
     }
@@ -301,7 +301,7 @@ void Renderer::DrawTexture(const Ref<Texture>& texture,
                            const std::array<glm::vec2, 2>& uv,
                            const glm::vec3& pos, const glm::quat& rot,
                            const glm::vec2& scale, const glm::vec4& color,
-                           int entity_id) {
+                           uint32_t entity_id) {
     DrawTexture(
         texture, uv,
         glm::translate(glm::mat4(1.0f), pos) * glm::toMat4(rot) *
@@ -312,7 +312,7 @@ void Renderer::DrawTexture(const Ref<Texture>& texture,
 void Renderer::DrawTexture(const Ref<Texture>& texture,
                            const std::array<glm::vec2, 2>& uv,
                            const glm::mat4& transform, const glm::vec4& color,
-                           int entity_id) {
+                           uint32_t entity_id) {
     if (m_data.quad_index_cnt >= Renderer2DData::MAX_INDICES) {
         NextQuadBatch();
     }
@@ -349,7 +349,7 @@ void Renderer::DrawTexture(const Ref<Texture>& texture,
 
 void Renderer::DrawTexture(const Ref<Texture>& texture, const glm::vec3& pos,
                            const glm::quat& rot, const glm::vec2& scale,
-                           const glm::vec4& color, int entity_id) {
+                           const glm::vec4& color, uint32_t entity_id) {
     DrawTexture(
         texture, QUAD_UV,
         glm::translate(glm::mat4(1.0f), pos) * glm::toMat4(rot) *
@@ -359,14 +359,14 @@ void Renderer::DrawTexture(const Ref<Texture>& texture, const glm::vec3& pos,
 
 void Renderer::DrawTexture(const Ref<Texture>& texture,
                            const glm::mat4& transform, const glm::vec4& color,
-                           int entity_id) {
+                           uint32_t entity_id) {
     DrawTexture(texture, QUAD_UV, transform, color, entity_id);
 }
 
 void Renderer::DrawBillboard(const Ref<Texture>& texture,
                              const std::array<glm::vec2, 2>& uv,
                              const glm::vec3& pos, const glm::vec2& scale,
-                             const glm::vec4& color, int entity_id) {
+                             const glm::vec4& color, uint32_t entity_id) {
     DrawTexture(
         texture, uv,
         glm::translate(glm::mat4(1.0f), pos) *
@@ -377,7 +377,7 @@ void Renderer::DrawBillboard(const Ref<Texture>& texture,
 
 void Renderer::DrawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
                              const glm::vec2& scale, const glm::vec4& color,
-                             int entity_id) {
+                             uint32_t entity_id) {
     DrawTexture(
         texture,
         glm::translate(glm::mat4(1.0f), pos) *
@@ -388,7 +388,7 @@ void Renderer::DrawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
 
 void Renderer::DrawText(const Font& font, const std::string& text,
                         const glm::mat4& transform, const glm::vec4& color,
-                        int entity_id) {
+                        uint32_t entity_id) {
     glm::mat4 t =
         glm::translate(glm::mat4(1.0f), glm::vec3(m_data.text_origin.x,
                                                   m_data.text_origin.y, 0)) *
@@ -418,7 +418,7 @@ void Renderer::DrawText(const Font& font, const std::string& text,
 
 void Renderer::DrawCircle(const glm::vec3& pos, const glm::vec2& scale,
                           const glm::vec4& color, float thickness, float fade,
-                          int entity_id) {
+                          uint32_t entity_id) {
     DrawCircle(
         glm::translate(glm::mat4(1.0f), pos) *
             glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
@@ -426,7 +426,7 @@ void Renderer::DrawCircle(const glm::vec3& pos, const glm::vec2& scale,
 }
 
 void Renderer::DrawCircle(const glm::mat4& transform, const glm::vec4& color,
-                          float thickness, float fade, int entity_id) {
+                          float thickness, float fade, uint32_t entity_id) {
     if (m_data.circle_index_cnt >= Renderer2DData::MAX_INDICES) {
         NextCircleBatch();
     }

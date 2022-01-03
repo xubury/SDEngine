@@ -44,6 +44,7 @@ void ProfileSystem::OnRender() {
              m_fps.GetFPS(), m_fps.GetFrameTime());
 
     device->SetTarget(renderer->GetDefaultTarget());
+    device->DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
     renderer->Begin(m_camera);
     renderer->SetTextOrigin(
         -m_camera.GetNearWidth() / 2,

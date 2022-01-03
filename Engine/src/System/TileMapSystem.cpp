@@ -117,6 +117,7 @@ void TileMapSystem::OnImGui() {
 
 void TileMapSystem::OnRender() {
     device->SetTarget(renderer->GetDefaultTarget());
+    device->DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
     device->Disable(SD::Operation::DEPTH_TEST);
     renderer->Begin(*scene->GetCamera());
 

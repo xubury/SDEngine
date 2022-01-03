@@ -14,7 +14,7 @@ void main() {
 #shader fragment
 #version 450 core
 
-out vec4 fragColor;
+layout(location = 0) out vec4 frag_color;
 
 in vec2 texCoord;
 
@@ -43,5 +43,5 @@ void main() {
 
     result = pow(result, vec3(1.0 / u_gamma));
 
-    fragColor = vec4(result, 1.0f);
+    frag_color = vec4(result, 1.0f);
 }

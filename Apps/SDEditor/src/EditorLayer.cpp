@@ -53,8 +53,8 @@ void EditorLayer::PushSystems() {
 
         PushSystem(m_camera_system);
         PushSystem(m_lighting_system);
-        PushSystem(m_sprite_system);
         PushSystem(m_skybox_system);
+        PushSystem(m_sprite_system);
         PushSystem(m_post_process_system);
         PushSystem(m_profile_system);
 
@@ -88,13 +88,15 @@ void EditorLayer::OnPush() {
         });
 }
 
-void EditorLayer::OnPop() {}
+void EditorLayer::OnPop() {
+    dispatcher->RemoveHandler(m_entity_select_handler);
+}
 
 void EditorLayer::OnRender() {
     device->SetFramebuffer(renderer->GetFramebuffer());
     device->Clear();
-    renderer->GetFramebuffer()->ClearAttachment(
-        1, reinterpret_cast<const int *>(&entt::null));
+    uint32_t id = static_cast<uint32_t>(entt::null);
+    renderer->GetFramebuffer()->ClearAttachment(1, &id);
     for (auto &system : GetSystems()) {
         system->OnRender();
     }
@@ -313,11 +315,11 @@ void EditorLayer::SetViewportSize(uint32_t left, uint32_t top, uint32_t width,
                     DataFormatType::UBYTE, TextureWrap::EDGE,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     m_screen_buffer->Attach(TextureSpec(1, TextureType::TEX_2D, DataFormat::RED,
-                                        DataFormatType::INT, TextureWrap::EDGE,
+                                        DataFormatType::UINT, TextureWrap::EDGE,
                                         TextureMagFilter::NEAREST,
                                         TextureMinFilter::NEAREST));
     m_debug_gbuffer = Framebuffer::Create(width, height);
-    for (int i = 0; i <= GeometryBufferType::G_ENTITY_ID; ++i) {
+    for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
         m_debug_gbuffer->Attach(TextureSpec(
             1, TextureType::TEX_2D, GetTextureFormat(GeometryBufferType(i)),
             GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
@@ -459,17 +461,12 @@ void EditorLayer::DrawViewport() {
             // out of bound check
             if (mouseX > 0 && mouseY > 0 && mouseX < entity_tex->GetWidth() &&
                 mouseY < entity_tex->GetHeight()) {
-                m_debug_gbuffer->ReadPixels(G_ENTITY_ID, 0, mouseX, mouseY, 0,
-                                            1, 1, 1, sizeof(entity_id),
-                                            &entity_id);
-                SD_TRACE("gbuffer id:{}", entity_id);
                 entity_tex->ReadPixels(0, mouseX, mouseY, 0, 1, 1, 1,
                                        sizeof(entity_id), &entity_id);
-                SD_TRACE("id:{}", entity_id);
             }
             if (entity_id != entt::null) {
-                // dispatcher->PublishEvent(
-                //     EntitySelectEvent{entity_id, scene.get()});
+                dispatcher->PublishEvent(
+                    EntitySelectEvent{entity_id, scene.get()});
             }
         }
     }
@@ -480,7 +477,7 @@ void EditorLayer::DrawViewport() {
 void EditorLayer::DebugLighting() {
     if (m_mode == THREE_DIMENSIONAL) {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
-        for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
+        for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
             device->ReadBuffer(m_lighting_system->GetGBuffer(), i);
             device->DrawBuffer(m_debug_gbuffer.get(), i);
             device->BlitFramebuffer(
@@ -494,7 +491,7 @@ void EditorLayer::DebugLighting() {
         ImGui::Begin("GBuffer");
         {
             ImVec2 wsize = ImGui::GetContentRegionAvail();
-            for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
+            for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
                 ImGui::DrawTexture(*m_debug_gbuffer->GetTexture(i), wsize,
                                    ImVec2(0, 1), ImVec2(1, 0));
             }

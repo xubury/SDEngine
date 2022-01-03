@@ -35,8 +35,6 @@ class GLDevice : public Device {
 
     void SetDepthfunc(DepthFunc depth_func) override;
 
-    void ResetShaderState() override;
-
     void DrawBuffer(Framebuffer *fb, int buf) override;
 
     void DrawBuffers(Framebuffer *fb, int n, const int *buf) override;

@@ -18,7 +18,7 @@ class Scene;
 struct SD_RENDERER_API LineVertex {
     glm::vec3 pos;
     glm::vec4 color;
-    int entity_id;
+    uint32_t entity_id;
 };
 
 struct SD_RENDERER_API Line {
@@ -30,7 +30,7 @@ struct SD_RENDERER_API QuadVertex {
     glm::vec4 color;
     glm::vec2 uv;
     int tex_id;
-    int entity_id;
+    uint32_t entity_id;
     QuadVertex() : position(0.f), color(0.f), uv(0.f), tex_id(0.f) {}
 };
 
@@ -49,7 +49,7 @@ struct SD_RENDERER_API CircleVertex {
     glm::vec4 color;
     float thickness;
     float fade;
-    int entity_id;
+    uint32_t entity_id;
 };
 
 struct SD_RENDERER_API Circle {
@@ -113,52 +113,53 @@ class SD_RENDERER_API Renderer {
     glm::ivec2 GetTextCursor() const;
 
     void DrawLine(const glm::vec3 &start, const glm::vec3 &end,
-                  const glm::vec4 &color, int entity_id = -1);
+                  const glm::vec4 &color, uint32_t entity_id = -1);
 
     void DrawQuad(const glm::vec3 &pos, const glm::quat &rot,
                   const glm::vec2 &scale, const glm::vec4 &color,
-                  int entity_id = -1);
+                  uint32_t entity_id = -1);
     void DrawQuad(const glm::mat4 &transform, const glm::vec4 &color,
-                  int entity_id = -1);
+                  uint32_t entity_id = -1);
 
     void DrawTexture(const Ref<Texture> &texture,
                      const std::array<glm::vec2, 2> &uv, const glm::vec3 &pos,
                      const glm::quat &rot, const glm::vec2 &scale,
                      const glm::vec4 &color = glm::vec4(1.0f),
-                     int entity_id = -1);
+                     uint32_t entity_id = -1);
     void DrawTexture(const Ref<Texture> &texture,
                      const std::array<glm::vec2, 2> &uv,
                      const glm::mat4 &transform,
                      const glm::vec4 &color = glm::vec4(1.0f),
-                     int entity_id = -1);
+                     uint32_t entity_id = -1);
 
     void DrawTexture(const Ref<Texture> &texture, const glm::vec3 &pos,
                      const glm::quat &rot, const glm::vec2 &scale,
                      const glm::vec4 &color = glm::vec4(1.0f),
-                     int entity_id = -1);
+                     uint32_t entity_id = -1);
     void DrawTexture(const Ref<Texture> &texture, const glm::mat4 &transform,
                      const glm::vec4 &color = glm::vec4(1.0f),
-                     int entity_id = -1);
+                     uint32_t entity_id = -1);
 
     void DrawBillboard(const Ref<Texture> &texture,
                        const std::array<glm::vec2, 2> &uv, const glm::vec3 &pos,
                        const glm::vec2 &scale,
                        const glm::vec4 &color = glm::vec4(1.0f),
-                       int entity_id = -1);
+                       uint32_t entity_id = -1);
     void DrawBillboard(const Ref<Texture> &texture, const glm::vec3 &pos,
                        const glm::vec2 &scale,
                        const glm::vec4 &color = glm::vec4(1.0f),
-                       int entity_id = -1);
+                       uint32_t entity_id = -1);
 
     void DrawText(const Font &font, const std::string &text,
                   const glm::mat4 &transform,
-                  const glm::vec4 &color = glm::vec4(1.0f), int entity_id = -1);
+                  const glm::vec4 &color = glm::vec4(1.0f),
+                  uint32_t entity_id = -1);
 
     void DrawCircle(const glm::vec3 &pos, const glm::vec2 &scale,
                     const glm::vec4 &color, float thickness, float fade,
-                    int entity_id = -1);
+                    uint32_t entity_id = -1);
     void DrawCircle(const glm::mat4 &transform, const glm::vec4 &color,
-                    float thickness, float fade, int entity_id = -1);
+                    float thickness, float fade, uint32_t entity_id = -1);
 
     void RenderToScreen();
 

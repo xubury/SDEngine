@@ -45,9 +45,9 @@ void PostProcessSystem::InitBuffers() {
                         DataFormatType::FLOAT16, TextureWrap::EDGE));
     }
     m_post_buffer = Framebuffer::Create(m_width, m_height);
-    m_post_buffer->Attach(
-        TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
-                    DataFormatType::FLOAT16, TextureWrap::EDGE));
+    m_post_buffer->Attach(TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
+                                      DataFormatType::FLOAT16,
+                                      TextureWrap::EDGE));
 }
 
 void PostProcessSystem::OnPush() {
@@ -128,6 +128,7 @@ void PostProcessSystem::RenderBlur() {
 
 void PostProcessSystem::RenderPost() {
     device->SetTarget(renderer->GetDefaultTarget());
+    device->DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
     m_post_shader->SetBool("u_bloom", m_is_bloom);
     m_post_shader->SetFloat("u_bloomFactor", m_bloom_factor);
     m_post_shader->SetTexture("u_blur", m_blur_result);

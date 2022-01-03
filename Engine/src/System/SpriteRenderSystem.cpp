@@ -25,7 +25,8 @@ void SpriteRenderSystem::OnRender() {
         if (font) {
             renderer->DrawText(*font, textComp.text,
                                transformComp.GetWorldTransform().GetMatrix(),
-                               textComp.color, static_cast<int>(entity_id));
+                               textComp.color,
+                               static_cast<uint32_t>(entity_id));
         }
     });
     renderer->End();
@@ -51,7 +52,7 @@ void SpriteRenderSystem::OnRender() {
     tilemap_comp.each([this](entt::entity entity_id,
                              const SpriteComponent &sprite_comp,
                              const TransformComponent &transform_comp) {
-        int id = static_cast<int>(entity_id);
+        uint32_t id = static_cast<uint32_t>(entity_id);
         renderer->DrawTexture(asset->Get<Sprite>(sprite_comp.id)->GetTexture(),
                               sprite_comp.uvs,
                               transform_comp.GetWorldPosition(),

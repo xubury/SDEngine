@@ -35,7 +35,7 @@ DataFormatType GetTextureFormatType(GeometryBufferType type) {
         case GeometryBufferType::G_EMISSIVE:
             return DataFormatType::UBYTE;
         case GeometryBufferType::G_ENTITY_ID:
-            return DataFormatType::INT;
+            return DataFormatType::UINT;
         default:
             SD_CORE_WARN("Unknown GBuffer!");
             return DataFormatType::UBYTE;
@@ -216,8 +216,6 @@ void LightingSystem::OnRender() {
 }
 
 void LightingSystem::Clear() {
-    device->ResetShaderState();
-
     device->SetClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     device->SetFramebuffer(m_ssao_buffer.get());
     device->Clear(BufferBitMask::COLOR_BUFFER_BIT);
@@ -298,6 +296,7 @@ void LightingSystem::RenderSSAO() {
 
 void LightingSystem::RenderEmissive() {
     device->SetTarget(renderer->GetDefaultTarget());
+    device->DrawBuffer(renderer->GetFramebuffer(), 0);
     m_emssive_shader->Bind();
     m_emssive_shader->SetTexture("u_lighting",
                                  GetLightingBuffer()->GetTexture());
@@ -377,7 +376,7 @@ void LightingSystem::RenderGBuffer() {
                             const TerrainComponent &terrainComp) {
         m_gbuffer_shader->SetMat4(
             "u_model", transformComp.GetWorldTransform().GetMatrix());
-        m_gbuffer_shader->SetInt("u_entity_id", static_cast<int32_t>(entity));
+        m_gbuffer_shader->SetUint("u_entity_id", static_cast<uint32_t>(entity));
         auto &terrain = terrainComp.terrain;
         auto &material = terrain.GetMaterial();
         m_gbuffer_shader->SetTexture(
@@ -396,7 +395,7 @@ void LightingSystem::RenderGBuffer() {
                           const ModelComponent &modelComp) {
         m_gbuffer_shader->SetMat4(
             "u_model", transformComp.GetWorldTransform().GetMatrix());
-        m_gbuffer_shader->SetInt("u_entity_id", static_cast<int32_t>(entity));
+        m_gbuffer_shader->SetUint("u_entity_id", static_cast<uint32_t>(entity));
         m_gbuffer_shader->SetVec3("u_color", modelComp.color);
         auto model = asset->Get<Model>(modelComp.id);
         if (model) {

@@ -16,12 +16,12 @@ void main() {
 #shader fragment
 #version 450 core
 
-out vec4 fragColor;
+layout(location = 0) out vec4 frag_color;
 
 in vec3 out_uv;
 
 uniform samplerCube skybox;
 
 void main() {
-    fragColor = texture(skybox, out_uv);
+    frag_color = texture(skybox, out_uv);
 }

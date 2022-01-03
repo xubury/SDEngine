@@ -7,7 +7,7 @@ layout(location = 0) in vec3 a_pos;
 layout(location = 1) in vec4 a_color;
 layout(location = 2) in vec2 a_uv;
 layout(location = 3) in int a_tex_id;
-layout(location = 4) in int a_entity_id;
+layout(location = 4) in uint a_entity_id;
 
 struct VertexOutput {
     vec4 color;
@@ -16,7 +16,7 @@ struct VertexOutput {
 
 layout(location = 0) out VertexOutput out_vertex;
 layout(location = 2) out flat int out_tex_id;
-layout(location = 3) out flat int out_entity_id;
+layout(location = 3) out flat uint out_entity_id;
 
 void main() {
     gl_Position = u_projection * u_view * vec4(a_pos, 1.0f);
@@ -30,7 +30,7 @@ void main() {
 #version 450 core
 
 layout(location = 0) out vec4 frag_color;
-layout(location = 1) out int entity_id;
+layout(location = 1) out uint entity_id;
 
 layout(binding = 0) uniform sampler2D u_textures[32];
 
@@ -41,7 +41,7 @@ struct VertexOutput {
 
 layout(location = 0) in VertexOutput in_vertex;
 layout(location = 2) in flat int in_tex_id;
-layout(location = 3) in flat int in_entity_id;
+layout(location = 3) in flat uint in_entity_id;
 
 void main() {
     vec4 textureColor = texture(u_textures[in_tex_id], in_vertex.uv);

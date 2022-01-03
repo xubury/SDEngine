@@ -8,7 +8,7 @@ layout(location = 1) in vec3 a_local_pos;
 layout(location = 2) in vec4 a_color;
 layout(location = 3) in float a_thickness;
 layout(location = 4) in float a_fade;
-layout(location = 5) in int a_entity_id;
+layout(location = 5) in uint a_entity_id;
 
 struct VertexOutput {
     vec3 local_pos;
@@ -18,7 +18,7 @@ struct VertexOutput {
 };
 
 layout(location = 0) out VertexOutput out_vertex;
-layout(location = 5) out flat int out_entity_id;
+layout(location = 5) out flat uint out_entity_id;
 
 void main() {
     gl_Position = u_projection * u_view * vec4(a_world_pos, 1.0f);
@@ -34,7 +34,7 @@ void main() {
 #version 450 core
 
 layout(location = 0) out vec4 frag_color;
-layout(location = 1) out int entity_id;
+layout(location = 1) out uint entity_id;
 
 struct VertexOutput {
     vec3 local_pos;
@@ -44,7 +44,7 @@ struct VertexOutput {
 };
 
 layout(location = 0) in VertexOutput in_vertex;
-layout(location = 5) in flat int in_entity_id;
+layout(location = 5) in flat uint in_entity_id;
 
 void main() {
     float distance = 1.0 - length(in_vertex.local_pos);

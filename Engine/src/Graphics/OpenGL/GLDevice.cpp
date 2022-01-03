@@ -113,8 +113,6 @@ void GLDevice::SetDepthfunc(DepthFunc depth_func) {
     glDepthFunc(Translate(depth_func));
 }
 
-void GLDevice::ResetShaderState() { glUseProgram(0); }
-
 void GLDevice::DrawBuffer(Framebuffer *fb, int buf) {
     if (fb) {
         glNamedFramebufferDrawBuffer(fb->GetId(), GL_COLOR_ATTACHMENT0 + buf);

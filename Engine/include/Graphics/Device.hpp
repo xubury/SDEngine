@@ -52,8 +52,6 @@ class SD_GRAPHICS_API Device {
 
     virtual void SetDepthfunc(DepthFunc depth_func) = 0;
 
-    virtual void ResetShaderState() = 0;
-
     virtual void DrawBuffer(Framebuffer *fb, int buf) = 0;
     virtual void DrawBuffers(Framebuffer *fb, int n, const int *buf) = 0;
 
