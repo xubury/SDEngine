@@ -75,7 +75,7 @@ void GLDevice::Clear(BufferBitMask bit) {
             Translate(bit & BufferBitMask::STENCIL_BUFFER_BIT));
 }
 
-void GLDevice::SetShader(Shader *shader) {
+void GLDevice::SetShader(const Shader *shader) {
     if (shader) {
         glUseProgram(shader->GetId());
     } else {
@@ -91,11 +91,12 @@ void GLDevice::SetViewport(const Viewport &viewport) {
         viewport.GetWidth(), viewport.GetHeight());
 }
 
-void GLDevice::SetFramebuffer(Framebuffer *framebuffer) {
+void GLDevice::SetFramebuffer(const Framebuffer *framebuffer) {
     if (framebuffer) {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->GetId());
         glViewport(0, 0, framebuffer->GetWidth(), framebuffer->GetHeight());
-        GLFramebuffer *glfb = dynamic_cast<GLFramebuffer *>(framebuffer);
+        const GLFramebuffer *glfb =
+            dynamic_cast<const GLFramebuffer *>(framebuffer);
         const auto &drawables = glfb->GetDrawables();
         glNamedFramebufferDrawBuffers(glfb->GetId(), drawables.size(),
                                       drawables.data());

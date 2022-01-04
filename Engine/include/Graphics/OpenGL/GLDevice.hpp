@@ -19,11 +19,11 @@ class GLDevice : public Device {
 
     void Clear(BufferBitMask bit) override;
 
-    void SetShader(Shader *shader) override;
+    void SetShader(const Shader *shader) override;
 
     void SetViewport(const Viewport &viewport) override;
 
-    void SetFramebuffer(Framebuffer *framebuffer) override;
+    void SetFramebuffer(const Framebuffer *framebuffer) override;
 
     void SetPolygonMode(PolygonMode mode, Face face) override;
 

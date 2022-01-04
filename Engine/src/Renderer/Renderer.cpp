@@ -115,17 +115,23 @@ void Renderer::InitRenderer2D() {
     SetupShaderUBO(*m_circle_shader);
 }
 
-void Renderer::Submit(const VertexArray& vao, MeshTopology topology,
-                      size_t count, size_t offset) {
+void Renderer::Submit(const Shader& shader, const VertexArray& vao,
+                      MeshTopology topology, size_t count, size_t offset,
+                      bool index) {
+    m_device->SetShader(&shader);
     vao.Bind();
-    m_device->DrawElements(topology, count, offset);
+    if (index) {
+        m_device->DrawElements(topology, count, offset);
+    } else {
+        m_device->DrawArrays(topology, offset, count);
+    }
 }
 
-void Renderer::DrawMesh(const Mesh& mesh) {
+void Renderer::DrawMesh(const Shader& shader, const Mesh& mesh) {
     m_device->SetPolygonMode(mesh.GetPolygonMode(), Face::BOTH);
     VertexArray* vao = mesh.GetVertexArray();
     SD_CORE_ASSERT(vao, "Invalid mesh!");
-    Renderer::Submit(*vao, mesh.GetTopology(),
+    Renderer::Submit(shader, *vao, mesh.GetTopology(),
                      vao->GetIndexBuffer()->GetCount(), 0);
 }
 
@@ -150,6 +156,7 @@ void Renderer::Begin(Camera& camera) {
 void Renderer::End() {
     Flush();
     StartBatch();
+    m_device->SetShader(nullptr);
 }
 
 void Renderer::StartBatch() {
@@ -203,9 +210,8 @@ void Renderer::FlushLines() {
         size_t offset = m_data.line_buffer_ptr - m_data.line_buffer.data();
         m_data.line_vao->UpdateBuffer(0, m_data.line_buffer.data(),
                                       sizeof(Line) * offset);
-        m_device->SetShader(m_line_shader.get());
-        m_data.line_vao->Bind();
-        m_device->DrawArrays(MeshTopology::LINES, 0, m_data.line_vertex_cnt);
+        Submit(*m_line_shader, *m_data.line_vao, MeshTopology::LINES,
+               m_data.line_vertex_cnt, 0, false);
     }
 }
 
@@ -219,9 +225,8 @@ void Renderer::FlushQuads() {
             m_sprite_shader->SetTexture(i, m_data.texture_slots[i].get());
         }
 
-        m_device->SetShader(m_sprite_shader.get());
-        Submit(*m_data.quad_vao, MeshTopology::TRIANGLES, m_data.quad_index_cnt,
-               0);
+        Submit(*m_sprite_shader, *m_data.quad_vao, MeshTopology::TRIANGLES,
+               m_data.quad_index_cnt, 0);
     }
 }
 
@@ -232,8 +237,7 @@ void Renderer::FlushCircles() {
         m_data.circle_vao->UpdateBuffer(0, m_data.circle_buffer.data(),
                                         offset * sizeof(Circle));
 
-        m_device->SetShader(m_circle_shader.get());
-        Submit(*m_data.circle_vao, MeshTopology::TRIANGLES,
+        Submit(*m_circle_shader, *m_data.circle_vao, MeshTopology::TRIANGLES,
                m_data.circle_index_cnt, 0);
     }
 }

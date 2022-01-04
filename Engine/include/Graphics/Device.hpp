@@ -35,11 +35,11 @@ class SD_GRAPHICS_API Device {
                             BufferBitMask::DEPTH_BUFFER_BIT |
                             BufferBitMask::STENCIL_BUFFER_BIT) = 0;
 
-    virtual void SetShader(Shader *shader) = 0;
+    virtual void SetShader(const Shader *shader) = 0;
 
     virtual void SetViewport(const Viewport &viewport) = 0;
 
-    virtual void SetFramebuffer(Framebuffer *framebuffer) = 0;
+    virtual void SetFramebuffer(const Framebuffer *framebuffer) = 0;
 
     virtual void SetPolygonMode(PolygonMode mode, Face face) = 0;
 

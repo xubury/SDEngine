@@ -24,7 +24,7 @@ class SD_SYSTEM_API SkyboxSystem : public System {
     void OnRender() override;
 
    private:
-    Ref<Shader> m_skyboxShader;
+    Ref<Shader> m_skybox_shader;
     Ref<VertexArray> m_box_vao;
     ResourceId m_skybox_id;
 

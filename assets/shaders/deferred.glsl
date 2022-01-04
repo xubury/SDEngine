@@ -30,12 +30,13 @@ uniform sampler2DMS u_albedo;
 uniform sampler2DMS u_ambient;
 uniform sampler2DMS u_background;
 uniform sampler2D u_ssao;
+uniform bool u_ssao_state;
 
 
 void main() {
     vec3 color = vec3(0);
     const int samples = textureSamples(u_position);
-    const float ambient_occlusion = texture(u_ssao, in_uv).r;
+    const float ambient_occlusion = u_ssao_state ? texture(u_ssao, in_uv).r : 1;
 
     const ivec2 uv = ivec2(in_uv * textureSize(u_position));
     for (int i = 0; i < samples; ++i) {

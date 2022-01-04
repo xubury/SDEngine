@@ -97,10 +97,11 @@ class SD_RENDERER_API Renderer {
     Renderer(const Renderer &) = delete;
     Renderer &operator=(const Renderer &) = delete;
 
-    void Submit(const VertexArray &vao, MeshTopology topology, size_t count,
-                size_t offset);
+    void Submit(const Shader &shader, const VertexArray &vao,
+                MeshTopology topology, size_t count, size_t offset,
+                bool index = true);
 
-    void DrawMesh(const Mesh &mesh);
+    void DrawMesh(const Shader &shader, const Mesh &mesh);
 
     void StartBatch();
     void Flush();

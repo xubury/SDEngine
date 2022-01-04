@@ -34,7 +34,7 @@ SkyboxSystem::SkyboxSystem() : System("SkyboxSystem") {
 }
 
 void SkyboxSystem::OnInit() {
-    m_skyboxShader = ShaderLibrary::Instance().Load("shaders/skybox.glsl");
+    m_skybox_shader = ShaderLibrary::Instance().Load("shaders/skybox.glsl");
     m_skybox_id = asset->LoadAsset<Skybox>("skybox/test.skybox");
 }
 
@@ -69,19 +69,18 @@ void SkyboxSystem::OnRender() {
     glm::vec3 pos = scene->GetCamera()->GetWorldPosition();
     glm::mat4 projection = scene->GetCamera()->GetViewPorjection() *
                            glm::translate(glm::mat4(1.0f), pos);
-    m_skyboxShader->SetMat4("u_projection", projection);
+    m_skybox_shader->SetMat4("u_projection", projection);
 
-    device->SetShader(m_skyboxShader.get());
     device->SetDepthfunc(DepthFunc::LESS_EQUAL);
     device->SetCullFace(Face::FRONT);
     auto skybox = asset->Get<Skybox>(m_skybox_id);
     if (skybox) {
-        m_skyboxShader->SetTexture("skybox", skybox->GetTexture());
+        m_skybox_shader->SetTexture("skybox", skybox->GetTexture());
     }
 
     device->SetFramebuffer(renderer->GetFramebuffer());
     device->DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
-    renderer->Submit(*m_box_vao, MeshTopology::TRIANGLES,
+    renderer->Submit(*m_skybox_shader, *m_box_vao, MeshTopology::TRIANGLES,
                      m_box_vao->GetIndexBuffer()->GetCount(), 0);
     device->SetCullFace(Face::BACK);
     device->SetDepthfunc(DepthFunc::LESS);

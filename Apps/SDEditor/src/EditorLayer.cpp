@@ -52,9 +52,11 @@ void EditorLayer::PushSystems() {
         m_profile_system = CreateSystem<ProfileSystem>(m_width, m_height);
 
         PushSystem(m_camera_system);
-        PushSystem(m_lighting_system);
         PushSystem(m_skybox_system);
-        PushSystem(m_sprite_system);
+        PushSystem(m_lighting_system);  // lighting is put behind skybox to do
+                                        // MSAA with skybox(the background)
+        PushSystem(m_sprite_system);    // also sprite is put behind skybox and
+                                        // deferred lighting to do blending
         PushSystem(m_post_process_system);
         PushSystem(m_profile_system);
 
@@ -72,7 +74,8 @@ void EditorLayer::PushSystems() {
 
         PushSystem(m_camera_system);
         PushSystem(m_skybox_system);
-        PushSystem(m_sprite_system);
+        PushSystem(m_sprite_system);  // sprite render need to put behind skybox
+                                      // to do blending
         PushSystem(m_post_process_system);
         PushSystem(m_tile_map_system);
         PushSystem(m_profile_system);
