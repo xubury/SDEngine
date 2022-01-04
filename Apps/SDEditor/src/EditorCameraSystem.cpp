@@ -5,6 +5,7 @@
 namespace SD {
 
 const float ROTATION_SPEED = 0.1;
+const float TRANSLATION_SPEED = 100.f;
 const float SMOOTHNESS = 10;
 const float MAX_FAR_Z = 1000;
 
@@ -78,25 +79,26 @@ void EditorCameraSystem::OnImGui() {
 }
 
 void EditorCameraSystem::OnTick(float dt) {
+    float step = TRANSLATION_SPEED * dt;
     if (Input::IsKeyDown(Keycode::W) &&
         m_camera.GetCameraType() == CameraType::PERSPECTIVE) {
-        m_camera.TranslateWorld(-m_camera.GetWorldFront());
+        m_camera.TranslateWorld(-m_camera.GetWorldFront() * step);
     }
     if (Input::IsKeyDown(Keycode::S) &&
         m_camera.GetCameraType() == CameraType::PERSPECTIVE) {
-        m_camera.TranslateWorld(m_camera.GetWorldFront());
+        m_camera.TranslateWorld(m_camera.GetWorldFront() * step);
     }
     if (Input::IsKeyDown(Keycode::A)) {
-        m_camera.TranslateWorld(-m_camera.GetWorldRight());
+        m_camera.TranslateWorld(-m_camera.GetWorldRight() * step);
     }
     if (Input::IsKeyDown(Keycode::D)) {
-        m_camera.TranslateWorld(m_camera.GetWorldRight());
+        m_camera.TranslateWorld(m_camera.GetWorldRight() * step);
     }
     if (Input::IsKeyDown(Keycode::LSHIFT)) {
-        m_camera.TranslateWorld(m_camera.GetWorldUp());
+        m_camera.TranslateWorld(m_camera.GetWorldUp() * step);
     }
     if (Input::IsKeyDown(Keycode::LCTRL)) {
-        m_camera.TranslateWorld(-m_camera.GetWorldUp());
+        m_camera.TranslateWorld(-m_camera.GetWorldUp() * step);
     }
     m_mouse_smooth_movement =
         glm::mix(m_mouse_smooth_movement, m_mouse_movement, dt * SMOOTHNESS);
