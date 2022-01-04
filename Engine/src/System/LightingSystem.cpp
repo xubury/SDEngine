@@ -223,6 +223,7 @@ void LightingSystem::RenderShadowMap() {
         if (!light.IsCastShadow()) return;
 
         device->SetFramebuffer(light.GetShadowMap());
+        device->SetShader(nullptr);  // supress shader recompile warning
         light.GetShadowMap()->ClearDepth();
         light.ComputeLightSpaceMatrix(transformComp.GetWorldTransform(),
                                       scene->GetCamera());
@@ -240,9 +241,9 @@ void LightingSystem::RenderShadowMap() {
                 }
             }
         });
-        renderer->End();
     });
     device->SetCullFace(Face::BACK);
+    device->SetShader(nullptr);  // supress shader recompile warning
 }
 
 void LightingSystem::RenderSSAO() {
@@ -360,7 +361,6 @@ void LightingSystem::RenderGBuffer() {
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
     renderer->Begin(*m_gbuffer_shader, *scene->GetCamera());
-    device->SetShader(m_gbuffer_shader.get());
 
     terrainView.each([this](const entt::entity &entity,
                             const TransformComponent &transformComp,

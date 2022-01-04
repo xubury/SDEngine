@@ -4,8 +4,7 @@
 namespace SD {
 
 GLRenderbuffer::GLRenderbuffer(int width, int height, int samples,
-                               DataFormat format,
-                               DataFormatType format_type)
+                               DataFormat format, DataFormatType format_type)
     : Renderbuffer(width, height, samples, format, format_type) {
     Allocate();
 }
