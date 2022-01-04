@@ -138,8 +138,11 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
             m_entity_to_destroy = entity;
         }
         if (ImGui::MenuItem("Create Empty Entity")) {
-           Entity child = scene->CreateEntity("Empty Entity");
-           entity.AddChild(child);
+            Entity child = scene->CreateEntity("Empty Entity");
+            entity.AddChild(child);
+        }
+        if (ImGui::MenuItem("Clone Entity")) {
+            scene->CloneEntity(entity);
         }
 
         ImGui::EndPopup();

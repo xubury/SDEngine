@@ -6,6 +6,7 @@
 #include "ECS/Export.hpp"
 #include "ECS/Component.hpp"
 
+#include "entt/entt.hpp"
 #define ENTT_USE_ATOMIC
 #include "entt/config/config.h"
 #include "entt/entity/snapshot.hpp"
@@ -15,14 +16,14 @@
 namespace SD {
 
 class Entity;
+using EntityId = entt::entity;
+using EntityIdType = entt::id_type;
 
-typedef entt::delegate<void(entt::snapshot &,
-                            cereal::PortableBinaryOutputArchive &)>
-    ComponentSerializeFunction;
-typedef entt::delegate<void(entt::snapshot_loader &,
-                            cereal::PortableBinaryInputArchive &)>
+using ComponentSerializeFunction = entt::delegate<void(
+    entt::snapshot &, cereal::PortableBinaryOutputArchive &)>;
 
-    ComponentDeserializeFunction;
+using ComponentDeserializeFunction = entt::delegate<void(
+    entt::snapshot_loader &, cereal::PortableBinaryInputArchive &)>;
 
 class SD_ECS_API Scene : public entt::registry {
    public:
@@ -39,17 +40,17 @@ class SD_ECS_API Scene : public entt::registry {
 
     Camera *GetCamera();
 
+    Entity CloneEntity(EntityId from);
+
     // Registering a component enables serialization as well as duplication
     // functionality in & out editor.
     template <typename T>
-    void RegisterComponent(bool only_clone = false) {
+    void RegisterComponent() {
         auto id = entt::type_hash<T>::value();
-        if (!only_clone) {
-            m_serialize_functions[id]
-                .first.template connect<&Scene::SerializeComponent<T>>(this);
-            m_serialize_functions[id]
-                .second.template connect<&Scene::DeserializeComponent<T>>(this);
-        }
+        m_serialize_functions[id]
+            .first.template connect<&Scene::SerializeComponent<T>>(this);
+        m_serialize_functions[id]
+            .second.template connect<&Scene::DeserializeComponent<T>>(this);
         on_construct<T>().template connect<&OnComponentAdded<T>>();
     }
 
@@ -66,15 +67,21 @@ class SD_ECS_API Scene : public entt::registry {
         loader.component<T>(archive);
     }
 
+    template <typename T>
+    void CloneComponent(EntityId from, EntityId to) {
+        T component = get<T>(from);
+        emplace<T>(to, component);
+    }
+
     Camera *m_camera;
-    entt::entity m_selected_entity;
-    std::unordered_map<entt::id_type, std::pair<ComponentSerializeFunction,
-                                                ComponentDeserializeFunction>>
+    EntityId m_selected_entity;
+    std::unordered_map<EntityIdType, std::pair<ComponentSerializeFunction,
+                                               ComponentDeserializeFunction>>
         m_serialize_functions;
 };
 
 struct EntitySelectEvent {
-    entt::entity entity_id;
+    EntityId entity_id;
     Scene *scene;
 };
 

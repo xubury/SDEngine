@@ -18,6 +18,16 @@ Entity Scene::CreateEntity(const std::string &name) {
     return entity;
 }
 
+Entity Scene::CloneEntity(EntityId from) {
+    EntityId to = create();
+    for (auto &&curr : storage()) {
+        if (auto &storage = curr.second; storage.contains(from)) {
+            storage.emplace(to, storage.get(from));
+        }
+    }
+    return {to, this};
+}
+
 void Scene::Serialize(cereal::PortableBinaryOutputArchive &archive) {
     entt::snapshot loader{*this};
     loader.entities(archive);
