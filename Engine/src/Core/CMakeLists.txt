@@ -58,6 +58,7 @@ target_link_libraries(sd-core
     sol2
 
     PRIVATE
+    sd-loader
     SDL2::SDL2
     ${SDL2_IMAGE_LIBRARIES})
 

@@ -1,4 +1,4 @@
-#include "Renderer/ModelLoader.hpp"
+#include "Loader/ModelLoader.hpp"
 #include "Renderer/Model.hpp"
 #include "Renderer/Bitmap.hpp"
 

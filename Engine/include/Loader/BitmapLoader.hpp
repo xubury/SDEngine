@@ -1,13 +1,13 @@
 #ifndef SD_BITMAP_LOADER_HPP
 #define SD_BITMAP_LOADER_HPP
 
-#include "Renderer/Export.hpp"
+#include "Loader/Export.hpp"
 #include "Renderer/Bitmap.hpp"
 #include "Asset/AssetManager.hpp"
 
 namespace SD {
 
-class SD_RENDERER_API BitmapLoader : public AssetLoader {
+class SD_LOADER_API BitmapLoader : public AssetLoader {
    public:
     BitmapLoader(AssetManager &manager);
     ~BitmapLoader();

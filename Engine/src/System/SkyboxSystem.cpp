@@ -33,7 +33,7 @@ SkyboxSystem::SkyboxSystem() : System("SkyboxSystem") {
 }
 
 void SkyboxSystem::OnInit() {
-    m_skybox_shader = ShaderLibrary::Instance().Load("shaders/skybox.glsl");
+    m_skybox_shader = asset->LoadAndGet<Shader>("shaders/skybox.glsl");
     m_skybox_id = asset->LoadAsset<Skybox>("skybox/test.skybox");
 }
 

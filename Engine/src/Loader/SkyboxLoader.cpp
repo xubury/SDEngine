@@ -1,4 +1,4 @@
-#include "Renderer/SkyboxLoader.hpp"
+#include "Loader/SkyboxLoader.hpp"
 #include "Utility/String.hpp"
 #include "Utility/ThreadPool.hpp"
 

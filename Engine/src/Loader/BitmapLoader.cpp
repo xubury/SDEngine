@@ -1,4 +1,4 @@
-#include "Renderer/BitmapLoader.hpp"
+#include "Loader/BitmapLoader.hpp"
 #include "Graphics/Graphics.hpp"
 
 #include <SDL_image.h>

@@ -1,4 +1,4 @@
-#include "Renderer/SpriteLoader.hpp"
+#include "Loader/SpriteLoader.hpp"
 #include "Renderer/Sprite.hpp"
 #include "Renderer/Bitmap.hpp"
 #include "Utility/String.hpp"

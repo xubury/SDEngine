@@ -1,12 +1,12 @@
-#ifndef SD_SPRITE_LOADER_HPP
-#define SD_SPRITE_LOADER_HPP
+#ifndef SD_MODEL_LOADER_HPP
+#define SD_MODEL_LOADER_HPP
 
-#include "Renderer/Export.hpp"
+#include "Loader/Export.hpp"
 #include "Asset/AssetManager.hpp"
 
 namespace SD {
 
-class SD_RENDERER_API SpriteLoader : public AssetLoader {
+class SD_LOADER_API ModelLoader : public AssetLoader {
    public:
     using AssetLoader::AssetLoader;
 
@@ -15,4 +15,4 @@ class SD_RENDERER_API SpriteLoader : public AssetLoader {
 
 }  // namespace SD
 
-#endif
+#endif /* SD_MODEL_LOADER_HPP */

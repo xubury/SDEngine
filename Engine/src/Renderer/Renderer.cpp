@@ -1,4 +1,5 @@
 #include "Renderer/Renderer.hpp"
+#include "Asset/AssetManager.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Device.hpp"
 #include "Utility/String.hpp"
@@ -12,7 +13,8 @@ const static std::array<glm::vec4, 4> QUAD_VERTEX_POS = {
 const static std::array<glm::vec2, 2> QUAD_UV = {glm::vec2(0, 0),
                                                  glm::vec2(1, 1)};
 
-Renderer::Renderer(Device* device) : m_device(device) {
+Renderer::Renderer(Device* device, AssetManager* asset)
+    : m_device(device), m_asset(asset) {
     SD_CORE_TRACE("Initializing Renderer");
     m_camera_UBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
                                          BufferIOType::DYNAMIC);
@@ -106,9 +108,9 @@ void Renderer::InitRenderer2D() {
     const float color[4] = {1, 1, 1, 1};
     m_data.texture_slots[0]->SetPixels(0, 0, 0, 1, 1, 1, color);
 
-    m_line_shader = ShaderLibrary::Instance().Load("shaders/line.glsl");
-    m_sprite_shader = ShaderLibrary::Instance().Load("shaders/sprite.glsl");
-    m_circle_shader = ShaderLibrary::Instance().Load("shaders/circle.glsl");
+    m_line_shader = m_asset->LoadAndGet<Shader>("shaders/line.glsl");
+    m_sprite_shader = m_asset->LoadAndGet<Shader>("shaders/sprite.glsl");
+    m_circle_shader = m_asset->LoadAndGet<Shader>("shaders/circle.glsl");
 
     SetupShaderUBO(*m_line_shader);
     SetupShaderUBO(*m_sprite_shader);

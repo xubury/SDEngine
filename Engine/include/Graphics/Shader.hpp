@@ -64,30 +64,6 @@ class SD_GRAPHICS_API Shader {
     Shader() = default;
 };
 
-class SD_GRAPHICS_API ShaderLibrary {
-   public:
-    static ShaderLibrary& Instance();
-
-    void BuildShader(Shader& shader, const std::filesystem::path& path);
-
-    void Add(const std::string& name, const Ref<Shader>& shader);
-    Ref<Shader> Load(const std::string& filepath);
-    Ref<Shader> Load(const std::string& name, const std::string& filepath);
-
-    Ref<Shader> Get(const std::string& name);
-
-    bool Exists(const std::string& name) const;
-
-    void SetDirectory(const std::filesystem::path& path);
-
-    std::filesystem::path GetAbsolutePath(
-        const std::filesystem::path& path) const;
-
-   private:
-    std::unordered_map<std::string, Ref<Shader>> m_shaders;
-    std::filesystem::path m_directory;
-};
-
 }  // namespace SD
 
 #endif /* SD_SHADER_HPP */

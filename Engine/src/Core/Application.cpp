@@ -4,16 +4,18 @@
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
 
-#include "Renderer/BitmapLoader.hpp"
-#include "Renderer/ModelLoader.hpp"
-#include "Renderer/FontLoader.hpp"
-#include "Renderer/SkyboxLoader.hpp"
-#include "Renderer/SpriteLoader.hpp"
+#include "Loader/BitmapLoader.hpp"
+#include "Loader/ModelLoader.hpp"
+#include "Loader/FontLoader.hpp"
+#include "Loader/SkyboxLoader.hpp"
+#include "Loader/SpriteLoader.hpp"
+#include "Loader/ShaderLoader.hpp"
 
 #include "Renderer/Model.hpp"
 #include "Renderer/Bitmap.hpp"
 #include "Renderer/Font.hpp"
 #include "Renderer/Sprite.hpp"
+#include "Graphics/Shader.hpp"
 
 namespace SD {
 
@@ -47,8 +49,6 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     // Setting up which api to use
     SetGraphicsAPI(api);
 
-    ShaderLibrary::Instance().SetDirectory("assets");
-
     m_window = Window::Create(property);
 
     device = Device::Create(m_window.get());
@@ -58,9 +58,10 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     asset->SetLoader<Font, FontLoader>();
     asset->SetLoader<Skybox, SkyboxLoader>();
     asset->SetLoader<Sprite, SpriteLoader>();
+    asset->SetLoader<Shader, ShaderLoader>();
     asset->Load("assets");
 
-    renderer = CreateRef<Renderer>(device.get());
+    renderer = CreateRef<Renderer>(device.get(), asset.get());
 
     dispatcher = CreateRef<EventDispatcher>();
 

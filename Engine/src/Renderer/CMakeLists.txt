@@ -1,8 +1,3 @@
-find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
-find_package(assimp REQUIRED)
-find_package(Freetype REQUIRED)
-
 set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Renderer)
 set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Renderer)
 
@@ -14,17 +9,12 @@ set(Renderer_Include
     ${Include_Root}/Renderer.hpp
     ${Include_Root}/Skybox.hpp
     ${Include_Root}/Sprite.hpp
-    ${Include_Root}/SpriteLoader.hpp
     ${Include_Root}/Terrain.hpp
     ${Include_Root}/Font.hpp
     ${Include_Root}/Model.hpp
     ${Include_Root}/Mateiral.hpp
     ${Include_Root}/Mesh.hpp
-    ${Include_Root}/Bitmap.hpp
-    ${Include_Root}/BitmapLoader.hpp
-    ${Include_Root}/FontLoader.hpp
-    ${Include_Root}/ModelLoader.hpp
-    ${Include_Root}/SkyboxLoader.hpp)
+    ${Include_Root}/Bitmap.hpp)
 
 set(Renderer_Src
     ${Src_Root}/Camera.cpp
@@ -32,17 +22,12 @@ set(Renderer_Src
     ${Src_Root}/Renderer.cpp
     ${Src_Root}/Skybox.cpp
     ${Src_Root}/Sprite.cpp
-    ${Src_Root}/SpriteLoader.cpp
     ${Src_Root}/Terrain.cpp
     ${Src_Root}/Font.cpp
     ${Src_Root}/Material.cpp
     ${Src_Root}/Mesh.cpp
     ${Src_Root}/Model.cpp
-    ${Src_Root}/Bitmap.cpp
-    ${Src_Root}/FontLoader.cpp
-    ${Src_Root}/BitmapLoader.cpp
-    ${Src_Root}/ModelLoader.cpp
-    ${Src_Root}/SkyboxLoader.cpp)
+    ${Src_Root}/Bitmap.cpp)
 
 add_library(sd-renderer ${Renderer_Src})
 
@@ -61,12 +46,7 @@ target_link_libraries(sd-renderer
     PUBLIC
     sd-utility
     sd-graphics
-    sd-asset
-    PRIVATE
-    SDL2::SDL2
-    ${SDL2_IMAGE_LIBRARIES}
-    assimp::assimp
-    Freetype::Freetype)
+    sd-asset)
 
 target_include_directories(sd-renderer
     PUBLIC

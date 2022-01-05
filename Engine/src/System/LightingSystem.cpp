@@ -87,13 +87,12 @@ void LightingSystem::OnPop() {
 }
 
 void LightingSystem::InitShaders() {
-    m_shadow_shader = ShaderLibrary::Instance().Load("shaders/shadow.glsl");
-    m_emssive_shader = ShaderLibrary::Instance().Load("shaders/emissive.glsl");
-    m_deferred_shader = ShaderLibrary::Instance().Load("shaders/deferred.glsl");
-    m_gbuffer_shader = ShaderLibrary::Instance().Load("shaders/gbuffer.glsl");
-    m_ssao_shader = ShaderLibrary::Instance().Load("shaders/ssao.glsl");
-    m_ssao_blur_shader =
-        ShaderLibrary::Instance().Load("shaders/ssao_blur.glsl");
+    m_shadow_shader = asset->LoadAndGet<Shader>("shaders/shadow.glsl");
+    m_emssive_shader = asset->LoadAndGet<Shader>("shaders/emissive.glsl");
+    m_deferred_shader = asset->LoadAndGet<Shader>("shaders/deferred.glsl");
+    m_gbuffer_shader = asset->LoadAndGet<Shader>("shaders/gbuffer.glsl");
+    m_ssao_shader = asset->LoadAndGet<Shader>("shaders/ssao.glsl");
+    m_ssao_blur_shader = asset->LoadAndGet<Shader>("shaders/ssao_blur.glsl");
 }
 
 void LightingSystem::InitSSAO() {
