@@ -202,7 +202,7 @@ static void DrawComponent(const std::string &name, Entity entity,
 void ScenePanel::DrawComponents(Entity &entity) {
     if (entity.HasComponent<TagComponent>()) {
         auto &id = entity.GetComponent<IdComponent>().id;
-        std::string idString = "Resouce Id: " + std::to_string(id);
+        std::string idString = "Resource Id: " + std::to_string(id);
         ImGui::TextUnformatted(idString.c_str());
     }
     if (entity.HasComponent<TagComponent>()) {
