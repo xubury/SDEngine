@@ -53,11 +53,11 @@ Application::Application(const std::string &title, GraphicsAPI api) {
 
     device = Device::Create(m_window.get());
     asset = CreateRef<AssetManager>();
-    asset->SetLoader<Bitmap>(new BitmapLoader(*asset));
-    asset->SetLoader<Model>(new ModelLoader(*asset));
-    asset->SetLoader<Font>(new FontLoader(*asset));
-    asset->SetLoader<Skybox>(new SkyboxLoader(*asset));
-    asset->SetLoader<Sprite>(new SpriteLoader(*asset));
+    asset->SetLoader<Bitmap, BitmapLoader>();
+    asset->SetLoader<Model, ModelLoader>();
+    asset->SetLoader<Font, FontLoader>();
+    asset->SetLoader<Skybox, SkyboxLoader>();
+    asset->SetLoader<Sprite, SpriteLoader>();
     asset->Load("assets");
 
     renderer = CreateRef<Renderer>(device.get());

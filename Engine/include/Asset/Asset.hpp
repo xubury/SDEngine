@@ -88,10 +88,10 @@ class SD_ASSET_API AssetManager {
 
     bool Valid() const { return std::filesystem::exists(m_directory); }
 
-    template <typename ASSET>
-    void SetLoader(AssetLoader *loader) {
+    template <typename ASSET, typename LOADER, typename... ARGS>
+    void SetLoader(ARGS &&...args) {
         size_t type = GetAssetType<ASSET>();
-        m_loaders[type] = loader;
+        m_loaders[type] = new LOADER(*this, std::forward(args)...);
     }
 
     template <typename ASSET>
