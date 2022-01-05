@@ -45,10 +45,11 @@ class EditorLayer : public Layer {
     int GetViewportWidth() const { return m_width; }
     int GetViewportHeight() const { return m_height; }
 
-    void SetViewportSize(uint32_t left, uint32_t top, uint32_t width,
-                         uint32_t height);
+    void SetViewportSize(int left, int top, int width, int height);
 
    private:
+    void InitBuffers();
+
     void ProcessDialog();
 
     void PushSystems();
@@ -95,6 +96,7 @@ class EditorLayer : public Layer {
 
     Entity m_selected_entity;
 
+    HandlerRegistration m_size_handler;
     HandlerRegistration m_entity_select_handler;
 };
 

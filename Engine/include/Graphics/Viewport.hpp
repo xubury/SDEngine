@@ -38,6 +38,14 @@ class SD_GRAPHICS_API Viewport {
     bool m_is_hover;
     bool m_is_focus;
 };
+
+struct ViewportEvent {
+    int left;
+    int top;
+    int width;
+    int height;
+};
+
 }  // namespace SD
 
 #endif  // !SD_VIEWPORT_HPP

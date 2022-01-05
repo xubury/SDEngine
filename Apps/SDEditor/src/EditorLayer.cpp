@@ -23,7 +23,7 @@ EditorLayer::EditorLayer(int width, int height, int msaa)
 EditorLayer::~EditorLayer() {}
 
 void EditorLayer::OnInit() {
-    SetViewportSize(0, 0, m_width, m_height);
+    InitBuffers();
     // editor related system
     m_scene_panel = CreateSystem<ScenePanel>();
     m_editor_camera_system =
@@ -33,6 +33,25 @@ void EditorLayer::OnInit() {
 
     PushSystem(m_scene_panel);
     PushSystem(m_editor_camera_system);
+}
+
+void EditorLayer::InitBuffers() {
+    m_screen_buffer = Framebuffer::Create(m_width, m_height);
+    m_screen_buffer->Attach(
+        TextureSpec(1, TextureType::TEX_2D, DataFormat::RGB,
+                    DataFormatType::UBYTE, TextureWrap::EDGE,
+                    TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
+    m_screen_buffer->Attach(TextureSpec(1, TextureType::TEX_2D, DataFormat::RED,
+                                        DataFormatType::UINT, TextureWrap::EDGE,
+                                        TextureMagFilter::NEAREST,
+                                        TextureMinFilter::NEAREST));
+    m_debug_gbuffer = Framebuffer::Create(m_width, m_height);
+    for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
+        m_debug_gbuffer->Attach(TextureSpec(
+            1, TextureType::TEX_2D, GetTextureFormat(GeometryBufferType(i)),
+            GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
+            TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
+    }
 }
 
 void EditorLayer::PushSystems() {
@@ -86,10 +105,17 @@ void EditorLayer::OnPush() {
         [this](const EntitySelectEvent &e) {
             m_selected_entity = {e.entity_id, e.scene};
         });
+    m_size_handler =
+        dispatcher->Register<ViewportEvent>([this](const ViewportEvent &e) {
+            m_width = e.width;
+            m_height = e.height;
+            InitBuffers();
+        });
 }
 
 void EditorLayer::OnPop() {
     dispatcher->RemoveHandler(m_entity_select_handler);
+    dispatcher->RemoveHandler(m_size_handler);
 }
 
 void EditorLayer::OnRender() {
@@ -304,32 +330,10 @@ void EditorLayer::OnEventProcess(const Event &event) {
     }
 }
 
-void EditorLayer::SetViewportSize(uint32_t left, uint32_t top, uint32_t width,
-                                  uint32_t height) {
-    WindowSizeEvent event;
-    event.width = width;
-    event.height = height;
+void EditorLayer::SetViewportSize(int left, int top, int width, int height) {
+    ViewportEvent event{left, top, width, height};
     dispatcher->PublishEvent(event);
     renderer->GetDefaultTarget().SetSize(left, top, width, height);
-    m_screen_buffer = Framebuffer::Create(width, height);
-    m_screen_buffer->Attach(
-        TextureSpec(1, TextureType::TEX_2D, DataFormat::RGB,
-                    DataFormatType::UBYTE, TextureWrap::EDGE,
-                    TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
-    m_screen_buffer->Attach(TextureSpec(1, TextureType::TEX_2D, DataFormat::RED,
-                                        DataFormatType::UINT, TextureWrap::EDGE,
-                                        TextureMagFilter::NEAREST,
-                                        TextureMinFilter::NEAREST));
-    m_debug_gbuffer = Framebuffer::Create(width, height);
-    for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
-        m_debug_gbuffer->Attach(TextureSpec(
-            1, TextureType::TEX_2D, GetTextureFormat(GeometryBufferType(i)),
-            GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
-            TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
-    }
-
-    m_width = width;
-    m_height = height;
 }
 
 void EditorLayer::NewScene() { scene->clear(); }
@@ -423,8 +427,8 @@ void EditorLayer::DrawViewport() {
         if (m_width != wsize.x || m_height != wsize.y) {
             if (wsize.x > 0 && wsize.y > 0) {
                 SetViewportSize(viewportMinRegion.x + viewportOffset.x,
-                                viewportMinRegion.y + viewportOffset.y, wsize.x,
-                                wsize.y);
+                                viewportMinRegion.y + viewportOffset.y,
+                                wsize.x, wsize.y);
             }
         }
         viewport.SetFocus(ImGui::IsWindowFocused());

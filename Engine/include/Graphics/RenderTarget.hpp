@@ -14,7 +14,7 @@ namespace SD {
 class SD_GRAPHICS_API RenderTarget {
    public:
     RenderTarget() = default;
-    RenderTarget(int width, int height);
+    RenderTarget(const Viewport &viewport);
 
     RenderTarget(const RenderTarget &) = delete;
     RenderTarget &operator=(const RenderTarget &) = delete;

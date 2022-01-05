@@ -20,7 +20,7 @@ class EditorCameraSystem : public System {
 
     void OnTick(float dt) override;
 
-    void OnSizeEvent(const WindowSizeEvent &event);
+    void OnSizeEvent(const ViewportEvent &event);
     void OnMouseMotion(const MouseMotionEvent &event);
 
     void Rotate(float yaw, float pitch);

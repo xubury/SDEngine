@@ -21,7 +21,7 @@ class ScenePanel : public System {
 
     void OnImGui() override;
 
-    void OnSizeEvent(const WindowSizeEvent &event);
+    void OnSizeEvent(const ViewportEvent &event);
 
     void SetGizmoMode(ImGuizmo::MODE mode) { m_gizmo_mode = mode; }
     ImGuizmo::MODE GetGizmoMode() const;

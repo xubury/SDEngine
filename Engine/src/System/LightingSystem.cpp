@@ -166,7 +166,7 @@ void LightingSystem::InitLighting() {
         RenderbufferSpec(samples, DataFormat::DEPTH, DataFormatType::FLOAT16));
 }
 
-void LightingSystem::OnSizeEvent(const WindowSizeEvent &event) {
+void LightingSystem::OnSizeEvent(const ViewportEvent &event) {
     m_width = event.width;
     m_height = event.height;
     InitLighting();

@@ -23,7 +23,7 @@ void ScenePanel::OnPush() {
 
 void ScenePanel::OnPop() { dispatcher->RemoveHandler(m_size_handler); }
 
-void ScenePanel::OnSizeEvent(const WindowSizeEvent &event) {
+void ScenePanel::OnSizeEvent(const ViewportEvent &event) {
     m_width = event.width;
     m_height = event.height;
 }

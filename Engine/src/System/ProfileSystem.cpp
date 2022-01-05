@@ -17,10 +17,8 @@ void ProfileSystem::OnInit() {
 }
 
 void ProfileSystem::OnPush() {
-    m_size_handler =
-        dispatcher->Register<WindowSizeEvent>([this](const WindowSizeEvent &e) {
-            m_camera.Resize(e.width, e.height);
-        });
+    m_size_handler = dispatcher->Register<ViewportEvent>(
+        [this](const ViewportEvent &e) { m_camera.Resize(e.width, e.height); });
 }
 
 void ProfileSystem::OnPop() { dispatcher->RemoveHandler(m_size_handler); }

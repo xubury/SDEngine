@@ -61,8 +61,6 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     asset->SetLoader<Shader, ShaderLoader>();
     asset->Load("assets");
 
-    renderer = CreateRef<Renderer>(device.get(), asset.get());
-
     dispatcher = CreateRef<EventDispatcher>();
 
     scene = CreateRef<Scene>();

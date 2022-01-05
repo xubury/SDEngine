@@ -42,7 +42,7 @@ void EditorCameraSystem::OnMouseMotion(const MouseMotionEvent &event) {
     }
 }
 
-void EditorCameraSystem::OnSizeEvent(const WindowSizeEvent &event) {
+void EditorCameraSystem::OnSizeEvent(const ViewportEvent &event) {
     m_camera.Resize(event.width, event.height);
 }
 

@@ -2,8 +2,8 @@
 
 namespace SD {
 
-RenderTarget::RenderTarget(int width, int height)
-    : m_viewport(0, 0, width, height) {}
+RenderTarget::RenderTarget(const Viewport &viewport)
+    : m_viewport(viewport) {}
 
 void RenderTarget::CreateFramebuffer() {
     m_framebuffer =

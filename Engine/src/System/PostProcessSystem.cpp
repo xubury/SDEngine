@@ -100,7 +100,7 @@ void PostProcessSystem::OnRender() {
     device->SetDepthMask(true);
 }
 
-void PostProcessSystem::OnSizeEvent(const WindowSizeEvent &event) {
+void PostProcessSystem::OnSizeEvent(const ViewportEvent &event) {
     m_width = event.width;
     m_height = event.height;
     InitBuffers();

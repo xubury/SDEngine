@@ -92,7 +92,7 @@ struct SD_RENDERER_API Renderer2DData {
 
 class SD_RENDERER_API Renderer {
    public:
-    Renderer(Device *device, AssetManager *asset);
+    Renderer(const Viewport &viewport, Device *device, AssetManager *asset);
     ~Renderer();
     Renderer(const Renderer &) = delete;
     Renderer &operator=(const Renderer &) = delete;
