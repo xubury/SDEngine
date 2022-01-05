@@ -2,7 +2,7 @@
 #define SD_SPRITE_LOADER_HPP
 
 #include "Renderer/Export.hpp"
-#include "Asset/Asset.hpp"
+#include "Asset/AssetManager.hpp"
 
 namespace SD {
 

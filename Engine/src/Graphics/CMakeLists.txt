@@ -37,7 +37,7 @@ set(Graphics_Include
     ${Include_Root}/Graphics.hpp
     ${Include_Root}/Shader.hpp
     ${Include_Root}/Texture.hpp
-    ${Include_Root}/Translator.hpp
+    ${Include_Root}/Viewport.hpp
     ${Include_Root}/VertexArray.hpp)
 
 set(Graphics_Src
@@ -51,6 +51,7 @@ set(Graphics_Src
     ${Src_Root}/Graphics.cpp
     ${Src_Root}/Shader.cpp
     ${Src_Root}/Texture.cpp
+    ${Src_Root}/Viewport.cpp
     ${Src_Root}/VertexArray.cpp)
 
 add_library(sd-graphics ${Graphics_Src})

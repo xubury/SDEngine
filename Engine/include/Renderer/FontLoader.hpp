@@ -3,7 +3,7 @@
 
 #include "Renderer/Export.hpp"
 #include "Renderer/Font.hpp"
-#include "Asset/Asset.hpp"
+#include "Asset/AssetManager.hpp"
 
 typedef struct FT_LibraryRec_ *FT_Library;
 typedef struct FT_FaceRec_ *FT_Face;

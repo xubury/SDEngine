@@ -1,6 +1,4 @@
 #include "System/ProfileSystem.hpp"
-#include "Renderer/Renderer.hpp"
-#include "Asset/Asset.hpp"
 #include "Core/Input.hpp"
 
 namespace SD {

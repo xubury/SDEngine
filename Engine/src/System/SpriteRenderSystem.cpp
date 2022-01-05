@@ -1,5 +1,4 @@
 #include "System/SpriteRenderSystem.hpp"
-#include "Renderer/Renderer.hpp"
 #include "Renderer/Font.hpp"
 #include "Renderer/Bitmap.hpp"
 #include "Renderer/Sprite.hpp"

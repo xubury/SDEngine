@@ -1,5 +1,4 @@
 #include "System/SkyboxSystem.hpp"
-#include "Renderer/Renderer.hpp"
 #include "ECS/Scene.hpp"
 
 namespace SD {
@@ -7,9 +6,9 @@ namespace SD {
 SkyboxSystem::SkyboxSystem() : System("SkyboxSystem") {
     const float skybox_vertices[] = {
         // front
-        -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
+        -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0,
         // back
-        -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0};
+        -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0};
 
     const uint32_t skybox_indices[] = {// front
                                        0, 1, 2, 2, 3, 0,
@@ -72,7 +71,6 @@ void SkyboxSystem::OnRender() {
     m_skybox_shader->SetMat4("u_projection", projection);
 
     device->SetDepthfunc(DepthFunc::LESS_EQUAL);
-    device->SetCullFace(Face::FRONT);
     auto skybox = asset->Get<Skybox>(m_skybox_id);
     if (skybox) {
         m_skybox_shader->SetTexture("skybox", skybox->GetTexture());
@@ -82,7 +80,6 @@ void SkyboxSystem::OnRender() {
     device->DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
     renderer->Submit(*m_skybox_shader, *m_box_vao, MeshTopology::TRIANGLES,
                      m_box_vao->GetIndexBuffer()->GetCount(), 0);
-    device->SetCullFace(Face::BACK);
     device->SetDepthfunc(DepthFunc::LESS);
 }
 

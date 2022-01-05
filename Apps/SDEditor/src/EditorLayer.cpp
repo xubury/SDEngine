@@ -1,9 +1,6 @@
 #include "EditorLayer.hpp"
 #include "Core/Input.hpp"
 #include "Core/Application.hpp"
-#include "ECS/Component.hpp"
-#include "Renderer/Renderer.hpp"
-#include "Asset/Asset.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGuizmo.h"
 

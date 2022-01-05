@@ -3,7 +3,7 @@
 
 #include "Renderer/Export.hpp"
 #include "Renderer/Skybox.hpp"
-#include "Asset/Asset.hpp"
+#include "Asset/AssetManager.hpp"
 
 namespace SD {
 

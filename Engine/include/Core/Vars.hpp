@@ -3,7 +3,7 @@
 
 #include "Core/Export.hpp"
 #include "Core/Window.hpp"
-#include "Asset/Asset.hpp"
+#include "Asset/AssetManager.hpp"
 #include "Utility/Ini.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Utility/EventDispatcher.hpp"

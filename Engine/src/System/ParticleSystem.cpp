@@ -1,5 +1,4 @@
 #include "System/ParticleSystem.hpp"
-#include "Renderer/Renderer.hpp"
 #include "Utility/Random.hpp"
 #include "Utility/Math.hpp"
 

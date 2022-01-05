@@ -5,6 +5,7 @@
 #include "Graphics/Export.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/Framebuffer.hpp"
+#include "Graphics/Viewport.hpp"
 #include <vector>
 #include <glm/glm.hpp>
 
