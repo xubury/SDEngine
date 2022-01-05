@@ -17,3 +17,4 @@ add_subdirectory(src/System)
 add_subdirectory(src/TileMap)
 
 add_subdirectory(libs/entt)
+add_subdirectory(libs/sol2)

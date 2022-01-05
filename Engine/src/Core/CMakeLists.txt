@@ -1,5 +1,6 @@
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
+find_package(Lua REQUIRED)
 
 set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Core)
 set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Core)
@@ -38,11 +39,11 @@ add_library(sd-core ${Core_Src})
 target_compile_options(sd-core PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(sd-core 
+    target_compile_definitions(sd-core
         INTERFACE
         SD_CORE_IMPORT
 
-        PRIVATE 
+        PRIVATE
         SD_CORE_EXPORT)
 endif()
 
@@ -52,6 +53,10 @@ target_link_libraries(sd-core
     sd-utility
     sd-imgui
     sd-ecs
+
+    ${LUA_LIBRARIES}
+    sol2
+
     PRIVATE
     SDL2::SDL2
     ${SDL2_IMAGE_LIBRARIES})

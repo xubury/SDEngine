@@ -1,4 +1,5 @@
 #include "SDEditor.hpp"
+#include "sol/sol.hpp"
 
 IMPLEMENT_APP(SD::SDEditor);
 
@@ -7,6 +8,14 @@ namespace SD {
 SDEditor::SDEditor() : Application("SD Editor", GraphicsAPI::OpenGL) {}
 
 void SDEditor::OnStart() {
+    // lua test
+    sol::state lua;
+    int x = 0;
+    lua.set_function("beep", [&x] { ++x; });
+    lua.script("beep()");
+    SD_CORE_INFO("lua test: x={}", x);
+
+
     int viewport_width = ini->GetInteger("editor", "viewport width", 800);
     int viewport_height = ini->GetInteger("editor", "viewport height", 600);
 
