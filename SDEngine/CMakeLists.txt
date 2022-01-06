@@ -4,7 +4,7 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-set(SD_ENGINE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/Engine)
+set(SD_ENGINE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(src/Core)
 add_subdirectory(src/Utility)

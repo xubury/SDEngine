@@ -1,12 +1,12 @@
 [submodule "Engine/libs/entt"]
-	path = Engine/libs/entt
+	path = SDEngine/libs/entt
 	url = git@github.com:skypjack/entt.git
 [submodule "Engine/libs/imgui"]
-	path = Engine/libs/imgui
+	path = SDEngine/libs/imgui
 	url = git@github.com:ocornut/imgui.git
 [submodule "Engine/libs/ImGuizmo"]
-	path = Engine/libs/ImGuizmo
+	path = SDEngine/libs/ImGuizmo
 	url = git@github.com:CedricGuillemet/ImGuizmo.git
 [submodule "Engine/libs/sol2"]
-	path = Engine/libs/sol2
+	path = SDEngine/libs/sol2
 	url = https://github.com/ThePhD/sol2
