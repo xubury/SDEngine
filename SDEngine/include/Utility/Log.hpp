@@ -9,20 +9,24 @@
 
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
+#include <spdlog/sinks/base_sink.h>
 
 namespace SD {
 
 class SD_UTILITY_API Log {
    public:
+    using BasicSink = spdlog::sinks::base_sink<std::mutex>;
     static void Init(const std::string& logFileName);
 
     static std::shared_ptr<spdlog::logger>& GetCoreLogger();
 
     static std::shared_ptr<spdlog::logger>& GetClientLogger();
 
+    static void EmplaceSink(const std::shared_ptr<BasicSink> &sink);
+
    private:
-    static std::shared_ptr<spdlog::logger> s_coreLogger;
-    static std::shared_ptr<spdlog::logger> s_clientLogger;
+    static std::shared_ptr<spdlog::logger> s_core_logger;
+    static std::shared_ptr<spdlog::logger> s_client_logger;
 };
 
 }  // namespace SD

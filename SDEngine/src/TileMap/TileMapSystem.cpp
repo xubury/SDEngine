@@ -12,9 +12,9 @@ const int LINE_WIDTH = 5;
 TileMapSystem::TileMapSystem()
     : System("TileMapSystem"),
       m_file_dialog_open(false),
+      m_priority(0),
       m_draw_outline(true),
-      m_operation(Operation::NONE),
-      m_priority(0) {
+      m_operation(Operation::NONE) {
     m_outline_texture =
         Texture::Create(GRID_TEXTURE_SIZE, GRID_TEXTURE_SIZE,
                         TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
