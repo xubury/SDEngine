@@ -22,7 +22,6 @@ namespace SD {
 const std::string SETTING_FILENAME = "setting.ini";
 
 Application::Application(const std::string &title, GraphicsAPI api) {
-    WindowProp property;
 
     std::string debug_path = (GetAppDirectory() / "Debug.txt").string();
     Log::Init(debug_path);
@@ -38,11 +37,13 @@ Application::Application(const std::string &title, GraphicsAPI api) {
             ini_path);
     }
 
+    WindowProp property;
     property.title = title;
     property.width = ini->GetInteger("window", "width", property.width);
     property.height = ini->GetInteger("window", "height", property.height);
     property.msaa = ini->GetInteger("window", "msaa", property.msaa);
     property.vsync = ini->GetBoolean("window", "vsync", property.vsync);
+    property.flag = SDL_WINDOW_RESIZABLE;
 
     SDL(SDL_Init(SDL_INIT_EVERYTHING));
 

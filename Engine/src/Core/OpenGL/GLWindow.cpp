@@ -5,8 +5,7 @@
 namespace SD {
 
 GLWindow::GLWindow(const WindowProp &property) {
-    uint32_t sdlFlags =
-        property.flag | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
+    uint32_t sdl_flags = property.flag | SDL_WINDOW_OPENGL;
 
     // Double buffer
     SDL(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1));
@@ -24,7 +23,7 @@ GLWindow::GLWindow(const WindowProp &property) {
     }
 
     m_window = SDL_CreateWindow(property.title.c_str(), property.x, property.y,
-                                property.width, property.height, sdlFlags);
+                                property.width, property.height, sdl_flags);
     SD_CORE_ASSERT(m_window != nullptr, SDL_GetError());
 
     m_context = SDL_GL_CreateContext(m_window);

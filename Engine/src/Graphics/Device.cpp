@@ -4,6 +4,7 @@
 namespace SD {
 
 Ref<Device> Device::Create(Context *context) {
+    SD_CORE_TRACE("Initializing Graphics Deivce...");
     Ref<Device> device;
     switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:

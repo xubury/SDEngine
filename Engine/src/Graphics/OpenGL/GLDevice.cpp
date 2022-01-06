@@ -30,6 +30,9 @@ static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
 #endif
 
 GLDevice::GLDevice(Context *context) : Device(context) {
+    SD_CORE_INFO("---Graphics Card Info---");
+    SD_CORE_INFO("Vendor: {}", glGetString(GL_VENDOR));
+    SD_CORE_INFO("Renderer: {}", glGetString(GL_RENDERER));
 #ifdef DEBUG_BUILD
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
