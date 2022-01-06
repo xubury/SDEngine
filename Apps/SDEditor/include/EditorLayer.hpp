@@ -13,7 +13,7 @@
 #include "System/ProfileSystem.hpp"
 #include "System/PostProcessSystem.hpp"
 #include "System/SpriteRenderSystem.hpp"
-#include "System/TileMapSystem.hpp"
+#include "TileMap/TileMapSystem.hpp"
 
 namespace SD {
 

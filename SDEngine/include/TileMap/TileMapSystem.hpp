@@ -1,8 +1,8 @@
 #ifndef SD_TILE_MAP_SYSTEM_HPP
 #define SD_TILE_MAP_SYSTEM_HPP
 
-#include "System/Export.hpp"
 #include "Core/System.hpp"
+#include "TileMap/Export.hpp"
 #include "TileMap/TileCanvas.hpp"
 #include "Renderer/Sprite.hpp"
 #include "ImGui/ImGuiWidget.hpp"
@@ -10,7 +10,7 @@
 
 namespace SD {
 
-class SD_SYSTEM_API TileMapSystem : public System {
+class SD_TILE_MAP_API TileMapSystem : public System {
     enum Operation { NONE, ADD_ENTITY, REMOVE_ENTITY };
 
    public:
@@ -32,6 +32,11 @@ class SD_SYSTEM_API TileMapSystem : public System {
 
     bool m_file_dialog_open;
     ImFileDialogInfo m_fileDialogInfo;
+
+    // Selected sprite and its uvs
+    ResourceId m_sprite_id;
+    std::array<glm::vec2, 2> m_uvs{glm::vec2{0, 0}, glm::vec2{0, 0}};
+    int m_priority;
 
     bool m_draw_outline;
 

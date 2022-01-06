@@ -1,4 +1,4 @@
-#include "System/TileMapSystem.hpp"
+#include "TileMap/TileMapSystem.hpp"
 #include "Core/Input.hpp"
 
 namespace SD {
@@ -13,7 +13,8 @@ TileMapSystem::TileMapSystem()
     : System("TileMapSystem"),
       m_file_dialog_open(false),
       m_draw_outline(true),
-      m_operation(Operation::NONE) {
+      m_operation(Operation::NONE),
+      m_priority(0) {
     m_outline_texture =
         Texture::Create(GRID_TEXTURE_SIZE, GRID_TEXTURE_SIZE,
                         TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
@@ -35,7 +36,7 @@ TileMapSystem::TileMapSystem()
 
 void TileMapSystem::OnTick(float) {}
 
-void TileMapSystem::OnInit() { m_brush.scene = scene.get(); }
+void TileMapSystem::OnInit() {}
 
 void TileMapSystem::OnPush() {}
 
@@ -55,10 +56,21 @@ void TileMapSystem::OnImGui() {
                 default: {
                 } break;
                 case Operation::ADD_ENTITY: {
-                    m_brush.Output();
+                    glm::vec3 world;
+                    if (m_brush.GetSelectPos(world)) {
+                        Entity child = scene->CreateEntity("Tile");
+                        auto &comp = child.AddComponent<SpriteComponent>();
+                        child.GetComponent<TransformComponent>()
+                            .SetWorldPosition(world);
+                        comp.id = m_sprite_id;
+                        comp.uvs = m_uvs;
+                        comp.size =
+                            m_brush.canvas.GetTileSize() * m_brush.count;
+                        comp.priority = m_priority;
+                    }
                 } break;
                 case Operation::REMOVE_ENTITY: {
-                    m_brush.Clear();
+                    // m_brush.Clear();
                 } break;
             }
         } else if (ImGui::IsMouseClicked(1)) {
@@ -90,15 +102,13 @@ void TileMapSystem::OnImGui() {
             m_fileDialogInfo.regex_match = IMG_FILTER;
         }
         if (ImGui::FileDialog(&m_file_dialog_open, &m_fileDialogInfo)) {
-            m_brush.sprite_id =
+            m_sprite_id =
                 asset->LoadAsset<Sprite>(m_fileDialogInfo.result_path);
         }
 
-        int priority = m_brush.GetPriority();
         ImGui::TextUnformatted("Brush Prioirty");
         ImGui::SameLine();
-        if (ImGui::InputInt("##Priority", &priority)) {
-            m_brush.SetPriority(priority);
+        if (ImGui::InputInt("##Priority", &m_priority)) {
         }
         glm::ivec2 size = m_brush.canvas.GetTileSize();
         ImGui::TextUnformatted("Cavnas Tile Size:");
@@ -107,10 +117,10 @@ void TileMapSystem::OnImGui() {
             m_brush.canvas.SetTileSize(size);
         }
 
-        auto sprite = asset->Get<Sprite>(m_brush.sprite_id);
+        auto sprite = asset->Get<Sprite>(m_sprite_id);
         if (sprite) {
-            ImGui::DrawTileTexture(*sprite->GetTexture(), m_brush.uvs,
-                                   m_brush.count, m_brush.pivot);
+            ImGui::DrawTileTexture(*sprite->GetTexture(), m_uvs, m_brush.count,
+                                   m_brush.pivot);
         }
     }
     ImGui::End();
@@ -129,9 +139,9 @@ void TileMapSystem::OnRender() {
     glm::vec3 world;
     if (m_brush.GetSelectPos(world)) {
         if (m_operation == Operation::ADD_ENTITY) {
-            auto sprite = asset->Get<Sprite>(m_brush.sprite_id);
+            auto sprite = asset->Get<Sprite>(m_sprite_id);
             if (sprite) {
-                renderer->DrawTexture(sprite->GetTexture(), m_brush.uvs, world,
+                renderer->DrawTexture(sprite->GetTexture(), m_uvs, world,
                                       glm::quat(), BRUSH_SIZE);
             }
         }

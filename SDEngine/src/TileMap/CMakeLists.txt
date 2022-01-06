@@ -2,19 +2,31 @@ set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/TileMap)
 set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/TileMap)
 
 set(TileMap_Include
-    ${Include_Root}/TileLayout.hpp
-    ${Include_Root}/Tile.hpp)
+    ${Include_Root}/Export.hpp
+    ${Include_Root}/TileMapSystem.hpp
+    ${Include_Root}/TileCanvas.hpp)
 
-set(TileMap_Src)
+set(TileMap_Src
+    ${Src_Root}/TileMapSystem.cpp
+    ${Src_Root}/TileCanvas.cpp)
 
-add_library(sd-tilemap INTERFACE)
+add_library(sd-tilemap ${TileMap_Src})
 
-target_compile_options(sd-tilemap INTERFACE -Wall -Wextra -Wundef -pedantic -std=c++17)
+target_compile_options(sd-tilemap PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
-target_link_libraries(sd-tilemap INTERFACE sd-renderer)
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(sd-tilemap
+        INTERFACE
+        SD_TILE_MAP_IMPORT
+
+        PRIVATE
+        SD_TILE_MAP_EXPORT)
+endif()
+
+target_link_libraries(sd-tilemap PUBLIC sd-utility sd-core)
 
 target_include_directories(sd-tilemap
-    INTERFACE
+    PUBLIC
     ${SD_ENGINE_SOURCE_DIR}/include)
 
 install(TARGETS sd-tilemap LIBRARY DESTINATION lib)

@@ -31,7 +31,7 @@ target_include_directories(sd-ecs
     PRIVATE
     ${SD_ENGINE_SOURCE_DIR}/libs/entt)
 
-target_link_libraries(sd-ecs PUBLIC sd-utility EnTT::EnTT sd-renderer sd-tilemap)
+target_link_libraries(sd-ecs PUBLIC sd-utility EnTT::EnTT sd-renderer)
 
 install(TARGETS sd-ecs LIBRARY DESTINATION lib)
 

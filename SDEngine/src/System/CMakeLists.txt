@@ -20,8 +20,7 @@ set(System_Src
     ${Src_Root}/ProfileSystem.cpp
     ${Src_Root}/SkyboxSystem.cpp
     ${Src_Root}/SpriteRenderSystem.cpp
-    ${Src_Root}/TerrainSystem.cpp
-    ${Src_Root}/TileMapSystem.cpp)
+    ${Src_Root}/TerrainSystem.cpp)
 
 add_library(sd-system ${System_Src})
 
@@ -41,8 +40,7 @@ target_link_libraries(sd-system
     sd-ecs 
     sd-utility
     sd-core
-    sd-asset
-    sd-tilemap)
+    sd-asset)
 
 target_include_directories(sd-system
     PUBLIC
