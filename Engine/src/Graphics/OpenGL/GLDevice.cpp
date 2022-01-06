@@ -107,6 +107,7 @@ void GLDevice::SetFramebuffer(const Framebuffer *framebuffer) {
     } else {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, m_context->GetWidth(), m_context->GetHeight());
+        glNamedFramebufferDrawBuffer(0, GL_FRONT_LEFT);
     }
 }
 
@@ -168,20 +169,19 @@ void GLDevice::BlitFramebuffer(const Framebuffer *src, int src_x, int src_y,
                     Translate(mask & BufferBitMask::DEPTH_BUFFER_BIT) |
                     Translate(mask & BufferBitMask::STENCIL_BUFFER_BIT);
     GLenum gl_filter = Translate(filter);
-    glBlitNamedFramebuffer(src_id, dst_id, src_x, src_y, src_width, src_height,
-                           dst_x, dst_y, dst_width, dst_height, gl_mask,
-                           gl_filter);
+    glBlitNamedFramebuffer(src_id, dst_id, src_x, src_y, src_x + src_width,
+                           src_y + src_height, dst_x, dst_y, dst_x + dst_width,
+                           dst_y + dst_height, gl_mask, gl_filter);
 }
 
 void GLDevice::BlitToScreen(const RenderTarget &target) {
     ReadBuffer(target.GetFramebuffer(), 0);
     const auto &viewport = target.GetViewport();
-    int bottom = GetHeight() - viewport.GetHeight() - viewport.GetTop();
     BlitFramebuffer(target.GetFramebuffer(), 0, 0, viewport.GetWidth(),
-                    viewport.GetHeight(), nullptr, viewport.GetLeft(), bottom,
-                    viewport.GetWidth() + viewport.GetLeft(),
-                    viewport.GetHeight() + bottom,
-                    BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::LINEAR);
+                    viewport.GetHeight(), nullptr, viewport.GetLeft(),
+                    GetHeight() - viewport.GetHeight() - viewport.GetTop(),
+                    viewport.GetWidth(), viewport.GetHeight(),
+                    BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
 }
 
 const glm::ivec2 GLDevice::GetUVIndex(int index) const {
