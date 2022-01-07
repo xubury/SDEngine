@@ -16,6 +16,7 @@ add_subdirectory(src/Asset)
 add_subdirectory(src/Loader)
 add_subdirectory(src/System)
 add_subdirectory(src/TileMap)
+add_subdirectory(src/Animation)
 
 add_subdirectory(libs/entt)
 add_subdirectory(libs/sol2)
