@@ -12,25 +12,7 @@ void SpriteRenderSystem::OnPush() {}
 void SpriteRenderSystem::OnPop() {}
 
 void SpriteRenderSystem::OnRender() {
-    auto textView = scene->view<TransformComponent, TextComponent>();
-
     device->SetFramebuffer(renderer->GetFramebuffer());
-    renderer->Begin(*scene->GetCamera());
-    textView.each([this](entt::entity entity_id,
-                         const TransformComponent &transformComp,
-                         const TextComponent &textComp) {
-        renderer->SetTextOrigin(0, 0);
-        auto font = asset->Get<Font>(textComp.id);
-        if (font) {
-            renderer->DrawText(*font, textComp.text,
-                               transformComp.GetWorldTransform().GetMatrix(),
-                               textComp.color,
-                               static_cast<uint32_t>(entity_id));
-        }
-    });
-    renderer->End();
-
-    // draw tile map
     device->SetDepthMask(false);
     renderer->Begin(*scene->GetCamera());
     auto tilemap_comp = scene->view<SpriteComponent, TransformComponent>();
@@ -57,6 +39,21 @@ void SpriteRenderSystem::OnRender() {
                               transform_comp.GetWorldPosition(),
                               transform_comp.GetWorldRotation(),
                               sprite_comp.size, glm::vec4(1.0f), id);
+    });
+
+    auto textView = scene->view<TransformComponent, TextComponent>();
+
+    textView.each([this](entt::entity entity_id,
+                         const TransformComponent &transformComp,
+                         const TextComponent &textComp) {
+        renderer->SetTextOrigin(0, 0);
+        auto font = asset->Get<Font>(textComp.id);
+        if (font) {
+            renderer->DrawText(*font, textComp.text,
+                               transformComp.GetWorldTransform().GetMatrix(),
+                               textComp.color,
+                               static_cast<uint32_t>(entity_id));
+        }
     });
     renderer->End();
     device->SetDepthMask(true);
