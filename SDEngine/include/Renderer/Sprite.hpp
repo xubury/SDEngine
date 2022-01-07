@@ -9,16 +9,14 @@ namespace SD {
 
 class SD_RENDERER_API Sprite {
    public:
-    Sprite()
-        : m_texture(Texture::Create(
-              1, 1,
-              TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
-                          DataFormatType::UBYTE))){};
+    Sprite() = default;
     Sprite(const Ref<Texture> &texture);
 
     void SetTexture(const Ref<Texture> &texture) { m_texture = texture; }
 
-    const Ref<Texture> GetTexture() const { return m_texture; }
+    const Texture *GetTexture() const { return m_texture.get(); }
+
+    Texture *GetTexture() { return m_texture.get(); }
 
    private:
     Ref<Texture> m_texture;

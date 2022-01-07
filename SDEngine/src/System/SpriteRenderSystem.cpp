@@ -34,7 +34,7 @@ void SpriteRenderSystem::OnRender() {
                              const SpriteComponent &sprite_comp,
                              const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
-        renderer->DrawTexture(asset->Get<Sprite>(sprite_comp.id)->GetTexture(),
+        renderer->DrawTexture(*asset->Get<Sprite>(sprite_comp.id)->GetTexture(),
                               sprite_comp.uvs,
                               transform_comp.GetWorldPosition(),
                               transform_comp.GetWorldRotation(),

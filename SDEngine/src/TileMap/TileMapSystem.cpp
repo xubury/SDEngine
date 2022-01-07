@@ -141,7 +141,7 @@ void TileMapSystem::OnRender() {
         if (m_operation == Operation::ADD_ENTITY) {
             auto sprite = asset->Get<Sprite>(m_sprite_id);
             if (sprite) {
-                renderer->DrawTexture(sprite->GetTexture(), m_uvs, world,
+                renderer->DrawTexture(*sprite->GetTexture(), m_uvs, world,
                                       glm::quat(), BRUSH_SIZE);
             }
         }
@@ -178,7 +178,7 @@ void TileMapSystem::OnRender() {
                 TILE_SIZE.y * std::floor(TILE_CNT.y / 2.f),
             0);
         renderer->DrawTexture(
-            m_outline_texture, {uv_origin, glm::vec2(TILE_CNT) + uv_origin},
+            *m_outline_texture, {uv_origin, glm::vec2(TILE_CNT) + uv_origin},
             outline_pos, glm::quat(), TEX_SIZE, glm::vec4(1, 1, 1, 0.7));
     }
     renderer->End();

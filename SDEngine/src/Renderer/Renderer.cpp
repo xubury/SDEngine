@@ -99,13 +99,15 @@ void Renderer::InitRenderer2D() {
     m_data.circle_vao->AddVertexBuffer(circle_vbo, layout);
     m_data.circle_vao->SetIndexBuffer(quad_ebo);
 
-    m_data.texture_slots[0] = Texture::Create(
+    m_data.default_texture = Texture::Create(
         1, 1,
         TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
                     DataFormatType::FLOAT16, TextureWrap::REPEAT,
                     TextureMagFilter::LINEAR, TextureMinFilter::LINEAR));
     const float color[4] = {1, 1, 1, 1};
-    m_data.texture_slots[0]->SetPixels(0, 0, 0, 1, 1, 1, color);
+    m_data.default_texture->SetPixels(0, 0, 0, 1, 1, 1, color);
+
+    m_data.texture_slots[0] = m_data.default_texture.get();
 
     m_line_shader = m_asset->LoadAndGet<Shader>("shaders/line.glsl");
     m_sprite_shader = m_asset->LoadAndGet<Shader>("shaders/sprite.glsl");
@@ -223,7 +225,7 @@ void Renderer::FlushQuads() {
                                       offset * sizeof(Quad));
 
         for (uint32_t i = 0; i < m_data.texture_index; ++i) {
-            m_sprite_shader->SetTexture(i, m_data.texture_slots[i].get());
+            m_sprite_shader->SetTexture(i, m_data.texture_slots[i]);
         }
 
         Submit(*m_sprite_shader, *m_data.quad_vao, MeshTopology::TRIANGLES,
@@ -302,7 +304,7 @@ void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color,
     m_data.quad_index_cnt += 6;
 }
 
-void Renderer::DrawTexture(const Ref<Texture>& texture,
+void Renderer::DrawTexture(const Texture& texture,
                            const std::array<glm::vec2, 2>& uv,
                            const glm::vec3& pos, const glm::quat& rot,
                            const glm::vec2& scale, const glm::vec4& color,
@@ -314,7 +316,7 @@ void Renderer::DrawTexture(const Ref<Texture>& texture,
         color, entity_id);
 }
 
-void Renderer::DrawTexture(const Ref<Texture>& texture,
+void Renderer::DrawTexture(const Texture& texture,
                            const std::array<glm::vec2, 2>& uv,
                            const glm::mat4& transform, const glm::vec4& color,
                            uint32_t entity_id) {
@@ -324,7 +326,7 @@ void Renderer::DrawTexture(const Ref<Texture>& texture,
 
     uint32_t textureIndex = 0;
     for (uint32_t i = 1; i < m_data.texture_index; ++i) {
-        if (*m_data.texture_slots[i] == *texture) {
+        if (*m_data.texture_slots[i] == texture) {
             textureIndex = i;
             break;
         }
@@ -335,7 +337,7 @@ void Renderer::DrawTexture(const Ref<Texture>& texture,
             NextQuadBatch();
         }
         textureIndex = m_data.texture_index;
-        m_data.texture_slots[m_data.texture_index++] = texture;
+        m_data.texture_slots[m_data.texture_index++] = &texture;
     }
 
     for (uint32_t i = 0; i < 4; ++i) {
@@ -352,7 +354,7 @@ void Renderer::DrawTexture(const Ref<Texture>& texture,
     m_data.quad_index_cnt += 6;
 }
 
-void Renderer::DrawTexture(const Ref<Texture>& texture, const glm::vec3& pos,
+void Renderer::DrawTexture(const Texture& texture, const glm::vec3& pos,
                            const glm::quat& rot, const glm::vec2& scale,
                            const glm::vec4& color, uint32_t entity_id) {
     DrawTexture(
@@ -362,13 +364,12 @@ void Renderer::DrawTexture(const Ref<Texture>& texture, const glm::vec3& pos,
         color, entity_id);
 }
 
-void Renderer::DrawTexture(const Ref<Texture>& texture,
-                           const glm::mat4& transform, const glm::vec4& color,
-                           uint32_t entity_id) {
+void Renderer::DrawTexture(const Texture& texture, const glm::mat4& transform,
+                           const glm::vec4& color, uint32_t entity_id) {
     DrawTexture(texture, QUAD_UV, transform, color, entity_id);
 }
 
-void Renderer::DrawBillboard(const Ref<Texture>& texture,
+void Renderer::DrawBillboard(const Texture& texture,
                              const std::array<glm::vec2, 2>& uv,
                              const glm::vec3& pos, const glm::vec2& scale,
                              const glm::vec4& color, uint32_t entity_id) {
@@ -380,7 +381,7 @@ void Renderer::DrawBillboard(const Ref<Texture>& texture,
         color, entity_id);
 }
 
-void Renderer::DrawBillboard(const Ref<Texture>& texture, const glm::vec3& pos,
+void Renderer::DrawBillboard(const Texture& texture, const glm::vec3& pos,
                              const glm::vec2& scale, const glm::vec4& color,
                              uint32_t entity_id) {
     DrawTexture(
@@ -416,7 +417,7 @@ void Renderer::DrawText(const Font& font, const std::string& text,
                     m_data.text_cursor.y + ch.bearing.y - ch.size.y * 0.5f,
                     0)) *
             glm::scale(glm::mat4(1.0f), glm::vec3(ch.size.x, ch.size.y, 1.0f));
-        DrawTexture(ch.glyph, ch.uv, t * offset, color, entity_id);
+        DrawTexture(*ch.glyph, ch.uv, t * offset, color, entity_id);
         m_data.text_cursor.x += ch.advance;
     }
 }

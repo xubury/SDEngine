@@ -88,7 +88,7 @@ bool DrawVec3Control(const std::string &label, glm::vec3 &values,
 
 void DrawTexture(const SD::Texture &texture, const ImVec2 &uv0,
                  const ImVec2 &uv1) {
-    ImVec2 wsize = ImGui::GetContentRegionAvail();
+    ImVec2 wsize = ImGui::GetWindowSize();
     const float width = texture.GetWidth() * std::abs(uv1.x - uv0.x);
     const float height = texture.GetHeight() * std::abs(uv1.y - uv0.y);
     const float ASPECT = height / width;
@@ -103,7 +103,7 @@ bool DrawTileTexture(const SD::Texture &texture, std::array<glm::vec2, 2> &uvs,
     ImGui::TextUnformatted("Tile Size:");
     ImGui::InputInt2("##Size", &tile_size.x);
 
-    ImVec2 wsize = ImGui::GetContentRegionAvail();
+    ImVec2 wsize = ImGui::GetWindowSize();
     const float ASPECT = wsize.x / texture.GetWidth();
     wsize.y = texture.GetHeight() * ASPECT;
     const glm::vec2 scaled_tile_size = glm::vec2(tile_size) * ASPECT;

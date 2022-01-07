@@ -143,7 +143,7 @@ void EditorLayer::OnRender() {
             glm::vec3 pos = transComp.GetWorldPosition();
             float dist = glm::distance(pos, cam->GetWorldPosition());
             float scale = (dist - cam->GetNearZ()) / 20;
-            renderer->DrawBillboard(m_light_icon->GetTexture(), pos,
+            renderer->DrawBillboard(*m_light_icon->GetTexture(), pos,
                                     glm::vec2(scale));
         });
 

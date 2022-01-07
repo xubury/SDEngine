@@ -68,6 +68,8 @@ struct SD_RENDERER_API Renderer2DData {
     static const uint32_t MAX_INDICES = MAX_QUADS * 6;
     static const uint32_t MAX_TEXTURE_SLOTS = 32;
 
+    Ref<Texture> default_texture;
+
     Ref<VertexArray> line_vao;
     size_t line_vertex_cnt = 0;
     std::array<Line, MAX_LINES> line_buffer;
@@ -79,7 +81,7 @@ struct SD_RENDERER_API Renderer2DData {
     Quad *quad_buffer_ptr = nullptr;
 
     uint32_t texture_index = 1;
-    std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> texture_slots;
+    std::array<const Texture *, MAX_TEXTURE_SLOTS> texture_slots;
 
     Ref<VertexArray> circle_vao;
     size_t circle_index_cnt = 0;
@@ -122,31 +124,30 @@ class SD_RENDERER_API Renderer {
     void DrawQuad(const glm::mat4 &transform, const glm::vec4 &color,
                   uint32_t entity_id = -1);
 
-    void DrawTexture(const Ref<Texture> &texture,
-                     const std::array<glm::vec2, 2> &uv, const glm::vec3 &pos,
-                     const glm::quat &rot, const glm::vec2 &scale,
+    void DrawTexture(const Texture &texture, const std::array<glm::vec2, 2> &uv,
+                     const glm::vec3 &pos, const glm::quat &rot,
+                     const glm::vec2 &scale,
                      const glm::vec4 &color = glm::vec4(1.0f),
                      uint32_t entity_id = -1);
-    void DrawTexture(const Ref<Texture> &texture,
-                     const std::array<glm::vec2, 2> &uv,
+    void DrawTexture(const Texture &texture, const std::array<glm::vec2, 2> &uv,
                      const glm::mat4 &transform,
                      const glm::vec4 &color = glm::vec4(1.0f),
                      uint32_t entity_id = -1);
 
-    void DrawTexture(const Ref<Texture> &texture, const glm::vec3 &pos,
+    void DrawTexture(const Texture &texture, const glm::vec3 &pos,
                      const glm::quat &rot, const glm::vec2 &scale,
                      const glm::vec4 &color = glm::vec4(1.0f),
                      uint32_t entity_id = -1);
-    void DrawTexture(const Ref<Texture> &texture, const glm::mat4 &transform,
+    void DrawTexture(const Texture &texture, const glm::mat4 &transform,
                      const glm::vec4 &color = glm::vec4(1.0f),
                      uint32_t entity_id = -1);
 
-    void DrawBillboard(const Ref<Texture> &texture,
+    void DrawBillboard(const Texture &texture,
                        const std::array<glm::vec2, 2> &uv, const glm::vec3 &pos,
                        const glm::vec2 &scale,
                        const glm::vec4 &color = glm::vec4(1.0f),
                        uint32_t entity_id = -1);
-    void DrawBillboard(const Ref<Texture> &texture, const glm::vec3 &pos,
+    void DrawBillboard(const Texture &texture, const glm::vec3 &pos,
                        const glm::vec2 &scale,
                        const glm::vec4 &color = glm::vec4(1.0f),
                        uint32_t entity_id = -1);
