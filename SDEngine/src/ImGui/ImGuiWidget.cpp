@@ -86,9 +86,15 @@ bool DrawVec3Control(const std::string &label, glm::vec3 &values,
     return ret;
 }
 
-void DrawTexture(const SD::Texture &texture, const ImVec2 &size,
-                 const ImVec2 &uv0, const ImVec2 &uv1) {
-    ImGui::Image((void *)(intptr_t)texture.GetId(), size, uv0, uv1);
+void DrawTexture(const SD::Texture &texture, const ImVec2 &uv0,
+                 const ImVec2 &uv1) {
+    ImVec2 wsize = ImGui::GetContentRegionAvail();
+    const float width = texture.GetWidth() * std::abs(uv1.x - uv0.x);
+    const float height = texture.GetHeight() * std::abs(uv1.y - uv0.y);
+    const float ASPECT = height / width;
+    wsize.y = wsize.x * ASPECT;
+
+    ImGui::Image((void *)(intptr_t)texture.GetId(), wsize, uv0, uv1);
 }
 
 bool DrawTileTexture(const SD::Texture &texture, std::array<glm::vec2, 2> &uvs,
@@ -110,7 +116,7 @@ bool DrawTileTexture(const SD::Texture &texture, std::array<glm::vec2, 2> &uvs,
     ImRect bb(window->DC.CursorPos,
               ImVec2(window->DC.CursorPos.x + cols * scaled_tile_size.x,
                      window->DC.CursorPos.y + rows * scaled_tile_size.y));
-    ImGui::DrawTexture(texture, wsize);
+    ImGui::DrawTexture(texture);
     for (int i = 0; i <= cols; ++i) {
         DrawList->AddLine(ImVec2(bb.Min.x + i * scaled_tile_size.x, bb.Min.y),
                           ImVec2(bb.Min.x + i * scaled_tile_size.x, bb.Max.y),

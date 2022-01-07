@@ -37,7 +37,7 @@ class ScenePanel : public System {
     void DrawComponents(Entity &entity);
 
     void DrawMaterialsList(const std::vector<Material> &materials,
-                           const ImVec2 &size, int *selected);
+                           int *selected);
 
     Entity m_selected_entity;
     Entity m_entity_to_destroy;

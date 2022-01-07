@@ -3,6 +3,7 @@
 #include "Utility/String.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "Asset/Asset.hpp"
+#include "Renderer/Sprite.hpp"
 
 #define ECS_MOVEENTITY "ECS MOVEENTITY"
 
@@ -316,10 +317,9 @@ void ScenePanel::DrawComponents(Entity &entity) {
         }
 
         ImGui::ColorEdit3("Color", &mc.color[0]);
-        ImVec2 size(64, 64);
         auto model = asset->Get<Model>(mc.id);
         if (model) {
-            DrawMaterialsList(model->GetMaterials(), size,
+            DrawMaterialsList(model->GetMaterials(),
                               &m_selected_material_id_map[entity]);
         }
     });
@@ -454,11 +454,18 @@ void ScenePanel::DrawComponents(Entity &entity) {
         "Sprite", entity, [&](SpriteComponent &sprite_comp) {
             ImGui::TextUnformatted("Prioirty");
             ImGui::InputInt("##Priority", &sprite_comp.priority);
+            auto sprite = asset->Get<Sprite>(sprite_comp.id);
+            if (sprite) {
+                ImGui::DrawTexture(
+                    *sprite->GetTexture(),
+                    ImVec2(sprite_comp.uvs[0].x, sprite_comp.uvs[0].y),
+                    ImVec2(sprite_comp.uvs[1].x, sprite_comp.uvs[1].y));
+            }
         });
 }
 
 void ScenePanel::DrawMaterialsList(const std::vector<Material> &materials,
-                                   const ImVec2 &size, int *selected) {
+                                   int *selected) {
     int itemSize = materials.size();
     if (!itemSize) return;
 
@@ -482,7 +489,7 @@ void ScenePanel::DrawMaterialsList(const std::vector<Material> &materials,
     for (const auto &[type, texture] : material.GetTextures()) {
         ImGui::TextUnformatted(GetMaterialName(type).c_str());
         ImGui::SameLine(width / 2);
-        ImGui::DrawTexture(*texture, size);
+        ImGui::DrawTexture(*texture);
     }
 }
 
