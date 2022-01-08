@@ -10,10 +10,11 @@ add_executable(SDEditor
     src/SDEditor.cpp
     src/EditorLayer.cpp
     src/ScenePanel.cpp
-    src/EditorCameraSystem.cpp)
+    src/EditorCameraSystem.cpp
+    src/AnimationEditor.cpp)
 
 target_include_directories(SDEditor PUBLIC include)
 
 target_compile_options(SDEditor PUBLIC  -Wall -Wextra -Wundef -pedantic -std=c++17)
 
-target_link_libraries(SDEditor PUBLIC sd-core sd-system sd-tilemap)
+target_link_libraries(SDEditor PUBLIC sd-core sd-system sd-tilemap sd-animation)

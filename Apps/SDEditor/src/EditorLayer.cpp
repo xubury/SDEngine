@@ -87,6 +87,7 @@ void EditorLayer::PushSystems() {
             CreateSystem<PostProcessSystem>(m_width, m_height);
         m_tile_map_system = CreateSystem<TileMapSystem>();
         m_profile_system = CreateSystem<ProfileSystem>(m_width, m_height);
+        m_animation_editor = CreateSystem<AnimationEditor>();
 
         PushSystem(m_camera_system);
         PushSystem(m_skybox_system);
@@ -94,6 +95,7 @@ void EditorLayer::PushSystems() {
                                       // to do blending
         PushSystem(m_post_process_system);
         PushSystem(m_tile_map_system);
+        PushSystem(m_animation_editor);
         PushSystem(m_profile_system);
 
         m_editor_camera_system->AllowRotate(false);

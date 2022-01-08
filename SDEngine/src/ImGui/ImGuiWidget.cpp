@@ -98,7 +98,8 @@ void DrawTexture(const SD::Texture &texture, const ImVec2 &uv0,
 }
 
 bool DrawTileTexture(const SD::Texture &texture, std::array<glm::vec2, 2> &uvs,
-                     glm::ivec2 &selected_cnt, glm::ivec2 &pivot) {
+                     glm::ivec2 *selected_cnt, glm::ivec2 *pivot) {
+    bool ret = false;
     static glm::ivec2 tile_size(50);
     ImGui::TextUnformatted("Tile Size:");
     ImGui::InputInt2("##Size", &tile_size.x);
@@ -146,16 +147,22 @@ bool DrawTileTexture(const SD::Texture &texture, std::array<glm::vec2, 2> &uvs,
                 uvs[1].y = uvs[1].y * tile_size.y / texture.GetHeight();
                 first_uvs = uvs;
 
-                pivot = glm::ivec2(0, 0);
+                if (pivot) {
+                    *pivot = glm::ivec2(0, 0);
+                }
 
-                selected_cnt.x = 1;
-                selected_cnt.y = 1;
+                if (selected_cnt) {
+                    selected_cnt->x = 1;
+                    selected_cnt->y = 1;
+                }
             } else if (ImGui::IsMouseClicked(1)) {
-                pivot = glm::floor(image_pos / glm::vec2(tile_size));
-                pivot.x -=
-                    std::floor(uvs[0].x * texture.GetWidth() / tile_size.x);
-                pivot.y -=
-                    std::floor(uvs[0].y * texture.GetHeight() / tile_size.y);
+                if (pivot) {
+                    *pivot = glm::floor(image_pos / glm::vec2(tile_size));
+                    pivot->x -=
+                        std::floor(uvs[0].x * texture.GetWidth() / tile_size.x);
+                    pivot->y -= std::floor(uvs[0].y * texture.GetHeight() /
+                                           tile_size.y);
+                }
             }
             if (ImGui::IsMouseDown(0)) {
                 uvs[0] = glm::floor(image_pos / glm::vec2(tile_size));
@@ -177,8 +184,10 @@ bool DrawTileTexture(const SD::Texture &texture, std::array<glm::vec2, 2> &uvs,
                 } else {
                     uvs[1].y = first_uvs[1].y;
                 }
-                selected_cnt =
-                    glm::round((uvs[1] - uvs[0]) * glm::vec2(cols, rows));
+                if (selected_cnt) {
+                    *selected_cnt =
+                        glm::round((uvs[1] - uvs[0]) * glm::vec2(cols, rows));
+                }
             }
         }
     }
@@ -193,20 +202,22 @@ bool DrawTileTexture(const SD::Texture &texture, std::array<glm::vec2, 2> &uvs,
         DrawList->AddQuad(active_grid.GetTL(), active_grid.GetTR(),
                           active_grid.GetBR(), active_grid.GetBL(), GRID_COLOR,
                           THICKNESS);
-        const ImRect pivot_grid(
-            ImVec2((pivot.x + 1 - PIVOT_SIZE) * scaled_tile_size.x +
-                       active_grid.GetTL().x,
-                   (pivot.y + 1 - PIVOT_SIZE) * scaled_tile_size.y +
-                       active_grid.GetTL().y),
-            ImVec2((pivot.x + PIVOT_SIZE) * scaled_tile_size.x +
-                       active_grid.GetTL().x,
-                   (pivot.y + PIVOT_SIZE) * scaled_tile_size.y +
-                       active_grid.GetTL().y));
-        DrawList->AddQuadFilled(pivot_grid.GetTL(), pivot_grid.GetTR(),
-                                pivot_grid.GetBR(), pivot_grid.GetBL(),
-                                PIVOT_COLOR);
+        if (pivot) {
+            const ImRect pivot_grid(
+                ImVec2((pivot->x + 1 - PIVOT_SIZE) * scaled_tile_size.x +
+                           active_grid.GetTL().x,
+                       (pivot->y + 1 - PIVOT_SIZE) * scaled_tile_size.y +
+                           active_grid.GetTL().y),
+                ImVec2((pivot->x + PIVOT_SIZE) * scaled_tile_size.x +
+                           active_grid.GetTL().x,
+                       (pivot->y + PIVOT_SIZE) * scaled_tile_size.y +
+                           active_grid.GetTL().y));
+            DrawList->AddQuadFilled(pivot_grid.GetTL(), pivot_grid.GetTR(),
+                                    pivot_grid.GetBR(), pivot_grid.GetBL(),
+                                    PIVOT_COLOR);
+        }
     }
-    return selected_cnt.x > 0 && selected_cnt.y > 0;
+    return ret;
 }
 
 bool BeginCenterPopupModal(const char *name, bool *p_open,

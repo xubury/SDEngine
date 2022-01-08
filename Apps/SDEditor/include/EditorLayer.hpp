@@ -3,9 +3,10 @@
 
 #include "Core/Layer.hpp"
 #include "Renderer/Camera.hpp"
-#include "ScenePanel.hpp"
 
+#include "ScenePanel.hpp"
 #include "EditorCameraSystem.hpp"
+#include "AnimationEditor.hpp"
 
 #include "System/CameraSystem.hpp"
 #include "System/LightingSystem.hpp"
@@ -77,6 +78,7 @@ class EditorLayer : public Layer {
     Ref<PostProcessSystem> m_post_process_system;
     Ref<ProfileSystem> m_profile_system;
     Ref<TileMapSystem> m_tile_map_system;
+    Ref<AnimationEditor> m_animation_editor;
 
     int m_width;
     int m_height;

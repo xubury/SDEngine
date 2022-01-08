@@ -119,8 +119,8 @@ void TileMapSystem::OnImGui() {
 
         auto sprite = asset->Get<Sprite>(m_sprite_id);
         if (sprite) {
-            ImGui::DrawTileTexture(*sprite->GetTexture(), m_uvs, m_brush.count,
-                                   m_brush.pivot);
+            ImGui::DrawTileTexture(*sprite->GetTexture(), m_uvs, &m_brush.count,
+                                   &m_brush.pivot);
         }
     }
     ImGui::End();

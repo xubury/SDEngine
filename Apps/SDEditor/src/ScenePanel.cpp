@@ -29,7 +29,10 @@ void ScenePanel::OnSizeEvent(const ViewportEvent &event) {
     m_height = event.height;
 }
 
-void ScenePanel::Reset() { m_selected_material_id_map.clear(); }
+void ScenePanel::Reset() {
+    m_selected_material_id_map.clear();
+    m_selected_anim_id_map.clear();
+}
 
 ImGuizmo::MODE ScenePanel::GetGizmoMode() const { return m_gizmo_mode; }
 
@@ -258,6 +261,14 @@ void ScenePanel::DrawComponents(Entity &entity) {
                 SD_CORE_WARN("This entity already has the Camera Component!");
             ImGui::CloseCurrentPopup();
         }
+        if (ImGui::MenuItem("Sprite Animation")) {
+            if (!entity.HasComponent<SpriteAnimationComponent>())
+                entity.AddComponent<SpriteAnimationComponent>();
+            else
+                SD_CORE_WARN(
+                    "This entity already has the Sprite Animation Component!");
+            ImGui::CloseCurrentPopup();
+        }
 
         ImGui::EndPopup();
     }
@@ -462,6 +473,25 @@ void ScenePanel::DrawComponents(Entity &entity) {
                     ImVec2(sprite_comp.uvs[1].x, sprite_comp.uvs[1].y));
             }
         });
+    DrawComponent<SpriteAnimationComponent>(
+        "Sprite Animation", entity, [&](SpriteAnimationComponent &anim_comp) {
+            DrawAnimList(anim_comp.animations, &m_selected_anim_id_map[entity]);
+            auto &anim =
+                anim_comp.animations.at(m_selected_anim_id_map[entity]);
+            int frame_index = 0;
+            ImGui::SliderInt("##Frame", &frame_index, 0, anim.GetSize());
+            float speed = anim.GetSpeed();
+            ImGui::TextUnformatted("FPS:");
+            if (ImGui::InputFloat("##Anim Speed", &speed)) {
+                anim.SetSpeed(speed);
+            }
+            if (frame_index < static_cast<int>(anim.GetSize())) {
+                auto texture = anim.GetTexture(frame_index);
+                auto &uvs = anim.GetUVs(frame_index);
+                ImGui::DrawTexture(*texture, ImVec2(uvs[0].x, uvs[0].y),
+                                   ImVec2(uvs[1].x, uvs[1].y));
+            }
+        });
 }
 
 void ScenePanel::DrawMaterialsList(const std::vector<Material> &materials,
@@ -490,6 +520,27 @@ void ScenePanel::DrawMaterialsList(const std::vector<Material> &materials,
         ImGui::TextUnformatted(GetMaterialName(type).c_str());
         ImGui::SameLine(width / 2);
         ImGui::DrawTexture(*texture);
+    }
+}
+
+void ScenePanel::DrawAnimList(const std::vector<SpriteAnimation> &anims,
+                              int *selected) {
+    int itemSize = anims.size();
+    if (!itemSize) return;
+
+    std::string item;
+    item = "Anim " + std::to_string(*selected);
+    if (ImGui::BeginCombo("##Animations", item.c_str())) {
+        for (int i = 0; i < itemSize; i++) {
+            item = "Anim " + std::to_string(i);
+            const bool is_selected = (*selected == i);
+            if (ImGui::Selectable(item.c_str(), is_selected)) *selected = i;
+
+            // Set the initial focus when opening the combo (scrolling +
+            // keyboard navigation focus)
+            if (is_selected) ImGui::SetItemDefaultFocus();
+        }
+        ImGui::EndCombo();
     }
 }
 

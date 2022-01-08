@@ -73,6 +73,7 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     scene->RegisterComponent<TextComponent>();
     scene->RegisterComponent<CameraComponent>();
     scene->RegisterComponent<SpriteComponent>();
+    scene->RegisterComponent<SpriteAnimationComponent>();
 
     m_imgui = CreateLayer<ImGuiLayer>(m_window.get());
     PushOverlay(m_imgui);

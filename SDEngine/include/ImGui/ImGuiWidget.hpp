@@ -23,7 +23,8 @@ void IMGUI_API DrawTexture(const SD::Texture &texture,
 
 bool IMGUI_API DrawTileTexture(const SD::Texture &texture,
                                std::array<glm::vec2, 2> &uvs,
-                               glm::ivec2 &selected_cnt, glm::ivec2 &pivot);
+                               glm::ivec2 *selected_cnt = nullptr,
+                               glm::ivec2 *pivot = nullptr);
 
 bool IMGUI_API BeginCenterPopupModal(const char *name, bool *p_open = nullptr,
                                      ImGuiWindowFlags flags = 0);

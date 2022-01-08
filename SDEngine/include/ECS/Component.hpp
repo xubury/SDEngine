@@ -12,6 +12,7 @@
 #include "Renderer/Terrain.hpp"
 #include "Renderer/Light.hpp"
 #include "Renderer/Skybox.hpp"
+#include "Animation/Animation.hpp"
 
 #include "entt/entt.hpp"
 
@@ -130,6 +131,11 @@ struct SD_ECS_API SpriteComponent {
     SERIALIZE(id, uvs, size, priority)
 };
 
+struct SD_ECS_API SpriteAnimationComponent {
+    std::vector<SpriteAnimation> animations;
+    SERIALIZE(animations)
+};
+
 template <typename T>
 void OnComponentAdded(entt::registry&, entt::entity) {}
 
@@ -147,6 +153,13 @@ inline void OnComponentAdded<LightComponent>(entt::registry& reg,
     if (lightComp.light.IsCastShadow()) {
         lightComp.light.CreateShadowMap();
     }
+}
+
+template <>
+inline void OnComponentAdded<SpriteAnimationComponent>(entt::registry& reg,
+                                                       entt::entity ent) {
+    auto& anim = reg.get<SpriteAnimationComponent>(ent);
+    anim.animations.push_back(SpriteAnimation());
 }
 
 }  // namespace SD

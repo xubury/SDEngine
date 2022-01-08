@@ -53,6 +53,7 @@ target_link_libraries(sd-core
     sd-utility
     sd-imgui
     sd-ecs
+    sd-animation
 
     ${LUA_LIBRARIES}
     sol2
