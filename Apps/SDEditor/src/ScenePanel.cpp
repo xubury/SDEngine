@@ -466,19 +466,21 @@ void ScenePanel::DrawComponents(Entity &entity) {
         });
     DrawComponent<SpriteComponent>(
         "Sprite", entity, [&](SpriteComponent &sprite_comp) {
+            auto &frame = sprite_comp.frame;
             ImGui::TextUnformatted("Prioirty");
             ImGui::InputInt("##Priority", &sprite_comp.priority);
-            auto sprite = asset->Get<Sprite>(sprite_comp.id);
+            auto sprite = asset->Get<Sprite>(frame.id);
             if (sprite) {
-                ImGui::DrawTexture(
-                    *sprite->GetTexture(),
-                    ImVec2(sprite_comp.uvs[0].x, sprite_comp.uvs[0].y),
-                    ImVec2(sprite_comp.uvs[1].x, sprite_comp.uvs[1].y));
+                ImGui::DrawTexture(*sprite->GetTexture(),
+                                   ImVec2(frame.uvs[0].x, frame.uvs[0].y),
+                                   ImVec2(frame.uvs[1].x, frame.uvs[1].y));
             }
         });
     DrawComponent<SpriteAnimationComponent>(
         "Sprite Animation", entity, [&](SpriteAnimationComponent &anim_comp) {
             DrawAnimList(anim_comp.animations, &m_selected_anim_id_map[entity]);
+            ImGui::TextUnformatted("Prioirty");
+            ImGui::InputInt("##Priority", &anim_comp.priority);
             auto &anim =
                 anim_comp.animations.at(m_selected_anim_id_map[entity]);
             int frame_index = 0;
@@ -532,8 +534,8 @@ void ScenePanel::DrawMaterialsList(const std::vector<Material> &materials,
     }
 }
 
-void ScenePanel::DrawAnimList(const std::vector<FrameAnimation<Frame>> &anims,
-                              int *selected) {
+void ScenePanel::DrawAnimList(
+    const std::vector<FrameAnimation<SpriteFrame>> &anims, int *selected) {
     int itemSize = anims.size();
     if (!itemSize) return;
 

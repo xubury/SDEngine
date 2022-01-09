@@ -60,12 +60,12 @@ void TileMapSystem::OnImGui() {
                     if (m_brush.GetSelectPos(world)) {
                         Entity child = scene->CreateEntity("Tile");
                         auto &comp = child.AddComponent<SpriteComponent>();
+                        auto &frame = comp.frame;
                         child.GetComponent<TransformComponent>()
                             .SetWorldPosition(world);
-                        comp.id = m_sprite_id;
-                        comp.uvs = m_uvs;
-                        comp.size =
-                            m_brush.canvas.GetTileSize() * m_brush.count;
+                        frame.id = m_sprite_id;
+                        frame.uvs = m_uvs;
+                        frame.size = m_brush.tile_size * m_brush.count;
                         comp.priority = m_priority;
                     }
                 } break;
@@ -108,19 +108,12 @@ void TileMapSystem::OnImGui() {
 
         ImGui::TextUnformatted("Brush Prioirty");
         ImGui::SameLine();
-        if (ImGui::InputInt("##Priority", &m_priority)) {
-        }
-        glm::ivec2 size = m_brush.canvas.GetTileSize();
-        ImGui::TextUnformatted("Cavnas Tile Size:");
-        ImGui::SameLine();
-        if (ImGui::InputInt2("##Canvas Tile Size", &size.x)) {
-            m_brush.canvas.SetTileSize(size);
-        }
+        ImGui::InputInt("##Priority", &m_priority);
 
         auto sprite = asset->Get<Sprite>(m_sprite_id);
         if (sprite) {
-            ImGui::DrawTileTexture(*sprite->GetTexture(), m_uvs, &m_brush.count,
-                                   &m_brush.pivot);
+            ImGui::DrawTileTexture(*sprite->GetTexture(), m_brush.tile_size,
+                                   m_uvs, &m_brush.count, &m_brush.pivot);
         }
     }
     ImGui::End();
@@ -133,9 +126,8 @@ void TileMapSystem::OnRender() {
     renderer->Begin(*scene->GetCamera());
 
     // draw brush & outline
-    const glm::ivec2 TILE_SIZE = m_brush.canvas.GetTileSize();
-
-    const glm::vec2 BRUSH_SIZE = TILE_SIZE * m_brush.count;
+    const glm::ivec2 &TILE_SIZE = m_brush.tile_size;
+    const glm::vec2 &BRUSH_SIZE = TILE_SIZE * m_brush.count;
     glm::vec3 world;
     if (m_brush.GetSelectPos(world)) {
         if (m_operation == Operation::ADD_ENTITY) {

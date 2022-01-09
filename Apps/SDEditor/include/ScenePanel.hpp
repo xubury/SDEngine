@@ -38,7 +38,7 @@ class ScenePanel : public System {
 
     void DrawMaterialsList(const std::vector<Material> &materials,
                            int *selected);
-    void DrawAnimList(const std::vector<FrameAnimation<Frame>> &anims,
+    void DrawAnimList(const std::vector<FrameAnimation<SpriteFrame>> &anims,
                       int *selected);
 
     Entity m_selected_entity;

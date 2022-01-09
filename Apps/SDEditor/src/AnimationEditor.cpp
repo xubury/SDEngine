@@ -35,9 +35,8 @@ void AnimationEditor::OnImGui() {
         }
         auto sprite = asset->Get<Sprite>(m_sprite_id);
         if (sprite) {
-            glm::ivec2 count(0);
-            glm::ivec2 tile_size =
-                ImGui::DrawTileTexture(*sprite->GetTexture(), m_uvs, &count);
+            ImGui::DrawTileTexture(*sprite->GetTexture(), m_tile_size, m_uvs,
+                                   &m_count);
             if (m_selected_entity &&
                 m_selected_entity.HasComponent<SpriteAnimationComponent>()) {
                 auto &anim_comp =
@@ -61,11 +60,12 @@ void AnimationEditor::OnImGui() {
                 }
                 ImGui::SameLine();
                 if (ImGui::Button("Add Anim")) {
-                    anim_comp.animations.push_back(FrameAnimation<Frame>());
+                    anim_comp.animations.push_back(
+                        FrameAnimation<SpriteFrame>());
                 }
                 if (ImGui::Button("Add Frame")) {
                     anim_comp.animations[m_anim_index].PushBack(
-                        Frame{m_sprite_id, m_uvs, count * tile_size, 0});
+                        SpriteFrame{m_sprite_id, m_uvs, m_count * m_tile_size});
                 }
             }
         }

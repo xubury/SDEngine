@@ -14,6 +14,7 @@ class AnimationEditor : public System {
     void OnPush() override;
     void OnPop() override;
     void OnImGui() override;
+
    private:
     HandlerRegistration m_entity_handler;
     Entity m_selected_entity;
@@ -23,6 +24,8 @@ class AnimationEditor : public System {
 
     ResourceId m_sprite_id;
     std::array<glm::vec2, 2> m_uvs;
+    glm::ivec2 m_count;
+    glm::ivec2 m_tile_size;
 
     int m_anim_index;
 };

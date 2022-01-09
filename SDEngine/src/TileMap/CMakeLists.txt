@@ -4,11 +4,11 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/TileMap)
 set(TileMap_Include
     ${Include_Root}/Export.hpp
     ${Include_Root}/TileMapSystem.hpp
-    ${Include_Root}/TileCanvas.hpp)
+    ${Include_Root}/TileBrush.hpp)
 
 set(TileMap_Src
     ${Src_Root}/TileMapSystem.cpp
-    ${Src_Root}/TileCanvas.cpp)
+    ${Src_Root}/TileBrush.cpp)
 
 add_library(sd-tilemap ${TileMap_Src})
 

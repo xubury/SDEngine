@@ -3,7 +3,7 @@
 
 #include "Core/System.hpp"
 #include "TileMap/Export.hpp"
-#include "TileMap/TileCanvas.hpp"
+#include "TileMap/TileBrush.hpp"
 #include "Renderer/Sprite.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGui/FileDialog.hpp"

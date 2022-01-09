@@ -15,7 +15,6 @@ void SpriteRenderSystem::OnRender() {
     device->SetFramebuffer(renderer->GetFramebuffer());
     device->SetDepthMask(false);
     renderer->Begin(*scene->GetCamera());
-    auto tilemap_comp = scene->view<SpriteComponent, TransformComponent>();
     scene->sort<SpriteComponent>(
         [this](const entt::entity lhs, const entt::entity rhs) {
             auto l_z = scene->get<TransformComponent>(lhs).GetWorldPosition().z;
@@ -30,15 +29,16 @@ void SpriteRenderSystem::OnRender() {
                 return l_p < r_p;
             }
         });
-    tilemap_comp.each([this](entt::entity entity_id,
-                             const SpriteComponent &sprite_comp,
-                             const TransformComponent &transform_comp) {
+    auto sprite_view = scene->view<SpriteComponent, TransformComponent>();
+    sprite_view.each([this](entt::entity entity_id,
+                            const SpriteComponent &sprite_comp,
+                            const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
-        renderer->DrawTexture(*asset->Get<Sprite>(sprite_comp.id)->GetTexture(),
-                              sprite_comp.uvs,
-                              transform_comp.GetWorldPosition(),
-                              transform_comp.GetWorldRotation(),
-                              sprite_comp.size, glm::vec4(1.0f), id);
+        auto &frame = sprite_comp.frame;
+        renderer->DrawTexture(*asset->Get<Sprite>(frame.id)->GetTexture(),
+                              frame.uvs, transform_comp.GetWorldPosition(),
+                              transform_comp.GetWorldRotation(), frame.size,
+                              glm::vec4(1.0f), id);
     });
 
     auto textView = scene->view<TransformComponent, TextComponent>();

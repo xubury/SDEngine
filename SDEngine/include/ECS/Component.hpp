@@ -122,28 +122,27 @@ struct SD_ECS_API CameraComponent {
     SERIALIZE(camera)
 };
 
-struct SD_ECS_API Frame {
+struct SD_ECS_API SpriteFrame {
     ResourceId id;
     std::array<glm::vec2, 2> uvs;
     glm::vec2 size;
-    int priority;
 
-    SERIALIZE(id, uvs, size, priority)
+    SERIALIZE(id, uvs, size)
 };
 
 struct SD_ECS_API SpriteComponent {
-    ResourceId id;
-    std::array<glm::vec2, 2> uvs;
-    glm::vec2 size;
-    int priority;
+    SpriteFrame frame;
+    int priority;  // TODO:consider moving this to a seperate component to
+                   // perform sort with animation sprites
 
-    SERIALIZE(id, uvs, size, priority)
+    SERIALIZE(frame, priority)
 };
 
 struct SD_ECS_API SpriteAnimationComponent {
-    std::vector<FrameAnimation<Frame>> animations;
+    std::vector<FrameAnimation<SpriteFrame>> animations;
+    int priority;
 
-    SERIALIZE(animations)
+    SERIALIZE(animations, priority)
 };
 
 template <typename T>
@@ -169,7 +168,7 @@ template <>
 inline void OnComponentAdded<SpriteAnimationComponent>(entt::registry& reg,
                                                        entt::entity ent) {
     auto& anim = reg.get<SpriteAnimationComponent>(ent);
-    anim.animations.push_back(FrameAnimation<Frame>());
+    anim.animations.push_back(FrameAnimation<SpriteFrame>());
 }
 
 }  // namespace SD
