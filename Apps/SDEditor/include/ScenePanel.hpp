@@ -38,7 +38,8 @@ class ScenePanel : public System {
 
     void DrawMaterialsList(const std::vector<Material> &materials,
                            int *selected);
-    void DrawAnimList(const std::vector<SpriteAnimation> &anims, int *selected);
+    void DrawAnimList(const std::vector<FrameAnimation<Frame>> &anims,
+                      int *selected);
 
     Entity m_selected_entity;
     Entity m_entity_to_destroy;

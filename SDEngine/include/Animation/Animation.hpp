@@ -21,36 +21,43 @@ class SD_ANIMATION_API Animation {
     float m_duration;
 };
 
-class SD_ANIMATION_API SpriteAnimation : public Animation {
+template <typename FRAME>
+class SD_ANIMATION_API FrameAnimation : public Animation {
    public:
-    SpriteAnimation() = default;
+    FrameAnimation() = default;
 
-    void SetFrameTime(float time) override;
+    void SetFrameTime(float time) override {
+        m_frame_index = time * m_frame_per_second;
+    }
 
-    void SetSpeed(float fps);
+    void SetSpeed(float fps) {
+        m_frame_per_second = fps;
+        SetDuration(m_frames.size() / m_frame_per_second);
+    }
+
     float GetSpeed() const { return m_frame_per_second; }
 
     void SetFrameIndex(int index) { m_frame_index = index; }
 
-    void PushBack(const Ref<Sprite>& sprite,
-                  const std::array<glm::vec2, 2>& uvs);
+    void PushBack(const FRAME& frame) {
+        m_frames.push_back(frame);
+        SetDuration(m_frames.size() / m_frame_per_second);
+    }
 
-    void SetFrame(const Ref<Sprite>& sprite,
-                  const std::array<glm::vec2, 2>& uvs, int index);
+    void SetFrame(const FRAME& frame, int index) { m_frames.at(index) = frame; }
 
-    const Texture* GetTexture(int index = -1) const;
-    const std::array<glm::vec2, 2>& GetUVs(int index = -1) const;
+    const FRAME& GetFrame(int index = -1) const {
+        return index == -1 ? m_frames.at(m_frame_index) : m_frames.at(index);
+    }
+    size_t GetFrameSize() const { return m_frames.size(); }
 
-    size_t GetSize() const { return m_sprites.size(); }
-
-    SERIALIZE(m_frame_per_second, m_frame_index, m_uvs)
+    SERIALIZE(m_frame_per_second, m_frame_index, m_frames)
 
    private:
     float m_frame_per_second;
     uint32_t m_frame_index;
 
-    std::vector<Ref<Sprite>> m_sprites;
-    std::vector<std::array<glm::vec2, 2>> m_uvs;
+    std::vector<FRAME> m_frames;
 };
 
 }  // namespace SD

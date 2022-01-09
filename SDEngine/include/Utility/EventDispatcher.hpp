@@ -46,7 +46,8 @@ class HandlerRegistration {
 class EventDispatcher {
    public:
     template <typename EVENT, typename F>
-    HandlerRegistration Register(F* object, void (F::*method)(const EVENT&)) {
+    [[nodiscard]] HandlerRegistration Register(
+        F* object, void (F::*method)(const EVENT&)) {
         const auto type_idx = std::type_index(typeid(EVENT));
         const void* handle;
         SafeUniqueAccess([&]() {
@@ -62,7 +63,8 @@ class EventDispatcher {
     // lambda function should give template explicitly, not sure how to make
     // compiler to dedcut it
     template <typename EVENT>
-    HandlerRegistration Register(std::function<void(const EVENT&)>&& method) {
+    [[nodiscard]] HandlerRegistration Register(
+        std::function<void(const EVENT&)>&& method) {
         const auto type_idx = std::type_index(typeid(EVENT));
         const void* handle;
         SafeUniqueAccess([&]() {

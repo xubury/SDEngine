@@ -97,12 +97,14 @@ void DrawTexture(const SD::Texture &texture, const ImVec2 &uv0,
     ImGui::Image((void *)(intptr_t)texture.GetId(), wsize, uv0, uv1);
 }
 
-bool DrawTileTexture(const SD::Texture &texture, std::array<glm::vec2, 2> &uvs,
-                     glm::ivec2 *selected_cnt, glm::ivec2 *pivot) {
-    bool ret = false;
+glm::ivec2 DrawTileTexture(const SD::Texture &texture,
+                           std::array<glm::vec2, 2> &uvs,
+                           glm::ivec2 *selected_cnt, glm::ivec2 *pivot) {
     static glm::ivec2 tile_size(50);
     ImGui::TextUnformatted("Tile Size:");
     ImGui::InputInt2("##Size", &tile_size.x);
+    tile_size.x = std::clamp(tile_size.x, 0, texture.GetWidth());
+    tile_size.y = std::clamp(tile_size.y, 0, texture.GetHeight());
 
     ImVec2 wsize = ImGui::GetWindowSize();
     const float ASPECT = wsize.x / texture.GetWidth();
@@ -217,7 +219,7 @@ bool DrawTileTexture(const SD::Texture &texture, std::array<glm::vec2, 2> &uvs,
                                     PIVOT_COLOR);
         }
     }
-    return ret;
+    return tile_size;
 }
 
 bool BeginCenterPopupModal(const char *name, bool *p_open,

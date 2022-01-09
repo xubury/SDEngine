@@ -22,7 +22,10 @@ void ScenePanel::OnPush() {
         });
 }
 
-void ScenePanel::OnPop() { dispatcher->RemoveHandler(m_size_handler); }
+void ScenePanel::OnPop() {
+    dispatcher->RemoveHandler(m_size_handler);
+    dispatcher->RemoveHandler(m_entity_select_handler);
+}
 
 void ScenePanel::OnSizeEvent(const ViewportEvent &event) {
     m_width = event.width;
@@ -479,17 +482,23 @@ void ScenePanel::DrawComponents(Entity &entity) {
             auto &anim =
                 anim_comp.animations.at(m_selected_anim_id_map[entity]);
             int frame_index = 0;
-            ImGui::SliderInt("##Frame", &frame_index, 0, anim.GetSize());
+            if (anim.GetFrameSize()) {
+                ImGui::SliderInt("##Frame", &frame_index, 0,
+                                 anim.GetFrameSize() - 1);
+            }
             float speed = anim.GetSpeed();
             ImGui::TextUnformatted("FPS:");
             if (ImGui::InputFloat("##Anim Speed", &speed)) {
                 anim.SetSpeed(speed);
             }
-            if (frame_index < static_cast<int>(anim.GetSize())) {
-                auto texture = anim.GetTexture(frame_index);
-                auto &uvs = anim.GetUVs(frame_index);
-                ImGui::DrawTexture(*texture, ImVec2(uvs[0].x, uvs[0].y),
-                                   ImVec2(uvs[1].x, uvs[1].y));
+            if (frame_index < static_cast<int>(anim.GetFrameSize())) {
+                const auto &frame = anim.GetFrame(frame_index);
+                const auto sprite = asset->Get<Sprite>(frame.id);
+                if (sprite) {
+                    ImGui::DrawTexture(*sprite->GetTexture(),
+                                       ImVec2(frame.uvs[0].x, frame.uvs[0].y),
+                                       ImVec2(frame.uvs[1].x, frame.uvs[1].y));
+                }
             }
         });
 }
@@ -523,7 +532,7 @@ void ScenePanel::DrawMaterialsList(const std::vector<Material> &materials,
     }
 }
 
-void ScenePanel::DrawAnimList(const std::vector<SpriteAnimation> &anims,
+void ScenePanel::DrawAnimList(const std::vector<FrameAnimation<Frame>> &anims,
                               int *selected) {
     int itemSize = anims.size();
     if (!itemSize) return;

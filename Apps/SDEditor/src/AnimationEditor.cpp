@@ -7,9 +7,10 @@ AnimationEditor::AnimationEditor()
     : System("Anmiation Editor"), m_anim_index(0) {}
 
 void AnimationEditor::OnPush() {
-    dispatcher->Register<EntitySelectEvent>([this](const EntitySelectEvent &e) {
-        m_selected_entity = {e.entity_id, e.scene};
-    });
+    m_entity_handler = dispatcher->Register<EntitySelectEvent>(
+        [this](const EntitySelectEvent &e) {
+            this->m_selected_entity = {e.entity_id, e.scene};
+        });
 }
 
 void AnimationEditor::OnPop() { dispatcher->RemoveHandler(m_entity_handler); }
@@ -34,33 +35,39 @@ void AnimationEditor::OnImGui() {
         }
         auto sprite = asset->Get<Sprite>(m_sprite_id);
         if (sprite) {
+            glm::ivec2 count(0);
+            glm::ivec2 tile_size =
+                ImGui::DrawTileTexture(*sprite->GetTexture(), m_uvs, &count);
             if (m_selected_entity &&
                 m_selected_entity.HasComponent<SpriteAnimationComponent>()) {
                 auto &anim_comp =
                     m_selected_entity.GetComponent<SpriteAnimationComponent>();
-                std::string item = "Anim " + std::to_string(m_anim_index);
                 int item_size = anim_comp.animations.size();
-                if (ImGui::BeginCombo("##Animations", item.c_str())) {
-                    for (int i = 0; i < item_size; ++i) {
-                        item = "Anim: " + std::to_string(i);
-                        const bool is_selected = (m_anim_index == i);
-                        if (ImGui::Selectable(item.c_str(), is_selected))
-                            m_anim_index = i;
+                if (item_size > 0) {
+                    std::string item = "Anim " + std::to_string(m_anim_index);
+                    if (ImGui::BeginCombo("##Animations", item.c_str())) {
+                        for (int i = 0; i < item_size; ++i) {
+                            item = "Anim: " + std::to_string(i);
+                            const bool is_selected = (m_anim_index == i);
+                            if (ImGui::Selectable(item.c_str(), is_selected))
+                                m_anim_index = i;
 
-                        // Set the initial focus when opening the combo
-                        // (scrolling + keyboard navigation focus)
-                        if (is_selected) ImGui::SetItemDefaultFocus();
+                            // Set the initial focus when opening the combo
+                            // (scrolling + keyboard navigation focus)
+                            if (is_selected) ImGui::SetItemDefaultFocus();
+                        }
+                        ImGui::EndCombo();
                     }
-                    ImGui::EndCombo();
                 }
+                ImGui::SameLine();
                 if (ImGui::Button("Add Anim")) {
-                    anim_comp.animations.push_back(SpriteAnimation());
+                    anim_comp.animations.push_back(FrameAnimation<Frame>());
                 }
                 if (ImGui::Button("Add Frame")) {
-                    anim_comp.animations[m_anim_index].PushBack(sprite, m_uvs);
+                    anim_comp.animations[m_anim_index].PushBack(
+                        Frame{m_sprite_id, m_uvs, count * tile_size, 0});
                 }
             }
-            ImGui::DrawTileTexture(*sprite->GetTexture(), m_uvs);
         }
     }
     ImGui::End();
