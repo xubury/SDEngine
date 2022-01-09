@@ -130,19 +130,22 @@ struct SD_ECS_API SpriteFrame {
     SERIALIZE(id, uvs, size)
 };
 
+struct SD_ECS_API PriorityComponent {
+    int priority;
+    SERIALIZE(priority)
+};
+
 struct SD_ECS_API SpriteComponent {
     SpriteFrame frame;
-    int priority;  // TODO:consider moving this to a seperate component to
-                   // perform sort with animation sprites
 
-    SERIALIZE(frame, priority)
+    SERIALIZE(frame)
 };
 
 struct SD_ECS_API SpriteAnimationComponent {
     std::vector<FrameAnimation<SpriteFrame>> animations;
-    int priority;
+    int index{0};
 
-    SERIALIZE(animations, priority)
+    SERIALIZE(animations, index)
 };
 
 template <typename T>
@@ -165,8 +168,19 @@ inline void OnComponentAdded<LightComponent>(entt::registry& reg,
 }
 
 template <>
+inline void OnComponentAdded<SpriteComponent>(entt::registry& reg,
+                                              entt::entity ent) {
+    if (!reg.all_of<PriorityComponent>(ent)) {
+        reg.emplace<PriorityComponent>(ent);
+    }
+}
+
+template <>
 inline void OnComponentAdded<SpriteAnimationComponent>(entt::registry& reg,
                                                        entt::entity ent) {
+    if (!reg.all_of<PriorityComponent>(ent)) {
+        reg.emplace<PriorityComponent>(ent);
+    }
     auto& anim = reg.get<SpriteAnimationComponent>(ent);
     anim.animations.push_back(FrameAnimation<SpriteFrame>());
 }

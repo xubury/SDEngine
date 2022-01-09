@@ -11,35 +11,73 @@ void SpriteRenderSystem::OnPush() {}
 
 void SpriteRenderSystem::OnPop() {}
 
+struct SpriteDrawData {
+    Texture *texture;
+    std::array<glm::vec2, 2> uvs;
+    glm::vec3 pos;
+    glm::quat rot;
+    glm::vec2 size;
+    uint32_t entity_id;
+    int priority;
+};
 void SpriteRenderSystem::OnRender() {
     device->SetFramebuffer(renderer->GetFramebuffer());
     device->SetDepthMask(false);
     renderer->Begin(*scene->GetCamera());
-    scene->sort<SpriteComponent>(
-        [this](const entt::entity lhs, const entt::entity rhs) {
-            auto l_z = scene->get<TransformComponent>(lhs).GetWorldPosition().z;
-            auto r_z = scene->get<TransformComponent>(rhs).GetWorldPosition().z;
-            auto l_p = scene->get<SpriteComponent>(lhs).priority;
-            auto r_p = scene->get<SpriteComponent>(rhs).priority;
-            if (l_z < r_z) {
-                return true;
-            } else if (l_z > r_z) {
-                return false;
-            } else {
-                return l_p < r_p;
-            }
-        });
-    auto sprite_view = scene->view<SpriteComponent, TransformComponent>();
-    sprite_view.each([this](entt::entity entity_id,
-                            const SpriteComponent &sprite_comp,
-                            const TransformComponent &transform_comp) {
+    std::vector<SpriteDrawData> datas;
+    auto sprite_view =
+        scene->view<PriorityComponent, SpriteComponent, TransformComponent>();
+    sprite_view.each([this, &datas](entt::entity entity_id,
+                                    const PriorityComponent &priority_comp,
+                                    const SpriteComponent &sprite_comp,
+                                    const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
         auto &frame = sprite_comp.frame;
-        renderer->DrawTexture(*asset->Get<Sprite>(frame.id)->GetTexture(),
-                              frame.uvs, transform_comp.GetWorldPosition(),
-                              transform_comp.GetWorldRotation(), frame.size,
-                              glm::vec4(1.0f), id);
+        auto sprite = asset->Get<Sprite>(frame.id);
+        if (sprite) {
+            datas.push_back({sprite->GetTexture(), frame.uvs,
+                             transform_comp.GetWorldPosition(),
+                             transform_comp.GetWorldRotation(), frame.size, id,
+                             priority_comp.priority});
+        }
     });
+    auto anim_view = scene->view<PriorityComponent, SpriteAnimationComponent,
+                                 TransformComponent>();
+    anim_view.each([this, &datas](entt::entity entity_id,
+                                  const PriorityComponent &priority_comp,
+                                  const SpriteAnimationComponent &anim_comp,
+                                  const TransformComponent &transform_comp) {
+        uint32_t id = static_cast<uint32_t>(entity_id);
+        auto &frames = anim_comp.animations.at(anim_comp.index);
+        if (frames.GetFrameSize()) {
+            auto &frame = frames.GetFrame();
+            auto sprite = asset->Get<Sprite>(frame.id);
+            if (sprite) {
+                datas.push_back({sprite->GetTexture(), frame.uvs,
+                                 transform_comp.GetWorldPosition(),
+                                 transform_comp.GetWorldRotation(), frame.size,
+                                 id, priority_comp.priority});
+            }
+        }
+    });
+
+    std::sort(datas.begin(), datas.end(), [](const auto &lhs, const auto &rhs) {
+        auto l_z = lhs.pos.z;
+        auto r_z = rhs.pos.z;
+        auto l_p = lhs.priority;
+        auto r_p = rhs.priority;
+        if (l_z < r_z) {
+            return true;
+        } else if (l_z > r_z) {
+            return false;
+        } else {
+            return l_p < r_p;
+        }
+    });
+    for (const auto &data : datas) {
+        renderer->DrawTexture(*data.texture, data.uvs, data.pos, data.rot,
+                              data.size, glm::vec4(1.0f), data.entity_id);
+    }
 
     auto textView = scene->view<TransformComponent, TextComponent>();
 

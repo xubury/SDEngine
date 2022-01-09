@@ -464,11 +464,14 @@ void ScenePanel::DrawComponents(Entity &entity) {
                 cameraComp.camera.SetFarZ(far_z);
             }
         });
+    DrawComponent<PriorityComponent>(
+        "Priority", entity, [&](PriorityComponent &priority_comp) {
+            ImGui::TextUnformatted("Prioirty");
+            ImGui::InputInt("##Priority", &priority_comp.priority);
+        });
     DrawComponent<SpriteComponent>(
         "Sprite", entity, [&](SpriteComponent &sprite_comp) {
             auto &frame = sprite_comp.frame;
-            ImGui::TextUnformatted("Prioirty");
-            ImGui::InputInt("##Priority", &sprite_comp.priority);
             auto sprite = asset->Get<Sprite>(frame.id);
             if (sprite) {
                 ImGui::DrawTexture(*sprite->GetTexture(),
@@ -479,8 +482,6 @@ void ScenePanel::DrawComponents(Entity &entity) {
     DrawComponent<SpriteAnimationComponent>(
         "Sprite Animation", entity, [&](SpriteAnimationComponent &anim_comp) {
             DrawAnimList(anim_comp.animations, &m_selected_anim_id_map[entity]);
-            ImGui::TextUnformatted("Prioirty");
-            ImGui::InputInt("##Priority", &anim_comp.priority);
             auto &anim =
                 anim_comp.animations.at(m_selected_anim_id_map[entity]);
             int frame_index = 0;

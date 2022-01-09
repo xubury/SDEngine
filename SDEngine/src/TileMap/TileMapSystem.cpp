@@ -66,7 +66,8 @@ void TileMapSystem::OnImGui() {
                         frame.id = m_sprite_id;
                         frame.uvs = m_uvs;
                         frame.size = m_brush.tile_size * m_brush.count;
-                        comp.priority = m_priority;
+                        child.GetComponent<PriorityComponent>().priority =
+                            m_priority;
                     }
                 } break;
                 case Operation::REMOVE_ENTITY: {
