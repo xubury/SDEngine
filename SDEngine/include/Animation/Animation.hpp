@@ -22,7 +22,7 @@ class SD_ANIMATION_API Animation {
 };
 
 template <typename FRAME>
-class SD_ANIMATION_API FrameAnimation : public Animation {
+class FrameAnimation : public Animation {
    public:
     FrameAnimation() = default;
 

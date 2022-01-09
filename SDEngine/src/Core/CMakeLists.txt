@@ -49,11 +49,9 @@ endif()
 
 target_link_libraries(sd-core
     PUBLIC
-    sd-renderer
     sd-utility
     sd-imgui
     sd-ecs
-    sd-animation
 
     ${LUA_LIBRARIES}
     sol2

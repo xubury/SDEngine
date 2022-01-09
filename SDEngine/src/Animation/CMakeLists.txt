@@ -7,7 +7,6 @@ set(Animation_Include
     ${Include_Root}/Animator.hpp)
 
 set(Animation_Src
-    ${Src_Root}/Animation.cpp
     ${Src_Root}/Animator.cpp)
 
 add_library(sd-animation ${Animation_Src})
