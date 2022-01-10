@@ -21,7 +21,9 @@ class SD_ANIMATION_API Animation {
     SERIALIZE(m_duration, m_is_loop)
 
    protected:
+    template <typename ANIM>
     friend class Animator;
+
     virtual void Tick(float dt) = 0;
 
     float m_duration;

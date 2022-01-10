@@ -32,7 +32,10 @@ void ScenePanel::OnSizeEvent(const ViewportEvent &event) {
     m_height = event.height;
 }
 
-void ScenePanel::Reset() { m_selected_material_id_map.clear(); }
+void ScenePanel::Reset() {
+    m_selected_material_id_map.clear();
+    m_selected_anim_id_map.clear();
+}
 
 ImGuizmo::MODE ScenePanel::GetGizmoMode() const { return m_gizmo_mode; }
 
@@ -478,8 +481,9 @@ void ScenePanel::DrawComponents(Entity &entity) {
         });
     DrawComponent<SpriteAnimationComponent>(
         "Sprite Animation", entity, [&](SpriteAnimationComponent &anim_comp) {
-            DrawAnimList(anim_comp.animations, &anim_comp.index);
-            auto &anim = anim_comp.animations.at(anim_comp.index);
+            DrawAnimList(anim_comp.animations, &m_selected_anim_id_map[entity]);
+            auto &anim =
+                anim_comp.animations.at(m_selected_anim_id_map[entity]);
             static int frame_index = 0;
             if (anim.GetFrameSize()) {
                 ImGui::TextUnformatted("Frame:");
@@ -510,7 +514,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
                 if (is_playing) {
                     anim_comp.animator.Stop();
                 } else {
-                    anim_comp.animator.Play();
+                    anim_comp.animator.Play(&anim);
                 }
             }
         });

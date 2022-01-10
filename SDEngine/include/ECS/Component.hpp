@@ -144,10 +144,9 @@ struct SD_ECS_API SpriteComponent {
 
 struct SD_ECS_API SpriteAnimationComponent {
     std::vector<FrameAnimation<SpriteFrame>> animations;
-    int index{0};
+    Animator<FrameAnimation<SpriteFrame>> animator;
 
-    Animator animator;
-    SERIALIZE(animations, index)
+    SERIALIZE(animations)
 };
 
 template <typename T>
