@@ -19,8 +19,6 @@ class SD_ANIMATION_API Animator {
     bool IsPlaying() const { return m_is_playing; }
 
    private:
-    float m_current_time;
-
     bool m_is_playing;
 };
 

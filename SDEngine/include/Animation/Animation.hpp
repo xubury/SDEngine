@@ -10,24 +10,51 @@ namespace SD {
 
 class SD_ANIMATION_API Animation {
    public:
-    Animation() = default;
+    Animation() : m_duration(0), m_is_loop(true){};
 
     float GetDuration() const { return m_duration; }
     void SetDuration(float duration) { m_duration = duration; }
 
-    virtual void SetFrameTime(float time) = 0;
+    bool IsLoop() const { return m_is_loop; }
+    void SetLoop(bool loop) { m_is_loop = loop; }
 
-   private:
+    SERIALIZE(m_duration, m_is_loop)
+
+   protected:
+    friend class Animator;
+    virtual void Tick(float dt) = 0;
+
     float m_duration;
+    bool m_is_loop;
 };
 
 template <typename FRAME>
 class FrameAnimation : public Animation {
    public:
-    FrameAnimation() : m_frame_index(0), m_frame_per_second(30.0f){};
+    FrameAnimation()
+        : m_frame_index(0), m_frame_per_second(30.0f), m_frame_progress(0.f){};
 
-    void SetFrameTime(float time) override {
-        m_frame_index = time * m_frame_per_second;
+    void Tick(float time) override {
+        float progess = m_frame_per_second * time;
+        if (m_frame_index + 1 <= m_frame_progress + progess) {
+            // new frame
+            // callback();
+
+            if (m_frame_index + 1 == m_frames.size()) {
+                // finish
+                if (m_is_loop) {
+                    m_frame_index = 0;
+                    m_frame_progress = 0.f;
+                } else {
+                    m_frame_progress = m_frames.size();
+                }
+            } else {
+                ++m_frame_index;
+                m_frame_progress += progess;
+            }
+        } else {
+            m_frame_progress += progess;
+        }
     }
 
     void SetSpeed(float fps) {
@@ -54,8 +81,9 @@ class FrameAnimation : public Animation {
     SERIALIZE(m_frame_index, m_frame_per_second, m_frames)
 
    private:
-    int m_frame_index;
+    size_t m_frame_index;
     float m_frame_per_second;
+    float m_frame_progress;
 
     std::vector<FRAME> m_frames;
 };

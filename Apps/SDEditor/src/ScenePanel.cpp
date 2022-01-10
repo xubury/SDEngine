@@ -480,7 +480,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
         "Sprite Animation", entity, [&](SpriteAnimationComponent &anim_comp) {
             DrawAnimList(anim_comp.animations, &anim_comp.index);
             auto &anim = anim_comp.animations.at(anim_comp.index);
-            int frame_index = 0;
+            static int frame_index = 0;
             if (anim.GetFrameSize()) {
                 ImGui::TextUnformatted("Frame:");
                 ImGui::SliderInt("##Frame", &frame_index, 0,
@@ -499,6 +499,10 @@ void ScenePanel::DrawComponents(Entity &entity) {
                                        ImVec2(frame.uvs[0].x, frame.uvs[0].y),
                                        ImVec2(frame.uvs[1].x, frame.uvs[1].y));
                 }
+            }
+            bool loop = anim.IsLoop();
+            if (ImGui::Checkbox("Loop", &loop)) {
+                anim.SetLoop(loop);
             }
             bool is_playing = anim_comp.animator.IsPlaying();
             std::string button_str = is_playing ? "Stop" : "Play";
