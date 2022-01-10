@@ -10,6 +10,8 @@ class SD_SYSTEM_API SpriteRenderSystem : public System {
    public:
     SpriteRenderSystem();
 
+    void OnTick(float dt) override;
+
     void OnPush() override;
 
     void OnPop() override;

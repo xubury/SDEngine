@@ -11,6 +11,16 @@ void SpriteRenderSystem::OnPush() {}
 
 void SpriteRenderSystem::OnPop() {}
 
+void SpriteRenderSystem::OnTick(float dt) {
+    auto anim_view = scene->view<SpriteAnimationComponent>();
+    anim_view.each([&](SpriteAnimationComponent &anim_comp) {
+        if (!anim_comp.animations.empty()) {
+            auto &anim = anim_comp.animations.at(anim_comp.index);
+            anim_comp.animator.Tick(&anim, dt);
+        }
+    });
+}
+
 struct SpriteDrawData {
     Texture *texture;
     std::array<glm::vec2, 2> uvs;
@@ -48,15 +58,17 @@ void SpriteRenderSystem::OnRender() {
                                   const SpriteAnimationComponent &anim_comp,
                                   const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
-        auto &frames = anim_comp.animations.at(anim_comp.index);
-        if (frames.GetFrameSize()) {
-            auto &frame = frames.GetFrame();
-            auto sprite = asset->Get<Sprite>(frame.id);
-            if (sprite) {
-                datas.push_back({sprite->GetTexture(), frame.uvs,
-                                 transform_comp.GetWorldPosition(),
-                                 transform_comp.GetWorldRotation(), frame.size,
-                                 id, priority_comp.priority});
+        if (!anim_comp.animations.empty()) {
+            auto &anim = anim_comp.animations.at(anim_comp.index);
+            if (anim.GetFrameSize()) {
+                auto &frame = anim.GetFrame();
+                auto sprite = asset->Get<Sprite>(frame.id);
+                if (sprite) {
+                    datas.push_back({sprite->GetTexture(), frame.uvs,
+                                     transform_comp.GetWorldPosition(),
+                                     transform_comp.GetWorldRotation(),
+                                     frame.size, id, priority_comp.priority});
+                }
             }
         }
     });

@@ -24,7 +24,7 @@ class SD_ANIMATION_API Animation {
 template <typename FRAME>
 class FrameAnimation : public Animation {
    public:
-    FrameAnimation() = default;
+    FrameAnimation() : m_frame_index(0), m_frame_per_second(30.0f){};
 
     void SetFrameTime(float time) override {
         m_frame_index = time * m_frame_per_second;
@@ -51,11 +51,11 @@ class FrameAnimation : public Animation {
     }
     size_t GetFrameSize() const { return m_frames.size(); }
 
-    SERIALIZE(m_frame_per_second, m_frame_index, m_frames)
+    SERIALIZE(m_frame_index, m_frame_per_second, m_frames)
 
    private:
+    int m_frame_index;
     float m_frame_per_second;
-    uint32_t m_frame_index;
 
     std::vector<FRAME> m_frames;
 };

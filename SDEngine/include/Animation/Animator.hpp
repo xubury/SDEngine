@@ -10,16 +10,16 @@ class SD_ANIMATION_API Animator {
    public:
     Animator();
 
-    void Play(Animation *animation);
+    void Play();
 
     void Stop();
 
-    void Tick(float dt);
+    void Tick(Animation *animation, float dt);
+
+    bool IsPlaying() const { return m_is_playing; }
 
    private:
     float m_current_time;
-
-    Animation *m_animation;
 
     bool m_is_playing;
 };

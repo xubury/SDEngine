@@ -13,6 +13,7 @@
 #include "Renderer/Light.hpp"
 #include "Renderer/Skybox.hpp"
 #include "Animation/Animation.hpp"
+#include "Animation/Animator.hpp"
 
 #include "entt/entt.hpp"
 
@@ -145,6 +146,7 @@ struct SD_ECS_API SpriteAnimationComponent {
     std::vector<FrameAnimation<SpriteFrame>> animations;
     int index{0};
 
+    Animator animator;
     SERIALIZE(animations, index)
 };
 

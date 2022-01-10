@@ -44,7 +44,6 @@ class ScenePanel : public System {
     Entity m_selected_entity;
     Entity m_entity_to_destroy;
     std::unordered_map<entt::entity, int> m_selected_material_id_map;
-    std::unordered_map<entt::entity, int> m_selected_anim_id_map;
 
     ImGuizmo::MODE m_gizmo_mode;
     ImGuizmo::OPERATION m_gizmo_op;

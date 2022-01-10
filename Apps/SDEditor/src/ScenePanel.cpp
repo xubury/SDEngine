@@ -32,10 +32,7 @@ void ScenePanel::OnSizeEvent(const ViewportEvent &event) {
     m_height = event.height;
 }
 
-void ScenePanel::Reset() {
-    m_selected_material_id_map.clear();
-    m_selected_anim_id_map.clear();
-}
+void ScenePanel::Reset() { m_selected_material_id_map.clear(); }
 
 ImGuizmo::MODE ScenePanel::GetGizmoMode() const { return m_gizmo_mode; }
 
@@ -481,11 +478,11 @@ void ScenePanel::DrawComponents(Entity &entity) {
         });
     DrawComponent<SpriteAnimationComponent>(
         "Sprite Animation", entity, [&](SpriteAnimationComponent &anim_comp) {
-            DrawAnimList(anim_comp.animations, &m_selected_anim_id_map[entity]);
-            auto &anim =
-                anim_comp.animations.at(m_selected_anim_id_map[entity]);
+            DrawAnimList(anim_comp.animations, &anim_comp.index);
+            auto &anim = anim_comp.animations.at(anim_comp.index);
             int frame_index = 0;
             if (anim.GetFrameSize()) {
+                ImGui::TextUnformatted("Frame:");
                 ImGui::SliderInt("##Frame", &frame_index, 0,
                                  anim.GetFrameSize() - 1);
             }
@@ -501,6 +498,15 @@ void ScenePanel::DrawComponents(Entity &entity) {
                     ImGui::DrawTexture(*sprite->GetTexture(),
                                        ImVec2(frame.uvs[0].x, frame.uvs[0].y),
                                        ImVec2(frame.uvs[1].x, frame.uvs[1].y));
+                }
+            }
+            bool is_playing = anim_comp.animator.IsPlaying();
+            std::string button_str = is_playing ? "Stop" : "Play";
+            if (ImGui::Button(button_str.c_str())) {
+                if (is_playing) {
+                    anim_comp.animator.Stop();
+                } else {
+                    anim_comp.animator.Play();
                 }
             }
         });
