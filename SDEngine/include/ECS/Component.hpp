@@ -27,17 +27,11 @@ struct SD_ECS_API IdComponent {
 
 struct SD_ECS_API TagComponent {
     std::string tag;
-    TagComponent() = default;
-    TagComponent(const std::string& tag) : tag(tag) {}
 
     SERIALIZE(tag)
 };
 
 struct SD_ECS_API TransformComponent {
-    void OnComponentAdded(entt::registry& reg, entt::entity ent) {
-        auto& data = reg.get<TransformComponent>(ent);
-        data.ecs = &reg;
-    }
     std::set<entt::entity> children;
     entt::entity parent;
     entt::registry* ecs{nullptr};
@@ -92,11 +86,6 @@ struct SD_ECS_API ModelComponent {
     ModelComponent() = default;
 
     SERIALIZE(id, color)
-};
-
-struct SD_ECS_API TerrainComponent {
-    Terrain terrain;
-    TerrainComponent() : terrain(1, 10) {}
 };
 
 struct SD_ECS_API LightComponent {

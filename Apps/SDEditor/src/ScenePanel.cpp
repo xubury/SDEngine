@@ -234,13 +234,6 @@ void ScenePanel::DrawComponents(Entity &entity) {
                 SD_CORE_WARN("This entity already has the Model Component!");
             ImGui::CloseCurrentPopup();
         }
-        if (ImGui::MenuItem("Terrain")) {
-            if (!entity.HasComponent<TerrainComponent>())
-                entity.AddComponent<TerrainComponent>();
-            else
-                SD_CORE_WARN("This entity already has the Terrain Component!");
-            ImGui::CloseCurrentPopup();
-        }
         if (ImGui::MenuItem("Light")) {
             if (!entity.HasComponent<LightComponent>())
                 entity.AddComponent<LightComponent>();
@@ -337,21 +330,6 @@ void ScenePanel::DrawComponents(Entity &entity) {
                               &m_selected_material_id_map[entity]);
         }
     });
-    // drawComponent<TerrainComponent>(
-    //     "Terrain", entity, [&](TerrainComponent &terrain) {
-    //         int gridSize = terrain.terrain.getGridSize();
-    //         int vertexCount = terrain.terrain.getVertexCount();
-    //         if (ImGui::InputInt("Grid size:", &gridSize)) {
-    //             terrain.terrain.setGridSize(std::max(gridSize, 1));
-    //             terrain.terrain.generateMesh();
-    //             renderer->getTerrainSystem()->updateTerrain(entity);
-    //         }
-    //         if (ImGui::InputInt("Vertex count:", &vertexCount)) {
-    //             terrain.terrain.setVertexCount(std::max(vertexCount, 2));
-    //             terrain.terrain.generateMesh();
-    //             renderer->getTerrainSystem()->updateTerrain(entity);
-    //         }
-    //     });
     DrawComponent<LightComponent>(
         "Light", entity, [&](LightComponent &lightComp) {
             Light &light = lightComp.light;

@@ -355,29 +355,9 @@ void LightingSystem::RenderGBuffer() {
     uint32_t id = static_cast<uint32_t>(entt::null);
     m_gbuffer->ClearAttachment(GeometryBufferType::G_ENTITY_ID, &id);
 
-    auto terrainView = scene->view<TransformComponent, TerrainComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
     renderer->Begin(*m_gbuffer_shader, *scene->GetCamera());
-
-    terrainView.each([this](const entt::entity &entity,
-                            const TransformComponent &transformComp,
-                            const TerrainComponent &terrainComp) {
-        m_gbuffer_shader->SetMat4(
-            "u_model", transformComp.GetWorldTransform().GetMatrix());
-        m_gbuffer_shader->SetUint("u_entity_id", static_cast<uint32_t>(entity));
-        auto &terrain = terrainComp.terrain;
-        auto &material = terrain.GetMaterial();
-        m_gbuffer_shader->SetTexture(
-            "u_material.diffuse", material.GetTexture(MaterialType::DIFFUSE));
-        m_gbuffer_shader->SetTexture(
-            "u_material.specular", material.GetTexture(MaterialType::SPECULAR));
-        m_gbuffer_shader->SetTexture(
-            "u_material.ambient", material.GetTexture(MaterialType::AMBIENT));
-        m_gbuffer_shader->SetTexture(
-            "u_material.emissive", material.GetTexture(MaterialType::EMISSIVE));
-        renderer->DrawMesh(*m_gbuffer_shader, terrain.GetMesh());
-    });
 
     modelView.each([this](const entt::entity &entity,
                           const TransformComponent &transformComp,
