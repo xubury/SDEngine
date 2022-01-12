@@ -80,7 +80,7 @@ class FrameAnimation : public Animation {
     }
     size_t GetFrameSize() const { return m_frames.size(); }
 
-    SERIALIZE(m_frame_index, m_frame_per_second, m_frames)
+    SERIALIZE(m_frame_index, m_frame_per_second, m_frame_progress, m_frames)
 
    private:
     size_t m_frame_index;
