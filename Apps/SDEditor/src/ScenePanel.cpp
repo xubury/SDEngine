@@ -308,8 +308,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
     DrawComponent<ModelComponent>("Model", entity, [&](ModelComponent &mc) {
         static bool fileDialogOpen = false;
         static ImFileDialogInfo fileDialogInfo;
-        std::string path = asset->GetAssetPath(mc.id);
-        ImGui::InputText("##Path", path.data(), path.size(),
+        ImGui::InputText("##Path", mc.model_path.data(), mc.model_path.size(),
                          ImGuiInputTextFlags_ReadOnly);
         ImGui::SameLine();
         if (ImGui::Button("Open")) {
@@ -320,11 +319,17 @@ void ScenePanel::DrawComponents(Entity &entity) {
             fileDialogInfo.directory_path = asset->GetRootPath();
         }
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
-            mc.id = asset->LoadAsset<Model>(fileDialogInfo.result_path);
+            try {
+                mc.model_id =
+                    asset->LoadAsset<Model>(fileDialogInfo.result_path);
+                mc.model_path = asset->GetAssetPath(mc.model_id);
+            } catch (const Exception &e) {
+                SD_CORE_ERROR("Error loading model: {}", e.what());
+            }
         }
 
         ImGui::ColorEdit3("Color", &mc.color[0]);
-        auto model = asset->Get<Model>(mc.id);
+        auto model = asset->Get<Model>(mc.model_id);
         if (model) {
             DrawMaterialsList(model->GetMaterials(),
                               &m_selected_material_id_map[entity]);
@@ -382,9 +387,9 @@ void ScenePanel::DrawComponents(Entity &entity) {
     DrawComponent<TextComponent>("Text", entity, [&](TextComponent &textComp) {
         static bool fileDialogOpen = false;
         static ImFileDialogInfo fileDialogInfo;
-        std::string path = asset->GetAssetPath(textComp.id);
         ImGui::Text("Font File:");
-        ImGui::InputText("##Path", path.data(), path.size(),
+        ImGui::InputText("##Path", textComp.font_path.data(),
+                         textComp.font_path.size(),
                          ImGuiInputTextFlags_ReadOnly);
         ImGui::SameLine();
         if (ImGui::Button("Open")) {
@@ -397,10 +402,11 @@ void ScenePanel::DrawComponents(Entity &entity) {
         }
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
             try {
-                ResourceId id =
+                textComp.font_id =
                     asset->LoadAsset<Font>(fileDialogInfo.result_path);
-                textComp.id = id;
+                textComp.font_path = asset->GetAssetPath(textComp.font_id);
             } catch (const Exception &e) {
+                SD_CORE_ERROR("Error loading font: {}", e.what());
             }
         }
         ImGui::Text("Text Content:");
@@ -450,7 +456,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
     DrawComponent<SpriteComponent>(
         "Sprite", entity, [&](SpriteComponent &sprite_comp) {
             auto &frame = sprite_comp.frame;
-            auto sprite = asset->Get<Sprite>(frame.id);
+            auto sprite = asset->Get<Sprite>(frame.sprite_id);
             if (sprite) {
                 ImGui::DrawTexture(*sprite->GetTexture(),
                                    ImVec2(frame.uvs[0].x, frame.uvs[0].y),
@@ -475,7 +481,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
             }
             if (frame_index < static_cast<int>(anim.GetFrameSize())) {
                 const auto &frame = anim.GetFrame(frame_index);
-                const auto sprite = asset->Get<Sprite>(frame.id);
+                const auto sprite = asset->Get<Sprite>(frame.sprite_id);
                 if (sprite) {
                     ImGui::DrawTexture(*sprite->GetTexture(),
                                        ImVec2(frame.uvs[0].x, frame.uvs[0].y),

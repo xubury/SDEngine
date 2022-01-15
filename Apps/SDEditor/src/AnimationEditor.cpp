@@ -18,8 +18,7 @@ void AnimationEditor::OnPop() { dispatcher->RemoveHandler(m_entity_handler); }
 void AnimationEditor::OnImGui() {
     ImGui::Begin("Anmiation Editor");
     {
-        std::string path = m_dialog_info.result_path.string();
-        ImGui::InputText("##Path", path.data(), path.size(),
+        ImGui::InputText("##Path", m_sprite_path.data(), m_sprite_path.size(),
                          ImGuiInputTextFlags_ReadOnly);
         ImGui::SameLine();
         if (ImGui::Button("Open")) {
@@ -32,6 +31,7 @@ void AnimationEditor::OnImGui() {
         }
         if (ImGui::FileDialog(&m_is_dialog_open, &m_dialog_info)) {
             m_sprite_id = asset->LoadAsset<Sprite>(m_dialog_info.result_path);
+            m_sprite_path = asset->GetAssetPath(m_sprite_id);
         }
         auto sprite = asset->Get<Sprite>(m_sprite_id);
         if (sprite) {
@@ -65,7 +65,8 @@ void AnimationEditor::OnImGui() {
                 }
                 if (ImGui::Button("Add Frame")) {
                     anim_comp.animations[m_anim_index].PushBack(
-                        SpriteFrame{m_sprite_id, m_uvs, m_count * m_tile_size});
+                        SpriteFrame{m_sprite_id, m_sprite_path, m_uvs,
+                                    m_count * m_tile_size});
                 }
             }
         }

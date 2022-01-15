@@ -63,7 +63,8 @@ void TileMapSystem::OnImGui() {
                         auto &frame = comp.frame;
                         child.GetComponent<TransformComponent>()
                             .SetWorldPosition(world);
-                        frame.id = m_sprite_id;
+                        frame.sprite_id = m_sprite_id;
+                        frame.sprite_path = m_sprite_path;
                         frame.uvs = m_uvs;
                         frame.size = m_brush.tile_size * m_brush.count;
                         child.GetComponent<PriorityComponent>().priority =
@@ -90,8 +91,7 @@ void TileMapSystem::OnImGui() {
         ImGui::RadioButton("Clear Sprite",
                            reinterpret_cast<int *>(&m_operation),
                            Operation::REMOVE_ENTITY);
-        std::string path = m_fileDialogInfo.result_path.string();
-        ImGui::InputText("##Path", path.data(), path.size(),
+        ImGui::InputText("##Path", m_sprite_path.data(), m_sprite_path.size(),
                          ImGuiInputTextFlags_ReadOnly);
         ImGui::SameLine();
         if (ImGui::Button("Open")) {
@@ -103,8 +103,13 @@ void TileMapSystem::OnImGui() {
             m_fileDialogInfo.regex_match = IMG_FILTER;
         }
         if (ImGui::FileDialog(&m_file_dialog_open, &m_fileDialogInfo)) {
-            m_sprite_id =
-                asset->LoadAsset<Sprite>(m_fileDialogInfo.result_path);
+            try {
+                m_sprite_id =
+                    asset->LoadAsset<Sprite>(m_fileDialogInfo.result_path);
+                m_sprite_path = asset->GetAssetPath(m_sprite_id);
+            } catch (const Exception &e) {
+                SD_CORE_ERROR("Error loading sprite: {}", e.what());
+            }
         }
 
         ImGui::TextUnformatted("Brush Prioirty");

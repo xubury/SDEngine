@@ -35,6 +35,7 @@ class SD_TILE_MAP_API TileMapSystem : public System {
 
     // Selected sprite and its uvs
     ResourceId m_sprite_id;
+    std::string m_sprite_path;
     std::array<glm::vec2, 2> m_uvs{glm::vec2{0, 0}, glm::vec2{0, 0}};
     int m_priority;
 

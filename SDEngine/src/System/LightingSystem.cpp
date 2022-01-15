@@ -230,7 +230,7 @@ void LightingSystem::RenderShadowMap() {
 
         modelView.each([this](const TransformComponent &transformComp,
                               const ModelComponent &modelComp) {
-            auto model = asset->Get<Model>(modelComp.id);
+            auto model = asset->Get<Model>(modelComp.model_id);
             m_shadow_shader->SetMat4(
                 "u_model", transformComp.GetWorldTransform().GetMatrix());
             if (model) {
@@ -366,7 +366,7 @@ void LightingSystem::RenderGBuffer() {
             "u_model", transformComp.GetWorldTransform().GetMatrix());
         m_gbuffer_shader->SetUint("u_entity_id", static_cast<uint32_t>(entity));
         m_gbuffer_shader->SetVec3("u_color", modelComp.color);
-        auto model = asset->Get<Model>(modelComp.id);
+        auto model = asset->Get<Model>(modelComp.model_id);
         if (model) {
             for (const auto &mesh : model->GetMeshes()) {
                 auto &material = model->GetMaterials()[mesh.GetMaterialIndex()];

@@ -42,7 +42,7 @@ void SpriteRenderSystem::OnRender() {
                                     const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
         auto &frame = sprite_comp.frame;
-        auto sprite = asset->Get<Sprite>(frame.id);
+        auto sprite = asset->Get<Sprite>(frame.sprite_id);
         if (sprite) {
             datas.push_back({sprite->GetTexture(), frame.uvs,
                              transform_comp.GetWorldPosition(),
@@ -61,7 +61,7 @@ void SpriteRenderSystem::OnRender() {
         if (anim) {
             if (anim->GetFrameSize()) {
                 auto &frame = anim->GetFrame();
-                auto sprite = asset->Get<Sprite>(frame.id);
+                auto sprite = asset->Get<Sprite>(frame.sprite_id);
                 if (sprite) {
                     datas.push_back({sprite->GetTexture(), frame.uvs,
                                      transform_comp.GetWorldPosition(),
@@ -96,7 +96,7 @@ void SpriteRenderSystem::OnRender() {
                          const TransformComponent &transformComp,
                          const TextComponent &textComp) {
         renderer->SetTextOrigin(0, 0);
-        auto font = asset->Get<Font>(textComp.id);
+        auto font = asset->Get<Font>(textComp.font_id);
         if (font) {
             renderer->DrawText(*font, textComp.text,
                                transformComp.GetWorldTransform().GetMatrix(),

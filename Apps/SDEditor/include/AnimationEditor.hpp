@@ -23,6 +23,7 @@ class AnimationEditor : public System {
     bool m_is_dialog_open;
 
     ResourceId m_sprite_id;
+    std::string m_sprite_path;
     std::array<glm::vec2, 2> m_uvs;
     glm::ivec2 m_count;
     glm::ivec2 m_tile_size;
