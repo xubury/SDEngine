@@ -29,7 +29,7 @@ class SD_UTILITY_API ThreadPool {
 
 template <class F, class... ARGS>
 decltype(auto) ThreadPool::Queue(F&& f, ARGS&&... args) {
-    using return_type = decltype(f(args...));
+    using return_type = typename std::result_of<F(ARGS...)>::type;
 
     std::packaged_task<return_type()> task(
         std::bind(std::forward<F>(f), std::forward<ARGS>(args)...));
