@@ -58,11 +58,11 @@ endif()
 target_compile_options(sd-utility PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(sd-utility 
+    target_compile_definitions(sd-utility
         INTERFACE
         SD_UTILITY_IMPORT
 
-        PRIVATE 
+        PRIVATE
         SD_UTILITY_EXPORT)
 endif()
 
@@ -74,9 +74,10 @@ target_include_directories(sd-utility
 
 target_link_libraries(sd-utility
     PUBLIC
-    spdlog::spdlog 
-    glm 
-    cereal)
+    spdlog::spdlog
+    glm)
+
+add_dependencies(sd-utility cereal::cereal)
 
 install(TARGETS sd-utility LIBRARY DESTINATION lib)
 

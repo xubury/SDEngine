@@ -22,7 +22,6 @@ namespace SD {
 const std::string SETTING_FILENAME = "setting.ini";
 
 Application::Application(const std::string &title, GraphicsAPI api) {
-
     std::string debug_path = (GetAppDirectory() / "Debug.txt").string();
     Log::Init(debug_path);
     SD_CORE_INFO("Debug info is output to: {}", debug_path);
