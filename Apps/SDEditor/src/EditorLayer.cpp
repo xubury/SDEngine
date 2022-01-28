@@ -3,6 +3,7 @@
 #include "Core/Application.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGuizmo.h"
+#include "System/ScriptSystem.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -67,6 +68,7 @@ void EditorLayer::PushSystems() {
             CreateSystem<PostProcessSystem>(m_width, m_height);
         m_profile_system = CreateSystem<ProfileSystem>(m_width, m_height);
 
+        PushSystem(CreateRef<ScriptSystem>());
         PushSystem(m_camera_system);
         PushSystem(m_skybox_system);
         PushSystem(m_lighting_system);  // lighting is put behind skybox to do
@@ -89,6 +91,7 @@ void EditorLayer::PushSystems() {
         m_profile_system = CreateSystem<ProfileSystem>(m_width, m_height);
         m_animation_editor = CreateSystem<AnimationEditor>();
 
+        PushSystem(CreateRef<ScriptSystem>());
         PushSystem(m_camera_system);
         PushSystem(m_skybox_system);
         PushSystem(m_sprite_system);  // sprite render need to put behind skybox

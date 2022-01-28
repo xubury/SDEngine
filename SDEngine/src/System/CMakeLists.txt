@@ -9,6 +9,7 @@ set(System_Include
     ${Include_Root}/PostProcessSystem.hpp
     ${Include_Root}/ProfileSystem.hpp
     ${Include_Root}/SkyboxSystem.hpp
+    ${Include_Root}/ScriptSystem.hpp
     ${Include_Root}/SpriteRenderSystem.hpp)
 
 set(System_Src
@@ -18,6 +19,7 @@ set(System_Src
     ${Src_Root}/PostProcessSystem.cpp
     ${Src_Root}/ProfileSystem.cpp
     ${Src_Root}/SkyboxSystem.cpp
+    ${Src_Root}/ScriptSystem.cpp
     ${Src_Root}/SpriteRenderSystem.cpp)
 
 add_library(sd-system ${System_Src})
