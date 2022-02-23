@@ -2,15 +2,15 @@
 #define SD_TILE_MAP_SYSTEM_HPP
 
 #include "Core/System.hpp"
-#include "TileMap/Export.hpp"
-#include "TileMap/TileBrush.hpp"
 #include "Renderer/Sprite.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGui/FileDialog.hpp"
 
+#include "TileBrush.hpp"
+
 namespace SD {
 
-class SD_TILE_MAP_API TileMapSystem : public System {
+class TileMapSystem : public System {
     enum Operation { NONE, ADD_ENTITY, REMOVE_ENTITY };
 
    public:

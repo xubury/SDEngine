@@ -1,4 +1,4 @@
-#include "TileMap/TileBrush.hpp"
+#include "TileBrush.hpp"
 
 namespace SD {
 

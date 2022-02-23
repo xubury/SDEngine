@@ -7,6 +7,7 @@
 #include "ScenePanel.hpp"
 #include "EditorCameraSystem.hpp"
 #include "AnimationEditor.hpp"
+#include "TileMapSystem.hpp"
 
 #include "System/CameraSystem.hpp"
 #include "System/LightingSystem.hpp"
@@ -14,7 +15,6 @@
 #include "System/ProfileSystem.hpp"
 #include "System/PostProcessSystem.hpp"
 #include "System/SpriteRenderSystem.hpp"
-#include "TileMap/TileMapSystem.hpp"
 
 namespace SD {
 
