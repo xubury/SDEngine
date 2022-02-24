@@ -341,7 +341,10 @@ void EditorLayer::SetViewportSize(int left, int top, int width, int height) {
     renderer->GetDefaultTarget().SetSize(left, top, width, height);
 }
 
-void EditorLayer::NewScene() { scene->clear(); }
+void EditorLayer::NewScene() {
+    scene->clear();
+    dispatcher->PublishEvent(EntitySelectEvent{entt::null, scene.get()});
+}
 
 void EditorLayer::OpenLoadSceneDialog() {
     m_load_scene_open = true;
@@ -363,7 +366,7 @@ void EditorLayer::OpenSaveSceneDialog() {
 
 void EditorLayer::ProcessDialog() {
     if (ImGui::FileDialog(&m_load_scene_open, &m_file_dialog_info)) {
-        scene->clear();
+        NewScene();
         std::ifstream is(m_file_dialog_info.result_path.string(),
                          std::ios::binary);
         cereal::PortableBinaryInputArchive archive(is);
