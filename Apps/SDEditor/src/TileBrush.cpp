@@ -8,11 +8,11 @@ glm::ivec2 TileBrush::WorldToTile(const glm::vec3 &world,
     if (transform) {
         const glm::vec3 local = transform->WorldToLocal(world);
 
-        tile.x = std::ceil(local.x / tile_size.x - 0.5f);
-        tile.y = std::ceil(local.y / tile_size.y - 0.5f);
+        tile.x = std::round(local.x / tile_size.x);
+        tile.y = std::round(local.y / tile_size.y);
     } else {
-        tile.x = std::ceil(world.x / tile_size.x - 0.5f);
-        tile.y = std::ceil(world.y / tile_size.y - 0.5f);
+        tile.x = std::round(world.x / tile_size.x);
+        tile.y = std::round(world.y / tile_size.y);
     }
     return tile;
 }

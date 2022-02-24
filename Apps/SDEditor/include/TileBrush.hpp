@@ -28,16 +28,19 @@ class TileBrush {
     bool GetSelectPos(glm::vec3 &pos) {
         bool ret = false;
 
-        const glm::vec2 BRUSH_SIZE = tile_size * count;
-        glm::vec3 offset(BRUSH_SIZE.x / 2 - tile_size.x / 2.f,
-                         -BRUSH_SIZE.y / 2 + tile_size.y / 2.f, 0);
         glm::vec3 world;
         Math::Plane plane(glm::vec3(0, 0, 1), glm::vec3(0));
         if (Math::IntersectRayPlane(m_ray, plane, world)) {
             pos = glm::vec3(WorldToTile(world), 0);
             pos.x -= pivot.x;
             pos.y += pivot.y;
-            pos = TileToWorld(pos) + offset;
+            pos = TileToWorld(pos);
+            // Because quad's local coordinate is origin at center during
+            // rendering , we need to at an offset to the pivot which
+            // essentially moves the origin to the pivot.
+            const glm::vec2 OFFSET = tile_size * (count - 1) / 2;
+            pos.x += OFFSET.x;
+            pos.y -= OFFSET.y;
             ret = true;
         }
         return ret;

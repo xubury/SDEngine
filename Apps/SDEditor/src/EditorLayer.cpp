@@ -438,8 +438,10 @@ void EditorLayer::DrawViewport() {
         }
         viewport.SetFocus(ImGui::IsWindowFocused());
         viewport.SetHover(ImGui::IsWindowHovered() && !ImGuizmo::IsOver());
-        ImGui::DrawTexture(*m_screen_buffer->GetTexture(), ImVec2(0, 1),
-                           ImVec2(1, 0));
+        const auto &tl_uv = device->GetUVIndex(0);
+        const auto &br_uv = device->GetUVIndex(2);
+        ImGui::DrawTexture(*m_screen_buffer->GetTexture(),
+                           ImVec2(tl_uv.x, tl_uv.y), ImVec2(br_uv.x, br_uv.y));
         ImGuizmo::SetRect(viewport.GetLeft(), viewport.GetTop(),
                           viewport.GetWidth(), viewport.GetHeight());
         ImGuizmo::SetDrawlist();
@@ -497,18 +499,22 @@ void EditorLayer::DebugLighting() {
                 m_debug_gbuffer->GetHeight(), BufferBitMask::COLOR_BUFFER_BIT,
                 BlitFilter::NEAREST);
         }
+        const auto &tl_uv = device->GetUVIndex(0);
+        const auto &br_uv = device->GetUVIndex(2);
         ImGui::Begin("GBuffer");
         {
             for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
                 ImGui::DrawTexture(*m_debug_gbuffer->GetTexture(i),
-                                   ImVec2(0, 1), ImVec2(1, 0));
+                                   ImVec2(tl_uv.x, tl_uv.y),
+                                   ImVec2(br_uv.x, br_uv.y));
             }
         }
         ImGui::End();
         ImGui::Begin("SSAO");
         {
-            ImGui::DrawTexture(*m_lighting_system->GetSSAO(), ImVec2(0, 1),
-                               ImVec2(1, 0));
+            ImGui::DrawTexture(*m_lighting_system->GetSSAO(),
+                               ImVec2(tl_uv.x, tl_uv.y),
+                               ImVec2(br_uv.x, br_uv.y));
         }
         ImGui::End();
         ImGui::PopStyleVar();
