@@ -24,6 +24,8 @@ EditorLayer::EditorLayer(int width, int height, int msaa)
 EditorLayer::~EditorLayer() {}
 
 void EditorLayer::OnInit() {
+    Layer::OnInit();
+
     InitBuffers();
     // editor related system
     m_scene_panel = CreateSystem<ScenePanel>();
@@ -342,7 +344,7 @@ void EditorLayer::SetViewportSize(int left, int top, int width, int height) {
 }
 
 void EditorLayer::NewScene() {
-    scene->clear();
+    scene = CreateRef<Scene>();
     dispatcher->PublishEvent(EntitySelectEvent{entt::null, scene.get()});
 }
 
@@ -366,18 +368,13 @@ void EditorLayer::OpenSaveSceneDialog() {
 
 void EditorLayer::ProcessDialog() {
     if (ImGui::FileDialog(&m_load_scene_open, &m_file_dialog_info)) {
-        NewScene();
-        std::ifstream is(m_file_dialog_info.result_path.string(),
-                         std::ios::binary);
-        cereal::PortableBinaryInputArchive archive(is);
-        scene->Deserialize(archive);
+        auto new_scene = asset->LoadAndGet<Scene>(m_file_dialog_info.result_path.string());
+        dispatcher->PublishEvent(NewSceneEvent{new_scene});
+        dispatcher->PublishEvent(EntitySelectEvent{entt::null, scene.get()});
         m_scene_panel->Reset();
     }
     if (ImGui::FileDialog(&m_save_scene_open, &m_file_dialog_info)) {
-        std::ofstream os(m_file_dialog_info.result_path.string(),
-                         std::ios::binary);
-        cereal::PortableBinaryOutputArchive archive(os);
-        scene->Serialize(archive);
+        asset->SaveAsset(scene, m_file_dialog_info.result_path.string());
     }
 }
 

@@ -16,12 +16,6 @@ class TileMapSystem : public System {
    public:
     TileMapSystem();
 
-    void OnTick(float dt) override;
-
-    void OnInit() override;
-    void OnPush() override;
-    void OnPop() override;
-
     void OnImGui() override;
     void OnRender() override;
 

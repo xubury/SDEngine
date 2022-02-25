@@ -4,11 +4,19 @@
 #include "Utility/Serialize.hpp"
 #include "Asset/Asset.hpp"
 
-#include <stack>
-
 namespace SD {
 
-Scene::Scene() : m_selected_entity(entt::null) {}
+Scene::Scene() : m_selected_entity(entt::null) {
+    RegisterComponent<IdComponent>();
+    RegisterComponent<TagComponent>();
+    RegisterComponent<TransformComponent>();
+    RegisterComponent<ModelComponent>();
+    RegisterComponent<LightComponent>();
+    RegisterComponent<TextComponent>();
+    RegisterComponent<CameraComponent>();
+    RegisterComponent<SpriteComponent>();
+    RegisterComponent<SpriteAnimationComponent>();
+}
 
 Entity Scene::CreateEntity(const std::string &name) {
     Entity entity(create(), this);

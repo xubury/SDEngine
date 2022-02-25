@@ -62,6 +62,7 @@ LightingSystem::LightingSystem(int width, int height)
 }
 
 void LightingSystem::OnInit() {
+    System::OnInit();
     InitShaders();
     InitSSAOKernel();
     InitSSAO();

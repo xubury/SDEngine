@@ -16,7 +16,14 @@ class SD_CORE_API System {
 
     virtual ~System() { SD_CORE_TRACE("Deleting system: {}", m_name); };
 
-    virtual void OnInit(){};
+    virtual void OnInit() {
+        m_scene_handler = dispatcher->Register<NewSceneEvent>(
+            [&](const NewSceneEvent &event) {
+                auto cam = scene->GetCamera();
+                scene = event.scene;
+                scene->SetCamera(cam);
+            });
+    };
 
     virtual void OnPush(){};
 
@@ -38,6 +45,8 @@ class SD_CORE_API System {
     friend class Layer;
 
     std::string m_name;
+
+    HandlerRegistration m_scene_handler;
 
     SET_APP_VARS
 };

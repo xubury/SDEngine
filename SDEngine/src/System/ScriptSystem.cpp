@@ -4,6 +4,6 @@ namespace SD {
 
 ScriptSystem::ScriptSystem() : System("ScriptSystem") {}
 
-void ScriptSystem::OnInit() {}
+void ScriptSystem::OnInit() { System::OnInit(); }
 
 }  // namespace SD

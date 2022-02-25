@@ -13,6 +13,7 @@ ProfileSystem::ProfileSystem(int width, int height)
       m_is_show_message(true) {}
 
 void ProfileSystem::OnInit() {
+    System::OnInit();
     m_font = asset->LoadAndGet<Font>("fonts/default.font");
 }
 

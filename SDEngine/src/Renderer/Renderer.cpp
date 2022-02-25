@@ -295,8 +295,8 @@ void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color,
         m_data.quad_buffer_ptr->vertices[i].position =
             transform * QUAD_VERTEX_POS[i];
         m_data.quad_buffer_ptr->vertices[i].color = color;
-        m_data.quad_buffer_ptr->vertices[i].uv.x = QUAD_UV[uv_index.x].x;
-        m_data.quad_buffer_ptr->vertices[i].uv.y = QUAD_UV[uv_index.y].y;
+        m_data.quad_buffer_ptr->vertices[i].uv.x = uv_index.x;
+        m_data.quad_buffer_ptr->vertices[i].uv.y = uv_index.y;
         m_data.quad_buffer_ptr->vertices[i].tex_id = 0;
         m_data.quad_buffer_ptr->vertices[i].entity_id = entity_id;
     }

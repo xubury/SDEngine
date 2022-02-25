@@ -31,6 +31,7 @@ PostProcessSystem::PostProcessSystem(int width, int height)
 }
 
 void PostProcessSystem::OnInit() {
+    System::OnInit();
     m_blur_shader = asset->LoadAndGet<Shader>("shaders/blur.glsl");
     m_post_shader = asset->LoadAndGet<Shader>("shaders/post_process.glsl");
     InitBuffers();

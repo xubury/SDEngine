@@ -24,7 +24,14 @@ class SD_CORE_API Layer {
     Layer(const Layer &) = delete;
 
     Layer &operator=(const Layer &) = delete;
-    virtual void OnInit() {}
+    virtual void OnInit() {
+        m_scene_handler = dispatcher->Register<NewSceneEvent>(
+            [&](const NewSceneEvent &event) {
+                auto cam = scene->GetCamera();
+                scene = event.scene;
+                scene->SetCamera(cam);
+            });
+    }
 
     virtual void OnPush() {}
 
@@ -75,6 +82,8 @@ class SD_CORE_API Layer {
     std::string m_name;
     bool m_is_block_event;
     EventStack<Ref<System>> m_systems;
+
+    HandlerRegistration m_scene_handler;
 };
 
 }  // namespace SD

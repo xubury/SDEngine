@@ -34,14 +34,6 @@ TileMapSystem::TileMapSystem()
     free(data);
 }
 
-void TileMapSystem::OnTick(float) {}
-
-void TileMapSystem::OnInit() {}
-
-void TileMapSystem::OnPush() {}
-
-void TileMapSystem::OnPop() {}
-
 void TileMapSystem::OnImGui() {
     const auto &viewport = renderer->GetDefaultTarget().GetViewport();
     if (viewport.IsHover()) {

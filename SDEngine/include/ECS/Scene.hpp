@@ -85,6 +85,10 @@ struct EntitySelectEvent {
     Scene *scene;
 };
 
+struct NewSceneEvent {
+    Ref<Scene> scene;
+};
+
 }  // namespace SD
 
 #endif /* SD_SCENE_HPP */

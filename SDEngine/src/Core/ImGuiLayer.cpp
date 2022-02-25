@@ -40,6 +40,8 @@ void ImGuiLayer::End() {
 }
 
 void ImGuiLayer::OnInit() {
+    Layer::OnInit();
+
     IMGUI_CHECKVERSION();
     m_context = ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();

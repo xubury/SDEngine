@@ -26,6 +26,11 @@ class SD_ASSET_API AssetLoader {
 
     virtual Ref<void> LoadAsset(const std::string &path) = 0;
 
+    virtual bool SaveAsset(const Ref<void> &, const std::string &) {
+        SD_CORE_ERROR("Save asset no implment yet");
+        return false;
+    };
+
     AssetManager &Manager() { return m_manager; }
 
    private:
@@ -86,6 +91,12 @@ class SD_ASSET_API AssetManager {
             }
             return id;
         }
+    }
+    template <typename ASSET>
+    void SaveAsset(const Ref<ASSET> &asset, const std::filesystem::path &path) {
+        std::string full_path = GetAbsolutePath(path).string();
+        size_t type = GetAssetType<ASSET>();
+        m_loaders.at(type)->SaveAsset(asset, full_path);
     }
 
     template <typename ASSET>

@@ -13,7 +13,8 @@ set(Loader_Include
     ${Include_Root}/FontLoader.hpp
     ${Include_Root}/ModelLoader.hpp
     ${Include_Root}/ShaderLoader.hpp
-    ${Include_Root}/SkyboxLoader.hpp)
+    ${Include_Root}/SkyboxLoader.hpp
+    ${Include_Root}/SceneLoader.hpp)
 
 set(Loader_Src
     ${Src_Root}/SpriteLoader.cpp
@@ -21,7 +22,8 @@ set(Loader_Src
     ${Src_Root}/FontLoader.cpp
     ${Src_Root}/ModelLoader.cpp
     ${Src_Root}/ShaderLoader.cpp
-    ${Src_Root}/SkyboxLoader.cpp)
+    ${Src_Root}/SkyboxLoader.cpp
+    ${Src_Root}/SceneLoader.cpp)
 
 add_library(sd-loader ${Loader_Src})
 
@@ -45,6 +47,7 @@ target_link_libraries(sd-loader
     sd-utility 
     sd-graphics
     sd-renderer
+    sd-ecs
 
     PRIVATE
     SDL2::SDL2
