@@ -52,7 +52,16 @@ void Scene::Deserialize(cereal::PortableBinaryInputArchive &archive) {
     }
 }
 
-void Scene::SetCamera(Camera *camera) { m_camera = camera; }
+void Scene::OnEditor(float, Camera *camera) { m_camera = camera; }
+
+void Scene::OnRuntime(float) {
+    auto view = this->view<CameraComponent>();
+    view.each([&](CameraComponent &cam_comp) {
+        if (cam_comp.primary) {
+            m_camera = &cam_comp.camera;
+        }
+    });
+}
 
 Camera *Scene::GetCamera() { return m_camera; }
 

@@ -128,17 +128,4 @@ void EditorCameraSystem::Rotate(float yaw, float pitch) {
     m_camera.SetWorldRotation(rotation);
 }
 
-void EditorCameraSystem::ActiveEditorCam(bool active) {
-    if (active) {
-        scene->SetCamera(&m_camera);
-    } else {
-        auto view = scene->view<CameraComponent>();
-        auto iter = view.begin();
-        if (iter != view.end()) {
-            auto &camComp = view.get<CameraComponent>(*iter);
-            scene->SetCamera(&camComp.camera);
-        }
-    }
-}
-
 }  // namespace SD

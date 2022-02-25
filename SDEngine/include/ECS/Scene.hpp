@@ -36,8 +36,9 @@ class SD_ECS_API Scene : public entt::registry {
 
     void Deserialize(cereal::PortableBinaryInputArchive &archive);
 
-    void SetCamera(Camera *camera);
+    void OnEditor(float dt, Camera *camera);
 
+    void OnRuntime(float dt);
     Camera *GetCamera();
 
     Entity CloneEntity(EntityId from);

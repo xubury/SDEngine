@@ -14,7 +14,7 @@ EditorLayer::EditorLayer(int width, int height, int msaa)
       m_width(width),
       m_height(height),
       m_msaa(msaa),
-      m_hide(false),
+      m_is_runtime(false),
       m_quitting(false),
       m_load_scene_open(false),
       m_save_scene_open(false) {
@@ -133,7 +133,7 @@ void EditorLayer::OnRender() {
     for (auto &system : GetSystems()) {
         system->OnRender();
     }
-    if (m_hide) {
+    if (m_is_runtime) {
         // render to default buffer
         device->SetFramebuffer(nullptr);
         device->Clear();
@@ -160,6 +160,11 @@ void EditorLayer::OnRender() {
 }
 
 void EditorLayer::OnTick(float dt) {
+    if (m_is_runtime) {
+        scene->OnRuntime(dt);
+    } else {
+        scene->OnEditor(dt, m_editor_camera_system->GetCamera());
+    }
     for (auto &system : GetSystems()) {
         system->OnTick(dt);
     }
@@ -183,7 +188,7 @@ void EditorLayer::OnImGui() {
         ImGui::EndPopup();
     }
 
-    if (!m_hide) {
+    if (!m_is_runtime) {
         static bool dockspaceOpen = true;
         static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
         static bool fullScreen = true;
@@ -263,16 +268,14 @@ void EditorLayer::OnImGui() {
 }
 
 void EditorLayer::Hide() {
-    m_hide = true;
+    m_is_runtime = true;
     SetIsBlockEvent(false);
-    m_editor_camera_system->ActiveEditorCam(false);
     SetViewportSize(0, 0, device->GetWidth(), device->GetHeight());
 }
 
 void EditorLayer::Show() {
-    m_hide = false;
+    m_is_runtime = false;
     SetIsBlockEvent(true);
-    m_editor_camera_system->ActiveEditorCam(true);
 }
 
 void EditorLayer::Quit() { m_quitting = true; }
@@ -281,7 +284,7 @@ void EditorLayer::OnEventProcess(const Event &event) {
     if (event.type == EventType::MOUSE_MOTION) {
         dispatcher->PublishEvent(event.mouse_motion);
     } else if (event.type == EventType::WINDOW_RESIZED) {
-        if (m_hide) {
+        if (m_is_runtime) {
             SetViewportSize(0, 0, event.window_size.width,
                             event.window_size.height);
         }
@@ -295,7 +298,7 @@ void EditorLayer::OnEventProcess(const Event &event) {
                 break;
             case Keycode::Z: {
                 if (IsKeyModActive(event.key.mod, Keymod::LCTRL)) {
-                    if (m_hide) {
+                    if (m_is_runtime) {
                         Show();
                     } else {
                         Hide();
@@ -368,7 +371,8 @@ void EditorLayer::OpenSaveSceneDialog() {
 
 void EditorLayer::ProcessDialog() {
     if (ImGui::FileDialog(&m_load_scene_open, &m_file_dialog_info)) {
-        auto new_scene = asset->LoadAndGet<Scene>(m_file_dialog_info.result_path.string());
+        auto new_scene =
+            asset->LoadAndGet<Scene>(m_file_dialog_info.result_path.string());
         dispatcher->PublishEvent(NewSceneEvent{new_scene});
         dispatcher->PublishEvent(EntitySelectEvent{entt::null, scene.get()});
         m_scene_panel->Reset();

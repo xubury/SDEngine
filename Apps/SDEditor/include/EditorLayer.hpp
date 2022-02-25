@@ -87,7 +87,7 @@ class EditorLayer : public Layer {
     Ref<Framebuffer> m_debug_gbuffer;
     Ref<Framebuffer> m_screen_buffer;
 
-    bool m_hide;
+    bool m_is_runtime;
     bool m_quitting;
 
     bool m_load_scene_open;

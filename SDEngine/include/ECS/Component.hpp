@@ -106,12 +106,13 @@ struct SD_ECS_API TextComponent {
 
 struct SD_ECS_API CameraComponent {
     Camera camera;
+    bool primary;
     CameraComponent() = default;
     CameraComponent(CameraType type, float fov, float width, float height,
                     float near_z, float far_z)
         : camera(type, fov, width, height, near_z, far_z) {}
 
-    SERIALIZE(camera)
+    SERIALIZE(camera, primary)
 };
 
 struct SD_ECS_API SpriteFrame {

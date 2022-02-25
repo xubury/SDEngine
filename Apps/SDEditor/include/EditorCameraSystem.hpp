@@ -25,9 +25,9 @@ class EditorCameraSystem : public System {
 
     void Rotate(float yaw, float pitch);
 
-    void ActiveEditorCam(bool active);
-
     void AllowRotate(bool enable) { m_allow_rotate = enable; }
+
+    Camera *GetCamera() { return &m_camera; }
 
    private:
     HandlerRegistration m_key_handler;
