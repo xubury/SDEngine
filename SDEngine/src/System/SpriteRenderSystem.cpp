@@ -43,7 +43,7 @@ void SpriteRenderSystem::OnRender() {
         auto &frame = sprite_comp.frame;
         auto sprite = asset->Get<Sprite>(frame.sprite_id);
         if (sprite) {
-            datas.push_back({sprite->GetTexture().get(), frame.uvs,
+            datas.push_back({sprite->GetTexture(), frame.uvs,
                              transform_comp.GetWorldPosition(),
                              transform_comp.GetWorldRotation(), frame.size, id,
                              priority_comp.priority});
@@ -62,7 +62,7 @@ void SpriteRenderSystem::OnRender() {
                 auto &frame = anim->GetFrame();
                 auto sprite = asset->Get<Sprite>(frame.sprite_id);
                 if (sprite) {
-                    datas.push_back({sprite->GetTexture().get(), frame.uvs,
+                    datas.push_back({sprite->GetTexture(), frame.uvs,
                                      transform_comp.GetWorldPosition(),
                                      transform_comp.GetWorldRotation(),
                                      frame.size, id, priority_comp.priority});

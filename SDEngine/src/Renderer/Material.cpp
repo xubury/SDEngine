@@ -18,7 +18,7 @@ const std::string GetMaterialName(MaterialType type) {
     return stringByMaterialType.at(type);
 }
 
-void Material::SetTexture(MaterialType type, const Ref<Texture> &texture) {
+void Material::SetTexture(MaterialType type, Texture *texture) {
     m_textures[type] = texture;
 }
 
@@ -37,7 +37,7 @@ void Material::RemoveTexture(MaterialType type) {
 }
 
 Texture *Material::GetTexture(MaterialType type) const {
-    return HasTexture(type) ? m_textures.at(type).get() : nullptr;
+    return HasTexture(type) ? m_textures.at(type) : nullptr;
 }
 
 }  // namespace SD

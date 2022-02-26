@@ -26,7 +26,7 @@ const std::string SD_RENDERER_API GetMaterialName(MaterialType type);
 
 class SD_RENDERER_API Material {
    public:
-    void SetTexture(MaterialType type, const Ref<Texture> &texture);
+    void SetTexture(MaterialType type, Texture *texture);
 
     bool HasTexture(MaterialType type) const;
 
@@ -34,16 +34,16 @@ class SD_RENDERER_API Material {
 
     Texture *GetTexture(MaterialType type) const;
 
-    std::unordered_map<MaterialType, Ref<Texture>> &GetTextures() {
+    std::unordered_map<MaterialType, Texture *> &GetTextures() {
         return m_textures;
     }
 
-    const std::unordered_map<MaterialType, Ref<Texture>> &GetTextures() const {
+    const std::unordered_map<MaterialType, Texture *> &GetTextures() const {
         return m_textures;
     };
 
    private:
-    std::unordered_map<MaterialType, Ref<Texture>> m_textures;
+    std::unordered_map<MaterialType, Texture *> m_textures;
 };
 
 }  // namespace SD

@@ -120,10 +120,10 @@ static inline MaterialType ConvertAssimpTextureType(aiTextureType textureType) {
     }
 }
 
-static void processAiMaterials(AssetManager *manager,
-                               const std::filesystem::path &directory,
-                               const aiMaterial *ai_material,
-                               Material &material) {
+static Material ProcessAiMaterials(AssetManager *manager,
+                                   const std::filesystem::path &directory,
+                                   const aiMaterial *ai_material) {
+    Material material;
     for (int type = aiTextureType_NONE + 1; type < aiTextureType_SHININESS;
          ++type) {
         aiTextureType ai_type = aiTextureType(type);
@@ -150,9 +150,10 @@ static void processAiMaterials(AssetManager *manager,
         texture->SetWrap(ConvertAssimpMapMode(map_mode));
         material.SetTexture(ConvertAssimpTextureType(ai_type), texture);
     }
+    return material;
 }
 
-static void processNode(const aiScene *scene, const aiNode *node,
+static void ProcessNode(const aiScene *scene, const aiNode *node,
                         Ref<Model> &model) {
     if (node == nullptr) return;
     for (uint32_t i = 0; i < node->mNumChildren; ++i) {
@@ -161,7 +162,7 @@ static void processNode(const aiScene *scene, const aiNode *node,
             uint32_t id = child->mMeshes[j];
             model->AddMesh(ProcessAiMesh(scene->mMeshes[id]));
         }
-        processNode(scene, child, model);
+        ProcessNode(scene, child, model);
     }
 }
 
@@ -177,13 +178,11 @@ Ref<void> ModelLoader::LoadAsset(const std::string &path) {
         return model;
     }
 
-    processNode(scene, scene->mRootNode, model);
+    ProcessNode(scene, scene->mRootNode, model);
     std::filesystem::path directory = std::filesystem::path(path).parent_path();
     for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
-        Material material;
-        processAiMaterials(&Manager(), directory, scene->mMaterials[i],
-                           material);
-        model->AddMaterial(material);
+        model->AddMaterial(
+            ProcessAiMaterials(&Manager(), directory, scene->mMaterials[i]));
     }
 
     return model;
