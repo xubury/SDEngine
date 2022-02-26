@@ -4,7 +4,6 @@
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
 
-#include "Loader/BitmapLoader.hpp"
 #include "Loader/ModelLoader.hpp"
 #include "Loader/FontLoader.hpp"
 #include "Loader/SkyboxLoader.hpp"
@@ -13,7 +12,6 @@
 #include "Loader/SceneLoader.hpp"
 
 #include "Renderer/Model.hpp"
-#include "Renderer/Bitmap.hpp"
 #include "Renderer/Font.hpp"
 #include "Renderer/Sprite.hpp"
 #include "Graphics/Shader.hpp"
@@ -54,7 +52,6 @@ Application::Application(const std::string &title, GraphicsAPI api) {
 
     device = Device::Create(m_window.get());
     asset = CreateRef<AssetManager>();
-    asset->SetLoader<Bitmap, BitmapLoader>();
     asset->SetLoader<Model, ModelLoader>();
     asset->SetLoader<Font, FontLoader>();
     asset->SetLoader<Skybox, SkyboxLoader>();

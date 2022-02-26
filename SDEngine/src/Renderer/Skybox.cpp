@@ -4,20 +4,23 @@ namespace SD {
 
 Skybox::Skybox() {}
 
-void Skybox::SetFace(CubeMapFace face, const Bitmap &bitmap) {
-    DataFormat format = bitmap.HasAlpha() ? DataFormat::RGBA : DataFormat::RGB;
-    if (m_texture == nullptr || m_width != bitmap.Width() ||
-        m_height != bitmap.Height() || format != m_format) {
-        m_width = bitmap.Width();
-        m_height = bitmap.Height();
+void Skybox::SetFace(CubeMapFace face, int width, int height, int channels,
+                     int bits_per_pixels, const void *data) {
+    DataFormat format = GetDataFormat(channels);
+    DataFormatType format_type = GetDataFormatType(bits_per_pixels, channels);
+    if (m_texture == nullptr || m_width != width || m_height != height ||
+        format != m_format || format_type != m_format_type) {
+        m_width = width;
+        m_height = height;
         m_format = format;
-        m_texture = Texture::Create(
-            m_width, m_height,
-            TextureSpec(1, TextureType::TEX_CUBE, m_format,
-                        DataFormatType::UBYTE, TextureWrap::EDGE));
+        m_format_type = format_type;
+        m_texture =
+            Texture::Create(m_width, m_height,
+                            TextureSpec(1, TextureType::TEX_CUBE, m_format,
+                                        m_format_type, TextureWrap::EDGE));
     }
     m_texture->SetPixels(0, 0, static_cast<int>(face), m_width, m_height, 1,
-                         bitmap.Data());
+                         data);
 }
 
 }  // namespace SD

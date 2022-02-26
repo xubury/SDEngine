@@ -1,5 +1,4 @@
 #include "Renderer/Font.hpp"
-#include "Renderer/Bitmap.hpp"
 
 namespace SD {
 

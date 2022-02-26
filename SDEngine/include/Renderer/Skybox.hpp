@@ -5,7 +5,6 @@
 #include "Renderer/Export.hpp"
 
 #include "Graphics/Texture.hpp"
-#include "Renderer/Bitmap.hpp"
 
 namespace SD {
 
@@ -13,7 +12,8 @@ class SD_RENDERER_API Skybox {
    public:
     Skybox();
 
-    void SetFace(CubeMapFace face, const Bitmap &bitmap);
+    void SetFace(CubeMapFace face, int width, int height, int channels,
+                 int bits_per_pixels, const void *data);
     Texture *GetTexture() { return m_texture.get(); }
 
     bool Valid() const;
@@ -21,9 +21,10 @@ class SD_RENDERER_API Skybox {
 
    private:
     Ref<Texture> m_texture;
-    uint32_t m_width;
-    uint32_t m_height;
+    int m_width;
+    int m_height;
     DataFormat m_format;
+    DataFormatType m_format_type;
 };
 
 }  // namespace SD

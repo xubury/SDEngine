@@ -1,6 +1,6 @@
 #include "Loader/ModelLoader.hpp"
 #include "Renderer/Model.hpp"
-#include "Renderer/Bitmap.hpp"
+#include "Renderer/Sprite.hpp"
 
 #include "Utility/ThreadPool.hpp"
 
@@ -43,7 +43,8 @@ static MeshTopology ConvertAssimpPrimitive(aiPrimitiveType type) {
         case aiPrimitiveType_POLYGON:
             return MeshTopology::QUADS;
         default:
-            SD_CORE_WARN("[ConvertAssimpPrimitive] Unhandled mesh topology!");
+            SD_CORE_WARN("[ConvertAssimpPrimitive] Unknown mesh topology: {}!",
+                         type);
             return MeshTopology::TRIANGLES;
     };
 }
@@ -119,21 +120,14 @@ static inline MaterialType ConvertAssimpTextureType(aiTextureType textureType) {
     }
 }
 
-struct MaterialSpec {
-    Ref<Bitmap> image;
-    MaterialType type;
-    TextureSpec texture_spec;
-    MaterialSpec(const Ref<Bitmap> &image, const MaterialType &type,
-                 const TextureSpec &texture_spec)
-        : image(image), type(type), texture_spec(texture_spec) {}
-};
-
-static std::vector<MaterialSpec> processAiMaterials(
-    AssetManager *manager, const std::filesystem::path &directory,
-    const aiMaterial *assimpMaterial) {
-    std::vector<MaterialSpec> specs;
-    for (int type = 1; type < aiTextureType_SHININESS; ++type) {
-        uint32_t count = assimpMaterial->GetTextureCount(aiTextureType(type));
+static void processAiMaterials(AssetManager *manager,
+                               const std::filesystem::path &directory,
+                               const aiMaterial *ai_material,
+                               Material &material) {
+    for (int type = aiTextureType_NONE + 1; type < aiTextureType_SHININESS;
+         ++type) {
+        aiTextureType ai_type = aiTextureType(type);
+        uint32_t count = ai_material->GetTextureCount(ai_type);
         if (count < 1) {
             continue;
         } else if (count > 1) {
@@ -144,22 +138,18 @@ static std::vector<MaterialSpec> processAiMaterials(
 
         aiString texturePath;
         aiTextureMapMode map_mode = aiTextureMapMode::aiTextureMapMode_Wrap;
-        if (assimpMaterial->GetTexture(aiTextureType(type), 0, &texturePath,
-                                       nullptr, nullptr, nullptr, nullptr,
-                                       &map_mode) != AI_SUCCESS) {
+        if (ai_material->GetTexture(ai_type, 0, &texturePath, nullptr, nullptr,
+                                    nullptr, nullptr,
+                                    &map_mode) != AI_SUCCESS) {
             SD_CORE_ERROR("[processAiMaterial] Assimp GetTexture error!");
             continue;
         }
-        auto image = manager->LoadAndGet<Bitmap>(directory / texturePath.C_Str());
-        specs.emplace_back(
-            image, ConvertAssimpTextureType(aiTextureType(type)),
-            TextureSpec(1, TextureType::TEX_2D,
-                        image->HasAlpha() ? DataFormat::RGBA : DataFormat::RGB,
-                        DataFormatType::UBYTE, ConvertAssimpMapMode(map_mode),
-                        TextureMagFilter::LINEAR,
-                        TextureMinFilter::LINEAR_LINEAR));
+        auto image =
+            manager->LoadAndGet<Sprite>(directory / texturePath.C_Str());
+        auto texture = image->GetTexture();
+        texture->SetWrap(ConvertAssimpMapMode(map_mode));
+        material.SetTexture(ConvertAssimpTextureType(ai_type), texture);
     }
-    return specs;
 }
 
 static void processNode(const aiScene *scene, const aiNode *node,
@@ -189,21 +179,10 @@ Ref<void> ModelLoader::LoadAsset(const std::string &path) {
 
     processNode(scene, scene->mRootNode, model);
     std::filesystem::path directory = std::filesystem::path(path).parent_path();
-    ThreadPool pool(std::thread::hardware_concurrency());
-    std::vector<std::future<std::vector<MaterialSpec>>> results;
     for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
-        results.emplace_back(pool.Queue(processAiMaterials, &Manager(),
-                                        directory, scene->mMaterials[i]));
-    }
-    for (auto &&result : results) {
         Material material;
-        for (auto &&spec : result.get()) {
-            auto texture = Texture::Create(
-                spec.image->Width(), spec.image->Height(), spec.texture_spec);
-            texture->SetPixels(0, 0, 0, spec.image->Width(),
-                               spec.image->Height(), 1, spec.image->Data());
-            material.SetTexture(spec.type, texture);
-        }
+        processAiMaterials(&Manager(), directory, scene->mMaterials[i],
+                           material);
         model->AddMaterial(material);
     }
 
