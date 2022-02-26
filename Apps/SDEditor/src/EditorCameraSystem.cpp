@@ -21,10 +21,7 @@ EditorCameraSystem::EditorCameraSystem(uint32_t width, uint32_t height)
     m_camera.SetWorldPosition(glm::vec3(0, 0, 1));
 }
 
-void EditorCameraSystem::OnInit() {
-    System::OnInit();
-    ActiveEditorCam(true);
-}
+void EditorCameraSystem::OnInit() { System::OnInit(); }
 
 void EditorCameraSystem::OnPush() {
     m_key_handler =

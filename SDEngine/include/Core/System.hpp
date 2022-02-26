@@ -18,11 +18,7 @@ class SD_CORE_API System {
 
     virtual void OnInit() {
         m_scene_handler = dispatcher->Register<NewSceneEvent>(
-            [&](const NewSceneEvent &event) {
-                auto cam = scene->GetCamera();
-                scene = event.scene;
-                scene->SetCamera(cam);
-            });
+            [&](const NewSceneEvent &event) { scene = event.scene; });
     };
 
     virtual void OnPush(){};
