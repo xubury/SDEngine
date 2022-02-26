@@ -6,7 +6,7 @@
 
 namespace SD {
 
-class SD_LOADER_API SpriteLoader : public AssetLoader {
+class SD_LOADER_API TextureLoader : public AssetLoader {
    public:
     using AssetLoader::AssetLoader;
 

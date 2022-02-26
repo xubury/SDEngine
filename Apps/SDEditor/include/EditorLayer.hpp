@@ -94,7 +94,7 @@ class EditorLayer : public Layer {
     bool m_save_scene_open;
     ImFileDialogInfo m_file_dialog_info;
 
-    Ref<Sprite> m_light_icon;
+    Ref<Texture> m_light_icon;
 
     Entity m_selected_entity;
 

@@ -2,7 +2,7 @@
 #define SD_ANIMATION_HPP
 
 #include "Animation/Export.hpp"
-#include "Renderer/Sprite.hpp"
+#include "Utility/Serialize.hpp"
 
 #include <cstdint>
 

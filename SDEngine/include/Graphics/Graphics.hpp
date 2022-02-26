@@ -114,11 +114,6 @@ void SD_GRAPHICS_API SetGraphicsAPI(GraphicsAPI api);
 
 GraphicsAPI SD_GRAPHICS_API GetGraphicsAPI();
 
-DataFormat SD_GRAPHICS_API GetDataFormat(int channels);
-
-DataFormatType SD_GRAPHICS_API GetDataFormatType(int bits_per_pixel,
-                                                 int channels);
-
 }  // namespace SD
 
 #endif /* SD_GRAPHICS_HPP */

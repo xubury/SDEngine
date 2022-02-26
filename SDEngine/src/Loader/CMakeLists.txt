@@ -8,20 +8,18 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Loader)
 
 set(Loader_Include
     ${Include_Root}/Export.hpp
-    ${Include_Root}/SpriteLoader.hpp
+    ${Include_Root}/TextureLoader.hpp
     ${Include_Root}/FontLoader.hpp
     ${Include_Root}/ModelLoader.hpp
     ${Include_Root}/ShaderLoader.hpp
-    ${Include_Root}/SkyboxLoader.hpp
     ${Include_Root}/SceneLoader.hpp
     ${Include_Root}/SDLHelper.hpp)
 
 set(Loader_Src
-    ${Src_Root}/SpriteLoader.cpp
+    ${Src_Root}/TextureLoader.cpp
     ${Src_Root}/FontLoader.cpp
     ${Src_Root}/ModelLoader.cpp
     ${Src_Root}/ShaderLoader.cpp
-    ${Src_Root}/SkyboxLoader.cpp
     ${Src_Root}/SceneLoader.cpp
     ${Src_Root}/SDLHelper.cpp)
 

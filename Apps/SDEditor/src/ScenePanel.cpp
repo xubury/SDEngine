@@ -3,7 +3,6 @@
 #include "Utility/String.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "Asset/Asset.hpp"
-#include "Renderer/Sprite.hpp"
 
 #define ECS_MOVEENTITY "ECS MOVEENTITY"
 
@@ -456,9 +455,9 @@ void ScenePanel::DrawComponents(Entity &entity) {
     DrawComponent<SpriteComponent>(
         "Sprite", entity, [&](SpriteComponent &sprite_comp) {
             auto &frame = sprite_comp.frame;
-            auto sprite = asset->Get<Sprite>(frame.sprite_id);
-            if (sprite) {
-                ImGui::DrawTexture(*sprite->GetTexture(),
+            auto texture = asset->Get<Texture>(frame.texture_id);
+            if (texture) {
+                ImGui::DrawTexture(*texture,
                                    ImVec2(frame.uvs[0].x, frame.uvs[0].y),
                                    ImVec2(frame.uvs[1].x, frame.uvs[1].y));
             }
@@ -481,9 +480,9 @@ void ScenePanel::DrawComponents(Entity &entity) {
             }
             if (frame_index < static_cast<int>(anim.GetFrameSize())) {
                 const auto &frame = anim.GetFrame(frame_index);
-                const auto sprite = asset->Get<Sprite>(frame.sprite_id);
-                if (sprite) {
-                    ImGui::DrawTexture(*sprite->GetTexture(),
+                const auto texture = asset->Get<Texture>(frame.texture_id);
+                if (texture) {
+                    ImGui::DrawTexture(*texture,
                                        ImVec2(frame.uvs[0].x, frame.uvs[0].y),
                                        ImVec2(frame.uvs[1].x, frame.uvs[1].y));
                 }

@@ -55,8 +55,8 @@ void TileMapSystem::OnImGui() {
                         auto &frame = comp.frame;
                         child.GetComponent<TransformComponent>()
                             .SetWorldPosition(world);
-                        frame.sprite_id = m_sprite_id;
-                        frame.sprite_path = m_sprite_path;
+                        frame.texture_id = m_texture_id;
+                        frame.texture_path = m_texture_path;
                         frame.uvs = m_uvs;
                         frame.size = m_brush.tile_size * m_brush.count;
                         child.GetComponent<PriorityComponent>().priority =
@@ -83,7 +83,7 @@ void TileMapSystem::OnImGui() {
         ImGui::RadioButton("Clear Sprite",
                            reinterpret_cast<int *>(&m_operation),
                            Operation::REMOVE_ENTITY);
-        ImGui::InputText("##Path", m_sprite_path.data(), m_sprite_path.size(),
+        ImGui::InputText("##Path", m_texture_path.data(), m_texture_path.size(),
                          ImGuiInputTextFlags_ReadOnly);
         ImGui::SameLine();
         if (ImGui::Button("Open")) {
@@ -96,9 +96,9 @@ void TileMapSystem::OnImGui() {
         }
         if (ImGui::FileDialog(&m_file_dialog_open, &m_fileDialogInfo)) {
             try {
-                m_sprite_id =
-                    asset->LoadAsset<Sprite>(m_fileDialogInfo.result_path);
-                m_sprite_path = asset->GetAssetPath(m_sprite_id);
+                m_texture_id =
+                    asset->LoadAsset<Texture>(m_fileDialogInfo.result_path);
+                m_texture_path = asset->GetAssetPath(m_texture_id);
             } catch (const Exception &e) {
                 SD_CORE_ERROR("Error loading sprite: {}", e.what());
             }
@@ -108,10 +108,10 @@ void TileMapSystem::OnImGui() {
         ImGui::SameLine();
         ImGui::InputInt("##Priority", &m_priority);
 
-        auto sprite = asset->Get<Sprite>(m_sprite_id);
-        if (sprite) {
-            ImGui::DrawTileTexture(*sprite->GetTexture(), m_brush.tile_size,
-                                   m_uvs, &m_brush.count, &m_brush.pivot);
+        auto texture = asset->Get<Texture>(m_texture_id);
+        if (texture) {
+            ImGui::DrawTileTexture(*texture, m_brush.tile_size, m_uvs,
+                                   &m_brush.count, &m_brush.pivot);
         }
     }
     ImGui::End();
@@ -129,10 +129,10 @@ void TileMapSystem::OnRender() {
     glm::vec3 world;
     if (m_brush.GetSelectPos(world)) {
         if (m_operation == Operation::ADD_ENTITY) {
-            auto sprite = asset->Get<Sprite>(m_sprite_id);
-            if (sprite) {
-                renderer->DrawTexture(*sprite->GetTexture(), m_uvs, world,
-                                      glm::quat(), BRUSH_SIZE);
+            auto texture = asset->Get<Texture>(m_texture_id);
+            if (texture) {
+                renderer->DrawTexture(*texture, m_uvs, world, glm::quat(),
+                                      BRUSH_SIZE);
             }
         }
         // Draw selection

@@ -2,7 +2,6 @@
 #define SD_TILE_MAP_SYSTEM_HPP
 
 #include "Core/System.hpp"
-#include "Renderer/Sprite.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGui/FileDialog.hpp"
 
@@ -28,8 +27,8 @@ class TileMapSystem : public System {
     ImFileDialogInfo m_fileDialogInfo;
 
     // Selected sprite and its uvs
-    ResourceId m_sprite_id;
-    std::string m_sprite_path;
+    ResourceId m_texture_id;
+    std::string m_texture_path;
     std::array<glm::vec2, 2> m_uvs{glm::vec2{0, 0}, glm::vec2{0, 0}};
     int m_priority;
 

@@ -35,7 +35,7 @@ SkyboxSystem::SkyboxSystem() : System("SkyboxSystem") {
 void SkyboxSystem::OnInit() {
     System::OnInit();
     m_skybox_shader = asset->LoadAndGet<Shader>("shaders/skybox.glsl");
-    m_skybox_id = asset->LoadAsset<Skybox>("skybox/test.skybox");
+    m_skybox_id = asset->LoadAsset<Texture>("skybox/test.cube");
 }
 
 void SkyboxSystem::OnPush() {}
@@ -59,7 +59,7 @@ void SkyboxSystem::OnImGui() {
         }
         if (ImGui::FileDialog(&m_file_dialog_open, &m_file_dialog_info)) {
             m_skybox_id =
-                asset->LoadAsset<Skybox>(m_file_dialog_info.result_path);
+                asset->LoadAsset<Texture>(m_file_dialog_info.result_path);
         }
     }
     ImGui::End();
@@ -72,9 +72,9 @@ void SkyboxSystem::OnRender() {
     m_skybox_shader->SetMat4("u_projection", projection);
 
     device->SetDepthfunc(DepthFunc::LESS_EQUAL);
-    auto skybox = asset->Get<Skybox>(m_skybox_id);
+    auto skybox = asset->Get<Texture>(m_skybox_id);
     if (skybox) {
-        m_skybox_shader->SetTexture("skybox", skybox->GetTexture());
+        m_skybox_shader->SetTexture("skybox", skybox.get());
     }
 
     device->SetFramebuffer(renderer->GetFramebuffer());

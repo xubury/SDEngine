@@ -11,7 +11,6 @@
 #include "Renderer/Font.hpp"
 #include "Renderer/Terrain.hpp"
 #include "Renderer/Light.hpp"
-#include "Renderer/Skybox.hpp"
 #include "Animation/Animation.hpp"
 #include "Animation/Animator.hpp"
 
@@ -116,12 +115,12 @@ struct SD_ECS_API CameraComponent {
 };
 
 struct SD_ECS_API SpriteFrame {
-    ResourceId sprite_id;
-    std::string sprite_path;
+    ResourceId texture_id;
+    std::string texture_path;
     std::array<glm::vec2, 2> uvs;
     glm::vec2 size;
 
-    SERIALIZE(sprite_id, sprite_path, uvs, size)
+    SERIALIZE(texture_id, texture_path, uvs, size)
 };
 
 struct SD_ECS_API PriorityComponent {

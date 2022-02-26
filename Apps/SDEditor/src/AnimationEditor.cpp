@@ -1,5 +1,4 @@
 #include "AnimationEditor.hpp"
-#include "Renderer/Sprite.hpp"
 
 namespace SD {
 
@@ -18,7 +17,7 @@ void AnimationEditor::OnPop() { dispatcher->RemoveHandler(m_entity_handler); }
 void AnimationEditor::OnImGui() {
     ImGui::Begin("Anmiation Editor");
     {
-        ImGui::InputText("##Path", m_sprite_path.data(), m_sprite_path.size(),
+        ImGui::InputText("##Path", m_texture_path.data(), m_texture_path.size(),
                          ImGuiInputTextFlags_ReadOnly);
         ImGui::SameLine();
         if (ImGui::Button("Open")) {
@@ -30,13 +29,12 @@ void AnimationEditor::OnImGui() {
             m_dialog_info.regex_match = IMG_FILTER;
         }
         if (ImGui::FileDialog(&m_is_dialog_open, &m_dialog_info)) {
-            m_sprite_id = asset->LoadAsset<Sprite>(m_dialog_info.result_path);
-            m_sprite_path = asset->GetAssetPath(m_sprite_id);
+            m_texture_id = asset->LoadAsset<Texture>(m_dialog_info.result_path);
+            m_texture_path = asset->GetAssetPath(m_texture_id);
         }
-        auto sprite = asset->Get<Sprite>(m_sprite_id);
-        if (sprite) {
-            ImGui::DrawTileTexture(*sprite->GetTexture(), m_tile_size, m_uvs,
-                                   &m_count);
+        auto texture = asset->Get<Texture>(m_texture_id);
+        if (texture) {
+            ImGui::DrawTileTexture(*texture, m_tile_size, m_uvs, &m_count);
             if (m_selected_entity &&
                 m_selected_entity.HasComponent<SpriteAnimationComponent>()) {
                 auto &anim_comp =
@@ -65,7 +63,7 @@ void AnimationEditor::OnImGui() {
                 }
                 if (ImGui::Button("Add Frame")) {
                     anim_comp.animations[m_anim_index].PushBack(
-                        SpriteFrame{m_sprite_id, m_sprite_path, m_uvs,
+                        SpriteFrame{m_texture_id, m_texture_path, m_uvs,
                                     m_count * m_tile_size});
                 }
             }

@@ -6,14 +6,12 @@
 
 #include "Loader/ModelLoader.hpp"
 #include "Loader/FontLoader.hpp"
-#include "Loader/SkyboxLoader.hpp"
-#include "Loader/SpriteLoader.hpp"
+#include "Loader/TextureLoader.hpp"
 #include "Loader/ShaderLoader.hpp"
 #include "Loader/SceneLoader.hpp"
 
 #include "Renderer/Model.hpp"
 #include "Renderer/Font.hpp"
-#include "Renderer/Sprite.hpp"
 #include "Graphics/Shader.hpp"
 
 namespace SD {
@@ -54,8 +52,7 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     asset = CreateRef<AssetManager>();
     asset->SetLoader<Model, ModelLoader>();
     asset->SetLoader<Font, FontLoader>();
-    asset->SetLoader<Skybox, SkyboxLoader>();
-    asset->SetLoader<Sprite, SpriteLoader>();
+    asset->SetLoader<Texture, TextureLoader>();
     asset->SetLoader<Shader, ShaderLoader>();
     asset->SetLoader<Scene, SceneLoader>();
     asset->Load("assets");

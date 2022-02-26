@@ -1,6 +1,5 @@
 #include "Loader/ModelLoader.hpp"
 #include "Renderer/Model.hpp"
-#include "Renderer/Sprite.hpp"
 
 #include "Utility/ThreadPool.hpp"
 
@@ -144,11 +143,10 @@ static Material ProcessAiMaterials(AssetManager *manager,
             SD_CORE_ERROR("[processAiMaterial] Assimp GetTexture error!");
             continue;
         }
-        auto image =
-            manager->LoadAndGet<Sprite>(directory / texturePath.C_Str());
-        auto texture = image->GetTexture();
+        auto texture =
+            manager->LoadAndGet<Texture>(directory / texturePath.C_Str());
         texture->SetWrap(ConvertAssimpMapMode(map_mode));
-        material.SetTexture(ConvertAssimpTextureType(ai_type), texture);
+        material.SetTexture(ConvertAssimpTextureType(ai_type), texture.get());
     }
     return material;
 }
