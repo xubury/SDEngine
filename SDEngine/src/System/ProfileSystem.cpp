@@ -1,6 +1,8 @@
 #include "System/ProfileSystem.hpp"
 #include "Core/Input.hpp"
 
+#include "Loader/FontLoader.hpp"
+
 namespace SD {
 
 const uint32_t FPS_CAPACITY = 50;
@@ -14,7 +16,7 @@ ProfileSystem::ProfileSystem(int width, int height)
 
 void ProfileSystem::OnInit() {
     System::OnInit();
-    m_font = asset->LoadAndGet<Font>("fonts/default.font");
+    m_font = FontLoader::LoadFont("assets/fonts/msyh.ttc", 20);
 }
 
 void ProfileSystem::OnPush() {

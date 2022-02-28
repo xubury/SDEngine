@@ -2,12 +2,12 @@
 #define SD_FONT_HPP
 
 #include "Utility/Base.hpp"
-#include "Renderer/Export.hpp"
+#include "Graphics/Export.hpp"
 #include "Graphics/Texture.hpp"
 
 namespace SD {
 
-struct SD_RENDERER_API Character {
+struct SD_GRAPHICS_API Character {
     Character() = default;
     Ref<Texture> glyph;
     std::array<glm::vec2, 2> uv;
@@ -16,7 +16,7 @@ struct SD_RENDERER_API Character {
     uint32_t advance;
 };
 
-class SD_RENDERER_API Font {
+class SD_GRAPHICS_API Font {
    public:
     Font(uint32_t pixel_height);
     ~Font() = default;

@@ -11,6 +11,11 @@ namespace SD {
 
 namespace String {
 
+inline std::string RemoveExtension(const std::string &str) {
+    size_t lastindex = str.find_last_of(".");
+    return str.substr(0, lastindex);
+}
+
 inline void TrimLeft(std::string &s) {
     s.erase(s.begin(), std::find_if(s.begin(), s.end(),
                                     [](char ch) { return !std::isspace(ch); }));

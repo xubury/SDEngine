@@ -1,7 +1,7 @@
 #shader vertex
 #version 450 core
 
-#include shaders/camera.glsl
+#include camera.glsl
 
 layout(location = 0) in vec3 a_pos;
 layout(location = 1) in vec2 a_texCoord;
@@ -31,7 +31,7 @@ void main() {
 #shader fragment
 #version 450 core
 
-#include shaders/material.glsl
+#include material.glsl
 
 struct VertexOutput {
     vec3 position;

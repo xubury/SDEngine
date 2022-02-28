@@ -1,4 +1,4 @@
-#include "Renderer/Light.hpp"
+#include "Graphics/Light.hpp"
 
 namespace SD {
 

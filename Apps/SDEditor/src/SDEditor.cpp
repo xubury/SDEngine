@@ -18,9 +18,8 @@ void SDEditor::OnStart() {
     int viewport_width = ini->GetInteger("editor", "viewport width", 800);
     int viewport_height = ini->GetInteger("editor", "viewport height", 600);
 
-    renderer =
-        CreateRef<Renderer>(Viewport(0, 0, viewport_width, viewport_height),
-                            device.get(), asset.get());
+    renderer = CreateRef<Renderer>(
+        Viewport(0, 0, viewport_width, viewport_height), device.get());
 #ifdef SD_IMGUI_IMPORT
     // for DLL context
     ImGui::SetCurrentContext(GetImGuiLayer()->GetContext());

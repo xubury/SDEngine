@@ -1,13 +1,13 @@
 #ifndef SD_TERRAIN_HPP
 #define SD_TERRAIN_HPP
 
-#include "Renderer/Export.hpp"
-#include "Renderer/Mesh.hpp"
-#include "Renderer/Material.hpp"
+#include "Graphics/Export.hpp"
+#include "Graphics/Mesh.hpp"
+#include "Graphics/Material.hpp"
 
 namespace SD {
 
-class SD_RENDERER_API Terrain {
+class SD_GRAPHICS_API Terrain {
    public:
     Terrain(int gridSize, int vertexCount);
 

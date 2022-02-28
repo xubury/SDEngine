@@ -1,9 +1,12 @@
 #include "System/SkyboxSystem.hpp"
 #include "ECS/Scene.hpp"
 
+#include "Loader/ShaderLoader.hpp"
+#include "Loader/TextureLoader.hpp"
+
 namespace SD {
 
-SkyboxSystem::SkyboxSystem() : System("SkyboxSystem") {
+SkyboxSystem::SkyboxSystem() : System("SkyboxSystem"), m_skybox(nullptr) {
     const float skybox_vertices[] = {
         // front
         -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0,
@@ -34,8 +37,11 @@ SkyboxSystem::SkyboxSystem() : System("SkyboxSystem") {
 
 void SkyboxSystem::OnInit() {
     System::OnInit();
-    m_skybox_shader = asset->LoadAndGet<Shader>("shaders/skybox.glsl");
-    m_skybox_id = asset->LoadAsset<Texture>("skybox/test.cube");
+    m_skybox_shader = ShaderLoader::LoadShader("assets/shaders/skybox.glsl");
+    m_skybox = TextureLoader::LoadTextureCube(
+        {"assets/skybox/right.jpg", "assets/skybox/left.jpg",
+         "assets/skybox/top.jpg", "assets/skybox/bottom.jpg",
+         "assets/skybox/front.jpg", "assets/skybox/back.jpg"});
 }
 
 void SkyboxSystem::OnPush() {}
@@ -45,7 +51,7 @@ void SkyboxSystem::OnPop() {}
 void SkyboxSystem::OnImGui() {
     ImGui::Begin("Skybox System");
     {
-        std::string path = asset->GetAssetPath(m_skybox_id);
+        static std::string path;
         ImGui::TextUnformatted("Skybox Path:");
         ImGui::InputText("##Path", path.data(), path.size(),
                          ImGuiInputTextFlags_ReadOnly);
@@ -55,11 +61,12 @@ void SkyboxSystem::OnImGui() {
             m_file_dialog_info.type = ImGuiFileDialogType::OPEN_FILE;
             m_file_dialog_info.title = "Open File";
             m_file_dialog_info.file_name = "";
-            m_file_dialog_info.directory_path = asset->GetRootPath();
+            m_file_dialog_info.directory_path = asset->GetDirectory();
         }
         if (ImGui::FileDialog(&m_file_dialog_open, &m_file_dialog_info)) {
-            m_skybox_id =
-                asset->LoadAsset<Texture>(m_file_dialog_info.result_path);
+            // m_skybox =
+            //     asset->LoadAsset<TextureAsset>(m_file_dialog_info.result_path)
+            //         ->GetTexture();
         }
     }
     ImGui::End();
@@ -72,9 +79,8 @@ void SkyboxSystem::OnRender() {
     m_skybox_shader->SetMat4("u_projection", projection);
 
     device->SetDepthfunc(DepthFunc::LESS_EQUAL);
-    auto skybox = asset->Get<Texture>(m_skybox_id);
-    if (skybox) {
-        m_skybox_shader->SetTexture("skybox", skybox.get());
+    if (m_skybox) {
+        m_skybox_shader->SetTexture("skybox", m_skybox.get());
     }
 
     device->SetFramebuffer(renderer->GetFramebuffer());

@@ -5,11 +5,11 @@
 #include "Utility/Serialize.hpp"
 #include "Utility/Transform.hpp"
 #include "Graphics/RenderTarget.hpp"
-#include "Renderer/Camera.hpp"
+#include "Graphics/Camera.hpp"
 
 namespace SD {
 
-class SD_RENDERER_API Light {
+class SD_GRAPHICS_API Light {
    public:
     Light();
 

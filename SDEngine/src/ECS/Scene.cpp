@@ -2,7 +2,6 @@
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
 #include "Utility/Serialize.hpp"
-#include "Asset/Asset.hpp"
 
 namespace SD {
 

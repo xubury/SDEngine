@@ -3,26 +3,12 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Renderer)
 
 
 set(Renderer_Include
-    ${Include_Root}/Camera.hpp
     ${Include_Root}/Export.hpp
-    ${Include_Root}/Light.hpp
     ${Include_Root}/Renderer.hpp
-    ${Include_Root}/Terrain.hpp
-    ${Include_Root}/Font.hpp
-    ${Include_Root}/Model.hpp
-    ${Include_Root}/Mateiral.hpp
-    ${Include_Root}/Mesh.hpp
     ${Include_Root}/Bitmap.hpp)
 
 set(Renderer_Src
-    ${Src_Root}/Camera.cpp
-    ${Src_Root}/Light.cpp
     ${Src_Root}/Renderer.cpp
-    ${Src_Root}/Terrain.cpp
-    ${Src_Root}/Font.cpp
-    ${Src_Root}/Material.cpp
-    ${Src_Root}/Mesh.cpp
-    ${Src_Root}/Model.cpp
     ${Src_Root}/Bitmap.cpp)
 
 add_library(sd-renderer ${Renderer_Src})
@@ -42,7 +28,9 @@ target_link_libraries(sd-renderer
     PUBLIC
     sd-utility
     sd-graphics
-    sd-asset)
+
+    PRIVATE
+    sd-loader)
 
 target_include_directories(sd-renderer
     PUBLIC

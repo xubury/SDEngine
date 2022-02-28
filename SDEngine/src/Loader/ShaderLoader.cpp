@@ -14,9 +14,11 @@ static inline ShaderType GetShaderType(const std::string& name) {
 
     return map.at(name);
 }
-Ref<void> ShaderLoader::LoadAsset(const std::string& path) {
+
+Ref<Shader> ShaderLoader::LoadShader(const std::string& path) {
     Ref<Shader> shader = Shader::Create();
     SD_CORE_TRACE("Building shader code from {}", path);
+    std::filesystem::path directory = std::filesystem::path(path).parent_path();
     std::string source;
     File::Read(path, source);
     size_t i = source.find("#shader");
@@ -54,15 +56,16 @@ Ref<void> ShaderLoader::LoadAsset(const std::string& path) {
                 code.substr(offset, start - offset - 1);
 
             code.erase(j, start - j);
-            std::string includeCode;
+            std::string include_code;
+            const std::string include_path = (directory / include).string();
             try {
-                File::Read(Manager().GetAbsolutePath(include).string(),
-                           includeCode);
+                File::Read(include_path, include_code);
             } catch (const FileException& e) {
                 throw FileException(
-                    path, fmt::format("Invalid include path: {}", include));
+                    path,
+                    fmt::format("Invalid include path: {}", include_path));
             }
-            code.insert(j, includeCode);
+            code.insert(j, include_code);
 
             j = code.find("#include", start);
         }

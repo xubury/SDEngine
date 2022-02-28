@@ -12,6 +12,7 @@ const int LINE_WIDTH = 5;
 TileMapSystem::TileMapSystem()
     : System("TileMapSystem"),
       m_file_dialog_open(false),
+      m_texture_asset(nullptr),
       m_priority(0),
       m_draw_outline(true),
       m_operation(Operation::NONE) {
@@ -43,7 +44,7 @@ void TileMapSystem::OnImGui() {
             return;
         }
         m_brush.SetRay(scene->GetCamera()->ComputeCameraRay(clip));
-        if (ImGui::IsMouseClicked(0)) {
+        if (ImGui::IsMouseClicked(0) && m_texture_asset) {
             switch (m_operation) {
                 default: {
                 } break;
@@ -55,8 +56,8 @@ void TileMapSystem::OnImGui() {
                         auto &frame = comp.frame;
                         child.GetComponent<TransformComponent>()
                             .SetWorldPosition(world);
-                        frame.texture_id = m_texture_id;
-                        frame.texture_path = m_texture_path;
+                        frame.texture_id = m_texture_asset->GetStringId();
+                        frame.texture_path = m_texture_asset->GetPath();
                         frame.uvs = m_uvs;
                         frame.size = m_brush.tile_size * m_brush.count;
                         child.GetComponent<PriorityComponent>().priority =
@@ -83,22 +84,22 @@ void TileMapSystem::OnImGui() {
         ImGui::RadioButton("Clear Sprite",
                            reinterpret_cast<int *>(&m_operation),
                            Operation::REMOVE_ENTITY);
-        ImGui::InputText("##Path", m_texture_path.data(), m_texture_path.size(),
-                         ImGuiInputTextFlags_ReadOnly);
+        // ImGui::InputText("##Path", m_texture_path.data(),
+        // m_texture_path.size(),
+        //                  ImGuiInputTextFlags_ReadOnly);
         ImGui::SameLine();
         if (ImGui::Button("Open")) {
             m_file_dialog_open = true;
             m_fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
             m_fileDialogInfo.title = "Open File";
             m_fileDialogInfo.file_name = "";
-            m_fileDialogInfo.directory_path = asset->GetRootPath();
+            m_fileDialogInfo.directory_path = asset->GetDirectory();
             m_fileDialogInfo.regex_match = IMG_FILTER;
         }
         if (ImGui::FileDialog(&m_file_dialog_open, &m_fileDialogInfo)) {
             try {
-                m_texture_id =
-                    asset->LoadAsset<Texture>(m_fileDialogInfo.result_path);
-                m_texture_path = asset->GetAssetPath(m_texture_id);
+                m_texture_asset = asset->LoadAsset<TextureAsset>(
+                    m_fileDialogInfo.result_path);
             } catch (const Exception &e) {
                 SD_CORE_ERROR("Error loading sprite: {}", e.what());
             }
@@ -108,10 +109,10 @@ void TileMapSystem::OnImGui() {
         ImGui::SameLine();
         ImGui::InputInt("##Priority", &m_priority);
 
-        auto texture = asset->Get<Texture>(m_texture_id);
-        if (texture) {
-            ImGui::DrawTileTexture(*texture, m_brush.tile_size, m_uvs,
-                                   &m_brush.count, &m_brush.pivot);
+        if (m_texture_asset) {
+            ImGui::DrawTileTexture(*m_texture_asset->GetTexture(),
+                                   m_brush.tile_size, m_uvs, &m_brush.count,
+                                   &m_brush.pivot);
         }
     }
     ImGui::End();
@@ -124,15 +125,14 @@ void TileMapSystem::OnRender() {
     renderer->Begin(*scene->GetCamera());
 
     // draw brush & outline
-    const glm::ivec2 &TILE_SIZE = m_brush.tile_size;
-    const glm::vec2 &BRUSH_SIZE = TILE_SIZE * m_brush.count;
+    const glm::ivec2 &tile_size = m_brush.tile_size;
+    const glm::vec2 &brush_size = tile_size * m_brush.count;
     glm::vec3 world;
     if (m_brush.GetSelectPos(world)) {
         if (m_operation == Operation::ADD_ENTITY) {
-            auto texture = asset->Get<Texture>(m_texture_id);
-            if (texture) {
-                renderer->DrawTexture(*texture, m_uvs, world, glm::quat(),
-                                      BRUSH_SIZE);
+            if (m_texture_asset) {
+                renderer->DrawTexture(*m_texture_asset->GetTexture(), m_uvs,
+                                      world, glm::quat(), brush_size);
             }
         }
         // Draw selection
@@ -147,29 +147,29 @@ void TileMapSystem::OnRender() {
             } break;
         }
         if (m_operation != Operation::NONE) {
-            renderer->DrawQuad(world, glm::quat(), BRUSH_SIZE, select_color);
+            renderer->DrawQuad(world, glm::quat(), brush_size, select_color);
         }
     }
 
     if (m_draw_outline) {
         int render_width = renderer->GetDefaultTarget().GetWidth();
         int render_height = renderer->GetDefaultTarget().GetHeight();
-        const glm::ivec2 TILE_CNT(
-            std::ceil(static_cast<float>(render_width) / TILE_SIZE.x) + 1,
-            std::ceil(static_cast<float>(render_height) / TILE_SIZE.y) + 1);
-        const glm::vec2 TEX_SIZE = TILE_CNT * TILE_SIZE;
+        const glm::ivec2 tile_cnt(
+            std::ceil(static_cast<float>(render_width) / tile_size.x) + 1,
+            std::ceil(static_cast<float>(render_height) / tile_size.y) + 1);
+        const glm::vec2 tex_size = tile_cnt * tile_size;
 
         const glm::vec3 cam_pos = scene->GetCamera()->GetWorldPosition();
-        glm::vec2 uv_origin(cam_pos.x / TILE_SIZE.x, -cam_pos.y / TILE_SIZE.y);
+        glm::vec2 uv_origin(cam_pos.x / tile_size.x, -cam_pos.y / tile_size.y);
         const glm::vec3 outline_pos(
-            TEX_SIZE.x / 2.f + cam_pos.x - TILE_SIZE.x / 2.f -
-                TILE_SIZE.x * std::floor(TILE_CNT.x / 2.f),
-            -TEX_SIZE.y / 2.f + cam_pos.y + TILE_SIZE.y / 2.f +
-                TILE_SIZE.y * std::floor(TILE_CNT.y / 2.f),
+            tex_size.x / 2.f + cam_pos.x - tile_size.x / 2.f -
+                tile_size.x * std::floor(tile_cnt.x / 2.f),
+            -tex_size.y / 2.f + cam_pos.y + tile_size.y / 2.f +
+                tile_size.y * std::floor(tile_cnt.y / 2.f),
             0);
         renderer->DrawTexture(
-            *m_outline_texture, {uv_origin, glm::vec2(TILE_CNT) + uv_origin},
-            outline_pos, glm::quat(), TEX_SIZE, glm::vec4(1, 1, 1, 0.7));
+            *m_outline_texture, {uv_origin, glm::vec2(tile_cnt) + uv_origin},
+            outline_pos, glm::quat(), tex_size, glm::vec4(1, 1, 1, 0.7));
     }
     renderer->End();
     device->Enable(SD::Operation::DEPTH_TEST);

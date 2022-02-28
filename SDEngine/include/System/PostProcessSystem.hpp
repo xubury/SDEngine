@@ -45,8 +45,8 @@ class SD_SYSTEM_API PostProcessSystem : public System {
 
     int m_width;
     int m_height;
-    Ref<Shader> m_post_shader;
 
+    Ref<Shader> m_post_shader;
     Ref<Shader> m_blur_shader;
 
     Ref<Framebuffer> m_blur_buffer[2];

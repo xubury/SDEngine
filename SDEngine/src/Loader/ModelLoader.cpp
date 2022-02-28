@@ -1,7 +1,5 @@
 #include "Loader/ModelLoader.hpp"
-#include "Renderer/Model.hpp"
-
-#include "Utility/ThreadPool.hpp"
+#include "Loader/TextureLoader.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -119,9 +117,11 @@ static inline MaterialType ConvertAssimpTextureType(aiTextureType textureType) {
     }
 }
 
-static Material ProcessAiMaterials(AssetManager *manager,
-                                   const std::filesystem::path &directory,
-                                   const aiMaterial *ai_material) {
+using ImportedMateral = std::unordered_map<std::string, Ref<Texture>>;
+
+static Material ProcessAiMaterial(const std::filesystem::path &directory,
+                                  const aiMaterial *ai_material,
+                                  ImportedMateral &imported_materials) {
     Material material;
     for (int type = aiTextureType_NONE + 1; type < aiTextureType_SHININESS;
          ++type) {
@@ -131,28 +131,36 @@ static Material ProcessAiMaterials(AssetManager *manager,
             continue;
         } else if (count > 1) {
             SD_CORE_WARN(
-                "[processAiMaterial] Cannot handle multiple texture of same "
+                "[ProcessAiMaterials] Cannot handle multiple texture of same "
                 "type!");
         }
 
-        aiString texturePath;
-        aiTextureMapMode map_mode = aiTextureMapMode::aiTextureMapMode_Wrap;
-        if (ai_material->GetTexture(ai_type, 0, &texturePath, nullptr, nullptr,
+        aiString texture_path;
+        aiTextureMapMode ai_map_mode = aiTextureMapMode::aiTextureMapMode_Wrap;
+        // TODO:load texture prop
+        if (ai_material->GetTexture(ai_type, 0, &texture_path, nullptr, nullptr,
                                     nullptr, nullptr,
-                                    &map_mode) != AI_SUCCESS) {
+                                    &ai_map_mode) != AI_SUCCESS) {
             SD_CORE_ERROR("[processAiMaterial] Assimp GetTexture error!");
             continue;
         }
-        auto texture =
-            manager->LoadAndGet<Texture>(directory / texturePath.C_Str());
-        texture->SetWrap(ConvertAssimpMapMode(map_mode));
-        material.SetTexture(ConvertAssimpTextureType(ai_type), texture.get());
+        std::string full_path = directory / texture_path.C_Str();
+        Ref<Texture> texture;
+        if (imported_materials.count(full_path) == 0) {
+            texture = TextureLoader::LoadTexture2D(full_path);
+            imported_materials.emplace(full_path, texture);
+        } else {
+            texture = imported_materials.at(full_path);
+        }
+        texture->SetWrap(ConvertAssimpMapMode(ai_map_mode));
+        material.SetPath(ConvertAssimpTextureType(ai_type), full_path);
+        material.SetTexture(ConvertAssimpTextureType(ai_type), texture);
     }
     return material;
 }
 
 static void ProcessNode(const aiScene *scene, const aiNode *node,
-                        Ref<Model> &model) {
+                        Model *model) {
     if (node == nullptr) return;
     for (uint32_t i = 0; i < node->mNumChildren; ++i) {
         const aiNode *child = node->mChildren[i];
@@ -164,23 +172,25 @@ static void ProcessNode(const aiScene *scene, const aiNode *node,
     }
 }
 
-Ref<void> ModelLoader::LoadAsset(const std::string &path) {
-    Ref<Model> model = CreateRef<Model>();
+Ref<Model> ModelLoader::LoadModel(const std::string &path) {
+    Ref<Model> model;
     SD_CORE_TRACE("Loading model form: {}...", path);
 
     Assimp::Importer importer;
-    uint32_t importFlags = aiProcess_Triangulate | aiProcess_FlipUVs;
-    const aiScene *scene = importer.ReadFile(path, importFlags);
+    uint32_t import_flags = aiProcess_Triangulate | aiProcess_FlipUVs;
+    const aiScene *scene = importer.ReadFile(path, import_flags);
     if (scene == nullptr) {
         SD_CORE_ERROR("Model loading failed: {}", importer.GetErrorString());
-        return model;
-    }
-
-    ProcessNode(scene, scene->mRootNode, model);
-    std::filesystem::path directory = std::filesystem::path(path).parent_path();
-    for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
-        model->AddMaterial(
-            ProcessAiMaterials(&Manager(), directory, scene->mMaterials[i]));
+    } else {
+        model = CreateRef<Model>();
+        ProcessNode(scene, scene->mRootNode, model.get());
+        std::filesystem::path directory =
+            std::filesystem::path(path).parent_path();
+        ImportedMateral imported_materials;
+        for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
+            model->AddMaterial(ProcessAiMaterial(
+                directory, scene->mMaterials[i], imported_materials));
+        }
     }
 
     return model;

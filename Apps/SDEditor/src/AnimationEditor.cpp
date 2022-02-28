@@ -5,6 +5,8 @@ namespace SD {
 AnimationEditor::AnimationEditor()
     : System("Anmiation Editor"), m_anim_index(0) {}
 
+void AnimationEditor::OnInit() { System::OnInit(); }
+
 void AnimationEditor::OnPush() {
     m_entity_handler = dispatcher->Register<EntitySelectEvent>(
         [this](const EntitySelectEvent &e) {
@@ -17,23 +19,24 @@ void AnimationEditor::OnPop() { dispatcher->RemoveHandler(m_entity_handler); }
 void AnimationEditor::OnImGui() {
     ImGui::Begin("Anmiation Editor");
     {
-        ImGui::InputText("##Path", m_texture_path.data(), m_texture_path.size(),
-                         ImGuiInputTextFlags_ReadOnly);
+        // ImGui::InputText("##Path", m_texture_path.data(),
+        // m_texture_path.size(),
+        //                  ImGuiInputTextFlags_ReadOnly);
         ImGui::SameLine();
         if (ImGui::Button("Open")) {
             m_is_dialog_open = true;
             m_dialog_info.type = ImGuiFileDialogType::OPEN_FILE;
             m_dialog_info.title = "Open File";
             m_dialog_info.file_name = "";
-            m_dialog_info.directory_path = asset->GetRootPath();
+            m_dialog_info.directory_path = asset->GetDirectory();
             m_dialog_info.regex_match = IMG_FILTER;
         }
         if (ImGui::FileDialog(&m_is_dialog_open, &m_dialog_info)) {
-            m_texture_id = asset->LoadAsset<Texture>(m_dialog_info.result_path);
-            m_texture_path = asset->GetAssetPath(m_texture_id);
+            m_texture_asset =
+                asset->LoadAsset<TextureAsset>(m_dialog_info.result_path);
         }
-        auto texture = asset->Get<Texture>(m_texture_id);
-        if (texture) {
+        if (m_texture_asset) {
+            auto texture = m_texture_asset->GetTexture();
             ImGui::DrawTileTexture(*texture, m_tile_size, m_uvs, &m_count);
             if (m_selected_entity &&
                 m_selected_entity.HasComponent<SpriteAnimationComponent>()) {
@@ -63,7 +66,8 @@ void AnimationEditor::OnImGui() {
                 }
                 if (ImGui::Button("Add Frame")) {
                     anim_comp.animations[m_anim_index].PushBack(
-                        SpriteFrame{m_texture_id, m_texture_path, m_uvs,
+                        SpriteFrame{m_texture_asset->GetStringId(),
+                                    m_texture_asset->GetPath(), m_uvs,
                                     m_count * m_tile_size});
                 }
             }

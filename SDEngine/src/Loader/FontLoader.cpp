@@ -8,7 +8,6 @@
 namespace SD {
 
 const std::string SECTION_NAME = "Font";
-const uint32_t DEFAULT_FONT_HEIGHT = 20;
 
 const char32_t UNICODE_RANGE[] = {
     0x0020, 0x00FF,  // Basic Latin + Latin Supplement
@@ -31,50 +30,38 @@ const char32_t UNICODE_RANGE[] = {
     0x4E00, 0x9FFF,  // CJK Ideograms
     0};
 
-FontLoader::FontLoader(AssetManager &manager) : AssetLoader(manager) {
-    if (FT_Init_FreeType(&m_ft)) {
+Ref<Font> FontLoader::LoadFont(const std::string &path, int32_t pixel_height) {
+    FT_Library ft;
+    FT_Face face;
+    if (FT_Init_FreeType(&ft)) {
         SD_CORE_ERROR("Could not init Freetype library!");
     }
-}
-
-FontLoader::~FontLoader() { FT_Done_FreeType(m_ft); }
-
-Ref<void> FontLoader::LoadAsset(const std::string &path) {
     Ref<Font> font;
     SD_CORE_TRACE("Loading font form: {}...", path);
-    Ini ini;
-    try {
-        ini.Load(path);
-        std::filesystem::path font_path =
-            std::filesystem::path(path).parent_path() /
-            ini.Get("Font", "path", path);
-        if (FT_New_Face(m_ft, font_path.string().c_str(), 0, &m_face)) {
-            SD_CORE_ERROR("Failed to load font {}!", font_path);
-        } else {
-            uint32_t pixel_height =
-                ini.GetInteger("Font", "pixel_height", DEFAULT_FONT_HEIGHT);
-            font = CreateRef<Font>(pixel_height);
-            FT_Set_Pixel_Sizes(m_face, 0, pixel_height);
-            LoadGlyph(*font);
-        }
-        FT_Done_Face(m_face);
-    } catch (const Exception &e) {
-        SD_CORE_ERROR("Error loading font file: {}", e.what());
+    if (FT_New_Face(ft, path.c_str(), 0, &face)) {
+        SD_CORE_ERROR("Failed to load font {}!", path);
+    } else {
+        font = CreateRef<Font>(pixel_height);
+        FT_Set_Pixel_Sizes(face, 0, pixel_height);
+        LoadGlyph(face, font.get());
     }
+    FT_Done_Face(face);
+    FT_Done_FreeType(ft);
     return font;
 }
 
-void FontLoader::LoadGlyph(Font &font) {
+void FontLoader::LoadGlyph(FT_Face face, Font *font) {
     for (size_t i = 0; UNICODE_RANGE[i] != 0; i += 2) {
-        LoadRangedGlyph(font, UNICODE_RANGE[i], UNICODE_RANGE[i + 1] + 1);
+        LoadRangedGlyph(face, font, UNICODE_RANGE[i], UNICODE_RANGE[i + 1] + 1);
     }
 }
 
-void FontLoader::LoadRangedGlyph(Font &font, char32_t start, char32_t end) {
+void FontLoader::LoadRangedGlyph(FT_Face face, Font *font, char32_t start,
+                                 char32_t end) {
     const int64_t NUM_GLYPHS = end - start;
     if (NUM_GLYPHS < 0) return;
 
-    const uint32_t HEIGHT = m_face->size->metrics.height >> 6;
+    const uint32_t HEIGHT = face->size->metrics.height >> 6;
     const uint32_t MAX_DIM = (HEIGHT + 1) * std::ceil(std::sqrt(NUM_GLYPHS));
     uint32_t tex_size = 1;
     while (tex_size < MAX_DIM) tex_size <<= 1;
@@ -87,14 +74,14 @@ void FontLoader::LoadRangedGlyph(Font &font, char32_t start, char32_t end) {
                         TextureSpec(1, TextureType::TEX_2D, DataFormat::ALPHA,
                                     DataFormatType::UBYTE));
     for (char32_t ch = start; ch < end; ++ch) {
-        if (FT_Load_Char(m_face, ch,
+        if (FT_Load_Char(face, ch,
                          FT_LOAD_RENDER | FT_LOAD_FORCE_AUTOHINT |
                              FT_LOAD_TARGET_LIGHT)) {
             SD_CORE_WARN("[Font::LoadGlpyph] Failed to load character!");
             continue;
         }
 
-        FT_Bitmap *ft_bmp = &m_face->glyph->bitmap;
+        FT_Bitmap *ft_bmp = &face->glyph->bitmap;
         if (x + ft_bmp->width >= tex_size) {
             x = 0;
             y += HEIGHT + 1;
@@ -107,9 +94,9 @@ void FontLoader::LoadRangedGlyph(Font &font, char32_t start, char32_t end) {
 
         Character c;
         c.bearing =
-            glm::ivec2(m_face->glyph->bitmap_left, m_face->glyph->bitmap_top);
+            glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
         c.size = glm::ivec2(ft_bmp->width, ft_bmp->rows);
-        c.advance = m_face->glyph->advance.x >> 6;
+        c.advance = face->glyph->advance.x >> 6;
 
         c.uv[0] = glm::vec2(static_cast<float>(x) / tex_size,
                             static_cast<float>(y) / tex_size);
@@ -117,7 +104,7 @@ void FontLoader::LoadRangedGlyph(Font &font, char32_t start, char32_t end) {
                             static_cast<float>(y + ft_bmp->rows) / tex_size);
         c.glyph = glyph;
 
-        font.SetCharacter(ch, std::move(c));
+        font->SetCharacter(ch, std::move(c));
         x += ft_bmp->width + 1;
     }
 

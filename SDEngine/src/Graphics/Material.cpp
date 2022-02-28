@@ -1,4 +1,4 @@
-#include "Renderer/Material.hpp"
+#include "Graphics/Material.hpp"
 #include <map>
 
 namespace SD {
@@ -18,7 +18,7 @@ const std::string GetMaterialName(MaterialType type) {
     return stringByMaterialType.at(type);
 }
 
-void Material::SetTexture(MaterialType type, Texture *texture) {
+void Material::SetTexture(MaterialType type, const Ref<Texture> &texture) {
     m_textures[type] = texture;
 }
 
@@ -36,8 +36,8 @@ void Material::RemoveTexture(MaterialType type) {
     }
 }
 
-Texture *Material::GetTexture(MaterialType type) const {
-    return HasTexture(type) ? m_textures.at(type) : nullptr;
+const Texture *Material::GetTexture(MaterialType type) const {
+    return HasTexture(type) ? m_textures.at(type).get() : nullptr;
 }
 
 }  // namespace SD

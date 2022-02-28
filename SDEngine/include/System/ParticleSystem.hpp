@@ -3,7 +3,7 @@
 
 #include "System/Export.hpp"
 #include "Core/System.hpp"
-#include "Renderer/Camera.hpp"
+#include "Graphics/Camera.hpp"
 
 #include <glm/glm.hpp>
 #include <vector>

@@ -2,17 +2,13 @@
 #define SD_SCENE_LOADER_HPP
 
 #include "Loader/Export.hpp"
-#include "Asset/AssetManager.hpp"
+#include "ECS/Scene.hpp"
 
 namespace SD {
 
-class SD_LOADER_API SceneLoader : public AssetLoader {
+class SD_LOADER_API SceneLoader {
    public:
-    using AssetLoader::AssetLoader;
-
-    Ref<void> LoadAsset(const std::string &path) override;
-
-    bool SaveAsset(const Ref<void> &asset, const std::string &path) override;
+    static Ref<Scene> LoadScene(const std::string &path);
 };
 
 }  // namespace SD

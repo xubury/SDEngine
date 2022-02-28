@@ -14,8 +14,8 @@ void main() {
 #shader fragment
 #version 450 core
 
-#include shaders/camera.glsl
-#include shaders/light.glsl
+#include camera.glsl
+#include light.glsl
 
 layout(location = 0) out vec3 frag_color;
 

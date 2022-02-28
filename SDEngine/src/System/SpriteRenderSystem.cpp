@@ -1,5 +1,8 @@
 #include "System/SpriteRenderSystem.hpp"
-#include "Renderer/Font.hpp"
+#include "Graphics/Font.hpp"
+
+#include "Asset/TextureAsset.hpp"
+#include "Asset/FontAsset.hpp"
 
 namespace SD {
 
@@ -40,9 +43,10 @@ void SpriteRenderSystem::OnRender() {
                                     const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
         auto &frame = sprite_comp.frame;
-        auto texture = asset->Get<Texture>(frame.texture_id);
-        if (texture) {
-            datas.push_back({texture.get(), frame.uvs,
+        if (asset->Exists<TextureAsset>(frame.texture_id)) {
+            auto texture =
+                asset->GetAsset<TextureAsset>(frame.texture_id)->GetTexture();
+            datas.push_back({texture, frame.uvs,
                              transform_comp.GetWorldPosition(),
                              transform_comp.GetWorldRotation(), frame.size, id,
                              priority_comp.priority});
@@ -59,9 +63,11 @@ void SpriteRenderSystem::OnRender() {
         if (anim) {
             if (anim->GetFrameSize()) {
                 auto &frame = anim->GetFrame();
-                auto texture = asset->Get<Texture>(frame.texture_id);
-                if (texture) {
-                    datas.push_back({texture.get(), frame.uvs,
+                if (asset->Exists<TextureAsset>(frame.texture_id)) {
+                    auto texture =
+                        asset->GetAsset<TextureAsset>(frame.texture_id)
+                            ->GetTexture();
+                    datas.push_back({texture, frame.uvs,
                                      transform_comp.GetWorldPosition(),
                                      transform_comp.GetWorldRotation(),
                                      frame.size, id, priority_comp.priority});
@@ -94,8 +100,8 @@ void SpriteRenderSystem::OnRender() {
                          const TransformComponent &transformComp,
                          const TextComponent &textComp) {
         renderer->SetTextOrigin(0, 0);
-        auto font = asset->Get<Font>(textComp.font_id);
-        if (font) {
+        if (asset->Exists<FontAsset>(textComp.font_id)) {
+            auto font = asset->GetAsset<FontAsset>(textComp.font_id)->GetFont();
             renderer->DrawText(*font, textComp.text,
                                transformComp.GetWorldTransform().GetMatrix(),
                                textComp.color,

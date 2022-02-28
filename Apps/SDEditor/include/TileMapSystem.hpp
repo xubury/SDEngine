@@ -5,6 +5,8 @@
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGui/FileDialog.hpp"
 
+#include "Asset/TextureAsset.hpp"
+
 #include "TileBrush.hpp"
 
 namespace SD {
@@ -27,8 +29,7 @@ class TileMapSystem : public System {
     ImFileDialogInfo m_fileDialogInfo;
 
     // Selected sprite and its uvs
-    ResourceId m_texture_id;
-    std::string m_texture_path;
+    TextureAsset *m_texture_asset;
     std::array<glm::vec2, 2> m_uvs{glm::vec2{0, 0}, glm::vec2{0, 0}};
     int m_priority;
 

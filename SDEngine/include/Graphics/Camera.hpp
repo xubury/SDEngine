@@ -1,7 +1,7 @@
 #ifndef SD_CAMERA_HPP
 #define SD_CAMERA_HPP
 
-#include "Renderer/Export.hpp"
+#include "Graphics/Export.hpp"
 #include "Utility/Base.hpp"
 #include "Utility/Transform.hpp"
 #include "Utility/Math.hpp"
@@ -12,7 +12,7 @@ namespace SD {
 
 enum class CameraType { ORTHOGRAPHIC, PERSPECTIVE };
 
-class SD_RENDERER_API Camera {
+class SD_GRAPHICS_API Camera {
    public:
     Camera();
     Camera(CameraType type, float fov, float width, float height, float near_z,

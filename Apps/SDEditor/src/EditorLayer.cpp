@@ -5,6 +5,8 @@
 #include "ImGuizmo.h"
 #include "System/ScriptSystem.hpp"
 
+#include "Loader/TextureLoader.hpp"
+
 #include <glm/gtc/type_ptr.hpp>
 
 namespace SD {
@@ -32,7 +34,7 @@ void EditorLayer::OnInit() {
     m_editor_camera_system =
         CreateSystem<EditorCameraSystem>(m_width, m_height);
 
-    m_light_icon = asset->LoadAndGet<Texture>("icons/light.png");
+    m_light_icon = TextureLoader::LoadTexture2D("assets/icons/light.png");
 
     PushSystem(m_scene_panel);
     PushSystem(m_editor_camera_system);
@@ -370,14 +372,14 @@ void EditorLayer::OpenSaveSceneDialog() {
 
 void EditorLayer::ProcessDialog() {
     if (ImGui::FileDialog(&m_load_scene_open, &m_file_dialog_info)) {
-        auto new_scene =
-            asset->LoadAndGet<Scene>(m_file_dialog_info.result_path.string());
-        dispatcher->PublishEvent(NewSceneEvent{new_scene});
-        dispatcher->PublishEvent(EntitySelectEvent{entt::null, scene.get()});
-        m_scene_panel->Reset();
+        // auto new_scene =
+        //     asset->LoadAndGet<Scene>(m_file_dialog_info.result_path.string());
+        // dispatcher->PublishEvent(NewSceneEvent{new_scene});
+        // dispatcher->PublishEvent(EntitySelectEvent{entt::null, scene.get()});
+        // m_scene_panel->Reset();
     }
     if (ImGui::FileDialog(&m_save_scene_open, &m_file_dialog_info)) {
-        asset->SaveAsset(scene, m_file_dialog_info.result_path.string());
+        // asset->SaveAsset(scene, m_file_dialog_info.result_path.string());
     }
 }
 

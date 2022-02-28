@@ -3,8 +3,8 @@
 
 #include "System/Export.hpp"
 #include "Core/System.hpp"
-#include "Renderer/Font.hpp"
-#include "Renderer/Camera.hpp"
+#include "Graphics/Font.hpp"
+#include "Graphics/Camera.hpp"
 #include "Utility/Timing.hpp"
 
 namespace SD {

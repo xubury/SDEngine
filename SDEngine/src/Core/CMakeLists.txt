@@ -52,12 +52,13 @@ target_link_libraries(sd-core
     sd-utility
     sd-imgui
     sd-ecs
+    sd-renderer
+    sd-asset
 
     ${LUA_LIBRARIES}
     sol2
 
     PRIVATE
-    sd-loader
     SDL2::SDL2
     ${SDL2_IMAGE_LIBRARIES})
 

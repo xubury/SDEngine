@@ -2,7 +2,7 @@
 #define SD_EDITOR_LAYER_HPP
 
 #include "Core/Layer.hpp"
-#include "Renderer/Camera.hpp"
+#include "Graphics/Camera.hpp"
 
 #include "ScenePanel.hpp"
 #include "EditorCameraSystem.hpp"
@@ -37,7 +37,7 @@ class EditorLayer : public Layer {
 
     void OnImGui() override;
 
-    void OnEventProcess(const Event &event) override;
+    void OnEventProcess(const Event& event) override;
 
     void NewScene();
     void OpenLoadSceneDialog();

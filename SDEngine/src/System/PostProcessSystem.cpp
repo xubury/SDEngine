@@ -1,6 +1,8 @@
 #include "System/PostProcessSystem.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 
+#include "Loader/ShaderLoader.hpp"
+
 namespace SD {
 
 PostProcessSystem::PostProcessSystem(int width, int height)
@@ -32,8 +34,8 @@ PostProcessSystem::PostProcessSystem(int width, int height)
 
 void PostProcessSystem::OnInit() {
     System::OnInit();
-    m_blur_shader = asset->LoadAndGet<Shader>("shaders/blur.glsl");
-    m_post_shader = asset->LoadAndGet<Shader>("shaders/post_process.glsl");
+    m_blur_shader = ShaderLoader::LoadShader("assets/shaders/blur.glsl");
+    m_post_shader = ShaderLoader::LoadShader("assets/shaders/post_process.glsl");
     InitBuffers();
 }
 
@@ -137,7 +139,7 @@ void PostProcessSystem::RenderPost() {
 
     m_post_shader->SetFloat("u_gamma", m_gamma_correction);
 
-    renderer->Submit(*m_post_shader.get(), *m_quad, MeshTopology::TRIANGLES,
+    renderer->Submit(*m_post_shader, *m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
 }
 

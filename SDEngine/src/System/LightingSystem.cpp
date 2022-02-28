@@ -5,6 +5,10 @@
 #include "Utility/Random.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 
+#include "Loader/ShaderLoader.hpp"
+
+#include "Asset/ModelAsset.hpp"
+
 namespace SD {
 
 DataFormat GetTextureFormat(GeometryBufferType type) {
@@ -88,12 +92,14 @@ void LightingSystem::OnPop() {
 }
 
 void LightingSystem::InitShaders() {
-    m_shadow_shader = asset->LoadAndGet<Shader>("shaders/shadow.glsl");
-    m_emssive_shader = asset->LoadAndGet<Shader>("shaders/emissive.glsl");
-    m_deferred_shader = asset->LoadAndGet<Shader>("shaders/deferred.glsl");
-    m_gbuffer_shader = asset->LoadAndGet<Shader>("shaders/gbuffer.glsl");
-    m_ssao_shader = asset->LoadAndGet<Shader>("shaders/ssao.glsl");
-    m_ssao_blur_shader = asset->LoadAndGet<Shader>("shaders/ssao_blur.glsl");
+    m_shadow_shader = ShaderLoader::LoadShader("assets/shaders/shadow.glsl");
+    m_emssive_shader = ShaderLoader::LoadShader("assets/shaders/emissive.glsl");
+    m_deferred_shader =
+        ShaderLoader::LoadShader("assets/shaders/deferred.glsl");
+    m_gbuffer_shader = ShaderLoader::LoadShader("assets/shaders/gbuffer.glsl");
+    m_ssao_shader = ShaderLoader::LoadShader("assets/shaders/ssao.glsl");
+    m_ssao_blur_shader =
+        ShaderLoader::LoadShader("assets/shaders/ssao_blur.glsl");
 }
 
 void LightingSystem::InitSSAO() {
@@ -231,10 +237,11 @@ void LightingSystem::RenderShadowMap() {
 
         modelView.each([this](const TransformComponent &transformComp,
                               const ModelComponent &modelComp) {
-            auto model = asset->Get<Model>(modelComp.model_id);
-            m_shadow_shader->SetMat4(
-                "u_model", transformComp.GetWorldTransform().GetMatrix());
-            if (model) {
+            if (asset->Exists<ModelAsset>(modelComp.model_id)) {
+                m_shadow_shader->SetMat4(
+                    "u_model", transformComp.GetWorldTransform().GetMatrix());
+                auto model =
+                    asset->GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
                 for (const auto &mesh : model->GetMeshes()) {
                     renderer->DrawMesh(*m_shadow_shader, mesh);
                 }
@@ -367,8 +374,9 @@ void LightingSystem::RenderGBuffer() {
             "u_model", transformComp.GetWorldTransform().GetMatrix());
         m_gbuffer_shader->SetUint("u_entity_id", static_cast<uint32_t>(entity));
         m_gbuffer_shader->SetVec3("u_color", modelComp.color);
-        auto model = asset->Get<Model>(modelComp.model_id);
-        if (model) {
+        if (asset->Exists<ModelAsset>(modelComp.model_id)) {
+            auto model =
+                asset->GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
             for (const auto &mesh : model->GetMeshes()) {
                 auto &material = model->GetMaterials()[mesh.GetMaterialIndex()];
                 m_gbuffer_shader->SetTexture(

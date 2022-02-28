@@ -3,7 +3,7 @@
 
 #include "Core/Export.hpp"
 #include "Core/Window.hpp"
-#include "Asset/AssetManager.hpp"
+#include "Asset/AssetStorage.hpp"
 #include "Utility/Ini.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Utility/EventDispatcher.hpp"
@@ -18,7 +18,7 @@ std::filesystem::path SD_CORE_API GetAppDirectory();
     Ref<Device> device;      \
     Ref<Ini> ini;            \
     Ref<Renderer> renderer;  \
-    Ref<AssetManager> asset; \
+    Ref<AssetStorage> asset; \
     Ref<Scene> scene;        \
     Ref<EventDispatcher> dispatcher;
 

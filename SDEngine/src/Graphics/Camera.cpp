@@ -1,4 +1,4 @@
-#include "Renderer/Camera.hpp"
+#include "Graphics/Camera.hpp"
 #include <glm/gtx/matrix_decompose.hpp>
 
 namespace SD {

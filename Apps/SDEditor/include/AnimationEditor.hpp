@@ -5,12 +5,15 @@
 #include "ImGui/FileDialog.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 
+#include "Asset/TextureAsset.hpp"
+
 namespace SD {
 
 class AnimationEditor : public System {
    public:
     AnimationEditor();
 
+    void OnInit() override;
     void OnPush() override;
     void OnPop() override;
     void OnImGui() override;
@@ -22,8 +25,7 @@ class AnimationEditor : public System {
     ImFileDialogInfo m_dialog_info;
     bool m_is_dialog_open;
 
-    ResourceId m_texture_id;
-    std::string m_texture_path;
+    TextureAsset *m_texture_asset;
     std::array<glm::vec2, 2> m_uvs;
     glm::ivec2 m_count;
     glm::ivec2 m_tile_size;

@@ -1,17 +1,16 @@
 #ifndef SD_RENDERER_HPP
 #define SD_RENDERER_HPP
 
+#include "Renderer/Export.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/RenderTarget.hpp"
 #include "Graphics/Device.hpp"
 #include "Graphics/Shader.hpp"
-#include "Renderer/Mesh.hpp"
-#include "Renderer/Camera.hpp"
-#include "Renderer/Font.hpp"
+#include "Graphics/Mesh.hpp"
+#include "Graphics/Camera.hpp"
+#include "Graphics/Font.hpp"
 
 namespace SD {
-
-class AssetManager;
 
 class Scene;
 
@@ -94,7 +93,7 @@ struct SD_RENDERER_API Renderer2DData {
 
 class SD_RENDERER_API Renderer {
    public:
-    Renderer(const Viewport &viewport, Device *device, AssetManager *asset);
+    Renderer(const Viewport &viewport, Device *device);
     ~Renderer();
     Renderer(const Renderer &) = delete;
     Renderer &operator=(const Renderer &) = delete;
@@ -185,7 +184,6 @@ class SD_RENDERER_API Renderer {
     void SetupShaderUBO(Shader &shader);
 
     Device *m_device;
-    AssetManager *m_asset;
 
     Ref<UniformBuffer> m_camera_UBO;
 

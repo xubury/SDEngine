@@ -4,15 +4,10 @@
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
 
-#include "Loader/ModelLoader.hpp"
-#include "Loader/FontLoader.hpp"
-#include "Loader/TextureLoader.hpp"
-#include "Loader/ShaderLoader.hpp"
-#include "Loader/SceneLoader.hpp"
-
-#include "Renderer/Model.hpp"
-#include "Renderer/Font.hpp"
-#include "Graphics/Shader.hpp"
+#include "Asset/ModelAsset.hpp"
+#include "Asset/FontAsset.hpp"
+#include "Asset/TextureAsset.hpp"
+#include "Asset/SceneAsset.hpp"
 
 namespace SD {
 
@@ -49,13 +44,33 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     m_window = Window::Create(property);
 
     device = Device::Create(m_window.get());
-    asset = CreateRef<AssetManager>();
-    asset->SetLoader<Model, ModelLoader>();
-    asset->SetLoader<Font, FontLoader>();
-    asset->SetLoader<Texture, TextureLoader>();
-    asset->SetLoader<Shader, ShaderLoader>();
-    asset->SetLoader<Scene, SceneLoader>();
-    asset->Load("assets");
+    asset = CreateRef<AssetStorage>();
+    asset->SetDirectory("assets");
+    asset->RegisterAsset<FontAsset>(AssetTypeData{
+        0,
+        std::bind(Asset::Create<FontAsset>),
+        std::bind(Asset::Destroy<FontAsset>, std::placeholders::_1),
+        {"ttc", "ttf"}});
+    asset->RegisterAsset<TextureAsset>(AssetTypeData{
+        0,
+        std::bind(Asset::Create<TextureAsset>),
+        std::bind(Asset::Destroy<TextureAsset>, std::placeholders::_1),
+        {"png", "jpg"}});
+    // asset->RegisterAsset<ShaderAsset>(AssetTypeData{
+    //     0,
+    //     std::bind(Asset::Create<ShaderAsset>),
+    //     std::bind(Asset::Destroy<ShaderAsset>, std::placeholders::_1),
+    //     {"png", "jpg"}});
+    asset->RegisterAsset<ModelAsset>(AssetTypeData{
+        1,
+        std::bind(Asset::Create<ModelAsset>),
+        std::bind(Asset::Destroy<ModelAsset>, std::placeholders::_1),
+        {"obj"}});
+    asset->RegisterAsset<SceneAsset>(AssetTypeData{
+        2,
+        std::bind(Asset::Create<SceneAsset>),
+        std::bind(Asset::Destroy<SceneAsset>, std::placeholders::_1),
+        {"scene"}});
 
     dispatcher = CreateRef<EventDispatcher>();
 
@@ -66,8 +81,6 @@ Application::Application(const std::string &title, GraphicsAPI api) {
 }
 
 Application::~Application() {
-    asset->Save();
-
     glm::ivec2 size = m_window->GetSize();
     ini->SetInteger("window", "width", size.x);
     ini->SetInteger("window", "height", size.y);

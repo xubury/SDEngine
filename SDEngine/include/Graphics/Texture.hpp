@@ -66,9 +66,8 @@ class SD_GRAPHICS_API Texture {
 
    protected:
     Texture(int width, int height, int samples, TextureType type,
-            DataFormat format, DataFormatType format_type,
-            TextureWrap wrap, TextureMagFilter filter,
-            TextureMinFilter min_filter);
+            DataFormat format, DataFormatType format_type, TextureWrap wrap,
+            TextureMagFilter filter, TextureMinFilter min_filter);
 
     int m_width;
     int m_height;

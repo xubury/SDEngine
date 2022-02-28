@@ -41,10 +41,9 @@ target_include_directories(sd-loader
     ${SD_ENGINE_SOURCE_DIR}/include)
 
 target_link_libraries(sd-loader 
-    PUBLIC 
-    sd-utility 
+    PUBLIC
+    sd-utility
     sd-graphics
-    sd-renderer
     sd-ecs
 
     PRIVATE

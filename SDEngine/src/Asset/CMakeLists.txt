@@ -15,7 +15,7 @@ add_library(sd-asset ${Asset_Src})
 target_compile_options(sd-asset PUBLIC -Wall -Wextra -Wundef -pedantic -std=c++17)
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(sd-asset 
+    target_compile_definitions(sd-asset
         INTERFACE
         SD_ASSET_IMPORT
 
@@ -29,7 +29,7 @@ target_include_directories(sd-asset
 
 target_link_libraries(sd-asset
     PUBLIC
-    sd-utility)
+    sd-loader)
 
 install(TARGETS sd-asset LIBRARY DESTINATION lib)
 

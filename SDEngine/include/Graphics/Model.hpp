@@ -1,21 +1,19 @@
 #ifndef SD_MODEL_HPP
 #define SD_MODEL_HPP
 
-#include "Renderer/Export.hpp"
-#include "Renderer/Mesh.hpp"
-#include "Renderer/Material.hpp"
+#include "Graphics/Export.hpp"
+#include "Graphics/Mesh.hpp"
+#include "Graphics/Material.hpp"
 
 namespace SD {
 
-class SD_RENDERER_API Model {
+class SD_GRAPHICS_API Model {
    public:
     Model() = default;
 
     const std::vector<Mesh> &GetMeshes() const { return m_meshes; };
-    std::vector<Mesh> &GetMeshes() { return m_meshes; };
 
-    const std::vector<Material> &GetMaterial() const { return m_materials; };
-    std::vector<Material> &GetMaterials() { return m_materials; };
+    const std::vector<Material> &GetMaterials() const { return m_materials; };
 
     void AddMesh(const Mesh &mesh);
     void AddMesh(Mesh &&mesh);

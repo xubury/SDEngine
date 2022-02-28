@@ -2,28 +2,21 @@
 #define SD_FONT_LOADER_HPP
 
 #include "Loader/Export.hpp"
-#include "Renderer/Font.hpp"
-#include "Asset/AssetManager.hpp"
+#include "Graphics/Font.hpp"
 
 typedef struct FT_LibraryRec_ *FT_Library;
 typedef struct FT_FaceRec_ *FT_Face;
 
 namespace SD {
 
-class SD_LOADER_API FontLoader : public AssetLoader {
+class SD_LOADER_API FontLoader {
    public:
-    FontLoader(AssetManager &manager);
-
-    Ref<void> LoadAsset(const std::string &path) override;
-
-    ~FontLoader();
+    static Ref<Font> LoadFont(const std::string &path, int32_t pixel_height);
 
    private:
-    void LoadGlyph(Font &font);
-    void LoadRangedGlyph(Font &font, char32_t start, char32_t end);
-
-    FT_Library m_ft;
-    FT_Face m_face;
+    static void LoadGlyph(FT_Face face, Font *font);
+    static void LoadRangedGlyph(FT_Face face, Font *font, char32_t start,
+                                char32_t end);
 };
 
 }  // namespace SD

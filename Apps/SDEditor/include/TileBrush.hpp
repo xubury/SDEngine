@@ -17,7 +17,7 @@ class TileBrush {
    public:
     glm::ivec2 count{0, 0};
     glm::ivec2 pivot{0, 0};
-    glm::ivec2 tile_size;
+    glm::ivec2 tile_size{10, 10};
 
     glm::ivec2 WorldToTile(const glm::vec3 &world,
                            const Transform *transform = nullptr) const;

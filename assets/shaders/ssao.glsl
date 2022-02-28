@@ -14,7 +14,7 @@ void main() {
 #shader fragment
 #version 450 core
 
-#include shaders/camera.glsl
+#include camera.glsl
 
 layout(location = 0) out float frag_color;
 

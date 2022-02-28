@@ -4,6 +4,10 @@
 #include "ImGui/ImGuiWidget.hpp"
 #include "Asset/Asset.hpp"
 
+#include "Asset/TextureAsset.hpp"
+#include "Asset/FontAsset.hpp"
+#include "Asset/ModelAsset.hpp"
+
 #define ECS_MOVEENTITY "ECS MOVEENTITY"
 
 namespace SD {
@@ -315,21 +319,23 @@ void ScenePanel::DrawComponents(Entity &entity) {
             fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
             fileDialogInfo.title = "Open File";
             fileDialogInfo.file_name = "";
-            fileDialogInfo.directory_path = asset->GetRootPath();
+            fileDialogInfo.directory_path = asset->GetDirectory();
         }
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
             try {
-                mc.model_id =
-                    asset->LoadAsset<Model>(fileDialogInfo.result_path);
-                mc.model_path = asset->GetAssetPath(mc.model_id);
+                ModelAsset *model =
+                    asset->LoadAsset<ModelAsset>(fileDialogInfo.result_path);
+                mc.model_id = model->GetStringId();
+                mc.model_path = model->GetPath();
             } catch (const Exception &e) {
                 SD_CORE_ERROR("Error loading model: {}", e.what());
             }
         }
 
         ImGui::ColorEdit3("Color", &mc.color[0]);
-        auto model = asset->Get<Model>(mc.model_id);
-        if (model) {
+        if (asset->Exists<ModelAsset>(fileDialogInfo.result_path)) {
+            auto model = asset->GetAsset<ModelAsset>(fileDialogInfo.result_path)
+                             ->GetModel();
             DrawMaterialsList(model->GetMaterials(),
                               &m_selected_material_id_map[entity]);
         }
@@ -397,13 +403,14 @@ void ScenePanel::DrawComponents(Entity &entity) {
             fileDialogInfo.title = "Open File";
             fileDialogInfo.regex_match = FONT_FILTER;
             fileDialogInfo.file_name = "";
-            fileDialogInfo.directory_path = asset->GetRootPath();
+            fileDialogInfo.directory_path = asset->GetDirectory();
         }
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
             try {
-                textComp.font_id =
-                    asset->LoadAsset<Font>(fileDialogInfo.result_path);
-                textComp.font_path = asset->GetAssetPath(textComp.font_id);
+                auto font_asset =
+                    asset->LoadAsset<FontAsset>(fileDialogInfo.result_path);
+                textComp.font_id = font_asset->GetStringId();
+                textComp.font_path = font_asset->GetPath();
             } catch (const Exception &e) {
                 SD_CORE_ERROR("Error loading font: {}", e.what());
             }
@@ -455,8 +462,9 @@ void ScenePanel::DrawComponents(Entity &entity) {
     DrawComponent<SpriteComponent>(
         "Sprite", entity, [&](SpriteComponent &sprite_comp) {
             auto &frame = sprite_comp.frame;
-            auto texture = asset->Get<Texture>(frame.texture_id);
-            if (texture) {
+            if (asset->Exists<TextureAsset>(frame.texture_id)) {
+                auto texture = asset->GetAsset<TextureAsset>(frame.texture_id)
+                                   ->GetTexture();
                 ImGui::DrawTexture(*texture,
                                    ImVec2(frame.uvs[0].x, frame.uvs[0].y),
                                    ImVec2(frame.uvs[1].x, frame.uvs[1].y));
@@ -480,8 +488,10 @@ void ScenePanel::DrawComponents(Entity &entity) {
             }
             if (frame_index < static_cast<int>(anim.GetFrameSize())) {
                 const auto &frame = anim.GetFrame(frame_index);
-                const auto texture = asset->Get<Texture>(frame.texture_id);
-                if (texture) {
+                if (asset->Exists<TextureAsset>(frame.texture_id)) {
+                    auto texture =
+                        asset->GetAsset<TextureAsset>(frame.texture_id)
+                            ->GetTexture();
                     ImGui::DrawTexture(*texture,
                                        ImVec2(frame.uvs[0].x, frame.uvs[0].y),
                                        ImVec2(frame.uvs[1].x, frame.uvs[1].y));
