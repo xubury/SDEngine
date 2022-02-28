@@ -4,6 +4,7 @@
 #include "Utility/Base.hpp"
 
 #include "Asset/Export.hpp"
+#include "Utility/String.hpp"
 #include "Utility/Serialize.hpp"
 #include "Utility/ResourceId.hpp"
 

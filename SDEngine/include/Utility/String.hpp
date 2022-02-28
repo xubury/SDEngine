@@ -16,6 +16,15 @@ inline std::string RemoveExtension(const std::string &str) {
     return str.substr(0, lastindex);
 }
 
+inline std::string GetExtension(const std::string &str) {
+    size_t lastindex = str.find_last_of(".");
+    return str.substr(lastindex);
+}
+
+inline bool HasExtension(const std::string &str) {
+    return str.find_last_of(".") != std::string::npos;
+}
+
 inline void TrimLeft(std::string &s) {
     s.erase(s.begin(), std::find_if(s.begin(), s.end(),
                                     [](char ch) { return !std::isspace(ch); }));
