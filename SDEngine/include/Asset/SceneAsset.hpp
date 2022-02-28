@@ -9,10 +9,9 @@ namespace SD {
 class SceneAsset : public Asset {
    public:
     SceneAsset() = default;
-    void *LoadFromFile(const std::string &path) {
-        *this = LoadArchiveFromFile<SceneAsset>(path);
+    void LoadFromFile(const std::string &path) {
+        LoadArchiveFromFile<SceneAsset>(path, this);
         m_scene = SceneLoader::LoadScene(m_scene_path);
-        return this;
     }
 
     Scene *GetScene() { return m_scene.get(); }

@@ -11,10 +11,9 @@ namespace SD {
 class FontAsset : public Asset {
    public:
     FontAsset() : m_pixel_height(20){};
-    void *LoadFromFile(const std::string &path) override {
-        *this = LoadArchiveFromFile<FontAsset>(path);
+    void LoadFromFile(const std::string &path) override {
+        LoadArchiveFromFile<FontAsset>(path, this);
         m_font = FontLoader::LoadFont(m_font_path, m_pixel_height);
-        return this;
     }
 
     Font *GetFont() { return m_font.get(); }

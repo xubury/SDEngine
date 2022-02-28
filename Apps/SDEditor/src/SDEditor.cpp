@@ -28,6 +28,18 @@ void SDEditor::OnStart() {
     m_layer = CreateLayer<EditorLayer>(viewport_width, viewport_height,
                                        GetWindow().GetMSAA());
     PushLayer(m_layer);
+    // asset module test
+    TextureAsset *texture_asset =
+        asset->CreateAsset<TextureAsset>("test.asset");
+    texture_asset->SetTexturePath(std::filesystem::current_path() /
+                                  "assets/textures/awesomeface.png");
+
+    asset->SaveAsset<TextureAsset>(texture_asset->GetId());
+    asset->Unload<TextureAsset>(texture_asset->GetId());
+
+    TextureAsset *loaded = asset->LoadAsset<TextureAsset>("test.asset");
+    SD_CORE_TRACE("texture path:{} path:{}", loaded->GetTexturePath(),
+                  loaded->GetPath());
 }
 
 void SDEditor::OnExit() {

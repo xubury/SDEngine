@@ -8,17 +8,30 @@ namespace SD {
 
 class TextureAsset : public Asset {
    public:
-    void *LoadFromFile(const std::string &path) {
-        *this = Asset::LoadArchiveFromFile<TextureAsset>(path);
-        if (m_type == TextureType::TEX_2D) {
-            m_texture = TextureLoader::LoadTexture2D(m_texture_path[0]);
-        } else if (m_type == TextureType::TEX_CUBE) {
-            m_texture = TextureLoader::LoadTextureCube(m_texture_path);
+    TextureAsset() : m_type(TextureType::TEX_2D), m_texture_path(1) {}
+    ~TextureAsset() { SD_CORE_TRACE("deleting asset"); }
+
+    void LoadFromFile(const std::string &path) override {
+        Asset::LoadArchiveFromFile<TextureAsset>(path, this);
+        try {
+            if (m_type == TextureType::TEX_2D) {
+                // TODO:fix the path problem
+                m_texture = TextureLoader::LoadTexture2D(m_texture_path[0]);
+            } else if (m_type == TextureType::TEX_CUBE) {
+                m_texture = TextureLoader::LoadTextureCube(m_texture_path);
+            }
+        } catch (const Exception &e) {
+            SD_CORE_WARN(e.what());
         }
-        return this;
     }
 
     Texture *GetTexture() { return m_texture.get(); }
+
+    void SetTexturePath(const std::string &path) {
+        m_texture_path[0] =
+            std::filesystem::path(path).lexically_relative(m_directory);
+    }
+    std::string GetTexturePath() const { return m_texture_path[0]; }
 
     SERIALIZE(m_type, m_wrap, m_filter, m_min_filter, m_texture_path)
 

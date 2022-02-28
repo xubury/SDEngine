@@ -56,7 +56,7 @@ void TileMapSystem::OnImGui() {
                         auto &frame = comp.frame;
                         child.GetComponent<TransformComponent>()
                             .SetWorldPosition(world);
-                        frame.texture_id = m_texture_asset->GetStringId();
+                        frame.texture_id = m_texture_asset->GetId();
                         frame.texture_path = m_texture_asset->GetPath();
                         frame.uvs = m_uvs;
                         frame.size = m_brush.tile_size * m_brush.count;

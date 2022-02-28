@@ -325,7 +325,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
             try {
                 ModelAsset *model =
                     asset->LoadAsset<ModelAsset>(fileDialogInfo.result_path);
-                mc.model_id = model->GetStringId();
+                mc.model_id = model->GetId();
                 mc.model_path = model->GetPath();
             } catch (const Exception &e) {
                 SD_CORE_ERROR("Error loading model: {}", e.what());
@@ -333,9 +333,10 @@ void ScenePanel::DrawComponents(Entity &entity) {
         }
 
         ImGui::ColorEdit3("Color", &mc.color[0]);
-        if (asset->Exists<ModelAsset>(fileDialogInfo.result_path)) {
-            auto model = asset->GetAsset<ModelAsset>(fileDialogInfo.result_path)
-                             ->GetModel();
+        ResourceId rid(fileDialogInfo.result_path);
+        if (asset->Exists<ModelAsset>(rid)) {
+            auto model =
+                asset->GetAsset<ModelAsset>(ResourceId(rid))->GetModel();
             DrawMaterialsList(model->GetMaterials(),
                               &m_selected_material_id_map[entity]);
         }
@@ -409,7 +410,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
             try {
                 auto font_asset =
                     asset->LoadAsset<FontAsset>(fileDialogInfo.result_path);
-                textComp.font_id = font_asset->GetStringId();
+                textComp.font_id = font_asset->GetId();
                 textComp.font_path = font_asset->GetPath();
             } catch (const Exception &e) {
                 SD_CORE_ERROR("Error loading font: {}", e.what());

@@ -13,4 +13,7 @@ ResourceId::ResourceId()
 
 ResourceId::ResourceId(uint64_t resource_id) : m_resource_id(resource_id) {}
 
+ResourceId::ResourceId(const std::string &str)
+    : m_resource_id(std::hash<std::string>{}(str)) {}
+
 }  // namespace SD

@@ -66,7 +66,7 @@ void AnimationEditor::OnImGui() {
                 }
                 if (ImGui::Button("Add Frame")) {
                     anim_comp.animations[m_anim_index].PushBack(
-                        SpriteFrame{m_texture_asset->GetStringId(),
+                        SpriteFrame{m_texture_asset->GetId(),
                                     m_texture_asset->GetPath(), m_uvs,
                                     m_count * m_tile_size});
                 }

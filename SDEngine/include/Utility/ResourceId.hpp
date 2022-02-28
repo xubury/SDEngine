@@ -13,6 +13,7 @@ class SD_UTILITY_API ResourceId {
    public:
     ResourceId();
     ResourceId(uint64_t resource_id);
+    explicit ResourceId(const std::string &str);
     ResourceId(const ResourceId &) = default;
     ~ResourceId() = default;
 

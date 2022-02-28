@@ -38,11 +38,6 @@ class AssetStorage {
         return cache.find(rid) != cache.end();
     }
 
-    template <typename T>
-    bool Exists(const std::string& str) {
-        return Exists<T>(std::hash<std::string>{}(str));
-    }
-
     bool Exists(TypeId tid, ResourceId rid) {
         auto& cache = m_assets[tid];
         return cache.find(rid) != cache.end();
@@ -55,35 +50,40 @@ class AssetStorage {
     }
 
     template <typename T>
-    T* GetAsset(const std::string& path) {
-        return GetAsset<T>(std::hash<std::string>{}(path));
-    }
-
-    template <typename T>
     T* LoadAsset(const std::string& path) {
-        ResourceId rid = std::hash<std::string>{}(path);
+        ResourceId rid(path);
         TypeId tid = GetTypeId<T>();
         T* asset = nullptr;
         if (!Exists(tid, rid)) {
-            T* asset = new T;
-            asset->LoadFromFile((m_directory / path).string());
-            Add(asset, tid, rid);
+            asset = new T;
+            asset->m_directory = m_directory;
             asset->m_path = path;
             asset->m_rid = rid;
+            asset->LoadFromFile((m_directory / path).string());
+            Add(asset, tid, rid);
         } else {
-            asset = GetAsset<T>(path);
+            asset = GetAsset<T>(rid);
         }
         return asset;
     }
 
     template <typename T>
     T* CreateAsset(const std::string& path) {
-        ResourceId rid = std::hash<std::string>{}(path);
+        ResourceId rid(path);
         TypeId tid = GetTypeId<T>();
         T* asset = new T;
+        asset->m_directory = m_directory;
+        asset->m_path = path;
+        asset->m_rid = rid;
+        Asset::SaveArchiveToFile((m_directory / path).string(), *asset);
         Add(asset, tid, rid);
-        Asset::SaveArchiveToFile(path, *asset);
         return asset;
+    }
+
+    template <typename T>
+    void SaveAsset(ResourceId rid) {
+        T* obj = GetAsset<T>(rid);
+        Asset::SaveArchiveToFile((m_directory / obj->m_path).string(), *obj);
     }
 
     void Add(Asset* data, TypeId tid, ResourceId rid) {
@@ -94,11 +94,6 @@ class AssetStorage {
     template <typename T>
     void Add(T* data, ResourceId rid) {
         Add(data, GetTypeId<T>(), rid);
-    }
-
-    template <typename T>
-    void Add(T* data, const std::string& path) {
-        Add(data, GetTypeId<T>(), std::hash<std::string>{}(path));
     }
 
     template <typename T>
@@ -115,11 +110,6 @@ class AssetStorage {
         cache.erase(rid);
     }
 
-    template <typename T>
-    void Unload(const std::string& path) {
-        Unload<T>(std::hash<std::string>{}(path));
-    }
-
     void Unload(TypeId tid, ResourceId rid) {
         auto& cache = m_assets[tid];
         if (!Exists(tid, rid)) {
@@ -130,10 +120,6 @@ class AssetStorage {
         auto* ptr = cache[rid];
         GetTypeData(tid).m_destroy_func(ptr);
         cache.erase(rid);
-    }
-
-    void Unload(TypeId tid, const std::string& path) {
-        Unload(tid, std::hash<std::string>{}(path));
     }
 
     template <typename T>
@@ -158,7 +144,9 @@ class AssetStorage {
     }
 
     void SetDirectory(const std::filesystem::path& directory) {
-        m_directory = directory;
+        m_directory = directory.is_relative()
+                          ? std::filesystem::current_path() / directory
+                          : directory;
     }
 
     const std::filesystem::path& GetDirectory() const { return m_directory; }

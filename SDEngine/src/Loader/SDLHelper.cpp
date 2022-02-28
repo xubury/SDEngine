@@ -4,6 +4,9 @@
 namespace SD {
 
 SDL_Surface* LoadImage(const std::string& path) {
+    if (path.empty()) {
+        throw Exception("Empty path!");
+    }
     SDL_Surface* loaded = IMG_Load(path.c_str());
     SD_CORE_TRACE("Loading image form: {}...", path);
     if (loaded == nullptr) {
