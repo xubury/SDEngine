@@ -8,7 +8,7 @@ namespace SD {
 const uint8_t MAX_TEXTURES = 32;
 
 GLShader::GLShader()
-    : m_id(0), m_vertexId(0), m_fragmentId(0), m_geometryId(0), m_computeId(0) {
+    : m_vertexId(0), m_fragmentId(0), m_geometryId(0), m_computeId(0) {
     m_id = glCreateProgram();
 }
 
@@ -74,8 +74,6 @@ void GLShader::LinkShaders() {
     CheckCompileErrors(m_id, "Program");
     DestroyShaders();
 }
-
-uint32_t GLShader::GetId() const { return m_id; }
 
 void GLShader::CheckCompileErrors(uint32_t shader, const std::string& type) {
     int success;

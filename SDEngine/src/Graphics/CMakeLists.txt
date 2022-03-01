@@ -27,6 +27,7 @@ set(OpenGL_Src
 
 set(Graphics_Include
     ${OpenGL_Include}
+    ${Include_Root}/Resource.hpp
     ${Include_Root}/Bitmap.hpp
     ${Include_Root}/Camera.hpp
     ${Include_Root}/Light.hpp

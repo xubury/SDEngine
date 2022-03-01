@@ -6,7 +6,7 @@
 
 namespace SD {
 
-GLVertexArray::GLVertexArray() : m_id(0), m_attrib_id(0) {
+GLVertexArray::GLVertexArray() : m_attrib_id(0) {
     glCreateVertexArrays(1, &m_id);
 }
 

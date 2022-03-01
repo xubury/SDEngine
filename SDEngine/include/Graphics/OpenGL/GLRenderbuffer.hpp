@@ -11,12 +11,8 @@ class SD_GRAPHICS_API GLRenderbuffer : public Renderbuffer {
     GLRenderbuffer(int width, int height, int samples, DataFormat format,
                    DataFormatType format_type);
 
-    uint32_t GetId() const override { return gl_id; }
-
    private:
     void Allocate();
-
-    GLuint gl_id;
 };
 
 }  // namespace SD

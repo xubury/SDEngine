@@ -27,7 +27,6 @@ class SD_GRAPHICS_API GLVertexArray : public VertexArray {
     Ref<IndexBuffer> GetIndexBuffer() override;
 
    private:
-    GLuint m_id;
     std::vector<Ref<VertexBuffer>> m_vertex_buffers;
     Ref<IndexBuffer> m_indexBuffer;
     std::vector<VertexBufferLayout> m_layouts;

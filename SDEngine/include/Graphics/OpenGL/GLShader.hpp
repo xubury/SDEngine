@@ -23,8 +23,6 @@ class SD_GRAPHICS_API GLShader : public Shader {
 
     void LinkShaders() override;
 
-    uint32_t GetId() const override;
-
     void SetBool(const std::string& name, bool value) override;
 
     void SetInt(const std::string& name, int value) override;
@@ -57,7 +55,6 @@ class SD_GRAPHICS_API GLShader : public Shader {
 
     void DestroyShaders();
 
-    GLuint m_id;
     GLuint m_vertexId;
     GLuint m_fragmentId;
     GLuint m_geometryId;

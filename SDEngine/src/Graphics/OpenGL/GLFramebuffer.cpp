@@ -5,7 +5,7 @@
 namespace SD {
 
 GLFramebuffer::GLFramebuffer(int width, int height)
-    : m_id(0), m_width(width), m_height(height), m_texture_cnt(0) {
+    : Framebuffer(width, height), m_texture_cnt(0) {
     glCreateFramebuffers(1, &m_id);
 }
 

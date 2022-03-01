@@ -10,14 +10,14 @@ GLRenderbuffer::GLRenderbuffer(int width, int height, int samples,
 }
 
 void GLRenderbuffer::Allocate() {
-    glCreateRenderbuffers(1, &gl_id);
+    glCreateRenderbuffers(1, &m_id);
 
     GLint gl_internal_format = TranslateInternalFormat(m_format, m_format_type);
     if (m_samples > 1) {
         glNamedRenderbufferStorageMultisample(
-            gl_id, m_samples, gl_internal_format, m_width, m_height);
+            m_id, m_samples, gl_internal_format, m_width, m_height);
     } else {
-        glNamedRenderbufferStorage(gl_id, gl_internal_format, m_width,
+        glNamedRenderbufferStorage(m_id, gl_internal_format, m_width,
                                    m_height);
     }
 }

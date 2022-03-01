@@ -7,7 +7,7 @@
 
 namespace SD {
 
-class SD_GRAPHICS_API VertexArray {
+class SD_GRAPHICS_API VertexArray : public Resource {
    public:
     static Ref<VertexArray> Create();
 

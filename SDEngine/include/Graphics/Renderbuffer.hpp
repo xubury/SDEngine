@@ -15,12 +15,10 @@ struct SD_GRAPHICS_API RenderbufferSpec {
         : samples(samples), format(format), format_type(format_type) {}
 };
 
-class SD_GRAPHICS_API Renderbuffer {
+class SD_GRAPHICS_API Renderbuffer : public Resource {
    public:
     static Ref<Renderbuffer> Create(int width, int height,
                                     const RenderbufferSpec &spec);
-
-    virtual uint32_t GetId() const = 0;
 
     int GetWidth() const { return m_width; }
     int GetHeight() const { return m_height; }

@@ -15,8 +15,6 @@ class GLTexture : public Texture {
 
     ~GLTexture();
 
-    uint32_t GetId() const override;
-
     void Bind() const override;
     void Unbind() const override;
 
@@ -35,7 +33,6 @@ class GLTexture : public Texture {
    private:
     void Allocate();
 
-    GLuint gl_id;
     GLenum gl_type;
     GLint gl_internal_format;
     GLenum gl_format;

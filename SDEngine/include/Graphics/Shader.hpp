@@ -3,6 +3,7 @@
 
 #include "Utility/Base.hpp"
 #include "Graphics/Export.hpp"
+#include "Graphics/Resource.hpp"
 
 #include <string>
 #include <vector>
@@ -17,7 +18,7 @@ class UniformBuffer;
 
 enum class ShaderType { INVALID, VERTEX, FRAGMENT, GEOMETRY, COMPUTE };
 
-class SD_GRAPHICS_API Shader {
+class SD_GRAPHICS_API Shader : public Resource {
    public:
     static Ref<Shader> Create();
 
@@ -30,8 +31,6 @@ class SD_GRAPHICS_API Shader {
     virtual void CompileShader(ShaderType type, const std::string& code) = 0;
 
     virtual void LinkShaders() = 0;
-
-    virtual uint32_t GetId() const = 0;
 
     virtual void SetBool(const std::string& name, bool value) = 0;
 

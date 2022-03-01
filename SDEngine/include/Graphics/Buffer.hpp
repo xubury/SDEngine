@@ -3,10 +3,11 @@
 
 #include "Utility/Base.hpp"
 #include "Graphics/Graphics.hpp"
+#include "Graphics/Resource.hpp"
 
 namespace SD {
 
-class SD_GRAPHICS_API Buffer {
+class SD_GRAPHICS_API Buffer : public Resource {
    public:
     virtual ~Buffer() = default;
 
@@ -22,8 +23,6 @@ class SD_GRAPHICS_API Buffer {
     virtual void BindBase(uint32_t index) const = 0;
 
     virtual void Unbind() const = 0;
-
-    virtual uint32_t GetId() const = 0;
 
    protected:
     Buffer() = default;

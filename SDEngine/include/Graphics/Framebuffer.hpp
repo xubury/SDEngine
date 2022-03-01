@@ -10,7 +10,7 @@
 
 namespace SD {
 
-class SD_GRAPHICS_API Framebuffer {
+class SD_GRAPHICS_API Framebuffer : public Resource {
    public:
     static Ref<Framebuffer> Create(int width, int height);
 
@@ -19,10 +19,8 @@ class SD_GRAPHICS_API Framebuffer {
     Framebuffer(const Framebuffer &) = delete;
     Framebuffer &operator=(const Framebuffer &) = delete;
 
-    virtual uint32_t GetId() const = 0;
-
-    virtual int GetWidth() const = 0;
-    virtual int GetHeight() const = 0;
+    int GetWidth() const { return m_width; };
+    int GetHeight() const { return m_height; };
 
     virtual void Attach(const TextureSpec &spec) = 0;
 
@@ -44,7 +42,10 @@ class SD_GRAPHICS_API Framebuffer {
     virtual const Texture *GetTexture(uint32_t attachment_id = 0) const = 0;
 
    protected:
-    Framebuffer() = default;
+    int32_t m_width;
+    int32_t m_height;
+    Framebuffer(int32_t width, int32_t height)
+        : m_width(width), m_height(height) {}
 };
 
 }  // namespace SD

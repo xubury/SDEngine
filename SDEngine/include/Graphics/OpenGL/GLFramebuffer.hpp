@@ -14,11 +14,6 @@ class GLFramebuffer : public Framebuffer {
     GLFramebuffer(int width, int height);
     virtual ~GLFramebuffer();
 
-    uint32_t GetId() const override { return m_id; }
-
-    int GetWidth() const override { return m_width; }
-    int GetHeight() const override { return m_height; }
-
     void Attach(const TextureSpec &spec) override;
 
     void Attach(const RenderbufferSpec &renderbuffer) override;
@@ -40,9 +35,6 @@ class GLFramebuffer : public Framebuffer {
     const std::vector<GLenum> &GetDrawables() const { return m_drawables; }
 
    private:
-    GLuint m_id;
-    int m_width;
-    int m_height;
     uint32_t m_texture_cnt;
     std::vector<Ref<void>> m_attachments;
     std::vector<GLenum> m_drawables;

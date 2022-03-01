@@ -3,6 +3,7 @@
 
 #include "Utility/Base.hpp"
 #include "Graphics/Graphics.hpp"
+#include "Graphics/Resource.hpp"
 
 namespace SD {
 
@@ -28,7 +29,7 @@ struct SD_GRAPHICS_API TextureSpec {
           min_filter(min_filter) {}
 };
 
-class SD_GRAPHICS_API Texture {
+class SD_GRAPHICS_API Texture : public Resource {
    public:
     static Ref<Texture> Create(int width, int height, const TextureSpec &spec);
 
@@ -53,8 +54,6 @@ class SD_GRAPHICS_API Texture {
 
     bool operator==(const Texture &other) const;
     bool operator!=(const Texture &other) const;
-
-    virtual uint32_t GetId() const = 0;
 
     int GetWidth() const;
     int GetHeight() const;

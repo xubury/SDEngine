@@ -163,8 +163,8 @@ void GLDevice::BlitFramebuffer(const Framebuffer *src, int src_x, int src_y,
                                int dst_x, int dst_y, int dst_width,
                                int dst_height, BufferBitMask mask,
                                BlitFilter filter) {
-    int src_id = src ? src->GetId() : 0;
-    int dst_id = dst ? dst->GetId() : 0;
+    uint32_t src_id = src ? src->GetId() : 0;
+    uint32_t dst_id = dst ? dst->GetId() : 0;
     GLint gl_mask = Translate(mask & BufferBitMask::COLOR_BUFFER_BIT) |
                     Translate(mask & BufferBitMask::DEPTH_BUFFER_BIT) |
                     Translate(mask & BufferBitMask::STENCIL_BUFFER_BIT);
