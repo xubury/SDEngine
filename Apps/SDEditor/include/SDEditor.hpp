@@ -9,8 +9,8 @@ namespace SD {
 class SDEditor : public Application {
    public:
     SDEditor();
-    void OnStart() override;
-    void OnExit() override;
+    void OnInit() override;
+    void OnDestroy() override;
 
    private:
     Ref<EditorLayer> m_layer;

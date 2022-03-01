@@ -58,9 +58,9 @@ Application &GetApp();
         return s_instance;               \
     }                                    \
     int main(int, char **) {             \
-        SD::GetApp().OnStart();          \
+        SD::GetApp().OnInit();           \
         SD::GetApp().Run();              \
-        SD::GetApp().OnExit();           \
+        SD::GetApp().OnDestroy();        \
         return 0;                        \
     }
 

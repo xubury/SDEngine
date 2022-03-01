@@ -16,6 +16,9 @@ class SD_CORE_API Application {
     Window &GetWindow() { return *m_window; }
 
    protected:
+    virtual void OnInit();
+    virtual void OnDestroy();
+
     ImGuiLayer *GetImGuiLayer() const { return m_imgui.get(); }
 
     template <typename T>
@@ -44,7 +47,7 @@ class SD_CORE_API Application {
     void PopLayer(const Ref<Layer> &layer);
 
     Application(const std::string &title, GraphicsAPI api);
-    virtual ~Application();
+    virtual ~Application() = default;
 
     Application(const Application &application) = delete;
     Application &operator=(const Application &application) = delete;
@@ -55,9 +58,6 @@ class SD_CORE_API Application {
     MAKE_APP_VARS
 
     friend int ::main(int argc, char **argv);
-
-    virtual void OnStart() = 0;
-    virtual void OnExit() = 0;
 
     void Run();
 

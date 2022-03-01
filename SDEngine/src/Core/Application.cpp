@@ -14,9 +14,12 @@ namespace SD {
 const std::string SETTING_FILENAME = "setting.ini";
 
 Application::Application(const std::string &title, GraphicsAPI api) {
-    std::string debug_path = (GetAppDirectory() / "Debug.txt").string();
+    std::string debug_path = (GetAppDirectory() / "Debug.txt").generic_string();
     Log::Init(debug_path);
     SD_CORE_INFO("Debug info is output to: {}", debug_path);
+
+    // Setting up which api to use
+    SetGraphicsAPI(api);
 
     ini = CreateRef<Ini>();
     std::filesystem::path ini_path = GetAppDirectory() / SETTING_FILENAME;
@@ -38,49 +41,39 @@ Application::Application(const std::string &title, GraphicsAPI api) {
 
     SDL(SDL_Init(SDL_INIT_EVERYTHING));
 
-    // Setting up which api to use
-    SetGraphicsAPI(api);
-
     m_window = Window::Create(property);
 
     device = Device::Create(m_window.get());
+
     asset = CreateRef<AssetStorage>();
+    asset->Init();
     asset->SetDirectory("assets");
     asset->RegisterAsset<FontAsset>(AssetTypeData{
-        0,
-        std::bind(Asset::Create<FontAsset>),
-        std::bind(Asset::Destroy<FontAsset>, std::placeholders::_1),
-        {"ttc", "ttf"}});
+        0, std::bind(Asset::Create<FontAsset>),
+        std::bind(Asset::Destroy<FontAsset>, std::placeholders::_1)});
     asset->RegisterAsset<TextureAsset>(AssetTypeData{
-        0,
-        std::bind(Asset::Create<TextureAsset>),
-        std::bind(Asset::Destroy<TextureAsset>, std::placeholders::_1),
-        {"png", "jpg"}});
-    // asset->RegisterAsset<ShaderAsset>(AssetTypeData{
-    //     0,
-    //     std::bind(Asset::Create<ShaderAsset>),
-    //     std::bind(Asset::Destroy<ShaderAsset>, std::placeholders::_1),
-    //     {"png", "jpg"}});
+        0, std::bind(Asset::Create<TextureAsset>),
+        std::bind(Asset::Destroy<TextureAsset>, std::placeholders::_1)});
     asset->RegisterAsset<ModelAsset>(AssetTypeData{
-        1,
-        std::bind(Asset::Create<ModelAsset>),
-        std::bind(Asset::Destroy<ModelAsset>, std::placeholders::_1),
-        {"obj"}});
+        1, std::bind(Asset::Create<ModelAsset>),
+        std::bind(Asset::Destroy<ModelAsset>, std::placeholders::_1)});
     asset->RegisterAsset<SceneAsset>(AssetTypeData{
-        2,
-        std::bind(Asset::Create<SceneAsset>),
-        std::bind(Asset::Destroy<SceneAsset>, std::placeholders::_1),
-        {"scene"}});
+        2, std::bind(Asset::Create<SceneAsset>),
+        std::bind(Asset::Destroy<SceneAsset>, std::placeholders::_1)});
 
     dispatcher = CreateRef<EventDispatcher>();
 
     scene = CreateRef<Scene>();
+}
 
+void Application::OnInit() {
     m_imgui = CreateLayer<ImGuiLayer>(m_window.get());
     PushOverlay(m_imgui);
 }
 
-Application::~Application() {
+void Application::OnDestroy() {
+    asset->Shutdown();
+
     glm::ivec2 size = m_window->GetSize();
     ini->SetInteger("window", "width", size.x);
     ini->SetInteger("window", "height", size.y);

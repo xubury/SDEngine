@@ -19,13 +19,12 @@ inline size_t GetTypeId() {
 using Cache = std::unordered_map<ResourceId, Asset*>;
 
 struct AssetTypeData {
-    int m_load_priority{0};
-    AssetCreateFunc m_create_func;
-    AssetDestroyFunc m_destroy_func;
-    std::vector<std::string> m_associated_extensions;
+    int load_priority{0};
+    AssetCreateFunc create_func;
+    AssetDestroyFunc destroy_func;
 };
 
-class AssetStorage {
+class SD_ASSET_API AssetStorage {
    public:
     AssetStorage() = default;
     ~AssetStorage() = default;
@@ -72,14 +71,21 @@ class AssetStorage {
     template <typename T>
     T* CreateAsset(const std::string& path) {
         std::string full_path = (m_directory / path).generic_string();
-
         ResourceId rid(full_path);
         TypeId tid = GetTypeId<T>();
-        T* asset = new T;
-        asset->m_path = full_path;
-        asset->m_rid = rid;
-        Asset::SaveArchiveToFile(asset->m_path, asset);
-        Add(asset, tid, rid);
+        T* asset = nullptr;
+        if (Exists(tid, rid)) {
+            SD_CORE_WARN(
+                "Trying to create an asset that already exists, returning the "
+                "existing one.");
+            asset = GetAsset<T>(rid);
+        } else {
+            asset = new T;
+            asset->m_path = full_path;
+            asset->m_rid = rid;
+            Asset::SaveArchiveToFile(asset->m_path, asset);
+            Add(asset, tid, rid);
+        }
         return asset;
     }
 
@@ -109,7 +115,7 @@ class AssetStorage {
             return;
         }
         auto* ptr = cache[rid];
-        GetTypeData(tid).m_destroy_func(ptr);
+        GetTypeData(tid).destroy_func(ptr);
         cache.erase(rid);
     }
 
@@ -121,7 +127,7 @@ class AssetStorage {
             return;
         }
         auto* ptr = cache[rid];
-        GetTypeData(tid).m_destroy_func(ptr);
+        GetTypeData(tid).destroy_func(ptr);
         cache.erase(rid);
     }
 

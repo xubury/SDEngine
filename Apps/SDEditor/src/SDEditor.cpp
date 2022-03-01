@@ -7,7 +7,9 @@ namespace SD {
 
 SDEditor::SDEditor() : Application("SD Editor", GraphicsAPI::OpenGL) {}
 
-void SDEditor::OnStart() {
+void SDEditor::OnInit() {
+    Application::OnInit();
+
     // lua test
     sol::state lua;
     int x = 0;
@@ -41,9 +43,11 @@ void SDEditor::OnStart() {
                   loaded->GetPath());
 }
 
-void SDEditor::OnExit() {
+void SDEditor::OnDestroy() {
     ini->SetInteger("editor", "viewport width", m_layer->GetViewportWidth());
     ini->SetInteger("editor", "viewport height", m_layer->GetViewportHeight());
+
+    Application::OnDestroy();
 }
 
 }  // namespace SD
