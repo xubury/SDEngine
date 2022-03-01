@@ -1,4 +1,4 @@
-#include "Renderer/Bitmap.hpp"
+#include "Graphics/Bitmap.hpp"
 
 namespace SD {
 

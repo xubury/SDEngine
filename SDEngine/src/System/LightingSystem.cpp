@@ -1,5 +1,4 @@
 #include "System/LightingSystem.hpp"
-#include "Asset/AssetManager.hpp"
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
 #include "Utility/Random.hpp"

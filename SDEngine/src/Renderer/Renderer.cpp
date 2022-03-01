@@ -1,10 +1,8 @@
 #include "Renderer/Renderer.hpp"
-#include "Asset/AssetManager.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Device.hpp"
 #include "Utility/String.hpp"
 
-#include "Asset/AssetStorage.hpp"
 #include "Loader/ShaderLoader.hpp"
 
 namespace SD {

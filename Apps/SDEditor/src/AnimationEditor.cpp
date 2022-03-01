@@ -3,7 +3,7 @@
 namespace SD {
 
 AnimationEditor::AnimationEditor()
-    : System("Anmiation Editor"), m_anim_index(0) {}
+    : System("Anmiation Editor"), m_texture_asset(nullptr), m_anim_index(0) {}
 
 void AnimationEditor::OnInit() { System::OnInit(); }
 
@@ -32,8 +32,8 @@ void AnimationEditor::OnImGui() {
             m_dialog_info.regex_match = IMG_FILTER;
         }
         if (ImGui::FileDialog(&m_is_dialog_open, &m_dialog_info)) {
-            m_texture_asset =
-                asset->LoadAsset<TextureAsset>(m_dialog_info.result_path);
+            m_texture_asset = asset->LoadAsset<TextureAsset>(
+                m_dialog_info.result_path.string());
         }
         if (m_texture_asset) {
             auto texture = m_texture_asset->GetTexture();
@@ -65,10 +65,9 @@ void AnimationEditor::OnImGui() {
                         FrameAnimation<SpriteFrame>());
                 }
                 if (ImGui::Button("Add Frame")) {
-                    anim_comp.animations[m_anim_index].PushBack(
-                        SpriteFrame{m_texture_asset->GetId(),
-                                    m_texture_asset->GetPath(), m_uvs,
-                                    m_count * m_tile_size});
+                    anim_comp.animations[m_anim_index].PushBack(SpriteFrame{
+                        m_texture_asset->GetId(), m_texture_asset->GetPath(),
+                        m_uvs, m_count * m_tile_size});
                 }
             }
         }

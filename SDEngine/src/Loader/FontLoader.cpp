@@ -1,13 +1,10 @@
 #include "Loader/FontLoader.hpp"
-#include "Renderer/Bitmap.hpp"
-#include "Utility/Ini.hpp"
+#include "Graphics/Bitmap.hpp"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
 namespace SD {
-
-const std::string SECTION_NAME = "Font";
 
 const char32_t UNICODE_RANGE[] = {
     0x0020, 0x00FF,  // Basic Latin + Latin Supplement

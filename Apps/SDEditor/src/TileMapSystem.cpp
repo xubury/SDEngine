@@ -99,7 +99,7 @@ void TileMapSystem::OnImGui() {
         if (ImGui::FileDialog(&m_file_dialog_open, &m_fileDialogInfo)) {
             try {
                 m_texture_asset = asset->LoadAsset<TextureAsset>(
-                    m_fileDialogInfo.result_path);
+                    m_fileDialogInfo.result_path.string());
             } catch (const Exception &e) {
                 SD_CORE_ERROR("Error loading sprite: {}", e.what());
             }

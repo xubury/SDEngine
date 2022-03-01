@@ -31,8 +31,7 @@ void SDEditor::OnStart() {
     // asset module test
     TextureAsset *texture_asset =
         asset->CreateAsset<TextureAsset>("test.asset");
-    texture_asset->SetTexturePath(std::filesystem::current_path() /
-                                  "assets/textures/awesomeface.png");
+    texture_asset->SetTexturePath("textures/awesomeface.png");
 
     asset->SaveAsset<TextureAsset>(texture_asset->GetId());
     asset->Unload<TextureAsset>(texture_asset->GetId());

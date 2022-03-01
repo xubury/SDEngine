@@ -324,7 +324,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
             try {
                 ModelAsset *model =
-                    asset->LoadAsset<ModelAsset>(fileDialogInfo.result_path);
+                    asset->LoadAsset<ModelAsset>(fileDialogInfo.result_path.string());
                 mc.model_id = model->GetId();
                 mc.model_path = model->GetPath();
             } catch (const Exception &e) {
@@ -333,7 +333,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
         }
 
         ImGui::ColorEdit3("Color", &mc.color[0]);
-        ResourceId rid(fileDialogInfo.result_path);
+        ResourceId rid(fileDialogInfo.result_path.string());
         if (asset->Exists<ModelAsset>(rid)) {
             auto model =
                 asset->GetAsset<ModelAsset>(ResourceId(rid))->GetModel();
@@ -409,7 +409,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
             try {
                 auto font_asset =
-                    asset->LoadAsset<FontAsset>(fileDialogInfo.result_path);
+                    asset->LoadAsset<FontAsset>(fileDialogInfo.result_path.string());
                 textComp.font_id = font_asset->GetId();
                 textComp.font_path = font_asset->GetPath();
             } catch (const Exception &e) {

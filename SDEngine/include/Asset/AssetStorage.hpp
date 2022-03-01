@@ -51,15 +51,17 @@ class AssetStorage {
 
     template <typename T>
     T* LoadAsset(const std::string& path) {
-        ResourceId rid(path);
+        std::string full_path = (m_directory / path).generic_string();
+
+        ResourceId rid(full_path);
         TypeId tid = GetTypeId<T>();
         T* asset = nullptr;
         if (!Exists(tid, rid)) {
             asset = new T;
-            asset->m_directory = m_directory;
-            asset->m_path = path;
+            asset->m_path = full_path;
             asset->m_rid = rid;
-            asset->LoadFromFile((m_directory / path).string());
+            Asset::LoadArchiveFromFile(asset->m_path, asset);
+            asset->Init();
             Add(asset, tid, rid);
         } else {
             asset = GetAsset<T>(rid);
@@ -69,21 +71,22 @@ class AssetStorage {
 
     template <typename T>
     T* CreateAsset(const std::string& path) {
-        ResourceId rid(path);
+        std::string full_path = (m_directory / path).generic_string();
+
+        ResourceId rid(full_path);
         TypeId tid = GetTypeId<T>();
         T* asset = new T;
-        asset->m_directory = m_directory;
-        asset->m_path = path;
+        asset->m_path = full_path;
         asset->m_rid = rid;
-        Asset::SaveArchiveToFile((m_directory / path).string(), *asset);
+        Asset::SaveArchiveToFile(asset->m_path, asset);
         Add(asset, tid, rid);
         return asset;
     }
 
     template <typename T>
     void SaveAsset(ResourceId rid) {
-        T* obj = GetAsset<T>(rid);
-        Asset::SaveArchiveToFile((m_directory / obj->m_path).string(), *obj);
+        T* asset = GetAsset<T>(rid);
+        Asset::SaveArchiveToFile(asset->m_path, asset);
     }
 
     void Add(Asset* data, TypeId tid, ResourceId rid) {

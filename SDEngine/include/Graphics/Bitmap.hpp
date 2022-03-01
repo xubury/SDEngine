@@ -2,11 +2,11 @@
 #define SD_BITMAP_HPP
 
 #include "Utility/Base.hpp"
-#include "Renderer/Export.hpp"
+#include "Graphics/Export.hpp"
 
 namespace SD {
 
-class SD_RENDERER_API Bitmap {
+class SD_GRAPHICS_API Bitmap {
    public:
     Bitmap(uint32_t width, uint32_t height, uint8_t channels);
     Bitmap(uint32_t width, uint32_t height, uint8_t channels, uint8_t *data);

@@ -9,10 +9,13 @@ namespace SD {
 class ModelAsset : public Asset {
    public:
     ModelAsset() = default;
-    void LoadFromFile(const std::string &path) override {
-        LoadArchiveFromFile<ModelAsset>(path, this);
-
-        m_model = ModelLoader::LoadModel(m_model_path);
+    void Init() override {
+        try {
+            m_model = ModelLoader::LoadModel(GetAbsolutePath(m_model_path));
+            Asset::Init();
+        } catch (const Exception &e) {
+            SD_CORE_WARN(e.what());
+        }
     }
 
     Model *GetModel() { return m_model.get(); }

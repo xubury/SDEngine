@@ -14,7 +14,33 @@ using TypeId = size_t;
 
 class SD_ASSET_API Asset {
    public:
+    Asset() : m_is_initialized(false){};
     virtual ~Asset() = default;
+
+    virtual void Init() { m_is_initialized = true; };
+
+    template <typename T>
+    static void SaveArchiveToFile(const std::string &path, const T *obj) {
+        if (std::filesystem::exists(path)) {
+            std::filesystem::remove(path);
+        }
+        std::ofstream os(path, std::ios::binary);
+        os << ASSET_IDENTIFIER;
+        cereal::PortableBinaryOutputArchive oarchive(os);
+        oarchive(*obj);
+    }
+
+    template <typename T>
+    static void LoadArchiveFromFile(const std::string &path, T *obj) {
+        std::ifstream is(path, std::ios::binary);
+        std::string id(ASSET_IDENTIFIER.size(), ' ');
+        is.read(id.data(), id.size());
+        if (id != ASSET_IDENTIFIER) {
+            throw Exception("Invalid asset file!");
+        }
+        cereal::PortableBinaryInputArchive iarchive(is);
+        iarchive(*obj);
+    }
 
     template <typename T, typename... ARGS>
     static Asset *Create(ARGS &&...args) {
@@ -38,56 +64,19 @@ class SD_ASSET_API Asset {
 
     const static std::string ASSET_IDENTIFIER;
 
-    // template <typename T, typename... ARGS>
-    // static T *GetCreateAssetData(AssetStorage *storage,
-    //                              const std::string &path) {
-    //     ResourceId sid = std::hash<std::string>{}(path);
-    //     T *data = nullptr;
-    //     if (storage->Exists<T>(sid)) {
-    //         data = storage->GetAsset<T>(sid);
-    //     } else {
-    //         data = new T();
-    //         data->m_sid = sid;
-    //         data->m_path = path;
-    //         SaveArchiveToFile(path, *data);
-    //         storage->Add(static_cast<void *>(data), GetTypeId<T>(), sid);
-    //     }
-    //     return data;
-    // }
+    bool IsInitialized() const { return m_is_initialized; }
+
+    std::string GetAbsolutePath(const std::string &path) {
+        return (std::filesystem::path(m_path).parent_path() / path)
+            .generic_string();
+    }
 
    protected:
     friend class AssetStorage;
 
-    virtual void LoadFromFile(const std::string &path) = 0;
-
-    template <typename T>
-    static void SaveArchiveToFile(const std::string &path, const T &obj) {
-        if (std::filesystem::exists(path)) {
-            std::filesystem::remove(path);
-        }
-        std::ofstream os(path, std::ios::binary);
-        os << ASSET_IDENTIFIER;
-        cereal::PortableBinaryOutputArchive oarchive(os);
-        oarchive(obj);
-    }
-
-    template <typename T>
-    static void LoadArchiveFromFile(const std::string &path, T *obj) {
-        std::ifstream is(path, std::ios::binary);
-        std::string id(ASSET_IDENTIFIER.size(), ' ');
-        is.read(id.data(), id.size());
-        if (id != ASSET_IDENTIFIER) {
-            throw Exception("Invalid asset file!");
-        }
-        cereal::PortableBinaryInputArchive iarchive(is);
-        iarchive(*obj);
-    }
-
+    bool m_is_initialized;
     ResourceId m_rid;
     std::string m_path;
-    std::filesystem::path m_directory;
-
-    Asset() = default;
 };
 
 using AssetCreateFunc = std::function<Asset *()>;

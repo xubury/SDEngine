@@ -27,6 +27,7 @@ set(OpenGL_Src
 
 set(Graphics_Include
     ${OpenGL_Include}
+    ${Include_Root}/Bitmap.hpp
     ${Include_Root}/Camera.hpp
     ${Include_Root}/Light.hpp
     ${Include_Root}/Terrain.hpp
@@ -49,6 +50,7 @@ set(Graphics_Include
 
 set(Graphics_Src
     ${OpenGL_Src}
+    ${Src_Root}/Bitmap.cpp
     ${Src_Root}/Camera.cpp
     ${Src_Root}/Light.cpp
     ${Src_Root}/Terrain.cpp

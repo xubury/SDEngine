@@ -144,15 +144,15 @@ static Material ProcessAiMaterial(const std::filesystem::path &directory,
             SD_CORE_ERROR("[processAiMaterial] Assimp GetTexture error!");
             continue;
         }
-        std::string full_path = directory / texture_path.C_Str();
+        std::string full_path = (directory / texture_path.C_Str()).string();
         Ref<Texture> texture;
         if (imported_materials.count(full_path) == 0) {
             texture = TextureLoader::LoadTexture2D(full_path);
+            texture->SetWrap(ConvertAssimpMapMode(ai_map_mode));
             imported_materials.emplace(full_path, texture);
         } else {
             texture = imported_materials.at(full_path);
         }
-        texture->SetWrap(ConvertAssimpMapMode(ai_map_mode));
         material.SetPath(ConvertAssimpTextureType(ai_type), full_path);
         material.SetTexture(ConvertAssimpTextureType(ai_type), texture);
     }

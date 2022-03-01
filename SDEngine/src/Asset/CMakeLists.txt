@@ -4,11 +4,14 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Asset)
 set(Asset_Include
     ${Include_Root}/Export.hpp
     ${Include_Root}/Asset.hpp
-    ${Include_Root}/AssetManager.hpp)
+    ${Include_Root}/FontAsset.hpp
+    ${Include_Root}/ModelAsset.hpp
+    ${Include_Root}/SceneAsset.hpp
+    ${Include_Root}/TextureAsset.hpp)
 
 set(Asset_Src
     ${Src_Root}/Asset.cpp
-    ${Src_Root}/AssetManager.cpp)
+    ${Src_Root}/AssetStorage.cpp)
 
 add_library(sd-asset ${Asset_Src})
 
