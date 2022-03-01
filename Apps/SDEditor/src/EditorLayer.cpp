@@ -1,4 +1,5 @@
 #include "EditorLayer.hpp"
+#include "ContentBrowser.hpp"
 #include "Core/Input.hpp"
 #include "Core/Application.hpp"
 #include "ImGui/ImGuiWidget.hpp"
@@ -36,6 +37,7 @@ void EditorLayer::OnInit() {
 
     m_light_icon = TextureLoader::LoadTexture2D("assets/icons/light.png");
 
+    PushSystem(CreateSystem<ContentBrowser>());
     PushSystem(m_scene_panel);
     PushSystem(m_editor_camera_system);
 }

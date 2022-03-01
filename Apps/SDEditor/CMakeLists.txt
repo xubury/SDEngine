@@ -10,6 +10,7 @@ add_executable(SDEditor
     src/SDEditor.cpp
     src/EditorLayer.cpp
     src/ScenePanel.cpp
+    src/ContentBrowser.cpp
     src/EditorCameraSystem.cpp
     src/AnimationEditor.cpp
     src/TileMapSystem.cpp
