@@ -35,7 +35,8 @@ PostProcessSystem::PostProcessSystem(int width, int height)
 void PostProcessSystem::OnInit() {
     System::OnInit();
     m_blur_shader = ShaderLoader::LoadShader("assets/shaders/blur.glsl");
-    m_post_shader = ShaderLoader::LoadShader("assets/shaders/post_process.glsl");
+    m_post_shader =
+        ShaderLoader::LoadShader("assets/shaders/post_process.glsl");
     InitBuffers();
 }
 
@@ -53,21 +54,21 @@ void PostProcessSystem::InitBuffers() {
 }
 
 void PostProcessSystem::OnPush() {
-    m_is_bloom = ini->GetBoolean("post process", "bloom", m_is_bloom);
+    m_is_bloom = setting->GetBoolean("post process", "bloom", m_is_bloom);
     m_bloom_factor =
-        ini->GetFloat("post process", "bloom factor", m_bloom_factor);
-    m_exposure = ini->GetFloat("post process", "exposure", m_exposure);
-    m_gamma_correction =
-        ini->GetFloat("post process", "gamma correction", m_gamma_correction);
+        setting->GetFloat("post process", "bloom factor", m_bloom_factor);
+    m_exposure = setting->GetFloat("post process", "exposure", m_exposure);
+    m_gamma_correction = setting->GetFloat("post process", "gamma correction",
+                                           m_gamma_correction);
     m_size_handler =
         dispatcher->Register(this, &PostProcessSystem::OnSizeEvent);
 }
 
 void PostProcessSystem::OnPop() {
-    ini->SetBoolean("post process", "bloom", m_is_bloom);
-    ini->SetFloat("post process", "bloom factor", m_bloom_factor);
-    ini->SetFloat("post process", "exposure", m_exposure);
-    ini->SetFloat("post process", "gamma correction", m_gamma_correction);
+    setting->SetBoolean("post process", "bloom", m_is_bloom);
+    setting->SetFloat("post process", "bloom factor", m_bloom_factor);
+    setting->SetFloat("post process", "exposure", m_exposure);
+    setting->SetFloat("post process", "gamma correction", m_gamma_correction);
     dispatcher->RemoveHandler(m_size_handler);
 }
 

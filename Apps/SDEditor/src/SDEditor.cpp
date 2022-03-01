@@ -17,8 +17,8 @@ void SDEditor::OnInit() {
     lua.script("beep()");
     SD_CORE_INFO("lua test: x={}", x);
 
-    int viewport_width = ini->GetInteger("editor", "viewport width", 800);
-    int viewport_height = ini->GetInteger("editor", "viewport height", 600);
+    int viewport_width = setting->GetInteger("editor", "viewport width", 800);
+    int viewport_height = setting->GetInteger("editor", "viewport height", 600);
 
     renderer = CreateRef<Renderer>(
         Viewport(0, 0, viewport_width, viewport_height), device.get());
@@ -44,8 +44,8 @@ void SDEditor::OnInit() {
 }
 
 void SDEditor::OnDestroy() {
-    ini->SetInteger("editor", "viewport width", m_layer->GetViewportWidth());
-    ini->SetInteger("editor", "viewport height", m_layer->GetViewportHeight());
+    setting->SetInteger("editor", "viewport width", m_layer->GetViewportWidth());
+    setting->SetInteger("editor", "viewport height", m_layer->GetViewportHeight());
 
     Application::OnDestroy();
 }

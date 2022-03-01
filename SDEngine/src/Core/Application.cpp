@@ -21,26 +21,17 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     // Setting up which api to use
     SetGraphicsAPI(api);
 
-    ini = CreateRef<Ini>();
-    std::filesystem::path ini_path = GetAppDirectory() / SETTING_FILENAME;
-    if (std::filesystem::exists(ini_path)) {
-        ini->Load(ini_path.string());
-    } else {
-        SD_CORE_WARN(
-            "No such ini file: {}. The application will create a new one.",
-            ini_path);
-    }
-
-    WindowProp property;
-    property.title = title;
-    property.width = ini->GetInteger("window", "width", property.width);
-    property.height = ini->GetInteger("window", "height", property.height);
-    property.msaa = ini->GetInteger("window", "msaa", property.msaa);
-    property.vsync = ini->GetBoolean("window", "vsync", property.vsync);
-    property.flag = SDL_WINDOW_RESIZABLE;
-
     SDL(SDL_Init(SDL_INIT_EVERYTHING));
 
+    InitSettings();
+
+    WindowProp property(
+        title, setting->GetInteger("window", "x", SDL_WINDOWPOS_CENTERED),
+        setting->GetInteger("window", "y", SDL_WINDOWPOS_CENTERED),
+        setting->GetInteger("window", "width", 800),
+        setting->GetInteger("window", "height", 600),
+        setting->GetInteger("window", "msaa", 4),
+        setting->GetBoolean("window", "vsync", true), SDL_WINDOW_RESIZABLE);
     m_window = Window::Create(property);
 
     device = Device::Create(m_window.get());
@@ -48,18 +39,7 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     asset = CreateRef<AssetStorage>();
     asset->Init();
     asset->SetDirectory("assets");
-    asset->RegisterAsset<FontAsset>(AssetTypeData{
-        0, std::bind(Asset::Create<FontAsset>),
-        std::bind(Asset::Destroy<FontAsset>, std::placeholders::_1)});
-    asset->RegisterAsset<TextureAsset>(AssetTypeData{
-        0, std::bind(Asset::Create<TextureAsset>),
-        std::bind(Asset::Destroy<TextureAsset>, std::placeholders::_1)});
-    asset->RegisterAsset<ModelAsset>(AssetTypeData{
-        1, std::bind(Asset::Create<ModelAsset>),
-        std::bind(Asset::Destroy<ModelAsset>, std::placeholders::_1)});
-    asset->RegisterAsset<SceneAsset>(AssetTypeData{
-        2, std::bind(Asset::Create<SceneAsset>),
-        std::bind(Asset::Destroy<SceneAsset>, std::placeholders::_1)});
+    RegisterAssets();
 
     dispatcher = CreateRef<EventDispatcher>();
 
@@ -75,12 +55,12 @@ void Application::OnDestroy() {
     asset->Shutdown();
 
     glm::ivec2 size = m_window->GetSize();
-    ini->SetInteger("window", "width", size.x);
-    ini->SetInteger("window", "height", size.y);
-    ini->SetInteger("window", "msaa", m_window->GetMSAA());
-    ini->SetBoolean("window", "vsync", m_window->GetIsVSync());
+    setting->SetInteger("window", "width", size.x);
+    setting->SetInteger("window", "height", size.y);
+    setting->SetInteger("window", "msaa", m_window->GetMSAA());
+    setting->SetBoolean("window", "vsync", m_window->GetIsVSync());
 
-    ini->Save((GetAppDirectory() / SETTING_FILENAME).string());
+    setting->Save((GetAppDirectory() / SETTING_FILENAME).string());
 
     SDL_Quit();
 }
@@ -98,6 +78,33 @@ void Application::PushOverlay(const Ref<Layer> &layer) {
 void Application::PopLayer(const Ref<Layer> &layer) {
     layer->OnPop();
     m_layers.Pop(layer);
+}
+
+void Application::InitSettings() {
+    setting = CreateRef<Ini>();
+    std::filesystem::path ini_path = GetAppDirectory() / SETTING_FILENAME;
+    if (std::filesystem::exists(ini_path)) {
+        setting->Load(ini_path.string());
+    } else {
+        SD_CORE_WARN(
+            "No such ini file: {}. The application will create a new one.",
+            ini_path);
+    }
+}
+
+void Application::RegisterAssets() {
+    asset->RegisterAsset<FontAsset>(AssetTypeData{
+        0, std::bind(Asset::Create<FontAsset>),
+        std::bind(Asset::Destroy<FontAsset>, std::placeholders::_1)});
+    asset->RegisterAsset<TextureAsset>(AssetTypeData{
+        0, std::bind(Asset::Create<TextureAsset>),
+        std::bind(Asset::Destroy<TextureAsset>, std::placeholders::_1)});
+    asset->RegisterAsset<ModelAsset>(AssetTypeData{
+        1, std::bind(Asset::Create<ModelAsset>),
+        std::bind(Asset::Destroy<ModelAsset>, std::placeholders::_1)});
+    asset->RegisterAsset<SceneAsset>(AssetTypeData{
+        2, std::bind(Asset::Create<SceneAsset>),
+        std::bind(Asset::Destroy<SceneAsset>, std::placeholders::_1)});
 }
 
 void Application::ProcessEvent(const Event &event) {

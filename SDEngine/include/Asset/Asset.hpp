@@ -57,13 +57,6 @@ class SD_ASSET_API Asset {
 
     const std::string &GetPath() const { return m_path; }
 
-    void SetStringId(const std::string &path) {
-        m_path = path;
-        m_rid = std::hash<std::string>{}(path);
-    }
-
-    const static std::string ASSET_IDENTIFIER;
-
     bool IsInitialized() const { return m_is_initialized; }
 
     std::string GetAbsolutePath(const std::string &path) {
@@ -77,6 +70,9 @@ class SD_ASSET_API Asset {
     bool m_is_initialized;
     ResourceId m_rid;
     std::string m_path;
+
+   private:
+    const static std::string ASSET_IDENTIFIER;
 };
 
 using AssetCreateFunc = std::function<Asset *()>;

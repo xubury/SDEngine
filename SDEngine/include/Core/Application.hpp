@@ -59,11 +59,16 @@ class SD_CORE_API Application {
 
     friend int ::main(int argc, char **argv);
 
+    void InitSettings();
+
+    void RegisterAssets();
+
     void Run();
 
     void ProcessEvent(const Event &event);
 
     void Tick(float dt);
+
     void Render();
 
     EventStack<Ref<Layer>> m_layers;

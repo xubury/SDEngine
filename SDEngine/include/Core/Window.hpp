@@ -20,7 +20,8 @@ struct SD_CORE_API WindowProp {
     int msaa;
     bool vsync;
     uint32_t flag;
-    WindowProp();
+    WindowProp(const std::string &title, int32_t x, int32_t y, int32_t width,
+               int32_t height, int32_t msaa, bool vsync, uint32_t flag);
 };
 
 class SD_CORE_API Window : public Context {

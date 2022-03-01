@@ -4,11 +4,11 @@
 #include "Core/Export.hpp"
 #include "Core/Window.hpp"
 #include "Asset/AssetStorage.hpp"
-#include "Utility/Ini.hpp"
+#include "Graphics/Device.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Utility/Ini.hpp"
 #include "Utility/EventDispatcher.hpp"
 #include "ECS/Scene.hpp"
-#include "Graphics/Device.hpp"
 
 namespace SD {
 
@@ -16,7 +16,7 @@ std::filesystem::path SD_CORE_API GetAppDirectory();
 
 #define APP_VARS             \
     Ref<Device> device;      \
-    Ref<Ini> ini;            \
+    Ref<Ini> setting;        \
     Ref<Renderer> renderer;  \
     Ref<AssetStorage> asset; \
     Ref<Scene> scene;        \
@@ -25,7 +25,7 @@ std::filesystem::path SD_CORE_API GetAppDirectory();
 #define SET_APP_VARS                       \
     void SetAppVars(const AppVars &vars) { \
         device = vars.device;              \
-        ini = vars.ini;                    \
+        setting = vars.setting;            \
         renderer = vars.renderer;          \
         asset = vars.asset;                \
         scene = vars.scene;                \
@@ -36,7 +36,7 @@ std::filesystem::path SD_CORE_API GetAppDirectory();
     AppVars MakeAppVars() {           \
         AppVars vars;                 \
         vars.device = device;         \
-        vars.ini = ini;               \
+        vars.setting = setting;       \
         vars.renderer = renderer;     \
         vars.asset = asset;           \
         vars.scene = scene;           \

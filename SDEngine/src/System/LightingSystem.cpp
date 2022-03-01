@@ -75,19 +75,19 @@ void LightingSystem::OnInit() {
 void LightingSystem::OnPush() {
     m_size_handler = dispatcher->Register(this, &LightingSystem::OnSizeEvent);
 
-    m_ssao_state = ini->GetBoolean("ssao", "state", true);
-    m_ssao_radius = ini->GetFloat("ssao", "radius", 0.5);
-    m_ssao_bias = ini->GetFloat("ssao", "bias", 0.25);
-    m_ssao_power = ini->GetInteger("ssao", "power", 1);
+    m_ssao_state = setting->GetBoolean("ssao", "state", true);
+    m_ssao_radius = setting->GetFloat("ssao", "radius", 0.5);
+    m_ssao_bias = setting->GetFloat("ssao", "bias", 0.25);
+    m_ssao_power = setting->GetInteger("ssao", "power", 1);
 }
 
 void LightingSystem::OnPop() {
     dispatcher->RemoveHandler(m_size_handler);
 
-    ini->SetBoolean("ssao", "state", m_ssao_state);
-    ini->SetFloat("ssao", "radius", m_ssao_radius);
-    ini->SetFloat("ssao", "bias", m_ssao_bias);
-    ini->SetInteger("ssao", "power", m_ssao_power);
+    setting->SetBoolean("ssao", "state", m_ssao_state);
+    setting->SetFloat("ssao", "radius", m_ssao_radius);
+    setting->SetFloat("ssao", "bias", m_ssao_bias);
+    setting->SetInteger("ssao", "power", m_ssao_power);
 }
 
 void LightingSystem::InitShaders() {
