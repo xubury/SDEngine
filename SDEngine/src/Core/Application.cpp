@@ -34,11 +34,11 @@ Application::Application(const std::string &title, GraphicsAPI api) {
         setting->GetInteger("window", "height", 600),
         setting->GetInteger("window", "msaa", 4),
         setting->GetBoolean("window", "vsync", true), SDL_WINDOW_RESIZABLE);
-    m_window = Window::Create(property);
+    Window::Init(property);
 
     EventSystem::Init();
     AssetStorage::Init();
-    Device::Init(m_window.get());
+    Device::Init(&Window::Get());
     Renderer::Init();
 
     AssetStorage::Get().SetDirectory("assets");
@@ -53,11 +53,11 @@ Application::~Application() {
     AssetStorage::Shutdown();
     EventSystem::Shutdown();
 
-    glm::ivec2 size = m_window->GetSize();
+    glm::ivec2 size = Window::Get().GetSize();
     setting->SetInteger("window", "width", size.x);
     setting->SetInteger("window", "height", size.y);
-    setting->SetInteger("window", "msaa", m_window->GetMSAA());
-    setting->SetBoolean("window", "vsync", m_window->GetIsVSync());
+    setting->SetInteger("window", "msaa", Window::Get().GetMSAA());
+    setting->SetBoolean("window", "vsync", Window::Get().GetIsVSync());
 
     setting->Save((GetAppDirectory() / SETTING_FILENAME).string());
 
@@ -65,7 +65,7 @@ Application::~Application() {
 }
 
 void Application::OnInit() {
-    m_imgui = CreateLayer<ImGuiLayer>(m_window.get());
+    m_imgui = CreateLayer<ImGuiLayer>();
     PushOverlay(m_imgui);
 }
 
@@ -126,7 +126,7 @@ void Application::RegisterAssets() {
 
 void Application::ProcessEvent(const ApplicationEvent &event) {
     if (event.type == EventType::APP_QUIT) {
-        Quit();
+        Shutdown();
     }
     for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {
         (*layer)->OnEventProcess(event);
@@ -140,8 +140,8 @@ void Application::Run() {
     ApplicationEvent event;
     float ms_per_frame = 1000.f / min_fps;
     uint32_t ms_elapsed = 0;
-    while (!m_window->ShouldClose()) {
-        while (m_window->PollEvent(event)) {
+    while (!Window::Get().ShouldClose()) {
+        while (Window::Get().PollEvent(event)) {
             ProcessEvent(event);
         }
 
@@ -156,7 +156,7 @@ void Application::Run() {
     }
 }
 
-void Application::Quit() { m_window->SetShouldClose(true); }
+void Application::Shutdown() { Window::Get().SetShouldClose(true); }
 
 void Application::Tick(float dt) {
     for (auto iter = m_layers.rbegin(); iter != m_layers.rend(); ++iter) {
@@ -176,7 +176,7 @@ void Application::Render() {
     }
     m_imgui->End();
 
-    m_window->SwapBuffer();
+    Window::Get().SwapBuffer();
 }
 
 }  // namespace SD

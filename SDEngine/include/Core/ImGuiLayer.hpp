@@ -3,14 +3,13 @@
 
 #include "Core/Export.hpp"
 #include "Core/Layer.hpp"
-#include "Core/Window.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 
 namespace SD {
 
 class SD_CORE_API ImGuiLayer : public Layer {
    public:
-    ImGuiLayer(Window *window);
+    ImGuiLayer();
 
     ~ImGuiLayer();
 
@@ -31,7 +30,6 @@ class SD_CORE_API ImGuiLayer : public Layer {
    private:
     void SetDarkThemeColor();
     ImGuiContext *m_context;
-    Window *m_window;
 };
 
 }  // namespace SD

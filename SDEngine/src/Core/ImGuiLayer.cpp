@@ -1,4 +1,5 @@
 #include "Core/ImGuiLayer.hpp"
+#include "Core/Window.hpp"
 #include "Graphics/Device.hpp"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl.h"
@@ -6,8 +7,7 @@
 
 namespace SD {
 
-ImGuiLayer::ImGuiLayer(Window* window)
-    : Layer("ImGuiLayer"), m_window(window) {}
+ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}
 
 ImGuiLayer::~ImGuiLayer() {
     ImGui_ImplOpenGL3_Shutdown();
@@ -67,8 +67,8 @@ void ImGuiLayer::OnInit() {
     switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
             ImGui_ImplSDL2_InitForOpenGL(
-                static_cast<SDL_Window*>(m_window->GetHandle()),
-                m_window->GetGraphicsContext());
+                static_cast<SDL_Window*>(Window::Get().GetHandle()),
+                Window::Get().GetGraphicsContext());
             ImGui_ImplOpenGL3_Init("#version 450");
             break;
         default:

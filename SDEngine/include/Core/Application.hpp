@@ -11,9 +11,7 @@ namespace SD {
 
 class SD_CORE_API Application {
    public:
-    void Quit();
-
-    Window &GetWindow() { return *m_window; }
+    void Shutdown();
 
    protected:
     virtual void OnInit();
@@ -75,8 +73,6 @@ class SD_CORE_API Application {
 
     EventStack<Layer *> m_layers;
     ImGuiLayer *m_imgui;
-
-    Ref<Window> m_window;
 };
 
 }  // namespace SD

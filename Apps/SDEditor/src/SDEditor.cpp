@@ -30,7 +30,7 @@ void SDEditor::OnInit() {
 #endif
 
     m_layer = CreateLayer<EditorLayer>(viewport_width, viewport_height,
-                                       GetWindow().GetMSAA());
+                                       Window::Get().GetMSAA());
     PushLayer(m_layer);
 }
 

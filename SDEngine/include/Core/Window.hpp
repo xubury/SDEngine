@@ -26,7 +26,9 @@ struct SD_CORE_API WindowProp {
 
 class SD_CORE_API Window : public Context {
    public:
-    static Ref<Window> Create(const WindowProp &property);
+    static void Init(const WindowProp &property);
+    static void Shutdown();
+    static Window &Get();
 
     virtual ~Window() = default;
 

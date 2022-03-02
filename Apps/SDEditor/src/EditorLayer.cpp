@@ -181,7 +181,7 @@ void EditorLayer::OnImGui() {
     if (ImGui::BeginCenterPopupModal("Quit?")) {
         ImGui::TextUnformatted("Are you sure you want to quit?");
         if (ImGui::Button("Yes")) {
-            GetApp().Quit();
+            GetApp().Shutdown();
             ImGui::CloseCurrentPopup();
         }
         ImGui::SameLine();
