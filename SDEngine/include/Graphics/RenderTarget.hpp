@@ -40,6 +40,7 @@ class SD_GRAPHICS_API RenderTarget {
 
     const Viewport &GetViewport() const { return m_viewport; }
     Viewport &GetViewport() { return m_viewport; }
+    void SetViewport(const Viewport &viewport) { m_viewport = viewport; }
 
    private:
     Viewport m_viewport;

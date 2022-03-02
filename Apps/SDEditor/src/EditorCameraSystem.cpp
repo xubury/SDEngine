@@ -25,14 +25,14 @@ void EditorCameraSystem::OnInit() { System::OnInit(); }
 
 void EditorCameraSystem::OnPush() {
     m_key_handler =
-        dispatcher->Register(this, &EditorCameraSystem::OnMouseMotion);
+        EventSystem::Get().Register(this, &EditorCameraSystem::OnMouseMotion);
     m_size_handler =
-        dispatcher->Register(this, &EditorCameraSystem::OnSizeEvent);
+        EventSystem::Get().Register(this, &EditorCameraSystem::OnSizeEvent);
 }
 
 void EditorCameraSystem::OnPop() {
-    dispatcher->RemoveHandler(m_key_handler);
-    dispatcher->RemoveHandler(m_size_handler);
+    EventSystem::Get().RemoveHandler(m_key_handler);
+    EventSystem::Get().RemoveHandler(m_size_handler);
 }
 
 void EditorCameraSystem::OnMouseMotion(const MouseMotionEvent &event) {

@@ -4,7 +4,7 @@
 #include "Core/Export.hpp"
 #include "Utility/Base.hpp"
 #include "Core/Vars.hpp"
-#include "Core/Event.hpp"
+#include "Core/Event/Event.hpp"
 
 namespace SD {
 
@@ -17,7 +17,7 @@ class SD_CORE_API System {
     virtual ~System() { SD_CORE_TRACE("Deleting system: {}", m_name); };
 
     virtual void OnInit() {
-        m_scene_handler = dispatcher->Register<NewSceneEvent>(
+        m_scene_handler = EventSystem::Get().Register<NewSceneEvent>(
             [&](const NewSceneEvent &event) { scene = event.scene; });
     };
 

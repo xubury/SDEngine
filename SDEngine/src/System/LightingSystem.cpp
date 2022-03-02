@@ -6,6 +6,7 @@
 
 #include "Loader/ShaderLoader.hpp"
 
+#include "Asset/AssetStorage.hpp"
 #include "Asset/ModelAsset.hpp"
 
 namespace SD {
@@ -73,7 +74,8 @@ void LightingSystem::OnInit() {
 }
 
 void LightingSystem::OnPush() {
-    m_size_handler = dispatcher->Register(this, &LightingSystem::OnSizeEvent);
+    m_size_handler =
+        EventSystem::Get().Register(this, &LightingSystem::OnSizeEvent);
 
     m_ssao_state = setting->GetBoolean("ssao", "state", true);
     m_ssao_radius = setting->GetFloat("ssao", "radius", 0.5);
@@ -82,7 +84,7 @@ void LightingSystem::OnPush() {
 }
 
 void LightingSystem::OnPop() {
-    dispatcher->RemoveHandler(m_size_handler);
+    EventSystem::Get().RemoveHandler(m_size_handler);
 
     setting->SetBoolean("ssao", "state", m_ssao_state);
     setting->SetFloat("ssao", "radius", m_ssao_radius);
@@ -150,7 +152,7 @@ void LightingSystem::InitSSAOKernel() {
 }
 
 void LightingSystem::InitLighting() {
-    int samples = std::max<int>(device->GetMSAA(), 1);
+    int samples = std::max<int>(Device::Get().GetMSAA(), 1);
 
     for (int i = 0; i < 2; ++i) {
         m_light_buffer[i] = Framebuffer::Create(m_width, m_height);
@@ -197,18 +199,18 @@ void LightingSystem::OnRender() {
     SD_CORE_ASSERT(scene->GetCamera(), "No camera is set!");
 
     RenderShadowMap();
-    device->Disable(Operation::BLEND);
+    Device::Get().Disable(Operation::BLEND);
     RenderGBuffer();
     if (m_ssao_state) {
         RenderSSAO();
     }
     RenderDeferred();
-    device->Enable(Operation::BLEND);
+    Device::Get().Enable(Operation::BLEND);
     RenderEmissive();
 
-    device->ReadBuffer(m_gbuffer.get(), G_ENTITY_ID);
-    device->DrawBuffer(renderer->GetFramebuffer(), 1);
-    device->BlitFramebuffer(
+    Device::Get().ReadBuffer(m_gbuffer.get(), G_ENTITY_ID);
+    Device::Get().DrawBuffer(renderer->GetFramebuffer(), 1);
+    Device::Get().BlitFramebuffer(
         m_gbuffer.get(), 0, 0, m_gbuffer->GetWidth(), m_gbuffer->GetHeight(),
         renderer->GetFramebuffer(), 0, 0,
         renderer->GetFramebuffer()->GetWidth(),
@@ -220,14 +222,14 @@ void LightingSystem::OnRender() {
 void LightingSystem::RenderShadowMap() {
     auto lightView = scene->view<TransformComponent, LightComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
-    device->SetCullFace(Face::FRONT);
+    Device::Get().SetCullFace(Face::FRONT);
     lightView.each([this, &modelView](const TransformComponent &transformComp,
                                       LightComponent &lightComp) {
         Light &light = lightComp.light;
         if (!light.IsCastShadow()) return;
 
-        device->SetFramebuffer(light.GetShadowMap());
-        device->SetShader(nullptr);  // supress shader recompile warning
+        Device::Get().SetFramebuffer(light.GetShadowMap());
+        Device::Get().SetShader(nullptr);  // supress shader recompile warning
         light.GetShadowMap()->ClearDepth();
         light.ComputeLightSpaceMatrix(transformComp.GetWorldTransform(),
                                       scene->GetCamera());
@@ -236,25 +238,26 @@ void LightingSystem::RenderShadowMap() {
 
         modelView.each([this](const TransformComponent &transformComp,
                               const ModelComponent &modelComp) {
-            if (asset->Exists<ModelAsset>(modelComp.model_id)) {
+            if (AssetStorage::Get().Exists<ModelAsset>(modelComp.model_id)) {
                 m_shadow_shader->SetMat4(
                     "u_model", transformComp.GetWorldTransform().GetMatrix());
-                auto model =
-                    asset->GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
+                auto model = AssetStorage::Get()
+                                 .GetAsset<ModelAsset>(modelComp.model_id)
+                                 ->GetModel();
                 for (const auto &mesh : model->GetMeshes()) {
                     renderer->DrawMesh(*m_shadow_shader, mesh);
                 }
             }
         });
     });
-    device->SetCullFace(Face::BACK);
-    device->SetShader(nullptr);  // supress shader recompile warning
+    Device::Get().SetCullFace(Face::BACK);
+    Device::Get().SetShader(nullptr);  // supress shader recompile warning
 }
 
 void LightingSystem::RenderSSAO() {
     const float CLEAR_VALUE = 1.0f;
 
-    device->SetFramebuffer(m_ssao_buffer.get());
+    Device::Get().SetFramebuffer(m_ssao_buffer.get());
     m_ssao_buffer->ClearAttachment(0, &CLEAR_VALUE);
     renderer->Begin(*m_ssao_shader, *scene->GetCamera());
     m_ssao_shader->SetFloat("u_radius", m_ssao_radius);
@@ -270,7 +273,7 @@ void LightingSystem::RenderSSAO() {
     renderer->End();
 
     // blur
-    device->SetFramebuffer(m_ssao_blur_buffer.get());
+    Device::Get().SetFramebuffer(m_ssao_blur_buffer.get());
     m_ssao_blur_buffer->ClearAttachment(0, &CLEAR_VALUE);
     m_ssao_blur_shader->SetTexture("u_ssao", m_ssao_buffer->GetTexture());
     renderer->Submit(*m_ssao_blur_shader, *m_quad, MeshTopology::TRIANGLES,
@@ -280,8 +283,8 @@ void LightingSystem::RenderSSAO() {
 void LightingSystem::RenderEmissive() {
     auto lightView = scene->view<TransformComponent, LightComponent>();
     if (lightView.begin() != lightView.end()) {
-        device->SetFramebuffer(renderer->GetFramebuffer());
-        device->DrawBuffer(renderer->GetFramebuffer(), 0);
+        Device::Get().SetFramebuffer(renderer->GetFramebuffer());
+        Device::Get().DrawBuffer(renderer->GetFramebuffer(), 0);
         m_emssive_shader->SetTexture("u_lighting",
                                      GetLightingBuffer()->GetTexture());
         m_emssive_shader->SetTexture(
@@ -297,8 +300,8 @@ void LightingSystem::RenderDeferred() {
 
     // clear the last lighting pass' result
     for (int i = 0; i < 2; ++i) {
-        device->SetFramebuffer(m_light_buffer[i].get());
-        device->Clear(BufferBitMask::COLOR_BUFFER_BIT);
+        Device::Get().SetFramebuffer(m_light_buffer[i].get());
+        Device::Get().Clear(BufferBitMask::COLOR_BUFFER_BIT);
     }
 
     m_deferred_shader->SetTexture(
@@ -317,7 +320,7 @@ void LightingSystem::RenderDeferred() {
     const uint8_t output_id = 1;
     lightView.each([this](const TransformComponent &transformComp,
                           const LightComponent &lightComp) {
-        device->SetFramebuffer(m_light_buffer[output_id].get());
+        Device::Get().SetFramebuffer(m_light_buffer[output_id].get());
         renderer->Begin(*m_deferred_shader, *scene->GetCamera());
         const Light &light = lightComp.light;
         m_deferred_shader->SetTexture("u_lighting",
@@ -356,9 +359,9 @@ void LightingSystem::RenderDeferred() {
 }
 
 void LightingSystem::RenderGBuffer() {
-    device->SetFramebuffer(m_gbuffer.get());
-    device->Clear(BufferBitMask::COLOR_BUFFER_BIT |
-                  BufferBitMask::DEPTH_BUFFER_BIT);
+    Device::Get().SetFramebuffer(m_gbuffer.get());
+    Device::Get().Clear(BufferBitMask::COLOR_BUFFER_BIT |
+                        BufferBitMask::DEPTH_BUFFER_BIT);
     uint32_t id = static_cast<uint32_t>(entt::null);
     m_gbuffer->ClearAttachment(GeometryBufferType::G_ENTITY_ID, &id);
 
@@ -373,9 +376,10 @@ void LightingSystem::RenderGBuffer() {
             "u_model", transformComp.GetWorldTransform().GetMatrix());
         m_gbuffer_shader->SetUint("u_entity_id", static_cast<uint32_t>(entity));
         m_gbuffer_shader->SetVec3("u_color", modelComp.color);
-        if (asset->Exists<ModelAsset>(modelComp.model_id)) {
-            auto model =
-                asset->GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
+        if (AssetStorage::Get().Exists<ModelAsset>(modelComp.model_id)) {
+            auto model = AssetStorage::Get()
+                             .GetAsset<ModelAsset>(modelComp.model_id)
+                             ->GetModel();
             for (const auto &mesh : model->GetMeshes()) {
                 auto &material = model->GetMaterials()[mesh.GetMaterialIndex()];
                 m_gbuffer_shader->SetTexture(

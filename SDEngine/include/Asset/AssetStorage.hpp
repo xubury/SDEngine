@@ -26,10 +26,12 @@ struct AssetTypeData {
 
 class SD_ASSET_API AssetStorage {
    public:
+    static AssetStorage& Get();
+    static void Init();
+    static void Shutdown();
+
     AssetStorage() = default;
-    ~AssetStorage() = default;
-    void Init();
-    void Shutdown();
+    ~AssetStorage();
 
     template <typename T>
     bool Exists(ResourceId rid) {

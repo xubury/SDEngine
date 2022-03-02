@@ -1,4 +1,5 @@
 #include "AnimationEditor.hpp"
+#include "Asset/AssetStorage.hpp"
 
 namespace SD {
 
@@ -8,13 +9,13 @@ AnimationEditor::AnimationEditor()
 void AnimationEditor::OnInit() { System::OnInit(); }
 
 void AnimationEditor::OnPush() {
-    m_entity_handler = dispatcher->Register<EntitySelectEvent>(
+    m_entity_handler = EventSystem::Get().Register<EntitySelectEvent>(
         [this](const EntitySelectEvent &e) {
             this->m_selected_entity = {e.entity_id, e.scene};
         });
 }
 
-void AnimationEditor::OnPop() { dispatcher->RemoveHandler(m_entity_handler); }
+void AnimationEditor::OnPop() { EventSystem::Get().RemoveHandler(m_entity_handler); }
 
 void AnimationEditor::OnImGui() {
     ImGui::Begin("Anmiation Editor");
@@ -28,11 +29,11 @@ void AnimationEditor::OnImGui() {
             m_dialog_info.type = ImGuiFileDialogType::OPEN_FILE;
             m_dialog_info.title = "Open File";
             m_dialog_info.file_name = "";
-            m_dialog_info.directory_path = asset->GetDirectory();
+            m_dialog_info.directory_path = AssetStorage::Get().GetDirectory();
             m_dialog_info.regex_match = IMG_FILTER;
         }
         if (ImGui::FileDialog(&m_is_dialog_open, &m_dialog_info)) {
-            m_texture_asset = asset->LoadAsset<TextureAsset>(
+            m_texture_asset = AssetStorage::Get().LoadAsset<TextureAsset>(
                 m_dialog_info.result_path.string());
         }
         if (m_texture_asset) {

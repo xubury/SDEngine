@@ -1,6 +1,7 @@
 #include "ContentBrowser.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "Loader/TextureLoader.hpp"
+#include "Asset/AssetStorage.hpp"
 
 namespace SD {
 
@@ -11,12 +12,12 @@ void ContentBrowser::OnInit() {
     m_file_icon = TextureLoader::LoadTexture2D("assets/icons/FileIcon.png");
     m_directory_icon =
         TextureLoader::LoadTexture2D("assets/icons/DirectoryIcon.png");
-    m_current_directory = asset->GetDirectory();
+    m_current_directory = AssetStorage::Get().GetDirectory();
 }
 
 void ContentBrowser::OnImGui() {
     ImGui::Begin("Content Browser");
-    const std::filesystem::path root_path = asset->GetDirectory();
+    const std::filesystem::path root_path = AssetStorage::Get().GetDirectory();
     if (m_current_directory != std::filesystem::path(root_path)) {
         if (ImGui::Button("<-")) {
             m_current_directory = m_current_directory.parent_path();
@@ -36,8 +37,9 @@ void ContentBrowser::OnImGui() {
     for (auto& entry :
          std::filesystem::directory_iterator(m_current_directory)) {
         const auto& path = entry.path();
-        auto relativePath = std::filesystem::relative(path, root_path);
-        std::string filename = relativePath.filename().string();
+        const std::filesystem::path relative_path =
+            std::filesystem::relative(path, root_path);
+        const std::string filename = relative_path.filename().string();
 
         ImGui::PushID(filename.c_str());
         Ref<Texture> icon =
@@ -47,9 +49,9 @@ void ContentBrowser::OnImGui() {
                            {thumbnail_size, thumbnail_size});
 
         if (ImGui::BeginDragDropSource()) {
-            const auto itemPath = relativePath.c_str();
-            ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath,
-                                      (strlen(itemPath) + 1) * sizeof(wchar_t));
+            const std::string item_path = relative_path.string();
+            ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", item_path.c_str(),
+                                      item_path.size() + 1);
             ImGui::EndDragDropSource();
         }
 

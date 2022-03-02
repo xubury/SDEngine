@@ -13,8 +13,9 @@ const static std::array<glm::vec4, 4> QUAD_VERTEX_POS = {
 const static std::array<glm::vec2, 2> QUAD_UV = {glm::vec2(0, 0),
                                                  glm::vec2(1, 1)};
 
-Renderer::Renderer(const Viewport& viewport, Device* device)
-    : m_device(device), m_target(viewport) {
+Renderer::Renderer()
+    : m_target(
+          Viewport(0, 0, Device::Get().GetWidth(), Device::Get().GetHeight())) {
     SD_CORE_TRACE("Initializing Renderer");
     m_camera_UBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
                                          BufferIOType::DYNAMIC);
@@ -22,16 +23,16 @@ Renderer::Renderer(const Viewport& viewport, Device* device)
     InitRenderer2D();
 
     m_target.AddTexture(
-        TextureSpec(m_device->GetMSAA(), TextureType::TEX_2D_MULTISAMPLE,
+        TextureSpec(Device::Get().GetMSAA(), TextureType::TEX_2D_MULTISAMPLE,
                     DataFormat::RGBA, DataFormatType::UBYTE, TextureWrap::EDGE,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     m_target.AddTexture(
-        TextureSpec(m_device->GetMSAA(), TextureType::TEX_2D_MULTISAMPLE,
+        TextureSpec(Device::Get().GetMSAA(), TextureType::TEX_2D_MULTISAMPLE,
                     DataFormat::RED, DataFormatType::UINT, TextureWrap::EDGE,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     m_target.AddTexture(TextureSpec(
-        m_device->GetMSAA(), TextureType::TEX_2D_MULTISAMPLE, DataFormat::DEPTH,
-        DataFormatType::FLOAT16, TextureWrap::EDGE));
+        Device::Get().GetMSAA(), TextureType::TEX_2D_MULTISAMPLE,
+        DataFormat::DEPTH, DataFormatType::FLOAT16, TextureWrap::EDGE));
     m_target.CreateFramebuffer();
 }
 
@@ -120,17 +121,17 @@ void Renderer::InitRenderer2D() {
 void Renderer::Submit(const Shader& shader, const VertexArray& vao,
                       MeshTopology topology, size_t count, size_t offset,
                       bool index) {
-    m_device->SetShader(&shader);
+    Device::Get().SetShader(&shader);
     vao.Bind();
     if (index) {
-        m_device->DrawElements(topology, count, offset);
+        Device::Get().DrawElements(topology, count, offset);
     } else {
-        m_device->DrawArrays(topology, offset, count);
+        Device::Get().DrawArrays(topology, offset, count);
     }
 }
 
 void Renderer::DrawMesh(const Shader& shader, const Mesh& mesh) {
-    m_device->SetPolygonMode(mesh.GetPolygonMode(), Face::BOTH);
+    Device::Get().SetPolygonMode(mesh.GetPolygonMode(), Face::BOTH);
     VertexArray* vao = mesh.GetVertexArray();
     SD_CORE_ASSERT(vao, "Invalid mesh!");
     Renderer::Submit(shader, *vao, mesh.GetTopology(),
@@ -158,7 +159,7 @@ void Renderer::Begin(Camera& camera) {
 void Renderer::End() {
     Flush();
     StartBatch();
-    m_device->SetShader(nullptr);
+    Device::Get().SetShader(nullptr);
 }
 
 void Renderer::StartBatch() {
@@ -290,7 +291,7 @@ void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color,
         NextQuadBatch();
     }
     for (uint32_t i = 0; i < 4; ++i) {
-        glm::ivec2 uv_index = m_device->GetUVIndex(i);
+        glm::ivec2 uv_index = Device::Get().GetUVIndex(i);
         m_data.quad_buffer_ptr->vertices[i].position =
             transform * QUAD_VERTEX_POS[i];
         m_data.quad_buffer_ptr->vertices[i].color = color;
@@ -340,7 +341,7 @@ void Renderer::DrawTexture(const Texture& texture,
     }
 
     for (uint32_t i = 0; i < 4; ++i) {
-        glm::ivec2 uv_index = m_device->GetUVIndex(i);
+        glm::ivec2 uv_index = Device::Get().GetUVIndex(i);
         m_data.quad_buffer_ptr->vertices[i].position =
             transform * QUAD_VERTEX_POS[i];
         m_data.quad_buffer_ptr->vertices[i].color = color;

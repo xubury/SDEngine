@@ -81,15 +81,6 @@ class SD_ECS_API Scene : public entt::registry {
         m_serialize_functions;
 };
 
-struct EntitySelectEvent {
-    EntityId entity_id;
-    Scene *scene;
-};
-
-struct NewSceneEvent {
-    Ref<Scene> scene;
-};
-
 }  // namespace SD
 
 #endif /* SD_SCENE_HPP */

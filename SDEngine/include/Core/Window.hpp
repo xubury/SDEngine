@@ -3,7 +3,7 @@
 
 #include "Utility/Base.hpp"
 #include "Core/Export.hpp"
-#include "Core/Event.hpp"
+#include "Core/Event/Event.hpp"
 #include "Graphics/Context.hpp"
 
 #include <glm/glm.hpp>
@@ -49,7 +49,7 @@ class SD_CORE_API Window : public Context {
 
     virtual void SwapBuffer() = 0;
 
-    bool PollEvent(Event &event);
+    bool PollEvent(ApplicationEvent &event);
 
     bool ShouldClose();
     void SetShouldClose(bool shouldClose);

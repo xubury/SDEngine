@@ -13,7 +13,11 @@ namespace SD {
 
 class SD_GRAPHICS_API Device {
    public:
-    static Ref<Device> Create(Context *context);
+    static void Init(Context *context);
+
+    static void Shutdown();
+
+    static Device &Get();
 
     virtual ~Device() = default;
 

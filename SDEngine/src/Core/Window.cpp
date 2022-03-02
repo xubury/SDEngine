@@ -32,7 +32,7 @@ Ref<Window> Window::Create(const WindowProp &property) {
     return window;
 }
 
-bool Window::PollEvent(Event &event) {
+bool Window::PollEvent(ApplicationEvent &event) {
     SDL_Event sdl_event;
     if (SDL_PollEvent(&sdl_event) != 1) return false;
     switch (sdl_event.type) {

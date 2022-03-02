@@ -2,8 +2,8 @@
 #include "Utility/Log.hpp"
 #include "Utility/String.hpp"
 #include "ImGui/ImGuiWidget.hpp"
-#include "Asset/Asset.hpp"
 
+#include "Asset/AssetStorage.hpp"
 #include "Asset/TextureAsset.hpp"
 #include "Asset/FontAsset.hpp"
 #include "Asset/ModelAsset.hpp"
@@ -18,16 +18,17 @@ ScenePanel::ScenePanel()
       m_gizmo_op(ImGuizmo::TRANSLATE) {}
 
 void ScenePanel::OnPush() {
-    m_size_handler = dispatcher->Register(this, &ScenePanel::OnSizeEvent);
-    m_entity_select_handler = dispatcher->Register<EntitySelectEvent>(
+    m_size_handler =
+        EventSystem::Get().Register(this, &ScenePanel::OnSizeEvent);
+    m_entity_select_handler = EventSystem::Get().Register<EntitySelectEvent>(
         [this](const EntitySelectEvent &e) {
             this->m_selected_entity = {e.entity_id, e.scene};
         });
 }
 
 void ScenePanel::OnPop() {
-    dispatcher->RemoveHandler(m_size_handler);
-    dispatcher->RemoveHandler(m_entity_select_handler);
+    EventSystem::Get().RemoveHandler(m_size_handler);
+    EventSystem::Get().RemoveHandler(m_entity_select_handler);
 }
 
 void ScenePanel::OnSizeEvent(const ViewportEvent &event) {
@@ -59,13 +60,13 @@ void ScenePanel::OnImGui() {
 
     if (m_entity_to_destroy) {
         if (m_selected_entity == m_entity_to_destroy)
-            dispatcher->PublishEvent(EntitySelectEvent());
+            EventSystem::Get().PublishEvent(EntitySelectEvent());
         m_entity_to_destroy.Destroy();
         m_entity_to_destroy = {};
     }
 
     if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-        dispatcher->PublishEvent(EntitySelectEvent());
+        EventSystem::Get().PublishEvent(EntitySelectEvent());
 
     // Right-click on blank space
     if (ImGui::BeginPopupContextWindow(0, 1, false)) {
@@ -122,7 +123,8 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
     bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(entt::entity)entity,
                                     flags, "%s", tag.c_str());
     if (ImGui::IsItemClicked(0)) {
-        dispatcher->PublishEvent(EntitySelectEvent{entity, entity.GetScene()});
+        EventSystem::Get().PublishEvent(
+            EntitySelectEvent{entity, entity.GetScene()});
     }
 
     if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
@@ -142,7 +144,7 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
     }
 
     if (ImGui::BeginPopupContextItem()) {
-        dispatcher->PublishEvent(
+        EventSystem::Get().PublishEvent(
             EntitySelectEvent{m_selected_entity, m_selected_entity.GetScene()});
         if (ImGui::MenuItem("Delete Entity")) {
             m_entity_to_destroy = entity;
@@ -319,12 +321,12 @@ void ScenePanel::DrawComponents(Entity &entity) {
             fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
             fileDialogInfo.title = "Open File";
             fileDialogInfo.file_name = "";
-            fileDialogInfo.directory_path = asset->GetDirectory();
+            fileDialogInfo.directory_path = AssetStorage::Get().GetDirectory();
         }
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
             try {
-                ModelAsset *model =
-                    asset->LoadAsset<ModelAsset>(fileDialogInfo.result_path.string());
+                ModelAsset *model = AssetStorage::Get().LoadAsset<ModelAsset>(
+                    fileDialogInfo.result_path.string());
                 mc.model_id = model->GetId();
                 mc.model_path = model->GetPath();
             } catch (const Exception &e) {
@@ -334,9 +336,10 @@ void ScenePanel::DrawComponents(Entity &entity) {
 
         ImGui::ColorEdit3("Color", &mc.color[0]);
         ResourceId rid(fileDialogInfo.result_path.string());
-        if (asset->Exists<ModelAsset>(rid)) {
-            auto model =
-                asset->GetAsset<ModelAsset>(ResourceId(rid))->GetModel();
+        if (AssetStorage::Get().Exists<ModelAsset>(rid)) {
+            auto model = AssetStorage::Get()
+                             .GetAsset<ModelAsset>(ResourceId(rid))
+                             ->GetModel();
             DrawMaterialsList(model->GetMaterials(),
                               &m_selected_material_id_map[entity]);
         }
@@ -404,12 +407,12 @@ void ScenePanel::DrawComponents(Entity &entity) {
             fileDialogInfo.title = "Open File";
             fileDialogInfo.regex_match = FONT_FILTER;
             fileDialogInfo.file_name = "";
-            fileDialogInfo.directory_path = asset->GetDirectory();
+            fileDialogInfo.directory_path = AssetStorage::Get().GetDirectory();
         }
         if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
             try {
-                auto font_asset =
-                    asset->LoadAsset<FontAsset>(fileDialogInfo.result_path.string());
+                auto font_asset = AssetStorage::Get().LoadAsset<FontAsset>(
+                    fileDialogInfo.result_path.string());
                 textComp.font_id = font_asset->GetId();
                 textComp.font_path = font_asset->GetPath();
             } catch (const Exception &e) {
@@ -463,8 +466,9 @@ void ScenePanel::DrawComponents(Entity &entity) {
     DrawComponent<SpriteComponent>(
         "Sprite", entity, [&](SpriteComponent &sprite_comp) {
             auto &frame = sprite_comp.frame;
-            if (asset->Exists<TextureAsset>(frame.texture_id)) {
-                auto texture = asset->GetAsset<TextureAsset>(frame.texture_id)
+            if (AssetStorage::Get().Exists<TextureAsset>(frame.texture_id)) {
+                auto texture = AssetStorage::Get()
+                                   .GetAsset<TextureAsset>(frame.texture_id)
                                    ->GetTexture();
                 ImGui::DrawTexture(*texture,
                                    ImVec2(frame.uvs[0].x, frame.uvs[0].y),
@@ -489,10 +493,11 @@ void ScenePanel::DrawComponents(Entity &entity) {
             }
             if (frame_index < static_cast<int>(anim.GetFrameSize())) {
                 const auto &frame = anim.GetFrame(frame_index);
-                if (asset->Exists<TextureAsset>(frame.texture_id)) {
-                    auto texture =
-                        asset->GetAsset<TextureAsset>(frame.texture_id)
-                            ->GetTexture();
+                if (AssetStorage::Get().Exists<TextureAsset>(
+                        frame.texture_id)) {
+                    auto texture = AssetStorage::Get()
+                                       .GetAsset<TextureAsset>(frame.texture_id)
+                                       ->GetTexture();
                     ImGui::DrawTexture(*texture,
                                        ImVec2(frame.uvs[0].x, frame.uvs[0].y),
                                        ImVec2(frame.uvs[1].x, frame.uvs[1].y));

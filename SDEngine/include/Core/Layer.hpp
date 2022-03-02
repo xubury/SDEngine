@@ -4,8 +4,7 @@
 #include "Utility/Base.hpp"
 #include "Utility/EventStack.hpp"
 #include "Core/Export.hpp"
-#include "Core/Vars.hpp"
-#include "Core/Event.hpp"
+#include "Core/Event/Event.hpp"
 #include "Core/System.hpp"
 
 #include <string>
@@ -25,7 +24,7 @@ class SD_CORE_API Layer {
 
     Layer &operator=(const Layer &) = delete;
     virtual void OnInit() {
-        m_scene_handler = dispatcher->Register<NewSceneEvent>(
+        m_scene_handler = EventSystem::Get().Register<NewSceneEvent>(
             [&](const NewSceneEvent &event) { scene = event.scene; });
     }
 
@@ -39,7 +38,7 @@ class SD_CORE_API Layer {
 
     virtual void OnImGui() {}
 
-    virtual void OnEventProcess(const Event &) {}
+    virtual void OnEventProcess(const ApplicationEvent &) {}
 
     void SetIsBlockEvent(bool is_block) { m_is_block_event = is_block; }
     bool IsBlockEvent() const { return m_is_block_event; }

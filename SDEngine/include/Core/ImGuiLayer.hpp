@@ -23,7 +23,7 @@ class SD_CORE_API ImGuiLayer : public Layer {
 
     void OnPop() override;
 
-    void OnEventProcess(const Event &event) override;
+    void OnEventProcess(const ApplicationEvent &event) override;
 
     ImGuiContext *GetContext() const { return m_context; }
 

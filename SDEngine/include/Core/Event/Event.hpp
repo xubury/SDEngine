@@ -6,8 +6,16 @@
 #include "Core/Keyboard.hpp"
 #include "Core/Mouse.hpp"
 #include "ECS/Entity.hpp"
+#include "Utility/EventDispatcher.hpp"
 
 namespace SD {
+
+class SD_CORE_API EventSystem {
+   public:
+    static void Init();
+    static void Shutdown();
+    static EventDispatcher &Get();
+};
 
 struct WindowSizeEvent {
     uint32_t width;
@@ -55,7 +63,7 @@ enum class EventType {
     TEXT_INPUT
 };
 
-struct SD_CORE_API Event {
+struct SD_CORE_API ApplicationEvent {
     union {
         WindowSizeEvent window_size;
         KeyEvent key;
@@ -67,6 +75,22 @@ struct SD_CORE_API Event {
 
     EventType type = EventType::UNKNOWN;
     bool handled = false;
+};
+
+struct EntitySelectEvent {
+    EntityId entity_id;
+    Scene *scene;
+};
+
+struct NewSceneEvent {
+    Ref<Scene> scene;
+};
+
+struct ViewportEvent {
+    int left;
+    int top;
+    int width;
+    int height;
 };
 
 }  // namespace SD

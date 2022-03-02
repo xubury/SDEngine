@@ -1,6 +1,8 @@
 #include "SDEditor.hpp"
 #include "sol/sol.hpp"
 
+#include "Asset/AssetStorage.hpp"
+
 IMPLEMENT_APP(SD::SDEditor);
 
 namespace SD {
@@ -19,9 +21,7 @@ void SDEditor::OnInit() {
 
     int viewport_width = setting->GetInteger("editor", "viewport width", 800);
     int viewport_height = setting->GetInteger("editor", "viewport height", 600);
-
-    renderer = CreateRef<Renderer>(
-        Viewport(0, 0, viewport_width, viewport_height), device.get());
+    renderer->GetDefaultTarget().SetSize(0, 0, viewport_width, viewport_height);
 #ifdef SD_IMGUI_IMPORT
     // for DLL context
     ImGui::SetCurrentContext(GetImGuiLayer()->GetContext());
@@ -32,20 +32,23 @@ void SDEditor::OnInit() {
     PushLayer(m_layer);
     // asset module test
     TextureAsset *texture_asset =
-        asset->CreateAsset<TextureAsset>("test.asset");
+        AssetStorage::Get().CreateAsset<TextureAsset>("test.asset");
     texture_asset->SetTexturePath("textures/awesomeface.png");
 
-    asset->SaveAsset<TextureAsset>(texture_asset->GetId());
-    asset->Unload<TextureAsset>(texture_asset->GetId());
+    AssetStorage::Get().SaveAsset<TextureAsset>(texture_asset->GetId());
+    AssetStorage::Get().Unload<TextureAsset>(texture_asset->GetId());
 
-    TextureAsset *loaded = asset->LoadAsset<TextureAsset>("test.asset");
+    TextureAsset *loaded =
+        AssetStorage::Get().LoadAsset<TextureAsset>("test.asset");
     SD_CORE_TRACE("texture path:{} path:{}", loaded->GetTexturePath(),
                   loaded->GetPath());
 }
 
 void SDEditor::OnDestroy() {
-    setting->SetInteger("editor", "viewport width", m_layer->GetViewportWidth());
-    setting->SetInteger("editor", "viewport height", m_layer->GetViewportHeight());
+    setting->SetInteger("editor", "viewport width",
+                        m_layer->GetViewportWidth());
+    setting->SetInteger("editor", "viewport height",
+                        m_layer->GetViewportHeight());
 
     Application::OnDestroy();
 }

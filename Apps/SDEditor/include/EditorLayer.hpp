@@ -37,7 +37,7 @@ class EditorLayer : public Layer {
 
     void OnImGui() override;
 
-    void OnEventProcess(const Event& event) override;
+    void OnEventProcess(const ApplicationEvent& event) override;
 
     void NewScene();
     void OpenLoadSceneDialog();

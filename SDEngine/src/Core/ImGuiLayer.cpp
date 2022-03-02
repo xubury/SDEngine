@@ -25,7 +25,7 @@ void ImGuiLayer::Begin() {
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
     ImGuizmo::BeginFrame();
-    device->SetFramebuffer(nullptr);
+    Device::Get().SetFramebuffer(nullptr);
 }
 
 void ImGuiLayer::End() {
@@ -80,7 +80,7 @@ void ImGuiLayer::OnPush() {}
 
 void ImGuiLayer::OnPop() {}
 
-void ImGuiLayer::OnEventProcess(const Event& event) {
+void ImGuiLayer::OnEventProcess(const ApplicationEvent& event) {
     auto& io = ImGui::GetIO();
     switch (event.type) {
         default:

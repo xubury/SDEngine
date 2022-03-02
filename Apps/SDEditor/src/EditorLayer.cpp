@@ -112,12 +112,12 @@ void EditorLayer::PushSystems() {
 }
 
 void EditorLayer::OnPush() {
-    m_entity_select_handler = dispatcher->Register<EntitySelectEvent>(
+    m_entity_select_handler = EventSystem::Get().Register<EntitySelectEvent>(
         [this](const EntitySelectEvent &e) {
             m_selected_entity = {e.entity_id, e.scene};
         });
     m_size_handler =
-        dispatcher->Register<ViewportEvent>([this](const ViewportEvent &e) {
+        EventSystem::Get().Register<ViewportEvent>([this](const ViewportEvent &e) {
             m_width = e.width;
             m_height = e.height;
             InitBuffers();
@@ -125,13 +125,13 @@ void EditorLayer::OnPush() {
 }
 
 void EditorLayer::OnPop() {
-    dispatcher->RemoveHandler(m_entity_select_handler);
-    dispatcher->RemoveHandler(m_size_handler);
+    EventSystem::Get().RemoveHandler(m_entity_select_handler);
+    EventSystem::Get().RemoveHandler(m_size_handler);
 }
 
 void EditorLayer::OnRender() {
-    device->SetFramebuffer(renderer->GetFramebuffer());
-    device->Clear();
+    Device::Get().SetFramebuffer(renderer->GetFramebuffer());
+    Device::Get().Clear();
     uint32_t id = static_cast<uint32_t>(entt::null);
     renderer->GetFramebuffer()->ClearAttachment(1, &id);
     for (auto &system : GetSystems()) {
@@ -139,13 +139,13 @@ void EditorLayer::OnRender() {
     }
     if (m_is_runtime) {
         // render to default buffer
-        device->SetFramebuffer(nullptr);
-        device->Clear();
-        device->BlitToScreen(renderer->GetDefaultTarget());
+        Device::Get().SetFramebuffer(nullptr);
+        Device::Get().Clear();
+        Device::Get().BlitToScreen(renderer->GetDefaultTarget());
     } else {
-        device->Disable(Operation::DEPTH_TEST);
+        Device::Get().Disable(Operation::DEPTH_TEST);
 
-        device->SetFramebuffer(renderer->GetFramebuffer());
+        Device::Get().SetFramebuffer(renderer->GetFramebuffer());
         Camera *cam = scene->GetCamera();
         renderer->Begin(*cam);
         auto lightView = scene->view<LightComponent, TransformComponent>();
@@ -158,7 +158,7 @@ void EditorLayer::OnRender() {
         });
 
         renderer->End();
-        device->Enable(Operation::DEPTH_TEST);
+        Device::Get().Enable(Operation::DEPTH_TEST);
     }
 }
 
@@ -273,7 +273,7 @@ void EditorLayer::OnImGui() {
 void EditorLayer::Hide() {
     m_is_runtime = true;
     SetIsBlockEvent(false);
-    SetViewportSize(0, 0, device->GetWidth(), device->GetHeight());
+    SetViewportSize(0, 0, Device::Get().GetWidth(), Device::Get().GetHeight());
 }
 
 void EditorLayer::Show() {
@@ -283,16 +283,16 @@ void EditorLayer::Show() {
 
 void EditorLayer::Quit() { m_quitting = true; }
 
-void EditorLayer::OnEventProcess(const Event &event) {
+void EditorLayer::OnEventProcess(const ApplicationEvent &event) {
     if (event.type == EventType::MOUSE_MOTION) {
-        dispatcher->PublishEvent(event.mouse_motion);
+        EventSystem::Get().PublishEvent(event.mouse_motion);
     } else if (event.type == EventType::WINDOW_RESIZED) {
         if (m_is_runtime) {
             SetViewportSize(0, 0, event.window_size.width,
                             event.window_size.height);
         }
     } else if (event.type == EventType::KEY) {
-        dispatcher->PublishEvent(event.key);
+        EventSystem::Get().PublishEvent(event.key);
 
         if (!event.key.state) return;
 
@@ -345,13 +345,13 @@ void EditorLayer::OnEventProcess(const Event &event) {
 
 void EditorLayer::SetViewportSize(int left, int top, int width, int height) {
     ViewportEvent event{left, top, width, height};
-    dispatcher->PublishEvent(event);
+    EventSystem::Get().PublishEvent(event);
     renderer->GetDefaultTarget().SetSize(left, top, width, height);
 }
 
 void EditorLayer::NewScene() {
     scene = CreateRef<Scene>();
-    dispatcher->PublishEvent(EntitySelectEvent{entt::null, scene.get()});
+    EventSystem::Get().PublishEvent(EntitySelectEvent{entt::null, scene.get()});
 }
 
 void EditorLayer::OpenLoadSceneDialog() {
@@ -375,13 +375,13 @@ void EditorLayer::OpenSaveSceneDialog() {
 void EditorLayer::ProcessDialog() {
     if (ImGui::FileDialog(&m_load_scene_open, &m_file_dialog_info)) {
         // auto new_scene =
-        //     asset->LoadAndGet<Scene>(m_file_dialog_info.result_path.string());
-        // dispatcher->PublishEvent(NewSceneEvent{new_scene});
-        // dispatcher->PublishEvent(EntitySelectEvent{entt::null, scene.get()});
+        //     AssetStorage::Get().LoadAndGet<Scene>(m_file_dialog_info.result_path.string());
+        // EventSystem::Get().PublishEvent(NewSceneEvent{new_scene});
+        // EventSystem::Get().PublishEvent(EntitySelectEvent{entt::null, scene.get()});
         // m_scene_panel->Reset();
     }
     if (ImGui::FileDialog(&m_save_scene_open, &m_file_dialog_info)) {
-        // asset->SaveAsset(scene, m_file_dialog_info.result_path.string());
+        // AssetStorage::Get().SaveAsset(scene, m_file_dialog_info.result_path.string());
     }
 }
 
@@ -413,17 +413,17 @@ void EditorLayer::MenuBar() {
 void EditorLayer::DrawViewport() {
     auto &viewport = renderer->GetDefaultTarget().GetViewport();
 
-    device->ReadBuffer(renderer->GetFramebuffer(), 0);
-    device->DrawBuffer(m_screen_buffer.get(), 0);
-    device->BlitFramebuffer(
+    Device::Get().ReadBuffer(renderer->GetFramebuffer(), 0);
+    Device::Get().DrawBuffer(m_screen_buffer.get(), 0);
+    Device::Get().BlitFramebuffer(
         renderer->GetFramebuffer(), 0, 0,
         renderer->GetFramebuffer()->GetWidth(),
         renderer->GetFramebuffer()->GetHeight(), m_screen_buffer.get(), 0, 0,
         m_screen_buffer->GetWidth(), m_screen_buffer->GetHeight(),
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
-    device->ReadBuffer(renderer->GetFramebuffer(), 1);
-    device->DrawBuffer(m_screen_buffer.get(), 1);
-    device->BlitFramebuffer(
+    Device::Get().ReadBuffer(renderer->GetFramebuffer(), 1);
+    Device::Get().DrawBuffer(m_screen_buffer.get(), 1);
+    Device::Get().BlitFramebuffer(
         renderer->GetFramebuffer(), 0, 0,
         renderer->GetFramebuffer()->GetWidth(),
         renderer->GetFramebuffer()->GetHeight(), m_screen_buffer.get(), 0, 0,
@@ -445,8 +445,8 @@ void EditorLayer::DrawViewport() {
         }
         viewport.SetFocus(ImGui::IsWindowFocused());
         viewport.SetHover(ImGui::IsWindowHovered() && !ImGuizmo::IsOver());
-        const auto &tl_uv = device->GetUVIndex(0);
-        const auto &br_uv = device->GetUVIndex(2);
+        const auto &tl_uv = Device::Get().GetUVIndex(0);
+        const auto &br_uv = Device::Get().GetUVIndex(2);
         ImGui::DrawTexture(*m_screen_buffer->GetTexture(),
                            ImVec2(tl_uv.x, tl_uv.y), ImVec2(br_uv.x, br_uv.y));
         ImGuizmo::SetRect(viewport.GetLeft(), viewport.GetTop(),
@@ -483,7 +483,7 @@ void EditorLayer::DrawViewport() {
                                        sizeof(entity_id), &entity_id);
             }
             if (entity_id != entt::null) {
-                dispatcher->PublishEvent(
+                EventSystem::Get().PublishEvent(
                     EntitySelectEvent{entity_id, scene.get()});
             }
         }
@@ -496,9 +496,9 @@ void EditorLayer::DebugLighting() {
     if (m_mode == THREE_DIMENSIONAL) {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
         for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
-            device->ReadBuffer(m_lighting_system->GetGBuffer(), i);
-            device->DrawBuffer(m_debug_gbuffer.get(), i);
-            device->BlitFramebuffer(
+            Device::Get().ReadBuffer(m_lighting_system->GetGBuffer(), i);
+            Device::Get().DrawBuffer(m_debug_gbuffer.get(), i);
+            Device::Get().BlitFramebuffer(
                 m_lighting_system->GetGBuffer(), 0, 0,
                 m_lighting_system->GetGBuffer()->GetWidth(),
                 m_lighting_system->GetGBuffer()->GetHeight(),
@@ -506,8 +506,8 @@ void EditorLayer::DebugLighting() {
                 m_debug_gbuffer->GetHeight(), BufferBitMask::COLOR_BUFFER_BIT,
                 BlitFilter::NEAREST);
         }
-        const auto &tl_uv = device->GetUVIndex(0);
-        const auto &br_uv = device->GetUVIndex(2);
+        const auto &tl_uv = Device::Get().GetUVIndex(0);
+        const auto &br_uv = Device::Get().GetUVIndex(2);
         ImGui::Begin("GBuffer");
         {
             for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {

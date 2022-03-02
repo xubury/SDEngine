@@ -2,7 +2,9 @@
 #define SD_INPUT_ENGINE_HPP
 
 #include "Utility/Base.hpp"
-#include "Core/Event.hpp"
+#include "Core/Keyboard.hpp"
+#include "Core/Mouse.hpp"
+#include "Core/Export.hpp"
 
 #include <glm/glm.hpp>
 

@@ -3,19 +3,26 @@
 
 namespace SD {
 
-Ref<Device> Device::Create(Context *context) {
+static Device *s_device = nullptr;
+
+void Device::Init(Context *context) {
     SD_CORE_TRACE("Initializing Graphics Deivce...");
-    Ref<Device> device;
     switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
-            device = CreateRef<GLDevice>(context);
+            s_device = new GLDevice(context);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
-    return device;
 }
+
+void Device::Shutdown() {
+    delete s_device;
+    s_device = nullptr;
+}
+
+Device &Device::Get() { return *s_device; }
 
 Device::Device(Context *context) : m_context(context) {}
 

@@ -4,6 +4,7 @@
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
 
+#include "Asset/AssetStorage.hpp"
 #include "Asset/ModelAsset.hpp"
 #include "Asset/FontAsset.hpp"
 #include "Asset/TextureAsset.hpp"
@@ -21,9 +22,13 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     // Setting up which api to use
     SetGraphicsAPI(api);
 
-    SDL(SDL_Init(SDL_INIT_EVERYTHING));
-
     InitSettings();
+
+    SDL(SDL_Init(SDL_INIT_EVERYTHING));
+    EventSystem::Init();
+    AssetStorage::Init();
+    AssetStorage::Get().SetDirectory("assets");
+    RegisterAssets();
 
     WindowProp property(
         title, setting->GetInteger("window", "x", SDL_WINDOWPOS_CENTERED),
@@ -34,14 +39,8 @@ Application::Application(const std::string &title, GraphicsAPI api) {
         setting->GetBoolean("window", "vsync", true), SDL_WINDOW_RESIZABLE);
     m_window = Window::Create(property);
 
-    device = Device::Create(m_window.get());
-
-    asset = CreateRef<AssetStorage>();
-    asset->Init();
-    asset->SetDirectory("assets");
-    RegisterAssets();
-
-    dispatcher = CreateRef<EventDispatcher>();
+    Device::Init(m_window.get());
+    renderer = CreateRef<Renderer>();
 
     scene = CreateRef<Scene>();
 }
@@ -52,7 +51,9 @@ void Application::OnInit() {
 }
 
 void Application::OnDestroy() {
-    asset->Shutdown();
+    AssetStorage::Shutdown();
+    EventSystem::Shutdown();
+    Device::Shutdown();
 
     glm::ivec2 size = m_window->GetSize();
     setting->SetInteger("window", "width", size.x);
@@ -93,21 +94,21 @@ void Application::InitSettings() {
 }
 
 void Application::RegisterAssets() {
-    asset->RegisterAsset<FontAsset>(AssetTypeData{
+    AssetStorage::Get().RegisterAsset<FontAsset>(AssetTypeData{
         0, std::bind(Asset::Create<FontAsset>),
         std::bind(Asset::Destroy<FontAsset>, std::placeholders::_1)});
-    asset->RegisterAsset<TextureAsset>(AssetTypeData{
+    AssetStorage::Get().RegisterAsset<TextureAsset>(AssetTypeData{
         0, std::bind(Asset::Create<TextureAsset>),
         std::bind(Asset::Destroy<TextureAsset>, std::placeholders::_1)});
-    asset->RegisterAsset<ModelAsset>(AssetTypeData{
+    AssetStorage::Get().RegisterAsset<ModelAsset>(AssetTypeData{
         1, std::bind(Asset::Create<ModelAsset>),
         std::bind(Asset::Destroy<ModelAsset>, std::placeholders::_1)});
-    asset->RegisterAsset<SceneAsset>(AssetTypeData{
+    AssetStorage::Get().RegisterAsset<SceneAsset>(AssetTypeData{
         2, std::bind(Asset::Create<SceneAsset>),
         std::bind(Asset::Destroy<SceneAsset>, std::placeholders::_1)});
 }
 
-void Application::ProcessEvent(const Event &event) {
+void Application::ProcessEvent(const ApplicationEvent &event) {
     if (event.type == EventType::APP_QUIT) {
         Quit();
     }
@@ -120,7 +121,7 @@ void Application::ProcessEvent(const Event &event) {
 void Application::Run() {
     Clock clock;
     float min_fps = 30;
-    Event event;
+    ApplicationEvent event;
     float ms_per_frame = 1000.f / min_fps;
     uint32_t ms_elapsed = 0;
     while (!m_window->ShouldClose()) {

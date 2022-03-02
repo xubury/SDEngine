@@ -37,10 +37,7 @@ endif()
 
 target_link_libraries(sd-system 
     PUBLIC 
-    sd-ecs 
-    sd-utility
-    sd-core
-    sd-asset)
+    sd-core)
 
 target_include_directories(sd-system
     PUBLIC

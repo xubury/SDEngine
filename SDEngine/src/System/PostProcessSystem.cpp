@@ -61,7 +61,7 @@ void PostProcessSystem::OnPush() {
     m_gamma_correction = setting->GetFloat("post process", "gamma correction",
                                            m_gamma_correction);
     m_size_handler =
-        dispatcher->Register(this, &PostProcessSystem::OnSizeEvent);
+        EventSystem::Get().Register(this, &PostProcessSystem::OnSizeEvent);
 }
 
 void PostProcessSystem::OnPop() {
@@ -69,7 +69,7 @@ void PostProcessSystem::OnPop() {
     setting->SetFloat("post process", "bloom factor", m_bloom_factor);
     setting->SetFloat("post process", "exposure", m_exposure);
     setting->SetFloat("post process", "gamma correction", m_gamma_correction);
-    dispatcher->RemoveHandler(m_size_handler);
+    EventSystem::Get().RemoveHandler(m_size_handler);
 }
 
 void PostProcessSystem::OnImGui() {
@@ -88,10 +88,10 @@ void PostProcessSystem::OnImGui() {
 }
 
 void PostProcessSystem::OnRender() {
-    device->SetDepthMask(false);
-    device->ReadBuffer(renderer->GetFramebuffer(), 0);
-    device->DrawBuffer(m_post_buffer.get(), 0);
-    device->BlitFramebuffer(
+    Device::Get().SetDepthMask(false);
+    Device::Get().ReadBuffer(renderer->GetFramebuffer(), 0);
+    Device::Get().DrawBuffer(m_post_buffer.get(), 0);
+    Device::Get().BlitFramebuffer(
         renderer->GetFramebuffer(), 0, 0,
         renderer->GetFramebuffer()->GetWidth(),
         renderer->GetFramebuffer()->GetHeight(), m_post_buffer.get(), 0, 0,
@@ -101,7 +101,7 @@ void PostProcessSystem::OnRender() {
         RenderBlur();
     }
     RenderPost();
-    device->SetDepthMask(true);
+    Device::Get().SetDepthMask(true);
 }
 
 void PostProcessSystem::OnSizeEvent(const ViewportEvent &event) {
@@ -116,7 +116,7 @@ void PostProcessSystem::RenderBlur() {
     for (int i = 0; i < amount; ++i) {
         const int inputId = horizontal;
         const int outputId = !horizontal;
-        device->SetFramebuffer(m_blur_buffer[outputId].get());
+        Device::Get().SetFramebuffer(m_blur_buffer[outputId].get());
         m_blur_result = m_blur_buffer[outputId]->GetTexture();
         m_blur_shader->SetBool("u_horizontal", horizontal);
         m_blur_shader->SetTexture(
@@ -129,8 +129,8 @@ void PostProcessSystem::RenderBlur() {
 }
 
 void PostProcessSystem::RenderPost() {
-    device->SetFramebuffer(renderer->GetFramebuffer());
-    device->DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
+    Device::Get().SetFramebuffer(renderer->GetFramebuffer());
+    Device::Get().DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
     m_post_shader->SetBool("u_bloom", m_is_bloom);
     m_post_shader->SetFloat("u_bloomFactor", m_bloom_factor);
     m_post_shader->SetTexture("u_blur", m_blur_result);

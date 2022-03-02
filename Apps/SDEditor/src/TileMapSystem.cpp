@@ -1,5 +1,6 @@
 #include "TileMapSystem.hpp"
 #include "Core/Input.hpp"
+#include "Asset/AssetStorage.hpp"
 
 namespace SD {
 
@@ -93,12 +94,13 @@ void TileMapSystem::OnImGui() {
             m_fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
             m_fileDialogInfo.title = "Open File";
             m_fileDialogInfo.file_name = "";
-            m_fileDialogInfo.directory_path = asset->GetDirectory();
+            m_fileDialogInfo.directory_path =
+                AssetStorage::Get().GetDirectory();
             m_fileDialogInfo.regex_match = IMG_FILTER;
         }
         if (ImGui::FileDialog(&m_file_dialog_open, &m_fileDialogInfo)) {
             try {
-                m_texture_asset = asset->LoadAsset<TextureAsset>(
+                m_texture_asset = AssetStorage::Get().LoadAsset<TextureAsset>(
                     m_fileDialogInfo.result_path.string());
             } catch (const Exception &e) {
                 SD_CORE_ERROR("Error loading sprite: {}", e.what());
@@ -119,9 +121,9 @@ void TileMapSystem::OnImGui() {
 }
 
 void TileMapSystem::OnRender() {
-    device->SetFramebuffer(renderer->GetFramebuffer());
-    device->DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
-    device->Disable(SD::Operation::DEPTH_TEST);
+    Device::Get().SetFramebuffer(renderer->GetFramebuffer());
+    Device::Get().DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
+    Device::Get().Disable(SD::Operation::DEPTH_TEST);
     renderer->Begin(*scene->GetCamera());
 
     // draw brush & outline
@@ -172,7 +174,7 @@ void TileMapSystem::OnRender() {
             outline_pos, glm::quat(), tex_size, glm::vec4(1, 1, 1, 0.7));
     }
     renderer->End();
-    device->Enable(SD::Operation::DEPTH_TEST);
+    Device::Get().Enable(SD::Operation::DEPTH_TEST);
 }
 
 }  // namespace SD

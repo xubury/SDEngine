@@ -20,11 +20,11 @@ void ProfileSystem::OnInit() {
 }
 
 void ProfileSystem::OnPush() {
-    m_size_handler = dispatcher->Register<ViewportEvent>(
+    m_size_handler = EventSystem::Get().Register<ViewportEvent>(
         [this](const ViewportEvent &e) { m_camera.Resize(e.width, e.height); });
 }
 
-void ProfileSystem::OnPop() { dispatcher->RemoveHandler(m_size_handler); }
+void ProfileSystem::OnPop() { EventSystem::Get().RemoveHandler(m_size_handler); }
 
 void ProfileSystem::OnTick(float) {
     if (Input::IsKeyPressed(Keycode::F12)) {
@@ -42,8 +42,8 @@ void ProfileSystem::OnRender() {
     snprintf(fps_str.data(), fps_str.size(), "FPS: %.2f(%.2f ms)",
              m_fps.GetFPS(), m_fps.GetFrameTime());
 
-    device->SetFramebuffer(renderer->GetFramebuffer());
-    device->DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
+    Device::Get().SetFramebuffer(renderer->GetFramebuffer());
+    Device::Get().DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
     renderer->Begin(m_camera);
     renderer->SetTextOrigin(
         -m_camera.GetNearWidth() / 2,

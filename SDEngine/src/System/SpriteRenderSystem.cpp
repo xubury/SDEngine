@@ -1,6 +1,7 @@
 #include "System/SpriteRenderSystem.hpp"
 #include "Graphics/Font.hpp"
 
+#include "Asset/AssetStorage.hpp"
 #include "Asset/TextureAsset.hpp"
 #include "Asset/FontAsset.hpp"
 
@@ -31,8 +32,8 @@ struct SpriteDrawData {
     int priority;
 };
 void SpriteRenderSystem::OnRender() {
-    device->SetFramebuffer(renderer->GetFramebuffer());
-    device->SetDepthMask(false);
+    Device::Get().SetFramebuffer(renderer->GetFramebuffer());
+    Device::Get().SetDepthMask(false);
     renderer->Begin(*scene->GetCamera());
     std::vector<SpriteDrawData> datas;
     auto sprite_view =
@@ -43,9 +44,9 @@ void SpriteRenderSystem::OnRender() {
                                     const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
         auto &frame = sprite_comp.frame;
-        if (asset->Exists<TextureAsset>(frame.texture_id)) {
+        if (AssetStorage::Get().Exists<TextureAsset>(frame.texture_id)) {
             auto texture =
-                asset->GetAsset<TextureAsset>(frame.texture_id)->GetTexture();
+                AssetStorage::Get().GetAsset<TextureAsset>(frame.texture_id)->GetTexture();
             datas.push_back({texture, frame.uvs,
                              transform_comp.GetWorldPosition(),
                              transform_comp.GetWorldRotation(), frame.size, id,
@@ -63,9 +64,9 @@ void SpriteRenderSystem::OnRender() {
         if (anim) {
             if (anim->GetFrameSize()) {
                 auto &frame = anim->GetFrame();
-                if (asset->Exists<TextureAsset>(frame.texture_id)) {
+                if (AssetStorage::Get().Exists<TextureAsset>(frame.texture_id)) {
                     auto texture =
-                        asset->GetAsset<TextureAsset>(frame.texture_id)
+                        AssetStorage::Get().GetAsset<TextureAsset>(frame.texture_id)
                             ->GetTexture();
                     datas.push_back({texture, frame.uvs,
                                      transform_comp.GetWorldPosition(),
@@ -100,8 +101,8 @@ void SpriteRenderSystem::OnRender() {
                          const TransformComponent &transformComp,
                          const TextComponent &textComp) {
         renderer->SetTextOrigin(0, 0);
-        if (asset->Exists<FontAsset>(textComp.font_id)) {
-            auto font = asset->GetAsset<FontAsset>(textComp.font_id)->GetFont();
+        if (AssetStorage::Get().Exists<FontAsset>(textComp.font_id)) {
+            auto font = AssetStorage::Get().GetAsset<FontAsset>(textComp.font_id)->GetFont();
             renderer->DrawText(*font, textComp.text,
                                transformComp.GetWorldTransform().GetMatrix(),
                                textComp.color,
@@ -109,7 +110,7 @@ void SpriteRenderSystem::OnRender() {
         }
     });
     renderer->End();
-    device->SetDepthMask(true);
+    Device::Get().SetDepthMask(true);
 }
 
 }  // namespace SD

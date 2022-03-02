@@ -1,6 +1,7 @@
 #include "System/SkyboxSystem.hpp"
 #include "ECS/Scene.hpp"
 
+#include "Asset/AssetStorage.hpp"
 #include "Loader/ShaderLoader.hpp"
 #include "Loader/TextureLoader.hpp"
 
@@ -61,11 +62,11 @@ void SkyboxSystem::OnImGui() {
             m_file_dialog_info.type = ImGuiFileDialogType::OPEN_FILE;
             m_file_dialog_info.title = "Open File";
             m_file_dialog_info.file_name = "";
-            m_file_dialog_info.directory_path = asset->GetDirectory();
+            m_file_dialog_info.directory_path = AssetStorage::Get().GetDirectory();
         }
         if (ImGui::FileDialog(&m_file_dialog_open, &m_file_dialog_info)) {
             // m_skybox =
-            //     asset->LoadAsset<TextureAsset>(m_file_dialog_info.result_path)
+            //     AssetStorage::Get().LoadAsset<TextureAsset>(m_file_dialog_info.result_path)
             //         ->GetTexture();
         }
     }
@@ -78,16 +79,16 @@ void SkyboxSystem::OnRender() {
                            glm::translate(glm::mat4(1.0f), pos);
     m_skybox_shader->SetMat4("u_projection", projection);
 
-    device->SetDepthfunc(DepthFunc::LESS_EQUAL);
+    Device::Get().SetDepthfunc(DepthFunc::LESS_EQUAL);
     if (m_skybox) {
         m_skybox_shader->SetTexture("skybox", m_skybox.get());
     }
 
-    device->SetFramebuffer(renderer->GetFramebuffer());
-    device->DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
+    Device::Get().SetFramebuffer(renderer->GetFramebuffer());
+    Device::Get().DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
     renderer->Submit(*m_skybox_shader, *m_box_vao, MeshTopology::TRIANGLES,
                      m_box_vao->GetIndexBuffer()->GetCount(), 0);
-    device->SetDepthfunc(DepthFunc::LESS);
+    Device::Get().SetDepthfunc(DepthFunc::LESS);
 }
 
 }  // namespace SD
