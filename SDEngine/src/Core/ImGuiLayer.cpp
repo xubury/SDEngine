@@ -1,5 +1,5 @@
 #include "Core/ImGuiLayer.hpp"
-#include "Graphics/Graphics.hpp"
+#include "Graphics/Device.hpp"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl.h"
 #include "ImGuizmo.h"

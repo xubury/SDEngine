@@ -37,7 +37,7 @@ class SD_UTILITY_API EventStack {
                 --m_insertId;
             }
         } else {
-            SD_CORE_ERROR("EventStack::popLayer Failed! No layer found!");
+            SD_CORE_ERROR("EventStack::PopLayer Failed! No layer found!");
         }
     }
 

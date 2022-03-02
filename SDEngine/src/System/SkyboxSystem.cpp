@@ -1,5 +1,6 @@
 #include "System/SkyboxSystem.hpp"
 #include "ECS/Scene.hpp"
+#include "Renderer/Renderer.hpp"
 
 #include "Asset/AssetStorage.hpp"
 #include "Loader/ShaderLoader.hpp"
@@ -84,9 +85,9 @@ void SkyboxSystem::OnRender() {
         m_skybox_shader->SetTexture("skybox", m_skybox.get());
     }
 
-    Device::Get().SetFramebuffer(renderer->GetFramebuffer());
-    Device::Get().DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
-    renderer->Submit(*m_skybox_shader, *m_box_vao, MeshTopology::TRIANGLES,
+    Device::Get().SetFramebuffer(Renderer::Get().GetFramebuffer());
+    Device::Get().DrawBuffer(Renderer::Get().GetFramebuffer(), 0);  // only draw colors
+    Renderer::Get().Submit(*m_skybox_shader, *m_box_vao, MeshTopology::TRIANGLES,
                      m_box_vao->GetIndexBuffer()->GetCount(), 0);
     Device::Get().SetDepthfunc(DepthFunc::LESS);
 }

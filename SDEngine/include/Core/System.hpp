@@ -21,6 +21,10 @@ class SD_CORE_API System {
             [&](const NewSceneEvent &event) { scene = event.scene; });
     };
 
+    virtual void OnDestroy() {
+        EventSystem::Get().RemoveHandler(m_scene_handler);
+    }
+
     virtual void OnPush(){};
 
     virtual void OnPop(){};

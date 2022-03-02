@@ -1,4 +1,5 @@
 #include "EditorLayer.hpp"
+#include "Renderer/Renderer.hpp"
 #include "ContentBrowser.hpp"
 #include "Core/Input.hpp"
 #include "Core/Application.hpp"
@@ -74,7 +75,7 @@ void EditorLayer::PushSystems() {
             CreateSystem<PostProcessSystem>(m_width, m_height);
         m_profile_system = CreateSystem<ProfileSystem>(m_width, m_height);
 
-        PushSystem(CreateRef<ScriptSystem>());
+        PushSystem(CreateSystem<ScriptSystem>());
         PushSystem(m_camera_system);
         PushSystem(m_skybox_system);
         PushSystem(m_lighting_system);  // lighting is put behind skybox to do
@@ -97,7 +98,7 @@ void EditorLayer::PushSystems() {
         m_profile_system = CreateSystem<ProfileSystem>(m_width, m_height);
         m_animation_editor = CreateSystem<AnimationEditor>();
 
-        PushSystem(CreateRef<ScriptSystem>());
+        PushSystem(CreateSystem<ScriptSystem>());
         PushSystem(m_camera_system);
         PushSystem(m_skybox_system);
         PushSystem(m_sprite_system);  // sprite render need to put behind skybox
@@ -116,8 +117,8 @@ void EditorLayer::OnPush() {
         [this](const EntitySelectEvent &e) {
             m_selected_entity = {e.entity_id, e.scene};
         });
-    m_size_handler =
-        EventSystem::Get().Register<ViewportEvent>([this](const ViewportEvent &e) {
+    m_size_handler = EventSystem::Get().Register<ViewportEvent>(
+        [this](const ViewportEvent &e) {
             m_width = e.width;
             m_height = e.height;
             InitBuffers();
@@ -130,10 +131,10 @@ void EditorLayer::OnPop() {
 }
 
 void EditorLayer::OnRender() {
-    Device::Get().SetFramebuffer(renderer->GetFramebuffer());
+    Device::Get().SetFramebuffer(Renderer::Get().GetFramebuffer());
     Device::Get().Clear();
     uint32_t id = static_cast<uint32_t>(entt::null);
-    renderer->GetFramebuffer()->ClearAttachment(1, &id);
+    Renderer::Get().GetFramebuffer()->ClearAttachment(1, &id);
     for (auto &system : GetSystems()) {
         system->OnRender();
     }
@@ -141,23 +142,23 @@ void EditorLayer::OnRender() {
         // render to default buffer
         Device::Get().SetFramebuffer(nullptr);
         Device::Get().Clear();
-        Device::Get().BlitToScreen(renderer->GetDefaultTarget());
+        Device::Get().BlitToScreen(Renderer::Get().GetDefaultTarget());
     } else {
         Device::Get().Disable(Operation::DEPTH_TEST);
 
-        Device::Get().SetFramebuffer(renderer->GetFramebuffer());
+        Device::Get().SetFramebuffer(Renderer::Get().GetFramebuffer());
         Camera *cam = scene->GetCamera();
-        renderer->Begin(*cam);
+        Renderer::Get().Begin(*cam);
         auto lightView = scene->view<LightComponent, TransformComponent>();
         lightView.each([this, &cam](const LightComponent &,
                                     const TransformComponent &transComp) {
             glm::vec3 pos = transComp.GetWorldPosition();
             float dist = glm::distance(pos, cam->GetWorldPosition());
             float scale = (dist - cam->GetNearZ()) / 20;
-            renderer->DrawBillboard(*m_light_icon, pos, glm::vec2(scale));
+            Renderer::Get().DrawBillboard(*m_light_icon, pos, glm::vec2(scale));
         });
 
-        renderer->End();
+        Renderer::Get().End();
         Device::Get().Enable(Operation::DEPTH_TEST);
     }
 }
@@ -346,7 +347,7 @@ void EditorLayer::OnEventProcess(const ApplicationEvent &event) {
 void EditorLayer::SetViewportSize(int left, int top, int width, int height) {
     ViewportEvent event{left, top, width, height};
     EventSystem::Get().PublishEvent(event);
-    renderer->GetDefaultTarget().SetSize(left, top, width, height);
+    Renderer::Get().GetDefaultTarget().SetSize(left, top, width, height);
 }
 
 void EditorLayer::NewScene() {
@@ -377,11 +378,12 @@ void EditorLayer::ProcessDialog() {
         // auto new_scene =
         //     AssetStorage::Get().LoadAndGet<Scene>(m_file_dialog_info.result_path.string());
         // EventSystem::Get().PublishEvent(NewSceneEvent{new_scene});
-        // EventSystem::Get().PublishEvent(EntitySelectEvent{entt::null, scene.get()});
-        // m_scene_panel->Reset();
+        // EventSystem::Get().PublishEvent(EntitySelectEvent{entt::null,
+        // scene.get()}); m_scene_panel->Reset();
     }
     if (ImGui::FileDialog(&m_save_scene_open, &m_file_dialog_info)) {
-        // AssetStorage::Get().SaveAsset(scene, m_file_dialog_info.result_path.string());
+        // AssetStorage::Get().SaveAsset(scene,
+        // m_file_dialog_info.result_path.string());
     }
 }
 
@@ -411,22 +413,22 @@ void EditorLayer::MenuBar() {
 }
 
 void EditorLayer::DrawViewport() {
-    auto &viewport = renderer->GetDefaultTarget().GetViewport();
+    auto &viewport = Renderer::Get().GetDefaultTarget().GetViewport();
 
-    Device::Get().ReadBuffer(renderer->GetFramebuffer(), 0);
+    Device::Get().ReadBuffer(Renderer::Get().GetFramebuffer(), 0);
     Device::Get().DrawBuffer(m_screen_buffer.get(), 0);
     Device::Get().BlitFramebuffer(
-        renderer->GetFramebuffer(), 0, 0,
-        renderer->GetFramebuffer()->GetWidth(),
-        renderer->GetFramebuffer()->GetHeight(), m_screen_buffer.get(), 0, 0,
+        Renderer::Get().GetFramebuffer(), 0, 0,
+        Renderer::Get().GetFramebuffer()->GetWidth(),
+        Renderer::Get().GetFramebuffer()->GetHeight(), m_screen_buffer.get(), 0, 0,
         m_screen_buffer->GetWidth(), m_screen_buffer->GetHeight(),
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
-    Device::Get().ReadBuffer(renderer->GetFramebuffer(), 1);
+    Device::Get().ReadBuffer(Renderer::Get().GetFramebuffer(), 1);
     Device::Get().DrawBuffer(m_screen_buffer.get(), 1);
     Device::Get().BlitFramebuffer(
-        renderer->GetFramebuffer(), 0, 0,
-        renderer->GetFramebuffer()->GetWidth(),
-        renderer->GetFramebuffer()->GetHeight(), m_screen_buffer.get(), 0, 0,
+        Renderer::Get().GetFramebuffer(), 0, 0,
+        Renderer::Get().GetFramebuffer()->GetWidth(),
+        Renderer::Get().GetFramebuffer()->GetHeight(), m_screen_buffer.get(), 0, 0,
         m_screen_buffer->GetWidth(), m_screen_buffer->GetHeight(),
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
 

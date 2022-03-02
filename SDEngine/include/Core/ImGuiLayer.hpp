@@ -3,6 +3,7 @@
 
 #include "Core/Export.hpp"
 #include "Core/Layer.hpp"
+#include "Core/Window.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 
 namespace SD {

@@ -1,7 +1,12 @@
 #include "System/LightingSystem.hpp"
+
+#include "Renderer/Renderer.hpp"
+
 #include "ECS/Entity.hpp"
 #include "ECS/Component.hpp"
+
 #include "Utility/Random.hpp"
+
 #include "ImGui/ImGuiWidget.hpp"
 
 #include "Loader/ShaderLoader.hpp"
@@ -209,12 +214,12 @@ void LightingSystem::OnRender() {
     RenderEmissive();
 
     Device::Get().ReadBuffer(m_gbuffer.get(), G_ENTITY_ID);
-    Device::Get().DrawBuffer(renderer->GetFramebuffer(), 1);
+    Device::Get().DrawBuffer(Renderer::Get().GetFramebuffer(), 1);
     Device::Get().BlitFramebuffer(
         m_gbuffer.get(), 0, 0, m_gbuffer->GetWidth(), m_gbuffer->GetHeight(),
-        renderer->GetFramebuffer(), 0, 0,
-        renderer->GetFramebuffer()->GetWidth(),
-        renderer->GetFramebuffer()->GetHeight(),
+        Renderer::Get().GetFramebuffer(), 0, 0,
+        Renderer::Get().GetFramebuffer()->GetWidth(),
+        Renderer::Get().GetFramebuffer()->GetHeight(),
         BufferBitMask::COLOR_BUFFER_BIT | BufferBitMask::DEPTH_BUFFER_BIT,
         BlitFilter::NEAREST);
 }
@@ -245,7 +250,7 @@ void LightingSystem::RenderShadowMap() {
                                  .GetAsset<ModelAsset>(modelComp.model_id)
                                  ->GetModel();
                 for (const auto &mesh : model->GetMeshes()) {
-                    renderer->DrawMesh(*m_shadow_shader, mesh);
+                    Renderer::Get().DrawMesh(*m_shadow_shader, mesh);
                 }
             }
         });
@@ -259,7 +264,7 @@ void LightingSystem::RenderSSAO() {
 
     Device::Get().SetFramebuffer(m_ssao_buffer.get());
     m_ssao_buffer->ClearAttachment(0, &CLEAR_VALUE);
-    renderer->Begin(*m_ssao_shader, *scene->GetCamera());
+    Renderer::Get().Begin(*m_ssao_shader, *scene->GetCamera());
     m_ssao_shader->SetFloat("u_radius", m_ssao_radius);
     m_ssao_shader->SetFloat("u_bias", m_ssao_bias);
     m_ssao_shader->SetUint("u_power", m_ssao_power);
@@ -268,29 +273,29 @@ void LightingSystem::RenderSSAO() {
     m_ssao_shader->SetTexture(
         "u_normal", m_gbuffer->GetTexture(GeometryBufferType::G_NORMAL));
     m_ssao_shader->SetTexture("u_noise", m_ssao_noise.get());
-    renderer->Submit(*m_ssao_shader, *m_quad, MeshTopology::TRIANGLES,
+    Renderer::Get().Submit(*m_ssao_shader, *m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
-    renderer->End();
+    Renderer::Get().End();
 
     // blur
     Device::Get().SetFramebuffer(m_ssao_blur_buffer.get());
     m_ssao_blur_buffer->ClearAttachment(0, &CLEAR_VALUE);
     m_ssao_blur_shader->SetTexture("u_ssao", m_ssao_buffer->GetTexture());
-    renderer->Submit(*m_ssao_blur_shader, *m_quad, MeshTopology::TRIANGLES,
+    Renderer::Get().Submit(*m_ssao_blur_shader, *m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
 }
 
 void LightingSystem::RenderEmissive() {
     auto lightView = scene->view<TransformComponent, LightComponent>();
     if (lightView.begin() != lightView.end()) {
-        Device::Get().SetFramebuffer(renderer->GetFramebuffer());
-        Device::Get().DrawBuffer(renderer->GetFramebuffer(), 0);
+        Device::Get().SetFramebuffer(Renderer::Get().GetFramebuffer());
+        Device::Get().DrawBuffer(Renderer::Get().GetFramebuffer(), 0);
         m_emssive_shader->SetTexture("u_lighting",
                                      GetLightingBuffer()->GetTexture());
         m_emssive_shader->SetTexture(
             "u_emissive",
             m_gbuffer->GetTexture(GeometryBufferType::G_EMISSIVE));
-        renderer->Submit(*m_emssive_shader, *m_quad, MeshTopology::TRIANGLES,
+        Renderer::Get().Submit(*m_emssive_shader, *m_quad, MeshTopology::TRIANGLES,
                          m_quad->GetIndexBuffer()->GetCount(), 0);
     }
 }
@@ -313,7 +318,7 @@ void LightingSystem::RenderDeferred() {
     m_deferred_shader->SetTexture(
         "u_ambient", m_gbuffer->GetTexture(GeometryBufferType::G_AMBIENT));
     m_deferred_shader->SetTexture("u_background",
-                                  renderer->GetFramebuffer()->GetTexture());
+                                  Renderer::Get().GetFramebuffer()->GetTexture());
     m_deferred_shader->SetTexture("u_ssao", m_ssao_blur_buffer->GetTexture());
     m_deferred_shader->SetBool("u_ssao_state", m_ssao_state);
     const uint8_t input_id = 0;
@@ -321,7 +326,7 @@ void LightingSystem::RenderDeferred() {
     lightView.each([this](const TransformComponent &transformComp,
                           const LightComponent &lightComp) {
         Device::Get().SetFramebuffer(m_light_buffer[output_id].get());
-        renderer->Begin(*m_deferred_shader, *scene->GetCamera());
+        Renderer::Get().Begin(*m_deferred_shader, *scene->GetCamera());
         const Light &light = lightComp.light;
         m_deferred_shader->SetTexture("u_lighting",
                                       m_light_buffer[input_id]->GetTexture());
@@ -351,10 +356,10 @@ void LightingSystem::RenderDeferred() {
         }
         m_deferred_shader->SetMat4("u_light.projection_view",
                                    light.GetProjectionView());
-        renderer->Submit(*m_deferred_shader, *m_quad, MeshTopology::TRIANGLES,
+        Renderer::Get().Submit(*m_deferred_shader, *m_quad, MeshTopology::TRIANGLES,
                          m_quad->GetIndexBuffer()->GetCount(), 0);
         std::swap(m_light_buffer[input_id], m_light_buffer[output_id]);
-        renderer->End();
+        Renderer::Get().End();
     });
 }
 
@@ -367,7 +372,7 @@ void LightingSystem::RenderGBuffer() {
 
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
-    renderer->Begin(*m_gbuffer_shader, *scene->GetCamera());
+    Renderer::Get().Begin(*m_gbuffer_shader, *scene->GetCamera());
 
     modelView.each([this](const entt::entity &entity,
                           const TransformComponent &transformComp,
@@ -394,11 +399,11 @@ void LightingSystem::RenderGBuffer() {
                 m_gbuffer_shader->SetTexture(
                     "u_material.emissive",
                     material.GetTexture(MaterialType::EMISSIVE));
-                renderer->DrawMesh(*m_gbuffer_shader, mesh);
+                Renderer::Get().DrawMesh(*m_gbuffer_shader, mesh);
             }
         }
     });
-    renderer->End();
+    Renderer::Get().End();
 }
 
 void LightingSystem::SetSSAORadius(float radius) { m_ssao_radius = radius; }

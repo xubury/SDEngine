@@ -1,5 +1,6 @@
 #include "TileMapSystem.hpp"
 #include "Core/Input.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Asset/AssetStorage.hpp"
 
 namespace SD {
@@ -37,7 +38,7 @@ TileMapSystem::TileMapSystem()
 }
 
 void TileMapSystem::OnImGui() {
-    const auto &viewport = renderer->GetDefaultTarget().GetViewport();
+    const auto &viewport = Renderer::Get().GetDefaultTarget().GetViewport();
     if (viewport.IsHover()) {
         glm::vec2 clip = viewport.MapScreenToClip(
             glm::ivec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y));
@@ -121,10 +122,11 @@ void TileMapSystem::OnImGui() {
 }
 
 void TileMapSystem::OnRender() {
-    Device::Get().SetFramebuffer(renderer->GetFramebuffer());
-    Device::Get().DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
+    Device::Get().SetFramebuffer(Renderer::Get().GetFramebuffer());
+    Device::Get().DrawBuffer(Renderer::Get().GetFramebuffer(),
+                             0);  // only draw colors
     Device::Get().Disable(SD::Operation::DEPTH_TEST);
-    renderer->Begin(*scene->GetCamera());
+    Renderer::Get().Begin(*scene->GetCamera());
 
     // draw brush & outline
     const glm::ivec2 &tile_size = m_brush.tile_size;
@@ -133,8 +135,9 @@ void TileMapSystem::OnRender() {
     if (m_brush.GetSelectPos(world)) {
         if (m_operation == Operation::ADD_ENTITY) {
             if (m_texture_asset) {
-                renderer->DrawTexture(*m_texture_asset->GetTexture(), m_uvs,
-                                      world, glm::quat(), brush_size);
+                Renderer::Get().DrawTexture(*m_texture_asset->GetTexture(),
+                                            m_uvs, world, glm::quat(),
+                                            brush_size);
             }
         }
         // Draw selection
@@ -149,13 +152,14 @@ void TileMapSystem::OnRender() {
             } break;
         }
         if (m_operation != Operation::NONE) {
-            renderer->DrawQuad(world, glm::quat(), brush_size, select_color);
+            Renderer::Get().DrawQuad(world, glm::quat(), brush_size,
+                                     select_color);
         }
     }
 
     if (m_draw_outline) {
-        int render_width = renderer->GetDefaultTarget().GetWidth();
-        int render_height = renderer->GetDefaultTarget().GetHeight();
+        int render_width = Renderer::Get().GetDefaultTarget().GetWidth();
+        int render_height = Renderer::Get().GetDefaultTarget().GetHeight();
         const glm::ivec2 tile_cnt(
             std::ceil(static_cast<float>(render_width) / tile_size.x) + 1,
             std::ceil(static_cast<float>(render_height) / tile_size.y) + 1);
@@ -169,11 +173,11 @@ void TileMapSystem::OnRender() {
             -tex_size.y / 2.f + cam_pos.y + tile_size.y / 2.f +
                 tile_size.y * std::floor(tile_cnt.y / 2.f),
             0);
-        renderer->DrawTexture(
+        Renderer::Get().DrawTexture(
             *m_outline_texture, {uv_origin, glm::vec2(tile_cnt) + uv_origin},
             outline_pos, glm::quat(), tex_size, glm::vec4(1, 1, 1, 0.7));
     }
-    renderer->End();
+    Renderer::Get().End();
     Device::Get().Enable(SD::Operation::DEPTH_TEST);
 }
 

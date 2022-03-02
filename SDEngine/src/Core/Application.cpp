@@ -1,6 +1,7 @@
 #include "Core/Application.hpp"
 #include "Core/SDL.hpp"
 #include "Core/Input.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
 
@@ -25,10 +26,6 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     InitSettings();
 
     SDL(SDL_Init(SDL_INIT_EVERYTHING));
-    EventSystem::Init();
-    AssetStorage::Init();
-    AssetStorage::Get().SetDirectory("assets");
-    RegisterAssets();
 
     WindowProp property(
         title, setting->GetInteger("window", "x", SDL_WINDOWPOS_CENTERED),
@@ -39,21 +36,22 @@ Application::Application(const std::string &title, GraphicsAPI api) {
         setting->GetBoolean("window", "vsync", true), SDL_WINDOW_RESIZABLE);
     m_window = Window::Create(property);
 
+    EventSystem::Init();
+    AssetStorage::Init();
     Device::Init(m_window.get());
-    renderer = CreateRef<Renderer>();
+    Renderer::Init();
+
+    AssetStorage::Get().SetDirectory("assets");
+    RegisterAssets();
 
     scene = CreateRef<Scene>();
 }
 
-void Application::OnInit() {
-    m_imgui = CreateLayer<ImGuiLayer>(m_window.get());
-    PushOverlay(m_imgui);
-}
-
-void Application::OnDestroy() {
+Application::~Application() {
+    Renderer::Shutdown();
+    Device::Shutdown();
     AssetStorage::Shutdown();
     EventSystem::Shutdown();
-    Device::Shutdown();
 
     glm::ivec2 size = m_window->GetSize();
     setting->SetInteger("window", "width", size.x);
@@ -66,19 +64,37 @@ void Application::OnDestroy() {
     SDL_Quit();
 }
 
-void Application::PushLayer(const Ref<Layer> &layer) {
+void Application::OnInit() {
+    m_imgui = CreateLayer<ImGuiLayer>(m_window.get());
+    PushOverlay(m_imgui);
+}
+
+void Application::OnDestroy() {
+    while (m_layers.Size()) {
+        auto layer = m_layers.Front();
+        PopLayer(layer);
+        DestroyLayer(layer);
+    }
+}
+
+void Application::PushLayer(Layer *layer) {
     layer->OnPush();
     m_layers.Push(layer);
 }
 
-void Application::PushOverlay(const Ref<Layer> &layer) {
+void Application::PushOverlay(Layer *layer) {
     layer->OnPush();
     m_layers.PushOverlay(layer);
 }
 
-void Application::PopLayer(const Ref<Layer> &layer) {
+void Application::PopLayer(Layer *layer) {
     layer->OnPop();
     m_layers.Pop(layer);
+}
+
+void Application::DestroyLayer(Layer *layer) {
+    layer->OnDestroy();
+    delete layer;
 }
 
 void Application::InitSettings() {

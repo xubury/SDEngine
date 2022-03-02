@@ -69,16 +69,16 @@ class EditorLayer : public Layer {
 
     EditorMode m_mode{NONE};
 
-    Ref<ScenePanel> m_scene_panel;
-    Ref<EditorCameraSystem> m_editor_camera_system;
-    Ref<CameraSystem> m_camera_system;
-    Ref<LightingSystem> m_lighting_system;
-    Ref<SkyboxSystem> m_skybox_system;
-    Ref<SpriteRenderSystem> m_sprite_system;
-    Ref<PostProcessSystem> m_post_process_system;
-    Ref<ProfileSystem> m_profile_system;
-    Ref<TileMapSystem> m_tile_map_system;
-    Ref<AnimationEditor> m_animation_editor;
+    ScenePanel* m_scene_panel;
+    EditorCameraSystem* m_editor_camera_system;
+    CameraSystem* m_camera_system;
+    LightingSystem* m_lighting_system;
+    SkyboxSystem* m_skybox_system;
+    SpriteRenderSystem* m_sprite_system;
+    PostProcessSystem* m_post_process_system;
+    ProfileSystem* m_profile_system;
+    TileMapSystem* m_tile_map_system;
+    AnimationEditor* m_animation_editor;
 
     int m_width;
     int m_height;

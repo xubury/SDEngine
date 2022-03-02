@@ -13,6 +13,17 @@ const static std::array<glm::vec4, 4> QUAD_VERTEX_POS = {
 const static std::array<glm::vec2, 2> QUAD_UV = {glm::vec2(0, 0),
                                                  glm::vec2(1, 1)};
 
+static Renderer* s_renderer = nullptr;
+
+Renderer& Renderer::Get() { return *s_renderer; }
+
+void Renderer::Init() { s_renderer = new Renderer; }
+
+void Renderer::Shutdown() {
+    delete s_renderer;
+    s_renderer = nullptr;
+}
+
 Renderer::Renderer()
     : m_target(
           Viewport(0, 0, Device::Get().GetWidth(), Device::Get().GetHeight())) {

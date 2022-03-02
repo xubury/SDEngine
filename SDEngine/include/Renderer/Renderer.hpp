@@ -93,6 +93,9 @@ struct SD_RENDERER_API Renderer2DData {
 
 class SD_RENDERER_API Renderer {
    public:
+    static Renderer &Get();
+    static void Init();
+    static void Shutdown();
     Renderer();
     ~Renderer();
     Renderer(const Renderer &) = delete;

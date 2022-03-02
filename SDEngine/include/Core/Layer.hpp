@@ -23,9 +23,19 @@ class SD_CORE_API Layer {
     Layer(const Layer &) = delete;
 
     Layer &operator=(const Layer &) = delete;
+
     virtual void OnInit() {
         m_scene_handler = EventSystem::Get().Register<NewSceneEvent>(
             [&](const NewSceneEvent &event) { scene = event.scene; });
+    }
+
+    virtual void OnDestroy() {
+        while (m_systems.Size()) {
+            auto system = m_systems.Front();
+            PopSystem(system);
+            DestorySystem(system);
+        }
+        EventSystem::Get().RemoveHandler(m_scene_handler);
     }
 
     virtual void OnPush() {}
@@ -44,25 +54,27 @@ class SD_CORE_API Layer {
     bool IsBlockEvent() const { return m_is_block_event; }
 
     template <typename T, typename... ARGS>
-    Ref<T> CreateSystem(ARGS &&...args) {
-        Ref<T> system = CreateRef<T>(std::forward<ARGS>(args)...);
+    T *CreateSystem(ARGS &&...args) {
+        T *system = new T(std::forward<ARGS>(args)...);
         system->SetAppVars(MakeAppVars());
         system->OnInit();
         return system;
     }
 
-    void PushSystem(const Ref<System> &system) {
+    void DestorySystem(System *system) { delete system; }
+
+    void PushSystem(System *system) {
         system->OnPush();
         m_systems.Push(system);
     }
 
-    void PopSystem(const Ref<System> &system) {
+    void PopSystem(System *system) {
         system->OnPop();
         m_systems.Pop(system);
     }
 
-    const EventStack<Ref<System>> &GetSystems() const { return m_systems; }
-    EventStack<Ref<System>> &GetSystems() { return m_systems; }
+    const EventStack<System *> &GetSystems() const { return m_systems; }
+    EventStack<System *> &GetSystems() { return m_systems; }
 
     const std::string &GetName() const { return m_name; }
 
@@ -76,7 +88,7 @@ class SD_CORE_API Layer {
     SET_APP_VARS;
     std::string m_name;
     bool m_is_block_event;
-    EventStack<Ref<System>> m_systems;
+    EventStack<System *> m_systems;
 
     HandlerRegistration m_scene_handler;
 };

@@ -2,10 +2,7 @@
 #define SD_VARIABLES_HPP
 
 #include "Core/Export.hpp"
-#include "Core/Window.hpp"
-#include "Renderer/Renderer.hpp"
 #include "Utility/Ini.hpp"
-#include "Utility/EventDispatcher.hpp"
 #include "ECS/Scene.hpp"
 
 namespace SD {
@@ -14,13 +11,11 @@ std::filesystem::path SD_CORE_API GetAppDirectory();
 
 #define APP_VARS             \
     Ref<Ini> setting;        \
-    Ref<Renderer> renderer;  \
     Ref<Scene> scene;        \
 
 #define SET_APP_VARS                       \
     void SetAppVars(const AppVars &vars) { \
         setting = vars.setting;            \
-        renderer = vars.renderer;          \
         scene = vars.scene;                \
     }
 
@@ -28,7 +23,6 @@ std::filesystem::path SD_CORE_API GetAppDirectory();
     AppVars MakeAppVars() {           \
         AppVars vars;                 \
         vars.setting = setting;       \
-        vars.renderer = renderer;     \
         vars.scene = scene;           \
         return vars;                  \
     }

@@ -13,7 +13,7 @@ class SDEditor : public Application {
     void OnDestroy() override;
 
    private:
-    Ref<EditorLayer> m_layer;
+    EditorLayer* m_layer;
 };
 
 }  // namespace SD
