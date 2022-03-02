@@ -26,14 +26,6 @@ Device &Device::Get() { return *s_device; }
 
 Device::Device(Context *context) : m_context(context) {}
 
-glm::ivec2 Device::GetSize() const { return m_context->GetSize(); }
-
-int Device::GetWidth() const { return m_context->GetWidth(); }
-
-int Device::GetHeight() const { return m_context->GetHeight(); }
-
-uint8_t Device::GetMSAA() const { return m_context->GetMSAA(); }
-
 void Device::Reset() {
     SetShader(nullptr);
     SetFramebuffer(nullptr);

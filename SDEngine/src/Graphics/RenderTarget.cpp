@@ -2,12 +2,8 @@
 
 namespace SD {
 
-RenderTarget::RenderTarget(const Viewport &viewport)
-    : m_viewport(viewport) {}
-
 void RenderTarget::CreateFramebuffer() {
-    m_framebuffer =
-        Framebuffer::Create(m_viewport.GetWidth(), m_viewport.GetHeight());
+    m_framebuffer = Framebuffer::Create(m_width, m_height);
 
     for (const auto &spec : m_texture_specs) {
         m_framebuffer->Attach(spec);
@@ -31,15 +27,10 @@ void RenderTarget::Clear() {
     m_renderbuffer_specs.clear();
 }
 
-int RenderTarget::GetWidth() const { return m_viewport.GetWidth(); }
-
-int RenderTarget::GetHeight() const { return m_viewport.GetHeight(); }
-
-void RenderTarget::SetSize(int left, int top, int width, int height) {
-    int old_width = m_viewport.GetWidth();
-    int old_height = m_viewport.GetHeight();
-    m_viewport.SetSize(left, top, width, height);
-    if (old_width != width || old_height != height) {
+void RenderTarget::SetSize(int width, int height) {
+    if (m_width != width || m_height != height) {
+        m_width = width;
+        m_height = height;
         CreateFramebuffer();
     }
 }

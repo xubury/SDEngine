@@ -176,12 +176,13 @@ void GLDevice::BlitFramebuffer(const Framebuffer *src, int src_x, int src_y,
 
 void GLDevice::BlitToScreen(const RenderTarget &target) {
     ReadBuffer(target.GetFramebuffer(), 0);
-    const auto &viewport = target.GetViewport();
-    BlitFramebuffer(target.GetFramebuffer(), 0, 0, viewport.GetWidth(),
-                    viewport.GetHeight(), nullptr, viewport.GetLeft(),
-                    GetHeight() - viewport.GetHeight() - viewport.GetTop(),
-                    viewport.GetWidth(), viewport.GetHeight(),
-                    BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
+    const auto &viewport = m_context->GetViewport();
+    BlitFramebuffer(
+        target.GetFramebuffer(), 0, 0, viewport.GetWidth(),
+        viewport.GetHeight(), nullptr, viewport.GetLeft(),
+        m_context->GetHeight() - viewport.GetHeight() - viewport.GetTop(),
+        viewport.GetWidth(), viewport.GetHeight(),
+        BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
 }
 
 const glm::ivec2 GLDevice::GetUVIndex(int index) const {

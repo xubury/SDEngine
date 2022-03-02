@@ -1,5 +1,6 @@
 #include "TileMapSystem.hpp"
 #include "Core/Input.hpp"
+#include "Core/Window.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Asset/AssetStorage.hpp"
 
@@ -38,7 +39,7 @@ TileMapSystem::TileMapSystem()
 }
 
 void TileMapSystem::OnImGui() {
-    const auto &viewport = Renderer::Get().GetDefaultTarget().GetViewport();
+    const auto &viewport = Window::Get().GetViewport();
     if (viewport.IsHover()) {
         glm::vec2 clip = viewport.MapScreenToClip(
             glm::ivec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y));
@@ -158,8 +159,8 @@ void TileMapSystem::OnRender() {
     }
 
     if (m_draw_outline) {
-        int render_width = Renderer::Get().GetDefaultTarget().GetWidth();
-        int render_height = Renderer::Get().GetDefaultTarget().GetHeight();
+        int render_width = Renderer::Get().GetFramebuffer()->GetWidth();
+        int render_height = Renderer::Get().GetFramebuffer()->GetHeight();
         const glm::ivec2 tile_cnt(
             std::ceil(static_cast<float>(render_width) / tile_size.x) + 1,
             std::ceil(static_cast<float>(render_height) / tile_size.y) + 1);

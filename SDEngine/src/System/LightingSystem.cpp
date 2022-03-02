@@ -1,4 +1,5 @@
 #include "System/LightingSystem.hpp"
+#include "Core/Window.hpp"
 
 #include "Renderer/Renderer.hpp"
 
@@ -157,7 +158,7 @@ void LightingSystem::InitSSAOKernel() {
 }
 
 void LightingSystem::InitLighting() {
-    int samples = std::max<int>(Device::Get().GetMSAA(), 1);
+    int samples = std::max<int>(Window::Get().GetMSAA(), 1);
 
     for (int i = 0; i < 2; ++i) {
         m_light_buffer[i] = Framebuffer::Create(m_width, m_height);
@@ -274,15 +275,16 @@ void LightingSystem::RenderSSAO() {
         "u_normal", m_gbuffer->GetTexture(GeometryBufferType::G_NORMAL));
     m_ssao_shader->SetTexture("u_noise", m_ssao_noise.get());
     Renderer::Get().Submit(*m_ssao_shader, *m_quad, MeshTopology::TRIANGLES,
-                     m_quad->GetIndexBuffer()->GetCount(), 0);
+                           m_quad->GetIndexBuffer()->GetCount(), 0);
     Renderer::Get().End();
 
     // blur
     Device::Get().SetFramebuffer(m_ssao_blur_buffer.get());
     m_ssao_blur_buffer->ClearAttachment(0, &CLEAR_VALUE);
     m_ssao_blur_shader->SetTexture("u_ssao", m_ssao_buffer->GetTexture());
-    Renderer::Get().Submit(*m_ssao_blur_shader, *m_quad, MeshTopology::TRIANGLES,
-                     m_quad->GetIndexBuffer()->GetCount(), 0);
+    Renderer::Get().Submit(*m_ssao_blur_shader, *m_quad,
+                           MeshTopology::TRIANGLES,
+                           m_quad->GetIndexBuffer()->GetCount(), 0);
 }
 
 void LightingSystem::RenderEmissive() {
@@ -295,8 +297,9 @@ void LightingSystem::RenderEmissive() {
         m_emssive_shader->SetTexture(
             "u_emissive",
             m_gbuffer->GetTexture(GeometryBufferType::G_EMISSIVE));
-        Renderer::Get().Submit(*m_emssive_shader, *m_quad, MeshTopology::TRIANGLES,
-                         m_quad->GetIndexBuffer()->GetCount(), 0);
+        Renderer::Get().Submit(*m_emssive_shader, *m_quad,
+                               MeshTopology::TRIANGLES,
+                               m_quad->GetIndexBuffer()->GetCount(), 0);
     }
 }
 
@@ -317,8 +320,8 @@ void LightingSystem::RenderDeferred() {
         "u_albedo", m_gbuffer->GetTexture(GeometryBufferType::G_ALBEDO));
     m_deferred_shader->SetTexture(
         "u_ambient", m_gbuffer->GetTexture(GeometryBufferType::G_AMBIENT));
-    m_deferred_shader->SetTexture("u_background",
-                                  Renderer::Get().GetFramebuffer()->GetTexture());
+    m_deferred_shader->SetTexture(
+        "u_background", Renderer::Get().GetFramebuffer()->GetTexture());
     m_deferred_shader->SetTexture("u_ssao", m_ssao_blur_buffer->GetTexture());
     m_deferred_shader->SetBool("u_ssao_state", m_ssao_state);
     const uint8_t input_id = 0;
@@ -356,8 +359,9 @@ void LightingSystem::RenderDeferred() {
         }
         m_deferred_shader->SetMat4("u_light.projection_view",
                                    light.GetProjectionView());
-        Renderer::Get().Submit(*m_deferred_shader, *m_quad, MeshTopology::TRIANGLES,
-                         m_quad->GetIndexBuffer()->GetCount(), 0);
+        Renderer::Get().Submit(*m_deferred_shader, *m_quad,
+                               MeshTopology::TRIANGLES,
+                               m_quad->GetIndexBuffer()->GetCount(), 0);
         std::swap(m_light_buffer[input_id], m_light_buffer[output_id]);
         Renderer::Get().End();
     });

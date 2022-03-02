@@ -14,7 +14,7 @@ namespace SD {
 class SD_GRAPHICS_API RenderTarget {
    public:
     RenderTarget() = default;
-    RenderTarget(const Viewport &viewport);
+    RenderTarget(int width, int height) : m_width(width), m_height(height) {}
 
     RenderTarget(const RenderTarget &) = delete;
     RenderTarget &operator=(const RenderTarget &) = delete;
@@ -36,14 +36,11 @@ class SD_GRAPHICS_API RenderTarget {
 
     int GetWidth() const;
     int GetHeight() const;
-    void SetSize(int left, int top, int width, int height);
-
-    const Viewport &GetViewport() const { return m_viewport; }
-    Viewport &GetViewport() { return m_viewport; }
-    void SetViewport(const Viewport &viewport) { m_viewport = viewport; }
+    void SetSize(int width, int height);
 
    private:
-    Viewport m_viewport;
+    int m_width;
+    int m_height;
     Ref<Framebuffer> m_framebuffer;
 
     std::vector<TextureSpec> m_texture_specs;

@@ -22,8 +22,8 @@ void SDEditor::OnInit() {
 
     int viewport_width = setting->GetInteger("editor", "viewport width", 800);
     int viewport_height = setting->GetInteger("editor", "viewport height", 600);
-    Renderer::Get().GetDefaultTarget().SetSize(0, 0, viewport_width,
-                                               viewport_height);
+    Renderer::Get().GetDefaultTarget().SetSize(viewport_width, viewport_height);
+    Window::Get().SetViewportSize(0, 0, viewport_width, viewport_height);
 #ifdef SD_IMGUI_IMPORT
     // for DLL context
     ImGui::SetCurrentContext(GetImGuiLayer()->GetContext());

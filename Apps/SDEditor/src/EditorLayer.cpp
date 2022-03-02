@@ -274,7 +274,7 @@ void EditorLayer::OnImGui() {
 void EditorLayer::Hide() {
     m_is_runtime = true;
     SetIsBlockEvent(false);
-    SetViewportSize(0, 0, Device::Get().GetWidth(), Device::Get().GetHeight());
+    SetViewportSize(0, 0, Window::Get().GetWidth(), Window::Get().GetHeight());
 }
 
 void EditorLayer::Show() {
@@ -347,7 +347,8 @@ void EditorLayer::OnEventProcess(const ApplicationEvent &event) {
 void EditorLayer::SetViewportSize(int left, int top, int width, int height) {
     ViewportEvent event{left, top, width, height};
     EventSystem::Get().PublishEvent(event);
-    Renderer::Get().GetDefaultTarget().SetSize(left, top, width, height);
+    Window::Get().SetViewportSize(left, top, width, height);
+    Renderer::Get().GetDefaultTarget().SetSize(width, height);
 }
 
 void EditorLayer::NewScene() {
@@ -413,23 +414,23 @@ void EditorLayer::MenuBar() {
 }
 
 void EditorLayer::DrawViewport() {
-    auto &viewport = Renderer::Get().GetDefaultTarget().GetViewport();
+    auto &viewport = Window::Get().GetViewport();
 
     Device::Get().ReadBuffer(Renderer::Get().GetFramebuffer(), 0);
     Device::Get().DrawBuffer(m_screen_buffer.get(), 0);
     Device::Get().BlitFramebuffer(
         Renderer::Get().GetFramebuffer(), 0, 0,
         Renderer::Get().GetFramebuffer()->GetWidth(),
-        Renderer::Get().GetFramebuffer()->GetHeight(), m_screen_buffer.get(), 0, 0,
-        m_screen_buffer->GetWidth(), m_screen_buffer->GetHeight(),
+        Renderer::Get().GetFramebuffer()->GetHeight(), m_screen_buffer.get(), 0,
+        0, m_screen_buffer->GetWidth(), m_screen_buffer->GetHeight(),
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
     Device::Get().ReadBuffer(Renderer::Get().GetFramebuffer(), 1);
     Device::Get().DrawBuffer(m_screen_buffer.get(), 1);
     Device::Get().BlitFramebuffer(
         Renderer::Get().GetFramebuffer(), 0, 0,
         Renderer::Get().GetFramebuffer()->GetWidth(),
-        Renderer::Get().GetFramebuffer()->GetHeight(), m_screen_buffer.get(), 0, 0,
-        m_screen_buffer->GetWidth(), m_screen_buffer->GetHeight(),
+        Renderer::Get().GetFramebuffer()->GetHeight(), m_screen_buffer.get(), 0,
+        0, m_screen_buffer->GetWidth(), m_screen_buffer->GetHeight(),
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});

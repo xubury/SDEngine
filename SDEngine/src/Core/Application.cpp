@@ -39,7 +39,8 @@ Application::Application(const std::string &title, GraphicsAPI api) {
     EventSystem::Init();
     AssetStorage::Init();
     Device::Init(&Window::Get());
-    Renderer::Init();
+    Renderer::Init(Window::Get().GetWidth(), Window::Get().GetHeight(),
+                   Window::Get().GetMSAA());
 
     AssetStorage::Get().SetDirectory("assets");
     RegisterAssets();

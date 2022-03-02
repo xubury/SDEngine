@@ -17,16 +17,16 @@ static Renderer* s_renderer = nullptr;
 
 Renderer& Renderer::Get() { return *s_renderer; }
 
-void Renderer::Init() { s_renderer = new Renderer; }
+void Renderer::Init(int width, int height, int msaa) {
+    s_renderer = new Renderer(width, height, msaa);
+}
 
 void Renderer::Shutdown() {
     delete s_renderer;
     s_renderer = nullptr;
 }
 
-Renderer::Renderer()
-    : m_target(
-          Viewport(0, 0, Device::Get().GetWidth(), Device::Get().GetHeight())) {
+Renderer::Renderer(int width, int height, int msaa) : m_target(width, height) {
     SD_CORE_TRACE("Initializing Renderer");
     m_camera_UBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
                                          BufferIOType::DYNAMIC);
@@ -34,16 +34,16 @@ Renderer::Renderer()
     InitRenderer2D();
 
     m_target.AddTexture(
-        TextureSpec(Device::Get().GetMSAA(), TextureType::TEX_2D_MULTISAMPLE,
-                    DataFormat::RGBA, DataFormatType::UBYTE, TextureWrap::EDGE,
+        TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE, DataFormat::RGBA,
+                    DataFormatType::UBYTE, TextureWrap::EDGE,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     m_target.AddTexture(
-        TextureSpec(Device::Get().GetMSAA(), TextureType::TEX_2D_MULTISAMPLE,
-                    DataFormat::RED, DataFormatType::UINT, TextureWrap::EDGE,
+        TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE, DataFormat::RED,
+                    DataFormatType::UINT, TextureWrap::EDGE,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
-    m_target.AddTexture(TextureSpec(
-        Device::Get().GetMSAA(), TextureType::TEX_2D_MULTISAMPLE,
-        DataFormat::DEPTH, DataFormatType::FLOAT16, TextureWrap::EDGE));
+    m_target.AddTexture(TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE,
+                                    DataFormat::DEPTH, DataFormatType::FLOAT16,
+                                    TextureWrap::EDGE));
     m_target.CreateFramebuffer();
 }
 

@@ -72,12 +72,6 @@ class SD_GRAPHICS_API Device {
 
     virtual const glm::ivec2 GetUVIndex(int index) const = 0;
 
-    glm::ivec2 GetSize() const;
-    int GetWidth() const;
-    int GetHeight() const;
-
-    uint8_t GetMSAA() const;
-
     void Reset();
 
    protected:
