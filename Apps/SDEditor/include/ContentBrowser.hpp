@@ -5,6 +5,8 @@
 
 namespace SD {
 
+class Asset;
+
 class ContentBrowser : public System {
    public:
     ContentBrowser();
@@ -18,6 +20,7 @@ class ContentBrowser : public System {
     Ref<Texture> m_directory_icon;
 
     std::filesystem::path m_current_directory;
+    std::unordered_map<std::string, Asset*> m_tree;
 };
 
 }  // namespace SD

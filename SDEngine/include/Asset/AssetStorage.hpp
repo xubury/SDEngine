@@ -30,8 +30,8 @@ class SD_ASSET_API AssetStorage {
     static void Init();
     static void Shutdown();
 
-    AssetStorage() = default;
-    ~AssetStorage();
+    AssetStorage(const AssetStorage&) = delete;
+    AssetStorage& operator=(const AssetStorage&) = delete;
 
     template <typename T>
     bool Exists(ResourceId rid) {
@@ -134,8 +134,15 @@ class SD_ASSET_API AssetStorage {
     }
 
     template <typename T>
-    void RegisterAsset(const AssetTypeData& data) {
-        m_asset_types[GetTypeId<T>()] = data;
+    bool RegisterAsset(const AssetTypeData& data) {
+        TypeId tid = GetTypeId<T>();
+        auto ret = m_registered.emplace(tid);
+        if (ret.second) {
+            m_asset_types[tid] = data;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     AssetTypeData& GetTypeData(TypeId tid) { return m_asset_types[tid]; }
@@ -143,6 +150,19 @@ class SD_ASSET_API AssetStorage {
     template <typename T>
     const Cache& GetCache() const {
         return m_assets.at(GetTypeId<T>());
+    }
+
+    const Cache& GetCache(TypeId tid) const { return m_assets.at(tid); }
+
+    template <typename T>
+    bool Empty() {
+        return m_assets.count(GetTypeId<T>()) == 0;
+    }
+
+    bool Empty(TypeId tid) { return m_assets.count(tid) == 0; }
+
+    const std::unordered_set<TypeId>& GetRegistered() const {
+        return m_registered;
     }
 
     template <typename T>
@@ -163,6 +183,10 @@ class SD_ASSET_API AssetStorage {
     const std::filesystem::path& GetDirectory() const { return m_directory; }
 
    private:
+    AssetStorage() = default;
+    ~AssetStorage();
+
+    std::unordered_set<TypeId> m_registered;
     std::unordered_map<TypeId, Cache> m_assets;
     std::unordered_map<TypeId, AssetTypeData> m_asset_types;
     std::filesystem::path m_directory;

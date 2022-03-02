@@ -32,18 +32,6 @@ void SDEditor::OnInit() {
     m_layer = CreateLayer<EditorLayer>(viewport_width, viewport_height,
                                        GetWindow().GetMSAA());
     PushLayer(m_layer);
-    // asset module test
-    TextureAsset *texture_asset =
-        AssetStorage::Get().CreateAsset<TextureAsset>("test.asset");
-    texture_asset->SetTexturePath("textures/awesomeface.png");
-
-    AssetStorage::Get().SaveAsset<TextureAsset>(texture_asset->GetId());
-    AssetStorage::Get().Unload<TextureAsset>(texture_asset->GetId());
-
-    TextureAsset *loaded =
-        AssetStorage::Get().LoadAsset<TextureAsset>("test.asset");
-    SD_CORE_TRACE("texture path:{} path:{}", loaded->GetTexturePath(),
-                  loaded->GetPath());
 }
 
 void SDEditor::OnDestroy() {

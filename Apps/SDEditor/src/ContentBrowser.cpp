@@ -3,6 +3,8 @@
 #include "Loader/TextureLoader.hpp"
 #include "Asset/AssetStorage.hpp"
 
+#include "Asset/TextureAsset.hpp"
+
 namespace SD {
 
 ContentBrowser::ContentBrowser() : System("Content Browser") {}
@@ -13,6 +15,24 @@ void ContentBrowser::OnInit() {
     m_directory_icon =
         TextureLoader::LoadTexture2D("assets/icons/DirectoryIcon.png");
     m_current_directory = AssetStorage::Get().GetDirectory();
+
+    // asset module test
+    TextureAsset* texture_asset =
+        AssetStorage::Get().CreateAsset<TextureAsset>("test.asset");
+    texture_asset->SetTexturePath("textures/awesomeface.png");
+
+    AssetStorage::Get().SaveAsset<TextureAsset>(texture_asset->GetId());
+    AssetStorage::Get().Unload<TextureAsset>(texture_asset->GetId());
+
+    AssetStorage::Get().LoadAsset<TextureAsset>("test.asset");
+
+    auto& storage = AssetStorage::Get();
+    for (const TypeId tid : storage.GetRegistered()) {
+        if (storage.Empty(tid)) continue;
+        for (const auto& [id, asset] : storage.GetCache(tid)) {
+            m_tree[asset->GetPath()] = asset;
+        }
+    }
 }
 
 void ContentBrowser::OnImGui() {
@@ -37,13 +57,16 @@ void ContentBrowser::OnImGui() {
     for (auto& entry :
          std::filesystem::directory_iterator(m_current_directory)) {
         const auto& path = entry.path();
+        const bool is_directory = entry.is_directory();
+        if (!is_directory && m_tree.count(path.string()) == 0) {
+            continue;
+        }
         const std::filesystem::path relative_path =
             std::filesystem::relative(path, root_path);
         const std::string filename = relative_path.filename().string();
 
+        Ref<Texture> icon = is_directory ? m_directory_icon : m_file_icon;
         ImGui::PushID(filename.c_str());
-        Ref<Texture> icon =
-            entry.is_directory() ? m_directory_icon : m_file_icon;
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
         ImGui::ImageButton((ImTextureID)(intptr_t)icon->GetId(),
                            {thumbnail_size, thumbnail_size});
