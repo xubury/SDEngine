@@ -63,11 +63,19 @@ struct NewSceneEvent {
     Ref<Scene> scene;
 };
 
-struct ViewportEvent {
-    int left;
-    int top;
+struct ViewportSizeEvent {
     int width;
     int height;
+};
+
+struct ViewportPosEvent {
+    int x;
+    int y;
+};
+
+struct ViewportStateEvent {
+    bool is_focus;
+    bool is_hover;
 };
 
 }  // namespace SD

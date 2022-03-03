@@ -26,28 +26,33 @@ void Renderer::Shutdown() {
     s_renderer = nullptr;
 }
 
-Renderer::Renderer(int width, int height, int msaa) : m_target(width, height) {
+Renderer::Renderer(int width, int height, int msaa) {
     SD_CORE_TRACE("Initializing Renderer");
     m_camera_UBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
                                          BufferIOType::DYNAMIC);
 
     InitRenderer2D();
 
-    m_target.AddTexture(
+    m_framebuffer = Framebuffer::Create(width, height);
+    m_framebuffer->Attach(
         TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE, DataFormat::RGBA,
                     DataFormatType::UBYTE, TextureWrap::EDGE,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
-    m_target.AddTexture(
+    m_framebuffer->Attach(
         TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE, DataFormat::RED,
                     DataFormatType::UINT, TextureWrap::EDGE,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
-    m_target.AddTexture(TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE,
-                                    DataFormat::DEPTH, DataFormatType::FLOAT16,
-                                    TextureWrap::EDGE));
-    m_target.CreateFramebuffer();
+    m_framebuffer->Attach(
+        TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE, DataFormat::DEPTH,
+                    DataFormatType::FLOAT16, TextureWrap::EDGE));
+    m_framebuffer->Validate();
 }
 
 Renderer::~Renderer() { SD_CORE_TRACE("Deleting Renderer"); }
+
+void Renderer::SetSize(int32_t width, int32_t height) {
+    m_framebuffer->Resize(width, height);
+}
 
 void Renderer::InitRenderer2D() {
     // Initializing line vao

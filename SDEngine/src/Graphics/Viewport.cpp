@@ -13,11 +13,14 @@ int Viewport::GetWidth() const { return m_width; }
 
 int Viewport::GetHeight() const { return m_height; }
 
-void Viewport::SetSize(int left, int top, int width, int height) {
-    m_left = left;
-    m_top = top;
+void Viewport::SetSize(int width, int height) {
     m_width = width;
     m_height = height;
+}
+
+void Viewport::SetPos(int x, int y) {
+    m_left = x;
+    m_top = y;
 }
 
 glm::vec2 Viewport::MapScreenToClip(const glm::ivec2 &screen) const {

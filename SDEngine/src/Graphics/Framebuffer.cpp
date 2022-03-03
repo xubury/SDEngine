@@ -16,4 +16,12 @@ Ref<Framebuffer> Framebuffer::Create(int width, int height) {
     return frameBuffer;
 }
 
+void Framebuffer::Attach(const TextureSpec &spec) {
+    m_texture_specs.push_back(spec);
+}
+
+void Framebuffer::Attach(const RenderbufferSpec &spec) {
+    m_renderbuffer_specs.push_back(spec);
+}
+
 }  // namespace SD

@@ -2,7 +2,6 @@
 #define SD_DEVICE_HPP
 
 #include "Utility/Base.hpp"
-#include "Graphics/RenderTarget.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Context.hpp"
 #include "Graphics/VertexArray.hpp"
@@ -67,8 +66,6 @@ class SD_GRAPHICS_API Device {
                                  Framebuffer *dst, int dst_x, int dst_y,
                                  int dst_width, int dst_height,
                                  BufferBitMask mask, BlitFilter filter) = 0;
-
-    virtual void BlitToScreen(const RenderTarget &target) = 0;
 
     virtual const glm::ivec2 GetUVIndex(int index) const = 0;
 

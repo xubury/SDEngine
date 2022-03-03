@@ -31,7 +31,7 @@ void ScenePanel::OnPop() {
     EventSystem::Get().RemoveHandler(m_entity_select_handler);
 }
 
-void ScenePanel::OnSizeEvent(const ViewportEvent &event) {
+void ScenePanel::OnSizeEvent(const ViewportSizeEvent &event) {
     m_width = event.width;
     m_height = event.height;
 }

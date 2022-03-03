@@ -48,8 +48,6 @@ class GLDevice : public Device {
                          int dst_width, int dst_height, BufferBitMask mask,
                          BlitFilter filter) override;
 
-    void BlitToScreen(const RenderTarget &target) override;
-
     const glm::ivec2 GetUVIndex(int index) const override;
 };
 

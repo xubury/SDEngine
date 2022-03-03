@@ -4,7 +4,6 @@
 #include "System/Export.hpp"
 #include "Core/System.hpp"
 #include "Graphics/VertexArray.hpp"
-#include "Graphics/RenderTarget.hpp"
 #include "Graphics/Shader.hpp"
 
 namespace SD {
@@ -23,7 +22,7 @@ class SD_SYSTEM_API PostProcessSystem : public System {
 
     void OnRender() override;
 
-    void OnSizeEvent(const ViewportEvent &event);
+    void OnSizeEvent(const ViewportSizeEvent &event);
 
     void SetExposure(float exposure);
     float GetExposure();

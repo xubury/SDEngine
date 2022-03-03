@@ -4,7 +4,7 @@
 #include "Utility/Base.hpp"
 #include "Utility/Serialize.hpp"
 #include "Utility/Transform.hpp"
-#include "Graphics/RenderTarget.hpp"
+#include "Graphics/Framebuffer.hpp"
 #include "Graphics/Camera.hpp"
 
 namespace SD {

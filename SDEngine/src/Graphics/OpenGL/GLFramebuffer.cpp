@@ -5,57 +5,78 @@
 namespace SD {
 
 GLFramebuffer::GLFramebuffer(int width, int height)
-    : Framebuffer(width, height), m_texture_cnt(0) {
+    : Framebuffer(width, height) {
     glCreateFramebuffers(1, &m_id);
 }
 
 GLFramebuffer::~GLFramebuffer() { glDeleteFramebuffers(1, &m_id); }
 
-void GLFramebuffer::Attach(const TextureSpec &spec) {
-    auto texture = Texture::Create(m_width, m_height, spec);
-    GLenum attachment = 0;
-    switch (texture->GetFormat()) {
-        case DataFormat::DEPTH:
-            attachment = GL_DEPTH_ATTACHMENT;
-            break;
-        case DataFormat::DEPTH_STENCIL:
-            attachment = GL_DEPTH_STENCIL_ATTACHMENT;
-            break;
-        case DataFormat::ALPHA:
-        case DataFormat::RED:
-        case DataFormat::RG:
-        case DataFormat::RGB:
-        case DataFormat::RGBA:
-            attachment = GL_COLOR_ATTACHMENT0 + m_texture_cnt++;
-            m_drawables.push_back(attachment);
-            break;
-    }
-    m_attachments.emplace_back(texture);
-    glNamedFramebufferTexture(m_id, attachment, texture->GetId(), 0);
+void GLFramebuffer::Clear() {
+    m_attachments.clear();
+    m_drawables.clear();
+    glDeleteFramebuffers(1, &m_id);
+    glCreateFramebuffers(1, &m_id);
 }
 
-void GLFramebuffer::Attach(const RenderbufferSpec &spec) {
-    auto renderbuffer = Renderbuffer::Create(m_width, m_height, spec);
-    GLenum attachment = 0;
-    switch (renderbuffer->GetFormat()) {
-        case DataFormat::DEPTH:
-            attachment = GL_DEPTH_ATTACHMENT;
-            break;
-        case DataFormat::DEPTH_STENCIL:
-            attachment = GL_DEPTH_STENCIL_ATTACHMENT;
-            break;
-        case DataFormat::ALPHA:
-        case DataFormat::RED:
-        case DataFormat::RG:
-        case DataFormat::RGB:
-        case DataFormat::RGBA:
-            attachment = GL_COLOR_ATTACHMENT0 + m_texture_cnt++;
-            m_drawables.push_back(attachment);
-            break;
+void GLFramebuffer::Resize(int width, int height) {
+    if (m_width != width || m_height != height) {
+        m_width = width;
+        m_height = height;
+        Clear();
+        Validate();
     }
-    m_attachments.emplace_back(renderbuffer);
-    glNamedFramebufferRenderbuffer(m_id, attachment, GL_RENDERBUFFER,
-                                   renderbuffer->GetId());
+}
+
+void GLFramebuffer::Validate() {
+    int drawable_cnt = 0;
+    for (const auto &spec : m_texture_specs) {
+        auto texture = Texture::Create(m_width, m_height, spec);
+        GLenum attachment = 0;
+        switch (texture->GetFormat()) {
+            case DataFormat::DEPTH:
+                attachment = GL_DEPTH_ATTACHMENT;
+                break;
+            case DataFormat::DEPTH_STENCIL:
+                attachment = GL_DEPTH_STENCIL_ATTACHMENT;
+                break;
+            case DataFormat::ALPHA:
+            case DataFormat::RED:
+            case DataFormat::RG:
+            case DataFormat::RGB:
+            case DataFormat::RGBA:
+                attachment = GL_COLOR_ATTACHMENT0 + drawable_cnt++;
+                m_drawables.push_back(attachment);
+                break;
+        }
+        m_attachments.emplace_back(texture);
+        glNamedFramebufferTexture(m_id, attachment, texture->GetId(), 0);
+    }
+    for (const auto &spec : m_renderbuffer_specs) {
+        auto renderbuffer = Renderbuffer::Create(m_width, m_height, spec);
+        GLenum attachment = 0;
+        switch (renderbuffer->GetFormat()) {
+            case DataFormat::DEPTH:
+                attachment = GL_DEPTH_ATTACHMENT;
+                break;
+            case DataFormat::DEPTH_STENCIL:
+                attachment = GL_DEPTH_STENCIL_ATTACHMENT;
+                break;
+            case DataFormat::ALPHA:
+            case DataFormat::RED:
+            case DataFormat::RG:
+            case DataFormat::RGB:
+            case DataFormat::RGBA:
+                attachment = GL_COLOR_ATTACHMENT0 + drawable_cnt++;
+                m_drawables.push_back(attachment);
+                break;
+        }
+        m_attachments.emplace_back(renderbuffer);
+        glNamedFramebufferRenderbuffer(m_id, attachment, GL_RENDERBUFFER,
+                                       renderbuffer->GetId());
+    }
+    SD_CORE_ASSERT(
+        glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE,
+        "Framebuffer is incomplete!");
 }
 
 void GLFramebuffer::ReadPixels(uint32_t attachment_id, int level, int x, int y,

@@ -15,8 +15,13 @@ namespace SD {
 
 EditorLayer::EditorLayer(int width, int height, int msaa)
     : Layer("EditorLayer"),
-      m_width(width),
-      m_height(height),
+      m_viewport_pos(0, 0),
+      m_viewport_pos_update(true),
+      m_viewport_size(width, height),
+      m_viewport_size_update(true),
+      m_viewport_focus(false),
+      m_viewport_hover(false),
+      m_viewport_state_update(true),
       m_msaa(msaa),
       m_is_runtime(false),
       m_quitting(false),
@@ -34,7 +39,7 @@ void EditorLayer::OnInit() {
     // editor related system
     m_scene_panel = CreateSystem<ScenePanel>();
     m_editor_camera_system =
-        CreateSystem<EditorCameraSystem>(m_width, m_height);
+        CreateSystem<EditorCameraSystem>(m_viewport_size.x, m_viewport_size.y);
 
     m_light_icon = TextureLoader::LoadTexture2D("assets/icons/light.png");
 
@@ -44,7 +49,7 @@ void EditorLayer::OnInit() {
 }
 
 void EditorLayer::InitBuffers() {
-    m_screen_buffer = Framebuffer::Create(m_width, m_height);
+    m_screen_buffer = Framebuffer::Create(m_viewport_size.x, m_viewport_size.y);
     m_screen_buffer->Attach(
         TextureSpec(1, TextureType::TEX_2D, DataFormat::RGB,
                     DataFormatType::UBYTE, TextureWrap::EDGE,
@@ -53,13 +58,16 @@ void EditorLayer::InitBuffers() {
                                         DataFormatType::UINT, TextureWrap::EDGE,
                                         TextureMagFilter::NEAREST,
                                         TextureMinFilter::NEAREST));
-    m_debug_gbuffer = Framebuffer::Create(m_width, m_height);
+    m_debug_gbuffer = Framebuffer::Create(m_viewport_size.x, m_viewport_size.y);
     for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
         m_debug_gbuffer->Attach(TextureSpec(
             1, TextureType::TEX_2D, GetTextureFormat(GeometryBufferType(i)),
             GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
             TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     }
+
+    m_screen_buffer->Validate();
+    m_debug_gbuffer->Validate();
 }
 
 void EditorLayer::PushSystems() {
@@ -68,12 +76,14 @@ void EditorLayer::PushSystems() {
         // engine logic system
         m_camera_system = CreateSystem<CameraSystem>();
         // normal render systems
-        m_lighting_system = CreateSystem<LightingSystem>(m_width, m_height);
+        m_lighting_system =
+            CreateSystem<LightingSystem>(m_viewport_size.x, m_viewport_size.y);
         m_skybox_system = CreateSystem<SkyboxSystem>();
         m_sprite_system = CreateSystem<SpriteRenderSystem>();
-        m_post_process_system =
-            CreateSystem<PostProcessSystem>(m_width, m_height);
-        m_profile_system = CreateSystem<ProfileSystem>(m_width, m_height);
+        m_post_process_system = CreateSystem<PostProcessSystem>(
+            m_viewport_size.x, m_viewport_size.y);
+        m_profile_system =
+            CreateSystem<ProfileSystem>(m_viewport_size.x, m_viewport_size.y);
 
         PushSystem(CreateSystem<ScriptSystem>());
         PushSystem(m_camera_system);
@@ -92,10 +102,11 @@ void EditorLayer::PushSystems() {
         // normal render systems
         m_skybox_system = CreateSystem<SkyboxSystem>();
         m_sprite_system = CreateSystem<SpriteRenderSystem>();
-        m_post_process_system =
-            CreateSystem<PostProcessSystem>(m_width, m_height);
+        m_post_process_system = CreateSystem<PostProcessSystem>(
+            m_viewport_size.x, m_viewport_size.y);
         m_tile_map_system = CreateSystem<TileMapSystem>();
-        m_profile_system = CreateSystem<ProfileSystem>(m_width, m_height);
+        m_profile_system =
+            CreateSystem<ProfileSystem>(m_viewport_size.x, m_viewport_size.y);
         m_animation_editor = CreateSystem<AnimationEditor>();
 
         PushSystem(CreateSystem<ScriptSystem>());
@@ -113,11 +124,10 @@ void EditorLayer::PushSystems() {
 }
 
 void EditorLayer::OnPush() {
-    m_viewport_size_handler = EventSystem::Get().Register<ViewportEvent>(
-        [this](const ViewportEvent &e) {
-            m_width = e.width;
-            m_height = e.height;
-            InitBuffers();
+    m_viewport_size_handler = EventSystem::Get().Register<ViewportSizeEvent>(
+        [this](const ViewportSizeEvent &e) {
+            m_screen_buffer->Resize(e.width, e.height);
+            m_debug_gbuffer->Resize(e.width, e.height);
         });
     m_entity_select_handler = EventSystem::Get().Register<EntitySelectEvent>(
         [this](const EntitySelectEvent &e) {
@@ -126,6 +136,8 @@ void EditorLayer::OnPush() {
     m_window_size_handler =
         EventSystem::Get().Register(this, &EditorLayer::OnWindowSizeEvent);
     m_key_handler = EventSystem::Get().Register(this, &EditorLayer::OnKeyEvent);
+
+    // PublishViewportEvent();
 }
 
 void EditorLayer::OnPop() {
@@ -147,7 +159,7 @@ void EditorLayer::OnRender() {
         // render to default buffer
         Device::Get().SetFramebuffer(nullptr);
         Device::Get().Clear();
-        Device::Get().BlitToScreen(Renderer::Get().GetDefaultTarget());
+        // Device::Get().BlitToScreen(Renderer::Get().GetDefaultTarget());
     } else {
         Device::Get().Disable(Operation::DEPTH_TEST);
 
@@ -169,6 +181,8 @@ void EditorLayer::OnRender() {
 }
 
 void EditorLayer::OnTick(float dt) {
+    PublishViewportEvent();
+
     if (m_is_runtime) {
         scene->OnRuntime(dt);
     } else {
@@ -176,6 +190,29 @@ void EditorLayer::OnTick(float dt) {
     }
     for (auto &system : GetSystems()) {
         system->OnTick(dt);
+    }
+}
+
+void EditorLayer::PublishViewportEvent() {
+    if (m_viewport_size_update) {
+        ViewportSizeEvent event{m_viewport_size.x, m_viewport_size.y};
+        EventSystem::Get().PublishEvent(event);
+        SD_TRACE("publish viewport size event");
+        m_viewport_size_update = false;
+    }
+
+    if (m_viewport_pos_update) {
+        ViewportPosEvent event{m_viewport_pos.x, m_viewport_pos.y};
+        EventSystem::Get().PublishEvent(event);
+        SD_TRACE("publish viewport pos event");
+        m_viewport_pos_update = false;
+    }
+
+    if (m_viewport_state_update) {
+        ViewportStateEvent event{m_viewport_focus, m_viewport_hover};
+        EventSystem::Get().PublishEvent(event);
+        SD_TRACE("publish viewport state event");
+        m_viewport_state_update = false;
     }
 }
 
@@ -279,7 +316,6 @@ void EditorLayer::OnImGui() {
 void EditorLayer::Hide() {
     m_is_runtime = true;
     SetIsBlockEvent(false);
-    SetViewportSize(0, 0, Window::Get().GetWidth(), Window::Get().GetHeight());
 }
 
 void EditorLayer::Show() {
@@ -339,15 +375,9 @@ void EditorLayer::OnKeyEvent(const KeyEvent &e) {
 
 void EditorLayer::OnWindowSizeEvent(const WindowSizeEvent &e) {
     if (m_is_runtime) {
-        SetViewportSize(0, 0, e.width, e.height);
+        m_viewport_size.x = e.width;
+        m_viewport_size.y = e.height;
     }
-}
-
-void EditorLayer::SetViewportSize(int left, int top, int width, int height) {
-    ViewportEvent event{left, top, width, height};
-    EventSystem::Get().PublishEvent(event);
-    Window::Get().SetViewportSize(left, top, width, height);
-    Renderer::Get().GetDefaultTarget().SetSize(width, height);
 }
 
 void EditorLayer::NewScene() {
@@ -413,8 +443,6 @@ void EditorLayer::MenuBar() {
 }
 
 void EditorLayer::DrawViewport() {
-    auto &viewport = Window::Get().GetViewport();
-
     Device::Get().ReadBuffer(Renderer::Get().GetFramebuffer(), 0);
     Device::Get().DrawBuffer(m_screen_buffer.get(), 0);
     Device::Get().BlitFramebuffer(
@@ -435,24 +463,40 @@ void EditorLayer::DrawViewport() {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
     ImGui::Begin("Scene");
     {
-        ImVec2 wsize = ImGui::GetContentRegionAvail();
-        auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
-        auto viewportOffset = ImGui::GetWindowPos();
-        if (m_width != wsize.x || m_height != wsize.y) {
-            if (wsize.x > 0 && wsize.y > 0) {
-                SetViewportSize(viewportMinRegion.x + viewportOffset.x,
-                                viewportMinRegion.y + viewportOffset.y, wsize.x,
-                                wsize.y);
-            }
+        const auto &wsize = ImGui::GetContentRegionAvail();
+        const auto &min_region = ImGui::GetWindowContentRegionMin();
+        const auto &wpos = ImGui::GetWindowPos();
+        const glm::ivec2 viewport_size = {wsize.x, wsize.y};
+        const glm::ivec2 viewport_pos = {min_region.x + wpos.x,
+                                         min_region.y + wpos.y};
+        const bool viewport_hover =
+            ImGui::IsWindowHovered() && !ImGuizmo::IsOver();
+        const bool viewport_focus = ImGui::IsWindowFocused();
+
+        if (m_viewport_size != viewport_size) {
+            m_viewport_size = viewport_size;
+            m_viewport_size_update = true;
         }
-        viewport.SetFocus(ImGui::IsWindowFocused());
-        viewport.SetHover(ImGui::IsWindowHovered() && !ImGuizmo::IsOver());
+
+        if (m_viewport_pos != viewport_pos) {
+            m_viewport_pos = viewport_pos;
+            m_viewport_pos_update = true;
+        }
+
+        if (m_viewport_hover != viewport_hover ||
+            m_viewport_focus != viewport_focus) {
+            m_viewport_hover = viewport_hover;
+            m_viewport_focus = viewport_focus;
+            m_viewport_state_update = true;
+        }
+
         const auto &tl_uv = Device::Get().GetUVIndex(0);
         const auto &br_uv = Device::Get().GetUVIndex(2);
         ImGui::DrawTexture(*m_screen_buffer->GetTexture(),
                            ImVec2(tl_uv.x, tl_uv.y), ImVec2(br_uv.x, br_uv.y));
-        ImGuizmo::SetRect(viewport.GetLeft(), viewport.GetTop(),
-                          viewport.GetWidth(), viewport.GetHeight());
+
+        ImGuizmo::SetRect(m_viewport_pos.x, m_viewport_pos.y, m_viewport_size.x,
+                          m_viewport_size.y);
         ImGuizmo::SetDrawlist();
 
         if (m_selected_entity) {
@@ -472,16 +516,17 @@ void EditorLayer::DrawViewport() {
                 tc.SetWorldTransform(transform);
             }
         }
-        if (ImGui::IsMouseDown(0) && viewport.IsHover()) {
-            auto [mouseX, mouseY] = ImGui::GetMousePos();
-            mouseX -= viewport.GetLeft();
-            mouseY = viewport.GetHeight() - mouseY + viewport.GetTop();
+        if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
+            auto [mouse_x, mouse_y] = ImGui::GetMousePos();
+            mouse_x -= m_viewport_pos.x;
+            mouse_y -= m_viewport_pos.y;
             entt::entity entity_id = entt::null;
             auto entity_tex = m_screen_buffer->GetTexture(1);
             // out of bound check
-            if (mouseX > 0 && mouseY > 0 && mouseX < entity_tex->GetWidth() &&
-                mouseY < entity_tex->GetHeight()) {
-                entity_tex->ReadPixels(0, mouseX, mouseY, 0, 1, 1, 1,
+            if (mouse_x >= 0 && mouse_y >= 0 &&
+                mouse_x < entity_tex->GetWidth() &&
+                mouse_y < entity_tex->GetHeight()) {
+                entity_tex->ReadPixels(0, mouse_x, mouse_y, 0, 1, 1, 1,
                                        sizeof(entity_id), &entity_id);
             }
             if (entity_id != entt::null) {

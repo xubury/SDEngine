@@ -117,9 +117,11 @@ void LightingSystem::InitSSAO() {
 
     m_ssao_buffer = Framebuffer::Create(m_width, m_height);
     m_ssao_buffer->Attach(spec);
+    m_ssao_buffer->Validate();
 
     m_ssao_blur_buffer = Framebuffer::Create(m_width, m_height);
     m_ssao_blur_buffer->Attach(spec);
+    m_ssao_blur_buffer->Validate();
 }
 
 void LightingSystem::InitSSAOKernel() {
@@ -166,6 +168,7 @@ void LightingSystem::InitLighting() {
             samples, TextureType::TEX_2D_MULTISAMPLE, DataFormat::RGB,
             DataFormatType::FLOAT16, TextureWrap::EDGE,
             TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
+        m_light_buffer[i]->Validate();
     }
 
     m_gbuffer = Framebuffer::Create(m_width, m_height);
@@ -178,13 +181,18 @@ void LightingSystem::InitLighting() {
     }
     m_gbuffer->Attach(
         RenderbufferSpec(samples, DataFormat::DEPTH, DataFormatType::FLOAT16));
+    m_gbuffer->Validate();
 }
 
-void LightingSystem::OnSizeEvent(const ViewportEvent &event) {
+void LightingSystem::OnSizeEvent(const ViewportSizeEvent &event) {
     m_width = event.width;
     m_height = event.height;
-    InitLighting();
-    InitSSAO();
+    for (auto &buffer : m_light_buffer) {
+        buffer->Resize(event.width, event.height);
+    }
+    m_gbuffer->Resize(event.width, event.height);
+    m_ssao_buffer->Resize(event.width, event.height);
+    m_ssao_blur_buffer->Resize(event.width, event.height);
 }
 
 void LightingSystem::OnImGui() {

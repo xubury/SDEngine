@@ -9,7 +9,7 @@ const float TRANSLATION_SPEED = 100.f;
 const float SMOOTHNESS = 10;
 const float MAX_FAR_Z = 1000;
 
-EditorCameraSystem::EditorCameraSystem(uint32_t width, uint32_t height)
+EditorCameraSystem::EditorCameraSystem(int32_t width, int32_t height)
     : System("EditorCameraSystem"),
       m_width(width),
       m_height(height),
@@ -42,7 +42,7 @@ void EditorCameraSystem::OnMouseMotion(const MouseMotionEvent &event) {
     }
 }
 
-void EditorCameraSystem::OnSizeEvent(const ViewportEvent &event) {
+void EditorCameraSystem::OnSizeEvent(const ViewportSizeEvent &event) {
     m_camera.Resize(event.width, event.height);
 }
 

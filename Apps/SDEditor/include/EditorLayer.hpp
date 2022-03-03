@@ -41,15 +41,10 @@ class EditorLayer : public Layer {
     void OpenLoadSceneDialog();
     void OpenSaveSceneDialog();
 
-    int GetViewportWidth() const { return m_width; }
-    int GetViewportHeight() const { return m_height; }
-
-    void SetViewportSize(int left, int top, int width, int height);
-
    private:
-
-    void OnKeyEvent(const KeyEvent &e);
-    void OnWindowSizeEvent(const WindowSizeEvent &e);
+    void OnKeyEvent(const KeyEvent& e);
+    void OnWindowSizeEvent(const WindowSizeEvent& e);
+    void PublishViewportEvent();
 
     void InitBuffers();
 
@@ -82,8 +77,16 @@ class EditorLayer : public Layer {
     TileMapSystem* m_tile_map_system;
     AnimationEditor* m_animation_editor;
 
-    int m_width;
-    int m_height;
+    glm::ivec2 m_viewport_pos;
+    bool m_viewport_pos_update;
+
+    glm::ivec2 m_viewport_size;
+    bool m_viewport_size_update;
+
+    bool m_viewport_focus;
+    bool m_viewport_hover;
+    bool m_viewport_state_update;
+
     int m_msaa;
 
     Ref<Framebuffer> m_debug_gbuffer;

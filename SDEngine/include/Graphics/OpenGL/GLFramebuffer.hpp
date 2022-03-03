@@ -14,9 +14,8 @@ class GLFramebuffer : public Framebuffer {
     GLFramebuffer(int width, int height);
     virtual ~GLFramebuffer();
 
-    void Attach(const TextureSpec &spec) override;
-
-    void Attach(const RenderbufferSpec &renderbuffer) override;
+    virtual void Resize(int width, int height) override;
+    virtual void Validate() override;
 
     void ReadPixels(uint32_t attachment_id, int level, int x, int y, int z,
                     int w, int h, int d, size_t size,
@@ -34,8 +33,9 @@ class GLFramebuffer : public Framebuffer {
 
     const std::vector<GLenum> &GetDrawables() const { return m_drawables; }
 
+    void Clear();
+
    private:
-    uint32_t m_texture_cnt;
     std::vector<Ref<void>> m_attachments;
     std::vector<GLenum> m_drawables;
 };

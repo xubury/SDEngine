@@ -22,9 +22,11 @@ class SD_GRAPHICS_API Framebuffer : public Resource {
     int GetWidth() const { return m_width; };
     int GetHeight() const { return m_height; };
 
-    virtual void Attach(const TextureSpec &spec) = 0;
+    void Attach(const TextureSpec &spec);
+    void Attach(const RenderbufferSpec &renderbuffer);
 
-    virtual void Attach(const RenderbufferSpec &renderbuffer) = 0;
+    virtual void Resize(int width, int height) = 0;
+    virtual void Validate() = 0;
 
     virtual void ReadPixels(uint32_t attachment_id, int level, int x, int y,
                             int z, int w, int h, int d, size_t size,
@@ -46,6 +48,9 @@ class SD_GRAPHICS_API Framebuffer : public Resource {
     int32_t m_height;
     Framebuffer(int32_t width, int32_t height)
         : m_width(width), m_height(height) {}
+
+    std::vector<TextureSpec> m_texture_specs;
+    std::vector<RenderbufferSpec> m_renderbuffer_specs;
 };
 
 }  // namespace SD

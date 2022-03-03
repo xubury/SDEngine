@@ -3,7 +3,6 @@
 
 #include "Renderer/Export.hpp"
 #include "Graphics/Graphics.hpp"
-#include "Graphics/RenderTarget.hpp"
 #include "Graphics/Device.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/Mesh.hpp"
@@ -94,12 +93,15 @@ struct SD_RENDERER_API Renderer2DData {
 class SD_RENDERER_API Renderer {
    public:
     static Renderer &Get();
+
     static void Init(int width, int height, int msaa);
     static void Shutdown();
     Renderer(int width, int height, int msaa);
     ~Renderer();
     Renderer(const Renderer &) = delete;
     Renderer &operator=(const Renderer &) = delete;
+
+    void SetSize(int32_t width, int32_t height);
 
     void Submit(const Shader &shader, const VertexArray &vao,
                 MeshTopology topology, size_t count, size_t offset,
@@ -165,9 +167,7 @@ class SD_RENDERER_API Renderer {
     void DrawCircle(const glm::mat4 &transform, const glm::vec4 &color,
                     float thickness, float fade, uint32_t entity_id = -1);
 
-    Framebuffer *GetFramebuffer() { return m_target.GetFramebuffer(); }
-
-    RenderTarget &GetDefaultTarget() { return m_target; }
+    Framebuffer *GetFramebuffer() { return m_framebuffer.get(); }
 
    private:
     void InitRenderer2D();
@@ -190,7 +190,7 @@ class SD_RENDERER_API Renderer {
 
     Renderer2DData m_data;
 
-    RenderTarget m_target;
+    Ref<Framebuffer> m_framebuffer;
 
     Ref<Shader> m_line_shader;
     Ref<Shader> m_circle_shader;

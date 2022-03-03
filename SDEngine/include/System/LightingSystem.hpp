@@ -37,7 +37,7 @@ class SD_SYSTEM_API LightingSystem : public System {
 
     void OnRender() override;
 
-    void OnSizeEvent(const ViewportEvent &event);
+    void OnSizeEvent(const ViewportSizeEvent &event);
 
     Framebuffer *GetGBuffer() { return m_gbuffer.get(); }
 

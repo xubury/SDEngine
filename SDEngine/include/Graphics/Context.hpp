@@ -19,16 +19,6 @@ class SD_GRAPHICS_API Context {
     virtual int GetWidth() const = 0;
     virtual int GetHeight() const = 0;
     virtual uint8_t GetMSAA() const = 0;
-
-    void SetViewportSize(int left, int top, int width, int height) {
-        m_viewport.SetSize(left, top, width, height);
-    }
-    const Viewport &GetViewport() const { return m_viewport; }
-    Viewport &GetViewport() { return m_viewport; }
-    void SetViewport(const Viewport &viewport) { m_viewport = viewport; }
-
-   private:
-    Viewport m_viewport;
 };
 
 }  // namespace SD

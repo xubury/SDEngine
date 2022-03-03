@@ -47,11 +47,13 @@ void PostProcessSystem::InitBuffers() {
         m_blur_buffer[i]->Attach(
             TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
                         DataFormatType::FLOAT16, TextureWrap::EDGE));
+        m_blur_buffer[i]->Validate();
     }
     m_post_buffer = Framebuffer::Create(m_width, m_height);
     m_post_buffer->Attach(TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
                                       DataFormatType::FLOAT16,
                                       TextureWrap::EDGE));
+    m_post_buffer->Validate();
 }
 
 void PostProcessSystem::OnPush() {
@@ -105,10 +107,13 @@ void PostProcessSystem::OnRender() {
     Device::Get().SetDepthMask(true);
 }
 
-void PostProcessSystem::OnSizeEvent(const ViewportEvent &event) {
+void PostProcessSystem::OnSizeEvent(const ViewportSizeEvent &event) {
     m_width = event.width;
     m_height = event.height;
-    InitBuffers();
+    for (auto &buffer : m_blur_buffer) {
+        buffer->Resize(event.width, event.height);
+    }
+    m_post_buffer->Resize(event.width, event.height);
 }
 
 void PostProcessSystem::RenderBlur() {

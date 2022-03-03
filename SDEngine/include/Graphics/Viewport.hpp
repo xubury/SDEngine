@@ -17,7 +17,8 @@ class SD_GRAPHICS_API Viewport {
     int GetWidth() const;
     int GetHeight() const;
 
-    void SetSize(int left, int top, int width, int height);
+    void SetSize(int width, int height);
+    void SetPos(int x, int y);
     glm::vec2 MapScreenToClip(const glm::ivec2 &screen) const;
     glm::ivec2 MapClipToScreen(const glm::vec2 &clip) const;
 

@@ -20,11 +20,15 @@ void ProfileSystem::OnInit() {
 }
 
 void ProfileSystem::OnPush() {
-    m_size_handler = EventSystem::Get().Register<ViewportEvent>(
-        [this](const ViewportEvent &e) { m_camera.Resize(e.width, e.height); });
+    m_size_handler = EventSystem::Get().Register<ViewportSizeEvent>(
+        [this](const ViewportSizeEvent &e) {
+            m_camera.Resize(e.width, e.height);
+        });
 }
 
-void ProfileSystem::OnPop() { EventSystem::Get().RemoveHandler(m_size_handler); }
+void ProfileSystem::OnPop() {
+    EventSystem::Get().RemoveHandler(m_size_handler);
+}
 
 void ProfileSystem::OnTick(float) {
     if (Input::IsKeyPressed(Keycode::F12)) {
@@ -43,7 +47,8 @@ void ProfileSystem::OnRender() {
              m_fps.GetFPS(), m_fps.GetFrameTime());
 
     Device::Get().SetFramebuffer(Renderer::Get().GetFramebuffer());
-    Device::Get().DrawBuffer(Renderer::Get().GetFramebuffer(), 0);  // only draw colors
+    Device::Get().DrawBuffer(Renderer::Get().GetFramebuffer(),
+                             0);  // only draw colors
     Renderer::Get().Begin(m_camera);
     Renderer::Get().SetTextOrigin(
         -m_camera.GetNearWidth() / 2,
@@ -52,7 +57,8 @@ void ProfileSystem::OnRender() {
     Renderer::Get().DrawText(*m_font, fps_str, glm::mat4(1.0f));
     Renderer::Get().DrawText(*m_font, "\n中文测试: 你好", glm::mat4(1.0f));
     Renderer::Get().DrawText(*m_font, "\n中文測試: 你好", glm::mat4(1.0f));
-    Renderer::Get().DrawText(*m_font, "\n日本語テスト: こんにちは", glm::mat4(1.0f));
+    Renderer::Get().DrawText(*m_font, "\n日本語テスト: こんにちは",
+                             glm::mat4(1.0f));
     // Primitive test
     // Line
     const int PRIMITIVE_SIZE = 15;
@@ -62,11 +68,12 @@ void ProfileSystem::OnRender() {
     for (int i = 0; i < 10; ++i) {
         glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
         color[i % 3] = 1.0f;
-        Renderer::Get().DrawLine(glm::vec3(pos.x + PRIMITIVE_SIZE * i,
-                                     pos.y + i % 2 * PRIMITIVE_SIZE, 0),
-                           glm::vec3(pos.x + PRIMITIVE_SIZE * (i + 1),
-                                     pos.y + (i + 1) % 2 * PRIMITIVE_SIZE, 0),
-                           color);
+        Renderer::Get().DrawLine(
+            glm::vec3(pos.x + PRIMITIVE_SIZE * i,
+                      pos.y + i % 2 * PRIMITIVE_SIZE, 0),
+            glm::vec3(pos.x + PRIMITIVE_SIZE * (i + 1),
+                      pos.y + (i + 1) % 2 * PRIMITIVE_SIZE, 0),
+            color);
     }
     // Quad
     Renderer::Get().DrawText(*m_font, "\nQuad test: ", glm::mat4(1.0f));
@@ -75,8 +82,9 @@ void ProfileSystem::OnRender() {
     for (int i = 0; i < 10; ++i) {
         glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
         color[i % 3] = 1.0f;
-        Renderer::Get().DrawQuad(glm::vec3(pos.x, pos.y, 0), glm::quat(1, 0, 0, 0),
-                           glm::vec3(PRIMITIVE_SIZE, PRIMITIVE_SIZE, 1), color);
+        Renderer::Get().DrawQuad(
+            glm::vec3(pos.x, pos.y, 0), glm::quat(1, 0, 0, 0),
+            glm::vec3(PRIMITIVE_SIZE, PRIMITIVE_SIZE, 1), color);
         pos.x += PRIMITIVE_SIZE;
     }
     // Circle
@@ -87,8 +95,8 @@ void ProfileSystem::OnRender() {
         glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
         color[i % 3] = 1.0f;
         Renderer::Get().DrawCircle(glm::vec3(pos.x, pos.y, 0),
-                             glm::vec2(PRIMITIVE_SIZE, PRIMITIVE_SIZE), color,
-                             1.0f, 0.1f);
+                                   glm::vec2(PRIMITIVE_SIZE, PRIMITIVE_SIZE),
+                                   color, 1.0f, 0.1f);
         pos.x += PRIMITIVE_SIZE;
     }
     Renderer::Get().End();

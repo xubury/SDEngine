@@ -174,17 +174,6 @@ void GLDevice::BlitFramebuffer(const Framebuffer *src, int src_x, int src_y,
                            dst_y + dst_height, gl_mask, gl_filter);
 }
 
-void GLDevice::BlitToScreen(const RenderTarget &target) {
-    ReadBuffer(target.GetFramebuffer(), 0);
-    const auto &viewport = m_context->GetViewport();
-    BlitFramebuffer(
-        target.GetFramebuffer(), 0, 0, viewport.GetWidth(),
-        viewport.GetHeight(), nullptr, viewport.GetLeft(),
-        m_context->GetHeight() - viewport.GetHeight() - viewport.GetTop(),
-        viewport.GetWidth(), viewport.GetHeight(),
-        BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
-}
-
 const glm::ivec2 GLDevice::GetUVIndex(int index) const {
     const glm::ivec2 UV_INDEX[4] = {{0, 1}, {1, 1}, {1, 0}, {0, 0}};
     return UV_INDEX[index];

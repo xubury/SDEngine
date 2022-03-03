@@ -2,6 +2,7 @@
 #define SD_TILE_MAP_SYSTEM_HPP
 
 #include "Core/System.hpp"
+#include "Graphics/Viewport.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGui/FileDialog.hpp"
 
@@ -16,7 +17,8 @@ class TileMapSystem : public System {
 
    public:
     TileMapSystem();
-
+    void OnPush() override;
+    void OnPop() override;
     void OnImGui() override;
     void OnRender() override;
 
@@ -37,7 +39,10 @@ class TileMapSystem : public System {
 
     Operation m_operation;
 
-    HandlerRegistration m_entity_select_handler;
+    HandlerRegistration m_viewport_size_handler;
+    HandlerRegistration m_viewport_pos_handler;
+    HandlerRegistration m_viewport_state_handler;
+    Viewport m_viewport;
 };
 
 }  // namespace SD

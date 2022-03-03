@@ -8,7 +8,7 @@ namespace SD {
 
 class EditorCameraSystem : public System {
    public:
-    EditorCameraSystem(uint32_t width, uint32_t height);
+    EditorCameraSystem(int32_t width, int32_t height);
 
     void OnInit() override;
 
@@ -20,7 +20,7 @@ class EditorCameraSystem : public System {
 
     void OnTick(float dt) override;
 
-    void OnSizeEvent(const ViewportEvent &event);
+    void OnSizeEvent(const ViewportSizeEvent &event);
     void OnMouseMotion(const MouseMotionEvent &event);
 
     void Rotate(float yaw, float pitch);

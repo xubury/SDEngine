@@ -38,10 +38,29 @@ TileMapSystem::TileMapSystem()
     free(data);
 }
 
+void TileMapSystem::OnPush() {
+    m_viewport_size_handler = EventSystem::Get().Register<ViewportSizeEvent>(
+        [this](const ViewportSizeEvent &e) {
+            m_viewport.SetSize(e.width, e.height);
+        });
+    m_viewport_pos_handler = EventSystem::Get().Register<ViewportPosEvent>(
+        [this](const ViewportPosEvent &e) { m_viewport.SetSize(e.x, e.y); });
+    m_viewport_state_handler = EventSystem::Get().Register<ViewportStateEvent>(
+        [this](const ViewportStateEvent &e) {
+            m_viewport.SetFocus(e.is_focus);
+            m_viewport.SetHover(e.is_hover);
+        });
+}
+
+void TileMapSystem::OnPop() {
+    EventSystem::Get().RemoveHandler(m_viewport_size_handler);
+    EventSystem::Get().RemoveHandler(m_viewport_pos_handler);
+    EventSystem::Get().RemoveHandler(m_viewport_state_handler);
+}
+
 void TileMapSystem::OnImGui() {
-    const auto &viewport = Window::Get().GetViewport();
-    if (viewport.IsHover()) {
-        glm::vec2 clip = viewport.MapScreenToClip(
+    if (m_viewport.IsHover()) {
+        glm::vec2 clip = m_viewport.MapScreenToClip(
             glm::ivec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y));
         if (std::abs(clip.x) > 1 || std::abs(clip.y) > 1) {
             return;

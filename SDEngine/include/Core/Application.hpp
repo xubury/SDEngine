@@ -71,6 +71,7 @@ class SD_CORE_API Application {
 
     EventStack<Layer *> m_layers;
     ImGuiLayer *m_imgui;
+    HandlerRegistration m_viewport_event;
     HandlerRegistration m_quit_handler;
 };
 

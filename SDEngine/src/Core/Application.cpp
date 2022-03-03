@@ -69,12 +69,17 @@ void Application::OnInit() {
     m_quit_handler = EventSystem::Get().Register<AppQuitEvent>(
         [this](const AppQuitEvent &) { Shutdown(); });
 
+    m_viewport_event = EventSystem::Get().Register<ViewportSizeEvent>(
+        [](const ViewportSizeEvent &e) {
+            Renderer::Get().SetSize(e.width, e.height);
+        });
     m_imgui = CreateLayer<ImGuiLayer>();
     PushOverlay(m_imgui);
 }
 
 void Application::OnDestroy() {
     EventSystem::Get().RemoveHandler(m_quit_handler);
+    EventSystem::Get().RemoveHandler(m_viewport_event);
     while (m_layers.Size()) {
         auto layer = m_layers.Front();
         PopLayer(layer);
