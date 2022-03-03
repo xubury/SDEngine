@@ -37,8 +37,6 @@ class EditorLayer : public Layer {
 
     void OnImGui() override;
 
-    void OnEventProcess(const ApplicationEvent& event) override;
-
     void NewScene();
     void OpenLoadSceneDialog();
     void OpenSaveSceneDialog();
@@ -49,6 +47,10 @@ class EditorLayer : public Layer {
     void SetViewportSize(int left, int top, int width, int height);
 
    private:
+
+    void OnKeyEvent(const KeyEvent &e);
+    void OnWindowSizeEvent(const WindowSizeEvent &e);
+
     void InitBuffers();
 
     void ProcessDialog();
@@ -98,7 +100,9 @@ class EditorLayer : public Layer {
 
     Entity m_selected_entity;
 
-    HandlerRegistration m_size_handler;
+    HandlerRegistration m_viewport_size_handler;
+    HandlerRegistration m_window_size_handler;
+    HandlerRegistration m_key_handler;
     HandlerRegistration m_entity_select_handler;
 };
 

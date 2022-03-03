@@ -113,21 +113,26 @@ void EditorLayer::PushSystems() {
 }
 
 void EditorLayer::OnPush() {
-    m_entity_select_handler = EventSystem::Get().Register<EntitySelectEvent>(
-        [this](const EntitySelectEvent &e) {
-            m_selected_entity = {e.entity_id, e.scene};
-        });
-    m_size_handler = EventSystem::Get().Register<ViewportEvent>(
+    m_viewport_size_handler = EventSystem::Get().Register<ViewportEvent>(
         [this](const ViewportEvent &e) {
             m_width = e.width;
             m_height = e.height;
             InitBuffers();
         });
+    m_entity_select_handler = EventSystem::Get().Register<EntitySelectEvent>(
+        [this](const EntitySelectEvent &e) {
+            m_selected_entity = {e.entity_id, e.scene};
+        });
+    m_window_size_handler =
+        EventSystem::Get().Register(this, &EditorLayer::OnWindowSizeEvent);
+    m_key_handler = EventSystem::Get().Register(this, &EditorLayer::OnKeyEvent);
 }
 
 void EditorLayer::OnPop() {
+    EventSystem::Get().RemoveHandler(m_viewport_size_handler);
     EventSystem::Get().RemoveHandler(m_entity_select_handler);
-    EventSystem::Get().RemoveHandler(m_size_handler);
+    EventSystem::Get().RemoveHandler(m_window_size_handler);
+    EventSystem::Get().RemoveHandler(m_key_handler);
 }
 
 void EditorLayer::OnRender() {
@@ -284,63 +289,57 @@ void EditorLayer::Show() {
 
 void EditorLayer::Quit() { m_quitting = true; }
 
-void EditorLayer::OnEventProcess(const ApplicationEvent &event) {
-    if (event.type == EventType::MOUSE_MOTION) {
-        EventSystem::Get().PublishEvent(event.mouse_motion);
-    } else if (event.type == EventType::WINDOW_RESIZED) {
-        if (m_is_runtime) {
-            SetViewportSize(0, 0, event.window_size.width,
-                            event.window_size.height);
-        }
-    } else if (event.type == EventType::KEY) {
-        EventSystem::Get().PublishEvent(event.key);
+void EditorLayer::OnKeyEvent(const KeyEvent &e) {
+    if (!e.state) return;
 
-        if (!event.key.state) return;
+    switch (e.keycode) {
+        default:
+            break;
+        case Keycode::Z: {
+            if (IsKeyModActive(e.mod, Keymod::LCTRL)) {
+                if (m_is_runtime) {
+                    Show();
+                } else {
+                    Hide();
+                }
+            }
+        } break;
+        case Keycode::S: {
+            if (IsKeyModActive(e.mod, (Keymod::LCTRL | Keymod::LSHIFT))) {
+                OpenSaveSceneDialog();
+            } else if (IsKeyModActive(e.mod, Keymod::LSHIFT)) {
+                m_scene_panel->SetGizmoOperation(ImGuizmo::SCALE);
+            }
+        } break;
+        case Keycode::N: {
+            if (IsKeyModActive(e.mod, Keymod::LCTRL)) {
+                NewScene();
+            }
+        } break;
+        case Keycode::L: {
+            if (IsKeyModActive(e.mod, Keymod::LCTRL)) {
+                OpenLoadSceneDialog();
+            }
+        } break;
+        case Keycode::ESCAPE: {
+            Quit();
+        } break;
+        case Keycode::T: {
+            if (IsKeyModActive(e.mod, Keymod::LSHIFT)) {
+                m_scene_panel->SetGizmoOperation(ImGuizmo::TRANSLATE);
+            }
+        } break;
+        case Keycode::R: {
+            if (IsKeyModActive(e.mod, Keymod::LSHIFT)) {
+                m_scene_panel->SetGizmoOperation(ImGuizmo::ROTATE);
+            }
+        } break;
+    }
+}
 
-        switch (event.key.keycode) {
-            default:
-                break;
-            case Keycode::Z: {
-                if (IsKeyModActive(event.key.mod, Keymod::LCTRL)) {
-                    if (m_is_runtime) {
-                        Show();
-                    } else {
-                        Hide();
-                    }
-                }
-            } break;
-            case Keycode::S: {
-                if (IsKeyModActive(event.key.mod,
-                                   (Keymod::LCTRL | Keymod::LSHIFT))) {
-                    OpenSaveSceneDialog();
-                } else if (IsKeyModActive(event.key.mod, Keymod::LSHIFT)) {
-                    m_scene_panel->SetGizmoOperation(ImGuizmo::SCALE);
-                }
-            } break;
-            case Keycode::N: {
-                if (IsKeyModActive(event.key.mod, Keymod::LCTRL)) {
-                    NewScene();
-                }
-            } break;
-            case Keycode::L: {
-                if (IsKeyModActive(event.key.mod, Keymod::LCTRL)) {
-                    OpenLoadSceneDialog();
-                }
-            } break;
-            case Keycode::ESCAPE: {
-                Quit();
-            } break;
-            case Keycode::T: {
-                if (IsKeyModActive(event.key.mod, Keymod::LSHIFT)) {
-                    m_scene_panel->SetGizmoOperation(ImGuizmo::TRANSLATE);
-                }
-            } break;
-            case Keycode::R: {
-                if (IsKeyModActive(event.key.mod, Keymod::LSHIFT)) {
-                    m_scene_panel->SetGizmoOperation(ImGuizmo::ROTATE);
-                }
-            } break;
-        }
+void EditorLayer::OnWindowSizeEvent(const WindowSizeEvent &e) {
+    if (m_is_runtime) {
+        SetViewportSize(0, 0, e.width, e.height);
     }
 }
 

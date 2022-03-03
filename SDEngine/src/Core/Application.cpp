@@ -66,11 +66,15 @@ Application::~Application() {
 }
 
 void Application::OnInit() {
+    m_quit_handler = EventSystem::Get().Register<AppQuitEvent>(
+        [this](const AppQuitEvent &) { Shutdown(); });
+
     m_imgui = CreateLayer<ImGuiLayer>();
     PushOverlay(m_imgui);
 }
 
 void Application::OnDestroy() {
+    EventSystem::Get().RemoveHandler(m_quit_handler);
     while (m_layers.Size()) {
         auto layer = m_layers.Front();
         PopLayer(layer);
@@ -125,26 +129,13 @@ void Application::RegisterAssets() {
         std::bind(Asset::Destroy<SceneAsset>, std::placeholders::_1)});
 }
 
-void Application::ProcessEvent(const ApplicationEvent &event) {
-    if (event.type == EventType::APP_QUIT) {
-        Shutdown();
-    }
-    for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {
-        (*layer)->OnEventProcess(event);
-        if ((*layer)->IsBlockEvent()) break;
-    }
-}
-
 void Application::Run() {
     Clock clock;
     float min_fps = 30;
-    ApplicationEvent event;
     float ms_per_frame = 1000.f / min_fps;
     uint32_t ms_elapsed = 0;
     while (!Window::Get().ShouldClose()) {
-        while (Window::Get().PollEvent(event)) {
-            ProcessEvent(event);
-        }
+        Window::Get().PollEvents();
 
         ms_elapsed = clock.Restart();
         while (ms_elapsed > ms_per_frame) {

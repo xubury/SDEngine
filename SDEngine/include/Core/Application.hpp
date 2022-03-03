@@ -65,14 +65,13 @@ class SD_CORE_API Application {
 
     void Run();
 
-    void ProcessEvent(const ApplicationEvent &event);
-
     void Tick(float dt);
 
     void Render();
 
     EventStack<Layer *> m_layers;
     ImGuiLayer *m_imgui;
+    HandlerRegistration m_quit_handler;
 };
 
 }  // namespace SD

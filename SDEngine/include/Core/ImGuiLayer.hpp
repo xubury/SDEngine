@@ -23,13 +23,12 @@ class SD_CORE_API ImGuiLayer : public Layer {
 
     void OnPop() override;
 
-    void OnEventProcess(const ApplicationEvent &event) override;
-
     ImGuiContext *GetContext() const { return m_context; }
 
    private:
     void SetDarkThemeColor();
     ImGuiContext *m_context;
+    std::vector<HandlerRegistration> m_handlers;
 };
 
 }  // namespace SD

@@ -76,50 +76,45 @@ void ImGuiLayer::OnInit() {
     }
 }
 
-void ImGuiLayer::OnPush() {}
-
-void ImGuiLayer::OnPop() {}
-
-void ImGuiLayer::OnEventProcess(const ApplicationEvent& event) {
-    auto& io = ImGui::GetIO();
-    switch (event.type) {
-        default:
-            break;
-        case EventType::WINDOW_RESIZED:
-            io.DisplaySize.x = static_cast<float>(event.window_size.width);
-            io.DisplaySize.y = static_cast<float>(event.window_size.height);
-            break;
-        case EventType::TEXT_INPUT: {
-            // TODO: not sure if it is correct
-            io.AddInputCharactersUTF8(event.text_input.text);
-        } break;
-        case EventType::KEY: {
+void ImGuiLayer::OnPush() {
+    ImGuiIO& io = ImGui::GetIO();
+    m_handlers.push_back(EventSystem::Get().Register<WindowSizeEvent>(
+        [&](const WindowSizeEvent& e) {
+            io.DisplaySize.x = static_cast<float>(e.width);
+            io.DisplaySize.y = static_cast<float>(e.height);
+        }));
+    m_handlers.push_back(EventSystem::Get().Register<TextInputEvent>(
+        [&](const TextInputEvent& e) { io.AddInputCharactersUTF8(e.text); }));
+    m_handlers.push_back(
+        EventSystem::Get().Register<KeyEvent>([&](const KeyEvent& e) {
             io.KeysDown[static_cast<uint16_t>(
-                GetScancodeFromKeycode(event.key.keycode))] = event.key.state;
-            io.KeyShift = event.key.mod == Keymod::SHIFT;
-            io.KeyCtrl = event.key.mod == Keymod::CTRL;
-            io.KeyAlt = event.key.mod == Keymod::ALT;
-            io.KeySuper = event.key.mod == Keymod::GUI;
+                GetScancodeFromKeycode(e.keycode))] = e.state;
+            io.KeyShift = e.mod == Keymod::SHIFT;
+            io.KeyCtrl = e.mod == Keymod::CTRL;
+            io.KeyAlt = e.mod == Keymod::ALT;
+            io.KeySuper = e.mod == Keymod::GUI;
 #if defined(SD_PLATFORM_WINDOWS)
             io.KeySuper = false;
 #else
-            io.KeySuper = event.key.mod == Keymod::GUI;
+            io.KeySuper = e.mod == Keymod::GUI;
 #endif
-        } break;
-        case EventType::MOUSE_MOTION: {
-            io.MousePos.x = static_cast<float>(event.mouse_motion.x);
-            io.MousePos.y = static_cast<float>(event.mouse_motion.y);
-        } break;
-        case EventType::MOUSE_BUTTON: {
-            int button = static_cast<int>(event.mouse_button.button) -
+        }));
+    m_handlers.push_back(EventSystem::Get().Register<MouseMotionEvent>(
+        [&](const MouseMotionEvent& e) {
+            io.MousePos.x = static_cast<float>(e.x);
+            io.MousePos.y = static_cast<float>(e.y);
+        }));
+    m_handlers.push_back(EventSystem::Get().Register<MouseButtonEvent>(
+        [&](const MouseButtonEvent& e) {
+            int button = static_cast<int>(e.button) -
                          static_cast<int>(MouseButton::LEFT);
-            io.MouseDown[button] = event.mouse_button.state;
-        } break;
-        case EventType::MOUSE_WHEEL_SCROLLED: {
-            io.MouseWheel += event.mouse_wheel.y;
-        } break;
-    }
+            io.MouseDown[button] = e.state;
+        }));
+    m_handlers.push_back(EventSystem::Get().Register<MouseWheelEvent>(
+        [&](const MouseWheelEvent& e) { io.MouseWheel += e.y; }));
 }
+
+void ImGuiLayer::OnPop() { m_handlers.clear(); }
 
 void ImGuiLayer::SetDarkThemeColor() {
     auto& colors = ImGui::GetStyle().Colors;

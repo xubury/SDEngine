@@ -51,7 +51,7 @@ class SD_CORE_API Window : public Context {
 
     virtual void SwapBuffer() = 0;
 
-    bool PollEvent(ApplicationEvent &event);
+    void PollEvents();
 
     bool ShouldClose();
     void SetShouldClose(bool shouldClose);

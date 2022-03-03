@@ -52,30 +52,7 @@ struct TextInputEvent {
     char text[32];  // std::string is not allowed in union
 };
 
-enum class EventType {
-    UNKNOWN = 0,
-    APP_QUIT,
-    WINDOW_RESIZED,
-    KEY,
-    MOUSE_MOTION,
-    MOUSE_BUTTON,
-    MOUSE_WHEEL_SCROLLED,
-    TEXT_INPUT
-};
-
-struct SD_CORE_API ApplicationEvent {
-    union {
-        WindowSizeEvent window_size;
-        KeyEvent key;
-        MouseMotionEvent mouse_motion;
-        MouseButtonEvent mouse_button;
-        MouseWheelEvent mouse_wheel;
-        TextInputEvent text_input;
-    };
-
-    EventType type = EventType::UNKNOWN;
-    bool handled = false;
-};
+struct AppQuitEvent {};
 
 struct EntitySelectEvent {
     EntityId entity_id;

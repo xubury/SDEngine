@@ -38,64 +38,71 @@ void Window::Shutdown() {
 
 Window &Window::Get() { return *s_window; }
 
-bool Window::PollEvent(ApplicationEvent &event) {
+void Window::PollEvents() {
     SDL_Event sdl_event;
-    if (SDL_PollEvent(&sdl_event) != 1) return false;
-    switch (sdl_event.type) {
-        case SDL_MOUSEMOTION: {
-            event.type = EventType::MOUSE_MOTION;
-            event.mouse_motion.x = sdl_event.motion.x;
-            event.mouse_motion.y = sdl_event.motion.y;
-            event.mouse_motion.x_rel = sdl_event.motion.xrel;
-            event.mouse_motion.y_rel = sdl_event.motion.yrel;
-            Input::SetMouseCoord(event.mouse_motion.x, event.mouse_motion.y);
-        } break;
-        case SDL_MOUSEBUTTONDOWN:
-        case SDL_MOUSEBUTTONUP: {
-            event.type = EventType::MOUSE_BUTTON;
-            event.mouse_button.button =
-                static_cast<MouseButton>(sdl_event.button.button);
-            event.mouse_button.x = sdl_event.button.x;
-            event.mouse_button.y = sdl_event.button.y;
-            event.mouse_button.clicks = sdl_event.button.clicks;
-            event.mouse_button.state = sdl_event.button.state;
-            Input::SetMouseButtonState(event.mouse_button.button,
-                                       event.mouse_button.state);
-        } break;
-        case SDL_MOUSEWHEEL: {
-            event.type = EventType::MOUSE_WHEEL_SCROLLED;
-            event.mouse_wheel.x = sdl_event.wheel.x;
-            event.mouse_wheel.y = sdl_event.wheel.y;
-        } break;
-        case SDL_KEYDOWN:
-        case SDL_KEYUP: {
-            event.type = EventType::KEY;
-            event.key.keycode = static_cast<Keycode>(sdl_event.key.keysym.sym);
-            event.key.mod = sdl_event.key.keysym.mod;
-            event.key.state = sdl_event.key.state;
-            Input::SetKeyState(event.key.keycode, event.key.state);
-        } break;
-        case SDL_WINDOWEVENT: {
-            switch (sdl_event.window.event) {
-                case SDL_WINDOWEVENT_RESIZED:
-                case SDL_WINDOWEVENT_SIZE_CHANGED: {
-                    event.type = EventType::WINDOW_RESIZED;
-                    event.window_size.width = sdl_event.window.data1;
-                    event.window_size.height = sdl_event.window.data2;
-                } break;
-            }
-        } break;
-        case SDL_TEXTINPUT: {
-            event.type = EventType::TEXT_INPUT;
-            std::copy(std::begin(sdl_event.text.text),
-                      std::end(sdl_event.text.text), event.text_input.text);
-        } break;
-        case SDL_QUIT: {
-            event.type = EventType::APP_QUIT;
-        } break;
+    while (SDL_PollEvent(&sdl_event) == 1) {
+        switch (sdl_event.type) {
+            case SDL_MOUSEMOTION: {
+                MouseMotionEvent event;
+                event.x = sdl_event.motion.x;
+                event.y = sdl_event.motion.y;
+                event.x_rel = sdl_event.motion.xrel;
+                event.y_rel = sdl_event.motion.yrel;
+                Input::SetMouseCoord(event.x, event.y);
+                EventSystem::Get().PublishEvent(event);
+            } break;
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP: {
+                MouseButtonEvent event;
+                event.button =
+                    static_cast<MouseButton>(sdl_event.button.button);
+                event.x = sdl_event.button.x;
+                event.y = sdl_event.button.y;
+                event.clicks = sdl_event.button.clicks;
+                event.state = sdl_event.button.state;
+                Input::SetMouseButtonState(event.button, event.state);
+                EventSystem::Get().PublishEvent(event);
+            } break;
+            case SDL_MOUSEWHEEL: {
+                MouseWheelEvent event;
+                event.x = sdl_event.wheel.x;
+                event.y = sdl_event.wheel.y;
+                EventSystem::Get().PublishEvent(event);
+            } break;
+            case SDL_KEYDOWN:
+            case SDL_KEYUP: {
+                KeyEvent event;
+                event.keycode = static_cast<Keycode>(sdl_event.key.keysym.sym);
+                event.mod = sdl_event.key.keysym.mod;
+                event.state = sdl_event.key.state;
+                Input::SetKeyState(event.keycode, event.state);
+                EventSystem::Get().PublishEvent(event);
+            } break;
+            case SDL_WINDOWEVENT: {
+                switch (sdl_event.window.event) {
+                    case SDL_WINDOWEVENT_RESIZED:
+                    case SDL_WINDOWEVENT_SIZE_CHANGED: {
+                        WindowSizeEvent event;
+                        event.width = sdl_event.window.data1;
+                        event.height = sdl_event.window.data2;
+                        EventSystem::Get().PublishEvent(event);
+                    } break;
+                }
+            } break;
+            case SDL_TEXTINPUT: {
+                TextInputEvent event;
+                std::copy(std::begin(sdl_event.text.text),
+                          std::end(sdl_event.text.text), event.text);
+                EventSystem::Get().PublishEvent(event);
+            } break;
+            case SDL_QUIT: {
+                AppQuitEvent event;
+                EventSystem::Get().PublishEvent(event);
+            } break;
+        }
     }
-    return true;
 }
+
 bool Window::ShouldClose() { return m_should_close; }
 
 void Window::SetShouldClose(bool shouldClose) { m_should_close = shouldClose; }
