@@ -44,7 +44,8 @@ class EditorLayer : public Layer {
    private:
     void OnKeyEvent(const KeyEvent& e);
     void OnWindowSizeEvent(const WindowSizeEvent& e);
-    void PublishViewportEvent();
+    void OnViewportUpdate();
+    void BlitViewportBuffer();
 
     void InitBuffers();
 
@@ -90,7 +91,7 @@ class EditorLayer : public Layer {
     int m_msaa;
 
     Ref<Framebuffer> m_debug_gbuffer;
-    Ref<Framebuffer> m_screen_buffer;
+    Ref<Framebuffer> m_viewport_buffer;
 
     bool m_is_runtime;
     bool m_quitting;
@@ -103,7 +104,6 @@ class EditorLayer : public Layer {
 
     Entity m_selected_entity;
 
-    HandlerRegistration m_viewport_size_handler;
     HandlerRegistration m_window_size_handler;
     HandlerRegistration m_key_handler;
     HandlerRegistration m_entity_select_handler;

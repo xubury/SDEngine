@@ -49,15 +49,16 @@ void EditorLayer::OnInit() {
 }
 
 void EditorLayer::InitBuffers() {
-    m_screen_buffer = Framebuffer::Create(m_viewport_size.x, m_viewport_size.y);
-    m_screen_buffer->Attach(
+    m_viewport_buffer =
+        Framebuffer::Create(m_viewport_size.x, m_viewport_size.y);
+    m_viewport_buffer->Attach(
         TextureSpec(1, TextureType::TEX_2D, DataFormat::RGB,
                     DataFormatType::UBYTE, TextureWrap::EDGE,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
-    m_screen_buffer->Attach(TextureSpec(1, TextureType::TEX_2D, DataFormat::RED,
-                                        DataFormatType::UINT, TextureWrap::EDGE,
-                                        TextureMagFilter::NEAREST,
-                                        TextureMinFilter::NEAREST));
+    m_viewport_buffer->Attach(
+        TextureSpec(1, TextureType::TEX_2D, DataFormat::RED,
+                    DataFormatType::UINT, TextureWrap::EDGE,
+                    TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     m_debug_gbuffer = Framebuffer::Create(m_viewport_size.x, m_viewport_size.y);
     for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
         m_debug_gbuffer->Attach(TextureSpec(
@@ -66,7 +67,7 @@ void EditorLayer::InitBuffers() {
             TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     }
 
-    m_screen_buffer->Validate();
+    m_viewport_buffer->Validate();
     m_debug_gbuffer->Validate();
 }
 
@@ -124,11 +125,6 @@ void EditorLayer::PushSystems() {
 }
 
 void EditorLayer::OnPush() {
-    m_viewport_size_handler = EventSystem::Get().Register<ViewportSizeEvent>(
-        [this](const ViewportSizeEvent &e) {
-            m_screen_buffer->Resize(e.width, e.height);
-            m_debug_gbuffer->Resize(e.width, e.height);
-        });
     m_entity_select_handler = EventSystem::Get().Register<EntitySelectEvent>(
         [this](const EntitySelectEvent &e) {
             m_selected_entity = {e.entity_id, e.scene};
@@ -136,12 +132,9 @@ void EditorLayer::OnPush() {
     m_window_size_handler =
         EventSystem::Get().Register(this, &EditorLayer::OnWindowSizeEvent);
     m_key_handler = EventSystem::Get().Register(this, &EditorLayer::OnKeyEvent);
-
-    // PublishViewportEvent();
 }
 
 void EditorLayer::OnPop() {
-    EventSystem::Get().RemoveHandler(m_viewport_size_handler);
     EventSystem::Get().RemoveHandler(m_entity_select_handler);
     EventSystem::Get().RemoveHandler(m_window_size_handler);
     EventSystem::Get().RemoveHandler(m_key_handler);
@@ -178,11 +171,11 @@ void EditorLayer::OnRender() {
         Renderer::Get().End();
         Device::Get().Enable(Operation::DEPTH_TEST);
     }
+    BlitViewportBuffer();
 }
 
 void EditorLayer::OnTick(float dt) {
-    PublishViewportEvent();
-
+    OnViewportUpdate();
     if (m_is_runtime) {
         scene->OnRuntime(dt);
     } else {
@@ -193,7 +186,7 @@ void EditorLayer::OnTick(float dt) {
     }
 }
 
-void EditorLayer::PublishViewportEvent() {
+void EditorLayer::OnViewportUpdate() {
     if (m_viewport_size_update) {
         ViewportSizeEvent event{m_viewport_size.x, m_viewport_size.y};
         EventSystem::Get().PublishEvent(event);
@@ -442,24 +435,28 @@ void EditorLayer::MenuBar() {
     }
 }
 
-void EditorLayer::DrawViewport() {
+void EditorLayer::BlitViewportBuffer() {
+    // blit the render color result
     Device::Get().ReadBuffer(Renderer::Get().GetFramebuffer(), 0);
-    Device::Get().DrawBuffer(m_screen_buffer.get(), 0);
+    Device::Get().DrawBuffer(m_viewport_buffer.get(), 0);
     Device::Get().BlitFramebuffer(
         Renderer::Get().GetFramebuffer(), 0, 0,
         Renderer::Get().GetFramebuffer()->GetWidth(),
-        Renderer::Get().GetFramebuffer()->GetHeight(), m_screen_buffer.get(), 0,
-        0, m_screen_buffer->GetWidth(), m_screen_buffer->GetHeight(),
+        Renderer::Get().GetFramebuffer()->GetHeight(), m_viewport_buffer.get(),
+        0, 0, m_viewport_buffer->GetWidth(), m_viewport_buffer->GetHeight(),
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
+    // blit the entity id result
     Device::Get().ReadBuffer(Renderer::Get().GetFramebuffer(), 1);
-    Device::Get().DrawBuffer(m_screen_buffer.get(), 1);
+    Device::Get().DrawBuffer(m_viewport_buffer.get(), 1);
     Device::Get().BlitFramebuffer(
         Renderer::Get().GetFramebuffer(), 0, 0,
         Renderer::Get().GetFramebuffer()->GetWidth(),
-        Renderer::Get().GetFramebuffer()->GetHeight(), m_screen_buffer.get(), 0,
-        0, m_screen_buffer->GetWidth(), m_screen_buffer->GetHeight(),
+        Renderer::Get().GetFramebuffer()->GetHeight(), m_viewport_buffer.get(),
+        0, 0, m_viewport_buffer->GetWidth(), m_viewport_buffer->GetHeight(),
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
+}
 
+void EditorLayer::DrawViewport() {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
     ImGui::Begin("Scene");
     {
@@ -475,6 +472,8 @@ void EditorLayer::DrawViewport() {
 
         if (m_viewport_size != viewport_size) {
             m_viewport_size = viewport_size;
+            m_viewport_buffer->Resize(m_viewport_size.x, m_viewport_size.y);
+            m_debug_gbuffer->Resize(m_viewport_size.x, m_viewport_size.y);
             m_viewport_size_update = true;
         }
 
@@ -492,7 +491,7 @@ void EditorLayer::DrawViewport() {
 
         const auto &tl_uv = Device::Get().GetUVIndex(0);
         const auto &br_uv = Device::Get().GetUVIndex(2);
-        ImGui::DrawTexture(*m_screen_buffer->GetTexture(),
+        ImGui::DrawTexture(*m_viewport_buffer->GetTexture(),
                            ImVec2(tl_uv.x, tl_uv.y), ImVec2(br_uv.x, br_uv.y));
 
         ImGuizmo::SetRect(m_viewport_pos.x, m_viewport_pos.y, m_viewport_size.x,
@@ -521,7 +520,7 @@ void EditorLayer::DrawViewport() {
             mouse_x -= m_viewport_pos.x;
             mouse_y -= m_viewport_pos.y;
             entt::entity entity_id = entt::null;
-            auto entity_tex = m_screen_buffer->GetTexture(1);
+            auto entity_tex = m_viewport_buffer->GetTexture(1);
             // out of bound check
             if (mouse_x >= 0 && mouse_y >= 0 &&
                 mouse_x < entity_tex->GetWidth() &&

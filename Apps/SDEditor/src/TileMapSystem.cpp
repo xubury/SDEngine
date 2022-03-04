@@ -58,41 +58,45 @@ void TileMapSystem::OnPop() {
     EventSystem::Get().RemoveHandler(m_viewport_state_handler);
 }
 
+void TileMapSystem::ManipulateScene() {
+    glm::vec2 clip = m_viewport.MapScreenToClip(
+        glm::ivec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y));
+    if (std::abs(clip.x) > 1 || std::abs(clip.y) > 1) {
+        return;
+    }
+    m_brush.SetRay(scene->GetCamera()->ComputeCameraRay(clip));
+    if (ImGui::IsMouseClicked(0) && m_texture_asset) {
+        switch (m_operation) {
+            default: {
+            } break;
+            case Operation::ADD_ENTITY: {
+                glm::vec3 world;
+                if (m_brush.GetSelectPos(world)) {
+                    Entity child = scene->CreateEntity("Tile");
+                    auto &comp = child.AddComponent<SpriteComponent>();
+                    auto &frame = comp.frame;
+                    child.GetComponent<TransformComponent>().SetWorldPosition(
+                        world);
+                    frame.texture_id = m_texture_asset->GetId();
+                    frame.texture_path = m_texture_asset->GetPath();
+                    frame.uvs = m_uvs;
+                    frame.size = m_brush.tile_size * m_brush.count;
+                    child.GetComponent<PriorityComponent>().priority =
+                        m_priority;
+                }
+            } break;
+            case Operation::REMOVE_ENTITY: {
+                // m_brush.Clear();
+            } break;
+        }
+    } else if (ImGui::IsMouseClicked(1)) {
+        m_operation = Operation::NONE;
+    }
+}
+
 void TileMapSystem::OnImGui() {
     if (m_viewport.IsHover()) {
-        glm::vec2 clip = m_viewport.MapScreenToClip(
-            glm::ivec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y));
-        if (std::abs(clip.x) > 1 || std::abs(clip.y) > 1) {
-            return;
-        }
-        m_brush.SetRay(scene->GetCamera()->ComputeCameraRay(clip));
-        if (ImGui::IsMouseClicked(0) && m_texture_asset) {
-            switch (m_operation) {
-                default: {
-                } break;
-                case Operation::ADD_ENTITY: {
-                    glm::vec3 world;
-                    if (m_brush.GetSelectPos(world)) {
-                        Entity child = scene->CreateEntity("Tile");
-                        auto &comp = child.AddComponent<SpriteComponent>();
-                        auto &frame = comp.frame;
-                        child.GetComponent<TransformComponent>()
-                            .SetWorldPosition(world);
-                        frame.texture_id = m_texture_asset->GetId();
-                        frame.texture_path = m_texture_asset->GetPath();
-                        frame.uvs = m_uvs;
-                        frame.size = m_brush.tile_size * m_brush.count;
-                        child.GetComponent<PriorityComponent>().priority =
-                            m_priority;
-                    }
-                } break;
-                case Operation::REMOVE_ENTITY: {
-                    // m_brush.Clear();
-                } break;
-            }
-        } else if (ImGui::IsMouseClicked(1)) {
-            m_operation = Operation::NONE;
-        }
+        ManipulateScene();
     }
     ImGui::Begin("TileMap System");
     {

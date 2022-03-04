@@ -23,6 +23,7 @@ class TileMapSystem : public System {
     void OnRender() override;
 
    private:
+    void ManipulateScene();
     Ref<Texture> m_outline_texture;
 
     TileBrush m_brush;
