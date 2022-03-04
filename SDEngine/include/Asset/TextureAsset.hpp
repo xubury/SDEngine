@@ -30,7 +30,12 @@ class TextureAsset : public Asset {
 
     Texture *GetTexture() { return m_texture.get(); }
 
-    void SetTexturePath(const std::string &path) { m_texture_path[0] = path; }
+    void SetTexturePath(const std::string &path) {
+        const std::filesystem::path dir =
+            std::filesystem::path(m_path).parent_path();
+        m_texture_path[0] =
+            std::filesystem::relative(path, dir).generic_string();
+    }
 
     std::string GetTexturePath() const { return m_texture_path[0]; }
 

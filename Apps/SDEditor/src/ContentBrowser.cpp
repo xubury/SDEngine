@@ -17,14 +17,17 @@ void ContentBrowser::OnInit() {
     m_current_directory = AssetStorage::Get().GetDirectory();
 
     // asset module test
-    TextureAsset* texture_asset =
-        AssetStorage::Get().CreateAsset<TextureAsset>("test.asset");
-    texture_asset->SetTexturePath("textures/awesomeface.png");
+    TextureAsset* texture_asset = AssetStorage::Get().CreateAsset<TextureAsset>(
+        "textures/awesomeface.asset");
+    texture_asset->SetTexturePath(
+        (AssetStorage::Get().GetDirectory() / "textures/awesomeface.png")
+            .string());
 
     AssetStorage::Get().SaveAsset<TextureAsset>(texture_asset->GetId());
     AssetStorage::Get().Unload<TextureAsset>(texture_asset->GetId());
 
     AssetStorage::Get().LoadAsset<TextureAsset>("test.asset");
+    AssetStorage::Get().LoadAsset<TextureAsset>("textures/awesomeface.asset");
 
     auto& storage = AssetStorage::Get();
     for (const TypeId tid : storage.GetRegistered()) {
@@ -45,11 +48,11 @@ void ContentBrowser::OnImGui() {
     }
 
     static float padding = 16.0f;
-    static float thumbnail_size = 128.0f;
-    float cell_size = thumbnail_size + padding;
+    static float thumbnail_size = 80.0f;
+    const float cell_size = thumbnail_size + padding;
 
-    float panel_width = ImGui::GetContentRegionAvail().x;
-    int column_cnt = (int)(panel_width / cell_size);
+    const float panel_width = ImGui::GetContentRegionAvail().x;
+    int column_cnt = std::floor(panel_width / cell_size);
     if (column_cnt < 1) column_cnt = 1;
 
     ImGui::Columns(column_cnt, 0, false);
@@ -58,7 +61,7 @@ void ContentBrowser::OnImGui() {
          std::filesystem::directory_iterator(m_current_directory)) {
         const auto& path = entry.path();
         const bool is_directory = entry.is_directory();
-        if (!is_directory && m_tree.count(path.string()) == 0) {
+        if (!is_directory && m_tree.count(path.generic_string()) == 0) {
             continue;
         }
         const std::filesystem::path relative_path =

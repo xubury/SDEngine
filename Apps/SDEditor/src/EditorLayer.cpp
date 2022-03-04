@@ -141,6 +141,9 @@ void EditorLayer::OnPop() {
 }
 
 void EditorLayer::OnRender() {
+    if (m_mode == EditorMode::NONE) {
+        return;
+    }
     Device::Get().SetFramebuffer(Renderer::Get().GetFramebuffer());
     Device::Get().Clear();
     uint32_t id = static_cast<uint32_t>(entt::null);
@@ -171,7 +174,10 @@ void EditorLayer::OnRender() {
         Renderer::Get().End();
         Device::Get().Enable(Operation::DEPTH_TEST);
     }
-    BlitViewportBuffer();
+    BlitViewportBuffers();
+    if (m_mode == EditorMode::THREE_DIMENSIONAL) {
+        BlitGeometryBuffers();
+    }
 }
 
 void EditorLayer::OnTick(float dt) {
@@ -297,7 +303,7 @@ void EditorLayer::OnImGui() {
         }
         MenuBar();
         DrawViewport();
-        DebugLighting();
+        DrawDebugBuffers();
         ProcessDialog();
         for (auto &system : GetSystems()) {
             system->OnImGui();
@@ -435,7 +441,7 @@ void EditorLayer::MenuBar() {
     }
 }
 
-void EditorLayer::BlitViewportBuffer() {
+void EditorLayer::BlitViewportBuffers() {
     // blit the render color result
     Device::Get().ReadBuffer(Renderer::Get().GetFramebuffer(), 0);
     Device::Get().DrawBuffer(m_viewport_buffer.get(), 0);
@@ -454,6 +460,19 @@ void EditorLayer::BlitViewportBuffer() {
         Renderer::Get().GetFramebuffer()->GetHeight(), m_viewport_buffer.get(),
         0, 0, m_viewport_buffer->GetWidth(), m_viewport_buffer->GetHeight(),
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
+}
+
+void EditorLayer::BlitGeometryBuffers() {
+    for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
+        Device::Get().ReadBuffer(m_lighting_system->GetGBuffer(), i);
+        Device::Get().DrawBuffer(m_debug_gbuffer.get(), i);
+        Device::Get().BlitFramebuffer(
+            m_lighting_system->GetGBuffer(), 0, 0,
+            m_lighting_system->GetGBuffer()->GetWidth(),
+            m_lighting_system->GetGBuffer()->GetHeight(), m_debug_gbuffer.get(),
+            0, 0, m_debug_gbuffer->GetWidth(), m_debug_gbuffer->GetHeight(),
+            BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
+    }
 }
 
 void EditorLayer::DrawViewport() {
@@ -516,16 +535,15 @@ void EditorLayer::DrawViewport() {
             }
         }
         if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
-            auto [mouse_x, mouse_y] = ImGui::GetMousePos();
-            mouse_x -= m_viewport_pos.x;
-            mouse_y -= m_viewport_pos.y;
+            const auto [mouse_x, mouse_y] = ImGui::GetMousePos();
+            const int tex_x = mouse_x - m_viewport_pos.x;
+            const int tex_y = m_viewport_size.y - (mouse_y - m_viewport_pos.y);
             entt::entity entity_id = entt::null;
-            auto entity_tex = m_viewport_buffer->GetTexture(1);
+            const Texture *entity_tex = m_viewport_buffer->GetTexture(1);
             // out of bound check
-            if (mouse_x >= 0 && mouse_y >= 0 &&
-                mouse_x < entity_tex->GetWidth() &&
-                mouse_y < entity_tex->GetHeight()) {
-                entity_tex->ReadPixels(0, mouse_x, mouse_y, 0, 1, 1, 1,
+            if (tex_x >= 0 && tex_y >= 0 && tex_x < entity_tex->GetWidth() &&
+                tex_y < entity_tex->GetHeight()) {
+                entity_tex->ReadPixels(0, tex_x, tex_y, 0, 1, 1, 1,
                                        sizeof(entity_id), &entity_id);
             }
             if (entity_id != entt::null) {
@@ -538,20 +556,9 @@ void EditorLayer::DrawViewport() {
     ImGui::PopStyleVar();
 }
 
-void EditorLayer::DebugLighting() {
+void EditorLayer::DrawDebugBuffers() {
     if (m_mode == THREE_DIMENSIONAL) {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
-        for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
-            Device::Get().ReadBuffer(m_lighting_system->GetGBuffer(), i);
-            Device::Get().DrawBuffer(m_debug_gbuffer.get(), i);
-            Device::Get().BlitFramebuffer(
-                m_lighting_system->GetGBuffer(), 0, 0,
-                m_lighting_system->GetGBuffer()->GetWidth(),
-                m_lighting_system->GetGBuffer()->GetHeight(),
-                m_debug_gbuffer.get(), 0, 0, m_debug_gbuffer->GetWidth(),
-                m_debug_gbuffer->GetHeight(), BufferBitMask::COLOR_BUFFER_BIT,
-                BlitFilter::NEAREST);
-        }
         const auto &tl_uv = Device::Get().GetUVIndex(0);
         const auto &br_uv = Device::Get().GetUVIndex(2);
         ImGui::Begin("GBuffer");

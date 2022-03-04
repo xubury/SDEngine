@@ -45,7 +45,8 @@ class EditorLayer : public Layer {
     void OnKeyEvent(const KeyEvent& e);
     void OnWindowSizeEvent(const WindowSizeEvent& e);
     void OnViewportUpdate();
-    void BlitViewportBuffer();
+    void BlitViewportBuffers();
+    void BlitGeometryBuffers();
 
     void InitBuffers();
 
@@ -57,7 +58,7 @@ class EditorLayer : public Layer {
 
     void DrawViewport();
 
-    void DebugLighting();
+    void DrawDebugBuffers();
 
     void Hide();
 
