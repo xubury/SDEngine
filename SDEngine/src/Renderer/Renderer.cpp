@@ -13,7 +13,6 @@ const static std::array<glm::vec4, 4> QUAD_VERTEX_POS = {
 const static std::array<glm::vec2, 2> QUAD_UV = {glm::vec2(0, 0),
                                                  glm::vec2(1, 1)};
 
-
 Renderer::Renderer(int width, int height, int msaa) {
     SD_CORE_TRACE("Initializing Renderer");
     m_camera_UBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
@@ -33,7 +32,7 @@ Renderer::Renderer(int width, int height, int msaa) {
     m_framebuffer->Attach(
         TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE, DataFormat::DEPTH,
                     DataFormatType::FLOAT16, TextureWrap::EDGE));
-    m_framebuffer->Validate();
+    m_framebuffer->Setup();
 }
 
 Renderer::~Renderer() { SD_CORE_TRACE("Deleting Renderer"); }
@@ -146,8 +145,9 @@ void Renderer::SetupShaderUBO(Shader& shader) {
     shader.SetUniformBuffer("Camera", *m_camera_UBO);
 }
 
-void Renderer::Begin(Framebuffer *framebuffer, Shader& shader, Camera& camera) {
+void Renderer::Begin(Framebuffer* framebuffer, Shader& shader, Camera& camera) {
     Device::Get().SetFramebuffer(framebuffer);
+    Device::Get().SetViewport(0, 0, framebuffer->GetWidth(), framebuffer->GetHeight());
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
@@ -155,8 +155,9 @@ void Renderer::Begin(Framebuffer *framebuffer, Shader& shader, Camera& camera) {
     SetupShaderUBO(shader);
 }
 
-void Renderer::Begin(Framebuffer *framebuffer, Camera& camera) {
+void Renderer::Begin(Framebuffer* framebuffer, Camera& camera) {
     Device::Get().SetFramebuffer(framebuffer);
+    Device::Get().SetViewport(0, 0, framebuffer->GetWidth(), framebuffer->GetHeight());
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));

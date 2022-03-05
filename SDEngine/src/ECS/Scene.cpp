@@ -58,6 +58,7 @@ void Scene::OnRuntime(float) {
     view.each([&](CameraComponent &cam_comp) {
         if (cam_comp.primary) {
             m_camera = &cam_comp.camera;
+            return;
         }
     });
 }

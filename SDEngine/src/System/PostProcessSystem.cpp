@@ -47,13 +47,13 @@ void PostProcessSystem::InitBuffers() {
         m_blur_buffer[i]->Attach(
             TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
                         DataFormatType::FLOAT16, TextureWrap::EDGE));
-        m_blur_buffer[i]->Validate();
+        m_blur_buffer[i]->Setup();
     }
     m_post_buffer = Framebuffer::Create(m_width, m_height);
     m_post_buffer->Attach(TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
                                       DataFormatType::FLOAT16,
                                       TextureWrap::EDGE));
-    m_post_buffer->Validate();
+    m_post_buffer->Setup();
 }
 
 void PostProcessSystem::OnPush() {

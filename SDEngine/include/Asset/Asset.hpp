@@ -11,6 +11,10 @@
 namespace SD {
 
 using TypeId = size_t;
+template <typename T>
+inline TypeId GetTypeId() {
+    return typeid(T).hash_code();
+}
 
 class SD_ASSET_API Asset {
    public:
@@ -20,14 +24,14 @@ class SD_ASSET_API Asset {
     virtual void Init() { m_is_initialized = true; };
 
     template <typename T>
-    static void SaveArchiveToFile(const std::string &path, const T *obj) {
-        if (std::filesystem::exists(path)) {
-            std::filesystem::remove(path);
+    static void SaveArchiveToFile(const T *obj) {
+        if (std::filesystem::exists(obj->m_path)) {
+            std::filesystem::remove(obj->m_path);
         }
-        std::ofstream os(path, std::ios::binary);
+        std::ofstream os(obj->m_path, std::ios::binary);
         os << ASSET_IDENTIFIER;
         cereal::PortableBinaryOutputArchive oarchive(os);
-        oarchive(*obj);
+        oarchive(obj->m_tid, obj->m_path, obj->m_rid, *obj);
     }
 
     template <typename T>
@@ -39,7 +43,7 @@ class SD_ASSET_API Asset {
             throw Exception("Invalid asset file!");
         }
         cereal::PortableBinaryInputArchive iarchive(is);
-        iarchive(*obj);
+        iarchive(obj->m_tid, obj->m_path, obj->m_rid, *obj);
     }
 
     template <typename T, typename... ARGS>
@@ -68,6 +72,7 @@ class SD_ASSET_API Asset {
     friend class AssetStorage;
 
     bool m_is_initialized;
+    TypeId m_tid;
     ResourceId m_rid;
     std::string m_path;
 

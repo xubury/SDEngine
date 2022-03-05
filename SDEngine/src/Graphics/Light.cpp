@@ -73,6 +73,7 @@ void Light::CreateShadowMap() {
         TextureSpec(1, TextureType::TEX_2D, DataFormat::DEPTH,
                     DataFormatType::FLOAT16, TextureWrap::BORDER,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
+    m_shadow_map->Setup();
     m_shadow_map->GetTexture()->SetBorderColor(&color);
 }
 

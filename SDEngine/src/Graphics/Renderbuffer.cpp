@@ -1,12 +1,13 @@
 #include "Graphics/Renderbuffer.hpp"
+#include "Graphics/Device.hpp"
 #include "Graphics/OpenGL/GLRenderbuffer.hpp"
 
 namespace SD {
 Ref<Renderbuffer> Renderbuffer::Create(int width, int height,
                                        const RenderbufferSpec &spec) {
     Ref<Renderbuffer> texture;
-    switch (GetGraphicsAPI()) {
-        case GraphicsAPI::OpenGL:
+    switch (Device::GetAPI()) {
+        case Device::API::OpenGL:
             texture = CreateRef<GLRenderbuffer>(width, height, spec.samples,
                                                 spec.format, spec.format_type);
             break;

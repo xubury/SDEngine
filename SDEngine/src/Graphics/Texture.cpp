@@ -1,4 +1,5 @@
 #include "Graphics/Texture.hpp"
+#include "Graphics/Device.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
 #include "Graphics/OpenGL/GLTexture.hpp"
 
@@ -6,8 +7,8 @@ namespace SD {
 
 Ref<Texture> Texture::Create(int width, int height, const TextureSpec &spec) {
     Ref<Texture> texture;
-    switch (GetGraphicsAPI()) {
-        case GraphicsAPI::OpenGL:
+    switch (Device::GetAPI()) {
+        case Device::API::OpenGL:
             texture = CreateRef<GLTexture>(
                 width, height, spec.samples, spec.type, spec.format,
                 spec.format_type, spec.wrap, spec.filter, spec.min_filter);

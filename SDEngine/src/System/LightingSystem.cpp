@@ -117,11 +117,11 @@ void LightingSystem::InitSSAO() {
 
     m_ssao_buffer = Framebuffer::Create(m_width, m_height);
     m_ssao_buffer->Attach(spec);
-    m_ssao_buffer->Validate();
+    m_ssao_buffer->Setup();
 
     m_ssao_blur_buffer = Framebuffer::Create(m_width, m_height);
     m_ssao_blur_buffer->Attach(spec);
-    m_ssao_blur_buffer->Validate();
+    m_ssao_blur_buffer->Setup();
 }
 
 void LightingSystem::InitSSAOKernel() {
@@ -166,7 +166,7 @@ void LightingSystem::InitLighting() {
             m_msaa, TextureType::TEX_2D_MULTISAMPLE, DataFormat::RGB,
             DataFormatType::FLOAT16, TextureWrap::EDGE,
             TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
-        m_light_buffer[i]->Validate();
+        m_light_buffer[i]->Setup();
     }
 
     m_gbuffer = Framebuffer::Create(m_width, m_height);
@@ -179,7 +179,7 @@ void LightingSystem::InitLighting() {
     }
     m_gbuffer->Attach(
         RenderbufferSpec(m_msaa, DataFormat::DEPTH, DataFormatType::FLOAT16));
-    m_gbuffer->Validate();
+    m_gbuffer->Setup();
 }
 
 void LightingSystem::OnSizeEvent(const ViewportSizeEvent &event) {
@@ -241,7 +241,6 @@ void LightingSystem::RenderShadowMap() {
         if (!light.IsCastShadow()) return;
 
         Device::Get().SetFramebuffer(light.GetShadowMap());
-        Device::Get().SetShader(nullptr);  // supress shader recompile warning
         light.GetShadowMap()->ClearDepth();
         light.ComputeLightSpaceMatrix(transformComp.GetWorldTransform(),
                                       scene->GetCamera());
@@ -263,7 +262,6 @@ void LightingSystem::RenderShadowMap() {
         });
     });
     Device::Get().SetCullFace(Face::BACK);
-    Device::Get().SetShader(nullptr);  // supress shader recompile warning
 }
 
 void LightingSystem::RenderSSAO() {
@@ -354,12 +352,11 @@ void LightingSystem::RenderDeferred() {
                                    light.IsDirectional());
         m_deferred_shader->SetBool("u_light.is_cast_shadow",
                                    light.IsCastShadow());
-        if (light.IsCastShadow()) {
-            m_deferred_shader->SetTexture("u_light.shadow_map",
-                                          light.GetShadowMap()->GetTexture());
-        } else {
-            m_deferred_shader->SetTexture("u_light.shadow_map", nullptr);
-        }
+        m_deferred_shader->SetTexture("u_light.shadow_map",
+                                      light.IsCastShadow()
+                                          ? light.GetShadowMap()->GetTexture()
+                                          : nullptr);
+
         m_deferred_shader->SetMat4("u_light.projection_view",
                                    light.GetProjectionView());
         renderer->Submit(*m_deferred_shader, *m_quad, MeshTopology::TRIANGLES,

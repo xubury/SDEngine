@@ -2,7 +2,7 @@
 #include "Core/SDL.hpp"
 #include "Core/Input.hpp"
 #include "Core/OpenGL/GLWindow.hpp"
-#include "Graphics/Graphics.hpp"
+#include "Graphics/Device.hpp"
 
 namespace SD {
 
@@ -21,8 +21,8 @@ WindowProp::WindowProp(const std::string &title, int32_t x, int32_t y,
 Scope<Window> Window::Create(const WindowProp &property) {
     SD_CORE_TRACE("Initializing Window...");
     Scope<Window> window;
-    switch (GetGraphicsAPI()) {
-        case GraphicsAPI::OpenGL:
+    switch (Device::GetAPI()) {
+        case Device::API::OpenGL:
             window = CreateScope<GLWindow>(property);
             break;
         default:

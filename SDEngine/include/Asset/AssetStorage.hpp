@@ -11,11 +11,6 @@
 
 namespace SD {
 
-template <typename T>
-inline size_t GetTypeId() {
-    return typeid(T).hash_code();
-}
-
 using Cache = std::unordered_map<ResourceId, Asset*>;
 
 struct AssetTypeData {
@@ -34,20 +29,27 @@ class SD_ASSET_API AssetStorage {
     AssetStorage& operator=(const AssetStorage&) = delete;
 
     template <typename T>
-    bool Exists(ResourceId rid) {
-        auto& cache = m_assets[GetTypeId<T>()];
-        return cache.find(rid) != cache.end();
+    bool Exists(ResourceId rid) const {
+        TypeId tid = GetTypeId<T>();
+        if (!Empty(tid)) {
+            auto& cache = GetCache(tid);
+            return cache.count(rid) != 0;
+        }
+        return false;
     }
 
-    bool Exists(TypeId tid, ResourceId rid) {
-        auto& cache = m_assets[tid];
-        return cache.find(rid) != cache.end();
+    bool Exists(TypeId tid, ResourceId rid) const {
+        if (!Empty(tid)) {
+            auto& cache = GetCache(tid);
+            return cache.count(rid) != 0;
+        }
+        return false;
     }
 
     template <typename T>
-    T* GetAsset(ResourceId rid) {
-        auto& cache = m_assets[GetTypeId<T>()];
-        return dynamic_cast<T*>(cache[rid]);
+    T* GetAsset(ResourceId rid) const {
+        auto& cache = GetCache<T>();
+        return dynamic_cast<T*>(cache.at(rid));
     }
 
     template <typename T>
@@ -59,9 +61,7 @@ class SD_ASSET_API AssetStorage {
         T* asset = nullptr;
         if (!Exists(tid, rid)) {
             asset = new T;
-            asset->m_path = full_path;
-            asset->m_rid = rid;
-            Asset::LoadArchiveFromFile(asset->m_path, asset);
+            Asset::LoadArchiveFromFile(full_path, asset);
             asset->Init();
             Add(asset, tid, rid);
         } else {
@@ -83,18 +83,19 @@ class SD_ASSET_API AssetStorage {
             asset = GetAsset<T>(rid);
         } else {
             asset = new T;
+            asset->m_tid = tid;
             asset->m_path = full_path;
             asset->m_rid = rid;
-            Asset::SaveArchiveToFile(asset->m_path, asset);
+            Asset::SaveArchiveToFile(asset);
             Add(asset, tid, rid);
         }
         return asset;
     }
 
     template <typename T>
-    void SaveAsset(ResourceId rid) {
+    void SaveAsset(ResourceId rid) const {
         T* asset = GetAsset<T>(rid);
-        Asset::SaveArchiveToFile(asset->m_path, asset);
+        Asset::SaveArchiveToFile(asset);
     }
 
     void Add(Asset* data, TypeId tid, ResourceId rid) {
@@ -155,11 +156,11 @@ class SD_ASSET_API AssetStorage {
     const Cache& GetCache(TypeId tid) const { return m_assets.at(tid); }
 
     template <typename T>
-    bool Empty() {
+    bool Empty() const {
         return m_assets.count(GetTypeId<T>()) == 0;
     }
 
-    bool Empty(TypeId tid) { return m_assets.count(tid) == 0; }
+    bool Empty(TypeId tid) const { return m_assets.count(tid) == 0; }
 
     const std::unordered_set<TypeId>& GetRegistered() const {
         return m_registered;

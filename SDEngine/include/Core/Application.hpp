@@ -46,7 +46,7 @@ class SD_CORE_API Application {
 
     void DestroyLayer(Layer *layer);
 
-    Application(const std::string &title, GraphicsAPI api);
+    Application(const std::string &title, Device::API api);
     virtual ~Application();
 
     Application(const Application &application) = delete;

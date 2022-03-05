@@ -3,6 +3,7 @@
 #include "Loader/TextureLoader.hpp"
 #include "Asset/AssetStorage.hpp"
 
+#include "Asset/ModelAsset.hpp"
 #include "Asset/TextureAsset.hpp"
 
 namespace SD {
@@ -15,31 +16,48 @@ void ContentBrowser::OnInit() {
     m_directory_icon =
         TextureLoader::LoadTexture2D("assets/icons/DirectoryIcon.png");
     m_current_directory = AssetStorage::Get().GetDirectory();
-
-    // asset module test
-    TextureAsset* texture_asset = AssetStorage::Get().CreateAsset<TextureAsset>(
-        "textures/awesomeface.asset");
-    texture_asset->SetTexturePath(
-        (AssetStorage::Get().GetDirectory() / "textures/awesomeface.png")
-            .string());
-
-    AssetStorage::Get().SaveAsset<TextureAsset>(texture_asset->GetId());
-    AssetStorage::Get().Unload<TextureAsset>(texture_asset->GetId());
-
-    AssetStorage::Get().LoadAsset<TextureAsset>("test.asset");
-    AssetStorage::Get().LoadAsset<TextureAsset>("textures/awesomeface.asset");
-
-    auto& storage = AssetStorage::Get();
-    for (const TypeId tid : storage.GetRegistered()) {
-        if (storage.Empty(tid)) continue;
-        for (const auto& [id, asset] : storage.GetCache(tid)) {
-            m_tree[asset->GetPath()] = asset;
-        }
-    }
 }
 
 void ContentBrowser::OnImGui() {
+    AssetStorage& storage = AssetStorage::Get();
     ImGui::Begin("Content Browser");
+    static bool create_asset = false;
+    // Right-click on blank space
+    if (ImGui::BeginPopupContextWindow(0, 1, false)) {
+        if (ImGui::MenuItem("Create model asset")) {
+            create_asset = true;
+        }
+
+        ImGui::EndPopup();
+    }
+    if (create_asset) {
+        ImGui::OpenPopup("Model asset creation");
+        if (ImGui::BeginCenterPopupModal("Model asset creation")) {
+            ImGui::TextUnformatted("Create model asset:");
+            static char name[255];
+            ImGui::InputText("Model Name: ", name, sizeof(name));
+            static std::string path =
+                (storage.GetDirectory() / "models/Sponza/sponza.obj")
+                    .generic_string();
+            ImGui::InputText("Model File: ", path.data(), path.size() + 1);
+            if (ImGui::Button("Ok")) {
+                ModelAsset* asset =
+                    storage.CreateAsset<ModelAsset>(m_current_directory / name);
+                asset->SetModelPath(path);
+                asset->Init();
+
+                create_asset = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("No")) {
+                create_asset = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+    }
+
     const std::filesystem::path root_path = AssetStorage::Get().GetDirectory();
     if (m_current_directory != std::filesystem::path(root_path)) {
         if (ImGui::Button("<-")) {
@@ -61,9 +79,6 @@ void ContentBrowser::OnImGui() {
          std::filesystem::directory_iterator(m_current_directory)) {
         const auto& path = entry.path();
         const bool is_directory = entry.is_directory();
-        if (!is_directory && m_tree.count(path.generic_string()) == 0) {
-            continue;
-        }
         const std::filesystem::path relative_path =
             std::filesystem::relative(path, root_path);
         const std::string filename = relative_path.filename().string();

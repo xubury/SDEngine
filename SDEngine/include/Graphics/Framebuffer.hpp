@@ -26,7 +26,7 @@ class SD_GRAPHICS_API Framebuffer : public Resource {
     void Attach(const RenderbufferSpec &renderbuffer);
 
     virtual void Resize(int width, int height) = 0;
-    virtual void Validate() = 0;
+    virtual void Setup() = 0;
 
     virtual void ReadPixels(uint32_t attachment_id, int level, int x, int y,
                             int z, int w, int h, int d, size_t size,

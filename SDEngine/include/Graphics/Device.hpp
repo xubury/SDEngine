@@ -3,15 +3,20 @@
 
 #include "Utility/Base.hpp"
 #include "Graphics/Graphics.hpp"
-#include "Graphics/Context.hpp"
-#include "Graphics/VertexArray.hpp"
-#include "Graphics/Shader.hpp"
-#include "Graphics/Framebuffer.hpp"
 
 namespace SD {
 
+class VertexArray;
+class Shader;
+class Framebuffer;
+
 class SD_GRAPHICS_API Device {
    public:
+    enum class API { OpenGL, Vulkan, Direct3D };
+
+    static API GetAPI();
+    static void SetAPI(API api);
+
     static void Init();
 
     static void Shutdown();
@@ -40,7 +45,7 @@ class SD_GRAPHICS_API Device {
 
     virtual void SetShader(const Shader *shader) = 0;
 
-    virtual void SetViewport(const glm::ivec2 &pos, const glm::ivec2 &size) = 0;
+    virtual void SetViewport(int x, int y, int width, int height) = 0;
 
     virtual void SetFramebuffer(const Framebuffer *framebuffer) = 0;
 

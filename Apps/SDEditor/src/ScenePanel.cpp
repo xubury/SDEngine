@@ -12,6 +12,32 @@
 
 namespace SD {
 
+template <typename T>
+void SelectAsset(ResourceId *selected_id) {
+    auto &storage = AssetStorage::Get();
+
+    if (!storage.Empty<T>()) {
+        const Cache &cache = storage.GetCache<T>();
+        std::string item = storage.Exists<T>(*selected_id)
+                               ? storage.GetAsset<T>(*selected_id)->GetPath()
+                               : "NONE";
+        if (ImGui::BeginCombo("##Assets", item.c_str())) {
+            for (auto &[rid, asset] : cache) {
+                item = asset->GetPath();
+                const bool is_selected = (*selected_id == asset->GetId());
+                if (ImGui::Selectable(item.c_str(), is_selected)) {
+                }
+                *selected_id = asset->GetId();
+
+                // Set the initial focus when opening the combo (scrolling +
+                // keyboard navigation focus)
+                if (is_selected) ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+    }
+}
+
 ScenePanel::ScenePanel()
     : System("ScenePanel"),
       m_gizmo_mode(ImGuizmo::WORLD),
@@ -311,38 +337,22 @@ void ScenePanel::DrawComponents(Entity &entity) {
         },
         false);
     DrawComponent<ModelComponent>("Model", entity, [&](ModelComponent &mc) {
-        static bool fileDialogOpen = false;
-        static ImFileDialogInfo fileDialogInfo;
-        ImGui::InputText("##Path", mc.model_path.data(), mc.model_path.size(),
-                         ImGuiInputTextFlags_ReadOnly);
-        ImGui::SameLine();
-        if (ImGui::Button("Open")) {
-            fileDialogOpen = true;
-            fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
-            fileDialogInfo.title = "Open File";
-            fileDialogInfo.file_name = "";
-            fileDialogInfo.directory_path = AssetStorage::Get().GetDirectory();
-        }
-        if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
-            try {
-                ModelAsset *model = AssetStorage::Get().LoadAsset<ModelAsset>(
-                    fileDialogInfo.result_path.string());
-                mc.model_id = model->GetId();
-                mc.model_path = model->GetPath();
-            } catch (const Exception &e) {
-                SD_CORE_ERROR("Error loading model: {}", e.what());
-            }
-        }
+        SelectAsset<ModelAsset>(&mc.model_id);
+        // if (AssetStorage::Get().Exists<model_path>(mc.model_id)) {
+        //     ModelAsset *model_asset =
+        //         AssetStorage::Get().GetAsset<ModelAsset>(mc.model_id);
+        //     mc.model_path = model_asset->GetPath();
+        // }
 
-        ImGui::ColorEdit3("Color", &mc.color[0]);
-        ResourceId rid(fileDialogInfo.result_path.string());
-        if (AssetStorage::Get().Exists<ModelAsset>(rid)) {
-            auto model = AssetStorage::Get()
-                             .GetAsset<ModelAsset>(ResourceId(rid))
-                             ->GetModel();
-            DrawMaterialsList(model->GetMaterials(),
-                              &m_selected_material_id_map[entity]);
-        }
+        // ImGui::ColorEdit3("Color", &mc.color[0]);
+        // ResourceId rid(fileDialogInfo.result_path.string());
+        // if (AssetStorage::Get().Exists<ModelAsset>(rid)) {
+        //     auto model = AssetStorage::Get()
+        //                      .GetAsset<ModelAsset>(ResourceId(rid))
+        //                      ->GetModel();
+        //     DrawMaterialsList(model->GetMaterials(),
+        //                       &m_selected_material_id_map[entity]);
+        // }
     });
     DrawComponent<LightComponent>(
         "Light", entity, [&](LightComponent &lightComp) {

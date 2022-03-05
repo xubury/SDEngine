@@ -23,11 +23,11 @@ void GLFramebuffer::Resize(int width, int height) {
         m_width = width;
         m_height = height;
         Clear();
-        Validate();
+        Setup();
     }
 }
 
-void GLFramebuffer::Validate() {
+void GLFramebuffer::Setup() {
     int drawable_cnt = 0;
     for (const auto &spec : m_texture_specs) {
         auto texture = Texture::Create(m_width, m_height, spec);
@@ -77,6 +77,8 @@ void GLFramebuffer::Validate() {
     SD_CORE_ASSERT(
         glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE,
         "Framebuffer is incomplete!");
+    glNamedFramebufferDrawBuffers(GetId(), m_drawables.size(),
+                                  m_drawables.data());
 }
 
 void GLFramebuffer::ReadPixels(uint32_t attachment_id, int level, int x, int y,

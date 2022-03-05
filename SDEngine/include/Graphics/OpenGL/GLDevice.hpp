@@ -21,7 +21,7 @@ class GLDevice : public Device {
 
     void SetShader(const Shader *shader) override;
 
-    void SetViewport(const glm::ivec2 &pos, const glm::ivec2 &size) override;
+    void SetViewport(int x, int y, int width, int height) override;
 
     void SetFramebuffer(const Framebuffer *framebuffer) override;
 

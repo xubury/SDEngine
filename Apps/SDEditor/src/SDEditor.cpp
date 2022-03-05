@@ -8,7 +8,7 @@ IMPLEMENT_APP(SD::SDEditor);
 
 namespace SD {
 
-SDEditor::SDEditor() : Application("SD Editor", GraphicsAPI::OpenGL) {}
+SDEditor::SDEditor() : Application("SD Editor", Device::API::OpenGL) {}
 
 void SDEditor::OnInit() {
     Application::OnInit();

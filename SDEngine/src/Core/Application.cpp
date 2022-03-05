@@ -15,13 +15,13 @@ namespace SD {
 
 const std::string SETTING_FILENAME = "setting.ini";
 
-Application::Application(const std::string &title, GraphicsAPI api) {
+Application::Application(const std::string &title, Device::API api) {
     std::string debug_path = (GetAppDirectory() / "Debug.txt").generic_string();
     Log::Init(debug_path);
     SD_CORE_INFO("Debug info is output to: {}", debug_path);
 
     // Setting up which api to use
-    SetGraphicsAPI(api);
+    Device::SetAPI(api);
 
     InitSettings();
 

@@ -1,7 +1,9 @@
 #include "Graphics/OpenGL/GLDevice.hpp"
 #include "Graphics/OpenGL/GLTranslator.hpp"
-#include "Graphics/Texture.hpp"
 #include "Graphics/OpenGL/GLFramebuffer.hpp"
+#include "Graphics/Texture.hpp"
+#include "Graphics/Shader.hpp"
+#include "Graphics/Framebuffer.hpp"
 #include <GL/glew.h>
 
 namespace SD {
@@ -80,25 +82,17 @@ void GLDevice::SetShader(const Shader *shader) {
     }
 }
 
-void GLDevice::SetViewport(const glm::ivec2 &pos, const glm::ivec2 &size) {
+void GLDevice::SetViewport(int x, int y, int width, int height) {
     // opengl define viewport origin at bottom-left
-    glViewport(pos.x, pos.y, size.x, size.y);
+    glViewport(x, y, width, height);
 }
 
 void GLDevice::SetFramebuffer(const Framebuffer *framebuffer) {
     if (framebuffer) {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->GetId());
-        // glViewport(0, 0, framebuffer->GetWidth(), framebuffer->GetHeight());
-        // const GLFramebuffer *glfb =
-        //     dynamic_cast<const GLFramebuffer *>(framebuffer);
-        // const auto &drawables = glfb->GetDrawables();
-        // glNamedFramebufferDrawBuffers(glfb->GetId(), drawables.size(),
-        //                               drawables.data());
 
     } else {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        // glViewport(0, 0, m_context->GetWidth(), m_context->GetHeight());
-        // glNamedFramebufferDrawBuffer(0, GL_FRONT_LEFT);
     }
 }
 

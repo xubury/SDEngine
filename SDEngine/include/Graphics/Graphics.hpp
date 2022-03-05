@@ -108,12 +108,6 @@ enum class CubeMapFace {
     NUMS
 };
 
-enum class GraphicsAPI { None, OpenGL };
-
-void SD_GRAPHICS_API SetGraphicsAPI(GraphicsAPI api);
-
-GraphicsAPI SD_GRAPHICS_API GetGraphicsAPI();
-
 }  // namespace SD
 
 #endif /* SD_GRAPHICS_HPP */

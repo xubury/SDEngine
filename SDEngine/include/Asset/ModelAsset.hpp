@@ -18,6 +18,11 @@ class ModelAsset : public Asset {
         }
     }
 
+    void SetModelPath(const std::string &path) {
+        const std::filesystem::path dir =
+            std::filesystem::path(m_path).parent_path();
+        m_model_path = std::filesystem::relative(path, dir).generic_string();
+    }
     Model *GetModel() { return m_model.get(); }
 
     SERIALIZE(m_model_path)

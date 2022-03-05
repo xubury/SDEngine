@@ -67,8 +67,8 @@ void EditorLayer::InitBuffers() {
             TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     }
 
-    m_viewport_buffer->Validate();
-    m_debug_gbuffer->Validate();
+    m_viewport_buffer->Setup();
+    m_debug_gbuffer->Setup();
 }
 
 void EditorLayer::PushSystems() {
@@ -195,21 +195,18 @@ void EditorLayer::OnViewportUpdate() {
     if (m_viewport_size_update) {
         ViewportSizeEvent event{m_viewport_size.x, m_viewport_size.y};
         EventSystem::Get().PublishEvent(event);
-        SD_TRACE("publish viewport size event");
         m_viewport_size_update = false;
     }
 
     if (m_viewport_pos_update) {
         ViewportPosEvent event{m_viewport_pos.x, m_viewport_pos.y};
         EventSystem::Get().PublishEvent(event);
-        SD_TRACE("publish viewport pos event");
         m_viewport_pos_update = false;
     }
 
     if (m_viewport_state_update) {
         ViewportStateEvent event{m_viewport_focus, m_viewport_hover};
         EventSystem::Get().PublishEvent(event);
-        SD_TRACE("publish viewport state event");
         m_viewport_state_update = false;
     }
 }
@@ -533,7 +530,8 @@ void EditorLayer::DrawViewport() {
                 tc.SetWorldTransform(transform);
             }
         }
-        if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
+        if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered() &&
+            !ImGuizmo::IsUsing()) {
             const auto [mouse_x, mouse_y] = ImGui::GetMousePos();
             const int tex_x = mouse_x - m_viewport_pos.x;
             const int tex_y = m_viewport_size.y - (mouse_y - m_viewport_pos.y);
