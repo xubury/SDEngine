@@ -1,5 +1,7 @@
 #include "Core/OpenGL/GLWindow.hpp"
 #include "Core/SDL.hpp"
+#include "imgui_impl_opengl3.h"
+#include "imgui_impl_sdl.h"
 #include <GL/glew.h>
 
 namespace SD {
@@ -34,9 +36,29 @@ GLWindow::GLWindow(const WindowProp &property) {
     SD_CORE_ASSERT(glewInit() == GLEW_OK, "glewInit failed!");
 }
 
-GLWindow::~GLWindow() { SDL_GL_DeleteContext(m_context); }
+GLWindow::~GLWindow() {
+    SDL_GL_DeleteContext(m_context);
+    SDL_DestroyWindow(m_window);
+}
 
-void *GLWindow::GetGraphicsContext() { return m_context; }
+void GLWindow::ImGuiInitBackend() {
+    ImGui_ImplSDL2_InitForOpenGL(m_window, m_context);
+    ImGui_ImplOpenGL3_Init("#version 450");
+}
+
+void GLWindow::ImGuiShutdown() {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+}
+
+void GLWindow::ImGuiNewFrame() {
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+}
+
+void GLWindow::ImGuiRenderDrawData() {
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
 
 uint8_t GLWindow::GetMSAA() const {
     int value = 1;
@@ -63,8 +85,6 @@ int GLWindow::GetHeight() const {
     SDL_GetWindowSize(m_window, nullptr, &height);
     return height;
 }
-
-void *GLWindow::GetHandle() const { return static_cast<void *>(m_window); }
 
 std::string GLWindow::GetTitle() const { return SDL_GetWindowTitle(m_window); }
 

@@ -4,27 +4,31 @@
 #include "Core/Export.hpp"
 #include "Utility/Ini.hpp"
 #include "ECS/Scene.hpp"
+#include "Renderer/Renderer.hpp"
 
 namespace SD {
 
 std::filesystem::path SD_CORE_API GetAppDirectory();
 
-#define APP_VARS             \
-    Ref<Ini> setting;        \
-    Ref<Scene> scene;        \
+#define APP_VARS            \
+    Ref<Ini> setting;       \
+    Ref<Renderer> renderer; \
+    Ref<Scene> scene;
 
 #define SET_APP_VARS                       \
     void SetAppVars(const AppVars &vars) { \
         setting = vars.setting;            \
+        renderer = vars.renderer;          \
         scene = vars.scene;                \
     }
 
-#define MAKE_APP_VARS                 \
-    AppVars MakeAppVars() {           \
-        AppVars vars;                 \
-        vars.setting = setting;       \
-        vars.scene = scene;           \
-        return vars;                  \
+#define MAKE_APP_VARS             \
+    AppVars MakeAppVars() {       \
+        AppVars vars;             \
+        vars.setting = setting;   \
+        vars.renderer = renderer; \
+        vars.scene = scene;       \
+        return vars;              \
     }
 
 struct AppVars {

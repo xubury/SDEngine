@@ -29,7 +29,7 @@ static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
 }
 #endif
 
-GLDevice::GLDevice(Context *context) : Device(context) {
+GLDevice::GLDevice() {
     SD_CORE_INFO("---Graphics Card Info---");
     SD_CORE_INFO("Vendor: {}", glGetString(GL_VENDOR));
     SD_CORE_INFO("Renderer: {}", glGetString(GL_RENDERER));
@@ -48,12 +48,6 @@ GLDevice::GLDevice(Context *context) : Device(context) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     Enable(Operation::CULL_FACE);
-
-    if (context->GetMSAA() > 1) {
-        Enable(Operation::MULTISAMPLE);
-    } else {
-        Disable(Operation::MULTISAMPLE);
-    }
 }
 
 void GLDevice::DrawElements(MeshTopology topology, int count, size_t offset) {
@@ -86,28 +80,25 @@ void GLDevice::SetShader(const Shader *shader) {
     }
 }
 
-void GLDevice::SetViewport(const Viewport &viewport) {
+void GLDevice::SetViewport(const glm::ivec2 &pos, const glm::ivec2 &size) {
     // opengl define viewport origin at bottom-left
-    glViewport(
-        viewport.GetLeft(),
-        m_context->GetHeight() - viewport.GetHeight() - viewport.GetTop(),
-        viewport.GetWidth(), viewport.GetHeight());
+    glViewport(pos.x, pos.y, size.x, size.y);
 }
 
 void GLDevice::SetFramebuffer(const Framebuffer *framebuffer) {
     if (framebuffer) {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->GetId());
-        glViewport(0, 0, framebuffer->GetWidth(), framebuffer->GetHeight());
-        const GLFramebuffer *glfb =
-            dynamic_cast<const GLFramebuffer *>(framebuffer);
-        const auto &drawables = glfb->GetDrawables();
-        glNamedFramebufferDrawBuffers(glfb->GetId(), drawables.size(),
-                                      drawables.data());
+        // glViewport(0, 0, framebuffer->GetWidth(), framebuffer->GetHeight());
+        // const GLFramebuffer *glfb =
+        //     dynamic_cast<const GLFramebuffer *>(framebuffer);
+        // const auto &drawables = glfb->GetDrawables();
+        // glNamedFramebufferDrawBuffers(glfb->GetId(), drawables.size(),
+        //                               drawables.data());
 
     } else {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, m_context->GetWidth(), m_context->GetHeight());
-        glNamedFramebufferDrawBuffer(0, GL_FRONT_LEFT);
+        // glViewport(0, 0, m_context->GetWidth(), m_context->GetHeight());
+        // glNamedFramebufferDrawBuffer(0, GL_FRONT_LEFT);
     }
 }
 

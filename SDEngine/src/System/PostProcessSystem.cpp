@@ -92,12 +92,12 @@ void PostProcessSystem::OnImGui() {
 
 void PostProcessSystem::OnRender() {
     Device::Get().SetDepthMask(false);
-    Device::Get().ReadBuffer(Renderer::Get().GetFramebuffer(), 0);
+    Device::Get().ReadBuffer(renderer->GetFramebuffer(), 0);
     Device::Get().DrawBuffer(m_post_buffer.get(), 0);
     Device::Get().BlitFramebuffer(
-        Renderer::Get().GetFramebuffer(), 0, 0,
-        Renderer::Get().GetFramebuffer()->GetWidth(),
-        Renderer::Get().GetFramebuffer()->GetHeight(), m_post_buffer.get(), 0, 0,
+        renderer->GetFramebuffer(), 0, 0,
+        renderer->GetFramebuffer()->GetWidth(),
+        renderer->GetFramebuffer()->GetHeight(), m_post_buffer.get(), 0, 0,
         m_post_buffer->GetWidth(), m_post_buffer->GetHeight(),
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
     if (m_is_bloom) {
@@ -128,15 +128,16 @@ void PostProcessSystem::RenderBlur() {
         m_blur_shader->SetTexture(
             "u_image", i == 0 ? m_post_buffer->GetTexture()
                               : m_blur_buffer[inputId]->GetTexture());
-        Renderer::Get().Submit(*m_blur_shader, *m_quad, MeshTopology::TRIANGLES,
+        renderer->Submit(*m_blur_shader, *m_quad, MeshTopology::TRIANGLES,
                          m_quad->GetIndexBuffer()->GetCount(), 0);
         horizontal = !horizontal;
     }
 }
 
 void PostProcessSystem::RenderPost() {
-    Device::Get().SetFramebuffer(Renderer::Get().GetFramebuffer());
-    Device::Get().DrawBuffer(Renderer::Get().GetFramebuffer(), 0);  // only draw colors
+    Device::Get().SetFramebuffer(renderer->GetFramebuffer());
+    Device::Get().DrawBuffer(renderer->GetFramebuffer(),
+                             0);  // only draw colors
     m_post_shader->SetBool("u_bloom", m_is_bloom);
     m_post_shader->SetFloat("u_bloomFactor", m_bloom_factor);
     m_post_shader->SetTexture("u_blur", m_blur_result);
@@ -146,7 +147,7 @@ void PostProcessSystem::RenderPost() {
 
     m_post_shader->SetFloat("u_gamma", m_gamma_correction);
 
-    Renderer::Get().Submit(*m_post_shader, *m_quad, MeshTopology::TRIANGLES,
+    renderer->Submit(*m_post_shader, *m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
 }
 

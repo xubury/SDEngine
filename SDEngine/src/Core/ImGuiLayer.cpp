@@ -1,28 +1,17 @@
 #include "Core/ImGuiLayer.hpp"
 #include "Core/Window.hpp"
 #include "Graphics/Device.hpp"
-#include "imgui_impl_opengl3.h"
-#include "imgui_impl_sdl.h"
 #include "ImGuizmo.h"
 
 namespace SD {
 
-ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}
+ImGuiLayer::ImGuiLayer(Window* window)
+    : Layer("ImGuiLayer"), m_window(window) {}
 
-ImGuiLayer::~ImGuiLayer() {
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplSDL2_Shutdown();
-}
+ImGuiLayer::~ImGuiLayer() { m_window->ImGuiShutdown(); }
 
 void ImGuiLayer::Begin() {
-    switch (GetGraphicsAPI()) {
-        case GraphicsAPI::OpenGL:
-            ImGui_ImplOpenGL3_NewFrame();
-            break;
-        default:
-            break;
-    }
-    ImGui_ImplSDL2_NewFrame();
+    m_window->ImGuiNewFrame();
     ImGui::NewFrame();
     ImGuizmo::BeginFrame();
     Device::Get().SetFramebuffer(nullptr);
@@ -30,13 +19,7 @@ void ImGuiLayer::Begin() {
 
 void ImGuiLayer::End() {
     ImGui::Render();
-    switch (GetGraphicsAPI()) {
-        case GraphicsAPI::OpenGL:
-            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-            break;
-        default:
-            break;
-    }
+    m_window->ImGuiRenderDrawData();
 }
 
 void ImGuiLayer::OnInit() {
@@ -64,16 +47,7 @@ void ImGuiLayer::OnInit() {
     SetDarkThemeColor();
 
     // Setup Platform/Renderer backends
-    switch (GetGraphicsAPI()) {
-        case GraphicsAPI::OpenGL:
-            ImGui_ImplSDL2_InitForOpenGL(
-                static_cast<SDL_Window*>(Window::Get().GetHandle()),
-                Window::Get().GetGraphicsContext());
-            ImGui_ImplOpenGL3_Init("#version 450");
-            break;
-        default:
-            SD_CORE_ERROR("Unsupported API!");
-    }
+    m_window->ImGuiInitBackend();
 }
 
 void ImGuiLayer::OnPush() {

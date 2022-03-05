@@ -34,13 +34,13 @@ Application::Application(const std::string &title, GraphicsAPI api) {
         setting->GetInteger("window", "height", 600),
         setting->GetInteger("window", "msaa", 4),
         setting->GetBoolean("window", "vsync", true), SDL_WINDOW_RESIZABLE);
-    Window::Init(property);
+    m_window = Window::Create(property);
 
     EventSystem::Init();
     AssetStorage::Init();
-    Device::Init(&Window::Get());
-    Renderer::Init(Window::Get().GetWidth(), Window::Get().GetHeight(),
-                   Window::Get().GetMSAA());
+    Device::Init();
+    renderer = CreateRef<Renderer>(m_window->GetWidth(), m_window->GetHeight(),
+                                   m_window->GetMSAA());
 
     AssetStorage::Get().SetDirectory("assets");
     RegisterAssets();
@@ -49,16 +49,15 @@ Application::Application(const std::string &title, GraphicsAPI api) {
 }
 
 Application::~Application() {
-    Renderer::Shutdown();
     Device::Shutdown();
     AssetStorage::Shutdown();
     EventSystem::Shutdown();
 
-    glm::ivec2 size = Window::Get().GetSize();
+    glm::ivec2 size = m_window->GetSize();
     setting->SetInteger("window", "width", size.x);
     setting->SetInteger("window", "height", size.y);
-    setting->SetInteger("window", "msaa", Window::Get().GetMSAA());
-    setting->SetBoolean("window", "vsync", Window::Get().GetIsVSync());
+    setting->SetInteger("window", "msaa", m_window->GetMSAA());
+    setting->SetBoolean("window", "vsync", m_window->GetIsVSync());
 
     setting->Save((GetAppDirectory() / SETTING_FILENAME).string());
 
@@ -70,10 +69,10 @@ void Application::OnInit() {
         [this](const AppQuitEvent &) { Shutdown(); });
 
     m_viewport_event = EventSystem::Get().Register<ViewportSizeEvent>(
-        [](const ViewportSizeEvent &e) {
-            Renderer::Get().SetSize(e.width, e.height);
+        [this](const ViewportSizeEvent &e) {
+            renderer->SetSize(e.width, e.height);
         });
-    m_imgui = CreateLayer<ImGuiLayer>();
+    m_imgui = CreateLayer<ImGuiLayer>(m_window.get());
     PushOverlay(m_imgui);
 }
 
@@ -139,8 +138,8 @@ void Application::Run() {
     float min_fps = 30;
     float ms_per_frame = 1000.f / min_fps;
     uint32_t ms_elapsed = 0;
-    while (!Window::Get().ShouldClose()) {
-        Window::Get().PollEvents();
+    while (!m_window->ShouldClose()) {
+        m_window->PollEvents();
 
         ms_elapsed = clock.Restart();
         while (ms_elapsed > ms_per_frame) {
@@ -153,7 +152,7 @@ void Application::Run() {
     }
 }
 
-void Application::Shutdown() { Window::Get().SetShouldClose(true); }
+void Application::Shutdown() { m_window->SetShouldClose(true); }
 
 void Application::Tick(float dt) {
     for (auto iter = m_layers.rbegin(); iter != m_layers.rend(); ++iter) {
@@ -173,7 +172,7 @@ void Application::Render() {
     }
     m_imgui->End();
 
-    Window::Get().SwapBuffer();
+    m_window->SwapBuffer();
 }
 
 }  // namespace SD

@@ -29,7 +29,7 @@ void SDEditor::OnInit() {
 
     // Renderer::Get().SetSize(viewport_width, viewport_height);
     m_layer = CreateLayer<EditorLayer>(viewport_width, viewport_height,
-                                       Window::Get().GetMSAA());
+                                       m_window->GetMSAA());
     PushLayer(m_layer);
 }
 

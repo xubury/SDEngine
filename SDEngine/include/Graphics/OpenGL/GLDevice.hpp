@@ -7,7 +7,7 @@ namespace SD {
 
 class GLDevice : public Device {
    public:
-    GLDevice(Context *context);
+    GLDevice();
 
     void DrawElements(MeshTopology topology, int count, size_t offset) override;
 
@@ -21,7 +21,7 @@ class GLDevice : public Device {
 
     void SetShader(const Shader *shader) override;
 
-    void SetViewport(const Viewport &viewport) override;
+    void SetViewport(const glm::ivec2 &pos, const glm::ivec2 &size) override;
 
     void SetFramebuffer(const Framebuffer *framebuffer) override;
 

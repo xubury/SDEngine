@@ -12,7 +12,7 @@ namespace SD {
 
 class SD_GRAPHICS_API Device {
    public:
-    static void Init(Context *context);
+    static void Init();
 
     static void Shutdown();
 
@@ -40,7 +40,7 @@ class SD_GRAPHICS_API Device {
 
     virtual void SetShader(const Shader *shader) = 0;
 
-    virtual void SetViewport(const Viewport &viewport) = 0;
+    virtual void SetViewport(const glm::ivec2 &pos, const glm::ivec2 &size) = 0;
 
     virtual void SetFramebuffer(const Framebuffer *framebuffer) = 0;
 
@@ -69,12 +69,8 @@ class SD_GRAPHICS_API Device {
 
     virtual const glm::ivec2 GetUVIndex(int index) const = 0;
 
-    void Reset();
-
    protected:
-    Device(Context *context);
-
-    Context *m_context;
+    Device() = default;
 };
 
 }  // namespace SD

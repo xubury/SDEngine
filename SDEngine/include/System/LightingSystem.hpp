@@ -25,7 +25,7 @@ DataFormatType SD_SYSTEM_API GetTextureFormatType(GeometryBufferType type);
 
 class SD_SYSTEM_API LightingSystem : public System {
    public:
-    LightingSystem(int width, int height);
+    LightingSystem(int32_t width, int32_t height, int32_t m_msaa);
 
     void OnInit() override;
 
@@ -72,8 +72,9 @@ class SD_SYSTEM_API LightingSystem : public System {
 
     Ref<Framebuffer> GetLightingBuffer() { return m_light_buffer[0]; };
 
-    int m_width;
-    int m_height;
+    int32_t m_width;
+    int32_t m_height;
+    int32_t m_msaa;
 
     Ref<Shader> m_shadow_shader;
 

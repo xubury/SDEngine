@@ -33,21 +33,21 @@ struct SpriteDrawData {
     int priority;
 };
 void SpriteRenderSystem::OnRender() {
-    Device::Get().SetFramebuffer(Renderer::Get().GetFramebuffer());
     Device::Get().SetDepthMask(false);
-    Renderer::Get().Begin(*scene->GetCamera());
+    renderer->Begin(renderer->GetFramebuffer(), *scene->GetCamera());
     std::vector<SpriteDrawData> datas;
     auto sprite_view =
         scene->view<PriorityComponent, SpriteComponent, TransformComponent>();
-    sprite_view.each([this, &datas](entt::entity entity_id,
-                                    const PriorityComponent &priority_comp,
-                                    const SpriteComponent &sprite_comp,
-                                    const TransformComponent &transform_comp) {
+    sprite_view.each([&datas](entt::entity entity_id,
+                              const PriorityComponent &priority_comp,
+                              const SpriteComponent &sprite_comp,
+                              const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
         auto &frame = sprite_comp.frame;
         if (AssetStorage::Get().Exists<TextureAsset>(frame.texture_id)) {
-            auto texture =
-                AssetStorage::Get().GetAsset<TextureAsset>(frame.texture_id)->GetTexture();
+            auto texture = AssetStorage::Get()
+                               .GetAsset<TextureAsset>(frame.texture_id)
+                               ->GetTexture();
             datas.push_back({texture, frame.uvs,
                              transform_comp.GetWorldPosition(),
                              transform_comp.GetWorldRotation(), frame.size, id,
@@ -56,19 +56,20 @@ void SpriteRenderSystem::OnRender() {
     });
     auto anim_view = scene->view<PriorityComponent, SpriteAnimationComponent,
                                  TransformComponent>();
-    anim_view.each([this, &datas](entt::entity entity_id,
-                                  const PriorityComponent &priority_comp,
-                                  const SpriteAnimationComponent &anim_comp,
-                                  const TransformComponent &transform_comp) {
+    anim_view.each([&datas](entt::entity entity_id,
+                            const PriorityComponent &priority_comp,
+                            const SpriteAnimationComponent &anim_comp,
+                            const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
         auto anim = anim_comp.animator.GetAnimation();
         if (anim) {
             if (anim->GetFrameSize()) {
                 auto &frame = anim->GetFrame();
-                if (AssetStorage::Get().Exists<TextureAsset>(frame.texture_id)) {
-                    auto texture =
-                        AssetStorage::Get().GetAsset<TextureAsset>(frame.texture_id)
-                            ->GetTexture();
+                if (AssetStorage::Get().Exists<TextureAsset>(
+                        frame.texture_id)) {
+                    auto texture = AssetStorage::Get()
+                                       .GetAsset<TextureAsset>(frame.texture_id)
+                                       ->GetTexture();
                     datas.push_back({texture, frame.uvs,
                                      transform_comp.GetWorldPosition(),
                                      transform_comp.GetWorldRotation(),
@@ -92,7 +93,7 @@ void SpriteRenderSystem::OnRender() {
         }
     });
     for (const auto &data : datas) {
-        Renderer::Get().DrawTexture(*data.texture, data.uvs, data.pos, data.rot,
+        renderer->DrawTexture(*data.texture, data.uvs, data.pos, data.rot,
                               data.size, glm::vec4(1.0f), data.entity_id);
     }
 
@@ -101,16 +102,18 @@ void SpriteRenderSystem::OnRender() {
     textView.each([this](entt::entity entity_id,
                          const TransformComponent &transformComp,
                          const TextComponent &textComp) {
-        Renderer::Get().SetTextOrigin(0, 0);
+        renderer->SetTextOrigin(0, 0);
         if (AssetStorage::Get().Exists<FontAsset>(textComp.font_id)) {
-            auto font = AssetStorage::Get().GetAsset<FontAsset>(textComp.font_id)->GetFont();
-            Renderer::Get().DrawText(*font, textComp.text,
+            auto font = AssetStorage::Get()
+                            .GetAsset<FontAsset>(textComp.font_id)
+                            ->GetFont();
+            renderer->DrawText(*font, textComp.text,
                                transformComp.GetWorldTransform().GetMatrix(),
                                textComp.color,
                                static_cast<uint32_t>(entity_id));
         }
     });
-    Renderer::Get().End();
+    renderer->End();
     Device::Get().SetDepthMask(true);
 }
 

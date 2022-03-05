@@ -4,7 +4,6 @@
 #include "Utility/Base.hpp"
 #include "Core/Export.hpp"
 #include "Core/Event/Event.hpp"
-#include "Graphics/Context.hpp"
 
 #include <glm/glm.hpp>
 #include <string>
@@ -24,30 +23,28 @@ struct SD_CORE_API WindowProp {
                int32_t height, int32_t msaa, bool vsync, uint32_t flag);
 };
 
-class SD_CORE_API Window : public Context {
+class SD_CORE_API Window {
    public:
-    static void Init(const WindowProp &property);
-    static void Shutdown();
-    static Window &Get();
+    static Scope<Window> Create(const WindowProp &property);
 
+    Window() = default;
     virtual ~Window() = default;
 
     Window(const Window &) = delete;
     Window &operator=(const Window &) = delete;
 
-    virtual void *GetHandle() const = 0;
-
-    virtual void *GetGraphicsContext() = 0;
-
+    virtual glm::ivec2 GetSize() const = 0;
+    virtual int GetWidth() const = 0;
+    virtual int GetHeight() const = 0;
+    virtual uint8_t GetMSAA() const = 0;
     virtual bool GetIsVSync() const = 0;
 
     virtual std::string GetTitle() const = 0;
 
-   protected:
-    Window() = default;
-
-   private:
-    friend class Application;
+    virtual void ImGuiInitBackend() = 0;
+    virtual void ImGuiShutdown() = 0;
+    virtual void ImGuiNewFrame() = 0;
+    virtual void ImGuiRenderDrawData() = 0;
 
     virtual void SwapBuffer() = 0;
 
@@ -56,6 +53,7 @@ class SD_CORE_API Window : public Context {
     bool ShouldClose();
     void SetShouldClose(bool shouldClose);
 
+   private:
     bool m_should_close;
 };
 

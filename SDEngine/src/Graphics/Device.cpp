@@ -5,11 +5,11 @@ namespace SD {
 
 static Device *s_device = nullptr;
 
-void Device::Init(Context *context) {
+void Device::Init() {
     SD_CORE_TRACE("Initializing Graphics Deivce...");
     switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
-            s_device = new GLDevice(context);
+            s_device = new GLDevice();
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
@@ -23,20 +23,5 @@ void Device::Shutdown() {
 }
 
 Device &Device::Get() { return *s_device; }
-
-Device::Device(Context *context) : m_context(context) {}
-
-void Device::Reset() {
-    SetShader(nullptr);
-    SetFramebuffer(nullptr);
-    Enable(Operation::DEPTH_TEST);
-
-    Enable(Operation::CULL_FACE);
-    SetCullFace(Face::BACK);
-
-    Enable(Operation::BLEND);
-
-    SetDepthMask(true);
-}
 
 }  // namespace SD

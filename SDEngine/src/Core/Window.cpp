@@ -18,25 +18,19 @@ WindowProp::WindowProp(const std::string &title, int32_t x, int32_t y,
       vsync(vsync),
       flag(flag) {}
 
-static Window *s_window = nullptr;
-void Window::Init(const WindowProp &property) {
+Scope<Window> Window::Create(const WindowProp &property) {
     SD_CORE_TRACE("Initializing Window...");
+    Scope<Window> window;
     switch (GetGraphicsAPI()) {
         case GraphicsAPI::OpenGL:
-            s_window = new GLWindow(property);
+            window = CreateScope<GLWindow>(property);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
             break;
     }
+    return window;
 }
-
-void Window::Shutdown() {
-    delete s_window;
-    s_window = nullptr;
-}
-
-Window &Window::Get() { return *s_window; }
 
 void Window::PollEvents() {
     SDL_Event sdl_event;

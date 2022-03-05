@@ -18,13 +18,14 @@ class SD_CORE_API GLWindow : public Window {
     int GetHeight() const override;
     uint8_t GetMSAA() const override;
 
-    void *GetHandle() const override;
-
-    void *GetGraphicsContext() override;
-
     bool GetIsVSync() const override;
 
     std::string GetTitle() const override;
+
+    void ImGuiInitBackend() override;
+    void ImGuiShutdown() override;
+    void ImGuiNewFrame() override;
+    void ImGuiRenderDrawData() override;
 
    private:
     void SwapBuffer() override;

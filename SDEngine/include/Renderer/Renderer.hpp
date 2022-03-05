@@ -1,6 +1,7 @@
 #ifndef SD_RENDERER_HPP
 #define SD_RENDERER_HPP
 
+#include "Graphics/Light.hpp"
 #include "Renderer/Export.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Device.hpp"
@@ -92,10 +93,6 @@ struct SD_RENDERER_API Renderer2DData {
 
 class SD_RENDERER_API Renderer {
    public:
-    static Renderer &Get();
-
-    static void Init(int width, int height, int msaa);
-    static void Shutdown();
     Renderer(int width, int height, int msaa);
     ~Renderer();
     Renderer(const Renderer &) = delete;
@@ -112,8 +109,9 @@ class SD_RENDERER_API Renderer {
     void StartBatch();
     void Flush();
 
-    void Begin(Camera &camera);
-    void Begin(Shader &shader, Camera &camera);
+    void Begin(Framebuffer *framebuffer, Camera &camera);
+    void Begin(Framebuffer *framebuffer, Shader &shader, Camera &camera);
+    void Begin(Framebuffer *framebuffer, Light &light);
     void End();
 
     void SetTextOrigin(int x, int y);

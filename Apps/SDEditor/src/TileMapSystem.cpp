@@ -146,11 +146,10 @@ void TileMapSystem::OnImGui() {
 }
 
 void TileMapSystem::OnRender() {
-    Device::Get().SetFramebuffer(Renderer::Get().GetFramebuffer());
-    Device::Get().DrawBuffer(Renderer::Get().GetFramebuffer(),
-                             0);  // only draw colors
     Device::Get().Disable(SD::Operation::DEPTH_TEST);
-    Renderer::Get().Begin(*scene->GetCamera());
+    renderer->Begin(renderer->GetFramebuffer(), *scene->GetCamera());
+    Device::Get().DrawBuffer(renderer->GetFramebuffer(),
+                             0);  // only draw colors
 
     // draw brush & outline
     const glm::ivec2 &tile_size = m_brush.tile_size;
@@ -159,9 +158,8 @@ void TileMapSystem::OnRender() {
     if (m_brush.GetSelectPos(world)) {
         if (m_operation == Operation::ADD_ENTITY) {
             if (m_texture_asset) {
-                Renderer::Get().DrawTexture(*m_texture_asset->GetTexture(),
-                                            m_uvs, world, glm::quat(),
-                                            brush_size);
+                renderer->DrawTexture(*m_texture_asset->GetTexture(), m_uvs,
+                                      world, glm::quat(), brush_size);
             }
         }
         // Draw selection
@@ -176,14 +174,13 @@ void TileMapSystem::OnRender() {
             } break;
         }
         if (m_operation != Operation::NONE) {
-            Renderer::Get().DrawQuad(world, glm::quat(), brush_size,
-                                     select_color);
+            renderer->DrawQuad(world, glm::quat(), brush_size, select_color);
         }
     }
 
     if (m_draw_outline) {
-        int render_width = Renderer::Get().GetFramebuffer()->GetWidth();
-        int render_height = Renderer::Get().GetFramebuffer()->GetHeight();
+        int render_width = renderer->GetFramebuffer()->GetWidth();
+        int render_height = renderer->GetFramebuffer()->GetHeight();
         const glm::ivec2 tile_cnt(
             std::ceil(static_cast<float>(render_width) / tile_size.x) + 1,
             std::ceil(static_cast<float>(render_height) / tile_size.y) + 1);
@@ -197,11 +194,11 @@ void TileMapSystem::OnRender() {
             -tex_size.y / 2.f + cam_pos.y + tile_size.y / 2.f +
                 tile_size.y * std::floor(tile_cnt.y / 2.f),
             0);
-        Renderer::Get().DrawTexture(
+        renderer->DrawTexture(
             *m_outline_texture, {uv_origin, glm::vec2(tile_cnt) + uv_origin},
             outline_pos, glm::quat(), tex_size, glm::vec4(1, 1, 1, 0.7));
     }
-    Renderer::Get().End();
+    renderer->End();
     Device::Get().Enable(SD::Operation::DEPTH_TEST);
 }
 

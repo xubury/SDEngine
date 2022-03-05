@@ -77,8 +77,8 @@ void EditorLayer::PushSystems() {
         // engine logic system
         m_camera_system = CreateSystem<CameraSystem>();
         // normal render systems
-        m_lighting_system =
-            CreateSystem<LightingSystem>(m_viewport_size.x, m_viewport_size.y);
+        m_lighting_system = CreateSystem<LightingSystem>(
+            m_viewport_size.x, m_viewport_size.y, m_msaa);
         m_skybox_system = CreateSystem<SkyboxSystem>();
         m_sprite_system = CreateSystem<SpriteRenderSystem>();
         m_post_process_system = CreateSystem<PostProcessSystem>(
@@ -144,10 +144,10 @@ void EditorLayer::OnRender() {
     if (m_mode == EditorMode::NONE) {
         return;
     }
-    Device::Get().SetFramebuffer(Renderer::Get().GetFramebuffer());
+    Device::Get().SetFramebuffer(renderer->GetFramebuffer());
     Device::Get().Clear();
     uint32_t id = static_cast<uint32_t>(entt::null);
-    Renderer::Get().GetFramebuffer()->ClearAttachment(1, &id);
+    renderer->GetFramebuffer()->ClearAttachment(1, &id);
     for (auto &system : GetSystems()) {
         system->OnRender();
     }
@@ -155,23 +155,22 @@ void EditorLayer::OnRender() {
         // render to default buffer
         Device::Get().SetFramebuffer(nullptr);
         Device::Get().Clear();
-        // Device::Get().BlitToScreen(Renderer::Get().GetDefaultTarget());
+        // Device::Get().BlitToScreen(renderer->GetDefaultTarget());
     } else {
         Device::Get().Disable(Operation::DEPTH_TEST);
 
-        Device::Get().SetFramebuffer(Renderer::Get().GetFramebuffer());
         Camera *cam = scene->GetCamera();
-        Renderer::Get().Begin(*cam);
+        renderer->Begin(renderer->GetFramebuffer(), *cam);
         auto lightView = scene->view<LightComponent, TransformComponent>();
         lightView.each([this, &cam](const LightComponent &,
                                     const TransformComponent &transComp) {
             glm::vec3 pos = transComp.GetWorldPosition();
             float dist = glm::distance(pos, cam->GetWorldPosition());
             float scale = (dist - cam->GetNearZ()) / 20;
-            Renderer::Get().DrawBillboard(*m_light_icon, pos, glm::vec2(scale));
+            renderer->DrawBillboard(*m_light_icon, pos, glm::vec2(scale));
         });
 
-        Renderer::Get().End();
+        renderer->End();
         Device::Get().Enable(Operation::DEPTH_TEST);
     }
     BlitViewportBuffers();
@@ -443,22 +442,22 @@ void EditorLayer::MenuBar() {
 
 void EditorLayer::BlitViewportBuffers() {
     // blit the render color result
-    Device::Get().ReadBuffer(Renderer::Get().GetFramebuffer(), 0);
+    Device::Get().ReadBuffer(renderer->GetFramebuffer(), 0);
     Device::Get().DrawBuffer(m_viewport_buffer.get(), 0);
     Device::Get().BlitFramebuffer(
-        Renderer::Get().GetFramebuffer(), 0, 0,
-        Renderer::Get().GetFramebuffer()->GetWidth(),
-        Renderer::Get().GetFramebuffer()->GetHeight(), m_viewport_buffer.get(),
-        0, 0, m_viewport_buffer->GetWidth(), m_viewport_buffer->GetHeight(),
+        renderer->GetFramebuffer(), 0, 0,
+        renderer->GetFramebuffer()->GetWidth(),
+        renderer->GetFramebuffer()->GetHeight(), m_viewport_buffer.get(), 0, 0,
+        m_viewport_buffer->GetWidth(), m_viewport_buffer->GetHeight(),
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
     // blit the entity id result
-    Device::Get().ReadBuffer(Renderer::Get().GetFramebuffer(), 1);
+    Device::Get().ReadBuffer(renderer->GetFramebuffer(), 1);
     Device::Get().DrawBuffer(m_viewport_buffer.get(), 1);
     Device::Get().BlitFramebuffer(
-        Renderer::Get().GetFramebuffer(), 0, 0,
-        Renderer::Get().GetFramebuffer()->GetWidth(),
-        Renderer::Get().GetFramebuffer()->GetHeight(), m_viewport_buffer.get(),
-        0, 0, m_viewport_buffer->GetWidth(), m_viewport_buffer->GetHeight(),
+        renderer->GetFramebuffer(), 0, 0,
+        renderer->GetFramebuffer()->GetWidth(),
+        renderer->GetFramebuffer()->GetHeight(), m_viewport_buffer.get(), 0, 0,
+        m_viewport_buffer->GetWidth(), m_viewport_buffer->GetHeight(),
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
 }
 

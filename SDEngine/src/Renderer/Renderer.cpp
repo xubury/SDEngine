@@ -13,18 +13,6 @@ const static std::array<glm::vec4, 4> QUAD_VERTEX_POS = {
 const static std::array<glm::vec2, 2> QUAD_UV = {glm::vec2(0, 0),
                                                  glm::vec2(1, 1)};
 
-static Renderer* s_renderer = nullptr;
-
-Renderer& Renderer::Get() { return *s_renderer; }
-
-void Renderer::Init(int width, int height, int msaa) {
-    s_renderer = new Renderer(width, height, msaa);
-}
-
-void Renderer::Shutdown() {
-    delete s_renderer;
-    s_renderer = nullptr;
-}
 
 Renderer::Renderer(int width, int height, int msaa) {
     SD_CORE_TRACE("Initializing Renderer");
@@ -158,7 +146,8 @@ void Renderer::SetupShaderUBO(Shader& shader) {
     shader.SetUniformBuffer("Camera", *m_camera_UBO);
 }
 
-void Renderer::Begin(Shader& shader, Camera& camera) {
+void Renderer::Begin(Framebuffer *framebuffer, Shader& shader, Camera& camera) {
+    Device::Get().SetFramebuffer(framebuffer);
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
@@ -166,7 +155,8 @@ void Renderer::Begin(Shader& shader, Camera& camera) {
     SetupShaderUBO(shader);
 }
 
-void Renderer::Begin(Camera& camera) {
+void Renderer::Begin(Framebuffer *framebuffer, Camera& camera) {
+    Device::Get().SetFramebuffer(framebuffer);
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
@@ -175,7 +165,6 @@ void Renderer::Begin(Camera& camera) {
 void Renderer::End() {
     Flush();
     StartBatch();
-    Device::Get().SetShader(nullptr);
 }
 
 void Renderer::StartBatch() {
