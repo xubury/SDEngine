@@ -27,17 +27,23 @@ Asset* CreateAsset(const std::string& path) {
 }
 
 static void DrawModelCreation(Asset* asset) {
+    ImGui::PushID(asset);
     ModelAsset* model_asset = dynamic_cast<ModelAsset*>(asset);
     if (model_asset) {
-        ImGui::OpenPopup("Asset Creation");
+        ImGui::OpenPopup("Setup asset property");
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4, 4});
 
-        if (ImGui::BeginCenterPopupModal("Asset Creation")) {
+        if (ImGui::BeginCenterPopupModal("Setup asset property")) {
+            ImGui::BeginChild("##SHEET", ImVec2(300, 300));
+
+            ImGui::Text("Model file");
+            ImGui::Separator();
+            ImGui::Columns(2, 0, false);
+            ImGui::TextUnformatted(model_asset->GetModelPath().c_str());
+
             static bool filedlg_open = false;
             static ImFileDialogInfo filedlg_info;
-            ImGui::Text("Model File:");
-            ImGui::TextUnformatted(model_asset->GetModelPath().c_str());
-            ImGui::SameLine();
+            ImGui::NextColumn();
             if (ImGui::Button("Open")) {
                 filedlg_open = true;
                 filedlg_info.type = ImGuiFileDialogType::OPEN_FILE;
@@ -51,11 +57,16 @@ static void DrawModelCreation(Asset* asset) {
                 model_asset->SetModelPath(
                     filedlg_info.result_path.generic_string());
             }
-            ImGui::NewLine();
+
+            ImGui::EndChild();
+
+            ImGui::Separator();
+            ImGui::Columns();
             if (ImGui::Button("Confirm")) {
                 model_asset->Init();
                 ImGui::CloseCurrentPopup();
             }
+
             ImGui::SameLine();
             if (ImGui::Button("Cancel")) {
                 AssetStorage::Get().Unload<ModelAsset>(model_asset->GetId());
@@ -66,6 +77,7 @@ static void DrawModelCreation(Asset* asset) {
         ImGui::PopStyleVar();
         ImGui::EndPopup();
     }
+    ImGui::PopID();
 }
 
 void ContentBrowser::OnImGui() {
