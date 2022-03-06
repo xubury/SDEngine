@@ -26,8 +26,8 @@ void SelectAsset(ResourceId *selected_id) {
                 item = asset->GetPath();
                 const bool is_selected = (*selected_id == asset->GetId());
                 if (ImGui::Selectable(item.c_str(), is_selected)) {
+                    *selected_id = asset->GetId();
                 }
-                *selected_id = asset->GetId();
 
                 // Set the initial focus when opening the combo (scrolling +
                 // keyboard navigation focus)

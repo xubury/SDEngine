@@ -241,6 +241,8 @@ void LightingSystem::RenderShadowMap() {
         if (!light.IsCastShadow()) return;
 
         Device::Get().SetFramebuffer(light.GetShadowMap());
+        Device::Get().SetViewport(0, 0, light.GetShadowMap()->GetWidth(),
+                                  light.GetShadowMap()->GetHeight());
         light.GetShadowMap()->ClearDepth();
         light.ComputeLightSpaceMatrix(transformComp.GetWorldTransform(),
                                       scene->GetCamera());

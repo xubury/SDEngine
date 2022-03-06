@@ -42,7 +42,7 @@ void ContentBrowser::OnImGui() {
             ImGui::InputText("Model File: ", path.data(), path.size() + 1);
             if (ImGui::Button("Ok")) {
                 ModelAsset* asset =
-                    storage.CreateAsset<ModelAsset>(m_current_directory / name);
+                    storage.CreateAsset<ModelAsset>((m_current_directory / name).generic_string());
                 asset->SetModelPath(path);
                 asset->Init();
 
