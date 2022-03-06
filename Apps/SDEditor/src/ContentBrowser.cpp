@@ -1,9 +1,10 @@
 #include "ContentBrowser.hpp"
 #include "ImGui/ImGuiWidget.hpp"
-#include "Loader/TextureLoader.hpp"
+#include "ImGui/FileDialog.hpp"
 #include "Asset/AssetStorage.hpp"
 
 #include "Asset/ModelAsset.hpp"
+#include "Asset/SceneAsset.hpp"
 #include "Asset/TextureAsset.hpp"
 
 namespace SD {
@@ -18,44 +19,76 @@ void ContentBrowser::OnInit() {
     m_current_directory = AssetStorage::Get().GetDirectory();
 }
 
-void ContentBrowser::OnImGui() {
+template <typename T>
+Asset* CreateAsset(const std::string& path) {
     AssetStorage& storage = AssetStorage::Get();
-    ImGui::Begin("Content Browser");
-    static bool create_asset = false;
-    // Right-click on blank space
-    if (ImGui::BeginPopupContextWindow(0, 1, false)) {
-        if (ImGui::MenuItem("Create model asset")) {
-            create_asset = true;
-        }
+    T* asset = storage.CreateAsset<T>(path);
+    return dynamic_cast<Asset*>(asset);
+}
 
-        ImGui::EndPopup();
-    }
-    if (create_asset) {
-        ImGui::OpenPopup("Model asset creation");
-        if (ImGui::BeginCenterPopupModal("Model asset creation")) {
-            ImGui::TextUnformatted("Create model asset:");
-            static char name[255];
-            ImGui::InputText("Model Name: ", name, sizeof(name));
-            static std::string path =
-                (storage.GetDirectory() / "models/Sponza/sponza.obj")
-                    .generic_string();
-            ImGui::InputText("Model File: ", path.data(), path.size() + 1);
-            if (ImGui::Button("Ok")) {
-                ModelAsset* asset =
-                    storage.CreateAsset<ModelAsset>((m_current_directory / name).generic_string());
-                asset->SetModelPath(path);
-                asset->Init();
+static void DrawModelCreation(Asset* asset) {
+    ModelAsset* model_asset = dynamic_cast<ModelAsset*>(asset);
+    if (model_asset) {
+        ImGui::OpenPopup("Asset Creation");
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4, 4});
 
-                create_asset = false;
+        if (ImGui::BeginCenterPopupModal("Asset Creation")) {
+            static bool filedlg_open = false;
+            static ImFileDialogInfo filedlg_info;
+            ImGui::Text("Model File:");
+            ImGui::TextUnformatted(model_asset->GetModelPath().c_str());
+            ImGui::SameLine();
+            if (ImGui::Button("Open")) {
+                filedlg_open = true;
+                filedlg_info.type = ImGuiFileDialogType::OPEN_FILE;
+                filedlg_info.title = "Open File";
+                // filedlg_info.regex_match = FONT_FILTER;
+                filedlg_info.file_name = "";
+                filedlg_info.directory_path =
+                    AssetStorage::Get().GetDirectory();
+            }
+            if (ImGui::FileDialog(&filedlg_open, &filedlg_info)) {
+                model_asset->SetModelPath(
+                    filedlg_info.result_path.generic_string());
+            }
+            ImGui::NewLine();
+            if (ImGui::Button("Confirm")) {
+                model_asset->Init();
                 ImGui::CloseCurrentPopup();
             }
             ImGui::SameLine();
-            if (ImGui::Button("No")) {
-                create_asset = false;
+            if (ImGui::Button("Cancel")) {
+                AssetStorage::Get().Unload<ModelAsset>(model_asset->GetId());
                 ImGui::CloseCurrentPopup();
             }
-            ImGui::EndPopup();
         }
+
+        ImGui::PopStyleVar();
+        ImGui::EndPopup();
+    }
+}
+
+void ContentBrowser::OnImGui() {
+    ImGui::Begin("Content Browser");
+    static bool create_new_asset = false;
+    static std::function<Asset*(const std::string&)> create_func;
+    static std::function<void(Asset*)> asset_creation_ui;
+    // Right-click on blank space
+    if (ImGui::BeginPopupContextWindow(0, 1, false)) {
+        if (ImGui::MenuItem("Create Model Asset")) {
+            create_new_asset = true;
+            create_func =
+                std::bind(&CreateAsset<ModelAsset>, std::placeholders::_1);
+            asset_creation_ui =
+                std::bind(DrawModelCreation, std::placeholders::_1);
+        }
+
+        if (ImGui::MenuItem("Create Scene Asset")) {
+            create_new_asset = true;
+            create_func =
+                std::bind(&CreateAsset<SceneAsset>, std::placeholders::_1);
+        }
+        ImGui::EndPopup();
     }
 
     const std::filesystem::path root_path = AssetStorage::Get().GetDirectory();
@@ -108,12 +141,37 @@ void ContentBrowser::OnImGui() {
         ImGui::PopID();
     }
 
+    static Asset* new_asset = nullptr;
+    if (create_new_asset) {
+        static char filename[255];
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        ImGui::ImageButton((ImTextureID)(intptr_t)m_file_icon->GetId(),
+                           {thumbnail_size, thumbnail_size});
+
+        ImGui::PopStyleColor();
+        if (ImGui::InputText("##ASSET_FILE_NAME", filename, sizeof(filename),
+                             ImGuiInputTextFlags_EnterReturnsTrue)) {
+            const std::filesystem::path full_path =
+                m_current_directory / filename;
+            if (!std::filesystem::exists(full_path)) {
+                create_new_asset = false;
+                new_asset = create_func(full_path.generic_string());
+            } else {
+                // File Already Exists
+            }
+        }
+        ImGui::NextColumn();
+    }
     ImGui::Columns(1);
 
     ImGui::SliderFloat("Thumbnail Size", &thumbnail_size, 16, 512);
     ImGui::SliderFloat("Padding", &padding, 0, 32);
 
     ImGui::End();
+
+    if (new_asset != nullptr && !new_asset->IsInitialized()) {
+        asset_creation_ui(new_asset);
+    }
 }
 
 }  // namespace SD

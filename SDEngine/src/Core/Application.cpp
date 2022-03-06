@@ -119,18 +119,18 @@ void Application::InitSettings() {
 }
 
 void Application::RegisterAssets() {
-    AssetStorage::Get().RegisterAsset<FontAsset>(AssetTypeData{
-        0, std::bind(Asset::Create<FontAsset>),
-        std::bind(Asset::Destroy<FontAsset>, std::placeholders::_1)});
-    AssetStorage::Get().RegisterAsset<TextureAsset>(AssetTypeData{
-        0, std::bind(Asset::Create<TextureAsset>),
-        std::bind(Asset::Destroy<TextureAsset>, std::placeholders::_1)});
-    AssetStorage::Get().RegisterAsset<ModelAsset>(AssetTypeData{
-        1, std::bind(Asset::Create<ModelAsset>),
-        std::bind(Asset::Destroy<ModelAsset>, std::placeholders::_1)});
-    AssetStorage::Get().RegisterAsset<SceneAsset>(AssetTypeData{
-        2, std::bind(Asset::Create<SceneAsset>),
-        std::bind(Asset::Destroy<SceneAsset>, std::placeholders::_1)});
+    AssetStorage::Get().RegisterAsset<FontAsset>(
+        AssetTypeData{0, std::bind(Asset::Create<FontAsset>),
+                      std::bind(Asset::Destroy, std::placeholders::_1)});
+    AssetStorage::Get().RegisterAsset<TextureAsset>(
+        AssetTypeData{0, std::bind(Asset::Create<TextureAsset>),
+                      std::bind(Asset::Destroy, std::placeholders::_1)});
+    AssetStorage::Get().RegisterAsset<ModelAsset>(
+        AssetTypeData{1, std::bind(Asset::Create<ModelAsset>),
+                      std::bind(Asset::Destroy, std::placeholders::_1)});
+    AssetStorage::Get().RegisterAsset<SceneAsset>(
+        AssetTypeData{2, std::bind(Asset::Create<SceneAsset>),
+                      std::bind(Asset::Destroy, std::placeholders::_1)});
 }
 
 void Application::Run() {

@@ -8,14 +8,21 @@ namespace SD {
 
 class SceneAsset : public Asset {
    public:
-    SceneAsset() = default;
+    SceneAsset() { m_scene = CreateRef<Scene>(); };
     void Init() override {
         try {
-            m_scene = SceneLoader::LoadScene(GetAbsolutePath(m_scene_path));
+            if (!m_scene_path.empty()) {
+                m_scene = SceneLoader::LoadScene(GetAbsolutePath(m_scene_path));
+            }
             Asset::Init();
         } catch (const Exception &e) {
             SD_CORE_WARN(e.what());
         }
+    }
+
+    void SetScenePath(const std::string &path) {
+        const std::filesystem::path dir = GetDirectory();
+        m_scene_path = std::filesystem::relative(path, dir).generic_string();
     }
 
     Scene *GetScene() { return m_scene.get(); }

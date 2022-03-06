@@ -404,31 +404,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
             }
         });
     DrawComponent<TextComponent>("Text", entity, [&](TextComponent &textComp) {
-        static bool fileDialogOpen = false;
-        static ImFileDialogInfo fileDialogInfo;
-        ImGui::Text("Font File:");
-        ImGui::InputText("##Path", textComp.font_path.data(),
-                         textComp.font_path.size(),
-                         ImGuiInputTextFlags_ReadOnly);
-        ImGui::SameLine();
-        if (ImGui::Button("Open")) {
-            fileDialogOpen = true;
-            fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
-            fileDialogInfo.title = "Open File";
-            fileDialogInfo.regex_match = FONT_FILTER;
-            fileDialogInfo.file_name = "";
-            fileDialogInfo.directory_path = AssetStorage::Get().GetDirectory();
-        }
-        if (ImGui::FileDialog(&fileDialogOpen, &fileDialogInfo)) {
-            try {
-                auto font_asset = AssetStorage::Get().LoadAsset<FontAsset>(
-                    fileDialogInfo.result_path.string());
-                textComp.font_id = font_asset->GetId();
-                textComp.font_path = font_asset->GetPath();
-            } catch (const Exception &e) {
-                SD_CORE_ERROR("Error loading font: {}", e.what());
-            }
-        }
+        SelectAsset<ModelAsset>(&textComp.font_id);
         ImGui::Text("Text Content:");
         static char buffer[256];
         std::copy(textComp.text.begin(), textComp.text.end(), buffer);

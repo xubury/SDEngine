@@ -8,10 +8,12 @@ namespace SD {
 
 class ModelAsset : public Asset {
    public:
-    ModelAsset() = default;
+    ModelAsset() { m_model = CreateRef<Model>(); };
     void Init() override {
         try {
-            m_model = ModelLoader::LoadModel(GetAbsolutePath(m_model_path));
+            if (m_model_path != "NONE") {
+                m_model = ModelLoader::LoadModel(GetAbsolutePath(m_model_path));
+            }
             Asset::Init();
         } catch (const Exception &e) {
             SD_CORE_WARN(e.what());
@@ -19,10 +21,12 @@ class ModelAsset : public Asset {
     }
 
     void SetModelPath(const std::string &path) {
-        const std::filesystem::path dir =
-            std::filesystem::path(m_path).parent_path();
+        const std::filesystem::path dir = GetDirectory();
         m_model_path = std::filesystem::relative(path, dir).generic_string();
     }
+
+    const std::string &GetModelPath() const { return m_model_path; }
+
     Model *GetModel() { return m_model.get(); }
 
     SERIALIZE(m_model_path)

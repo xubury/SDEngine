@@ -51,15 +51,19 @@ class SD_ASSET_API Asset {
         return dynamic_cast<Asset *>(new T(std::forward(args)...));
     }
 
-    template <typename T>
-    static void Destroy(Asset *ptr) {
-        T *type_ptr = dynamic_cast<T *>(ptr);
-        delete type_ptr;
-    }
+    static void Destroy(Asset *ptr) { delete ptr; }
 
     ResourceId GetId() const { return m_rid; }
 
-    const std::string &GetPath() const { return m_path; }
+    std::string GetPath() const { return m_path; }
+
+    std::filesystem::path GetDirectory() const {
+        return std::filesystem::path(m_path).parent_path();
+    }
+
+    std::string GetFilename() const {
+        return std::filesystem::path(m_path).filename().generic_string();
+    }
 
     bool IsInitialized() const { return m_is_initialized; }
 

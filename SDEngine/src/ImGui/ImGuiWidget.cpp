@@ -88,7 +88,7 @@ bool DrawVec3Control(const std::string &label, glm::vec3 &values,
 
 void DrawTexture(const SD::Texture &texture, const ImVec2 &uv0,
                  const ImVec2 &uv1) {
-    ImVec2 wsize = ImGui::GetWindowSize();
+    ImVec2 wsize = ImGui::GetContentRegionAvail();
     const float width = texture.GetWidth() * std::abs(uv1.x - uv0.x);
     const float height = texture.GetHeight() * std::abs(uv1.y - uv0.y);
     const float ASPECT = height / width;
