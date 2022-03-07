@@ -51,5 +51,27 @@ Ref<Shader> ShaderLoader::LoadShader(const std::string& vert_path,
     shader->LinkShaders();
     return shader;
 }
+Ref<Shader> ShaderLoader::LoadShader(const std::string& vert_path,
+                                     const std::string& frag_path,
+                                     const std::string& geo_path) {
+    Ref<Shader> shader = Shader::Create();
+    std::string vert_code;
+    std::string frag_code;
+    std::string geo_code;
+    if (!vert_path.empty()) {
+        ParseShaderCode(vert_path, vert_code);
+    }
+    if (!frag_path.empty()) {
+        ParseShaderCode(frag_path, frag_code);
+    }
+    if (!geo_path.empty()) {
+        ParseShaderCode(geo_path, geo_code);
+    }
+    shader->CompileShader(ShaderType::VERTEX, vert_code);
+    shader->CompileShader(ShaderType::FRAGMENT, frag_code);
+    shader->CompileShader(ShaderType::GEOMETRY, geo_code);
+    shader->LinkShaders();
+    return shader;
+}
 
 }  // namespace SD

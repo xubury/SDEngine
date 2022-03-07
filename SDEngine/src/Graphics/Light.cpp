@@ -68,18 +68,100 @@ float Light::GetQuadratic() const { return m_quadratic; }
 
 void Light::CreateShadowMap() {
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    m_shadow_map = Framebuffer::Create(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
-    m_shadow_map->Attach(
-        TextureSpec(1, TextureType::TEX_2D, DataFormat::DEPTH,
-                    DataFormatType::FLOAT16, TextureWrap::BORDER,
-                    TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
-    m_shadow_map->Setup();
-    m_shadow_map->GetTexture()->SetBorderColor(&color);
+    m_cascade_map = Framebuffer::Create();
+    m_cascade_map->Attach(TextureSpec(
+        SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, m_projection_views.size(), 1,
+        TextureType::TEX_2D, DataFormat::DEPTH, DataFormatType::FLOAT16,
+        TextureWrap::BORDER, TextureMagFilter::NEAREST,
+        TextureMinFilter::NEAREST));
+    m_cascade_map->Setup();
+    m_cascade_map->GetTexture()->SetBorderColor(&color);
 }
 
-void Light::DestroyShadowMap() { m_shadow_map.reset(); }
+void Light::DestroyShadowMap() { m_cascade_map.reset(); }
 
-Framebuffer *Light::GetShadowMap() const { return m_shadow_map.get(); }
+static std::vector<glm::vec4> GetFrustumCorners(const glm::mat4 &project_view) {
+    const auto &inv_pv = glm::inverse(project_view);
+    std::vector<glm::vec4> corners;
+    for (int x = 0; x <= 1; ++x) {
+        for (int y = 0; y <= 1; ++y) {
+            for (int z = 0; z <= 1; ++z) {
+                const auto pt =
+                    inv_pv * glm::vec4(2.0f * x - 1.0f, 2.0f * y - 1.0f,
+                                       2.0f * z - 1.0f, 1.0f);
+                corners.push_back(pt / pt.w);
+            }
+        }
+    }
+    return corners;
+}
+
+static glm::mat4 GetLightSpaceMatrix(const Transform &transform,
+                                     const glm::mat4 &projection_view) {
+    glm::vec3 center(0);
+    auto corners = GetFrustumCorners(projection_view);
+    for (const auto &c : corners) {
+        center += glm::vec3(c);
+    }
+    center /= corners.size();
+
+    const auto &light_dir = transform.GetFront();
+    const auto light_view =
+        glm::lookAt(center + light_dir, center, glm::vec3(1.0f));
+
+    float min_x = std::numeric_limits<float>::max();
+    float max_x = std::numeric_limits<float>::min();
+    float min_y = std::numeric_limits<float>::max();
+    float max_y = std::numeric_limits<float>::min();
+    float min_z = std::numeric_limits<float>::max();
+    float max_z = std::numeric_limits<float>::min();
+    for (const auto &pt : corners) {
+        const auto trf = light_view * pt;
+        min_x = std::min(min_x, trf.x);
+        max_x = std::max(max_x, trf.x);
+        min_y = std::min(min_y, trf.y);
+        max_y = std::max(max_y, trf.y);
+        min_z = std::min(min_z, trf.z);
+        max_z = std::max(max_z, trf.z);
+    }
+    const float z_mult = 10.0f;
+    min_z = min_z < 0 ? min_z * z_mult : min_z / z_mult;
+    max_z = max_z < 0 ? max_z / z_mult : max_z * z_mult;
+    const auto &light_proj =
+        glm::ortho(min_x, max_x, min_y, max_y, min_z, max_z);
+    return light_proj * light_view;
+}
+
+void Light::ComputeCascadeLightMatrix(const Transform &transform,
+                                      const Camera &camera) {
+    const uint32_t size = m_cascade_planes.size();
+    if (size + 1 != m_projection_views.size()) {
+        m_projection_views.resize(size + 1);
+        DestroyShadowMap();
+        CreateShadowMap();
+    }
+    const float fov = camera.GetFOV();
+    const float aspect = camera.GetNearWidth() / camera.GetNearHeight();
+    const float near_z = camera.GetNearZ();
+    const float far_z = camera.GetFarZ();
+    for (uint32_t i = 0; i < size + 1; ++i) {
+        float near_plane;
+        float far_plane;
+        if (i == 0) {
+            near_plane = near_z;
+            far_plane = far_z * m_cascade_planes[i];
+        } else if (i < size) {
+            near_plane = far_z * m_cascade_planes[i - 1];
+            far_plane = far_z * m_cascade_planes[i];
+        } else {
+            near_plane = far_z * m_cascade_planes[i - 1];
+            far_plane = far_z;
+        }
+        m_projection_views[i] = GetLightSpaceMatrix(
+            transform, glm::perspective(fov, aspect, near_plane, far_plane) *
+                           camera.GetView());
+    }
+}
 
 void Light::ComputeLightSpaceMatrix(const Transform &transform,
                                     const Camera *camera) {

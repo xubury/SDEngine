@@ -65,6 +65,8 @@ GLenum Translate(TextureType texture_type) {
             return GL_TEXTURE_2D;
         case TextureType::TEX_2D_MULTISAMPLE:
             return GL_TEXTURE_2D_MULTISAMPLE;
+        case TextureType::TEX_2D_ARRAY:
+            return GL_TEXTURE_2D_ARRAY;
         case TextureType::TEX_3D:
             return GL_TEXTURE_3D;
         case TextureType::TEX_CUBE:

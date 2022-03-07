@@ -35,10 +35,8 @@ void main() {
             vec4 albedo = texelFetch(u_albedo, uv, i);
             vec3 ambient = texelFetch(u_ambient, uv, i).rgb * ambient_occlusion;
 
-            vec3 view_pos = u_view[3].xyz;
-            vec3 view_dir = normalize(view_pos - pos);
-            color += 
-                last + calculateLight(u_light, pos, normal, view_dir, ambient, albedo);
+            color += last + calculateLight(u_light, pos, normal, 
+                                           u_view, ambient, albedo);
         } else {
             // Fragment is background, don't calculate light,
             // just add the last lighting result or the background color.

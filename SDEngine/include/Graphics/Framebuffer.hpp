@@ -12,7 +12,7 @@ namespace SD {
 
 class SD_GRAPHICS_API Framebuffer : public Resource {
    public:
-    static Ref<Framebuffer> Create(int width, int height);
+    static Ref<Framebuffer> Create();
 
     virtual ~Framebuffer() = default;
 
@@ -46,8 +46,7 @@ class SD_GRAPHICS_API Framebuffer : public Resource {
    protected:
     int32_t m_width;
     int32_t m_height;
-    Framebuffer(int32_t width, int32_t height)
-        : m_width(width), m_height(height) {}
+    Framebuffer() = default;
 
     std::vector<TextureSpec> m_texture_specs;
     std::vector<RenderbufferSpec> m_renderbuffer_specs;

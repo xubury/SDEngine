@@ -44,17 +44,16 @@ void PostProcessSystem::OnInit() {
 }
 
 void PostProcessSystem::InitBuffers() {
+    auto spec = TextureSpec(m_width, m_height, 1, 1, TextureType::TEX_2D,
+                            DataFormat::RGBA, DataFormatType::FLOAT16,
+                            TextureWrap::EDGE);
     for (int i = 0; i < 2; ++i) {
-        m_blur_buffer[i] = Framebuffer::Create(m_width, m_height);
-        m_blur_buffer[i]->Attach(
-            TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
-                        DataFormatType::FLOAT16, TextureWrap::EDGE));
+        m_blur_buffer[i] = Framebuffer::Create();
+        m_blur_buffer[i]->Attach(spec);
         m_blur_buffer[i]->Setup();
     }
-    m_post_buffer = Framebuffer::Create(m_width, m_height);
-    m_post_buffer->Attach(TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
-                                      DataFormatType::FLOAT16,
-                                      TextureWrap::EDGE));
+    m_post_buffer = Framebuffer::Create();
+    m_post_buffer->Attach(spec);
     m_post_buffer->Setup();
 }
 

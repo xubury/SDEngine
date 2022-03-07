@@ -7,18 +7,23 @@
 namespace SD {
 
 struct SD_GRAPHICS_API RenderbufferSpec {
+    int width;
+    int height;
     uint8_t samples;
     DataFormat format;
     DataFormatType format_type;
-    RenderbufferSpec(uint8_t samples, DataFormat format,
+    RenderbufferSpec(int width, int height, uint8_t samples, DataFormat format,
                      DataFormatType format_type)
-        : samples(samples), format(format), format_type(format_type) {}
+        : width(width),
+          height(height),
+          samples(samples),
+          format(format),
+          format_type(format_type) {}
 };
 
 class SD_GRAPHICS_API Renderbuffer : public Resource {
    public:
-    static Ref<Renderbuffer> Create(int width, int height,
-                                    const RenderbufferSpec &spec);
+    static Ref<Renderbuffer> Create(const RenderbufferSpec &spec);
 
     int GetWidth() const { return m_width; }
     int GetHeight() const { return m_height; }

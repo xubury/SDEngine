@@ -8,6 +8,5 @@ layout(location = 4) in vec3 a_biTangent;
 
 
 uniform mat4 u_model;
-uniform mat4 u_projection_view;
 
-void main() { gl_Position = u_projection_view * u_model * vec4(a_pos, 1.0f); }
+void main() { gl_Position = u_model * vec4(a_pos, 1.0f); }

@@ -8,10 +8,9 @@ namespace SD {
 
 class GLTexture : public Texture {
    public:
-    GLTexture(int width, int height, int samples, TextureType type,
-              DataFormat format, DataFormatType format_type,
-              TextureWrap wrap, TextureMagFilter filter,
-              TextureMinFilter min_filter);
+    GLTexture(int width, int height, int depth, int samples, TextureType type,
+              DataFormat format, DataFormatType format_type, TextureWrap wrap,
+              TextureMagFilter filter, TextureMinFilter min_filter);
 
     ~GLTexture();
 

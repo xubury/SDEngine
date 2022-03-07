@@ -19,10 +19,9 @@ TileMapSystem::TileMapSystem()
       m_priority(0),
       m_draw_outline(true),
       m_operation(Operation::NONE) {
-    m_outline_texture =
-        Texture::Create(GRID_TEXTURE_SIZE, GRID_TEXTURE_SIZE,
-                        TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
-                                    DataFormatType::UBYTE));
+    m_outline_texture = Texture::Create(TextureSpec(
+        GRID_TEXTURE_SIZE, GRID_TEXTURE_SIZE, 1, 1, TextureType::TEX_2D,
+        DataFormat::RGBA, DataFormatType::UBYTE));
     size_t pixel_size =
         4 * m_outline_texture->GetWidth() * m_outline_texture->GetHeight();
     void *data = malloc(pixel_size);

@@ -5,13 +5,14 @@
 
 namespace SD {
 
-Ref<Texture> Texture::Create(int width, int height, const TextureSpec &spec) {
+Ref<Texture> Texture::Create(const TextureSpec &spec) {
     Ref<Texture> texture;
     switch (Device::GetAPI()) {
         case Device::API::OpenGL:
-            texture = CreateRef<GLTexture>(
-                width, height, spec.samples, spec.type, spec.format,
-                spec.format_type, spec.wrap, spec.filter, spec.min_filter);
+            texture = CreateRef<GLTexture>(spec.width, spec.height, spec.depth,
+                                           spec.samples, spec.type, spec.format,
+                                           spec.format_type, spec.wrap,
+                                           spec.filter, spec.min_filter);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
@@ -20,12 +21,13 @@ Ref<Texture> Texture::Create(int width, int height, const TextureSpec &spec) {
     return texture;
 }
 
-Texture::Texture(int width, int height, int samples, TextureType type,
-                 DataFormat format, DataFormatType format_type,
-                 TextureWrap wrap, TextureMagFilter filter,
-                 TextureMinFilter min_filter)
+Texture::Texture(int width, int height, int depth, int samples,
+                 TextureType type, DataFormat format,
+                 DataFormatType format_type, TextureWrap wrap,
+                 TextureMagFilter filter, TextureMinFilter min_filter)
     : m_width(width),
       m_height(height),
+      m_depth(depth),
       m_samples(samples),
       m_type(type),
       m_format(format),

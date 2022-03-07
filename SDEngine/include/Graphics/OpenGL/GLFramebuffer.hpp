@@ -11,7 +11,7 @@ class GLTexture;
 
 class GLFramebuffer : public Framebuffer {
    public:
-    GLFramebuffer(int width, int height);
+    GLFramebuffer();
     virtual ~GLFramebuffer();
 
     virtual void Resize(int width, int height) override;

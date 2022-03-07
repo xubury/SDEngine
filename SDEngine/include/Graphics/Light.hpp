@@ -46,12 +46,22 @@ class SD_GRAPHICS_API Light {
     void CreateShadowMap();
     void DestroyShadowMap();
 
-    const glm::mat4 &GetProjectionView() const { return m_projection_view; }
+    const std::vector<glm::mat4> &GetLevelProjectionView() const {
+        return m_projection_views;
+    }
+    void SetCascadePlanes(const std::vector<float> &planes) {
+        m_cascade_planes = planes;
+    }
+
+    const std::vector<float> &GetCascadePlanes() { return m_cascade_planes; }
 
     void ComputeLightSpaceMatrix(const Transform &transform,
                                  const Camera *camera);
 
-    Framebuffer *GetShadowMap() const;
+    void ComputeCascadeLightMatrix(const Transform &transform,
+                                   const Camera &camera);
+
+    Framebuffer *GetCascadeMap() const { return m_cascade_map.get(); }
 
     SERIALIZE(m_ambient, m_diffuse, m_specular, m_cutoff, m_outer_cutoff,
               m_constant, m_linear, m_quadratic, m_is_directional,
@@ -61,8 +71,11 @@ class SD_GRAPHICS_API Light {
     static void ComputeBoundingBox(const Transform &transform,
                                    const Camera &camera, glm::vec3 &min,
                                    glm::vec3 &max);
-    Ref<Framebuffer> m_shadow_map;
+    Ref<Framebuffer> m_cascade_map;
     glm::mat4 m_projection_view;
+    // cascade light pv
+    std::vector<glm::mat4> m_projection_views;
+    std::vector<float> m_cascade_planes;
 
     bool m_is_cast_shadow;
     bool m_is_directional;

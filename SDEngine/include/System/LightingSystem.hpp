@@ -76,7 +76,7 @@ class SD_SYSTEM_API LightingSystem : public System {
     int32_t m_height;
     int32_t m_msaa;
 
-    Ref<Shader> m_shadow_shader;
+    Ref<Shader> m_cascade_shader;
 
     Ref<Shader> m_emssive_shader;
 

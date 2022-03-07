@@ -42,7 +42,13 @@ enum class MeshTopology {
 
 enum class PolygonMode { POINT, LINE, FILL };
 
-enum class TextureType { TEX_2D, TEX_2D_MULTISAMPLE, TEX_3D, TEX_CUBE };
+enum class TextureType {
+    TEX_2D,
+    TEX_2D_MULTISAMPLE,
+    TEX_2D_ARRAY,
+    TEX_3D,
+    TEX_CUBE
+};
 
 enum class DataFormat { ALPHA, RED, RG, RGB, RGBA, DEPTH, DEPTH_STENCIL };
 

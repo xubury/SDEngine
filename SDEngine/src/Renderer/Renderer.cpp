@@ -18,20 +18,23 @@ Renderer::Renderer(int width, int height, int msaa) {
     m_camera_UBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
                                          BufferIOType::DYNAMIC);
 
+    m_light_UBO = UniformBuffer::Create(nullptr, sizeof(LightData),
+                                        BufferIOType::DYNAMIC);
+
     InitRenderer2D();
 
-    m_framebuffer = Framebuffer::Create(width, height);
+    m_framebuffer = Framebuffer::Create();
     m_framebuffer->Attach(
-        TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE, DataFormat::RGBA,
-                    DataFormatType::UBYTE, TextureWrap::EDGE,
+        TextureSpec(width, height, 1, msaa, TextureType::TEX_2D_MULTISAMPLE,
+                    DataFormat::RGBA, DataFormatType::UBYTE, TextureWrap::EDGE,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     m_framebuffer->Attach(
-        TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE, DataFormat::RED,
-                    DataFormatType::UINT, TextureWrap::EDGE,
+        TextureSpec(width, height, 1, msaa, TextureType::TEX_2D_MULTISAMPLE,
+                    DataFormat::RED, DataFormatType::UINT, TextureWrap::EDGE,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
-    m_framebuffer->Attach(
-        TextureSpec(msaa, TextureType::TEX_2D_MULTISAMPLE, DataFormat::DEPTH,
-                    DataFormatType::FLOAT16, TextureWrap::EDGE));
+    m_framebuffer->Attach(TextureSpec(
+        width, height, 1, msaa, TextureType::TEX_2D_MULTISAMPLE,
+        DataFormat::DEPTH, DataFormatType::FLOAT16, TextureWrap::EDGE));
     m_framebuffer->Setup();
 }
 
@@ -103,8 +106,7 @@ void Renderer::InitRenderer2D() {
     m_data.circle_vao->SetIndexBuffer(quad_ebo);
 
     m_data.default_texture = Texture::Create(
-        1, 1,
-        TextureSpec(1, TextureType::TEX_2D, DataFormat::RGBA,
+        TextureSpec(1, 1, 1, 1, TextureType::TEX_2D, DataFormat::RGBA,
                     DataFormatType::FLOAT16, TextureWrap::REPEAT,
                     TextureMagFilter::LINEAR, TextureMinFilter::LINEAR));
     const float color[4] = {1, 1, 1, 1};
@@ -146,6 +148,7 @@ void Renderer::DrawMesh(const Shader& shader, const Mesh& mesh) {
 
 void Renderer::SetupShaderUBO(Shader& shader) {
     shader.SetUniformBuffer("Camera", *m_camera_UBO);
+    shader.SetUniformBuffer("LightData", *m_light_UBO);
 }
 
 void Renderer::Begin(Framebuffer* framebuffer, Shader& shader, Camera& camera) {
@@ -166,6 +169,21 @@ void Renderer::Begin(Framebuffer* framebuffer, Camera& camera) {
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
+}
+
+void Renderer::Begin(Light& light, Shader& shader) {
+    Framebuffer* fb = light.GetCascadeMap();
+    Device::Get().SetFramebuffer(fb);
+    Device::Get().SetViewport(0, 0, fb->GetWidth(), fb->GetHeight());
+    Device::Get().Clear(BufferBitMask::DEPTH_BUFFER_BIT);
+
+    *m_light_data.projection_view = *light.GetLevelProjectionView().data();
+
+    for (int i = 0; i < 16; ++i) {
+        m_light_UBO->UpdateData(&m_light_data.projection_view[i],
+                                sizeof(glm::mat4), sizeof(glm::mat4) * i);
+    }
+    shader.SetUniformBuffer("LightData", *m_light_UBO);
 }
 
 void Renderer::End() {

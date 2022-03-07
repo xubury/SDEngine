@@ -60,6 +60,10 @@ struct SD_RENDERER_API CameraData {
     glm::mat4 view;
 };
 
+struct SD_RENDERER_API LightData {
+    glm::mat4 projection_view[16];
+};
+
 struct SD_RENDERER_API Renderer2DData {
     static const uint32_t MAX_QUADS = 20000;
     static const uint32_t MAX_LINES = 20000;
@@ -111,7 +115,7 @@ class SD_RENDERER_API Renderer {
 
     void Begin(Framebuffer *framebuffer, Camera &camera);
     void Begin(Framebuffer *framebuffer, Shader &shader, Camera &camera);
-    void Begin(Framebuffer *framebuffer, Light &light);
+    void Begin(Light &light, Shader &shader);
     void End();
 
     void SetTextOrigin(int x, int y);
@@ -185,6 +189,7 @@ class SD_RENDERER_API Renderer {
     void SetupShaderUBO(Shader &shader);
 
     Ref<UniformBuffer> m_camera_UBO;
+    Ref<UniformBuffer> m_light_UBO;
 
     Renderer2DData m_data;
 
@@ -195,6 +200,7 @@ class SD_RENDERER_API Renderer {
     Ref<Shader> m_sprite_shader;
 
     CameraData m_camera_data;
+    LightData m_light_data;
 };
 
 }  // namespace SD

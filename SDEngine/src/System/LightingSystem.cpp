@@ -99,8 +99,6 @@ void LightingSystem::OnPop() {
 }
 
 void LightingSystem::InitShaders() {
-    m_shadow_shader =
-        ShaderLoader::LoadShader("assets/shaders/shadow.vert.glsl", "");
     m_emssive_shader = ShaderLoader::LoadShader(
         "assets/shaders/quad.vert.glsl", "assets/shaders/emissive.frag.glsl");
     m_deferred_shader = ShaderLoader::LoadShader(
@@ -111,19 +109,24 @@ void LightingSystem::InitShaders() {
                                              "assets/shaders/ssao.frag.glsl");
     m_ssao_blur_shader = ShaderLoader::LoadShader(
         "assets/shaders/quad.vert.glsl", "assets/shaders/ssao_blur.frag.glsl");
+
+    m_cascade_shader =
+        ShaderLoader::LoadShader("assets/shaders/shadow.vert.glsl", "",
+                                 "assets/shaders/shadow.geo.glsl");
 }
 
 void LightingSystem::InitSSAO() {
     // ssao target
-    TextureSpec spec(1, TextureType::TEX_2D, DataFormat::RED,
-                     DataFormatType::FLOAT16, TextureWrap::EDGE,
-                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST);
+    TextureSpec spec(m_width, m_height, 1, 1, TextureType::TEX_2D,
+                     DataFormat::RED, DataFormatType::FLOAT16,
+                     TextureWrap::EDGE, TextureMagFilter::NEAREST,
+                     TextureMinFilter::NEAREST);
 
-    m_ssao_buffer = Framebuffer::Create(m_width, m_height);
+    m_ssao_buffer = Framebuffer::Create();
     m_ssao_buffer->Attach(spec);
     m_ssao_buffer->Setup();
 
-    m_ssao_blur_buffer = Framebuffer::Create(m_width, m_height);
+    m_ssao_blur_buffer = Framebuffer::Create();
     m_ssao_blur_buffer->Attach(spec);
     m_ssao_blur_buffer->Setup();
 }
@@ -151,8 +154,7 @@ void LightingSystem::InitSSAOKernel() {
         ssao_noise[i] = glm::normalize(noise);
     }
     m_ssao_noise = Texture::Create(
-        4, 4,
-        TextureSpec(1, TextureType::TEX_2D, DataFormat::RGB,
+        TextureSpec(4, 4, 1, 1, TextureType::TEX_2D, DataFormat::RGB,
                     DataFormatType::FLOAT16, TextureWrap::REPEAT,
                     TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     m_ssao_noise->SetPixels(0, 0, 0, 4, 4, 1, ssao_noise.data());
@@ -165,24 +167,24 @@ void LightingSystem::InitSSAOKernel() {
 
 void LightingSystem::InitLighting() {
     for (int i = 0; i < 2; ++i) {
-        m_light_buffer[i] = Framebuffer::Create(m_width, m_height);
+        m_light_buffer[i] = Framebuffer::Create();
         m_light_buffer[i]->Attach(TextureSpec(
-            m_msaa, TextureType::TEX_2D_MULTISAMPLE, DataFormat::RGB,
-            DataFormatType::FLOAT16, TextureWrap::EDGE,
+            m_width, m_height, 1, m_msaa, TextureType::TEX_2D_MULTISAMPLE,
+            DataFormat::RGB, DataFormatType::FLOAT16, TextureWrap::EDGE,
             TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
         m_light_buffer[i]->Setup();
     }
 
-    m_gbuffer = Framebuffer::Create(m_width, m_height);
+    m_gbuffer = Framebuffer::Create();
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
         m_gbuffer->Attach(TextureSpec(
-            m_msaa, TextureType::TEX_2D_MULTISAMPLE,
+            m_width, m_height, 1, m_msaa, TextureType::TEX_2D_MULTISAMPLE,
             GetTextureFormat(GeometryBufferType(i)),
             GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
             TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     }
-    m_gbuffer->Attach(
-        RenderbufferSpec(m_msaa, DataFormat::DEPTH, DataFormatType::FLOAT16));
+    m_gbuffer->Attach(RenderbufferSpec(
+        m_width, m_height, m_msaa, DataFormat::DEPTH, DataFormatType::FLOAT16));
     m_gbuffer->Setup();
 }
 
@@ -235,6 +237,8 @@ void LightingSystem::OnRender() {
         BlitFilter::NEAREST);
 }
 
+const std::vector<float> g_cascade_planes = {1.f / 50.f, 1.f / 25.f, 1 / 10.f,
+                                             1 / 2.f};
 void LightingSystem::RenderShadowMap() {
     auto lightView = scene->view<TransformComponent, LightComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
@@ -244,28 +248,25 @@ void LightingSystem::RenderShadowMap() {
         Light &light = lightComp.light;
         if (!light.IsCastShadow()) return;
 
-        Device::Get().SetFramebuffer(light.GetShadowMap());
-        Device::Get().SetViewport(0, 0, light.GetShadowMap()->GetWidth(),
-                                  light.GetShadowMap()->GetHeight());
-        light.GetShadowMap()->ClearDepth();
-        light.ComputeLightSpaceMatrix(transformComp.GetWorldTransform(),
-                                      scene->GetCamera());
-        m_shadow_shader->SetMat4("u_projection_view",
-                                 light.GetProjectionView());
+        light.SetCascadePlanes(g_cascade_planes);
+        light.ComputeCascadeLightMatrix(transformComp.GetWorldTransform(),
+                                        *scene->GetCamera());
+        renderer->Begin(light, *m_cascade_shader);
 
         modelView.each([this](const TransformComponent &transformComp,
                               const ModelComponent &modelComp) {
             if (AssetStorage::Get().Exists<ModelAsset>(modelComp.model_id)) {
-                m_shadow_shader->SetMat4(
+                m_cascade_shader->SetMat4(
                     "u_model", transformComp.GetWorldTransform().GetMatrix());
                 auto model = AssetStorage::Get()
                                  .GetAsset<ModelAsset>(modelComp.model_id)
                                  ->GetModel();
                 for (const auto &mesh : model->GetMeshes()) {
-                    renderer->DrawMesh(*m_shadow_shader, mesh);
+                    renderer->DrawMesh(*m_cascade_shader, mesh);
                 }
             }
         });
+        renderer->End();
     });
     Device::Get().SetCullFace(Face::BACK);
 }
@@ -358,13 +359,20 @@ void LightingSystem::RenderDeferred() {
                                    light.IsDirectional());
         m_deferred_shader->SetBool("u_light.is_cast_shadow",
                                    light.IsCastShadow());
-        m_deferred_shader->SetTexture("u_light.shadow_map",
+        m_deferred_shader->SetTexture("u_light.cascade_map",
                                       light.IsCastShadow()
-                                          ? light.GetShadowMap()->GetTexture()
+                                          ? light.GetCascadeMap()->GetTexture()
                                           : nullptr);
+        m_deferred_shader->SetInt("u_num_of_cascades",
+                                  g_cascade_planes.size() + 1);
+        for (size_t i = 0; i < g_cascade_planes.size(); ++i) {
+            m_deferred_shader->SetFloat(
+                "u_cascade_planes[" + std::to_string(i) + "]",
+                g_cascade_planes[i] * scene->GetCamera()->GetFarZ());
+        }
+        m_deferred_shader->SetFloat("u_far_plane",
+                                    scene->GetCamera()->GetFarZ());
 
-        m_deferred_shader->SetMat4("u_light.projection_view",
-                                   light.GetProjectionView());
         renderer->Submit(*m_deferred_shader, *m_quad, MeshTopology::TRIANGLES,
                          m_quad->GetIndexBuffer()->GetCount(), 0);
         std::swap(m_light_buffer[input_id], m_light_buffer[output_id]);

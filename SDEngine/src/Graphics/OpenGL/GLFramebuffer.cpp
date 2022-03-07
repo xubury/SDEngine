@@ -4,10 +4,7 @@
 
 namespace SD {
 
-GLFramebuffer::GLFramebuffer(int width, int height)
-    : Framebuffer(width, height) {
-    glCreateFramebuffers(1, &m_id);
-}
+GLFramebuffer::GLFramebuffer() { glCreateFramebuffers(1, &m_id); }
 
 GLFramebuffer::~GLFramebuffer() { glDeleteFramebuffers(1, &m_id); }
 
@@ -22,6 +19,14 @@ void GLFramebuffer::Resize(int width, int height) {
     if (m_width != width || m_height != height) {
         m_width = width;
         m_height = height;
+        for (auto &spec : m_texture_specs) {
+            spec.width = width;
+            spec.height = height;
+        }
+        for (auto &spec : m_renderbuffer_specs) {
+            spec.width = width;
+            spec.height = height;
+        }
         Clear();
         Setup();
     }
@@ -30,7 +35,9 @@ void GLFramebuffer::Resize(int width, int height) {
 void GLFramebuffer::Setup() {
     int drawable_cnt = 0;
     for (const auto &spec : m_texture_specs) {
-        auto texture = Texture::Create(m_width, m_height, spec);
+        m_width = spec.width;
+        m_height = spec.height;
+        auto texture = Texture::Create(spec);
         GLenum attachment = 0;
         switch (texture->GetFormat()) {
             case DataFormat::DEPTH:
@@ -52,7 +59,9 @@ void GLFramebuffer::Setup() {
         glNamedFramebufferTexture(m_id, attachment, texture->GetId(), 0);
     }
     for (const auto &spec : m_renderbuffer_specs) {
-        auto renderbuffer = Renderbuffer::Create(m_width, m_height, spec);
+        m_width = spec.width;
+        m_height = spec.height;
+        auto renderbuffer = Renderbuffer::Create(spec);
         GLenum attachment = 0;
         switch (renderbuffer->GetFormat()) {
             case DataFormat::DEPTH:

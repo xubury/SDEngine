@@ -3,13 +3,13 @@
 #include "Graphics/OpenGL/GLRenderbuffer.hpp"
 
 namespace SD {
-Ref<Renderbuffer> Renderbuffer::Create(int width, int height,
-                                       const RenderbufferSpec &spec) {
+Ref<Renderbuffer> Renderbuffer::Create(const RenderbufferSpec &spec) {
     Ref<Renderbuffer> texture;
     switch (Device::GetAPI()) {
         case Device::API::OpenGL:
-            texture = CreateRef<GLRenderbuffer>(width, height, spec.samples,
-                                                spec.format, spec.format_type);
+            texture =
+                CreateRef<GLRenderbuffer>(spec.width, spec.height, spec.samples,
+                                          spec.format, spec.format_type);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");

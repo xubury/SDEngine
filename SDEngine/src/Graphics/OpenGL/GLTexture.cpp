@@ -3,12 +3,12 @@
 
 namespace SD {
 
-GLTexture::GLTexture(int width, int height, int samples, TextureType type,
-                     DataFormat format, DataFormatType format_type,
-                     TextureWrap wrap, TextureMagFilter filter,
-                     TextureMinFilter min_filter)
-    : Texture(width, height, samples, type, format, format_type, wrap, filter,
-              min_filter),
+GLTexture::GLTexture(int width, int height, int dpeth, int samples,
+                     TextureType type, DataFormat format,
+                     DataFormatType format_type, TextureWrap wrap,
+                     TextureMagFilter filter, TextureMinFilter min_filter)
+    : Texture(width, height, dpeth, samples, type, format, format_type, wrap,
+              filter, min_filter),
       gl_type(0),
       gl_internal_format(0),
       gl_format(0),
@@ -47,10 +47,13 @@ void GLTexture::Allocate() {
             glTextureStorage2DMultisample(m_id, m_samples, gl_internal_format,
                                           m_width, m_height, GL_TRUE);
             break;
-        case TextureType::TEX_3D:
-            // FIXME: depth not impl
+        case TextureType::TEX_2D_ARRAY:
             glTextureStorage3D(m_id, m_mipmap_levels, gl_internal_format,
-                               m_width, m_height, 0);
+                               m_width, m_height, m_depth);
+            break;
+        case TextureType::TEX_3D:
+            glTextureStorage3D(m_id, m_mipmap_levels, gl_internal_format,
+                               m_width, m_height, m_depth);
             break;
     }
 }
@@ -72,6 +75,7 @@ void GLTexture::SetPixels(int x, int y, int z, int width, int height, int depth,
             SD_CORE_ASSERT(false,
                            "TEX_2D_MULTISAMPLE is not allowed to set pixels!");
             break;
+        case TextureType::TEX_2D_ARRAY:
         case TextureType::TEX_3D:
         case TextureType::TEX_CUBE:
             glTextureSubImage3D(m_id, 0, x, y, z, width, height, depth,

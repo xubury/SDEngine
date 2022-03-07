@@ -8,6 +8,9 @@
 namespace SD {
 
 struct SD_GRAPHICS_API TextureSpec {
+    int width;
+    int height;
+    int depth;
     uint8_t samples;
     TextureType type;
     DataFormat format;
@@ -15,12 +18,15 @@ struct SD_GRAPHICS_API TextureSpec {
     TextureWrap wrap;
     TextureMagFilter filter;
     TextureMinFilter min_filter;
-    TextureSpec(uint8_t samples, TextureType type, DataFormat format,
-                DataFormatType format_type,
+    TextureSpec(int width, int height, int depth, uint8_t samples,
+                TextureType type, DataFormat format, DataFormatType format_type,
                 TextureWrap wrap = TextureWrap::REPEAT,
                 TextureMagFilter filter = TextureMagFilter::LINEAR,
                 TextureMinFilter min_filter = TextureMinFilter::LINEAR_LINEAR)
-        : samples(samples),
+        : width(width),
+          height(height),
+          depth(depth),
+          samples(samples),
           type(type),
           format(format),
           format_type(format_type),
@@ -31,7 +37,7 @@ struct SD_GRAPHICS_API TextureSpec {
 
 class SD_GRAPHICS_API Texture : public Resource {
    public:
-    static Ref<Texture> Create(int width, int height, const TextureSpec &spec);
+    static Ref<Texture> Create(const TextureSpec &spec);
 
     virtual ~Texture() = default;
 
@@ -64,12 +70,13 @@ class SD_GRAPHICS_API Texture : public Resource {
     DataFormatType GetFormatType() const;
 
    protected:
-    Texture(int width, int height, int samples, TextureType type,
+    Texture(int width, int height, int depth, int samples, TextureType type,
             DataFormat format, DataFormatType format_type, TextureWrap wrap,
             TextureMagFilter filter, TextureMinFilter min_filter);
 
     int m_width;
     int m_height;
+    int m_depth;
     int m_samples;
     int m_mipmap_levels;
 
