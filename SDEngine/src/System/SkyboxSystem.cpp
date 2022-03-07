@@ -39,7 +39,8 @@ SkyboxSystem::SkyboxSystem() : System("SkyboxSystem"), m_skybox(nullptr) {
 
 void SkyboxSystem::OnInit() {
     System::OnInit();
-    m_skybox_shader = ShaderLoader::LoadShader("assets/shaders/skybox.glsl");
+    m_skybox_shader = ShaderLoader::LoadShader(
+        "assets/shaders/skybox.vert.glsl", "assets/shaders/skybox.frag.glsl");
     m_skybox = TextureLoader::LoadTextureCube(
         {"assets/skybox/right.jpg", "assets/skybox/left.jpg",
          "assets/skybox/top.jpg", "assets/skybox/bottom.jpg",
@@ -63,7 +64,8 @@ void SkyboxSystem::OnImGui() {
             m_file_dialog_info.type = ImGuiFileDialogType::OPEN_FILE;
             m_file_dialog_info.title = "Open File";
             m_file_dialog_info.file_name = "";
-            m_file_dialog_info.directory_path = AssetStorage::Get().GetDirectory();
+            m_file_dialog_info.directory_path =
+                AssetStorage::Get().GetDirectory();
         }
         if (ImGui::FileDialog(&m_file_dialog_open, &m_file_dialog_info)) {
             // m_skybox =
@@ -86,7 +88,8 @@ void SkyboxSystem::OnRender() {
     }
 
     Device::Get().SetFramebuffer(renderer->GetFramebuffer());
-    Device::Get().DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
+    Device::Get().DrawBuffer(renderer->GetFramebuffer(),
+                             0);  // only draw colors
     renderer->Submit(*m_skybox_shader, *m_box_vao, MeshTopology::TRIANGLES,
                      m_box_vao->GetIndexBuffer()->GetCount(), 0);
     Device::Get().SetDepthfunc(DepthFunc::LESS);

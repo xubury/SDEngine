@@ -4,73 +4,50 @@
 
 namespace SD {
 
-static inline ShaderType GetShaderType(const std::string& name) {
-    static const std::unordered_map<std::string, ShaderType> map = {
-        {"vertex", ShaderType::VERTEX},
-        {"fragment", ShaderType::FRAGMENT},
-        {"geometry", ShaderType::GEOMETRY},
-        {"compute", ShaderType::COMPUTE},
-    };
+static void ParseShaderCode(const std::string& path, std::string& code) {
+    std::filesystem::path directory = std::filesystem::path(path).parent_path();
+    const char identifier[] = "#include";
+    SD_CORE_TRACE("Building shader code from {}", path);
+    File::Read(path, code);
+    // insert include code
+    size_t i = code.find(identifier);
+    while (i < code.size()) {
+        size_t start = code.find('\n', i) + 1;
+        if (i != 0 && start == 0) {
+            start = code.find('\0', i) + 1;
+        }
 
-    return map.at(name);
+        size_t offset = i + 9;
+        std::filesystem::path include = code.substr(offset, start - offset - 1);
+
+        code.erase(i, start - i);
+        std::string include_code;
+        const std::string include_path = (directory / include).string();
+        try {
+            File::Read(include_path, include_code);
+        } catch (const FileException& e) {
+            throw FileException(
+                path, fmt::format("Invalid include path: {}", include_path));
+        }
+        code.insert(i, include_code);
+
+        i = code.find(identifier, start);
+    }
 }
 
-Ref<Shader> ShaderLoader::LoadShader(const std::string& path) {
+Ref<Shader> ShaderLoader::LoadShader(const std::string& vert_path,
+                                     const std::string& frag_path) {
     Ref<Shader> shader = Shader::Create();
-    SD_CORE_TRACE("Building shader code from {}", path);
-    std::filesystem::path directory = std::filesystem::path(path).parent_path();
-    std::string source;
-    File::Read(path, source);
-    size_t i = source.find("#shader");
-    while (i < source.size()) {
-        size_t start = source.find('\n', i) + 1;
-        if (i != 0 && start == 0) {
-            start = source.find('\0', i) + 1;
-        }
-
-        size_t offset = i + 8;
-        std::string name = source.substr(offset, start - offset - 1);
-
-        size_t end = source.find("#shader", start);
-        i = end;
-
-        ShaderType type = GetShaderType(name);
-
-        std::string code;
-        if (type == ShaderType::INVALID) {
-            throw FileException(path,
-                                fmt::format("Invalid shader type: {}", name));
-        } else {
-            code = source.substr(start, end - start);
-        }
-        // insert include code
-        size_t j = code.find("#include");
-        while (j < code.size()) {
-            size_t start = code.find('\n', j) + 1;
-            if (j != 0 && start == 0) {
-                start = code.find('\0', j) + 1;
-            }
-
-            size_t offset = j + 9;
-            std::filesystem::path include =
-                code.substr(offset, start - offset - 1);
-
-            code.erase(j, start - j);
-            std::string include_code;
-            const std::string include_path = (directory / include).string();
-            try {
-                File::Read(include_path, include_code);
-            } catch (const FileException& e) {
-                throw FileException(
-                    path,
-                    fmt::format("Invalid include path: {}", include_path));
-            }
-            code.insert(j, include_code);
-
-            j = code.find("#include", start);
-        }
-        shader->CompileShader(type, code.c_str());
+    std::string vert_code;
+    std::string frag_code;
+    if (!vert_path.empty()) {
+        ParseShaderCode(vert_path, vert_code);
     }
+    if (!frag_path.empty()) {
+        ParseShaderCode(frag_path, frag_code);
+    }
+    shader->CompileShader(ShaderType::VERTEX, vert_code);
+    shader->CompileShader(ShaderType::FRAGMENT, frag_code);
     shader->LinkShaders();
     return shader;
 }

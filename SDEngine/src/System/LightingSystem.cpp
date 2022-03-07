@@ -99,14 +99,18 @@ void LightingSystem::OnPop() {
 }
 
 void LightingSystem::InitShaders() {
-    m_shadow_shader = ShaderLoader::LoadShader("assets/shaders/shadow.glsl");
-    m_emssive_shader = ShaderLoader::LoadShader("assets/shaders/emissive.glsl");
-    m_deferred_shader =
-        ShaderLoader::LoadShader("assets/shaders/deferred.glsl");
-    m_gbuffer_shader = ShaderLoader::LoadShader("assets/shaders/gbuffer.glsl");
-    m_ssao_shader = ShaderLoader::LoadShader("assets/shaders/ssao.glsl");
-    m_ssao_blur_shader =
-        ShaderLoader::LoadShader("assets/shaders/ssao_blur.glsl");
+    m_shadow_shader =
+        ShaderLoader::LoadShader("assets/shaders/shadow.vert.glsl", "");
+    m_emssive_shader = ShaderLoader::LoadShader(
+        "assets/shaders/quad.vert.glsl", "assets/shaders/emissive.frag.glsl");
+    m_deferred_shader = ShaderLoader::LoadShader(
+        "assets/shaders/quad.vert.glsl", "assets/shaders/deferred.frag.glsl");
+    m_gbuffer_shader = ShaderLoader::LoadShader(
+        "assets/shaders/mesh.vert.glsl", "assets/shaders/gbuffer.frag.glsl");
+    m_ssao_shader = ShaderLoader::LoadShader("assets/shaders/quad.vert.glsl",
+                                             "assets/shaders/ssao.frag.glsl");
+    m_ssao_blur_shader = ShaderLoader::LoadShader(
+        "assets/shaders/quad.vert.glsl", "assets/shaders/ssao_blur.frag.glsl");
 }
 
 void LightingSystem::InitSSAO() {

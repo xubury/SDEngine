@@ -112,9 +112,12 @@ void Renderer::InitRenderer2D() {
 
     m_data.texture_slots[0] = m_data.default_texture.get();
 
-    m_line_shader = ShaderLoader::LoadShader("assets/shaders/line.glsl");
-    m_sprite_shader = ShaderLoader::LoadShader("assets/shaders/sprite.glsl");
-    m_circle_shader = ShaderLoader::LoadShader("assets/shaders/circle.glsl");
+    m_line_shader = ShaderLoader::LoadShader("assets/shaders/line.vert.glsl",
+                                             "assets/shaders/line.frag.glsl");
+    m_sprite_shader = ShaderLoader::LoadShader(
+        "assets/shaders/texture.vert.glsl", "assets/shaders/texture.frag.glsl");
+    m_circle_shader = ShaderLoader::LoadShader(
+        "assets/shaders/circle.vert.glsl", "assets/shaders/circle.frag.glsl");
 
     SetupShaderUBO(*m_line_shader);
     SetupShaderUBO(*m_sprite_shader);
@@ -147,7 +150,8 @@ void Renderer::SetupShaderUBO(Shader& shader) {
 
 void Renderer::Begin(Framebuffer* framebuffer, Shader& shader, Camera& camera) {
     Device::Get().SetFramebuffer(framebuffer);
-    Device::Get().SetViewport(0, 0, framebuffer->GetWidth(), framebuffer->GetHeight());
+    Device::Get().SetViewport(0, 0, framebuffer->GetWidth(),
+                              framebuffer->GetHeight());
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
@@ -157,7 +161,8 @@ void Renderer::Begin(Framebuffer* framebuffer, Shader& shader, Camera& camera) {
 
 void Renderer::Begin(Framebuffer* framebuffer, Camera& camera) {
     Device::Get().SetFramebuffer(framebuffer);
-    Device::Get().SetViewport(0, 0, framebuffer->GetWidth(), framebuffer->GetHeight());
+    Device::Get().SetViewport(0, 0, framebuffer->GetWidth(),
+                              framebuffer->GetHeight());
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
