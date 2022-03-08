@@ -177,11 +177,11 @@ void Renderer::Begin(Light& light, Shader& shader) {
     Device::Get().SetViewport(0, 0, fb->GetWidth(), fb->GetHeight());
     Device::Get().Clear(BufferBitMask::DEPTH_BUFFER_BIT);
 
-    *m_light_data.projection_view = *light.GetLevelProjectionView().data();
+    const auto& data = light.GetLevelProjectionView();
 
     for (int i = 0; i < 16; ++i) {
-        m_light_UBO->UpdateData(&m_light_data.projection_view[i],
-                                sizeof(glm::mat4), sizeof(glm::mat4) * i);
+        m_light_UBO->UpdateData(&data[i], sizeof(glm::mat4),
+                                sizeof(glm::mat4) * i);
     }
     shader.SetUniformBuffer("LightData", *m_light_UBO);
 }

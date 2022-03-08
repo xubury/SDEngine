@@ -69,11 +69,12 @@ float Light::GetQuadratic() const { return m_quadratic; }
 void Light::CreateShadowMap() {
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
     m_cascade_map = Framebuffer::Create();
-    m_cascade_map->Attach(TextureSpec(
-        SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, m_projection_views.size(), 1,
-        TextureType::TEX_2D, DataFormat::DEPTH, DataFormatType::FLOAT16,
-        TextureWrap::BORDER, TextureMagFilter::NEAREST,
-        TextureMinFilter::NEAREST));
+    const int num_of_layers = std::max<int>(m_projection_views.size(), 1);
+    m_cascade_map->Attach(
+        TextureSpec(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, num_of_layers, 1,
+                    TextureType::TEX_2D_ARRAY, DataFormat::DEPTH,
+                    DataFormatType::FLOAT16, TextureWrap::BORDER,
+                    TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     m_cascade_map->Setup();
     m_cascade_map->GetTexture()->SetBorderColor(&color);
 }
@@ -133,30 +134,28 @@ static glm::mat4 GetLightSpaceMatrix(const Transform &transform,
 }
 
 void Light::ComputeCascadeLightMatrix(const Transform &transform,
-                                      const Camera &camera) {
-    const uint32_t size = m_cascade_planes.size();
-    if (size + 1 != m_projection_views.size()) {
-        m_projection_views.resize(size + 1);
+                                      const Camera &camera,
+                                      const std::vector<float> &factors) {
+    const float fov = camera.GetFOV();
+    const float aspect = camera.GetNearWidth() / camera.GetNearHeight();
+    const float far_z = camera.GetFarZ();
+    const uint32_t size = factors.size() + 1;
+    m_cascade_planes.resize(size);
+    for (uint32_t i = 0; i < size; ++i) {
+        if (i == size - 1) {
+            m_cascade_planes[i] = far_z;
+        } else {
+            m_cascade_planes[i] = factors[i] * far_z;
+        }
+    }
+    if (size != m_projection_views.size()) {
+        m_projection_views.resize(size);
         DestroyShadowMap();
         CreateShadowMap();
     }
-    const float fov = camera.GetFOV();
-    const float aspect = camera.GetNearWidth() / camera.GetNearHeight();
-    const float near_z = camera.GetNearZ();
-    const float far_z = camera.GetFarZ();
-    for (uint32_t i = 0; i < size + 1; ++i) {
-        float near_plane;
-        float far_plane;
-        if (i == 0) {
-            near_plane = near_z;
-            far_plane = far_z * m_cascade_planes[i];
-        } else if (i < size) {
-            near_plane = far_z * m_cascade_planes[i - 1];
-            far_plane = far_z * m_cascade_planes[i];
-        } else {
-            near_plane = far_z * m_cascade_planes[i - 1];
-            far_plane = far_z;
-        }
+    for (uint32_t i = 0; i < size; ++i) {
+        const float near_plane = i == 0 ? camera.GetNearZ() : m_cascade_planes[i - 1];
+        const float far_plane = m_cascade_planes[i];
         m_projection_views[i] = GetLightSpaceMatrix(
             transform, glm::perspective(fov, aspect, near_plane, far_plane) *
                            camera.GetView());

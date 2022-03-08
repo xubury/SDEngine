@@ -26,7 +26,6 @@ layout (std140) uniform LightData
 
 uniform float u_cascade_planes[16];
 uniform int u_num_of_cascades;
-uniform float u_far_plane;
 
 float shadowCalculation(Light light, vec3 frag_pos, vec3 normal, mat4 view) {
     if (!light.is_cast_shadow) return 0.f;
@@ -34,7 +33,7 @@ float shadowCalculation(Light light, vec3 frag_pos, vec3 normal, mat4 view) {
     vec4 frag_pos_view = view * vec4(frag_pos, 1.0f);
     float depth = abs(frag_pos_view.z);
 
-    int layer = u_num_of_cascades;
+    int layer = u_num_of_cascades -1;
     for (int i = 0; i < u_num_of_cascades; ++i) {
         if (depth < u_cascade_planes[i]) {
             layer = i;
@@ -55,11 +54,7 @@ float shadowCalculation(Light light, vec3 frag_pos, vec3 normal, mat4 view) {
     vec3 lightDir = normalize(light.position - frag_pos);
     float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
     const float bias_mod = 0.5f;
-    if (layer == u_num_of_cascades) {
-        bias *= 1 / (u_far_plane * bias_mod);
-    } else {
-        bias *= 1 / (u_cascade_planes[layer] * bias_mod);
-    }
+    bias *= 1 / (u_cascade_planes[layer] * bias_mod);
     bias = 0.05;
     float shadow = 0.0f;
 
@@ -68,7 +63,7 @@ float shadowCalculation(Light light, vec3 frag_pos, vec3 normal, mat4 view) {
     for (int x = -half_kernel_width; x <= half_kernel_width; ++x) {
         for (int y = -half_kernel_width; y <= half_kernel_width; ++y) {
             vec3 sample_pos = vec3(projCoords.xy + vec2(x, y) * tex_size, layer);
-            float pcfDepth = texture(light.cascade_map, vec3(0)).r;
+            float pcfDepth = texture(light.cascade_map, sample_pos).r;
             shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
         }
     }

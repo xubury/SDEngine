@@ -248,9 +248,8 @@ void LightingSystem::RenderShadowMap() {
         Light &light = lightComp.light;
         if (!light.IsCastShadow()) return;
 
-        light.SetCascadePlanes(g_cascade_planes);
         light.ComputeCascadeLightMatrix(transformComp.GetWorldTransform(),
-                                        *scene->GetCamera());
+                                        *scene->GetCamera(), g_cascade_planes);
         renderer->Begin(light, *m_cascade_shader);
 
         modelView.each([this](const TransformComponent &transformComp,
@@ -363,16 +362,14 @@ void LightingSystem::RenderDeferred() {
                                       light.IsCastShadow()
                                           ? light.GetCascadeMap()->GetTexture()
                                           : nullptr);
-        m_deferred_shader->SetInt("u_num_of_cascades",
-                                  g_cascade_planes.size() + 1);
-        for (size_t i = 0; i < g_cascade_planes.size(); ++i) {
-            m_deferred_shader->SetFloat(
-                "u_cascade_planes[" + std::to_string(i) + "]",
-                g_cascade_planes[i] * scene->GetCamera()->GetFarZ());
+        if (light.IsDirectional()) {
+            const auto &planes = light.GetCascadePlanes();
+            m_deferred_shader->SetInt("u_num_of_cascades", planes.size());
+            for (size_t i = 0; i < planes.size(); ++i) {
+                m_deferred_shader->SetFloat(
+                    "u_cascade_planes[" + std::to_string(i) + "]", planes[i]);
+            }
         }
-        m_deferred_shader->SetFloat("u_far_plane",
-                                    scene->GetCamera()->GetFarZ());
-
         renderer->Submit(*m_deferred_shader, *m_quad, MeshTopology::TRIANGLES,
                          m_quad->GetIndexBuffer()->GetCount(), 0);
         std::swap(m_light_buffer[input_id], m_light_buffer[output_id]);

@@ -200,7 +200,6 @@ class SD_RENDERER_API Renderer {
     Ref<Shader> m_sprite_shader;
 
     CameraData m_camera_data;
-    LightData m_light_data;
 };
 
 }  // namespace SD
