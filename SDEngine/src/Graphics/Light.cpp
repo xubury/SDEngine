@@ -107,7 +107,7 @@ static glm::mat4 GetLightSpaceMatrix(const Transform &transform,
     center /= corners.size();
 
     const auto light_view =
-        glm::lookAt(center - transform.GetFront(), center, transform.GetUp());
+        glm::lookAt(center - transform.GetFront(), center, glm::vec3(0, 1, 0));
 
     float min_x = std::numeric_limits<float>::max();
     float max_x = std::numeric_limits<float>::min();

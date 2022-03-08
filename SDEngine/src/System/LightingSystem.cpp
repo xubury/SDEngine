@@ -221,6 +221,7 @@ void LightingSystem::OnImGui() {
     }
     ImGui::End();
     ImGui::Begin("Depth Map");
+    ImGui::Checkbox("Layer Debug", &m_debug);
     ImGui::InputInt("Layer", &m_debug_layer);
     ImGui::DrawTexture(*m_cascade_debug_fb->GetTexture());
     ImGui::End();
@@ -229,7 +230,6 @@ void LightingSystem::OnImGui() {
 void LightingSystem::OnRender() {
     SD_CORE_ASSERT(scene->GetCamera(), "No camera is set!");
 
-    RenderShadowMap();
     Device::Get().Disable(Operation::BLEND);
     RenderGBuffer();
     if (m_ssao_state) {
@@ -250,37 +250,32 @@ void LightingSystem::OnRender() {
         BlitFilter::NEAREST);
 }
 
-void LightingSystem::RenderShadowMap() {
+void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
+    if (!light.IsCastShadow()) return;
+
     Texture *shadowMap = nullptr;
-    auto lightView = scene->view<TransformComponent, LightComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
     Device::Get().SetCullFace(Face::FRONT);
-    lightView.each([&](const TransformComponent &transformComp,
-                       LightComponent &lightComp) {
-        Light &light = lightComp.light;
-        if (!light.IsCastShadow()) return;
 
-        shadowMap = light.GetCascadeMap()->GetTexture();
-        light.ComputeCascadeLightMatrix(
-            transformComp.GetWorldTransform(), *scene->GetCamera(),
-            {1.0f / 50.f, 1.0f / 25.f, 1.0f / 10.f, 1.0f / 2.f});
-        renderer->Begin(light, *m_cascade_shader);
+    light.ComputeCascadeLightMatrix(transform, *scene->GetCamera(),
+                                    {1.0f / 50.f, 1.0f / 2.f});
+    renderer->Begin(light, *m_cascade_shader);
 
-        modelView.each([this](const TransformComponent &transformComp,
-                              const ModelComponent &modelComp) {
-            if (AssetStorage::Get().Exists<ModelAsset>(modelComp.model_id)) {
-                m_cascade_shader->SetMat4(
-                    "u_model", transformComp.GetWorldTransform().GetMatrix());
-                auto model = AssetStorage::Get()
-                                 .GetAsset<ModelAsset>(modelComp.model_id)
-                                 ->GetModel();
-                for (const auto &mesh : model->GetMeshes()) {
-                    renderer->DrawMesh(*m_cascade_shader, mesh);
-                }
+    modelView.each([this](const TransformComponent &transformComp,
+                          const ModelComponent &modelComp) {
+        if (AssetStorage::Get().Exists<ModelAsset>(modelComp.model_id)) {
+            m_cascade_shader->SetMat4(
+                "u_model", transformComp.GetWorldTransform().GetMatrix());
+            auto model = AssetStorage::Get()
+                             .GetAsset<ModelAsset>(modelComp.model_id)
+                             ->GetModel();
+            for (const auto &mesh : model->GetMeshes()) {
+                renderer->DrawMesh(*m_cascade_shader, mesh);
             }
-        });
-        renderer->End();
+        }
     });
+    renderer->End();
+    shadowMap = light.GetCascadeMap()->GetTexture();
     Device::Get().SetCullFace(Face::BACK);
 
     Device::Get().SetFramebuffer(m_cascade_debug_fb.get());
@@ -358,14 +353,16 @@ void LightingSystem::RenderDeferred() {
     m_deferred_shader->SetBool("u_ssao_state", m_ssao_state);
     const uint8_t input_id = 0;
     const uint8_t output_id = 1;
-    lightView.each([this](const TransformComponent &transformComp,
-                          const LightComponent &lightComp) {
+    lightView.each([&](const TransformComponent &transformComp,
+                       LightComponent &lightComp) {
+        Light &light = lightComp.light;
+        const Transform &transform = transformComp.GetWorldTransform();
+        RenderShadowMap(light, transform);
+
         renderer->Begin(m_light_buffer[output_id].get(), *m_deferred_shader,
                         *scene->GetCamera());
-        const Light &light = lightComp.light;
         m_deferred_shader->SetTexture("u_lighting",
                                       m_light_buffer[input_id]->GetTexture());
-        const Transform &transform = transformComp.GetWorldTransform();
         m_deferred_shader->SetVec3("u_light.direction", transform.GetFront());
         m_deferred_shader->SetVec3("u_light.ambient", light.GetAmbient());
         m_deferred_shader->SetVec3("u_light.diffuse", light.GetDiffuse());
@@ -383,11 +380,11 @@ void LightingSystem::RenderDeferred() {
                                    light.IsDirectional());
         m_deferred_shader->SetBool("u_light.is_cast_shadow",
                                    light.IsCastShadow());
-        m_deferred_shader->SetTexture("u_light.cascade_map",
-                                      light.IsCastShadow()
-                                          ? light.GetCascadeMap()->GetTexture()
-                                          : nullptr);
-        if (light.IsDirectional()) {
+        if (light.IsCastShadow()) {
+            m_deferred_shader->SetTexture("u_light.cascade_map",
+                                          light.GetCascadeMap()->GetTexture());
+            m_deferred_shader->SetInt("u_layer", m_debug_layer);
+            m_deferred_shader->SetBool("u_debug", m_debug);
             const auto &planes = light.GetCascadePlanes();
             m_deferred_shader->SetInt("u_num_of_cascades", planes.size());
             for (size_t i = 0; i < planes.size(); ++i) {

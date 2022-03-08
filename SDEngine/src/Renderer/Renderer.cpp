@@ -178,11 +178,8 @@ void Renderer::Begin(Light& light, Shader& shader) {
     Device::Get().Clear(BufferBitMask::DEPTH_BUFFER_BIT);
 
     const auto& data = light.GetLevelProjectionView();
+    m_light_UBO->UpdateData(data.data(), sizeof(glm::mat4) * data.size());
 
-    for (size_t i = 0; i < data.size(); ++i) {
-        m_light_UBO->UpdateData(&data[i], sizeof(glm::mat4),
-                                sizeof(glm::mat4) * i);
-    }
     shader.SetUniformBuffer("LightData", *m_light_UBO);
 }
 

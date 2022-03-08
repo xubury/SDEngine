@@ -26,20 +26,26 @@ layout (std140) uniform LightData
 
 uniform float u_cascade_planes[16];
 uniform int u_num_of_cascades;
+uniform int u_layer;
+uniform bool u_debug;
 
 float shadowCalculation(Light light, vec3 frag_pos, vec3 normal, mat4 view) {
     if (!light.is_cast_shadow) return 0.f;
 
     vec4 frag_pos_view = view * vec4(frag_pos, 1.0f);
-    float depth = abs(frag_pos_view.z);
+    float depthValue = abs(frag_pos_view.z);
 
     int layer = u_num_of_cascades -1;
     for (int i = 0; i < u_num_of_cascades; ++i) {
-        if (depth < u_cascade_planes[i]) {
+        if (depthValue < u_cascade_planes[i]) {
             layer = i;
             break;
         }
     }
+    // FIXME:WTF:
+    // with the next line the skybox will fail, 
+    // without it shadow doesn't work.
+    layer = u_debug ? u_layer : layer;
     vec4 frag_pos_light = u_light_matrix[layer] * vec4(frag_pos, 1.0);
     // perform perspective divide
     vec3 projCoords = frag_pos_light.xyz / frag_pos_light.w;
@@ -65,7 +71,7 @@ float shadowCalculation(Light light, vec3 frag_pos, vec3 normal, mat4 view) {
         for (int y = -half_kernel_width; y <= half_kernel_width; ++y) {
             vec3 sample_pos = vec3(projCoords.xy + vec2(x, y) * tex_size, layer);
             float pcfDepth = texture(light.cascade_map, sample_pos).r;
-            shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
+            shadow += (currentDepth - bias) > pcfDepth ? 1.0f : 0.0f;
         }
     }
     shadow /= (half_kernel_width * 2 + 1) * (half_kernel_width * 2 + 1);

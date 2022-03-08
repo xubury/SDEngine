@@ -160,8 +160,9 @@ void GLShader::SetUniformBuffer(const std::string& name,
                                 const UniformBuffer& buffer) {
     buffer.Bind();
     uint32_t index = glGetUniformBlockIndex(m_id, name.c_str());
-    if (index != GL_INVALID_INDEX)
+    if (index != GL_INVALID_INDEX) {
         glUniformBlockBinding(m_id, index, buffer.GetBindingPoint());
+    }
 }
 
 uint32_t GLShader::GetUint(const std::string& name) const {
