@@ -113,6 +113,9 @@ void LightingSystem::InitShaders() {
     m_cascade_shader =
         ShaderLoader::LoadShader("assets/shaders/shadow.vert.glsl", "",
                                  "assets/shaders/shadow.geo.glsl");
+    m_cascade_debug_shader =
+        ShaderLoader::LoadShader("assets/shaders/quad.vert.glsl",
+                                 "assets/shaders/debug_depth.frag.glsl");
 }
 
 void LightingSystem::InitSSAO() {
@@ -186,6 +189,12 @@ void LightingSystem::InitLighting() {
     m_gbuffer->Attach(RenderbufferSpec(
         m_width, m_height, m_msaa, DataFormat::DEPTH, DataFormatType::FLOAT16));
     m_gbuffer->Setup();
+
+    m_cascade_debug_fb = Framebuffer::Create();
+    m_cascade_debug_fb->Attach(TextureSpec(m_width, m_height, 1, 1,
+                                           TextureType::TEX_2D, DataFormat::RGB,
+                                           DataFormatType::UBYTE));
+    m_cascade_debug_fb->Setup();
 }
 
 void LightingSystem::OnSizeEvent(const ViewportSizeEvent &event) {
@@ -210,6 +219,10 @@ void LightingSystem::OnImGui() {
         ImGui::TextUnformatted("SSAO Bias");
         ImGui::SliderFloat("##SSAO Bias", &m_ssao_bias, 0.01, 2);
     }
+    ImGui::End();
+    ImGui::Begin("Depth Map");
+    ImGui::InputInt("Layer", &m_debug_layer);
+    ImGui::DrawTexture(*m_cascade_debug_fb->GetTexture());
     ImGui::End();
 }
 
@@ -237,19 +250,20 @@ void LightingSystem::OnRender() {
         BlitFilter::NEAREST);
 }
 
-const std::vector<float> g_cascade_planes = {1.f / 50.f, 1.f / 25.f, 1 / 10.f,
-                                             1 / 2.f};
 void LightingSystem::RenderShadowMap() {
+    Texture *shadowMap = nullptr;
     auto lightView = scene->view<TransformComponent, LightComponent>();
     auto modelView = scene->view<TransformComponent, ModelComponent>();
     Device::Get().SetCullFace(Face::FRONT);
-    lightView.each([this, &modelView](const TransformComponent &transformComp,
-                                      LightComponent &lightComp) {
+    lightView.each([&](const TransformComponent &transformComp,
+                       LightComponent &lightComp) {
         Light &light = lightComp.light;
         if (!light.IsCastShadow()) return;
 
-        light.ComputeCascadeLightMatrix(transformComp.GetWorldTransform(),
-                                        *scene->GetCamera(), g_cascade_planes);
+        shadowMap = light.GetCascadeMap()->GetTexture();
+        light.ComputeCascadeLightMatrix(
+            transformComp.GetWorldTransform(), *scene->GetCamera(),
+            {1.0f / 50.f, 1.0f / 25.f, 1.0f / 10.f, 1.0f / 2.f});
         renderer->Begin(light, *m_cascade_shader);
 
         modelView.each([this](const TransformComponent &transformComp,
@@ -268,6 +282,17 @@ void LightingSystem::RenderShadowMap() {
         renderer->End();
     });
     Device::Get().SetCullFace(Face::BACK);
+
+    Device::Get().SetFramebuffer(m_cascade_debug_fb.get());
+    Device::Get().SetViewport(0, 0, m_width, m_height);
+    m_cascade_debug_shader->SetTexture("depthMap", shadowMap);
+    m_cascade_debug_shader->SetInt("layer", m_debug_layer);
+    m_cascade_debug_shader->SetFloat("near_plane",
+                                     scene->GetCamera()->GetNearZ());
+    m_cascade_debug_shader->SetFloat("far_plane",
+                                     scene->GetCamera()->GetFarZ());
+    renderer->Submit(*m_cascade_debug_shader, *m_quad, MeshTopology::TRIANGLES,
+                     m_quad->GetIndexBuffer()->GetCount(), 0);
 }
 
 void LightingSystem::RenderSSAO() {

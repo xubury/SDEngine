@@ -179,7 +179,7 @@ void Renderer::Begin(Light& light, Shader& shader) {
 
     const auto& data = light.GetLevelProjectionView();
 
-    for (int i = 0; i < 16; ++i) {
+    for (size_t i = 0; i < data.size(); ++i) {
         m_light_UBO->UpdateData(&data[i], sizeof(glm::mat4),
                                 sizeof(glm::mat4) * i);
     }

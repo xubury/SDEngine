@@ -51,13 +51,14 @@ float shadowCalculation(Light light, vec3 frag_pos, vec3 normal, mat4 view) {
     if (currentDepth > 1.0f) return 0.0f;
 
     // check whether current frag pos is in shadow
-    vec3 lightDir = normalize(light.position - frag_pos);
+    vec3 lightDir = light.is_directional ? normalize(-light.direction) : normalize(light.position - frag_pos);
     float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
     const float bias_mod = 0.5f;
     bias *= 1 / (u_cascade_planes[layer] * bias_mod);
-    bias = 0.05;
+
     float shadow = 0.0f;
 
+    //PCF
     vec2 tex_size = 1.0f / vec2(textureSize(light.cascade_map, 0));
     const int half_kernel_width = 1;
     for (int x = -half_kernel_width; x <= half_kernel_width; ++x) {

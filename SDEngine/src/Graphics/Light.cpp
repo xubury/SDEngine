@@ -106,9 +106,8 @@ static glm::mat4 GetLightSpaceMatrix(const Transform &transform,
     }
     center /= corners.size();
 
-    const auto &light_dir = transform.GetFront();
     const auto light_view =
-        glm::lookAt(center + light_dir, center, glm::vec3(1.0f));
+        glm::lookAt(center - transform.GetFront(), center, transform.GetUp());
 
     float min_x = std::numeric_limits<float>::max();
     float max_x = std::numeric_limits<float>::min();
@@ -154,7 +153,8 @@ void Light::ComputeCascadeLightMatrix(const Transform &transform,
         CreateShadowMap();
     }
     for (uint32_t i = 0; i < size; ++i) {
-        const float near_plane = i == 0 ? camera.GetNearZ() : m_cascade_planes[i - 1];
+        const float near_plane =
+            i == 0 ? camera.GetNearZ() : m_cascade_planes[i - 1];
         const float far_plane = m_cascade_planes[i];
         m_projection_views[i] = GetLightSpaceMatrix(
             transform, glm::perspective(fov, aspect, near_plane, far_plane) *
