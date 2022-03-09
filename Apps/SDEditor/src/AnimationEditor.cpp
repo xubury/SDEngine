@@ -33,8 +33,8 @@ void AnimationEditor::OnImGui() {
             m_dialog_info.regex_match = IMG_FILTER;
         }
         if (ImGui::FileDialog(&m_is_dialog_open, &m_dialog_info)) {
-            m_texture_asset = AssetStorage::Get().LoadAsset<TextureAsset>(
-                m_dialog_info.result_path.string());
+            // m_texture_asset = AssetStorage::Get().LoadAsset<TextureAsset>(
+            //     m_dialog_info.result_path.string());
         }
         if (m_texture_asset) {
             auto texture = m_texture_asset->GetTexture();

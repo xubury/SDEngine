@@ -18,33 +18,11 @@ inline TypeId GetTypeId() {
 
 class SD_ASSET_API Asset {
    public:
-    Asset() : m_is_initialized(false){};
+    Asset(){};
     virtual ~Asset() = default;
 
-    virtual void Init() { m_is_initialized = true; };
-
-    template <typename T>
-    static void SaveArchiveToFile(const T *obj) {
-        if (std::filesystem::exists(obj->m_path)) {
-            std::filesystem::remove(obj->m_path);
-        }
-        std::ofstream os(obj->m_path, std::ios::binary);
-        os << ASSET_IDENTIFIER;
-        cereal::PortableBinaryOutputArchive oarchive(os);
-        oarchive(obj->m_tid, obj->m_path, obj->m_rid, *obj);
-    }
-
-    template <typename T>
-    static void LoadArchiveFromFile(const std::string &path, T *obj) {
-        std::ifstream is(path, std::ios::binary);
-        std::string id(ASSET_IDENTIFIER.size(), ' ');
-        is.read(id.data(), id.size());
-        if (id != ASSET_IDENTIFIER) {
-            throw Exception("Invalid asset file!");
-        }
-        cereal::PortableBinaryInputArchive iarchive(is);
-        iarchive(obj->m_tid, obj->m_path, obj->m_rid, *obj);
-    }
+    virtual void Deserialize(cereal::PortableBinaryInputArchive &archive) = 0;
+    virtual void Serialize(cereal::PortableBinaryOutputArchive &archive) = 0;
 
     template <typename T, typename... ARGS>
     static Asset *Create(ARGS &&...args) {
@@ -57,21 +35,6 @@ class SD_ASSET_API Asset {
 
     std::string GetPath() const { return m_path; }
 
-    std::filesystem::path GetDirectory() const {
-        return std::filesystem::path(m_path).parent_path();
-    }
-
-    std::string GetFilename() const {
-        return std::filesystem::path(m_path).filename().generic_string();
-    }
-
-    bool IsInitialized() const { return m_is_initialized; }
-
-    std::string GetAbsolutePath(const std::string &path) {
-        return (std::filesystem::path(m_path).parent_path() / path)
-            .generic_string();
-    }
-
    protected:
     friend class AssetStorage;
 
@@ -79,9 +42,6 @@ class SD_ASSET_API Asset {
     TypeId m_tid;
     ResourceId m_rid;
     std::string m_path;
-
-   private:
-    const static std::string ASSET_IDENTIFIER;
 };
 
 using AssetCreateFunc = std::function<Asset *()>;

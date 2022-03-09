@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <unordered_map>
 #include <functional>
-#include <string>
 
 namespace SD {
 
@@ -52,50 +51,50 @@ class SD_ASSET_API AssetStorage {
         return dynamic_cast<T*>(cache.at(rid));
     }
 
-    template <typename T>
-    T* LoadAsset(const std::string& path) {
-        std::string full_path = (m_directory / path).generic_string();
-
-        ResourceId rid(full_path);
-        TypeId tid = GetTypeId<T>();
-        T* asset = nullptr;
-        if (!Exists(tid, rid)) {
-            asset = new T;
-            Asset::LoadArchiveFromFile(full_path, asset);
-            asset->Init();
-            Add(asset, tid, rid);
-        } else {
-            asset = GetAsset<T>(rid);
+    Asset* LoadAsset(const std::string& path) {
+        std::string full_path = ResolvePath(path);
+        Asset* obj = nullptr;
+        try {
+            obj = DeserializeAsset(full_path);
+            if (Exists(obj->m_tid, obj->m_rid)) {
+                Unload(obj->m_tid, obj->m_rid);
+            }
+            Add(obj, obj->m_tid, obj->m_rid);
+        } catch (const Exception& e) {
+            SD_CORE_WARN(e.what());
         }
-        return asset;
+        return obj;
     }
 
     template <typename T>
     T* CreateAsset(const std::string& path) {
-        std::string full_path = (m_directory / path).generic_string();
-        ResourceId rid(full_path);
+        std::string full_path = ResolvePath(path);
+        ResourceId rid;
         TypeId tid = GetTypeId<T>();
-        T* asset = nullptr;
-        if (Exists(tid, rid)) {
-            SD_CORE_WARN(
-                "Trying to create an asset that already exists, returning the "
-                "existing one.");
-            asset = GetAsset<T>(rid);
-        } else {
-            asset = new T;
-            asset->m_tid = tid;
-            asset->m_path = full_path;
-            asset->m_rid = rid;
-            Asset::SaveArchiveToFile(asset);
-            Add(asset, tid, rid);
-        }
+        T* asset = new T;
+        asset->m_tid = tid;
+        asset->m_rid = rid;
+        asset->m_path = full_path;
+        Add(asset, tid, rid);
+        SaveAsset(asset);
         return asset;
+    }
+
+    void SaveAsset(Asset* obj) const {
+        if (std::filesystem::exists(obj->m_path)) {
+            std::filesystem::remove(obj->m_path);
+        }
+        std::ofstream os(obj->m_path, std::ios::binary);
+        os << ASSET_IDENTIFIER;
+        cereal::PortableBinaryOutputArchive oarchive(os);
+        oarchive(obj->m_tid, obj->m_rid);
+        obj->Serialize(oarchive);
     }
 
     template <typename T>
     void SaveAsset(ResourceId rid) const {
-        T* asset = GetAsset<T>(rid);
-        Asset::SaveArchiveToFile(asset);
+        auto& cache = GetCache<T>();
+        SaveAsset(cache.at(rid));
     }
 
     void Add(Asset* data, TypeId tid, ResourceId rid) {
@@ -183,7 +182,52 @@ class SD_ASSET_API AssetStorage {
 
     const std::filesystem::path& GetDirectory() const { return m_directory; }
 
+    std::string GetRelativePath(const std::string& path) const {
+        return std::filesystem::relative(path, m_directory).generic_string();
+    }
+
+    std::string GetAbsolutePath(const std::string& path) const {
+        return (m_directory / path).generic_string();
+    }
+
+    void ScanDirectory(const std::filesystem::path& dir);
+
+    const static std::string ASSET_IDENTIFIER;
+    const static std::string ASSET_POSFIX;
+
    private:
+    std::string ResolvePath(const std::string& path) {
+        std::filesystem::path full_path = m_directory / path;
+        if (full_path.has_extension()) {
+            if (full_path.extension() != ASSET_POSFIX) {
+                full_path.replace_extension(ASSET_POSFIX);
+            }
+        } else {
+            full_path += ASSET_POSFIX;
+        }
+        return full_path.generic_string();
+    }
+
+    Asset* DeserializeAsset(const std::string& path) {
+        std::ifstream is(path, std::ios::binary);
+        std::string id(ASSET_IDENTIFIER.size(), ' ');
+        is.read(id.data(), id.size());
+        if (id != ASSET_IDENTIFIER) {
+            throw Exception("Invalid asset file!");
+        }
+        cereal::PortableBinaryInputArchive iarchive(is);
+        TypeId tid;
+        ResourceId rid;
+        iarchive(tid, rid);
+
+        Asset* obj = m_asset_types.at(tid).create_func();
+        obj->m_tid = tid;
+        obj->m_rid = rid;
+        obj->m_path = path;
+        obj->Deserialize(iarchive);
+        return obj;
+    }
+
     AssetStorage() = default;
     ~AssetStorage();
 

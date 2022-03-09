@@ -42,8 +42,10 @@ Application::Application(const std::string &title, Device::API api) {
     renderer = CreateRef<Renderer>(m_window->GetWidth(), m_window->GetHeight(),
                                    m_window->GetMSAA());
 
-    AssetStorage::Get().SetDirectory("assets");
     RegisterAssets();
+    auto &storage = AssetStorage::Get();
+    storage.SetDirectory("assets");
+    storage.ScanDirectory(storage.GetDirectory());
 
     scene = CreateRef<Scene>();
 }

@@ -19,32 +19,74 @@ void ContentBrowser::OnInit() {
     m_current_directory = AssetStorage::Get().GetDirectory();
 }
 
+static void DrawSceneCreation(const std::filesystem::path& directory,
+                              bool* open) {
+    if (open) {
+        ImGui::OpenPopup("Scene Creation");
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4, 4});
+
+        if (ImGui::BeginCenterPopupModal("Scene Creation")) {
+            ImGui::BeginChild("##SHEET", ImVec2(300, 300));
+            ImGui::Columns(2, 0, false);
+            static char asset_name[255];
+            ImGui::Text("Name");
+            ImGui::NextColumn();
+            ImGui::InputText("##ASSET_FILE_NAME", asset_name,
+                             sizeof(asset_name));
+            ImGui::SameLine();
+            ImGui::TextUnformatted(AssetStorage::ASSET_POSFIX.c_str());
+
+            ImGui::EndChild();
+            ImGui::Columns();
+
+            ImGui::Separator();
+            if (ImGui::Button("Confirm")) {
+                auto& storage = AssetStorage::Get();
+                storage.CreateAsset<SceneAsset>(
+                    (directory / asset_name).generic_string());
+
+                ImGui::CloseCurrentPopup();
+                *open = false;
+            }
+
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel")) {
+                ImGui::CloseCurrentPopup();
+                *open = false;
+            }
+        }
+    }
+
+    ImGui::PopStyleVar();
+    ImGui::EndPopup();
+}
+
 static void DrawModelCreation(const std::filesystem::path& directory,
                               bool* open) {
     if (open) {
-        ImGui::OpenPopup("Setup asset property");
+        ImGui::OpenPopup("Model Creation");
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4, 4});
 
-        if (ImGui::BeginCenterPopupModal("Setup asset property")) {
+        if (ImGui::BeginCenterPopupModal("Model Creation")) {
             ImGui::BeginChild("##SHEET", ImVec2(300, 300));
-            static bool filedlg_open = false;
-            static ImFileDialogInfo filedlg_info;
             static char asset_name[255];
-            ImGui::Text("Name");
-            ImGui::Separator();
-            ImGui::Columns();
-            ImGui::InputText("##ASSET_FILE_NAME", asset_name,
-                             sizeof(asset_name),
-                             ImGuiInputTextFlags_EnterReturnsTrue);
-
-            ImGui::Text("Model file");
-            ImGui::Separator();
             ImGui::Columns(2, 0, false);
-            ImGui::TextUnformatted(
-                filedlg_info.result_path.generic_string().c_str());
+
+            ImGui::Text("Name");
+            ImGui::NextColumn();
+            ImGui::InputText("##ASSET_FILE_NAME", asset_name,
+                             sizeof(asset_name));
+            ImGui::SameLine();
+            ImGui::TextUnformatted(AssetStorage::ASSET_POSFIX.c_str());
 
             ImGui::NextColumn();
-            if (ImGui::Button("Open")) {
+            ImGui::Text("Model file");
+
+            ImGui::NextColumn();
+            static ImFileDialogInfo filedlg_info;
+            static bool filedlg_open = false;
+            static std::string model_path = "None";
+            if (ImGui::Button(model_path.c_str())) {
                 filedlg_open = true;
                 filedlg_info.type = ImGuiFileDialogType::OPEN_FILE;
                 filedlg_info.title = "Open File";
@@ -53,25 +95,29 @@ static void DrawModelCreation(const std::filesystem::path& directory,
                 filedlg_info.directory_path =
                     AssetStorage::Get().GetDirectory();
             }
-            ImGui::FileDialog(&filedlg_open, &filedlg_info);
+            if (ImGui::FileDialog(&filedlg_open, &filedlg_info)) {
+                model_path = filedlg_info.result_path.generic_string();
+            }
+
+            ImGui::Columns();
             ImGui::EndChild();
 
             ImGui::Separator();
-            ImGui::Columns();
             if (ImGui::Button("Confirm")) {
-                auto asset = AssetStorage::Get().CreateAsset<ModelAsset>(
+                auto& storage = AssetStorage::Get();
+                auto asset = storage.CreateAsset<ModelAsset>(
                     (directory / asset_name).generic_string());
-                asset->SetModelPath(
-                    filedlg_info.result_path.generic_string().c_str());
-                asset->Init();
-                *open = false;
+                asset->Import(model_path);
+
+                storage.SaveAsset(asset);
                 ImGui::CloseCurrentPopup();
+                *open = false;
             }
 
             ImGui::SameLine();
             if (ImGui::Button("Cancel")) {
-                *open = false;
                 ImGui::CloseCurrentPopup();
+                *open = false;
             }
         }
 
@@ -86,15 +132,18 @@ void ContentBrowser::OnImGui() {
     static std::function<void(bool*)> asset_creation_ui;
     // Right-click on blank space
     if (ImGui::BeginPopupContextWindow(0, 1, false)) {
-        if (ImGui::MenuItem("Create Model Asset")) {
-            create_new_asset = true;
-            asset_creation_ui = std::bind(
-                DrawModelCreation, m_current_directory, std::placeholders::_1);
-        }
-
-        if (ImGui::MenuItem("Create Scene Asset")) {
-            create_new_asset = true;
-        }
+        auto menu_item =
+            [&](const std::string& desc,
+                const std::function<void(const std::filesystem::path& path,
+                                         bool*)>& func) {
+                if (ImGui::MenuItem(desc.c_str())) {
+                    create_new_asset = true;
+                    asset_creation_ui = std::bind(func, m_current_directory,
+                                                  std::placeholders::_1);
+                }
+            };
+        menu_item("Create Model Asset", DrawModelCreation);
+        menu_item("Create Scene Asset", DrawSceneCreation);
         ImGui::EndPopup();
     }
 

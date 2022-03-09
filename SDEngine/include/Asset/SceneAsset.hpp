@@ -9,28 +9,18 @@ namespace SD {
 class SceneAsset : public Asset {
    public:
     SceneAsset() { m_scene = CreateRef<Scene>(); };
-    void Init() override {
-        try {
-            if (!m_scene_path.empty()) {
-                m_scene = SceneLoader::LoadScene(GetAbsolutePath(m_scene_path));
-            }
-            Asset::Init();
-        } catch (const Exception &e) {
-            SD_CORE_WARN(e.what());
-        }
+
+    void Serialize(cereal::PortableBinaryOutputArchive &archive) override {
+        m_scene->Serialize(archive);
     }
 
-    void SetScenePath(const std::string &path) {
-        const std::filesystem::path dir = GetDirectory();
-        m_scene_path = std::filesystem::relative(path, dir).generic_string();
+    void Deserialize(cereal::PortableBinaryInputArchive &archive) override {
+        m_scene->Deserialize(archive);
     }
 
     Scene *GetScene() { return m_scene.get(); }
 
-    SERIALIZE(m_scene_path)
-
    private:
-    std::string m_scene_path;
     Ref<Scene> m_scene;
 };
 

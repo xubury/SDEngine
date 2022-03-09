@@ -2,6 +2,7 @@
 #define SD_MODEL_ASSET_HPP
 
 #include "Asset/Asset.hpp"
+#include "AssetStorage.hpp"
 #include "Loader/ModelLoader.hpp"
 
 namespace SD {
@@ -9,20 +10,26 @@ namespace SD {
 class ModelAsset : public Asset {
    public:
     ModelAsset() { m_model = CreateRef<Model>(); };
-    void Init() override {
-        try {
-            if (m_model_path != "NONE") {
-                m_model = ModelLoader::LoadModel(GetAbsolutePath(m_model_path));
-            }
-            Asset::Init();
-        } catch (const Exception &e) {
-            SD_CORE_WARN(e.what());
-        }
+
+    void Serialize(cereal::PortableBinaryOutputArchive &archive) override {
+        archive(*this);
     }
 
-    void SetModelPath(const std::string &path) {
-        const std::filesystem::path dir = GetDirectory();
-        m_model_path = std::filesystem::relative(path, dir).generic_string();
+    void Deserialize(cereal::PortableBinaryInputArchive &archive) override {
+        archive(*this);
+
+        if (m_model_path.empty()) {
+            throw Exception("Empty model asset");
+        }
+
+        auto &storage = AssetStorage::Get();
+        m_model = ModelLoader::LoadModel(storage.GetAbsolutePath(m_model_path));
+    }
+
+    void Import(const std::string &path) {
+        auto &storage = AssetStorage::Get();
+        m_model_path = storage.GetRelativePath(path);
+        m_model = ModelLoader::LoadModel(path);
     }
 
     const std::string &GetModelPath() const { return m_model_path; }

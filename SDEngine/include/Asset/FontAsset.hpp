@@ -3,7 +3,7 @@
 
 #include "Asset/Export.hpp"
 #include "Asset/Asset.hpp"
-
+#include "AssetStorage.hpp"
 #include "Loader/FontLoader.hpp"
 
 namespace SD {
@@ -11,14 +11,16 @@ namespace SD {
 class FontAsset : public Asset {
    public:
     FontAsset() : m_pixel_height(20){};
-    void Init() override {
-        try {
-            m_font = FontLoader::LoadFont(GetAbsolutePath(m_font_path),
-                                          m_pixel_height);
-            Asset::Init();
-        } catch (const Exception &e) {
-            SD_CORE_WARN(e.what());
-        }
+
+    void Serialize(cereal::PortableBinaryOutputArchive &archive) override {
+        archive(*this);
+    }
+
+    void Deserialize(cereal::PortableBinaryInputArchive &archive) override {
+        archive(*this);
+        auto &storage = AssetStorage::Get();
+        m_font = FontLoader::LoadFont(storage.GetAbsolutePath(m_font_path),
+                                      m_pixel_height);
     }
 
     Font *GetFont() { return m_font.get(); }
