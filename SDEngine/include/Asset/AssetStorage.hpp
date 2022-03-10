@@ -47,21 +47,39 @@ class SD_ASSET_API AssetStorage {
 
     template <typename T>
     T* GetAsset(ResourceId rid) const {
-        auto& cache = GetCache<T>();
-        return dynamic_cast<T*>(cache.at(rid));
+        TypeId tid = GetTypeId<T>();
+        return dynamic_cast<T*>(GetAsset(tid, rid));
+    }
+
+    Asset* GetAsset(TypeId tid, ResourceId rid) const {
+        return GetCache(tid).at(rid);
     }
 
     Asset* LoadAsset(const std::string& path) {
         std::string full_path = ResolvePath(path);
+        SD_CORE_TRACE("load asset:{}", full_path);
+        std::ifstream is(full_path, std::ios::binary);
+        std::string id(ASSET_IDENTIFIER.size(), ' ');
+        is.read(id.data(), id.size());
+        SD_CORE_TRACE("file id:{}", ASSET_IDENTIFIER);
+        if (id != ASSET_IDENTIFIER) {
+            throw Exception("Invalid asset file!");
+        }
+        cereal::PortableBinaryInputArchive iarchive(is);
+        TypeId tid;
+        ResourceId rid;
+        iarchive(tid, rid);
+
         Asset* obj = nullptr;
-        try {
-            obj = DeserializeAsset(full_path);
-            if (Exists(obj->m_tid, obj->m_rid)) {
-                Unload(obj->m_tid, obj->m_rid);
-            }
+        if (Exists(tid, rid)) {
+            obj = GetCache(tid).at(rid);
+        } else {
+            obj = m_asset_types.at(tid).create_func();
+            obj->m_tid = tid;
+            obj->m_rid = rid;
+            obj->m_path = full_path;
+            obj->Deserialize(iarchive);
             Add(obj, obj->m_tid, obj->m_rid);
-        } catch (const Exception& e) {
-            SD_CORE_WARN(e.what());
         }
         return obj;
     }
@@ -71,13 +89,13 @@ class SD_ASSET_API AssetStorage {
         std::string full_path = ResolvePath(path);
         ResourceId rid;
         TypeId tid = GetTypeId<T>();
-        T* asset = new T;
+        Asset* asset = m_asset_types.at(tid).create_func();
         asset->m_tid = tid;
         asset->m_rid = rid;
         asset->m_path = full_path;
         Add(asset, tid, rid);
         SaveAsset(asset);
-        return asset;
+        return dynamic_cast<T*>(asset);
     }
 
     void SaveAsset(Asset* obj) const {
@@ -134,15 +152,9 @@ class SD_ASSET_API AssetStorage {
     }
 
     template <typename T>
-    bool RegisterAsset(const AssetTypeData& data) {
+    void RegisterAsset(const AssetTypeData& data) {
         TypeId tid = GetTypeId<T>();
-        auto ret = m_registered.emplace(tid);
-        if (ret.second) {
-            m_asset_types[tid] = data;
-            return true;
-        } else {
-            return false;
-        }
+        m_asset_types[tid] = data;
     }
 
     AssetTypeData& GetTypeData(TypeId tid) { return m_asset_types[tid]; }
@@ -160,10 +172,6 @@ class SD_ASSET_API AssetStorage {
     }
 
     bool Empty(TypeId tid) const { return m_assets.count(tid) == 0; }
-
-    const std::unordered_set<TypeId>& GetRegistered() const {
-        return m_registered;
-    }
 
     template <typename T>
     bool IsRegistered() {
@@ -198,40 +206,15 @@ class SD_ASSET_API AssetStorage {
    private:
     std::string ResolvePath(const std::string& path) {
         std::filesystem::path full_path = m_directory / path;
-        if (full_path.has_extension()) {
-            if (full_path.extension() != ASSET_POSFIX) {
-                full_path.replace_extension(ASSET_POSFIX);
-            }
-        } else {
+        if (!full_path.has_extension()) {
             full_path += ASSET_POSFIX;
         }
         return full_path.generic_string();
     }
 
-    Asset* DeserializeAsset(const std::string& path) {
-        std::ifstream is(path, std::ios::binary);
-        std::string id(ASSET_IDENTIFIER.size(), ' ');
-        is.read(id.data(), id.size());
-        if (id != ASSET_IDENTIFIER) {
-            throw Exception("Invalid asset file!");
-        }
-        cereal::PortableBinaryInputArchive iarchive(is);
-        TypeId tid;
-        ResourceId rid;
-        iarchive(tid, rid);
-
-        Asset* obj = m_asset_types.at(tid).create_func();
-        obj->m_tid = tid;
-        obj->m_rid = rid;
-        obj->m_path = path;
-        obj->Deserialize(iarchive);
-        return obj;
-    }
-
     AssetStorage() = default;
     ~AssetStorage();
 
-    std::unordered_set<TypeId> m_registered;
     std::unordered_map<TypeId, Cache> m_assets;
     std::unordered_map<TypeId, AssetTypeData> m_asset_types;
     std::filesystem::path m_directory;

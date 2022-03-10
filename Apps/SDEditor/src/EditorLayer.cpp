@@ -548,6 +548,21 @@ void EditorLayer::DrawViewport() {
                     EntitySelectEvent{entity_id, scene.get()});
             }
         }
+        if (ImGui::BeginDragDropTarget()) {
+            if (const ImGuiPayload *payload =
+                    ImGui::AcceptDragDropPayload(DROP_ASSET_ITEM)) {
+                std::string filename = static_cast<char *>(payload->Data);
+                        SD_TRACE("drop:{}", filename);
+                try {
+                    Asset *asset = AssetStorage::Get().LoadAsset(filename);
+                    if (asset) {
+                    }
+                } catch (const Exception &e) {
+                    SD_ERROR(e.what());
+                }
+            }
+            ImGui::EndDragDropTarget();
+        }
     }
     ImGui::End();
     ImGui::PopStyleVar();

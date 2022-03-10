@@ -5,6 +5,8 @@
 
 namespace SD {
 
+constexpr const char* DROP_ASSET_ITEM = "DROP_ASSET_ITEM";
+
 class Asset;
 
 class ContentBrowser : public System {

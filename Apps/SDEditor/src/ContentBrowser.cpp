@@ -127,6 +127,7 @@ static void DrawModelCreation(const std::filesystem::path& directory,
 }
 
 void ContentBrowser::OnImGui() {
+    auto& storage = AssetStorage::Get();
     ImGui::Begin("Content Browser");
     static bool create_new_asset = false;
     static std::function<void(bool*)> asset_creation_ui;
@@ -147,7 +148,7 @@ void ContentBrowser::OnImGui() {
         ImGui::EndPopup();
     }
 
-    const std::filesystem::path root_path = AssetStorage::Get().GetDirectory();
+    const std::filesystem::path root_path = storage.GetDirectory();
     if (m_current_directory != std::filesystem::path(root_path)) {
         if (ImGui::Button("<-")) {
             m_current_directory = m_current_directory.parent_path();
@@ -178,10 +179,11 @@ void ContentBrowser::OnImGui() {
         ImGui::ImageButton((ImTextureID)(intptr_t)icon->GetId(),
                            {thumbnail_size, thumbnail_size});
 
-        if (ImGui::BeginDragDropSource()) {
+        if (!is_directory && ImGui::BeginDragDropSource()) {
             const std::string item_path = relative_path.string();
-            ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", item_path.c_str(),
+            ImGui::SetDragDropPayload(DROP_ASSET_ITEM, item_path.c_str(),
                                       item_path.size() + 1);
+            ImGui::TextUnformatted(item_path.c_str());
             ImGui::EndDragDropSource();
         }
 

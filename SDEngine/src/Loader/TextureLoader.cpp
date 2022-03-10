@@ -24,6 +24,7 @@ Ref<Texture> TextureLoader::LoadTextureCube(
         }
         texture->SetPixels(0, 0, face, surface->w, surface->h, 1,
                            surface->pixels);
+        SDL_FreeSurface(surface);
     }
     return texture;
 }
