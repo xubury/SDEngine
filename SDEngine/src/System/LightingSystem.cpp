@@ -221,7 +221,6 @@ void LightingSystem::OnImGui() {
     }
     ImGui::End();
     ImGui::Begin("Depth Map");
-    ImGui::Checkbox("Layer Debug", &m_debug);
     ImGui::InputInt("Layer", &m_debug_layer);
     ImGui::DrawTexture(*m_cascade_debug_fb->GetTexture());
     ImGui::End();
@@ -236,8 +235,8 @@ void LightingSystem::OnRender() {
         RenderSSAO();
     }
     RenderDeferred();
-    Device::Get().Enable(Operation::BLEND);
     RenderEmissive();
+    Device::Get().Enable(Operation::BLEND);
 
     Device::Get().ReadBuffer(m_gbuffer.get(), G_ENTITY_ID);
     Device::Get().DrawBuffer(renderer->GetFramebuffer(), 1);
@@ -381,10 +380,9 @@ void LightingSystem::RenderDeferred() {
         m_deferred_shader->SetBool("u_light.is_cast_shadow",
                                    light.IsCastShadow());
         if (light.IsCastShadow()) {
-            m_deferred_shader->SetTexture("u_light.cascade_map",
+            m_deferred_shader->SetTexture("u_cascade_map",
                                           light.GetCascadeMap()->GetTexture());
             m_deferred_shader->SetInt("u_layer", m_debug_layer);
-            m_deferred_shader->SetBool("u_debug", m_debug);
             const auto &planes = light.GetCascadePlanes();
             m_deferred_shader->SetInt("u_num_of_cascades", planes.size());
             for (size_t i = 0; i < planes.size(); ++i) {

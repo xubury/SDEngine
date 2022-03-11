@@ -80,7 +80,6 @@ class SD_SYSTEM_API LightingSystem : public System {
     Ref<Shader> m_cascade_debug_shader;
     Ref<Framebuffer> m_cascade_debug_fb;
     int m_debug_layer{0};
-    bool m_debug{true};
 
     Ref<Shader> m_emssive_shader;
 
