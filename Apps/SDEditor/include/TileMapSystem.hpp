@@ -22,8 +22,10 @@ class TileMapSystem : public System {
     void OnImGui() override;
     void OnRender() override;
 
-   private:
+    void SetViewport(float left, float top, float width, float height);
     void ManipulateScene();
+
+   private:
     Ref<Texture> m_outline_texture;
 
     TileBrush m_brush;
@@ -32,7 +34,7 @@ class TileMapSystem : public System {
     ImFileDialogInfo m_fileDialogInfo;
 
     // Selected sprite and its uvs
-    TextureAsset *m_texture_asset;
+    ResourceId m_texture_id;
     std::array<glm::vec2, 2> m_uvs{glm::vec2{0, 0}, glm::vec2{0, 0}};
     int m_priority;
 
@@ -40,9 +42,6 @@ class TileMapSystem : public System {
 
     Operation m_operation;
 
-    HandlerRegistration m_viewport_size_handler;
-    HandlerRegistration m_viewport_pos_handler;
-    HandlerRegistration m_viewport_state_handler;
     Viewport m_viewport;
 };
 

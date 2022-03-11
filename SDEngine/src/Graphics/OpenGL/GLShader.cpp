@@ -143,8 +143,10 @@ void GLShader::SetMat4(const std::string& name, const glm::mat4& value) {
 }
 
 void GLShader::SetTexture(const std::string& name, const Texture* texture) {
-    uint8_t id = glGetUniformLocation(m_id, name.c_str()) % MAX_TEXTURES;
-    SetInt(name, id);
+    int id = glGetUniformLocation(m_id, name.c_str()) % MAX_TEXTURES;
+    if (texture) {
+        SetInt(name, id);
+    }
     SetTexture(id, texture);
 }
 

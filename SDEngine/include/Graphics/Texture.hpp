@@ -41,8 +41,8 @@ class SD_GRAPHICS_API Texture : public Resource {
 
     virtual ~Texture() = default;
 
-    virtual void Bind() const = 0;
-    virtual void Unbind() const = 0;
+    // virtual void Bind() const = 0;
+    // virtual void Unbind() const = 0;
 
     virtual void SetSlot(uint32_t slot) const = 0;
 

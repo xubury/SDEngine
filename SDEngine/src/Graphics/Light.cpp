@@ -6,7 +6,9 @@ const int SHADOW_MAP_WIDTH = 8192;
 const int SHADOW_MAP_HEIGHT = 8192;
 
 Light::Light()
-    : m_is_cast_shadow(false),
+    : m_cascade_planes{1000.f / 50.f, 1000.f / 25.f, 1000.f / 10.f,
+                       1000.f / 2.f, 1000.f},
+      m_is_cast_shadow(false),
       m_is_directional(false),
       m_ambient(1.0f),
       m_diffuse(1.0f),
@@ -69,12 +71,10 @@ float Light::GetQuadratic() const { return m_quadratic; }
 void Light::CreateShadowMap() {
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
     m_cascade_map = Framebuffer::Create();
-    const int num_of_layers = std::max<int>(m_projection_views.size(), 1);
-    m_cascade_map->Attach(
-        TextureSpec(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, num_of_layers, 1,
-                    TextureType::TEX_2D_ARRAY, DataFormat::DEPTH,
-                    DataFormatType::FLOAT16, TextureWrap::BORDER,
-                    TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
+    m_cascade_map->Attach(TextureSpec(
+        SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, 5, 1, TextureType::TEX_2D_ARRAY,
+        DataFormat::DEPTH, DataFormatType::FLOAT16, TextureWrap::BORDER,
+        TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
     m_cascade_map->Setup();
     m_cascade_map->GetTexture()->SetBorderColor(&color);
 }
@@ -133,25 +133,11 @@ static glm::mat4 GetLightSpaceMatrix(const Transform &transform,
 }
 
 void Light::ComputeCascadeLightMatrix(const Transform &transform,
-                                      const Camera &camera,
-                                      const std::vector<float> &factors) {
+                                      const Camera &camera) {
     const float fov = camera.GetFOV();
     const float aspect = camera.GetNearWidth() / camera.GetNearHeight();
-    const float far_z = camera.GetFarZ();
-    const uint32_t size = factors.size() + 1;
-    m_cascade_planes.resize(size);
-    for (uint32_t i = 0; i < size; ++i) {
-        if (i == size - 1) {
-            m_cascade_planes[i] = far_z;
-        } else {
-            m_cascade_planes[i] = factors[i] * far_z;
-        }
-    }
-    if (size != m_projection_views.size()) {
-        m_projection_views.resize(size);
-        DestroyShadowMap();
-        CreateShadowMap();
-    }
+    const uint32_t size = m_cascade_planes.size();
+    m_projection_views.resize(size);
     for (uint32_t i = 0; i < size; ++i) {
         const float near_plane =
             i == 0 ? camera.GetNearZ() : m_cascade_planes[i - 1];

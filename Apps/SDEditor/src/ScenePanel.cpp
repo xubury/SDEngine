@@ -378,6 +378,10 @@ void ScenePanel::DrawComponents(Entity &entity) {
             if (ImGui::Checkbox("Cast Shadow", &isCastShadow)) {
                 light.SetCastShadow(isCastShadow);
             }
+            auto planes = light.GetCascadePlanes();
+            if(ImGui::InputFloat4("Cascades", planes.data())) {
+                light.SetCascadePlanes(planes);
+            }
             if (!light.IsDirectional()) {
                 float constant = light.GetConstant();
                 if (ImGui::SliderFloat("Constant", &constant, 0.f, 1.0f)) {

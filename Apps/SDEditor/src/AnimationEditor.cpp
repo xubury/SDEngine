@@ -48,24 +48,7 @@ void AnimationEditor::OnPop() {
 void AnimationEditor::OnImGui() {
     ImGui::Begin("Anmiation Editor");
     {
-        // ImGui::InputText("##Path", m_texture_path.data(),
-        // m_texture_path.size(),
-        //                  ImGuiInputTextFlags_ReadOnly);
-        ImGui::SameLine();
-        if (ImGui::Button("Open")) {
-            m_is_dialog_open = true;
-            m_dialog_info.type = ImGuiFileDialogType::OPEN_FILE;
-            m_dialog_info.title = "Open File";
-            m_dialog_info.file_name = "";
-            m_dialog_info.directory_path = AssetStorage::Get().GetDirectory();
-            m_dialog_info.regex_match = IMG_FILTER;
-        }
-        if (m_is_dialog_open) {
-            // m_texture_asset = AssetStorage::Get().LoadAsset<TextureAsset>(
-            //     m_dialog_info.result_path.string());
-
-            SelectAsset<TextureAsset>(&m_texture_id);
-        }
+        SelectAsset<TextureAsset>(&m_texture_id);
         auto &storage = AssetStorage::Get();
         if (storage.Exists<TextureAsset>(m_texture_id)) {
             auto texture =

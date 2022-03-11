@@ -50,6 +50,9 @@ class SD_GRAPHICS_API Light {
         return m_projection_views;
     }
 
+    void SetCascadePlanes(const std::vector<float> &planes) {
+        m_cascade_planes = planes;
+    }
     const std::vector<float> &GetCascadePlanes() const {
         return m_cascade_planes;
     }
@@ -58,8 +61,7 @@ class SD_GRAPHICS_API Light {
                                  const Camera *camera);
 
     void ComputeCascadeLightMatrix(const Transform &transform,
-                                   const Camera &camera,
-                                   const std::vector<float> &factors);
+                                   const Camera &camera);
 
     Framebuffer *GetCascadeMap() const { return m_cascade_map.get(); }
 

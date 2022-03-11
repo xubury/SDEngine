@@ -84,7 +84,7 @@ void SkyboxSystem::OnRender() {
 
     Device::Get().SetDepthfunc(DepthFunc::LESS_EQUAL);
     if (m_skybox) {
-        m_skybox_shader->SetTexture("skybox", m_skybox.get());
+        m_skybox_shader->SetTexture("u_skybox", m_skybox.get());
     }
 
     Device::Get().SetFramebuffer(renderer->GetFramebuffer());

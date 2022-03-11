@@ -16,12 +16,8 @@ namespace SD {
 EditorLayer::EditorLayer(int width, int height, int msaa)
     : Layer("EditorLayer"),
       m_viewport_pos(0, 0),
-      m_viewport_pos_update(true),
       m_viewport_size(width, height),
       m_viewport_size_update(true),
-      m_viewport_focus(false),
-      m_viewport_hover(false),
-      m_viewport_state_update(true),
       m_msaa(msaa),
       m_is_runtime(false),
       m_quitting(false),
@@ -196,18 +192,6 @@ void EditorLayer::OnViewportUpdate() {
         ViewportSizeEvent event{m_viewport_size.x, m_viewport_size.y};
         EventSystem::Get().PublishEvent(event);
         m_viewport_size_update = false;
-    }
-
-    if (m_viewport_pos_update) {
-        ViewportPosEvent event{m_viewport_pos.x, m_viewport_pos.y};
-        EventSystem::Get().PublishEvent(event);
-        m_viewport_pos_update = false;
-    }
-
-    if (m_viewport_state_update) {
-        ViewportStateEvent event{m_viewport_focus, m_viewport_hover};
-        EventSystem::Get().PublishEvent(event);
-        m_viewport_state_update = false;
     }
 }
 
@@ -481,9 +465,6 @@ void EditorLayer::DrawViewport() {
         const glm::ivec2 viewport_size = {wsize.x, wsize.y};
         const glm::ivec2 viewport_pos = {min_region.x + wpos.x,
                                          min_region.y + wpos.y};
-        const bool viewport_hover =
-            ImGui::IsWindowHovered() && !ImGuizmo::IsOver();
-        const bool viewport_focus = ImGui::IsWindowFocused();
 
         if (m_viewport_size != viewport_size && viewport_size.x > 0 &&
             viewport_size.y > 0) {
@@ -495,14 +476,13 @@ void EditorLayer::DrawViewport() {
 
         if (m_viewport_pos != viewport_pos) {
             m_viewport_pos = viewport_pos;
-            m_viewport_pos_update = true;
         }
 
-        if (m_viewport_hover != viewport_hover ||
-            m_viewport_focus != viewport_focus) {
-            m_viewport_hover = viewport_hover;
-            m_viewport_focus = viewport_focus;
-            m_viewport_state_update = true;
+        if (m_tile_map_system) {
+            m_tile_map_system->SetViewport(m_viewport_pos.x, m_viewport_pos.y,
+                                           m_viewport_size.x,
+                                           m_viewport_size.y);
+            m_tile_map_system->ManipulateScene();
         }
 
         const auto &tl_uv = Device::Get().GetUVIndex(0);

@@ -14,8 +14,8 @@ class GLTexture : public Texture {
 
     ~GLTexture();
 
-    void Bind() const override;
-    void Unbind() const override;
+    // void Bind() const override;
+    // void Unbind() const override;
 
     void SetSlot(uint32_t slot) const override;
 

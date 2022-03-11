@@ -186,6 +186,7 @@ void Renderer::Begin(Light& light, Shader& shader) {
 void Renderer::End() {
     Flush();
     StartBatch();
+    Device::Get().SetShader(nullptr);
 }
 
 void Renderer::StartBatch() {

@@ -256,8 +256,7 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
     auto modelView = scene->view<TransformComponent, ModelComponent>();
     Device::Get().SetCullFace(Face::FRONT);
 
-    light.ComputeCascadeLightMatrix(transform, *scene->GetCamera(),
-                                    {1.0f / 50.f, 1.0f / 2.f});
+    light.ComputeCascadeLightMatrix(transform, *scene->GetCamera());
     renderer->Begin(light, *m_cascade_shader);
 
     modelView.each([this](const TransformComponent &transformComp,

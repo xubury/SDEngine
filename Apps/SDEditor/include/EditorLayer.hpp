@@ -76,18 +76,13 @@ class EditorLayer : public Layer {
     SpriteRenderSystem* m_sprite_system;
     PostProcessSystem* m_post_process_system;
     ProfileSystem* m_profile_system;
-    TileMapSystem* m_tile_map_system;
+    TileMapSystem* m_tile_map_system{nullptr};
     AnimationEditor* m_animation_editor;
 
     glm::ivec2 m_viewport_pos;
-    bool m_viewport_pos_update;
 
     glm::ivec2 m_viewport_size;
     bool m_viewport_size_update;
-
-    bool m_viewport_focus;
-    bool m_viewport_hover;
-    bool m_viewport_state_update;
 
     int m_msaa;
 

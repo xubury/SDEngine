@@ -6,6 +6,32 @@
 
 namespace SD {
 
+template <typename T>
+void SelectAsset(ResourceId *selected_id) {
+    auto &storage = AssetStorage::Get();
+
+    if (!storage.Empty<T>()) {
+        const Cache &cache = storage.GetCache<T>();
+        std::string item = storage.Exists<T>(*selected_id)
+                               ? storage.GetAsset<T>(*selected_id)->GetName()
+                               : "NONE";
+        if (ImGui::BeginCombo("##Assets", item.c_str())) {
+            for (auto &[rid, asset] : cache) {
+                item = asset->GetName();
+                const bool is_selected = (*selected_id == asset->GetId());
+                if (ImGui::Selectable(item.c_str(), is_selected)) {
+                    *selected_id = asset->GetId();
+                }
+
+                // Set the initial focus when opening the combo (scrolling +
+                // keyboard navigation focus)
+                if (is_selected) ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+    }
+}
+
 const glm::vec4 COLOR_RED(1, 0, 0, 0.5);
 const glm::vec4 COLOR_GREEN(0, 1, 0, 0.5);
 
@@ -15,7 +41,6 @@ const int LINE_WIDTH = 5;
 TileMapSystem::TileMapSystem()
     : System("TileMapSystem"),
       m_file_dialog_open(false),
-      m_texture_asset(nullptr),
       m_priority(0),
       m_draw_outline(true),
       m_operation(Operation::NONE) {
@@ -37,34 +62,28 @@ TileMapSystem::TileMapSystem()
     free(data);
 }
 
-void TileMapSystem::OnPush() {
-    m_viewport_size_handler = EventSystem::Get().Register<ViewportSizeEvent>(
-        [this](const ViewportSizeEvent &e) {
-            m_viewport.SetSize(e.width, e.height);
-        });
-    m_viewport_pos_handler = EventSystem::Get().Register<ViewportPosEvent>(
-        [this](const ViewportPosEvent &e) { m_viewport.SetSize(e.x, e.y); });
-    m_viewport_state_handler = EventSystem::Get().Register<ViewportStateEvent>(
-        [this](const ViewportStateEvent &e) {
-            m_viewport.SetFocus(e.is_focus);
-            m_viewport.SetHover(e.is_hover);
-        });
-}
+void TileMapSystem::OnPush() {}
 
-void TileMapSystem::OnPop() {
-    EventSystem::Get().RemoveHandler(m_viewport_size_handler);
-    EventSystem::Get().RemoveHandler(m_viewport_pos_handler);
-    EventSystem::Get().RemoveHandler(m_viewport_state_handler);
+void TileMapSystem::OnPop() {}
+
+void TileMapSystem::SetViewport(float left, float top, float width,
+                                float height) {
+    m_viewport.SetPos(left, top);
+    m_viewport.SetSize(width, height);
 }
 
 void TileMapSystem::ManipulateScene() {
-    glm::vec2 clip = m_viewport.MapScreenToClip(
-        glm::ivec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y));
+    if (!ImGui::IsWindowHovered()) {
+        return;
+    }
+    auto [mouse_x, mouse_y] = ImGui::GetMousePos();
+    glm::vec2 clip = m_viewport.MapScreenToClip(glm::ivec2(mouse_x, mouse_y));
     if (std::abs(clip.x) > 1 || std::abs(clip.y) > 1) {
         return;
     }
     m_brush.SetRay(scene->GetCamera()->ComputeCameraRay(clip));
-    if (ImGui::IsMouseClicked(0) && m_texture_asset) {
+    if (ImGui::IsMouseClicked(0) &&
+        AssetStorage::Get().Exists<TextureAsset>(m_texture_id)) {
         switch (m_operation) {
             default: {
             } break;
@@ -76,7 +95,7 @@ void TileMapSystem::ManipulateScene() {
                     auto &frame = comp.frame;
                     child.GetComponent<TransformComponent>().SetWorldPosition(
                         world);
-                    frame.texture_id = m_texture_asset->GetId();
+                    frame.texture_id = m_texture_id;
                     frame.uvs = m_uvs;
                     frame.size = m_brush.tile_size * m_brush.count;
                     child.GetComponent<PriorityComponent>().priority =
@@ -93,9 +112,6 @@ void TileMapSystem::ManipulateScene() {
 }
 
 void TileMapSystem::OnImGui() {
-    if (m_viewport.IsHover()) {
-        ManipulateScene();
-    }
     ImGui::Begin("TileMap System");
     {
         ImGui::Checkbox("Outline", &m_draw_outline);
@@ -112,30 +128,34 @@ void TileMapSystem::OnImGui() {
         // m_texture_path.size(),
         //                  ImGuiInputTextFlags_ReadOnly);
         ImGui::SameLine();
-        if (ImGui::Button("Open")) {
-            m_file_dialog_open = true;
-            m_fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
-            m_fileDialogInfo.title = "Open File";
-            m_fileDialogInfo.file_name = "";
-            m_fileDialogInfo.directory_path =
-                AssetStorage::Get().GetDirectory();
-            m_fileDialogInfo.regex_match = IMG_FILTER;
-        }
-        if (ImGui::FileDialog(&m_file_dialog_open, &m_fileDialogInfo)) {
-            try {
-                // m_texture_asset = AssetStorage::Get().LoadAsset<TextureAsset>(
-                //     m_fileDialogInfo.result_path.string());
-            } catch (const Exception &e) {
-                SD_CORE_ERROR("Error loading sprite: {}", e.what());
-            }
-        }
+        SelectAsset<TextureAsset>(&m_texture_id);
+        // if (ImGui::Button("Open")) {
+        //     m_file_dialog_open = true;
+        //     m_fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
+        //     m_fileDialogInfo.title = "Open File";
+        //     m_fileDialogInfo.file_name = "";
+        //     m_fileDialogInfo.directory_path =
+        //         AssetStorage::Get().GetDirectory();
+        //     m_fileDialogInfo.regex_match = IMG_FILTER;
+        // }
+        // if (ImGui::FileDialog(&m_file_dialog_open, &m_fileDialogInfo)) {
+        //     try {
+        //         // m_texture_asset =
+        //         AssetStorage::Get().LoadAsset<TextureAsset>(
+        //         //     m_fileDialogInfo.result_path.string());
+        //     } catch (const Exception &e) {
+        //         SD_CORE_ERROR("Error loading sprite: {}", e.what());
+        //     }
+        // }
 
         ImGui::TextUnformatted("Brush Prioirty");
         ImGui::SameLine();
         ImGui::InputInt("##Priority", &m_priority);
 
-        if (m_texture_asset) {
-            ImGui::DrawTileTexture(*m_texture_asset->GetTexture(),
+        if (AssetStorage::Get().Exists<TextureAsset>(m_texture_id)) {
+            ImGui::DrawTileTexture(*AssetStorage::Get()
+                                        .GetAsset<TextureAsset>(m_texture_id)
+                                        ->GetTexture(),
                                    m_brush.tile_size, m_uvs, &m_brush.count,
                                    &m_brush.pivot);
         }
@@ -155,9 +175,11 @@ void TileMapSystem::OnRender() {
     glm::vec3 world;
     if (m_brush.GetSelectPos(world)) {
         if (m_operation == Operation::ADD_ENTITY) {
-            if (m_texture_asset) {
-                renderer->DrawTexture(*m_texture_asset->GetTexture(), m_uvs,
-                                      world, glm::quat(), brush_size);
+            if (AssetStorage::Get().Exists<TextureAsset>(m_texture_id)) {
+                renderer->DrawTexture(*AssetStorage::Get()
+                                           .GetAsset<TextureAsset>(m_texture_id)
+                                           ->GetTexture(),
+                                      m_uvs, world, glm::quat(), brush_size);
             }
         }
         // Draw selection

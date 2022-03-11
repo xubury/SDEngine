@@ -58,9 +58,9 @@ void GLTexture::Allocate() {
     }
 }
 
-void GLTexture::Bind() const { glBindTexture(gl_type, m_id); }
+// void GLTexture::Bind() const { glBindTexture(gl_type, m_id); }
 
-void GLTexture::Unbind() const { glBindTexture(gl_type, 0); }
+// void GLTexture::Unbind() const { glBindTexture(gl_type, 0); }
 
 void GLTexture::SetSlot(uint32_t slot) const { glBindTextureUnit(slot, m_id); }
 

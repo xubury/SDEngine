@@ -1,9 +1,12 @@
 #version 450 core
 
-layout(triangles, invocations = 3) in;
+layout(triangles, invocations = 5) in;
 layout(triangle_strip, max_vertices = 3) out;
 
-#include shadow.glsl
+layout (std140) uniform LightData
+{
+    mat4 u_light_matrix[16];
+};
 
 void main() {          
 	for (int i = 0; i < 3; ++i) {
