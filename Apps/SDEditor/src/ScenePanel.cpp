@@ -379,7 +379,11 @@ void ScenePanel::DrawComponents(Entity &entity) {
                 light.SetCastShadow(isCastShadow);
             }
             auto planes = light.GetCascadePlanes();
-            if(ImGui::InputFloat4("Cascades", planes.data())) {
+            int num_of_cascades = planes.size();
+            if (ImGui::SliderInt("Num of Cascades", &num_of_cascades, 1, 4)) {
+                light.SetNumOfCascades(num_of_cascades);
+            }
+            if (ImGui::InputFloat4("Cascades", planes.data())) {
                 light.SetCascadePlanes(planes);
             }
             if (!light.IsDirectional()) {

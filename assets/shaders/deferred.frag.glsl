@@ -8,6 +8,8 @@ layout(location = 0) out vec3 frag_color;
 
 layout(location = 0) in vec2 in_uv;
 
+uniform Light u_light;
+
 uniform sampler2DMS u_lighting;
 uniform sampler2DMS u_position;
 uniform sampler2DMS u_normal;
@@ -16,8 +18,6 @@ uniform sampler2DMS u_ambient;
 uniform sampler2DMS u_background;
 uniform sampler2D u_ssao;
 uniform bool u_ssao_state;
-
-uniform Light u_light;
 
 void main() {
     vec3 color = vec3(0);

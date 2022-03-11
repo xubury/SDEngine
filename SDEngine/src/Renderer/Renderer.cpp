@@ -18,7 +18,7 @@ Renderer::Renderer(int width, int height, int msaa) {
     m_camera_UBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
                                          BufferIOType::DYNAMIC);
 
-    m_light_UBO = UniformBuffer::Create(nullptr, sizeof(LightData),
+    m_shadow_UBO = UniformBuffer::Create(nullptr, sizeof(ShadowData),
                                         BufferIOType::DYNAMIC);
 
     InitRenderer2D();
@@ -148,7 +148,7 @@ void Renderer::DrawMesh(const Shader& shader, const Mesh& mesh) {
 
 void Renderer::SetupShaderUBO(Shader& shader) {
     shader.SetUniformBuffer("Camera", *m_camera_UBO);
-    shader.SetUniformBuffer("LightData", *m_light_UBO);
+    shader.SetUniformBuffer("ShadowData", *m_shadow_UBO);
 }
 
 void Renderer::Begin(Framebuffer* framebuffer, Shader& shader, Camera& camera) {
@@ -171,16 +171,19 @@ void Renderer::Begin(Framebuffer* framebuffer, Camera& camera) {
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
 }
 
-void Renderer::Begin(Light& light, Shader& shader) {
+void Renderer::Begin(Light& light, const Transform& light_trans, Camera& camera,
+                     Shader& shader) {
     Framebuffer* fb = light.GetCascadeMap();
     Device::Get().SetFramebuffer(fb);
     Device::Get().SetViewport(0, 0, fb->GetWidth(), fb->GetHeight());
     Device::Get().Clear(BufferBitMask::DEPTH_BUFFER_BIT);
 
-    const auto& data = light.GetLevelProjectionView();
-    m_light_UBO->UpdateData(data.data(), sizeof(glm::mat4) * data.size());
+    light.ComputeCascadeLightMatrix(light_trans, camera);
 
-    shader.SetUniformBuffer("LightData", *m_light_UBO);
+    auto &pv = light.GetLevelProjectionView();
+    m_shadow_UBO->UpdateData(pv.data(), sizeof(glm::mat4) * pv.size());
+
+    shader.SetUniformBuffer("ShadowData", *m_shadow_UBO);
 }
 
 void Renderer::End() {

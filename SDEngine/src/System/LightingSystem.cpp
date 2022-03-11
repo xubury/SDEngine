@@ -252,12 +252,10 @@ void LightingSystem::OnRender() {
 void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
     if (!light.IsCastShadow()) return;
 
-    Texture *shadowMap = nullptr;
     auto modelView = scene->view<TransformComponent, ModelComponent>();
     Device::Get().SetCullFace(Face::FRONT);
 
-    light.ComputeCascadeLightMatrix(transform, *scene->GetCamera());
-    renderer->Begin(light, *m_cascade_shader);
+    renderer->Begin(light, transform, *scene->GetCamera(), *m_cascade_shader);
 
     modelView.each([this](const TransformComponent &transformComp,
                           const ModelComponent &modelComp) {
@@ -273,12 +271,12 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
         }
     });
     renderer->End();
-    shadowMap = light.GetCascadeMap()->GetTexture();
     Device::Get().SetCullFace(Face::BACK);
 
     Device::Get().SetFramebuffer(m_cascade_debug_fb.get());
     Device::Get().SetViewport(0, 0, m_width, m_height);
-    m_cascade_debug_shader->SetTexture("depthMap", shadowMap);
+    m_cascade_debug_shader->SetTexture("depthMap",
+                                       light.GetCascadeMap()->GetTexture());
     m_cascade_debug_shader->SetInt("layer", m_debug_layer);
     m_cascade_debug_shader->SetFloat("near_plane",
                                      scene->GetCamera()->GetNearZ());
@@ -381,8 +379,7 @@ void LightingSystem::RenderDeferred() {
         if (light.IsCastShadow()) {
             m_deferred_shader->SetTexture("u_cascade_map",
                                           light.GetCascadeMap()->GetTexture());
-            m_deferred_shader->SetInt("u_layer", m_debug_layer);
-            const auto &planes = light.GetCascadePlanes();
+            auto &planes = light.GetCascadePlanes();
             m_deferred_shader->SetInt("u_num_of_cascades", planes.size());
             for (size_t i = 0; i < planes.size(); ++i) {
                 m_deferred_shader->SetFloat(
@@ -391,8 +388,8 @@ void LightingSystem::RenderDeferred() {
         }
         renderer->Submit(*m_deferred_shader, *m_quad, MeshTopology::TRIANGLES,
                          m_quad->GetIndexBuffer()->GetCount(), 0);
-        std::swap(m_light_buffer[input_id], m_light_buffer[output_id]);
         renderer->End();
+        std::swap(m_light_buffer[input_id], m_light_buffer[output_id]);
     });
 }
 

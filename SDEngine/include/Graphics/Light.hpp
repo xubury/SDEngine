@@ -53,12 +53,19 @@ class SD_GRAPHICS_API Light {
     void SetCascadePlanes(const std::vector<float> &planes) {
         m_cascade_planes = planes;
     }
+
+    void SetNumOfCascades(int32_t num_of_cascades) {
+        m_cascade_planes.resize(num_of_cascades);
+        if (m_is_cast_shadow) {
+            // FIXME: just resize the framebuffer?
+            DestroyShadowMap();
+            CreateShadowMap();
+        }
+    }
+
     const std::vector<float> &GetCascadePlanes() const {
         return m_cascade_planes;
     }
-
-    void ComputeLightSpaceMatrix(const Transform &transform,
-                                 const Camera *camera);
 
     void ComputeCascadeLightMatrix(const Transform &transform,
                                    const Camera &camera);
@@ -70,9 +77,6 @@ class SD_GRAPHICS_API Light {
               m_is_cast_shadow)
 
    private:
-    static void ComputeBoundingBox(const Transform &transform,
-                                   const Camera &camera, glm::vec3 &min,
-                                   glm::vec3 &max);
     Ref<Framebuffer> m_cascade_map;
     glm::mat4 m_projection_view;
     // cascade light pv

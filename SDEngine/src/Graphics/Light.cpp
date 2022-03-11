@@ -6,8 +6,7 @@ const int SHADOW_MAP_WIDTH = 8192;
 const int SHADOW_MAP_HEIGHT = 8192;
 
 Light::Light()
-    : m_cascade_planes{1000.f / 50.f, 1000.f / 25.f, 1000.f / 10.f,
-                       1000.f / 2.f, 1000.f},
+    : m_cascade_planes{20.0f, 100.f, 500.f, 1000.f},
       m_is_cast_shadow(false),
       m_is_directional(false),
       m_ambient(1.0f),
@@ -72,9 +71,10 @@ void Light::CreateShadowMap() {
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
     m_cascade_map = Framebuffer::Create();
     m_cascade_map->Attach(TextureSpec(
-        SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, 5, 1, TextureType::TEX_2D_ARRAY,
-        DataFormat::DEPTH, DataFormatType::FLOAT16, TextureWrap::BORDER,
-        TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
+        SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, m_cascade_planes.size(), 1,
+        TextureType::TEX_2D_ARRAY, DataFormat::DEPTH, DataFormatType::FLOAT16,
+        TextureWrap::BORDER, TextureMagFilter::NEAREST,
+        TextureMinFilter::NEAREST));
     m_cascade_map->Setup();
     m_cascade_map->GetTexture()->SetBorderColor(&color);
 }
@@ -107,7 +107,7 @@ static glm::mat4 GetLightSpaceMatrix(const Transform &transform,
     center /= corners.size();
 
     const auto light_view =
-        glm::lookAt(center - transform.GetFront(), center, glm::vec3(0, 1, 0));
+        glm::lookAt(center - transform.GetFront(), center, transform.GetUp());
 
     float min_x = std::numeric_limits<float>::max();
     float max_x = std::numeric_limits<float>::min();
@@ -145,66 +145,6 @@ void Light::ComputeCascadeLightMatrix(const Transform &transform,
         m_projection_views[i] = GetLightSpaceMatrix(
             transform, glm::perspective(fov, aspect, near_plane, far_plane) *
                            camera.GetView());
-    }
-}
-
-void Light::ComputeLightSpaceMatrix(const Transform &transform,
-                                    const Camera *camera) {
-    glm::vec3 pos(0);
-    glm::mat4 projection(1.f);
-    if (m_is_directional) {
-        glm::vec3 min;
-        glm::vec3 max;
-        ComputeBoundingBox(transform, *camera, min, max);
-        // Add a offset for shadow behind the camera frustum
-        min.z -= 300;
-        glm::vec3 size = max - min;
-        glm::vec3 center = (max + min) / 2.f;
-        center.z -= size.z / 2.f;
-        pos = transform.GetRotation() * center;
-        projection = glm::ortho(-size.x / 2.f, size.x / 2.f, -size.y / 2.f,
-                                size.y / 2.f, 0.f, size.z);
-    } else {
-        pos = transform.GetPosition();
-        projection = glm::perspective(m_outer_cutoff * 2, 1.f, 1.f, 1000.f);
-    }
-    const glm::vec3 &up = transform.GetUp();
-    const glm::vec3 &front = transform.GetFront();
-    const glm::mat4 view = glm::lookAt(pos, pos + front, up);
-    m_projection_view = projection * view;
-}
-
-void Light::ComputeBoundingBox(const Transform &transform, const Camera &camera,
-                               glm::vec3 &min, glm::vec3 &max) {
-    min = glm::vec3(std::numeric_limits<float>::max());
-    max = glm::vec3(std::numeric_limits<float>::lowest());
-    const glm::mat3 &rot_inv =
-        glm::transpose(glm::mat3(transform.GetRotation()));
-    const glm::mat3 &cam_to_light =
-        rot_inv * glm::mat3(camera.GetWorldRotation());
-    const float near_z = camera.GetNearZ();
-    const float far_z = camera.GetFarZ();
-
-    const float near_width = camera.GetNearWidth() / 2.f;
-    const float far_width = camera.GetFarWidth() / 2.f;
-    const float near_height = camera.GetNearHeight() / 2.f;
-    const float far_height = camera.GetFarHeight() / 2.f;
-    const glm::vec3 &cam_pos_in_light = rot_inv * camera.GetWorldPosition();
-    std::array<glm::vec3, 8> vertices;
-    vertices[0] = glm::vec3(-near_width, -near_height, -near_z);
-    vertices[1] = glm::vec3(-near_width, near_height, -near_z);
-    vertices[2] = glm::vec3(near_width, -near_height, -near_z);
-    vertices[3] = glm::vec3(near_width, near_height, -near_z);
-
-    vertices[4] = glm::vec3(-far_width, -far_height, -far_z);
-    vertices[5] = glm::vec3(-far_width, far_height, -far_z);
-    vertices[6] = glm::vec3(far_width, -far_height, -far_z);
-    vertices[7] = glm::vec3(far_width, far_height, -far_z);
-
-    for (const auto &vertex : vertices) {
-        const glm::vec3 pos = cam_to_light * vertex + cam_pos_in_light;
-        min = glm::min(min, pos);
-        max = glm::max(max, pos);
     }
 }
 

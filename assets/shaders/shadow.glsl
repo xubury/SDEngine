@@ -1,28 +1,23 @@
-layout (std140) uniform LightData
+layout (std140) uniform ShadowData
 {
     mat4 u_light_matrix[16];
 };
 
-uniform sampler2DArray u_cascade_map;
 uniform int u_num_of_cascades;
-uniform int u_layer;
-uniform float u_cascade_planes[16];
+uniform float u_cascade_planes[4] ;
+uniform sampler2DArray u_cascade_map;
 
 float shadowCalculation(vec3 light_dir, vec3 frag_pos, vec3 normal, mat4 view) {
     vec4 frag_pos_view = view * vec4(frag_pos, 1.0f);
     float depthValue = abs(frag_pos_view.z);
 
-    int layer = u_num_of_cascades -1;
+    int layer = u_num_of_cascades - 1;
     for (int i = 0; i < u_num_of_cascades; ++i) {
         if (depthValue < u_cascade_planes[i]) {
             layer = i;
             break;
         }
     }
-    // FIXME:WTF:
-    // with the next line the skybox will fail, 
-    // without it shadow doesn't work.
-    // layer = u_debug ? layer : u_layer;
     vec4 frag_pos_light = u_light_matrix[layer] * vec4(frag_pos, 1.0);
     // perform perspective divide
     vec3 projCoords = frag_pos_light.xyz / frag_pos_light.w;
