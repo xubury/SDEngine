@@ -33,7 +33,7 @@ class SD_ASSET_API Asset {
 
     ResourceId GetId() const { return m_rid; }
 
-    std::string GetPath() const { return m_path; }
+    std::string GetName() const { return m_name; }
 
    protected:
     friend class AssetStorage;
@@ -41,7 +41,7 @@ class SD_ASSET_API Asset {
     bool m_is_initialized;
     TypeId m_tid;
     ResourceId m_rid;
-    std::string m_path;
+    std::string m_name;
 };
 
 using AssetCreateFunc = std::function<Asset *()>;

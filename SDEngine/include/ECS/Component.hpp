@@ -81,11 +81,10 @@ struct SD_ECS_API TransformComponent {
 
 struct SD_ECS_API ModelComponent {
     ResourceId model_id;
-    std::string model_path;
     glm::vec3 color;
     ModelComponent() = default;
 
-    SERIALIZE(model_id, model_path, color)
+    SERIALIZE(model_id, color)
 };
 
 struct SD_ECS_API LightComponent {
@@ -96,11 +95,10 @@ struct SD_ECS_API LightComponent {
 
 struct SD_ECS_API TextComponent {
     ResourceId font_id;
-    std::string font_path;
     glm::vec4 color = glm::vec4(1);
     std::string text;
 
-    SERIALIZE(font_id, font_path, color, text)
+    SERIALIZE(font_id, color, text)
 };
 
 struct SD_ECS_API CameraComponent {
@@ -116,11 +114,10 @@ struct SD_ECS_API CameraComponent {
 
 struct SD_ECS_API SpriteFrame {
     ResourceId texture_id;
-    std::string texture_path;
     std::array<glm::vec2, 2> uvs;
     glm::vec2 size;
 
-    SERIALIZE(texture_id, texture_path, uvs, size)
+    SERIALIZE(texture_id, uvs, size)
 };
 
 struct SD_ECS_API PriorityComponent {

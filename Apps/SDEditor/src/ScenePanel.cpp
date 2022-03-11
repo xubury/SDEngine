@@ -19,11 +19,11 @@ void SelectAsset(ResourceId *selected_id) {
     if (!storage.Empty<T>()) {
         const Cache &cache = storage.GetCache<T>();
         std::string item = storage.Exists<T>(*selected_id)
-                               ? storage.GetAsset<T>(*selected_id)->GetPath()
+                               ? storage.GetAsset<T>(*selected_id)->GetName()
                                : "NONE";
         if (ImGui::BeginCombo("##Assets", item.c_str())) {
             for (auto &[rid, asset] : cache) {
-                item = asset->GetPath();
+                item = asset->GetName();
                 const bool is_selected = (*selected_id == asset->GetId());
                 if (ImGui::Selectable(item.c_str(), is_selected)) {
                     *selected_id = asset->GetId();

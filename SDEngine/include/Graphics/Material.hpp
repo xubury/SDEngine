@@ -26,10 +26,7 @@ const std::string SD_GRAPHICS_API GetMaterialName(MaterialType type);
 
 class SD_GRAPHICS_API Material {
    public:
-    void SetTexture(MaterialType type, const Ref<Texture> &texture);
-    void SetPath(MaterialType type, const std::string &path) {
-        m_paths[type] = path;
-    }
+    void SetTexture(MaterialType type, const Texture *texture);
 
     bool HasTexture(MaterialType type) const;
 
@@ -37,15 +34,13 @@ class SD_GRAPHICS_API Material {
 
     const Texture *GetTexture(MaterialType type) const;
 
-    std::string GetPath(MaterialType type) const { return m_paths.at(type); }
-
-    const std::unordered_map<MaterialType, Ref<Texture>> &GetTextures() const {
+    const std::unordered_map<MaterialType, const Texture *> &GetTextures()
+        const {
         return m_textures;
     };
 
    private:
-    std::unordered_map<MaterialType, Ref<Texture>> m_textures;
-    std::unordered_map<MaterialType, std::string> m_paths;
+    std::unordered_map<MaterialType, const Texture *> m_textures;
 };
 
 }  // namespace SD

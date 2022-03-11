@@ -297,13 +297,13 @@ void EditorLayer::OnImGui() {
             }
             ImGui::EndPopup();
         }
+        for (auto &system : GetSystems()) {
+            system->OnImGui();
+        }
         MenuBar();
         DrawViewport();
         DrawDebugBuffers();
         ProcessDialog();
-        for (auto &system : GetSystems()) {
-            system->OnImGui();
-        }
         ImGui::End();
     }
 }
@@ -485,7 +485,8 @@ void EditorLayer::DrawViewport() {
             ImGui::IsWindowHovered() && !ImGuizmo::IsOver();
         const bool viewport_focus = ImGui::IsWindowFocused();
 
-        if (m_viewport_size != viewport_size) {
+        if (m_viewport_size != viewport_size && viewport_size.x > 0 &&
+            viewport_size.y > 0) {
             m_viewport_size = viewport_size;
             m_viewport_buffer->Resize(m_viewport_size.x, m_viewport_size.y);
             m_debug_gbuffer->Resize(m_viewport_size.x, m_viewport_size.y);
@@ -552,7 +553,7 @@ void EditorLayer::DrawViewport() {
             if (const ImGuiPayload *payload =
                     ImGui::AcceptDragDropPayload(DROP_ASSET_ITEM)) {
                 std::string filename = static_cast<char *>(payload->Data);
-                        SD_TRACE("drop:{}", filename);
+                SD_TRACE("drop:{}", filename);
                 try {
                     Asset *asset = AssetStorage::Get().LoadAsset(filename);
                     if (asset) {

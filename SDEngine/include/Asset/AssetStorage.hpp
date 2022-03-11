@@ -68,7 +68,8 @@ class SD_ASSET_API AssetStorage {
         cereal::PortableBinaryInputArchive iarchive(is);
         TypeId tid;
         ResourceId rid;
-        iarchive(tid, rid);
+        std::string name;
+        iarchive(tid, rid, name);
 
         Asset* obj = nullptr;
         if (Exists(tid, rid)) {
@@ -77,7 +78,7 @@ class SD_ASSET_API AssetStorage {
             obj = m_asset_types.at(tid).create_func();
             obj->m_tid = tid;
             obj->m_rid = rid;
-            obj->m_path = full_path;
+            obj->m_name = name;
             obj->Deserialize(iarchive);
             Add(obj, obj->m_tid, obj->m_rid);
         }
@@ -85,34 +86,33 @@ class SD_ASSET_API AssetStorage {
     }
 
     template <typename T>
-    T* CreateAsset(const std::string& path) {
-        std::string full_path = ResolvePath(path);
+    T* CreateAsset(const std::string& name) {
         ResourceId rid;
         TypeId tid = GetTypeId<T>();
         Asset* asset = m_asset_types.at(tid).create_func();
         asset->m_tid = tid;
         asset->m_rid = rid;
-        asset->m_path = full_path;
+        asset->m_name = name;
         Add(asset, tid, rid);
-        SaveAsset(asset);
         return dynamic_cast<T*>(asset);
     }
 
-    void SaveAsset(Asset* obj) const {
-        if (std::filesystem::exists(obj->m_path)) {
-            std::filesystem::remove(obj->m_path);
+    void SaveAsset(Asset* obj, const std::string& path) const {
+        std::string full_path = ResolvePath(path);
+        if (std::filesystem::exists(full_path)) {
+            std::filesystem::remove(full_path);
         }
-        std::ofstream os(obj->m_path, std::ios::binary);
+        std::ofstream os(full_path, std::ios::binary);
         os << ASSET_IDENTIFIER;
         cereal::PortableBinaryOutputArchive oarchive(os);
-        oarchive(obj->m_tid, obj->m_rid);
+        oarchive(obj->m_tid, obj->m_rid, obj->m_name);
         obj->Serialize(oarchive);
     }
 
     template <typename T>
-    void SaveAsset(ResourceId rid) const {
+    void SaveAsset(ResourceId rid, const std::string &path) const {
         auto& cache = GetCache<T>();
-        SaveAsset(cache.at(rid));
+        SaveAsset(cache.at(rid), path);
     }
 
     void Add(Asset* data, TypeId tid, ResourceId rid) {
@@ -204,7 +204,7 @@ class SD_ASSET_API AssetStorage {
     const static std::string ASSET_POSFIX;
 
    private:
-    std::string ResolvePath(const std::string& path) {
+    std::string ResolvePath(const std::string& path) const {
         std::filesystem::path full_path = m_directory / path;
         if (!full_path.has_extension()) {
             full_path += ASSET_POSFIX;

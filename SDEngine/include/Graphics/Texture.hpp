@@ -69,6 +69,9 @@ class SD_GRAPHICS_API Texture : public Resource {
     DataFormat GetFormat() const;
     DataFormatType GetFormatType() const;
 
+    void SetPath(const std::string &path) { m_path = path;}
+    const std::string &GetPath() const { return m_path;}
+
    protected:
     Texture(int width, int height, int depth, int samples, TextureType type,
             DataFormat format, DataFormatType format_type, TextureWrap wrap,
@@ -86,6 +89,8 @@ class SD_GRAPHICS_API Texture : public Resource {
     TextureWrap m_wrap;
     TextureMagFilter m_filter;
     TextureMinFilter m_min_filter;
+
+    std::string m_path;
 };
 
 }  // namespace SD

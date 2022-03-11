@@ -26,10 +26,10 @@ class TextureAsset : public Asset {
         m_texture = TextureLoader::LoadTexture2D(
             storage.GetAbsolutePath(m_texture_path));
     }
-    void Import(const std::string &path) {
+    void Import(const Ref<Texture> &texture) {
         auto &storage = AssetStorage::Get();
-        m_texture_path = storage.GetRelativePath(path);
-        m_texture = TextureLoader::LoadTexture2D(path);
+        m_texture_path = storage.GetRelativePath(texture->GetPath());
+        m_texture = texture;
     }
 
     Texture *GetTexture() { return m_texture.get(); }

@@ -42,9 +42,10 @@ static void DrawSceneCreation(const std::filesystem::path& directory,
             ImGui::Separator();
             if (ImGui::Button("Confirm")) {
                 auto& storage = AssetStorage::Get();
-                storage.CreateAsset<SceneAsset>(
-                    (directory / asset_name).generic_string());
+                auto asset = storage.CreateAsset<SceneAsset>(asset_name);
 
+                storage.SaveAsset(asset,
+                                  (directory / asset_name).generic_string());
                 ImGui::CloseCurrentPopup();
                 *open = false;
             }
@@ -105,11 +106,11 @@ static void DrawModelCreation(const std::filesystem::path& directory,
             ImGui::Separator();
             if (ImGui::Button("Confirm")) {
                 auto& storage = AssetStorage::Get();
-                auto asset = storage.CreateAsset<ModelAsset>(
-                    (directory / asset_name).generic_string());
-                asset->Import(model_path);
+                auto asset = storage.CreateAsset<ModelAsset>(asset_name);
+                asset->Import(ModelLoader::LoadModel(model_path));
 
-                storage.SaveAsset(asset);
+                storage.SaveAsset(asset,
+                                  (directory / asset_name).generic_string());
                 ImGui::CloseCurrentPopup();
                 *open = false;
             }

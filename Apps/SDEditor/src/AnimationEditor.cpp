@@ -3,8 +3,34 @@
 
 namespace SD {
 
+template <typename T>
+void SelectAsset(ResourceId *selected_id) {
+    auto &storage = AssetStorage::Get();
+
+    if (!storage.Empty<T>()) {
+        const Cache &cache = storage.GetCache<T>();
+        std::string item = storage.Exists<T>(*selected_id)
+                               ? storage.GetAsset<T>(*selected_id)->GetName()
+                               : "NONE";
+        if (ImGui::BeginCombo("##Assets", item.c_str())) {
+            for (auto &[rid, asset] : cache) {
+                item = asset->GetName();
+                const bool is_selected = (*selected_id == asset->GetId());
+                if (ImGui::Selectable(item.c_str(), is_selected)) {
+                    *selected_id = asset->GetId();
+                }
+
+                // Set the initial focus when opening the combo (scrolling +
+                // keyboard navigation focus)
+                if (is_selected) ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+    }
+}
+
 AnimationEditor::AnimationEditor()
-    : System("Anmiation Editor"), m_texture_asset(nullptr), m_anim_index(0) {}
+    : System("Anmiation Editor"), m_anim_index(0) {}
 
 void AnimationEditor::OnInit() { System::OnInit(); }
 
@@ -15,7 +41,9 @@ void AnimationEditor::OnPush() {
         });
 }
 
-void AnimationEditor::OnPop() { EventSystem::Get().RemoveHandler(m_entity_handler); }
+void AnimationEditor::OnPop() {
+    EventSystem::Get().RemoveHandler(m_entity_handler);
+}
 
 void AnimationEditor::OnImGui() {
     ImGui::Begin("Anmiation Editor");
@@ -32,12 +60,16 @@ void AnimationEditor::OnImGui() {
             m_dialog_info.directory_path = AssetStorage::Get().GetDirectory();
             m_dialog_info.regex_match = IMG_FILTER;
         }
-        if (ImGui::FileDialog(&m_is_dialog_open, &m_dialog_info)) {
+        if (m_is_dialog_open) {
             // m_texture_asset = AssetStorage::Get().LoadAsset<TextureAsset>(
             //     m_dialog_info.result_path.string());
+
+            SelectAsset<TextureAsset>(&m_texture_id);
         }
-        if (m_texture_asset) {
-            auto texture = m_texture_asset->GetTexture();
+        auto &storage = AssetStorage::Get();
+        if (storage.Exists<TextureAsset>(m_texture_id)) {
+            auto texture =
+                storage.GetAsset<TextureAsset>(m_texture_id)->GetTexture();
             ImGui::DrawTileTexture(*texture, m_tile_size, m_uvs, &m_count);
             if (m_selected_entity &&
                 m_selected_entity.HasComponent<SpriteAnimationComponent>()) {
@@ -67,8 +99,7 @@ void AnimationEditor::OnImGui() {
                 }
                 if (ImGui::Button("Add Frame")) {
                     anim_comp.animations[m_anim_index].PushBack(SpriteFrame{
-                        m_texture_asset->GetId(), m_texture_asset->GetPath(),
-                        m_uvs, m_count * m_tile_size});
+                        m_texture_id, m_uvs, m_count * m_tile_size});
                 }
             }
         }
