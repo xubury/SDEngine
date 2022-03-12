@@ -1,12 +1,32 @@
 #include "Loader/TextureLoader.hpp"
 #include "Graphics/Texture.hpp"
-#include "Loader/SDLHelper.hpp"
 #include "Utility/String.hpp"
 
-#include <SDL_image.h>
 #include <fstream>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 namespace SD {
+
+static DataFormat GetDataFormat(int32_t channels) {
+    DataFormat format = DataFormat::RGB;
+    switch (channels) {
+        case 1:
+            format = DataFormat::RED;
+            break;
+        case 2:
+            format = DataFormat::RG;
+            break;
+        case 3:
+            format = DataFormat::RGB;
+            break;
+        case 4:
+            format = DataFormat::RGBA;
+            break;
+    }
+    return format;
+}
 
 Ref<Texture> TextureLoader::LoadTextureCube(
     const std::vector<std::string>& pathes) {
@@ -15,31 +35,39 @@ Ref<Texture> TextureLoader::LoadTextureCube(
         throw Exception("Not enough images to load a texture cube!");
     }
     for (int face = 0; face < 6; ++face) {
-        SDL_Surface* surface = LoadImage(pathes[face]);
+        int32_t width;
+        int32_t height;
+        int32_t channels;
+        uint8_t* img =
+            stbi_load(pathes[face].c_str(), &width, &height, &channels, 0);
         if (face == 0) {
             texture = Texture::Create(
-                TextureSpec(surface->w, surface->h, 1, 1, TextureType::TEX_CUBE,
-                            GetDataFormat(surface), GetDataFormatType(surface),
+                TextureSpec(width, height, 1, 1, TextureType::TEX_CUBE,
+                            GetDataFormat(channels), DataFormatType::UBYTE,
                             TextureWrap::EDGE, TextureMagFilter::LINEAR,
                             TextureMinFilter::LINEAR_LINEAR));
         }
-        texture->SetPixels(0, 0, face, surface->w, surface->h, 1,
-                           surface->pixels);
+        texture->SetPixels(0, 0, face, width, height, 1, img);
         texture->SetPath(pathes[face]);
-        SDL_FreeSurface(surface);
+        stbi_image_free(img);
     }
     return texture;
 }
 
+// FIXME: 16bit should use this stbi_load_16();
+
 Ref<Texture> TextureLoader::LoadTexture2D(const std::string& path) {
-    SDL_Surface* surface = LoadImage(path);
+    int32_t width;
+    int32_t height;
+    int32_t channels;
+    uint8_t* img = stbi_load(path.c_str(), &width, &height, &channels, 0);
     Ref<Texture> texture = Texture::Create(TextureSpec(
-        surface->w, surface->h, 1, 1, TextureType::TEX_2D,
-        GetDataFormat(surface), GetDataFormatType(surface), TextureWrap::EDGE,
-        TextureMagFilter::LINEAR, TextureMinFilter::LINEAR_LINEAR));
-    texture->SetPixels(0, 0, 0, surface->w, surface->h, 1, surface->pixels);
+        width, height, 1, 1, TextureType::TEX_2D, GetDataFormat(channels),
+        DataFormatType::UBYTE, TextureWrap::EDGE, TextureMagFilter::LINEAR,
+        TextureMinFilter::LINEAR_LINEAR));
+    texture->SetPixels(0, 0, 0, width, height, 1, img);
     texture->SetPath(path);
-    SDL_FreeSurface(surface);
+    stbi_image_free(img);
     return texture;
 }
 

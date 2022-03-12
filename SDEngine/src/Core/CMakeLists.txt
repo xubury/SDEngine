@@ -1,5 +1,4 @@
 find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
 find_package(Lua REQUIRED)
 
 set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Core)
@@ -67,14 +66,11 @@ target_link_libraries(sd-core
     sol2
 
     PRIVATE
-    SDL2::SDL2
-    ${SDL2_IMAGE_LIBRARIES})
+    SDL2::SDL2)
 
 target_include_directories(sd-core
     PUBLIC
-    ${SD_ENGINE_SOURCE_DIR}/include
-    PRIVATE
-    ${SDL2_IMAGE_INCLUDE_DIRS})
+    ${SD_ENGINE_SOURCE_DIR}/include)
 
 install(TARGETS sd-core LIBRARY DESTINATION lib)
 

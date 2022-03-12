@@ -1,5 +1,3 @@
-find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
 find_package(assimp REQUIRED)
 find_package(Freetype REQUIRED)
 
@@ -12,16 +10,14 @@ set(Loader_Include
     ${Include_Root}/FontLoader.hpp
     ${Include_Root}/ModelLoader.hpp
     ${Include_Root}/ShaderLoader.hpp
-    ${Include_Root}/SceneLoader.hpp
-    ${Include_Root}/SDLHelper.hpp)
+    ${Include_Root}/SceneLoader.hpp)
 
 set(Loader_Src
     ${Src_Root}/TextureLoader.cpp
     ${Src_Root}/FontLoader.cpp
     ${Src_Root}/ModelLoader.cpp
     ${Src_Root}/ShaderLoader.cpp
-    ${Src_Root}/SceneLoader.cpp
-    ${Src_Root}/SDLHelper.cpp)
+    ${Src_Root}/SceneLoader.cpp)
 
 add_library(sd-loader ${Loader_Src})
 
@@ -38,7 +34,9 @@ endif()
 
 target_include_directories(sd-loader
     PUBLIC
-    ${SD_ENGINE_SOURCE_DIR}/include)
+    ${SD_ENGINE_SOURCE_DIR}/include
+    PRIVATE
+    ${SD_ENGINE_SOURCE_DIR}/libs)
 
 target_link_libraries(sd-loader 
     PUBLIC
@@ -47,8 +45,6 @@ target_link_libraries(sd-loader
     sd-ecs
 
     PRIVATE
-    SDL2::SDL2
-    ${SDL2_IMAGE_LIBRARIES}
     assimp::assimp
     Freetype::Freetype)
 
