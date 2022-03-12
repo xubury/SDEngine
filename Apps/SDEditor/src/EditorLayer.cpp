@@ -481,10 +481,8 @@ void EditorLayer::DrawViewport() {
             m_tile_map_system->ManipulateScene();
         }
 
-        const auto &tl_uv = Device::Get().GetUVIndex(0);
-        const auto &br_uv = Device::Get().GetUVIndex(2);
-        ImGui::DrawTexture(*m_viewport_buffer->GetTexture(),
-                           ImVec2(tl_uv.x, tl_uv.y), ImVec2(br_uv.x, br_uv.y));
+        ImGui::DrawTexture(*m_viewport_buffer->GetTexture(), ImVec2(0, 1),
+                           ImVec2(1, 0));
 
         ImGuizmo::SetRect(m_viewport_pos.x, m_viewport_pos.y, m_viewport_size.x,
                           m_viewport_size.y);
@@ -548,22 +546,18 @@ void EditorLayer::DrawViewport() {
 void EditorLayer::DrawDebugBuffers() {
     if (m_mode == THREE_DIMENSIONAL) {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
-        const auto &tl_uv = Device::Get().GetUVIndex(0);
-        const auto &br_uv = Device::Get().GetUVIndex(2);
         ImGui::Begin("GBuffer");
         {
             for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
                 ImGui::DrawTexture(*m_debug_gbuffer->GetTexture(i),
-                                   ImVec2(tl_uv.x, tl_uv.y),
-                                   ImVec2(br_uv.x, br_uv.y));
+                                   ImVec2(0, 1), ImVec2(1, 0));
             }
         }
         ImGui::End();
         ImGui::Begin("SSAO");
         {
-            ImGui::DrawTexture(*m_lighting_system->GetSSAO(),
-                               ImVec2(tl_uv.x, tl_uv.y),
-                               ImVec2(br_uv.x, br_uv.y));
+            ImGui::DrawTexture(*m_lighting_system->GetSSAO(), ImVec2(0, 1),
+                               ImVec2(1, 0));
         }
         ImGui::End();
         ImGui::PopStyleVar();

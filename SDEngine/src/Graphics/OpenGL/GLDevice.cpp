@@ -159,9 +159,4 @@ void GLDevice::BlitFramebuffer(const Framebuffer *src, int src_x, int src_y,
                            dst_y + dst_height, gl_mask, gl_filter);
 }
 
-const glm::ivec2 GLDevice::GetUVIndex(int index) const {
-    const glm::ivec2 UV_INDEX[4] = {{0, 1}, {1, 1}, {1, 0}, {0, 0}};
-    return UV_INDEX[index];
-}
-
 }  // namespace SD

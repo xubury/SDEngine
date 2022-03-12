@@ -27,7 +27,8 @@ const char32_t UNICODE_RANGE[] = {
     0x4E00, 0x9FFF,  // CJK Ideograms
     0};
 
-Ref<Font> FontLoader::LoadFont(const std::string &path, int32_t pixel_height) {
+Ref<Font> FontLoader::LoadFont(const std::string &path, int32_t pixel_height,
+                               bool flip_uv) {
     FT_Library ft;
     FT_Face face;
     if (FT_Init_FreeType(&ft)) {
@@ -40,21 +41,22 @@ Ref<Font> FontLoader::LoadFont(const std::string &path, int32_t pixel_height) {
     } else {
         font = CreateRef<Font>(pixel_height);
         FT_Set_Pixel_Sizes(face, 0, pixel_height);
-        LoadGlyph(face, font.get());
+        LoadGlyph(face, font.get(), flip_uv);
     }
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
     return font;
 }
 
-void FontLoader::LoadGlyph(FT_Face face, Font *font) {
+void FontLoader::LoadGlyph(FT_Face face, Font *font, bool flip_uv) {
     for (size_t i = 0; UNICODE_RANGE[i] != 0; i += 2) {
-        LoadRangedGlyph(face, font, UNICODE_RANGE[i], UNICODE_RANGE[i + 1] + 1);
+        LoadRangedGlyph(face, font, UNICODE_RANGE[i], UNICODE_RANGE[i + 1] + 1,
+                        flip_uv);
     }
 }
 
 void FontLoader::LoadRangedGlyph(FT_Face face, Font *font, char32_t start,
-                                 char32_t end) {
+                                 char32_t end, bool flip_uv) {
     const int64_t NUM_GLYPHS = end - start;
     if (NUM_GLYPHS < 0) return;
 
@@ -68,7 +70,8 @@ void FontLoader::LoadRangedGlyph(FT_Face face, Font *font, char32_t start,
     uint32_t y = 0;
     auto glyph = Texture::Create(
         TextureSpec(tex_size, tex_size, 1, 1, TextureType::TEX_2D,
-                    DataFormat::ALPHA, DataFormatType::UBYTE));
+                    DataFormat::ALPHA, DataFormatType::UBYTE, TextureWrap::EDGE,
+                    TextureMagFilter::LINEAR, TextureMinFilter::LINEAR_LINEAR));
     for (char32_t ch = start; ch < end; ++ch) {
         if (FT_Load_Char(face, ch,
                          FT_LOAD_RENDER | FT_LOAD_FORCE_AUTOHINT |
@@ -98,6 +101,7 @@ void FontLoader::LoadRangedGlyph(FT_Face face, Font *font, char32_t start,
                             static_cast<float>(y) / tex_size);
         c.uv[1] = glm::vec2(static_cast<float>(x + ft_bmp->width) / tex_size,
                             static_cast<float>(y + ft_bmp->rows) / tex_size);
+        if (flip_uv) std::swap(c.uv[0].y, c.uv[1].y);
         c.glyph = glyph;
 
         font->SetCharacter(ch, std::move(c));

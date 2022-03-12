@@ -72,8 +72,6 @@ class SD_GRAPHICS_API Device {
                                  int dst_width, int dst_height,
                                  BufferBitMask mask, BlitFilter filter) = 0;
 
-    virtual const glm::ivec2 GetUVIndex(int index) const = 0;
-
    protected:
     Device() = default;
 };

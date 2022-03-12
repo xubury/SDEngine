@@ -10,8 +10,8 @@ namespace SD {
 const static std::array<glm::vec4, 4> QUAD_VERTEX_POS = {
     glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f), glm::vec4(0.5f, -0.5f, 0.0f, 1.0f),
     glm::vec4(0.5f, 0.5f, 0.0f, 1.0f), glm::vec4(-0.5f, 0.5f, 0.0f, 1.0f)};
-const static std::array<glm::vec2, 2> QUAD_UV = {glm::vec2(0, 0),
-                                                 glm::vec2(1, 1)};
+const static std::array<glm::vec2, 4> QUAD_UV = {
+    glm::vec2(0, 0), glm::vec2(1, 0), glm::vec2(1, 1), glm::vec2(0, 1)};
 
 Renderer::Renderer(int width, int height, int msaa) {
     SD_CORE_TRACE("Initializing Renderer");
@@ -317,12 +317,11 @@ void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color,
         NextQuadBatch();
     }
     for (uint32_t i = 0; i < 4; ++i) {
-        glm::ivec2 uv_index = Device::Get().GetUVIndex(i);
         m_data.quad_buffer_ptr->vertices[i].position =
             transform * QUAD_VERTEX_POS[i];
         m_data.quad_buffer_ptr->vertices[i].color = color;
-        m_data.quad_buffer_ptr->vertices[i].uv.x = uv_index.x;
-        m_data.quad_buffer_ptr->vertices[i].uv.y = uv_index.y;
+        m_data.quad_buffer_ptr->vertices[i].uv.x = QUAD_UV[i].x;
+        m_data.quad_buffer_ptr->vertices[i].uv.y = QUAD_UV[i].y;
         m_data.quad_buffer_ptr->vertices[i].tex_id = 0;
         m_data.quad_buffer_ptr->vertices[i].entity_id = entity_id;
     }
@@ -367,12 +366,11 @@ void Renderer::DrawTexture(const Texture& texture,
     }
 
     for (uint32_t i = 0; i < 4; ++i) {
-        glm::ivec2 uv_index = Device::Get().GetUVIndex(i);
         m_data.quad_buffer_ptr->vertices[i].position =
             transform * QUAD_VERTEX_POS[i];
         m_data.quad_buffer_ptr->vertices[i].color = color;
-        m_data.quad_buffer_ptr->vertices[i].uv.x = uv[uv_index.x].x;
-        m_data.quad_buffer_ptr->vertices[i].uv.y = uv[uv_index.y].y;
+        m_data.quad_buffer_ptr->vertices[i].uv.x = uv[QUAD_UV[i].x].x;
+        m_data.quad_buffer_ptr->vertices[i].uv.y = uv[QUAD_UV[i].y].y;
         m_data.quad_buffer_ptr->vertices[i].tex_id = textureIndex;
         m_data.quad_buffer_ptr->vertices[i].entity_id = entity_id;
     }
@@ -384,7 +382,7 @@ void Renderer::DrawTexture(const Texture& texture, const glm::vec3& pos,
                            const glm::quat& rot, const glm::vec2& scale,
                            const glm::vec4& color, uint32_t entity_id) {
     DrawTexture(
-        texture, QUAD_UV,
+        texture, {glm::vec2(0), glm::vec2(1)},
         glm::translate(glm::mat4(1.0f), pos) * glm::toMat4(rot) *
             glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
         color, entity_id);
@@ -392,7 +390,8 @@ void Renderer::DrawTexture(const Texture& texture, const glm::vec3& pos,
 
 void Renderer::DrawTexture(const Texture& texture, const glm::mat4& transform,
                            const glm::vec4& color, uint32_t entity_id) {
-    DrawTexture(texture, QUAD_UV, transform, color, entity_id);
+    DrawTexture(texture, {glm::vec2(0), glm::vec2(1)}, transform, color,
+                entity_id);
 }
 
 void Renderer::DrawBillboard(const Texture& texture,

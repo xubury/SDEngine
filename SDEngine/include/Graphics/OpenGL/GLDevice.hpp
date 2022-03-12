@@ -43,12 +43,10 @@ class GLDevice : public Device {
 
     void ReadBuffer(const Framebuffer *fb, int buf) override;
 
-    void BlitFramebuffer(const Framebuffer *src, int src_x, int src_y, int src_width,
-                         int src_height, Framebuffer *dst, int dst_x, int dst_y,
-                         int dst_width, int dst_height, BufferBitMask mask,
-                         BlitFilter filter) override;
-
-    const glm::ivec2 GetUVIndex(int index) const override;
+    void BlitFramebuffer(const Framebuffer *src, int src_x, int src_y,
+                         int src_width, int src_height, Framebuffer *dst,
+                         int dst_x, int dst_y, int dst_width, int dst_height,
+                         BufferBitMask mask, BlitFilter filter) override;
 };
 
 }  // namespace SD

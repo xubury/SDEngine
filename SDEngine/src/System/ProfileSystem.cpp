@@ -16,7 +16,7 @@ ProfileSystem::ProfileSystem(int width, int height)
 
 void ProfileSystem::OnInit() {
     System::OnInit();
-    m_font = FontLoader::LoadFont("assets/fonts/msyh.ttc", 20);
+    m_font = FontLoader::LoadFont("assets/fonts/msyh.ttc", 20, true);
 }
 
 void ProfileSystem::OnPush() {
@@ -46,7 +46,8 @@ void ProfileSystem::OnRender() {
     snprintf(fps_str.data(), fps_str.size(), "FPS: %.2f(%.2f ms)",
              m_fps.GetFPS(), m_fps.GetFrameTime());
 
-    // Device::Get().DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw colors
+    // Device::Get().DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw
+    // colors
     renderer->Begin(renderer->GetFramebuffer(), m_camera);
     renderer->SetTextOrigin(
         -m_camera.GetNearWidth() / 2,
@@ -55,8 +56,7 @@ void ProfileSystem::OnRender() {
     renderer->DrawText(*m_font, fps_str, glm::mat4(1.0f));
     renderer->DrawText(*m_font, "\n中文测试: 你好", glm::mat4(1.0f));
     renderer->DrawText(*m_font, "\n中文測試: 你好", glm::mat4(1.0f));
-    renderer->DrawText(*m_font, "\n日本語テスト: こんにちは",
-                             glm::mat4(1.0f));
+    renderer->DrawText(*m_font, "\n日本語テスト: こんにちは", glm::mat4(1.0f));
     // Primitive test
     // Line
     const int PRIMITIVE_SIZE = 15;
@@ -66,12 +66,11 @@ void ProfileSystem::OnRender() {
     for (int i = 0; i < 10; ++i) {
         glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
         color[i % 3] = 1.0f;
-        renderer->DrawLine(
-            glm::vec3(pos.x + PRIMITIVE_SIZE * i,
-                      pos.y + i % 2 * PRIMITIVE_SIZE, 0),
-            glm::vec3(pos.x + PRIMITIVE_SIZE * (i + 1),
-                      pos.y + (i + 1) % 2 * PRIMITIVE_SIZE, 0),
-            color);
+        renderer->DrawLine(glm::vec3(pos.x + PRIMITIVE_SIZE * i,
+                                     pos.y + i % 2 * PRIMITIVE_SIZE, 0),
+                           glm::vec3(pos.x + PRIMITIVE_SIZE * (i + 1),
+                                     pos.y + (i + 1) % 2 * PRIMITIVE_SIZE, 0),
+                           color);
     }
     // Quad
     renderer->DrawText(*m_font, "\nQuad test: ", glm::mat4(1.0f));
@@ -80,9 +79,8 @@ void ProfileSystem::OnRender() {
     for (int i = 0; i < 10; ++i) {
         glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
         color[i % 3] = 1.0f;
-        renderer->DrawQuad(
-            glm::vec3(pos.x, pos.y, 0), glm::quat(1, 0, 0, 0),
-            glm::vec3(PRIMITIVE_SIZE, PRIMITIVE_SIZE, 1), color);
+        renderer->DrawQuad(glm::vec3(pos.x, pos.y, 0), glm::quat(1, 0, 0, 0),
+                           glm::vec3(PRIMITIVE_SIZE, PRIMITIVE_SIZE, 1), color);
         pos.x += PRIMITIVE_SIZE;
     }
     // Circle
@@ -93,8 +91,8 @@ void ProfileSystem::OnRender() {
         glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
         color[i % 3] = 1.0f;
         renderer->DrawCircle(glm::vec3(pos.x, pos.y, 0),
-                                   glm::vec2(PRIMITIVE_SIZE, PRIMITIVE_SIZE),
-                                   color, 1.0f, 0.1f);
+                             glm::vec2(PRIMITIVE_SIZE, PRIMITIVE_SIZE), color,
+                             1.0f, 0.1f);
         pos.x += PRIMITIVE_SIZE;
     }
     renderer->End();
