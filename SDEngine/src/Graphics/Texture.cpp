@@ -35,14 +35,9 @@ Texture::Texture(int width, int height, int depth, int samples,
       m_wrap(wrap),
       m_filter(filter),
       m_min_filter(min_filter) {
-    if (min_filter == TextureMinFilter::LINEAR ||
-        min_filter == TextureMinFilter::NEAREST) {
-        m_mipmap_levels = 1;
-    } else {
-        m_mipmap_levels = std::max(static_cast<int>(std::floor(
-                                       std::log2(std::max(m_width, m_height)))),
-                                   1);
-    }
+    m_mipmap_levels = std::max(
+        static_cast<int>(std::floor(std::log2(std::max(m_width, m_height)))),
+        1);
 }
 
 bool Texture::operator==(const Texture &other) const {

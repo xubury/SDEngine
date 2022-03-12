@@ -45,22 +45,18 @@ void EditorLayer::OnInit() {
 }
 
 void EditorLayer::InitBuffers() {
-    m_viewport_buffer = Framebuffer::Create();
-    m_viewport_buffer->Attach(TextureSpec(
-        m_viewport_size.x, m_viewport_size.y, 1, 1, TextureType::TEX_2D,
-        DataFormat::RGB, DataFormatType::UBYTE, TextureWrap::EDGE,
-        TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
-    m_viewport_buffer->Attach(TextureSpec(
-        m_viewport_size.x, m_viewport_size.y, 1, 1, TextureType::TEX_2D,
-        DataFormat::RED, DataFormatType::UINT, TextureWrap::EDGE,
-        TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
-    m_debug_gbuffer = Framebuffer::Create();
+    m_viewport_buffer =
+        Framebuffer::Create(m_viewport_size.x, m_viewport_size.y, 1, 1);
+    m_viewport_buffer->Attach(AttachmentDescription{
+        AttachmentType::TEXTURE_2D, DataFormat::RGB, DataFormatType::UBYTE});
+    m_viewport_buffer->Attach(AttachmentDescription{
+        AttachmentType::TEXTURE_2D, DataFormat::RED, DataFormatType::UINT});
+    m_debug_gbuffer =
+        Framebuffer::Create(m_viewport_size.x, m_viewport_size.y, 1, 1);
     for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
-        m_debug_gbuffer->Attach(TextureSpec(
-            m_viewport_size.x, m_viewport_size.y, 1, 1, TextureType::TEX_2D,
-            GetTextureFormat(GeometryBufferType(i)),
-            GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
-            TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
+        m_debug_gbuffer->Attach(AttachmentDescription{
+            AttachmentType::TEXTURE_2D, GetTextureFormat(GeometryBufferType(i)),
+            GetTextureFormatType(GeometryBufferType(i))});
     }
 
     m_viewport_buffer->Setup();

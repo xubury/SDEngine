@@ -21,8 +21,8 @@ struct SD_GRAPHICS_API TextureSpec {
     TextureSpec(int width, int height, int depth, uint8_t samples,
                 TextureType type, DataFormat format, DataFormatType format_type,
                 TextureWrap wrap = TextureWrap::REPEAT,
-                TextureMagFilter filter = TextureMagFilter::LINEAR,
-                TextureMinFilter min_filter = TextureMinFilter::LINEAR_LINEAR)
+                TextureMagFilter filter = TextureMagFilter::NEAREST,
+                TextureMinFilter min_filter = TextureMinFilter::NEAREST)
         : width(width),
           height(height),
           depth(depth),
@@ -69,8 +69,8 @@ class SD_GRAPHICS_API Texture : public Resource {
     DataFormat GetFormat() const;
     DataFormatType GetFormatType() const;
 
-    void SetPath(const std::string &path) { m_path = path;}
-    const std::string &GetPath() const { return m_path;}
+    void SetPath(const std::string &path) { m_path = path; }
+    const std::string &GetPath() const { return m_path; }
 
    protected:
     Texture(int width, int height, int depth, int samples, TextureType type,

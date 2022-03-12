@@ -19,22 +19,18 @@ Renderer::Renderer(int width, int height, int msaa) {
                                          BufferIOType::DYNAMIC);
 
     m_shadow_UBO = UniformBuffer::Create(nullptr, sizeof(ShadowData),
-                                        BufferIOType::DYNAMIC);
+                                         BufferIOType::DYNAMIC);
 
     InitRenderer2D();
 
-    m_framebuffer = Framebuffer::Create();
-    m_framebuffer->Attach(
-        TextureSpec(width, height, 1, msaa, TextureType::TEX_2D_MULTISAMPLE,
-                    DataFormat::RGBA, DataFormatType::UBYTE, TextureWrap::EDGE,
-                    TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
-    m_framebuffer->Attach(
-        TextureSpec(width, height, 1, msaa, TextureType::TEX_2D_MULTISAMPLE,
-                    DataFormat::RED, DataFormatType::UINT, TextureWrap::EDGE,
-                    TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
-    m_framebuffer->Attach(TextureSpec(
-        width, height, 1, msaa, TextureType::TEX_2D_MULTISAMPLE,
-        DataFormat::DEPTH, DataFormatType::FLOAT16, TextureWrap::EDGE));
+    m_framebuffer = Framebuffer::Create(width, height, 1, msaa);
+    m_framebuffer->Attach(AttachmentDescription{
+        AttachmentType::TEXTURE_2D, DataFormat::RGBA, DataFormatType::UBYTE});
+    m_framebuffer->Attach(AttachmentDescription{
+        AttachmentType::TEXTURE_2D, DataFormat::RED, DataFormatType::UINT});
+    m_framebuffer->Attach(AttachmentDescription{AttachmentType::RENDERBUFFER,
+                                                DataFormat::DEPTH,
+                                                DataFormatType::FLOAT16});
     m_framebuffer->Setup();
 }
 
@@ -180,7 +176,7 @@ void Renderer::Begin(Light& light, const Transform& light_trans, Camera& camera,
 
     light.ComputeCascadeLightMatrix(light_trans, camera);
 
-    auto &pv = light.GetLevelProjectionView();
+    auto& pv = light.GetLevelProjectionView();
     m_shadow_UBO->UpdateData(pv.data(), sizeof(glm::mat4) * pv.size());
 
     shader.SetUniformBuffer("ShadowData", *m_shadow_UBO);

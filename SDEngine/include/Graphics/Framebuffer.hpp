@@ -10,21 +10,19 @@
 
 namespace SD {
 
-enum AttchmentType { TEXTURE = 0, RENDERBUFFER = 1 };
+enum AttachmentType { TEXTURE_2D = 0, TEXTURE_2D_ARRAY = 1, RENDERBUFFER = 2 };
 
 struct AttachmentDescription {
-    AttchmentType type;
+    AttachmentType type;
     DataFormat format;
     DataFormatType format_type;
-    TextureWrap wrap;
-    TextureMagFilter mag_filter;
-    TextureMinFilter min_filter;
 };
 
 class SD_GRAPHICS_API Framebuffer : public Resource {
    public:
-    static Ref<Framebuffer> Create();
-
+    static Ref<Framebuffer> Create(int32_t width, int32_t height, int32_t depth,
+                                   int8_t samples);
+    Framebuffer(int32_t width, int32_t height, int32_t depth, int8_t samples);
     virtual ~Framebuffer() = default;
 
     Framebuffer(const Framebuffer &) = delete;
@@ -34,11 +32,10 @@ class SD_GRAPHICS_API Framebuffer : public Resource {
     int GetHeight() const { return m_height; };
 
     void Attach(const AttachmentDescription &attchment);
-    void Attach(const TextureSpec &spec);
-    void Attach(const RenderbufferSpec &renderbuffer);
 
-    virtual void Resize(int width, int height) = 0;
+    void Resize(int32_t width, int32_t height, int32_t depth = 1);
     virtual void Setup() = 0;
+    virtual void Invalidate() = 0;
 
     virtual void ReadPixels(uint32_t attachment_id, int level, int x, int y,
                             int z, int w, int h, int d, size_t size,
@@ -58,11 +55,10 @@ class SD_GRAPHICS_API Framebuffer : public Resource {
    protected:
     int32_t m_width;
     int32_t m_height;
-    Framebuffer() = default;
+    int32_t m_depth;
+    int8_t m_samples;
 
     std::vector<AttachmentDescription> m_attachment_descs;
-    std::vector<TextureSpec> m_texture_specs;
-    std::vector<RenderbufferSpec> m_renderbuffer_specs;
 };
 
 }  // namespace SD

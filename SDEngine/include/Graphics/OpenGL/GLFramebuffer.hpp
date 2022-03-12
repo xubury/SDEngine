@@ -11,11 +11,11 @@ class GLTexture;
 
 class GLFramebuffer : public Framebuffer {
    public:
-    GLFramebuffer();
+    GLFramebuffer(int32_t width, int32_t height, int32_t depth, int8_t samples);
     virtual ~GLFramebuffer();
 
-    virtual void Resize(int width, int height) override;
-    virtual void Setup() override;
+    void Setup() override;
+    void Invalidate() override;
 
     void ReadPixels(uint32_t attachment_id, int level, int x, int y, int z,
                     int w, int h, int d, size_t size,
@@ -31,13 +31,8 @@ class GLFramebuffer : public Framebuffer {
     Texture *GetTexture(uint32_t attachment_id) override;
     const Texture *GetTexture(uint32_t attachment_id) const override;
 
-    const std::vector<GLenum> &GetDrawables() const { return m_drawables; }
-
-    void Clear();
-
    private:
     std::vector<Ref<void>> m_attachments;
-    std::vector<GLenum> m_drawables;
     std::vector<GLenum> m_attachment_types;
 };
 

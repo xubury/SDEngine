@@ -20,7 +20,8 @@ Ref<Texture> TextureLoader::LoadTextureCube(
             texture = Texture::Create(
                 TextureSpec(surface->w, surface->h, 1, 1, TextureType::TEX_CUBE,
                             GetDataFormat(surface), GetDataFormatType(surface),
-                            TextureWrap::EDGE));
+                            TextureWrap::EDGE, TextureMagFilter::LINEAR,
+                            TextureMinFilter::LINEAR_LINEAR));
         }
         texture->SetPixels(0, 0, face, surface->w, surface->h, 1,
                            surface->pixels);
@@ -34,7 +35,8 @@ Ref<Texture> TextureLoader::LoadTexture2D(const std::string& path) {
     SDL_Surface* surface = LoadImage(path);
     Ref<Texture> texture = Texture::Create(TextureSpec(
         surface->w, surface->h, 1, 1, TextureType::TEX_2D,
-        GetDataFormat(surface), GetDataFormatType(surface), TextureWrap::EDGE));
+        GetDataFormat(surface), GetDataFormatType(surface), TextureWrap::EDGE,
+        TextureMagFilter::LINEAR, TextureMinFilter::LINEAR_LINEAR));
     texture->SetPixels(0, 0, 0, surface->w, surface->h, 1, surface->pixels);
     texture->SetPath(path);
     SDL_FreeSurface(surface);

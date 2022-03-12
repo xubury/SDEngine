@@ -120,17 +120,15 @@ void LightingSystem::InitShaders() {
 
 void LightingSystem::InitSSAO() {
     // ssao target
-    TextureSpec spec(m_width, m_height, 1, 1, TextureType::TEX_2D,
-                     DataFormat::RED, DataFormatType::FLOAT16,
-                     TextureWrap::EDGE, TextureMagFilter::NEAREST,
-                     TextureMinFilter::NEAREST);
+    AttachmentDescription attach_desc{AttachmentType::TEXTURE_2D,
+                                      DataFormat::RED, DataFormatType::FLOAT16};
 
-    m_ssao_buffer = Framebuffer::Create();
-    m_ssao_buffer->Attach(spec);
+    m_ssao_buffer = Framebuffer::Create(m_width, m_height, 1, 1);
+    m_ssao_buffer->Attach(attach_desc);
     m_ssao_buffer->Setup();
 
-    m_ssao_blur_buffer = Framebuffer::Create();
-    m_ssao_blur_buffer->Attach(spec);
+    m_ssao_blur_buffer = Framebuffer::Create(m_width, m_height, 1, 1);
+    m_ssao_blur_buffer->Attach(attach_desc);
     m_ssao_blur_buffer->Setup();
 }
 
@@ -170,30 +168,27 @@ void LightingSystem::InitSSAOKernel() {
 
 void LightingSystem::InitLighting() {
     for (int i = 0; i < 2; ++i) {
-        m_light_buffer[i] = Framebuffer::Create();
-        m_light_buffer[i]->Attach(TextureSpec(
-            m_width, m_height, 1, m_msaa, TextureType::TEX_2D_MULTISAMPLE,
-            DataFormat::RGB, DataFormatType::FLOAT16, TextureWrap::EDGE,
-            TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
+        m_light_buffer[i] = Framebuffer::Create(m_width, m_height, 1, m_msaa);
+        m_light_buffer[i]->Attach(
+            AttachmentDescription{AttachmentType::TEXTURE_2D, DataFormat::RGB,
+                                  DataFormatType::FLOAT16});
         m_light_buffer[i]->Setup();
     }
 
-    m_gbuffer = Framebuffer::Create();
+    m_gbuffer = Framebuffer::Create(m_width, m_height, 1, m_msaa);
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-        m_gbuffer->Attach(TextureSpec(
-            m_width, m_height, 1, m_msaa, TextureType::TEX_2D_MULTISAMPLE,
-            GetTextureFormat(GeometryBufferType(i)),
-            GetTextureFormatType(GeometryBufferType(i)), TextureWrap::EDGE,
-            TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
+        m_gbuffer->Attach(AttachmentDescription{
+            AttachmentType::TEXTURE_2D, GetTextureFormat(GeometryBufferType(i)),
+            GetTextureFormatType(GeometryBufferType(i))});
     }
-    m_gbuffer->Attach(RenderbufferSpec(
-        m_width, m_height, m_msaa, DataFormat::DEPTH, DataFormatType::FLOAT16));
+    m_gbuffer->Attach(AttachmentDescription{AttachmentType::RENDERBUFFER,
+                                            DataFormat::DEPTH,
+                                            DataFormatType::FLOAT32});
     m_gbuffer->Setup();
 
-    m_cascade_debug_fb = Framebuffer::Create();
-    m_cascade_debug_fb->Attach(TextureSpec(m_width, m_height, 1, 1,
-                                           TextureType::TEX_2D, DataFormat::RGB,
-                                           DataFormatType::UBYTE));
+    m_cascade_debug_fb = Framebuffer::Create(m_width, m_height, 1, 1);
+    m_cascade_debug_fb->Attach(AttachmentDescription{
+        AttachmentType::TEXTURE_2D, DataFormat::RGB, DataFormatType::UBYTE});
     m_cascade_debug_fb->Setup();
 }
 

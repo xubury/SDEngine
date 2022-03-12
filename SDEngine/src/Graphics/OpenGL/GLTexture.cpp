@@ -82,7 +82,8 @@ void GLTexture::SetPixels(int x, int y, int z, int width, int height, int depth,
                                 gl_format, gl_format_type, data);
             break;
     }
-    if (m_mipmap_levels > 1) glGenerateTextureMipmap(m_id);
+    SD_TRACE("m_mipmap_levels:{}", m_mipmap_levels);
+    glGenerateTextureMipmap(m_id);
 }
 
 void GLTexture::SetBorderColor(const void *color) {

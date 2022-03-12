@@ -69,17 +69,26 @@ float Light::GetQuadratic() const { return m_quadratic; }
 
 void Light::CreateShadowMap() {
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    m_cascade_map = Framebuffer::Create();
-    m_cascade_map->Attach(TextureSpec(
-        SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, m_cascade_planes.size(), 1,
-        TextureType::TEX_2D_ARRAY, DataFormat::DEPTH, DataFormatType::FLOAT16,
-        TextureWrap::BORDER, TextureMagFilter::NEAREST,
-        TextureMinFilter::NEAREST));
+    m_cascade_map = Framebuffer::Create(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT,
+                                        m_cascade_planes.size(), 1);
+    m_cascade_map->Attach(
+        AttachmentDescription{AttachmentType::TEXTURE_2D_ARRAY,
+                              DataFormat::DEPTH, DataFormatType::FLOAT16});
     m_cascade_map->Setup();
+    m_cascade_map->GetTexture()->SetWrap(TextureWrap::BORDER);
     m_cascade_map->GetTexture()->SetBorderColor(&color);
 }
 
 void Light::DestroyShadowMap() { m_cascade_map.reset(); }
+
+void Light::SetNumOfCascades(int32_t num_of_cascades) {
+    const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    m_cascade_planes.resize(num_of_cascades);
+    m_cascade_map->Resize(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT,
+                          m_cascade_planes.size());
+    m_cascade_map->GetTexture()->SetWrap(TextureWrap::BORDER);
+    m_cascade_map->GetTexture()->SetBorderColor(&color);
+}
 
 static std::vector<glm::vec4> GetFrustumCorners(const glm::mat4 &project_view) {
     const auto &inv_pv = glm::inverse(project_view);

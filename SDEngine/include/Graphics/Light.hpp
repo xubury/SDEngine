@@ -54,15 +54,7 @@ class SD_GRAPHICS_API Light {
         m_cascade_planes = planes;
     }
 
-    void SetNumOfCascades(int32_t num_of_cascades) {
-        m_cascade_planes.resize(num_of_cascades);
-        if (m_is_cast_shadow) {
-            // FIXME: just resize the framebuffer?
-            DestroyShadowMap();
-            CreateShadowMap();
-        }
-    }
-
+    void SetNumOfCascades(int32_t num_of_cascades);
     const std::vector<float> &GetCascadePlanes() const {
         return m_cascade_planes;
     }
