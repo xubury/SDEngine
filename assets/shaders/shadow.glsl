@@ -7,6 +7,9 @@ uniform int u_num_of_cascades;
 uniform float u_cascade_planes[4] ;
 uniform sampler2DArray u_cascade_map;
 
+const int half_kernel_width = 1;
+const float bias_mod = 0.5f;
+
 float shadowCalculation(vec3 light_dir, vec3 frag_pos, vec3 normal, mat4 view) {
     vec4 frag_pos_view = view * vec4(frag_pos, 1.0f);
     float depthValue = abs(frag_pos_view.z);
@@ -30,14 +33,11 @@ float shadowCalculation(vec3 light_dir, vec3 frag_pos, vec3 normal, mat4 view) {
 
     // check whether current frag pos is in shadow
     float bias = max(0.05 * (1.0 - dot(normal, light_dir)), 0.005);
-    const float bias_mod = 0.5f;
     bias *= 1 / (u_cascade_planes[layer] * bias_mod);
 
     float shadow = 0.0f;
-
     //PCF
     vec2 tex_size = 1.0f / vec2(textureSize(u_cascade_map, 0));
-    const int half_kernel_width = 1;
     for (int x = -half_kernel_width; x <= half_kernel_width; ++x) {
         for (int y = -half_kernel_width; y <= half_kernel_width; ++y) {
             vec3 sample_pos = vec3(projCoords.xy + vec2(x, y) * tex_size, layer);

@@ -3,12 +3,12 @@
 
 namespace SD {
 
-GLTexture::GLTexture(int width, int height, int dpeth, int samples,
+GLTexture::GLTexture(int width, int height, int depth, int8_t samples,
                      TextureType type, DataFormat format,
                      DataFormatType format_type, TextureWrap wrap,
-                     TextureMagFilter filter, TextureMinFilter min_filter)
-    : Texture(width, height, dpeth, samples, type, format, format_type, wrap,
-              filter, min_filter),
+                     TextureMinFilter min_filter, TextureMagFilter mag_filter)
+    : Texture(width, height, depth, samples, type, format, format_type, wrap,
+              min_filter, mag_filter),
       gl_type(0),
       gl_internal_format(0),
       gl_format(0),
@@ -22,8 +22,8 @@ GLTexture::GLTexture(int width, int height, int dpeth, int samples,
 
     if (m_type != TextureType::TEX_2D_MULTISAMPLE) {
         SetWrap(m_wrap);
-        SetMagFilter(m_filter);
         SetMinFilter(m_min_filter);
+        SetMagFilter(m_mag_filter);
     }
 }
 
@@ -109,9 +109,9 @@ void GLTexture::SetWrap(TextureWrap wrap) {
 }
 
 void GLTexture::SetMagFilter(TextureMagFilter filter) {
-    m_filter = filter;
+    m_mag_filter = filter;
 
-    GLint gl_filter = Translate(m_filter);
+    GLint gl_filter = Translate(m_mag_filter);
     glTextureParameteri(m_id, GL_TEXTURE_MAG_FILTER, gl_filter);
 }
 

@@ -101,10 +101,10 @@ void Renderer::InitRenderer2D() {
     m_data.circle_vao->AddVertexBuffer(circle_vbo, layout);
     m_data.circle_vao->SetIndexBuffer(quad_ebo);
 
-    m_data.default_texture = Texture::Create(
-        TextureSpec(1, 1, 1, 1, TextureType::TEX_2D, DataFormat::RGBA,
-                    DataFormatType::FLOAT16, TextureWrap::REPEAT,
-                    TextureMagFilter::LINEAR, TextureMinFilter::LINEAR));
+    m_data.default_texture =
+        Texture::Create(1, 1, 1, 1, TextureType::TEX_2D, DataFormat::RGBA,
+                        DataFormatType::FLOAT16, TextureWrap::REPEAT,
+                        TextureMinFilter::LINEAR, TextureMagFilter::LINEAR);
     const float color[4] = {1, 1, 1, 1};
     m_data.default_texture->SetPixels(0, 0, 0, 1, 1, 1, color);
 

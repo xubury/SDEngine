@@ -154,10 +154,10 @@ void LightingSystem::InitSSAOKernel() {
                         0.0f);  // rotate around z-axis (in tangent space)
         ssao_noise[i] = glm::normalize(noise);
     }
-    m_ssao_noise = Texture::Create(
-        TextureSpec(4, 4, 1, 1, TextureType::TEX_2D, DataFormat::RGB,
-                    DataFormatType::FLOAT16, TextureWrap::REPEAT,
-                    TextureMagFilter::NEAREST, TextureMinFilter::NEAREST));
+    m_ssao_noise =
+        Texture::Create(4, 4, 1, 1, TextureType::TEX_2D, DataFormat::RGB,
+                        DataFormatType::FLOAT16, TextureWrap::REPEAT,
+                        TextureMinFilter::NEAREST, TextureMagFilter::NEAREST);
     m_ssao_noise->SetPixels(0, 0, 0, 4, 4, 1, ssao_noise.data());
 
     for (uint32_t i = 0; i < kernel_size; ++i) {

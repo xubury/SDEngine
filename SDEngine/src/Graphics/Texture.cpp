@@ -5,14 +5,17 @@
 
 namespace SD {
 
-Ref<Texture> Texture::Create(const TextureSpec &spec) {
+Ref<Texture> Texture::Create(int width, int height, int depth, int8_t samples,
+                             TextureType type, DataFormat format,
+                             DataFormatType format_type, TextureWrap wrap,
+                             TextureMinFilter min_filter,
+                             TextureMagFilter mag_filter) {
     Ref<Texture> texture;
     switch (Device::GetAPI()) {
         case Device::API::OpenGL:
-            texture = CreateRef<GLTexture>(spec.width, spec.height, spec.depth,
-                                           spec.samples, spec.type, spec.format,
-                                           spec.format_type, spec.wrap,
-                                           spec.filter, spec.min_filter);
+            texture = CreateRef<GLTexture>(width, height, depth, samples, type,
+                                           format, format_type, wrap,
+                                           min_filter, mag_filter);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
@@ -21,10 +24,10 @@ Ref<Texture> Texture::Create(const TextureSpec &spec) {
     return texture;
 }
 
-Texture::Texture(int width, int height, int depth, int samples,
+Texture::Texture(int width, int height, int depth, int8_t samples,
                  TextureType type, DataFormat format,
                  DataFormatType format_type, TextureWrap wrap,
-                 TextureMagFilter filter, TextureMinFilter min_filter)
+                 TextureMinFilter min_filter, TextureMagFilter mag_filter)
     : m_width(width),
       m_height(height),
       m_depth(depth),
@@ -33,8 +36,8 @@ Texture::Texture(int width, int height, int depth, int samples,
       m_format(format),
       m_format_type(format_type),
       m_wrap(wrap),
-      m_filter(filter),
-      m_min_filter(min_filter) {
+      m_min_filter(min_filter),
+      m_mag_filter(mag_filter) {
     m_mipmap_levels = std::max(
         static_cast<int>(std::floor(std::log2(std::max(m_width, m_height)))),
         1);

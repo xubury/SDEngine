@@ -44,26 +44,26 @@ void GLFramebuffer::Setup() {
         switch (spec.type) {
             case AttachmentType::TEXTURE_2D: {
                 auto texture = Texture::Create(
-                    TextureSpec(m_width, m_height, m_depth, m_samples,
-                                m_samples > 1 ? TextureType::TEX_2D_MULTISAMPLE
-                                              : TextureType::TEX_2D,
-                                spec.format, spec.format_type));
+                    m_width, m_height, m_depth, m_samples,
+                    m_samples > 1 ? TextureType::TEX_2D_MULTISAMPLE
+                                  : TextureType::TEX_2D,
+                    spec.format, spec.format_type);
                 m_attachments.emplace_back(texture);
                 glNamedFramebufferTexture(m_id, attachment, texture->GetId(),
                                           0);
             } break;
             case AttachmentType::TEXTURE_2D_ARRAY: {
-                auto texture = Texture::Create(TextureSpec(
+                auto texture = Texture::Create(
                     m_width, m_height, m_depth, m_samples,
-                    TextureType::TEX_2D_ARRAY, spec.format, spec.format_type));
+                    TextureType::TEX_2D_ARRAY, spec.format, spec.format_type);
                 m_attachments.emplace_back(texture);
                 glNamedFramebufferTexture(m_id, attachment, texture->GetId(),
                                           0);
             } break;
             case AttachmentType::RENDERBUFFER: {
-                auto renderbuffer = Renderbuffer::Create(
-                    RenderbufferSpec(m_width, m_height, m_samples, spec.format,
-                                     spec.format_type));
+                auto renderbuffer =
+                    Renderbuffer::Create(m_width, m_height, m_samples,
+                                         spec.format, spec.format_type);
                 m_attachments.emplace_back(renderbuffer);
                 glNamedFramebufferRenderbuffer(
                     m_id, attachment, GL_RENDERBUFFER, renderbuffer->GetId());

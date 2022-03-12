@@ -10,9 +10,8 @@ namespace SD {
 class TextureAsset : public Asset {
    public:
     TextureAsset() {
-        m_texture = Texture::Create(TextureSpec(1, 1, 1, 1, TextureType::TEX_2D,
-                                                DataFormat::RGB,
-                                                DataFormatType::UBYTE));
+        m_texture = Texture::Create(1, 1, 1, 1, TextureType::TEX_2D,
+                                    DataFormat::RGB, DataFormatType::UBYTE);
     }
     ~TextureAsset() { SD_CORE_TRACE("deleting asset"); }
 

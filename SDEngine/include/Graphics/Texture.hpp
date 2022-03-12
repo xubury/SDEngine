@@ -7,37 +7,14 @@
 
 namespace SD {
 
-struct SD_GRAPHICS_API TextureSpec {
-    int width;
-    int height;
-    int depth;
-    uint8_t samples;
-    TextureType type;
-    DataFormat format;
-    DataFormatType format_type;
-    TextureWrap wrap;
-    TextureMagFilter filter;
-    TextureMinFilter min_filter;
-    TextureSpec(int width, int height, int depth, uint8_t samples,
-                TextureType type, DataFormat format, DataFormatType format_type,
-                TextureWrap wrap = TextureWrap::EDGE,
-                TextureMagFilter filter = TextureMagFilter::NEAREST,
-                TextureMinFilter min_filter = TextureMinFilter::NEAREST)
-        : width(width),
-          height(height),
-          depth(depth),
-          samples(samples),
-          type(type),
-          format(format),
-          format_type(format_type),
-          wrap(wrap),
-          filter(filter),
-          min_filter(min_filter) {}
-};
-
 class SD_GRAPHICS_API Texture : public Resource {
    public:
-    static Ref<Texture> Create(const TextureSpec &spec);
+    static Ref<Texture> Create(
+        int width, int height, int depth, int8_t samples, TextureType type,
+        DataFormat format, DataFormatType format_type,
+        TextureWrap wrap = TextureWrap::EDGE,
+        TextureMinFilter min_filter = TextureMinFilter::NEAREST,
+        TextureMagFilter mag_filter = TextureMagFilter::NEAREST);
 
     virtual ~Texture() = default;
 
@@ -73,9 +50,9 @@ class SD_GRAPHICS_API Texture : public Resource {
     const std::string &GetPath() const { return m_path; }
 
    protected:
-    Texture(int width, int height, int depth, int samples, TextureType type,
+    Texture(int width, int height, int depth, int8_t samples, TextureType type,
             DataFormat format, DataFormatType format_type, TextureWrap wrap,
-            TextureMagFilter filter, TextureMinFilter min_filter);
+            TextureMinFilter min_filter, TextureMagFilter mag_filter);
 
     int m_width;
     int m_height;
@@ -87,8 +64,8 @@ class SD_GRAPHICS_API Texture : public Resource {
     DataFormat m_format;
     DataFormatType m_format_type;
     TextureWrap m_wrap;
-    TextureMagFilter m_filter;
     TextureMinFilter m_min_filter;
+    TextureMagFilter m_mag_filter;
 
     std::string m_path;
 };

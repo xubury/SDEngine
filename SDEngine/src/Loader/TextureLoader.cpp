@@ -43,10 +43,10 @@ Ref<Texture> TextureLoader::LoadTextureCube(
             stbi_load(pathes[face].c_str(), &width, &height, &channels, 0);
         if (face == 0) {
             texture = Texture::Create(
-                TextureSpec(width, height, 1, 1, TextureType::TEX_CUBE,
-                            GetDataFormat(channels), DataFormatType::UBYTE,
-                            TextureWrap::EDGE, TextureMagFilter::LINEAR,
-                            TextureMinFilter::LINEAR_LINEAR));
+                width, height, 1, 1, TextureType::TEX_CUBE,
+                GetDataFormat(channels), DataFormatType::UBYTE,
+                TextureWrap::EDGE, TextureMinFilter::LINEAR_LINEAR,
+                TextureMagFilter::LINEAR);
         }
         texture->SetPixels(0, 0, face, width, height, 1, img);
         texture->SetPath(pathes[face]);
@@ -63,10 +63,10 @@ Ref<Texture> TextureLoader::LoadTexture2D(const std::string& path) {
     int32_t height;
     int32_t channels;
     uint8_t* img = stbi_load(path.c_str(), &width, &height, &channels, 0);
-    Ref<Texture> texture = Texture::Create(TextureSpec(
+    Ref<Texture> texture = Texture::Create(
         width, height, 1, 1, TextureType::TEX_2D, GetDataFormat(channels),
-        DataFormatType::UBYTE, TextureWrap::EDGE, TextureMagFilter::LINEAR,
-        TextureMinFilter::LINEAR_LINEAR));
+        DataFormatType::UBYTE, TextureWrap::EDGE,
+        TextureMinFilter::LINEAR_LINEAR, TextureMagFilter::LINEAR);
     texture->SetPixels(0, 0, 0, width, height, 1, img);
     texture->SetPath(path);
     stbi_image_free(img);
