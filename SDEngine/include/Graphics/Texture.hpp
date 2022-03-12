@@ -20,7 +20,7 @@ struct SD_GRAPHICS_API TextureSpec {
     TextureMinFilter min_filter;
     TextureSpec(int width, int height, int depth, uint8_t samples,
                 TextureType type, DataFormat format, DataFormatType format_type,
-                TextureWrap wrap = TextureWrap::REPEAT,
+                TextureWrap wrap = TextureWrap::EDGE,
                 TextureMagFilter filter = TextureMagFilter::NEAREST,
                 TextureMinFilter min_filter = TextureMinFilter::NEAREST)
         : width(width),

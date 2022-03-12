@@ -82,7 +82,6 @@ void GLTexture::SetPixels(int x, int y, int z, int width, int height, int depth,
                                 gl_format, gl_format_type, data);
             break;
     }
-    SD_TRACE("m_mipmap_levels:{}", m_mipmap_levels);
     glGenerateTextureMipmap(m_id);
 }
 

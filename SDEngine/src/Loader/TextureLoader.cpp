@@ -38,6 +38,7 @@ Ref<Texture> TextureLoader::LoadTextureCube(
         int32_t width;
         int32_t height;
         int32_t channels;
+        SD_CORE_TRACE("Loading image from {}", pathes[face]);
         uint8_t* img =
             stbi_load(pathes[face].c_str(), &width, &height, &channels, 0);
         if (face == 0) {
@@ -57,6 +58,7 @@ Ref<Texture> TextureLoader::LoadTextureCube(
 // FIXME: 16bit should use this stbi_load_16();
 
 Ref<Texture> TextureLoader::LoadTexture2D(const std::string& path) {
+    SD_CORE_TRACE("Loading image from {}", path);
     int32_t width;
     int32_t height;
     int32_t channels;
