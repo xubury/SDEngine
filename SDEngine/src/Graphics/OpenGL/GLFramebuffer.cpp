@@ -11,8 +11,8 @@ GLFramebuffer::~GLFramebuffer() { glDeleteFramebuffers(1, &m_id); }
 void GLFramebuffer::Clear() {
     m_attachments.clear();
     m_drawables.clear();
-    glDeleteFramebuffers(1, &m_id);
-    glCreateFramebuffers(1, &m_id);
+    glInvalidateNamedFramebufferData(m_id, m_attachment_types.size(),
+                                     m_attachment_types.data());
 }
 
 void GLFramebuffer::Resize(int width, int height) {
@@ -55,6 +55,7 @@ void GLFramebuffer::Setup() {
                 m_drawables.push_back(attachment);
                 break;
         }
+        m_attachment_types.emplace_back(attachment);
         m_attachments.emplace_back(texture);
         glNamedFramebufferTexture(m_id, attachment, texture->GetId(), 0);
     }
@@ -79,6 +80,7 @@ void GLFramebuffer::Setup() {
                 m_drawables.push_back(attachment);
                 break;
         }
+        m_attachment_types.emplace_back(attachment);
         m_attachments.emplace_back(renderbuffer);
         glNamedFramebufferRenderbuffer(m_id, attachment, GL_RENDERBUFFER,
                                        renderbuffer->GetId());

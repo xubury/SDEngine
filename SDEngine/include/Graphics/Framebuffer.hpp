@@ -10,6 +10,17 @@
 
 namespace SD {
 
+enum AttchmentType { TEXTURE = 0, RENDERBUFFER = 1 };
+
+struct AttachmentDescription {
+    AttchmentType type;
+    DataFormat format;
+    DataFormatType format_type;
+    TextureWrap wrap;
+    TextureMagFilter mag_filter;
+    TextureMinFilter min_filter;
+};
+
 class SD_GRAPHICS_API Framebuffer : public Resource {
    public:
     static Ref<Framebuffer> Create();
@@ -22,6 +33,7 @@ class SD_GRAPHICS_API Framebuffer : public Resource {
     int GetWidth() const { return m_width; };
     int GetHeight() const { return m_height; };
 
+    void Attach(const AttachmentDescription &attchment);
     void Attach(const TextureSpec &spec);
     void Attach(const RenderbufferSpec &renderbuffer);
 
@@ -48,6 +60,7 @@ class SD_GRAPHICS_API Framebuffer : public Resource {
     int32_t m_height;
     Framebuffer() = default;
 
+    std::vector<AttachmentDescription> m_attachment_descs;
     std::vector<TextureSpec> m_texture_specs;
     std::vector<RenderbufferSpec> m_renderbuffer_specs;
 };

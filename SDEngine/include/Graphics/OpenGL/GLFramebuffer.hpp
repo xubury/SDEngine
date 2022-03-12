@@ -38,6 +38,7 @@ class GLFramebuffer : public Framebuffer {
    private:
     std::vector<Ref<void>> m_attachments;
     std::vector<GLenum> m_drawables;
+    std::vector<GLenum> m_attachment_types;
 };
 
 }  // namespace SD

@@ -17,6 +17,10 @@ Ref<Framebuffer> Framebuffer::Create() {
     return frameBuffer;
 }
 
+void Framebuffer::Attach(const AttachmentDescription &desc) {
+    m_attachment_descs.emplace_back(desc);
+}
+
 void Framebuffer::Attach(const TextureSpec &spec) {
     m_texture_specs.push_back(spec);
 }
