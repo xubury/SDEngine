@@ -97,7 +97,7 @@ struct SD_RENDERER_API Renderer2DData {
 
 class SD_RENDERER_API Renderer {
    public:
-    Renderer(int width, int height, int msaa);
+    Renderer(Device *device, int width, int height, int msaa);
     ~Renderer();
     Renderer(const Renderer &) = delete;
     Renderer &operator=(const Renderer &) = delete;
@@ -188,6 +188,8 @@ class SD_RENDERER_API Renderer {
     void NextCircleBatch();
 
     void SetupShaderUBO(Shader &shader);
+
+    Device *m_device;
 
     Ref<UniformBuffer> m_camera_UBO;
     Ref<UniformBuffer> m_shadow_UBO;

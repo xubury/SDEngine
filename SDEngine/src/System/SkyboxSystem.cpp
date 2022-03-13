@@ -51,30 +51,7 @@ void SkyboxSystem::OnPush() {}
 
 void SkyboxSystem::OnPop() {}
 
-void SkyboxSystem::OnImGui() {
-    ImGui::Begin("Skybox System");
-    {
-        static std::string path;
-        ImGui::TextUnformatted("Skybox Path:");
-        ImGui::InputText("##Path", path.data(), path.size(),
-                         ImGuiInputTextFlags_ReadOnly);
-        ImGui::SameLine();
-        if (ImGui::Button("Open")) {
-            m_file_dialog_open = true;
-            m_file_dialog_info.type = ImGuiFileDialogType::OPEN_FILE;
-            m_file_dialog_info.title = "Open File";
-            m_file_dialog_info.file_name = "";
-            m_file_dialog_info.directory_path =
-                AssetStorage::Get().GetDirectory();
-        }
-        if (ImGui::FileDialog(&m_file_dialog_open, &m_file_dialog_info)) {
-            // m_skybox =
-            //     AssetStorage::Get().LoadAsset<TextureAsset>(m_file_dialog_info.result_path)
-            //         ->GetTexture();
-        }
-    }
-    ImGui::End();
-}
+void SkyboxSystem::OnImGui() {}
 
 void SkyboxSystem::OnRender() {
     glm::vec3 pos = scene->GetCamera()->GetWorldPosition();

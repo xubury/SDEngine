@@ -15,6 +15,21 @@ namespace SD {
 
 const std::string SETTING_FILENAME = "setting.ini";
 
+static void RegisterAssets(AssetStorage *storage) {
+    storage->RegisterAsset<FontAsset>(
+        AssetTypeData{0, std::bind(Asset::Create<FontAsset>),
+                      std::bind(Asset::Destroy, std::placeholders::_1)});
+    storage->RegisterAsset<TextureAsset>(
+        AssetTypeData{0, std::bind(Asset::Create<TextureAsset>),
+                      std::bind(Asset::Destroy, std::placeholders::_1)});
+    storage->RegisterAsset<ModelAsset>(
+        AssetTypeData{1, std::bind(Asset::Create<ModelAsset>),
+                      std::bind(Asset::Destroy, std::placeholders::_1)});
+    storage->RegisterAsset<SceneAsset>(
+        AssetTypeData{2, std::bind(Asset::Create<SceneAsset>),
+                      std::bind(Asset::Destroy, std::placeholders::_1)});
+}
+
 Application::Application(const std::string &title, Device::API api) {
     std::string debug_path = (GetAppDirectory() / "Debug.txt").generic_string();
     Log::Init(debug_path);
@@ -39,11 +54,11 @@ Application::Application(const std::string &title, Device::API api) {
     EventSystem::Init();
     AssetStorage::Init();
     Device::Init();
-    renderer = CreateRef<Renderer>(m_window->GetWidth(), m_window->GetHeight(),
-                                   m_window->GetMSAA());
+    renderer = CreateRef<Renderer>(&Device::Get(), m_window->GetWidth(),
+                                   m_window->GetHeight(), m_window->GetMSAA());
 
-    RegisterAssets();
     auto &storage = AssetStorage::Get();
+    RegisterAssets(&storage);
     storage.SetDirectory("assets");
     storage.ScanDirectory(storage.GetDirectory());
 }
@@ -68,17 +83,12 @@ void Application::OnInit() {
     m_quit_handler = EventSystem::Get().Register<AppQuitEvent>(
         [this](const AppQuitEvent &) { Shutdown(); });
 
-    m_viewport_event = EventSystem::Get().Register<ViewportSizeEvent>(
-        [this](const ViewportSizeEvent &e) {
-            renderer->SetSize(e.width, e.height);
-        });
     m_imgui = CreateLayer<ImGuiLayer>(m_window.get());
     PushOverlay(m_imgui);
 }
 
 void Application::OnDestroy() {
     EventSystem::Get().RemoveHandler(m_quit_handler);
-    EventSystem::Get().RemoveHandler(m_viewport_event);
     while (m_layers.Size()) {
         auto layer = m_layers.Front();
         PopLayer(layer);
@@ -116,21 +126,6 @@ void Application::InitSettings() {
             "No such ini file: {}. The application will create a new one.",
             ini_path);
     }
-}
-
-void Application::RegisterAssets() {
-    AssetStorage::Get().RegisterAsset<FontAsset>(
-        AssetTypeData{0, std::bind(Asset::Create<FontAsset>),
-                      std::bind(Asset::Destroy, std::placeholders::_1)});
-    AssetStorage::Get().RegisterAsset<TextureAsset>(
-        AssetTypeData{0, std::bind(Asset::Create<TextureAsset>),
-                      std::bind(Asset::Destroy, std::placeholders::_1)});
-    AssetStorage::Get().RegisterAsset<ModelAsset>(
-        AssetTypeData{1, std::bind(Asset::Create<ModelAsset>),
-                      std::bind(Asset::Destroy, std::placeholders::_1)});
-    AssetStorage::Get().RegisterAsset<SceneAsset>(
-        AssetTypeData{2, std::bind(Asset::Create<SceneAsset>),
-                      std::bind(Asset::Destroy, std::placeholders::_1)});
 }
 
 void Application::Run() {

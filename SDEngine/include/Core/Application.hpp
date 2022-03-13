@@ -13,11 +13,11 @@ class SD_CORE_API Application {
    public:
     void Shutdown();
 
+    ImGuiLayer *GetImGuiLayer() const { return m_imgui; }
+
    protected:
     virtual void OnInit();
     virtual void OnDestroy();
-
-    ImGuiLayer *GetImGuiLayer() const { return m_imgui; }
 
     template <typename T>
     T *GetLayer(const std::string &name) {
@@ -63,8 +63,6 @@ class SD_CORE_API Application {
 
     void InitSettings();
 
-    void RegisterAssets();
-
     void Run();
 
     void Tick(float dt);
@@ -74,7 +72,6 @@ class SD_CORE_API Application {
     EventStack<Layer *> m_layers;
     ImGuiLayer *m_imgui;
 
-    HandlerRegistration m_viewport_event;
     HandlerRegistration m_quit_handler;
 };
 

@@ -1,6 +1,7 @@
 #ifndef SD_EDITOR_LAYER_HPP
 #define SD_EDITOR_LAYER_HPP
 
+#include "System/GraphicsLayer.hpp"
 #include "Core/Layer.hpp"
 #include "Graphics/Camera.hpp"
 
@@ -20,11 +21,9 @@
 
 namespace SD {
 
-enum EditorMode { NONE, TWO_DIMENSIONAL, THREE_DIMENSIONAL };
-
 class EditorLayer : public Layer {
    public:
-    EditorLayer(int width, int height, int msaa);
+    EditorLayer(GraphicsLayer* graphics_layer, int width, int height);
     ~EditorLayer();
 
     void OnInit() override;
@@ -48,7 +47,6 @@ class EditorLayer : public Layer {
     void OnWindowSizeEvent(const WindowSizeEvent& e);
     void OnViewportUpdate();
     void BlitViewportBuffers();
-    void BlitGeometryBuffers();
 
     void InitBuffers();
 
@@ -62,22 +60,11 @@ class EditorLayer : public Layer {
 
     void DrawDebugBuffers();
 
-    void Hide();
-
-    void Show();
-
     void Quit();
-
-    EditorMode m_mode{NONE};
+    GraphicsLayer* m_graphics_layer;
 
     ScenePanel* m_scene_panel;
     EditorCameraSystem* m_editor_camera_system;
-    CameraSystem* m_camera_system;
-    LightingSystem* m_lighting_system;
-    SkyboxSystem* m_skybox_system;
-    SpriteRenderSystem* m_sprite_system;
-    PostProcessSystem* m_post_process_system;
-    ProfileSystem* m_profile_system;
     TileMapSystem* m_tile_map_system{nullptr};
     AnimationEditor* m_animation_editor;
 
@@ -86,9 +73,6 @@ class EditorLayer : public Layer {
     glm::ivec2 m_viewport_size;
     bool m_viewport_size_update;
 
-    int m_msaa;
-
-    Ref<Framebuffer> m_debug_gbuffer;
     Ref<Framebuffer> m_viewport_buffer;
 
     bool m_is_runtime;
@@ -97,8 +81,6 @@ class EditorLayer : public Layer {
     bool m_load_scene_open;
     bool m_save_scene_open;
     ImFileDialogInfo m_file_dialog_info;
-
-    Ref<Texture> m_light_icon;
 
     SceneAsset* m_scene_asset;
     Entity m_selected_entity;

@@ -1,6 +1,5 @@
 #include "SDEditor.hpp"
 #include "sol/sol.hpp"
-#include "Renderer/Renderer.hpp"
 
 #include "Asset/AssetStorage.hpp"
 
@@ -27,10 +26,15 @@ void SDEditor::OnInit() {
     ImGui::SetCurrentContext(GetImGuiLayer()->GetContext());
 #endif
 
-    // Renderer::Get().SetSize(viewport_width, viewport_height);
-    m_layer = CreateLayer<EditorLayer>(viewport_width, viewport_height,
-                                       m_window->GetMSAA());
-    PushLayer(m_layer);
+    m_graphics_layer = CreateLayer<GraphicsLayer>(
+        viewport_width, viewport_height, m_window->GetMSAA());
+    m_graphics_layer->SetDebug(true);
+    PushLayer(m_graphics_layer);
+
+    m_editor_layer = CreateLayer<EditorLayer>(m_graphics_layer, viewport_width,
+                                              viewport_height);
+
+    PushLayer(m_editor_layer);
 }
 
 void SDEditor::OnDestroy() { Application::OnDestroy(); }

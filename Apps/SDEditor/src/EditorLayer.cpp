@@ -7,18 +7,16 @@
 #include "ImGuizmo.h"
 #include "System/ScriptSystem.hpp"
 
-#include "Loader/TextureLoader.hpp"
-
 #include <glm/gtc/type_ptr.hpp>
 
 namespace SD {
 
-EditorLayer::EditorLayer(int width, int height, int msaa)
+EditorLayer::EditorLayer(GraphicsLayer *graphics_layer, int width, int height)
     : Layer("EditorLayer"),
+      m_graphics_layer(graphics_layer),
       m_viewport_pos(0, 0),
       m_viewport_size(width, height),
       m_viewport_size_update(true),
-      m_msaa(msaa),
       m_is_runtime(false),
       m_quitting(false),
       m_load_scene_open(false),
@@ -33,6 +31,7 @@ void EditorLayer::OnInit() {
     auto &storage = AssetStorage::Get();
     m_scene_asset = storage.CreateAsset<SceneAsset>("default scene");
     scene = m_scene_asset->GetScene();
+    EventSystem::Get().PublishEvent(NewSceneEvent{scene});
 
     InitBuffers();
     // editor related system
@@ -40,11 +39,11 @@ void EditorLayer::OnInit() {
     m_editor_camera_system =
         CreateSystem<EditorCameraSystem>(m_viewport_size.x, m_viewport_size.y);
 
-    m_light_icon = TextureLoader::LoadTexture2D("assets/icons/light.png");
-
     PushSystem(CreateSystem<ContentBrowser>());
     PushSystem(m_scene_panel);
     PushSystem(m_editor_camera_system);
+    PushSystem(
+        CreateSystem<ProfileSystem>(m_viewport_size.x, m_viewport_size.y));
 }
 
 void EditorLayer::InitBuffers() {
@@ -54,66 +53,20 @@ void EditorLayer::InitBuffers() {
         AttachmentDescription{AttachmentType::TEXTURE_2D, DataFormat::RGB8});
     m_viewport_buffer->Attach(
         AttachmentDescription{AttachmentType::TEXTURE_2D, DataFormat::R32UI});
-    m_debug_gbuffer =
-        Framebuffer::Create(m_viewport_size.x, m_viewport_size.y, 1, 1);
-    for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
-        m_debug_gbuffer->Attach(
-            AttachmentDescription{AttachmentType::TEXTURE_2D,
-                                  GetTextureFormat(GeometryBufferType(i))});
-    }
 
     m_viewport_buffer->Setup();
-    m_debug_gbuffer->Setup();
 }
 
 void EditorLayer::PushSystems() {
-    SD_CORE_ASSERT(m_mode != EditorMode::NONE, "Error editor mode!");
-    if (m_mode == EditorMode::THREE_DIMENSIONAL) {
-        // engine logic system
-        m_camera_system = CreateSystem<CameraSystem>();
-        // normal render systems
-        m_lighting_system = CreateSystem<LightingSystem>(
-            m_viewport_size.x, m_viewport_size.y, m_msaa);
-        m_skybox_system = CreateSystem<SkyboxSystem>();
-        m_sprite_system = CreateSystem<SpriteRenderSystem>();
-        m_post_process_system = CreateSystem<PostProcessSystem>(
-            m_viewport_size.x, m_viewport_size.y);
-        m_profile_system =
-            CreateSystem<ProfileSystem>(m_viewport_size.x, m_viewport_size.y);
-
-        PushSystem(CreateSystem<ScriptSystem>());
-        PushSystem(m_camera_system);
-        PushSystem(m_skybox_system);
-        PushSystem(m_lighting_system);  // lighting is put behind skybox to do
-                                        // MSAA with skybox(the background)
-        PushSystem(m_sprite_system);    // also sprite is put behind skybox and
-                                        // deferred lighting to do blending
-        PushSystem(m_post_process_system);
-        PushSystem(m_profile_system);
-
+    if (m_graphics_layer->GetGraphicsMode() ==
+        GraphicsMode::THREE_DIMENSIONAL) {
         m_editor_camera_system->AllowRotate(true);
     } else {
-        // engine logic system
-        m_camera_system = CreateSystem<CameraSystem>();
-        // normal render systems
-        m_skybox_system = CreateSystem<SkyboxSystem>();
-        m_sprite_system = CreateSystem<SpriteRenderSystem>();
-        m_post_process_system = CreateSystem<PostProcessSystem>(
-            m_viewport_size.x, m_viewport_size.y);
         m_tile_map_system = CreateSystem<TileMapSystem>();
-        m_profile_system =
-            CreateSystem<ProfileSystem>(m_viewport_size.x, m_viewport_size.y);
         m_animation_editor = CreateSystem<AnimationEditor>();
 
-        PushSystem(CreateSystem<ScriptSystem>());
-        PushSystem(m_camera_system);
-        PushSystem(m_skybox_system);
-        PushSystem(m_sprite_system);  // sprite render need to put behind skybox
-                                      // to do blending
-        PushSystem(m_post_process_system);
         PushSystem(m_tile_map_system);
         PushSystem(m_animation_editor);
-        PushSystem(m_profile_system);
 
         m_editor_camera_system->AllowRotate(false);
     }
@@ -136,42 +89,10 @@ void EditorLayer::OnPop() {
 }
 
 void EditorLayer::OnRender() {
-    if (m_mode == EditorMode::NONE) {
-        return;
-    }
-    Device::Get().SetFramebuffer(renderer->GetFramebuffer());
-    Device::Get().Clear();
-    uint32_t id = static_cast<uint32_t>(entt::null);
-    renderer->GetFramebuffer()->ClearAttachment(1, &id);
     for (auto &system : GetSystems()) {
         system->OnRender();
     }
-    if (m_is_runtime) {
-        // render to default buffer
-        Device::Get().SetFramebuffer(nullptr);
-        Device::Get().Clear();
-        // Device::Get().BlitToScreen(renderer->GetDefaultTarget());
-    } else {
-        Device::Get().Disable(Operation::DEPTH_TEST);
-
-        Camera *cam = scene->GetCamera();
-        renderer->Begin(renderer->GetFramebuffer(), *cam);
-        auto lightView = scene->view<LightComponent, TransformComponent>();
-        lightView.each([this, &cam](const LightComponent &,
-                                    const TransformComponent &transComp) {
-            glm::vec3 pos = transComp.GetWorldPosition();
-            float dist = glm::distance(pos, cam->GetWorldPosition());
-            float scale = (dist - cam->GetNearZ()) / 20;
-            renderer->DrawBillboard(*m_light_icon, pos, glm::vec2(scale));
-        });
-
-        renderer->End();
-        Device::Get().Enable(Operation::DEPTH_TEST);
-    }
     BlitViewportBuffers();
-    if (m_mode == EditorMode::THREE_DIMENSIONAL) {
-        BlitGeometryBuffers();
-    }
 }
 
 void EditorLayer::OnTick(float dt) {
@@ -212,93 +133,41 @@ void EditorLayer::OnImGui() {
         ImGui::EndPopup();
     }
 
-    if (!m_is_runtime) {
-        static bool dockspaceOpen = true;
-        static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
-        static bool fullScreen = true;
-
-        ImGuiWindowFlags windowFlags =
-            ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-        if (fullScreen) {
-            ImGuiViewport *viewport = ImGui::GetMainViewport();
-            ImGui::SetNextWindowPos(viewport->Pos);
-            ImGui::SetNextWindowSize(viewport->Size);
-            ImGui::SetNextWindowViewport(viewport->ID);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-            windowFlags |= ImGuiWindowFlags_NoTitleBar |
-                           ImGuiWindowFlags_NoCollapse |
-                           ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-            windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus |
-                           ImGuiWindowFlags_NoNavFocus;
-        }
-
-        if (dockspaceFlags & ImGuiDockNodeFlags_PassthruCentralNode)
-            windowFlags |= ImGuiWindowFlags_NoBackground;
-
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        ImGui::Begin("DockSpace Demo", &dockspaceOpen, windowFlags);
-        ImGui::PopStyleVar();
-
-        if (fullScreen) {
-            ImGui::PopStyleVar(2);
-        }
-
-        ImGuiIO &io = ImGui::GetIO();
-        ImGuiStyle &style = ImGui::GetStyle();
-        float minWinSizeX = style.WindowMinSize.x;
-        style.WindowMinSize.x = 370.0f;
-        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
-            ImGuiID dockspaceId = ImGui::GetID("MyDockSpace");
-            ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), dockspaceFlags);
-        }
-
-        style.WindowMinSize.x = minWinSizeX;
-
-        if (!m_quitting && m_mode == EditorMode::NONE) {
-            ImGui::OpenPopup("Select Editor Mode");
-        }
-        if (ImGui::BeginCenterPopupModal("Select Editor Mode")) {
-            static int mode = EditorMode::TWO_DIMENSIONAL;
-            ImGui::TextUnformatted("Please select an editor mode(2D/3D):");
-            ImGui::TextUnformatted("Mode:");
-            ImGui::SameLine();
-            ImGui::RadioButton("2D", &mode, EditorMode::TWO_DIMENSIONAL);
-            ImGui::SameLine();
-            ImGui::RadioButton("3D", &mode, EditorMode::THREE_DIMENSIONAL);
-            if (ImGui::Button("OK")) {
-                if (mode != EditorMode::NONE) {
-                    m_mode = static_cast<EditorMode>(mode);
-                    PushSystems();
-                    ImGui::CloseCurrentPopup();
-                }
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Quit")) {
-                Quit();
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::EndPopup();
-        }
-        for (auto &system : GetSystems()) {
-            system->OnImGui();
-        }
-        MenuBar();
-        DrawViewport();
-        DrawDebugBuffers();
-        ProcessDialog();
-        ImGui::End();
+    if (!m_quitting &&
+        m_graphics_layer->GetGraphicsMode() == GraphicsMode::NONE) {
+        ImGui::OpenPopup("Select Editor Mode");
     }
-}
-
-void EditorLayer::Hide() {
-    m_is_runtime = true;
-    SetIsBlockEvent(false);
-}
-
-void EditorLayer::Show() {
-    m_is_runtime = false;
-    SetIsBlockEvent(true);
+    if (ImGui::BeginCenterPopupModal("Select Editor Mode")) {
+        static GraphicsMode mode = GraphicsMode::TWO_DIMENSIONAL;
+        ImGui::TextUnformatted("Please select an editor mode(2D/3D):");
+        ImGui::TextUnformatted("Mode:");
+        ImGui::SameLine();
+        if (ImGui::RadioButton("2D", mode == GraphicsMode::TWO_DIMENSIONAL)) {
+            mode = GraphicsMode::TWO_DIMENSIONAL;
+        }
+        ImGui::SameLine();
+        if (ImGui::RadioButton("3D", mode == GraphicsMode::THREE_DIMENSIONAL)) {
+            mode = GraphicsMode::THREE_DIMENSIONAL;
+        }
+        if (ImGui::Button("OK")) {
+            m_graphics_layer->SetGraphicsMode(mode);
+            m_graphics_layer->InitPipeline();
+            PushSystems();
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Quit")) {
+            Quit();
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+    for (auto &system : GetSystems()) {
+        system->OnImGui();
+    }
+    MenuBar();
+    DrawViewport();
+    ProcessDialog();
 }
 
 void EditorLayer::Quit() { m_quitting = true; }
@@ -311,11 +180,7 @@ void EditorLayer::OnKeyEvent(const KeyEvent &e) {
             break;
         case Keycode::Z: {
             if (IsKeyModActive(e.mod, Keymod::LCTRL)) {
-                if (m_is_runtime) {
-                    Show();
-                } else {
-                    Hide();
-                }
+                m_is_runtime = !m_is_runtime;
             }
         } break;
         case Keycode::S: {
@@ -437,19 +302,6 @@ void EditorLayer::BlitViewportBuffers() {
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
 }
 
-void EditorLayer::BlitGeometryBuffers() {
-    for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
-        Device::Get().ReadBuffer(m_lighting_system->GetGBuffer(), i);
-        Device::Get().DrawBuffer(m_debug_gbuffer.get(), i);
-        Device::Get().BlitFramebuffer(
-            m_lighting_system->GetGBuffer(), 0, 0,
-            m_lighting_system->GetGBuffer()->GetWidth(),
-            m_lighting_system->GetGBuffer()->GetHeight(), m_debug_gbuffer.get(),
-            0, 0, m_debug_gbuffer->GetWidth(), m_debug_gbuffer->GetHeight(),
-            BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
-    }
-}
-
 void EditorLayer::DrawViewport() {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
     ImGui::Begin("Scene");
@@ -465,7 +317,6 @@ void EditorLayer::DrawViewport() {
             viewport_size.y > 0) {
             m_viewport_size = viewport_size;
             m_viewport_buffer->Resize(m_viewport_size.x, m_viewport_size.y);
-            m_debug_gbuffer->Resize(m_viewport_size.x, m_viewport_size.y);
             m_viewport_size_update = true;
         }
 
@@ -525,9 +376,8 @@ void EditorLayer::DrawViewport() {
         if (ImGui::BeginDragDropTarget()) {
             if (const ImGuiPayload *payload =
                     ImGui::AcceptDragDropPayload(DROP_ASSET_ITEM)) {
-                std::string filename = static_cast<char *>(payload->Data);
-                SD_TRACE("drop:{}", filename);
                 try {
+                    std::string filename = static_cast<char *>(payload->Data);
                     Asset *asset = AssetStorage::Get().LoadAsset(filename);
                     if (asset->IsTypeOf<SceneAsset>()) {
                         m_scene_asset = dynamic_cast<SceneAsset *>(asset);
@@ -544,27 +394,6 @@ void EditorLayer::DrawViewport() {
     }
     ImGui::End();
     ImGui::PopStyleVar();
-}
-
-void EditorLayer::DrawDebugBuffers() {
-    if (m_mode == THREE_DIMENSIONAL) {
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
-        ImGui::Begin("GBuffer");
-        {
-            for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
-                ImGui::DrawTexture(*m_debug_gbuffer->GetTexture(i),
-                                   ImVec2(0, 1), ImVec2(1, 0));
-            }
-        }
-        ImGui::End();
-        ImGui::Begin("SSAO");
-        {
-            ImGui::DrawTexture(*m_lighting_system->GetSSAO(), ImVec2(0, 1),
-                               ImVec2(1, 0));
-        }
-        ImGui::End();
-        ImGui::PopStyleVar();
-    }
 }
 
 }  // namespace SD

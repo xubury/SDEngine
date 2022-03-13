@@ -13,6 +13,7 @@ set(System_Include
     ${Include_Root}/SpriteRenderSystem.hpp)
 
 set(System_Src
+    ${Src_Root}/GraphicsLayer.cpp
     ${Src_Root}/CameraSystem.cpp
     ${Src_Root}/LightingSystem.cpp
     ${Src_Root}/ParticleSystem.cpp

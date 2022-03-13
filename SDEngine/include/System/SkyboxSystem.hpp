@@ -27,9 +27,6 @@ class SD_SYSTEM_API SkyboxSystem : public System {
     Ref<Shader> m_skybox_shader;
     Ref<VertexArray> m_box_vao;
     Ref<Texture> m_skybox;
-
-    bool m_file_dialog_open{false};
-    ImFileDialogInfo m_file_dialog_info;
 };
 
 }  // namespace SD

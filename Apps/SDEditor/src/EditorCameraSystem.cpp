@@ -47,7 +47,7 @@ void EditorCameraSystem::OnSizeEvent(const ViewportSizeEvent &event) {
 }
 
 void EditorCameraSystem::OnImGui() {
-    ImGui::Begin("Camera Sysetm");
+    ImGui::Begin("Editor Camera Sysetm");
     {
         CameraType type = m_camera.GetCameraType();
         if (ImGui::RadioButton("Perspective", reinterpret_cast<int *>(&type),

@@ -14,7 +14,7 @@ namespace SD {
 
 class SD_CORE_API Layer {
    public:
-    Layer(const std::string &name) : m_name(name), m_is_block_event(false) {
+    Layer(const std::string &name) : m_name(name) {
         SD_CORE_TRACE("Initializing layer: {}", name);
     }
 
@@ -47,9 +47,6 @@ class SD_CORE_API Layer {
     virtual void OnRender() {}
 
     virtual void OnImGui() {}
-
-    void SetIsBlockEvent(bool is_block) { m_is_block_event = is_block; }
-    bool IsBlockEvent() const { return m_is_block_event; }
 
     template <typename T, typename... ARGS>
     T *CreateSystem(ARGS &&...args) {
@@ -85,7 +82,6 @@ class SD_CORE_API Layer {
 
     SET_APP_VARS;
     std::string m_name;
-    bool m_is_block_event;
     EventStack<System *> m_systems;
 
     HandlerRegistration m_scene_handler;

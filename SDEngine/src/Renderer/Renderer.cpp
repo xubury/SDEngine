@@ -13,7 +13,8 @@ const static std::array<glm::vec4, 4> QUAD_VERTEX_POS = {
 const static std::array<glm::vec2, 4> QUAD_UV = {
     glm::vec2(0, 0), glm::vec2(1, 0), glm::vec2(1, 1), glm::vec2(0, 1)};
 
-Renderer::Renderer(int width, int height, int msaa) {
+Renderer::Renderer(Device* device, int width, int height, int msaa)
+    : m_device(device) {
     SD_CORE_TRACE("Initializing Renderer");
     m_camera_UBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
                                          BufferIOType::DYNAMIC);
@@ -124,17 +125,17 @@ void Renderer::InitRenderer2D() {
 void Renderer::Submit(const Shader& shader, const VertexArray& vao,
                       MeshTopology topology, size_t count, size_t offset,
                       bool index) {
-    Device::Get().SetShader(&shader);
+    m_device->SetShader(&shader);
     vao.Bind();
     if (index) {
-        Device::Get().DrawElements(topology, count, offset);
+        m_device->DrawElements(topology, count, offset);
     } else {
-        Device::Get().DrawArrays(topology, offset, count);
+        m_device->DrawArrays(topology, offset, count);
     }
 }
 
 void Renderer::DrawMesh(const Shader& shader, const Mesh& mesh) {
-    Device::Get().SetPolygonMode(mesh.GetPolygonMode(), Face::BOTH);
+    m_device->SetPolygonMode(mesh.GetPolygonMode(), Face::BOTH);
     VertexArray* vao = mesh.GetVertexArray();
     SD_CORE_ASSERT(vao, "Invalid mesh!");
     Renderer::Submit(shader, *vao, mesh.GetTopology(),
@@ -147,8 +148,8 @@ void Renderer::SetupShaderUBO(Shader& shader) {
 }
 
 void Renderer::Begin(Framebuffer* framebuffer, Shader& shader, Camera& camera) {
-    Device::Get().SetFramebuffer(framebuffer);
-    Device::Get().SetViewport(0, 0, framebuffer->GetWidth(),
+    m_device->SetFramebuffer(framebuffer);
+    m_device->SetViewport(0, 0, framebuffer->GetWidth(),
                               framebuffer->GetHeight());
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
@@ -158,8 +159,8 @@ void Renderer::Begin(Framebuffer* framebuffer, Shader& shader, Camera& camera) {
 }
 
 void Renderer::Begin(Framebuffer* framebuffer, Camera& camera) {
-    Device::Get().SetFramebuffer(framebuffer);
-    Device::Get().SetViewport(0, 0, framebuffer->GetWidth(),
+    m_device->SetFramebuffer(framebuffer);
+    m_device->SetViewport(0, 0, framebuffer->GetWidth(),
                               framebuffer->GetHeight());
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
@@ -169,9 +170,9 @@ void Renderer::Begin(Framebuffer* framebuffer, Camera& camera) {
 void Renderer::Begin(Light& light, const Transform& light_trans, Camera& camera,
                      Shader& shader) {
     Framebuffer* fb = light.GetCascadeMap();
-    Device::Get().SetFramebuffer(fb);
-    Device::Get().SetViewport(0, 0, fb->GetWidth(), fb->GetHeight());
-    Device::Get().Clear(BufferBitMask::DEPTH_BUFFER_BIT);
+    m_device->SetFramebuffer(fb);
+    m_device->SetViewport(0, 0, fb->GetWidth(), fb->GetHeight());
+    m_device->Clear(BufferBitMask::DEPTH_BUFFER_BIT);
 
     light.ComputeCascadeLightMatrix(light_trans, camera);
 
@@ -184,7 +185,7 @@ void Renderer::Begin(Light& light, const Transform& light_trans, Camera& camera,
 void Renderer::End() {
     Flush();
     StartBatch();
-    Device::Get().SetShader(nullptr);
+    m_device->SetShader(nullptr);
 }
 
 void Renderer::StartBatch() {
