@@ -45,9 +45,8 @@ void ProfileSystem::OnRender() {
     fps_str.resize(255);
     snprintf(fps_str.data(), fps_str.size(), "FPS: %.2f(%.2f ms)",
              m_fps.GetFPS(), m_fps.GetFrameTime());
-
-    // Device::Get().DrawBuffer(renderer->GetFramebuffer(), 0);  // only draw
-    // colors
+    // only draw colors
+    Device::Get().DrawBuffer(renderer->GetFramebuffer(), 0);
     renderer->Begin(renderer->GetFramebuffer(), m_camera);
     renderer->SetTextOrigin(
         -m_camera.GetNearWidth() / 2,

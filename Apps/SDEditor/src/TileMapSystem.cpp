@@ -167,8 +167,8 @@ void TileMapSystem::OnImGui() {
 void TileMapSystem::OnRender() {
     Device::Get().Disable(SD::Operation::DEPTH_TEST);
     renderer->Begin(renderer->GetFramebuffer(), *scene->GetCamera());
-    Device::Get().DrawBuffer(renderer->GetFramebuffer(),
-                             0);  // only draw colors
+    // only draw colors
+    Device::Get().DrawBuffer(renderer->GetFramebuffer(), 0);
 
     // draw brush & outline
     const glm::ivec2 &tile_size = m_brush.tile_size;

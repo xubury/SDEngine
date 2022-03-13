@@ -280,9 +280,9 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
 }
 
 void LightingSystem::RenderSSAO() {
-    const float CLEAR_VALUE = 1.0f;
+    const float clear_value = 1.0f;
 
-    m_ssao_buffer->ClearAttachment(0, &CLEAR_VALUE);
+    m_ssao_buffer->ClearAttachment(0, &clear_value);
     renderer->Begin(m_ssao_buffer.get(), *m_ssao_shader, *scene->GetCamera());
     m_ssao_shader->SetFloat("u_radius", m_ssao_radius);
     m_ssao_shader->SetFloat("u_bias", m_ssao_bias);
@@ -298,7 +298,7 @@ void LightingSystem::RenderSSAO() {
 
     // blur
     Device::Get().SetFramebuffer(m_ssao_blur_buffer.get());
-    m_ssao_blur_buffer->ClearAttachment(0, &CLEAR_VALUE);
+    m_ssao_blur_buffer->ClearAttachment(0, &clear_value);
     m_ssao_blur_shader->SetTexture("u_ssao", m_ssao_buffer->GetTexture());
     renderer->Submit(*m_ssao_blur_shader, *m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
@@ -387,14 +387,13 @@ void LightingSystem::RenderDeferred() {
 }
 
 void LightingSystem::RenderGBuffer() {
-    uint32_t id = static_cast<uint32_t>(entt::null);
-    m_gbuffer->ClearAttachment(GeometryBufferType::G_ENTITY_ID, &id);
-
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
     renderer->Begin(m_gbuffer.get(), *m_gbuffer_shader, *scene->GetCamera());
     Device::Get().Clear(BufferBitMask::COLOR_BUFFER_BIT |
                         BufferBitMask::DEPTH_BUFFER_BIT);
+    uint32_t id = static_cast<uint32_t>(entt::null);
+    m_gbuffer->ClearAttachment(GeometryBufferType::G_ENTITY_ID, &id);
 
     modelView.each([this](const entt::entity &entity,
                           const TransformComponent &transformComp,
