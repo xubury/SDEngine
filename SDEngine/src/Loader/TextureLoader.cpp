@@ -9,20 +9,20 @@
 
 namespace SD {
 
-static DataFormat GetDataFormat(int32_t channels) {
-    DataFormat format = DataFormat::RGB;
+static DataFormat Get8BitDataFormat(int32_t channels) {
+    DataFormat format = DataFormat::RGB8;
     switch (channels) {
         case 1:
-            format = DataFormat::RED;
+            format = DataFormat::R8;
             break;
         case 2:
-            format = DataFormat::RG;
+            format = DataFormat::RG8;
             break;
         case 3:
-            format = DataFormat::RGB;
+            format = DataFormat::RGB8;
             break;
         case 4:
-            format = DataFormat::RGBA;
+            format = DataFormat::RGBA8;
             break;
     }
     return format;
@@ -44,9 +44,8 @@ Ref<Texture> TextureLoader::LoadTextureCube(
         if (face == 0) {
             texture = Texture::Create(
                 width, height, 1, 1, TextureType::TEX_CUBE,
-                GetDataFormat(channels), DataFormatType::UBYTE,
-                TextureWrap::EDGE, TextureMinFilter::LINEAR_LINEAR,
-                TextureMagFilter::LINEAR);
+                Get8BitDataFormat(channels), TextureWrap::EDGE,
+                TextureMinFilter::LINEAR_LINEAR, TextureMagFilter::LINEAR);
         }
         texture->SetPixels(0, 0, face, width, height, 1, img);
         texture->SetPath(pathes[face]);
@@ -64,9 +63,9 @@ Ref<Texture> TextureLoader::LoadTexture2D(const std::string& path) {
     int32_t channels;
     uint8_t* img = stbi_load(path.c_str(), &width, &height, &channels, 0);
     Ref<Texture> texture = Texture::Create(
-        width, height, 1, 1, TextureType::TEX_2D, GetDataFormat(channels),
-        DataFormatType::UBYTE, TextureWrap::EDGE,
-        TextureMinFilter::LINEAR_LINEAR, TextureMagFilter::LINEAR);
+        width, height, 1, 1, TextureType::TEX_2D, Get8BitDataFormat(channels),
+        TextureWrap::EDGE, TextureMinFilter::LINEAR_LINEAR,
+        TextureMagFilter::LINEAR);
     texture->SetPixels(0, 0, 0, width, height, 1, img);
     texture->SetPath(path);
     stbi_image_free(img);

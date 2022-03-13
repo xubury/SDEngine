@@ -11,8 +11,7 @@ class SD_GRAPHICS_API Texture : public Resource {
    public:
     static Ref<Texture> Create(
         int width, int height, int depth, int8_t samples, TextureType type,
-        DataFormat format, DataFormatType format_type,
-        TextureWrap wrap = TextureWrap::EDGE,
+        DataFormat format, TextureWrap wrap = TextureWrap::EDGE,
         TextureMinFilter min_filter = TextureMinFilter::NEAREST,
         TextureMagFilter mag_filter = TextureMagFilter::NEAREST);
 
@@ -44,15 +43,14 @@ class SD_GRAPHICS_API Texture : public Resource {
 
     TextureType GetType() const;
     DataFormat GetFormat() const;
-    DataFormatType GetFormatType() const;
 
     void SetPath(const std::string &path) { m_path = path; }
     const std::string &GetPath() const { return m_path; }
 
    protected:
     Texture(int width, int height, int depth, int8_t samples, TextureType type,
-            DataFormat format, DataFormatType format_type, TextureWrap wrap,
-            TextureMinFilter min_filter, TextureMagFilter mag_filter);
+            DataFormat format, TextureWrap wrap, TextureMinFilter min_filter,
+            TextureMagFilter mag_filter);
 
     int m_width;
     int m_height;
@@ -62,7 +60,6 @@ class SD_GRAPHICS_API Texture : public Resource {
 
     TextureType m_type;
     DataFormat m_format;
-    DataFormatType m_format_type;
     TextureWrap m_wrap;
     TextureMinFilter m_min_filter;
     TextureMagFilter m_mag_filter;

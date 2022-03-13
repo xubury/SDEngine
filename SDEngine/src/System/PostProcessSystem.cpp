@@ -44,8 +44,8 @@ void PostProcessSystem::OnInit() {
 }
 
 void PostProcessSystem::InitBuffers() {
-    AttachmentDescription attach_desc{
-        AttachmentType::TEXTURE_2D, DataFormat::RGBA, DataFormatType::FLOAT16};
+    AttachmentDescription attach_desc{AttachmentType::TEXTURE_2D,
+                                      DataFormat::RGBA16F};
     for (int i = 0; i < 2; ++i) {
         m_blur_buffer[i] = Framebuffer::Create(m_width, m_height, 1, 1);
         m_blur_buffer[i]->Attach(attach_desc);

@@ -15,7 +15,6 @@ enum AttachmentType { TEXTURE_2D = 0, TEXTURE_2D_ARRAY = 1, RENDERBUFFER = 2 };
 struct AttachmentDescription {
     AttachmentType type;
     DataFormat format;
-    DataFormatType format_type;
 };
 
 class SD_GRAPHICS_API Framebuffer : public Resource {

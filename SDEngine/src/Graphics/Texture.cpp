@@ -7,15 +7,14 @@ namespace SD {
 
 Ref<Texture> Texture::Create(int width, int height, int depth, int8_t samples,
                              TextureType type, DataFormat format,
-                             DataFormatType format_type, TextureWrap wrap,
-                             TextureMinFilter min_filter,
+                             TextureWrap wrap, TextureMinFilter min_filter,
                              TextureMagFilter mag_filter) {
     Ref<Texture> texture;
     switch (Device::GetAPI()) {
         case Device::API::OpenGL:
-            texture = CreateRef<GLTexture>(width, height, depth, samples, type,
-                                           format, format_type, wrap,
-                                           min_filter, mag_filter);
+            texture =
+                CreateRef<GLTexture>(width, height, depth, samples, type,
+                                     format, wrap, min_filter, mag_filter);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
@@ -25,8 +24,7 @@ Ref<Texture> Texture::Create(int width, int height, int depth, int8_t samples,
 }
 
 Texture::Texture(int width, int height, int depth, int8_t samples,
-                 TextureType type, DataFormat format,
-                 DataFormatType format_type, TextureWrap wrap,
+                 TextureType type, DataFormat format, TextureWrap wrap,
                  TextureMinFilter min_filter, TextureMagFilter mag_filter)
     : m_width(width),
       m_height(height),
@@ -34,7 +32,6 @@ Texture::Texture(int width, int height, int depth, int8_t samples,
       m_samples(samples),
       m_type(type),
       m_format(format),
-      m_format_type(format_type),
       m_wrap(wrap),
       m_min_filter(min_filter),
       m_mag_filter(mag_filter) {
@@ -60,7 +57,5 @@ int Texture::GetSamples() const { return m_samples; }
 TextureType Texture::GetType() const { return m_type; }
 
 DataFormat Texture::GetFormat() const { return m_format; }
-
-DataFormatType Texture::GetFormatType() const { return m_format_type; }
 
 }  // namespace SD

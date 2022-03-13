@@ -24,13 +24,12 @@ Renderer::Renderer(int width, int height, int msaa) {
     InitRenderer2D();
 
     m_framebuffer = Framebuffer::Create(width, height, 1, msaa);
-    m_framebuffer->Attach(AttachmentDescription{
-        AttachmentType::TEXTURE_2D, DataFormat::RGBA, DataFormatType::UBYTE});
-    m_framebuffer->Attach(AttachmentDescription{
-        AttachmentType::TEXTURE_2D, DataFormat::RED, DataFormatType::UINT});
+    m_framebuffer->Attach(
+        AttachmentDescription{AttachmentType::TEXTURE_2D, DataFormat::RGBA8});
+    m_framebuffer->Attach(
+        AttachmentDescription{AttachmentType::TEXTURE_2D, DataFormat::R32UI});
     m_framebuffer->Attach(AttachmentDescription{AttachmentType::RENDERBUFFER,
-                                                DataFormat::DEPTH,
-                                                DataFormatType::FLOAT16});
+                                                DataFormat::DEPTH24});
     m_framebuffer->Setup();
 }
 
@@ -102,9 +101,9 @@ void Renderer::InitRenderer2D() {
     m_data.circle_vao->SetIndexBuffer(quad_ebo);
 
     m_data.default_texture =
-        Texture::Create(1, 1, 1, 1, TextureType::TEX_2D, DataFormat::RGBA,
-                        DataFormatType::FLOAT16, TextureWrap::REPEAT,
-                        TextureMinFilter::LINEAR, TextureMagFilter::LINEAR);
+        Texture::Create(1, 1, 1, 1, TextureType::TEX_2D, DataFormat::RGBA32F,
+                        TextureWrap::REPEAT, TextureMinFilter::LINEAR,
+                        TextureMagFilter::LINEAR);
     const float color[4] = {1, 1, 1, 1};
     m_data.default_texture->SetPixels(0, 0, 0, 1, 1, 1, color);
 

@@ -76,136 +76,58 @@ GLenum Translate(TextureType texture_type) {
     return 0;
 }
 
-GLenum TranslateFormat(DataFormat format, DataFormatType format_type) {
+GLenum Translate(DataFormat format) {
     switch (format) {
-        case DataFormat::ALPHA:
-        case DataFormat::RED: {
-            switch (format_type) {
-                case DataFormatType::INT:
-                case DataFormatType::UINT:
-                    return GL_RED_INTEGER;
-                default:
-                    return GL_RED;
-            }
-        } break;
-        case DataFormat::RG: {
-            switch (format_type) {
-                case DataFormatType::INT:
-                case DataFormatType::UINT:
-                    return GL_RG_INTEGER;
-                default:
-                    return GL_RG;
-            }
-        } break;
-        case DataFormat::RGB: {
-            switch (format_type) {
-                case DataFormatType::INT:
-                case DataFormatType::UINT:
-                    return GL_RGB_INTEGER;
-                default:
-                    return GL_RGB;
-            }
-        } break;
-        case DataFormat::RGBA: {
-            switch (format_type) {
-                case DataFormatType::INT:
-                case DataFormatType::UINT:
-                    return GL_RGBA_INTEGER;
-                default:
-                    return GL_RGBA;
-            }
-        } break;
-        case DataFormat::DEPTH:
-            return GL_DEPTH_COMPONENT;
-        case DataFormat::DEPTH_STENCIL:
-            return GL_DEPTH_STENCIL;
-    }
-    return 0;
-}
-
-GLenum Translate(DataFormatType format_type) {
-    switch (format_type) {
-        case DataFormatType::UBYTE:
-            return GL_UNSIGNED_BYTE;
-        case DataFormatType::UINT:
-            return GL_UNSIGNED_INT;
-        case DataFormatType::INT:
-            return GL_INT;
-        case DataFormatType::FLOAT16:
-        case DataFormatType::FLOAT32:
-            return GL_FLOAT;
-    }
-
-    return 0;
-}
-
-GLenum TranslateInternalFormat(DataFormat format, DataFormatType format_type) {
-    switch (format) {
-        case DataFormat::ALPHA:
-        case DataFormat::RED: {
-            switch (format_type) {
-                case DataFormatType::UBYTE:
-                    return GL_R8;
-                case DataFormatType::UINT:
-                    return GL_R32UI;
-                case DataFormatType::INT:
-                    return GL_R32I;
-                case DataFormatType::FLOAT16:
-                    return GL_R16F;
-                case DataFormatType::FLOAT32:
-                    return GL_R32F;
-            }
-            break;
-        }
-        case DataFormat::RG: {
-            switch (format_type) {
-                case DataFormatType::UBYTE:
-                    return GL_RG8;
-                case DataFormatType::UINT:
-                    return GL_RG32UI;
-                case DataFormatType::INT:
-                    return GL_RG32I;
-                case DataFormatType::FLOAT16:
-                    return GL_RG16F;
-                case DataFormatType::FLOAT32:
-                    return GL_RG32F;
-            }
-            break;
-        }
-        case DataFormat::RGB: {
-            switch (format_type) {
-                case DataFormatType::UBYTE:
-                    return GL_RGB8;
-                case DataFormatType::UINT:
-                    return GL_RGB32UI;
-                case DataFormatType::INT:
-                    return GL_RGB32I;
-                case DataFormatType::FLOAT16:
-                    return GL_RGB16F;
-                case DataFormatType::FLOAT32:
-                    return GL_RGB32F;
-            }
-            break;
-        }
-        case DataFormat::RGBA: {
-            switch (format_type) {
-                case DataFormatType::UBYTE:
-                    return GL_RGBA8;
-                case DataFormatType::UINT:
-                    return GL_RGBA32UI;
-                case DataFormatType::INT:
-                    return GL_RGBA32I;
-                case DataFormatType::FLOAT16:
-                    return GL_RGBA16F;
-                case DataFormatType::FLOAT32:
-                    return GL_RGBA32F;
-            }
-            break;
-        }
-        case DataFormat::DEPTH:
-            // TODO:This has problem for different video cards
+        case DataFormat::ALPHA8:
+        case DataFormat::R8:
+            return GL_R8;
+        case DataFormat::RG8:
+            return GL_RG8;
+        case DataFormat::RGB8:
+            return GL_RGB8;
+        case DataFormat::RGBA8:
+            return GL_RGBA8;
+        case DataFormat::ALPHA32I:
+        case DataFormat::R32I:
+            return GL_R32I;
+        case DataFormat::RG32I:
+            return GL_RG32I;
+        case DataFormat::RGB32I:
+            return GL_RGB32I;
+        case DataFormat::RGBA32I:
+            return GL_RGBA32I;
+        case DataFormat::ALPHA32UI:
+        case DataFormat::R32UI:
+            return GL_R32UI;
+        case DataFormat::RG32UI:
+            return GL_RG32UI;
+        case DataFormat::RGB32UI:
+            return GL_RGB32UI;
+        case DataFormat::RGBA32UI:
+            return GL_RGBA32UI;
+        case DataFormat::ALPHA16F:
+        case DataFormat::R16F:
+            return GL_R16F;
+        case DataFormat::RG16F:
+            return GL_RG16F;
+        case DataFormat::RGB16F:
+            return GL_RGB16F;
+        case DataFormat::RGBA16F:
+            return GL_RGBA16F;
+        case DataFormat::ALPHA32F:
+        case DataFormat::R32F:
+            return GL_R32F;
+        case DataFormat::RG32F:
+            return GL_RG32F;
+        case DataFormat::RGB32F:
+            return GL_RGB32F;
+        case DataFormat::RGBA32F:
+            return GL_RGBA32F;
+        case DataFormat::DEPTH24:
             return GL_DEPTH_COMPONENT24;
-        case DataFormat::DEPTH_STENCIL:
+        case DataFormat::STENCIL8:
+            return GL_STENCIL_INDEX8;
+        case DataFormat::DEPTH24_STENCIL8:
             return GL_DEPTH24_STENCIL8;
     }
     return 0;

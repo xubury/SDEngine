@@ -71,9 +71,8 @@ void Light::CreateShadowMap() {
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
     m_cascade_map = Framebuffer::Create(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT,
                                         m_cascade_planes.size(), 1);
-    m_cascade_map->Attach(
-        AttachmentDescription{AttachmentType::TEXTURE_2D_ARRAY,
-                              DataFormat::DEPTH, DataFormatType::FLOAT16});
+    m_cascade_map->Attach(AttachmentDescription{
+        AttachmentType::TEXTURE_2D_ARRAY, DataFormat::DEPTH24});
     m_cascade_map->Setup();
     m_cascade_map->GetTexture()->SetWrap(TextureWrap::BORDER);
     m_cascade_map->GetTexture()->SetBorderColor(&color);

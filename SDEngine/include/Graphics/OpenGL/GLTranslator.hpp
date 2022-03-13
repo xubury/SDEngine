@@ -15,15 +15,9 @@ GLenum SD_GRAPHICS_API Translate(PolygonMode mode);
 
 GLint SD_GRAPHICS_API Translate(BufferIOType io_type);
 
-GLenum SD_GRAPHICS_API Translate(DataFormatType format_type);
+GLenum SD_GRAPHICS_API Translate(DataFormat format);
 
 GLenum SD_GRAPHICS_API Translate(TextureType texture_type);
-
-GLenum SD_GRAPHICS_API TranslateFormat(DataFormat format,
-                                       DataFormatType format_type);
-
-GLenum SD_GRAPHICS_API TranslateInternalFormat(DataFormat format,
-                                               DataFormatType format_type);
 
 GLint SD_GRAPHICS_API Translate(TextureWrap wrap);
 

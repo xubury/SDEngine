@@ -3,20 +3,98 @@
 
 namespace SD {
 
+GLenum GetFormatType(DataFormat format) {
+    switch (format) {
+        case DataFormat::ALPHA8:
+        case DataFormat::ALPHA16F:
+        case DataFormat::ALPHA32F:
+        case DataFormat::R8:
+        case DataFormat::R16F:
+        case DataFormat::R32F:
+            return GL_RED;
+        case DataFormat::ALPHA32I:
+        case DataFormat::ALPHA32UI:
+        case DataFormat::R32I:
+        case DataFormat::R32UI:
+            return GL_RED_INTEGER;
+        case DataFormat::RG8:
+        case DataFormat::RG16F:
+        case DataFormat::RG32F:
+            return GL_RG;
+        case DataFormat::RG32I:
+        case DataFormat::RG32UI:
+            return GL_RG_INTEGER;
+        case DataFormat::RGB8:
+        case DataFormat::RGB16F:
+        case DataFormat::RGB32F:
+            return GL_RGB;
+        case DataFormat::RGB32I:
+        case DataFormat::RGB32UI:
+            return GL_RGB_INTEGER;
+        case DataFormat::RGBA8:
+        case DataFormat::RGBA16F:
+        case DataFormat::RGBA32F:
+            return GL_RGBA;
+        case DataFormat::RGBA32I:
+        case DataFormat::RGBA32UI:
+            return GL_RGBA_INTEGER;
+        case DataFormat::DEPTH24:
+            return GL_DEPTH;
+        case DataFormat::STENCIL8:
+            return GL_STENCIL_INDEX;
+        case DataFormat::DEPTH24_STENCIL8:
+            return GL_DEPTH_STENCIL;
+    }
+    return 0;
+}
+
+GLenum GetDataType(DataFormat format) {
+    switch (format) {
+        case DataFormat::ALPHA8:
+        case DataFormat::R8:
+        case DataFormat::RG8:
+        case DataFormat::RGB8:
+        case DataFormat::RGBA8:
+        case DataFormat::STENCIL8:
+            return GL_UNSIGNED_BYTE;
+        case DataFormat::ALPHA32I:
+        case DataFormat::R32I:
+        case DataFormat::RG32I:
+        case DataFormat::RGB32I:
+        case DataFormat::RGBA32I:
+            return GL_INT;
+        case DataFormat::ALPHA32UI:
+        case DataFormat::R32UI:
+        case DataFormat::RG32UI:
+        case DataFormat::RGB32UI:
+        case DataFormat::RGBA32UI:
+            return GL_UNSIGNED_INT;
+        case DataFormat::ALPHA16F:
+        case DataFormat::R16F:
+        case DataFormat::RG16F:
+        case DataFormat::RGB16F:
+        case DataFormat::RGBA16F:
+        case DataFormat::ALPHA32F:
+        case DataFormat::R32F:
+        case DataFormat::RG32F:
+        case DataFormat::RGB32F:
+        case DataFormat::RGBA32F:
+        case DataFormat::DEPTH24:
+        case DataFormat::DEPTH24_STENCIL8:
+            return GL_FLOAT;
+    }
+    return 0;
+}
+
 GLTexture::GLTexture(int width, int height, int depth, int8_t samples,
-                     TextureType type, DataFormat format,
-                     DataFormatType format_type, TextureWrap wrap,
+                     TextureType type, DataFormat format, TextureWrap wrap,
                      TextureMinFilter min_filter, TextureMagFilter mag_filter)
-    : Texture(width, height, depth, samples, type, format, format_type, wrap,
-              min_filter, mag_filter),
-      gl_type(0),
-      gl_internal_format(0),
+    : Texture(width, height, depth, samples, type, format, wrap, min_filter,
+              mag_filter),
       gl_format(0),
       gl_format_type(0) {
-    gl_type = Translate(m_type);
-    gl_internal_format = TranslateInternalFormat(m_format, m_format_type);
-    gl_format = TranslateFormat(m_format, m_format_type);
-    gl_format_type = Translate(m_format_type);
+    gl_format = GetFormatType(m_format);
+    gl_format_type = GetDataType(m_format);
 
     Allocate();
 
@@ -30,9 +108,13 @@ GLTexture::GLTexture(int width, int height, int depth, int8_t samples,
 GLTexture::~GLTexture() { glDeleteTextures(1, &m_id); }
 
 void GLTexture::Allocate() {
+    GLenum gl_type = Translate(m_type);
+    GLenum gl_sized_format = Translate(m_format);
     glCreateTextures(gl_type, 1, &m_id);
 
-    if (m_format == DataFormat::ALPHA) {
+    if (m_format == DataFormat::ALPHA8 || m_format == DataFormat::ALPHA32I ||
+        m_format == DataFormat::ALPHA32UI || m_format == DataFormat::ALPHA16F ||
+        m_format == DataFormat::ALPHA32F) {
         const GLint swizzle_mask[] = {GL_ONE, GL_ONE, GL_ONE, GL_RED};
         glTextureParameteriv(m_id, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
     }
@@ -40,27 +122,23 @@ void GLTexture::Allocate() {
     switch (m_type) {
         case TextureType::TEX_2D:
         case TextureType::TEX_CUBE: {
-            glTextureStorage2D(m_id, m_mipmap_levels, gl_internal_format,
-                               m_width, m_height);
+            glTextureStorage2D(m_id, m_mipmap_levels, gl_sized_format, m_width,
+                               m_height);
         } break;
         case TextureType::TEX_2D_MULTISAMPLE:
-            glTextureStorage2DMultisample(m_id, m_samples, gl_internal_format,
+            glTextureStorage2DMultisample(m_id, m_samples, gl_sized_format,
                                           m_width, m_height, GL_TRUE);
             break;
         case TextureType::TEX_2D_ARRAY:
-            glTextureStorage3D(m_id, m_mipmap_levels, gl_internal_format,
-                               m_width, m_height, m_depth);
+            glTextureStorage3D(m_id, m_mipmap_levels, gl_sized_format, m_width,
+                               m_height, m_depth);
             break;
         case TextureType::TEX_3D:
-            glTextureStorage3D(m_id, m_mipmap_levels, gl_internal_format,
-                               m_width, m_height, m_depth);
+            glTextureStorage3D(m_id, m_mipmap_levels, gl_sized_format, m_width,
+                               m_height, m_depth);
             break;
     }
 }
-
-// void GLTexture::Bind() const { glBindTexture(gl_type, m_id); }
-
-// void GLTexture::Unbind() const { glBindTexture(gl_type, 0); }
 
 void GLTexture::SetSlot(uint32_t slot) const { glBindTextureUnit(slot, m_id); }
 
@@ -86,14 +164,13 @@ void GLTexture::SetPixels(int x, int y, int z, int width, int height, int depth,
 }
 
 void GLTexture::SetBorderColor(const void *color) {
-    switch (m_format_type) {
-        case DataFormatType::FLOAT32:
-        case DataFormatType::FLOAT16:
+    switch (gl_format_type) {
+        case GL_FLOAT:
             glTextureParameterfv(m_id, GL_TEXTURE_BORDER_COLOR, (float *)color);
             break;
-        case DataFormatType::INT:
-        case DataFormatType::UINT:
-        case DataFormatType::UBYTE:
+        case GL_INT:
+        case GL_UNSIGNED_INT:
+        case GL_UNSIGNED_BYTE:
             glTextureParameteriv(m_id, GL_TEXTURE_BORDER_COLOR, (int *)color);
             break;
     }

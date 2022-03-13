@@ -50,7 +50,36 @@ enum class TextureType {
     TEX_CUBE
 };
 
-enum class DataFormat { ALPHA, RED, RG, RGB, RGBA, DEPTH, DEPTH_STENCIL };
+enum class DataFormat {
+    R8,
+    ALPHA8,
+    RG8,
+    RGB8,
+    RGBA8,
+    ALPHA32I,
+    R32I,
+    RG32I,
+    RGB32I,
+    RGBA32I,
+    ALPHA32UI,
+    R32UI,
+    RG32UI,
+    RGB32UI,
+    RGBA32UI,
+    R16F,
+    ALPHA16F,
+    RG16F,
+    RGB16F,
+    RGBA16F,
+    R32F,
+    ALPHA32F,
+    RG32F,
+    RGB32F,
+    RGBA32F,
+    DEPTH24,
+    STENCIL8,
+    DEPTH24_STENCIL8
+};
 
 enum class DataFormatType { UBYTE, UINT, INT, FLOAT16, FLOAT32 };
 

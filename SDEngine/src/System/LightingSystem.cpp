@@ -19,18 +19,18 @@ namespace SD {
 
 DataFormat GetTextureFormat(GeometryBufferType type) {
     switch (type) {
-        case GeometryBufferType::G_ALBEDO:
-            return DataFormat::RGBA;
         case GeometryBufferType::G_POSITION:
         case GeometryBufferType::G_NORMAL:
+            return DataFormat::RGB16F;
+        case GeometryBufferType::G_ALBEDO:
         case GeometryBufferType::G_AMBIENT:
         case GeometryBufferType::G_EMISSIVE:
-            return DataFormat::RGB;
+            return DataFormat::RGB8;
         case GeometryBufferType::G_ENTITY_ID:
-            return DataFormat::RED;
+            return DataFormat::R32UI;
         default:
             SD_CORE_WARN("Unknown GBuffer!");
-            return DataFormat::RGBA;
+            return DataFormat::RGBA8;
     }
 }
 
@@ -121,7 +121,7 @@ void LightingSystem::InitShaders() {
 void LightingSystem::InitSSAO() {
     // ssao target
     AttachmentDescription attach_desc{AttachmentType::TEXTURE_2D,
-                                      DataFormat::RED, DataFormatType::FLOAT16};
+                                      DataFormat::R16F};
 
     m_ssao_buffer = Framebuffer::Create(m_width, m_height, 1, 1);
     m_ssao_buffer->Attach(attach_desc);
@@ -155,9 +155,9 @@ void LightingSystem::InitSSAOKernel() {
         ssao_noise[i] = glm::normalize(noise);
     }
     m_ssao_noise =
-        Texture::Create(4, 4, 1, 1, TextureType::TEX_2D, DataFormat::RGB,
-                        DataFormatType::FLOAT16, TextureWrap::REPEAT,
-                        TextureMinFilter::NEAREST, TextureMagFilter::NEAREST);
+        Texture::Create(4, 4, 1, 1, TextureType::TEX_2D, DataFormat::RGB16F,
+                        TextureWrap::REPEAT, TextureMinFilter::NEAREST,
+                        TextureMagFilter::NEAREST);
     m_ssao_noise->SetPixels(0, 0, 0, 4, 4, 1, ssao_noise.data());
 
     for (uint32_t i = 0; i < kernel_size; ++i) {
@@ -169,26 +169,24 @@ void LightingSystem::InitSSAOKernel() {
 void LightingSystem::InitLighting() {
     for (int i = 0; i < 2; ++i) {
         m_light_buffer[i] = Framebuffer::Create(m_width, m_height, 1, m_msaa);
-        m_light_buffer[i]->Attach(
-            AttachmentDescription{AttachmentType::TEXTURE_2D, DataFormat::RGB,
-                                  DataFormatType::FLOAT16});
+        m_light_buffer[i]->Attach(AttachmentDescription{
+            AttachmentType::TEXTURE_2D, DataFormat::RGB16F});
         m_light_buffer[i]->Setup();
     }
 
     m_gbuffer = Framebuffer::Create(m_width, m_height, 1, m_msaa);
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-        m_gbuffer->Attach(AttachmentDescription{
-            AttachmentType::TEXTURE_2D, GetTextureFormat(GeometryBufferType(i)),
-            GetTextureFormatType(GeometryBufferType(i))});
+        m_gbuffer->Attach(
+            AttachmentDescription{AttachmentType::TEXTURE_2D,
+                                  GetTextureFormat(GeometryBufferType(i))});
     }
     m_gbuffer->Attach(AttachmentDescription{AttachmentType::RENDERBUFFER,
-                                            DataFormat::DEPTH,
-                                            DataFormatType::FLOAT32});
+                                            DataFormat::DEPTH24});
     m_gbuffer->Setup();
 
     m_cascade_debug_fb = Framebuffer::Create(m_width, m_height, 1, 1);
-    m_cascade_debug_fb->Attach(AttachmentDescription{
-        AttachmentType::TEXTURE_2D, DataFormat::RGB, DataFormatType::UBYTE});
+    m_cascade_debug_fb->Attach(
+        AttachmentDescription{AttachmentType::TEXTURE_2D, DataFormat::RGB8});
     m_cascade_debug_fb->Setup();
 }
 

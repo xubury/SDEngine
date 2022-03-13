@@ -24,20 +24,19 @@ void GLFramebuffer::Setup() {
     for (const auto &spec : m_attachment_descs) {
         GLenum attachment = 0;
         switch (spec.format) {
-            case DataFormat::DEPTH:
+            case DataFormat::DEPTH24:
                 attachment = GL_DEPTH_ATTACHMENT;
                 break;
-            case DataFormat::DEPTH_STENCIL:
+            case DataFormat::STENCIL8:
+                attachment = GL_STENCIL_ATTACHMENT;
+                break;
+            case DataFormat::DEPTH24_STENCIL8:
                 attachment = GL_DEPTH_STENCIL_ATTACHMENT;
                 break;
-            case DataFormat::ALPHA:
-            case DataFormat::RED:
-            case DataFormat::RG:
-            case DataFormat::RGB:
-            case DataFormat::RGBA: {
+            default:
                 attachment = GL_COLOR_ATTACHMENT0 + drawables.size();
                 drawables.emplace_back(attachment);
-            } break;
+                break;
         }
         m_attachment_types.emplace_back(attachment);
 
@@ -47,23 +46,22 @@ void GLFramebuffer::Setup() {
                     m_width, m_height, m_depth, m_samples,
                     m_samples > 1 ? TextureType::TEX_2D_MULTISAMPLE
                                   : TextureType::TEX_2D,
-                    spec.format, spec.format_type);
+                    spec.format);
                 m_attachments.emplace_back(texture);
                 glNamedFramebufferTexture(m_id, attachment, texture->GetId(),
                                           0);
             } break;
             case AttachmentType::TEXTURE_2D_ARRAY: {
-                auto texture = Texture::Create(
-                    m_width, m_height, m_depth, m_samples,
-                    TextureType::TEX_2D_ARRAY, spec.format, spec.format_type);
+                auto texture =
+                    Texture::Create(m_width, m_height, m_depth, m_samples,
+                                    TextureType::TEX_2D_ARRAY, spec.format);
                 m_attachments.emplace_back(texture);
                 glNamedFramebufferTexture(m_id, attachment, texture->GetId(),
                                           0);
             } break;
             case AttachmentType::RENDERBUFFER: {
-                auto renderbuffer =
-                    Renderbuffer::Create(m_width, m_height, m_samples,
-                                         spec.format, spec.format_type);
+                auto renderbuffer = Renderbuffer::Create(
+                    m_width, m_height, m_samples, spec.format);
                 m_attachments.emplace_back(renderbuffer);
                 glNamedFramebufferRenderbuffer(
                     m_id, attachment, GL_RENDERBUFFER, renderbuffer->GetId());
