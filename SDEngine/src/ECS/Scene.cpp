@@ -32,7 +32,14 @@ Entity Scene::CloneEntity(EntityId from) {
             storage.emplace(to, storage.get(from));
         }
     }
-    return {to, this};
+    get<TransformComponent>(to).children.clear();
+    auto &children = get<TransformComponent>(from).children;
+    Entity to_entity{to, this};
+    for (auto &child : children) {
+        Entity entity = CloneEntity(child);
+        to_entity.AddChild(entity);
+    }
+    return to_entity;
 }
 
 void Scene::Serialize(cereal::PortableBinaryOutputArchive &archive) {

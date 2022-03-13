@@ -42,10 +42,12 @@ class SD_ECS_API Entity {
 
     bool operator<(const Entity &other) const;
 
-    Scene *GetScene() { return m_scene; }
+    Scene *GetScene() const { return m_scene; }
+
+    EntityId GetId() const { return m_handle; }
 
    private:
-    entt::entity m_handle;
+    EntityId m_handle;
     Scene *m_scene;
 };
 

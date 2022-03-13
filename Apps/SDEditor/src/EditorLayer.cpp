@@ -376,7 +376,7 @@ void EditorLayer::OpenSaveSceneDialog() {
     m_save_scene_open = true;
     m_file_dialog_info.type = ImGuiFileDialogType::SAVE_FILE;
     m_file_dialog_info.title = "Save Scene";
-    m_file_dialog_info.file_name = "test.asset";
+    m_file_dialog_info.file_name = m_scene_asset->GetName();
     m_file_dialog_info.regex_match = SCENE_FILTER;
     m_file_dialog_info.directory_path = AssetStorage::Get().GetDirectory();
 }

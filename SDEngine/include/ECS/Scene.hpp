@@ -16,8 +16,6 @@
 namespace SD {
 
 class Entity;
-using EntityId = entt::entity;
-using EntityIdType = entt::id_type;
 
 using ComponentSerializeFunction = entt::delegate<void(
     entt::snapshot &, cereal::PortableBinaryOutputArchive &)>;

@@ -18,6 +18,9 @@
 
 namespace SD {
 
+using EntityId = entt::entity;
+using EntityIdType = entt::id_type;
+
 struct SD_ECS_API IdComponent {
     ResourceId id;
 
@@ -31,7 +34,7 @@ struct SD_ECS_API TagComponent {
 };
 
 struct SD_ECS_API TransformComponent {
-    std::set<entt::entity> children;
+    std::set<EntityId> children;
     entt::entity parent;
     entt::registry* ecs{nullptr};
 
