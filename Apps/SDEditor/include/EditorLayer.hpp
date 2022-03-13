@@ -16,6 +16,8 @@
 #include "System/PostProcessSystem.hpp"
 #include "System/SpriteRenderSystem.hpp"
 
+#include "Asset/SceneAsset.hpp"
+
 namespace SD {
 
 enum EditorMode { NONE, TWO_DIMENSIONAL, THREE_DIMENSIONAL };
@@ -98,6 +100,7 @@ class EditorLayer : public Layer {
 
     Ref<Texture> m_light_icon;
 
+    SceneAsset* m_scene_asset;
     Entity m_selected_entity;
 
     HandlerRegistration m_window_size_handler;

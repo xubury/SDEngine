@@ -30,6 +30,9 @@ EditorLayer::~EditorLayer() {}
 
 void EditorLayer::OnInit() {
     Layer::OnInit();
+    auto &storage = AssetStorage::Get();
+    m_scene_asset = storage.CreateAsset<SceneAsset>("default scene");
+    scene = m_scene_asset->GetScene();
 
     InitBuffers();
     // editor related system
@@ -356,8 +359,8 @@ void EditorLayer::OnWindowSizeEvent(const WindowSizeEvent &e) {
 }
 
 void EditorLayer::NewScene() {
-    scene = CreateRef<Scene>();
-    EventSystem::Get().PublishEvent(EntitySelectEvent{entt::null, scene.get()});
+    // scene = CreateRef<Scene>();
+    // EventSystem::Get().PublishEvent(EntitySelectEvent{entt::null, scene});
 }
 
 void EditorLayer::OpenLoadSceneDialog() {
@@ -366,29 +369,25 @@ void EditorLayer::OpenLoadSceneDialog() {
     m_file_dialog_info.title = "Load Scene";
     m_file_dialog_info.file_name = "";
     m_file_dialog_info.regex_match = SCENE_FILTER;
-    m_file_dialog_info.directory_path = std::filesystem::current_path();
+    m_file_dialog_info.directory_path = AssetStorage::Get().GetDirectory();
 }
 
 void EditorLayer::OpenSaveSceneDialog() {
     m_save_scene_open = true;
     m_file_dialog_info.type = ImGuiFileDialogType::SAVE_FILE;
     m_file_dialog_info.title = "Save Scene";
-    m_file_dialog_info.file_name = "test.scene";
+    m_file_dialog_info.file_name = "test.asset";
     m_file_dialog_info.regex_match = SCENE_FILTER;
-    m_file_dialog_info.directory_path = std::filesystem::current_path();
+    m_file_dialog_info.directory_path = AssetStorage::Get().GetDirectory();
 }
 
 void EditorLayer::ProcessDialog() {
     if (ImGui::FileDialog(&m_load_scene_open, &m_file_dialog_info)) {
-        // auto new_scene =
-        //     AssetStorage::Get().LoadAndGet<Scene>(m_file_dialog_info.result_path.string());
-        // EventSystem::Get().PublishEvent(NewSceneEvent{new_scene});
-        // EventSystem::Get().PublishEvent(EntitySelectEvent{entt::null,
-        // scene.get()}); m_scene_panel->Reset();
+        // AssetStorage::Get().LoadAsset(m_file_dialog_info.result_path.string());
     }
     if (ImGui::FileDialog(&m_save_scene_open, &m_file_dialog_info)) {
-        // AssetStorage::Get().SaveAsset(scene,
-        // m_file_dialog_info.result_path.string());
+        AssetStorage::Get().SaveAsset(m_scene_asset,
+                                      m_file_dialog_info.result_path.string());
     }
 }
 
@@ -520,7 +519,7 @@ void EditorLayer::DrawViewport() {
             }
             if (entity_id != entt::null) {
                 EventSystem::Get().PublishEvent(
-                    EntitySelectEvent{entity_id, scene.get()});
+                    EntitySelectEvent{entity_id, scene});
             }
         }
         if (ImGui::BeginDragDropTarget()) {
@@ -530,7 +529,11 @@ void EditorLayer::DrawViewport() {
                 SD_TRACE("drop:{}", filename);
                 try {
                     Asset *asset = AssetStorage::Get().LoadAsset(filename);
-                    if (asset) {
+                    if (asset->IsTypeOf<SceneAsset>()) {
+                        m_scene_asset = dynamic_cast<SceneAsset *>(asset);
+                        NewSceneEvent e{m_scene_asset->GetScene()};
+                        EventSystem::Get().PublishEvent(e);
+                        SD_TRACE("load scene asset");
                     }
                 } catch (const Exception &e) {
                     SD_ERROR(e.what());

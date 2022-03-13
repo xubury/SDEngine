@@ -13,7 +13,7 @@ std::filesystem::path SD_CORE_API GetAppDirectory();
 #define APP_VARS            \
     Ref<Ini> setting;       \
     Ref<Renderer> renderer; \
-    Ref<Scene> scene;
+    Scene *scene;
 
 #define SET_APP_VARS                       \
     void SetAppVars(const AppVars &vars) { \

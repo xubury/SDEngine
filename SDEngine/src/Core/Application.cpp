@@ -46,8 +46,6 @@ Application::Application(const std::string &title, Device::API api) {
     auto &storage = AssetStorage::Get();
     storage.SetDirectory("assets");
     storage.ScanDirectory(storage.GetDirectory());
-
-    scene = CreateRef<Scene>();
 }
 
 Application::~Application() {

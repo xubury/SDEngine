@@ -60,7 +60,7 @@ struct EntitySelectEvent {
 };
 
 struct NewSceneEvent {
-    Ref<Scene> scene;
+    Scene *scene;
 };
 
 struct ViewportSizeEvent {

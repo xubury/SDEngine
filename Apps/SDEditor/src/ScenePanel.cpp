@@ -75,10 +75,10 @@ void ScenePanel::OnImGui() {
     ImGui::Begin("Scene Hierarchy");
 
     scene->each([&](auto entityID) {
-        Entity entity{entityID, scene.get()};
+        Entity entity{entityID, scene};
 
         TransformComponent &data = entity.GetComponent<TransformComponent>();
-        Entity parent(data.parent, scene.get());
+        Entity parent(data.parent, scene);
         if (!parent) {
             DrawEntityNode(entity);
         }
@@ -114,7 +114,7 @@ void ScenePanel::OnImGui() {
             Entity entity = *(Entity *)payload->Data;
 
             Entity parent(entity.GetComponent<TransformComponent>().parent,
-                          scene.get());
+                          scene);
             if (parent) {
                 parent.RemoveChild(entity);
             }
@@ -188,7 +188,7 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
 
     if (opened) {
         for (entt::entity childId : data.children) {
-            Entity child(childId, scene.get());
+            Entity child(childId, scene);
             DrawEntityNode(child);
         }
         ImGui::TreePop();
@@ -338,21 +338,16 @@ void ScenePanel::DrawComponents(Entity &entity) {
         false);
     DrawComponent<ModelComponent>("Model", entity, [&](ModelComponent &mc) {
         SelectAsset<ModelAsset>(&mc.model_id);
-        // if (AssetStorage::Get().Exists<model_path>(mc.model_id)) {
-        //     ModelAsset *model_asset =
-        //         AssetStorage::Get().GetAsset<ModelAsset>(mc.model_id);
-        //     mc.model_path = model_asset->GetPath();
-        // }
 
-        // ImGui::ColorEdit3("Color", &mc.color[0]);
-        // ResourceId rid(fileDialogInfo.result_path.string());
-        // if (AssetStorage::Get().Exists<ModelAsset>(rid)) {
-        //     auto model = AssetStorage::Get()
-        //                      .GetAsset<ModelAsset>(ResourceId(rid))
-        //                      ->GetModel();
-        //     DrawMaterialsList(model->GetMaterials(),
-        //                       &m_selected_material_id_map[entity]);
-        // }
+        ImGui::TextUnformatted("Base Color");
+        ImGui::ColorEdit3("##Base Color", &mc.color[0]);
+        if (AssetStorage::Get().Exists<ModelAsset>(mc.model_id)) {
+            auto model = AssetStorage::Get()
+                             .GetAsset<ModelAsset>(mc.model_id)
+                             ->GetModel();
+            DrawMaterialsList(model->GetMaterials(),
+                              &m_selected_material_id_map[entity]);
+        }
     });
     DrawComponent<LightComponent>(
         "Light", entity, [&](LightComponent &lightComp) {
@@ -374,17 +369,20 @@ void ScenePanel::DrawComponents(Entity &entity) {
                 light.SetDirectional(isDirectional);
             }
             ImGui::SameLine();
-            bool isCastShadow = light.IsCastShadow();
-            if (ImGui::Checkbox("Cast Shadow", &isCastShadow)) {
-                light.SetCastShadow(isCastShadow);
+            bool is_cast_shadow = light.IsCastShadow();
+            if (ImGui::Checkbox("Cast Shadow", &is_cast_shadow)) {
+                light.SetCastShadow(is_cast_shadow);
             }
-            auto planes = light.GetCascadePlanes();
-            int num_of_cascades = planes.size();
-            if (ImGui::SliderInt("Num of Cascades", &num_of_cascades, 1, 4)) {
-                light.SetNumOfCascades(num_of_cascades);
-            }
-            if (ImGui::InputFloat4("Cascades", planes.data())) {
-                light.SetCascadePlanes(planes);
+            if (is_cast_shadow) {
+                auto planes = light.GetCascadePlanes();
+                int num_of_cascades = planes.size();
+                if (ImGui::SliderInt("Num of Cascades", &num_of_cascades, 1,
+                                     4)) {
+                    light.SetNumOfCascades(num_of_cascades);
+                }
+                if (ImGui::InputFloat4("Cascades", planes.data())) {
+                    light.SetCascadePlanes(planes);
+                }
             }
             if (!light.IsDirectional()) {
                 float constant = light.GetConstant();
@@ -412,7 +410,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
             }
         });
     DrawComponent<TextComponent>("Text", entity, [&](TextComponent &textComp) {
-        SelectAsset<ModelAsset>(&textComp.font_id);
+        SelectAsset<FontAsset>(&textComp.font_id);
         ImGui::Text("Text Content:");
         static char buffer[256];
         std::copy(textComp.text.begin(), textComp.text.end(), buffer);

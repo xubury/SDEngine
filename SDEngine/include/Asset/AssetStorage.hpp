@@ -66,6 +66,10 @@ class SD_ASSET_API AssetStorage {
             throw Exception("Invalid asset file!");
         }
         cereal::PortableBinaryInputArchive iarchive(is);
+        return DeserializeAsset(iarchive);
+    }
+
+    Asset* DeserializeAsset(cereal::PortableBinaryInputArchive& iarchive) {
         TypeId tid;
         ResourceId rid;
         std::string name;
@@ -105,12 +109,17 @@ class SD_ASSET_API AssetStorage {
         std::ofstream os(full_path, std::ios::binary);
         os << ASSET_IDENTIFIER;
         cereal::PortableBinaryOutputArchive oarchive(os);
+        SerializeAsset(obj, oarchive);
+    }
+
+    void SerializeAsset(Asset* obj,
+                        cereal::PortableBinaryOutputArchive& oarchive) const {
         oarchive(obj->m_tid, obj->m_rid, obj->m_name);
         obj->Serialize(oarchive);
     }
 
     template <typename T>
-    void SaveAsset(ResourceId rid, const std::string &path) const {
+    void SaveAsset(ResourceId rid, const std::string& path) const {
         auto& cache = GetCache<T>();
         SaveAsset(cache.at(rid), path);
     }

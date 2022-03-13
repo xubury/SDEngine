@@ -35,6 +35,11 @@ class SD_ASSET_API Asset {
 
     std::string GetName() const { return m_name; }
 
+    template <typename T>
+    bool IsTypeOf() {
+        return GetTypeId<T>() == m_tid;
+    }
+
    protected:
     friend class AssetStorage;
 
