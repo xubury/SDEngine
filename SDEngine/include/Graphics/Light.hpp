@@ -66,7 +66,7 @@ class SD_GRAPHICS_API Light {
 
     SERIALIZE(m_ambient, m_diffuse, m_specular, m_cutoff, m_outer_cutoff,
               m_constant, m_linear, m_quadratic, m_is_directional,
-              m_is_cast_shadow)
+              m_is_cast_shadow, m_cascade_planes)
 
    private:
     Ref<Framebuffer> m_cascade_map;
