@@ -117,7 +117,6 @@ static inline MaterialType ConvertAssimpTextureType(aiTextureType textureType) {
     }
 }
 
-
 static Material ProcessAiMaterial(const std::filesystem::path &directory,
                                   const aiMaterial *ai_material,
                                   ImportedTexture &imported_textures) {
@@ -140,10 +139,10 @@ static Material ProcessAiMaterial(const std::filesystem::path &directory,
         if (ai_material->GetTexture(ai_type, 0, &texture_path, nullptr, nullptr,
                                     nullptr, nullptr,
                                     &ai_map_mode) != AI_SUCCESS) {
-            SD_CORE_ERROR("[processAiMaterial] Assimp GetTexture error!");
-            continue;
+            throw Exception("[processAiMaterial] Assimp GetTexture error!");
         }
-        std::string full_path = (directory / texture_path.C_Str()).generic_string();
+        std::string full_path =
+            (directory / texture_path.C_Str()).generic_string();
         Ref<Texture> texture;
         if (imported_textures.count(full_path) == 0) {
             texture = TextureLoader::LoadTexture2D(full_path);
@@ -178,7 +177,8 @@ Ref<Model> ModelLoader::LoadModel(const std::string &path) {
     uint32_t import_flags = aiProcess_Triangulate | aiProcess_FlipUVs;
     const aiScene *scene = importer.ReadFile(path, import_flags);
     if (scene == nullptr) {
-        SD_CORE_ERROR("Model loading failed: {}", importer.GetErrorString());
+        throw Exception(
+            fmt::format("Model loading failed: {}", importer.GetErrorString()));
     } else {
         model = CreateRef<Model>();
         model->SetPath(path);

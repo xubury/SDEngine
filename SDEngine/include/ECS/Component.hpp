@@ -84,7 +84,7 @@ struct SD_ECS_API TransformComponent {
 
 struct SD_ECS_API ModelComponent {
     ResourceId model_id;
-    glm::vec3 color{1.0f, 1.0f, 1.0f};
+    glm::vec3 color;
     ModelComponent() = default;
 
     SERIALIZE(model_id, color)
