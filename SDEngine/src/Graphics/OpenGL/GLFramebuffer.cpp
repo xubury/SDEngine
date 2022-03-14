@@ -15,6 +15,9 @@ GLFramebuffer::~GLFramebuffer() { glDeleteFramebuffers(1, &m_id); }
 void GLFramebuffer::Invalidate() {
     glInvalidateNamedFramebufferData(m_id, m_attachment_types.size(),
                                      m_attachment_types.data());
+}
+
+void GLFramebuffer::Clear() {
     m_attachments.clear();
     m_attachment_types.clear();
 }

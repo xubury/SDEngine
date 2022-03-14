@@ -15,6 +15,7 @@ class GLFramebuffer : public Framebuffer {
     virtual ~GLFramebuffer();
 
     void Setup() override;
+    void Clear() override;
     void Invalidate() override;
 
     void ReadPixels(uint32_t attachment_id, int level, int x, int y, int z,

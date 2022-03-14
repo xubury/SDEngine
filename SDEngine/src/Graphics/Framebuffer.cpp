@@ -32,7 +32,7 @@ void Framebuffer::Resize(int32_t width, int32_t height, int32_t depth) {
         m_width = width;
         m_height = height;
         m_depth = depth;
-        Invalidate();
+        Clear();
         Setup();
     }
 }
