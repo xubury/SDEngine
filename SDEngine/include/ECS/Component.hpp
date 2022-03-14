@@ -9,7 +9,6 @@
 #include "Utility/ResourceId.hpp"
 #include "Graphics/Model.hpp"
 #include "Graphics/Font.hpp"
-#include "Graphics/Terrain.hpp"
 #include "Graphics/Light.hpp"
 #include "Animation/Animation.hpp"
 #include "Animation/Animator.hpp"

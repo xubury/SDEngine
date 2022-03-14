@@ -31,7 +31,6 @@ set(Graphics_Include
     ${Include_Root}/Bitmap.hpp
     ${Include_Root}/Camera.hpp
     ${Include_Root}/Light.hpp
-    ${Include_Root}/Terrain.hpp
     ${Include_Root}/Font.hpp
     ${Include_Root}/Model.hpp
     ${Include_Root}/Mateiral.hpp
@@ -53,7 +52,6 @@ set(Graphics_Src
     ${Src_Root}/Bitmap.cpp
     ${Src_Root}/Camera.cpp
     ${Src_Root}/Light.cpp
-    ${Src_Root}/Terrain.cpp
     ${Src_Root}/Font.cpp
     ${Src_Root}/Material.cpp
     ${Src_Root}/Mesh.cpp
