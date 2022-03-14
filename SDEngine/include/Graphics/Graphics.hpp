@@ -81,8 +81,6 @@ enum class DataFormat {
     DEPTH24_STENCIL8
 };
 
-enum class DataFormatType { UBYTE, UINT, INT, FLOAT16, FLOAT32 };
-
 enum class Face { FRONT, BACK, BOTH };
 
 enum class BlitFilter { NEAREST, LINEAR };

@@ -34,23 +34,6 @@ DataFormat GetTextureFormat(GeometryBufferType type) {
     }
 }
 
-DataFormatType GetTextureFormatType(GeometryBufferType type) {
-    switch (type) {
-        case GeometryBufferType::G_POSITION:
-        case GeometryBufferType::G_NORMAL:
-            return DataFormatType::FLOAT16;
-        case GeometryBufferType::G_ALBEDO:
-        case GeometryBufferType::G_AMBIENT:
-        case GeometryBufferType::G_EMISSIVE:
-            return DataFormatType::UBYTE;
-        case GeometryBufferType::G_ENTITY_ID:
-            return DataFormatType::UINT;
-        default:
-            SD_CORE_WARN("Unknown GBuffer!");
-            return DataFormatType::UBYTE;
-    }
-}
-
 LightingSystem::LightingSystem(int32_t width, int32_t height, int32_t msaa)
     : System("LightingSystem"), m_width(width), m_height(height), m_msaa(msaa) {
     const float quadVertices[] = {

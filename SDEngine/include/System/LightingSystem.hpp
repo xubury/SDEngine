@@ -21,8 +21,6 @@ enum GeometryBufferType {
 
 DataFormat SD_SYSTEM_API GetTextureFormat(GeometryBufferType type);
 
-DataFormatType SD_SYSTEM_API GetTextureFormatType(GeometryBufferType type);
-
 class SD_SYSTEM_API LightingSystem : public System {
    public:
     LightingSystem(int32_t width, int32_t height, int32_t m_msaa);
