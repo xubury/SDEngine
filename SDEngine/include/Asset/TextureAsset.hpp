@@ -13,7 +13,7 @@ class TextureAsset : public Asset {
         m_texture =
             Texture::Create(1, 1, 1, 1, TextureType::TEX_2D, DataFormat::RGB8);
     }
-    ~TextureAsset() { SD_CORE_TRACE("deleting asset"); }
+    ~TextureAsset() {}
 
     void Serialize(cereal::PortableBinaryOutputArchive &archive) override {
         archive(*this);

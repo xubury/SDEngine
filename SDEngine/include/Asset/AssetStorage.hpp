@@ -57,11 +57,9 @@ class SD_ASSET_API AssetStorage {
 
     Asset* LoadAsset(const std::string& path) {
         std::string full_path = ResolvePath(path);
-        SD_CORE_TRACE("load asset:{}", full_path);
         std::ifstream is(full_path, std::ios::binary);
         std::string id(ASSET_IDENTIFIER.size(), ' ');
         is.read(id.data(), id.size());
-        SD_CORE_TRACE("file id:{}", ASSET_IDENTIFIER);
         if (id != ASSET_IDENTIFIER) {
             throw Exception("Invalid asset file!");
         }
