@@ -8,7 +8,7 @@ namespace SD {
 
 class GLTexture : public Texture {
    public:
-    GLTexture(int width, int height, int depth, int8_t samples,
+    GLTexture(int width, int height, int depth, MultiSampleLevel samples,
               TextureType type, DataFormat format, TextureWrap wrap,
               TextureMinFilter min_filter, TextureMagFilter mag_filter);
 

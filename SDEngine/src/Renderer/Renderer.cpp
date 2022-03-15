@@ -13,7 +13,7 @@ const static std::array<glm::vec4, 4> QUAD_VERTEX_POS = {
 const static std::array<glm::vec2, 4> QUAD_UV = {
     glm::vec2(0, 0), glm::vec2(1, 0), glm::vec2(1, 1), glm::vec2(0, 1)};
 
-Renderer::Renderer(Device* device, int width, int height, int msaa)
+Renderer::Renderer(Device* device, int width, int height, MultiSampleLevel msaa)
     : m_device(device) {
     SD_CORE_TRACE("Initializing Renderer");
     m_camera_UBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
@@ -24,14 +24,17 @@ Renderer::Renderer(Device* device, int width, int height, int msaa)
 
     InitRenderer2D();
 
-    m_framebuffer = Framebuffer::Create(width, height, 1, msaa);
-    m_framebuffer->Attach(
-        AttachmentDescription{AttachmentType::TEXTURE_2D, DataFormat::RGBA8});
-    m_framebuffer->Attach(
-        AttachmentDescription{AttachmentType::TEXTURE_2D, DataFormat::R32UI});
-    m_framebuffer->Attach(AttachmentDescription{AttachmentType::RENDERBUFFER,
-                                                DataFormat::DEPTH24});
-    m_framebuffer->Setup();
+    FramebufferCreateInfo info;
+    info.width = width;
+    info.height = height;
+    info.depth = 1;
+    info.attachments.push_back(AttachmentDescription{AttachmentType::TEXTURE_2D,
+                                                     DataFormat::RGBA8, msaa});
+    info.attachments.push_back(AttachmentDescription{AttachmentType::TEXTURE_2D,
+                                                     DataFormat::R32UI, msaa});
+    info.attachments.push_back(AttachmentDescription{
+        AttachmentType::RENDERBUFFER, DataFormat::DEPTH24, msaa});
+    m_framebuffer = Framebuffer::Create(info);
 }
 
 Renderer::~Renderer() { SD_CORE_TRACE("Deleting Renderer"); }
@@ -102,9 +105,9 @@ void Renderer::InitRenderer2D() {
     m_data.circle_vao->SetIndexBuffer(quad_ebo);
 
     m_data.default_texture =
-        Texture::Create(1, 1, 1, 1, TextureType::TEX_2D, DataFormat::RGBA32F,
-                        TextureWrap::REPEAT, TextureMinFilter::LINEAR,
-                        TextureMagFilter::LINEAR);
+        Texture::Create(1, 1, 1, MultiSampleLevel::X1, TextureType::TEX_2D,
+                        DataFormat::RGBA32F, TextureWrap::REPEAT,
+                        TextureMinFilter::LINEAR, TextureMagFilter::LINEAR);
     const float color[4] = {1, 1, 1, 1};
     m_data.default_texture->SetPixels(0, 0, 0, 1, 1, 1, color);
 
@@ -150,7 +153,7 @@ void Renderer::SetupShaderUBO(Shader& shader) {
 void Renderer::Begin(Framebuffer* framebuffer, Shader& shader, Camera& camera) {
     m_device->SetFramebuffer(framebuffer);
     m_device->SetViewport(0, 0, framebuffer->GetWidth(),
-                              framebuffer->GetHeight());
+                          framebuffer->GetHeight());
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
@@ -161,7 +164,7 @@ void Renderer::Begin(Framebuffer* framebuffer, Shader& shader, Camera& camera) {
 void Renderer::Begin(Framebuffer* framebuffer, Camera& camera) {
     m_device->SetFramebuffer(framebuffer);
     m_device->SetViewport(0, 0, framebuffer->GetWidth(),
-                              framebuffer->GetHeight());
+                          framebuffer->GetHeight());
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));

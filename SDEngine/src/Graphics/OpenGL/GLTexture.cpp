@@ -86,7 +86,7 @@ GLenum GetDataType(DataFormat format) {
     return 0;
 }
 
-GLTexture::GLTexture(int width, int height, int depth, int8_t samples,
+GLTexture::GLTexture(int width, int height, int depth, MultiSampleLevel samples,
                      TextureType type, DataFormat format, TextureWrap wrap,
                      TextureMinFilter min_filter, TextureMagFilter mag_filter)
     : Texture(width, height, depth, samples, type, format, wrap, min_filter,
@@ -126,8 +126,9 @@ void GLTexture::Allocate() {
                                m_height);
         } break;
         case TextureType::TEX_2D_MULTISAMPLE:
-            glTextureStorage2DMultisample(m_id, m_samples, gl_sized_format,
-                                          m_width, m_height, GL_TRUE);
+            glTextureStorage2DMultisample(m_id, static_cast<GLsizei>(m_samples),
+                                          gl_sized_format, m_width, m_height,
+                                          GL_TRUE);
             break;
         case TextureType::TEX_2D_ARRAY:
             glTextureStorage3D(m_id, m_mipmap_levels, gl_sized_format, m_width,

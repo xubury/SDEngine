@@ -10,22 +10,20 @@
 
 namespace SD {
 
-struct SD_CORE_API WindowProp {
+struct SD_CORE_API WindowCreateInfo {
     std::string title;
     int x;
     int y;
     int width;
     int height;
-    int msaa;
+    MultiSampleLevel msaa;
     bool vsync;
     uint32_t flag;
-    WindowProp(const std::string &title, int32_t x, int32_t y, int32_t width,
-               int32_t height, int32_t msaa, bool vsync, uint32_t flag);
 };
 
 class SD_CORE_API Window {
    public:
-    static Scope<Window> Create(const WindowProp &property);
+    static Scope<Window> Create(const WindowCreateInfo &info);
 
     Window() = default;
     virtual ~Window() = default;
@@ -36,7 +34,7 @@ class SD_CORE_API Window {
     virtual glm::ivec2 GetSize() const = 0;
     virtual int GetWidth() const = 0;
     virtual int GetHeight() const = 0;
-    virtual uint8_t GetMSAA() const = 0;
+    virtual MultiSampleLevel GetMSAA() const = 0;
     virtual bool GetIsVSync() const = 0;
 
     virtual std::string GetTitle() const = 0;

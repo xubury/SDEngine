@@ -47,14 +47,16 @@ void EditorLayer::OnInit() {
 }
 
 void EditorLayer::InitBuffers() {
-    m_viewport_buffer =
-        Framebuffer::Create(m_viewport_size.x, m_viewport_size.y, 1, 1);
-    m_viewport_buffer->Attach(
-        AttachmentDescription{AttachmentType::TEXTURE_2D, DataFormat::RGB8});
-    m_viewport_buffer->Attach(
-        AttachmentDescription{AttachmentType::TEXTURE_2D, DataFormat::R32UI});
+    FramebufferCreateInfo info;
+    info.width = m_viewport_size.x;
+    info.height = m_viewport_size.y;
+    info.depth = 1;
+    info.attachments.push_back(AttachmentDescription{
+        AttachmentType::TEXTURE_2D, DataFormat::RGB8, MultiSampleLevel::X1});
+    info.attachments.push_back(AttachmentDescription{
+        AttachmentType::TEXTURE_2D, DataFormat::R32UI, MultiSampleLevel::X1});
 
-    m_viewport_buffer->Setup();
+    m_viewport_buffer = Framebuffer::Create(info);
 }
 
 void EditorLayer::PushSystems() {

@@ -6,24 +6,13 @@
 
 namespace SD {
 
-WindowProp::WindowProp(const std::string &title, int32_t x, int32_t y,
-                       int32_t width, int32_t height, int32_t msaa, bool vsync,
-                       uint32_t flag)
-    : title(title),
-      x(x),
-      y(y),
-      width(width),
-      height(height),
-      msaa(msaa),
-      vsync(vsync),
-      flag(flag) {}
 
-Scope<Window> Window::Create(const WindowProp &property) {
+Scope<Window> Window::Create(const WindowCreateInfo &info) {
     SD_CORE_TRACE("Initializing Window...");
     Scope<Window> window;
     switch (Device::GetAPI()) {
         case Device::API::OpenGL:
-            window = CreateScope<GLWindow>(property);
+            window = CreateScope<GLWindow>(info);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");

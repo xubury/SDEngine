@@ -2,8 +2,8 @@
 
 namespace SD {
 
-const int SHADOW_MAP_WIDTH = 8192;
-const int SHADOW_MAP_HEIGHT = 8192;
+const int SHADOW_MAP_WIDTH = 4086;
+const int SHADOW_MAP_HEIGHT = 4086;
 
 Light::Light()
     : m_cascade_planes{20.0f, 100.f, 500.f, 1000.f},
@@ -69,11 +69,12 @@ float Light::GetQuadratic() const { return m_quadratic; }
 
 void Light::CreateShadowMap() {
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    m_cascade_map = Framebuffer::Create(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT,
-                                        m_cascade_planes.size(), 1);
-    m_cascade_map->Attach(AttachmentDescription{
-        AttachmentType::TEXTURE_2D_ARRAY, DataFormat::DEPTH24});
-    m_cascade_map->Setup();
+    m_cascade_map = Framebuffer::Create(
+        {SHADOW_MAP_WIDTH,
+         SHADOW_MAP_HEIGHT,
+         (int)m_cascade_planes.size(),
+         {AttachmentDescription{AttachmentType::TEXTURE_2D_ARRAY,
+                                DataFormat::DEPTH24, MultiSampleLevel::X1}}});
     m_cascade_map->GetTexture()->SetWrap(TextureWrap::BORDER);
     m_cascade_map->GetTexture()->SetBorderColor(&color);
 }

@@ -15,7 +15,7 @@ enum class GraphicsMode { NONE, TWO_DIMENSIONAL, THREE_DIMENSIONAL };
 
 class SD_SYSTEM_API GraphicsLayer : public Layer {
    public:
-    GraphicsLayer(int32_t width, int32_t height, int8_t msaa);
+    GraphicsLayer(int32_t width, int32_t height, MultiSampleLevel msaa);
     void OnInit() override;
 
     void OnPush() override;
@@ -40,7 +40,7 @@ class SD_SYSTEM_API GraphicsLayer : public Layer {
     GraphicsMode m_mode;
     int32_t m_width;
     int32_t m_height;
-    int8_t m_msaa;
+    MultiSampleLevel m_msaa;
     bool m_debug;
 
     Ref<Framebuffer> m_debug_gbuffer;

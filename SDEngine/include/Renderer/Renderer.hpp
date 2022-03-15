@@ -97,7 +97,7 @@ struct SD_RENDERER_API Renderer2DData {
 
 class SD_RENDERER_API Renderer {
    public:
-    Renderer(Device *device, int width, int height, int msaa);
+    Renderer(Device *device, int width, int height, MultiSampleLevel msaa);
     ~Renderer();
     Renderer(const Renderer &) = delete;
     Renderer &operator=(const Renderer &) = delete;

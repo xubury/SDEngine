@@ -11,10 +11,9 @@ class GLTexture;
 
 class GLFramebuffer : public Framebuffer {
    public:
-    GLFramebuffer(int32_t width, int32_t height, int32_t depth, int8_t samples);
+    GLFramebuffer(const FramebufferCreateInfo &info);
     virtual ~GLFramebuffer();
 
-    void Setup() override;
     void Clear() override;
     void Invalidate() override;
 
@@ -33,6 +32,7 @@ class GLFramebuffer : public Framebuffer {
     const Texture *GetTexture(uint32_t attachment_id) const override;
 
    private:
+    void Setup() override;
     std::vector<Ref<void>> m_attachments;
     std::vector<GLenum> m_attachment_types;
 };

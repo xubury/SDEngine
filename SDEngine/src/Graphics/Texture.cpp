@@ -5,9 +5,10 @@
 
 namespace SD {
 
-Ref<Texture> Texture::Create(int width, int height, int depth, int8_t samples,
-                             TextureType type, DataFormat format,
-                             TextureWrap wrap, TextureMinFilter min_filter,
+Ref<Texture> Texture::Create(int width, int height, int depth,
+                             MultiSampleLevel samples, TextureType type,
+                             DataFormat format, TextureWrap wrap,
+                             TextureMinFilter min_filter,
                              TextureMagFilter mag_filter) {
     Ref<Texture> texture;
     switch (Device::GetAPI()) {
@@ -23,7 +24,7 @@ Ref<Texture> Texture::Create(int width, int height, int depth, int8_t samples,
     return texture;
 }
 
-Texture::Texture(int width, int height, int depth, int8_t samples,
+Texture::Texture(int width, int height, int depth, MultiSampleLevel samples,
                  TextureType type, DataFormat format, TextureWrap wrap,
                  TextureMinFilter min_filter, TextureMagFilter mag_filter)
     : m_width(width),
@@ -52,7 +53,7 @@ int Texture::GetWidth() const { return m_width; }
 
 int Texture::GetHeight() const { return m_height; }
 
-int Texture::GetSamples() const { return m_samples; }
+MultiSampleLevel Texture::GetSamples() const { return m_samples; }
 
 TextureType Texture::GetType() const { return m_type; }
 

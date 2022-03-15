@@ -23,7 +23,7 @@ DataFormat SD_SYSTEM_API GetTextureFormat(GeometryBufferType type);
 
 class SD_SYSTEM_API LightingSystem : public System {
    public:
-    LightingSystem(int32_t width, int32_t height, int32_t m_msaa);
+    LightingSystem(int32_t width, int32_t height, MultiSampleLevel msaa);
 
     void OnInit() override;
 
@@ -72,7 +72,7 @@ class SD_SYSTEM_API LightingSystem : public System {
 
     int32_t m_width;
     int32_t m_height;
-    int32_t m_msaa;
+    MultiSampleLevel m_msaa;
 
     Ref<Shader> m_cascade_shader;
     Ref<Shader> m_cascade_debug_shader;

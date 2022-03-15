@@ -4,10 +4,10 @@
 
 namespace SD {
 
-GLFramebuffer::GLFramebuffer(int32_t width, int32_t height, int32_t depth,
-                             int8_t samples)
-    : Framebuffer(width, height, depth, samples) {
+GLFramebuffer::GLFramebuffer(const FramebufferCreateInfo &info)
+    : Framebuffer(info) {
     glCreateFramebuffers(1, &m_id);
+    Setup();
 }
 
 GLFramebuffer::~GLFramebuffer() { glDeleteFramebuffers(1, &m_id); }
@@ -24,50 +24,55 @@ void GLFramebuffer::Clear() {
 
 void GLFramebuffer::Setup() {
     std::vector<GLenum> drawables;
-    for (const auto &spec : m_attachment_descs) {
-        GLenum attachment = 0;
-        switch (spec.format) {
+    for (const auto &attachment : m_info.attachments) {
+        GLenum gl_attachment = 0;
+        switch (attachment.format) {
             case DataFormat::DEPTH24:
-                attachment = GL_DEPTH_ATTACHMENT;
+                gl_attachment = GL_DEPTH_ATTACHMENT;
                 break;
             case DataFormat::STENCIL8:
-                attachment = GL_STENCIL_ATTACHMENT;
+                gl_attachment = GL_STENCIL_ATTACHMENT;
                 break;
             case DataFormat::DEPTH24_STENCIL8:
-                attachment = GL_DEPTH_STENCIL_ATTACHMENT;
+                gl_attachment = GL_DEPTH_STENCIL_ATTACHMENT;
                 break;
             default:
-                attachment = GL_COLOR_ATTACHMENT0 + drawables.size();
-                drawables.emplace_back(attachment);
+                gl_attachment = GL_COLOR_ATTACHMENT0 + drawables.size();
+                drawables.emplace_back(gl_attachment);
                 break;
         }
-        m_attachment_types.emplace_back(attachment);
+        m_attachment_types.emplace_back(gl_attachment);
 
-        switch (spec.type) {
+        switch (attachment.type) {
             case AttachmentType::TEXTURE_2D: {
-                auto texture = Texture::Create(
-                    m_width, m_height, m_depth, m_samples,
-                    m_samples > 1 ? TextureType::TEX_2D_MULTISAMPLE
-                                  : TextureType::TEX_2D,
-                    spec.format);
+                auto texture =
+                    Texture::Create(m_info.width, m_info.height, m_info.depth,
+                                    attachment.samples,
+                                    static_cast<GLsizei>(attachment.samples) > 1
+                                        ? TextureType::TEX_2D_MULTISAMPLE
+                                        : TextureType::TEX_2D,
+                                    attachment.format);
                 m_attachments.emplace_back(texture);
-                glNamedFramebufferTexture(m_id, attachment, texture->GetId(),
+                glNamedFramebufferTexture(m_id, gl_attachment, texture->GetId(),
                                           0);
             } break;
             case AttachmentType::TEXTURE_2D_ARRAY: {
-                auto texture =
-                    Texture::Create(m_width, m_height, m_depth, m_samples,
-                                    TextureType::TEX_2D_ARRAY, spec.format);
+                auto texture = Texture::Create(m_info.width, m_info.height,
+                                               m_info.depth, attachment.samples,
+                                               TextureType::TEX_2D_ARRAY,
+                                               attachment.format);
                 m_attachments.emplace_back(texture);
-                glNamedFramebufferTexture(m_id, attachment, texture->GetId(),
+                glNamedFramebufferTexture(m_id, gl_attachment, texture->GetId(),
                                           0);
             } break;
             case AttachmentType::RENDERBUFFER: {
-                auto renderbuffer = Renderbuffer::Create(
-                    m_width, m_height, m_samples, spec.format);
+                auto renderbuffer =
+                    Renderbuffer::Create(m_info.width, m_info.height,
+                                         attachment.samples, attachment.format);
                 m_attachments.emplace_back(renderbuffer);
-                glNamedFramebufferRenderbuffer(
-                    m_id, attachment, GL_RENDERBUFFER, renderbuffer->GetId());
+                glNamedFramebufferRenderbuffer(m_id, gl_attachment,
+                                               GL_RENDERBUFFER,
+                                               renderbuffer->GetId());
             } break;
         }
     }

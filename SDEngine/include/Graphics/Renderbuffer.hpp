@@ -9,21 +9,22 @@ namespace SD {
 class SD_GRAPHICS_API Renderbuffer : public Resource {
    public:
     static Ref<Renderbuffer> Create(int32_t width, int32_t height,
-                                    int8_t samples, DataFormat format);
+                                    MultiSampleLevel samples,
+                                    DataFormat format);
 
     int32_t GetWidth() const { return m_width; }
     int32_t GetHeight() const { return m_height; }
-    int32_t GetSamples() const { return m_samples; }
+    MultiSampleLevel GetSamples() const { return m_samples; }
 
     DataFormat GetFormat() const { return m_format; }
 
    protected:
-    Renderbuffer(int32_t width, int32_t height, int32_t samples,
+    Renderbuffer(int32_t width, int32_t height, MultiSampleLevel samples,
                  DataFormat format);
 
     int32_t m_width;
     int32_t m_height;
-    int32_t m_samples;
+    MultiSampleLevel m_samples;
 
     DataFormat m_format;
 };

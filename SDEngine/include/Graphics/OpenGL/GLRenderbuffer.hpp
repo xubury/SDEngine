@@ -7,7 +7,8 @@ namespace SD {
 
 class SD_GRAPHICS_API GLRenderbuffer : public Renderbuffer {
    public:
-    GLRenderbuffer(int width, int height, int samples, DataFormat format);
+    GLRenderbuffer(int width, int height, MultiSampleLevel samples,
+                   DataFormat format);
 
    private:
     void Allocate();

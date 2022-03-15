@@ -4,7 +4,7 @@
 
 namespace SD {
 
-GraphicsLayer::GraphicsLayer(int32_t width, int32_t height, int8_t msaa)
+GraphicsLayer::GraphicsLayer(int32_t width, int32_t height, MultiSampleLevel msaa)
     : Layer("Graphics Layer"),
       m_mode(GraphicsMode::NONE),
       m_width(width),
@@ -15,13 +15,16 @@ void GraphicsLayer::OnInit() {
     Layer::OnInit();
 
     m_light_icon = TextureLoader::LoadTexture2D("assets/icons/light.png");
-    m_debug_gbuffer = Framebuffer::Create(m_width, m_height, 1, 1);
+    FramebufferCreateInfo info;
+    info.width = m_width;
+    info.height = m_height;
+    info.depth = 1;
     for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
-        m_debug_gbuffer->Attach(
-            AttachmentDescription{AttachmentType::TEXTURE_2D,
-                                  GetTextureFormat(GeometryBufferType(i))});
+        info.attachments.push_back(AttachmentDescription{
+            AttachmentType::TEXTURE_2D, GetTextureFormat(GeometryBufferType(i)),
+            MultiSampleLevel::X1});
     }
-    m_debug_gbuffer->Setup();
+    m_debug_gbuffer = Framebuffer::Create(info);
 }
 
 void GraphicsLayer::OnTick(float dt) {

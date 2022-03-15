@@ -10,8 +10,9 @@ namespace SD {
 class SD_GRAPHICS_API Texture : public Resource {
    public:
     static Ref<Texture> Create(
-        int width, int height, int depth, int8_t samples, TextureType type,
-        DataFormat format, TextureWrap wrap = TextureWrap::EDGE,
+        int width, int height, int depth, MultiSampleLevel samples,
+        TextureType type, DataFormat format,
+        TextureWrap wrap = TextureWrap::EDGE,
         TextureMinFilter min_filter = TextureMinFilter::NEAREST,
         TextureMagFilter mag_filter = TextureMagFilter::NEAREST);
 
@@ -39,7 +40,7 @@ class SD_GRAPHICS_API Texture : public Resource {
 
     int GetWidth() const;
     int GetHeight() const;
-    int GetSamples() const;
+    MultiSampleLevel GetSamples() const;
 
     TextureType GetType() const;
     DataFormat GetFormat() const;
@@ -48,14 +49,14 @@ class SD_GRAPHICS_API Texture : public Resource {
     const std::string &GetPath() const { return m_path; }
 
    protected:
-    Texture(int width, int height, int depth, int8_t samples, TextureType type,
-            DataFormat format, TextureWrap wrap, TextureMinFilter min_filter,
-            TextureMagFilter mag_filter);
+    Texture(int width, int height, int depth, MultiSampleLevel samples,
+            TextureType type, DataFormat format, TextureWrap wrap,
+            TextureMinFilter min_filter, TextureMagFilter mag_filter);
 
     int m_width;
     int m_height;
     int m_depth;
-    int m_samples;
+    MultiSampleLevel m_samples;
     int m_mipmap_levels;
 
     TextureType m_type;

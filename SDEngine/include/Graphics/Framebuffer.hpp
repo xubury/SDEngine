@@ -10,30 +10,45 @@
 
 namespace SD {
 
-enum AttachmentType { TEXTURE_2D = 0, TEXTURE_2D_ARRAY = 1, RENDERBUFFER = 2 };
+enum class AttachmentType {
+    TEXTURE_2D = 0,
+    TEXTURE_2D_ARRAY = 1,
+    RENDERBUFFER = 2
+};
+
+enum class AttachmentLoadOp {
+    CLEAR,
+    LOAD,
+    DONT_CARE,
+};
+enum class AttachmentStoreOp { STORE, DONT_CARE };
 
 struct AttachmentDescription {
     AttachmentType type;
     DataFormat format;
+    MultiSampleLevel samples;
+};
+
+struct FramebufferCreateInfo {
+    int32_t width;
+    int32_t height;
+    int32_t depth;
+    std::vector<AttachmentDescription> attachments;
 };
 
 class SD_GRAPHICS_API Framebuffer : public Resource {
    public:
-    static Ref<Framebuffer> Create(int32_t width, int32_t height, int32_t depth,
-                                   int8_t samples);
-    Framebuffer(int32_t width, int32_t height, int32_t depth, int8_t samples);
+    static Ref<Framebuffer> Create(const FramebufferCreateInfo &info);
+    Framebuffer(const FramebufferCreateInfo &info);
     virtual ~Framebuffer() = default;
 
     Framebuffer(const Framebuffer &) = delete;
     Framebuffer &operator=(const Framebuffer &) = delete;
 
-    int GetWidth() const { return m_width; };
-    int GetHeight() const { return m_height; };
-
-    void Attach(const AttachmentDescription &attchment);
+    int GetWidth() const { return m_info.width; };
+    int GetHeight() const { return m_info.height; };
 
     void Resize(int32_t width, int32_t height, int32_t depth = 1);
-    virtual void Setup() = 0;
     virtual void Invalidate() = 0;
     virtual void Clear() = 0;
 
@@ -53,12 +68,8 @@ class SD_GRAPHICS_API Framebuffer : public Resource {
     virtual const Texture *GetTexture(uint32_t attachment_id = 0) const = 0;
 
    protected:
-    int32_t m_width;
-    int32_t m_height;
-    int32_t m_depth;
-    int8_t m_samples;
-
-    std::vector<AttachmentDescription> m_attachment_descs;
+    virtual void Setup() = 0;
+    FramebufferCreateInfo m_info;
 };
 
 }  // namespace SD

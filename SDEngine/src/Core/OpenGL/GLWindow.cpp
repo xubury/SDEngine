@@ -6,8 +6,8 @@
 
 namespace SD {
 
-GLWindow::GLWindow(const WindowProp &property) {
-    uint32_t sdl_flags = property.flag | SDL_WINDOW_OPENGL;
+GLWindow::GLWindow(const WindowCreateInfo &info) {
+    uint32_t sdl_flags = info.flag | SDL_WINDOW_OPENGL;
 
     // Double buffer
     SDL(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1));
@@ -19,19 +19,20 @@ GLWindow::GLWindow(const WindowProp &property) {
                             SDL_GL_CONTEXT_PROFILE_CORE));
 
     // MultiSampling
-    if (property.msaa > 1) {
+    int samples = static_cast<int>(info.msaa);
+    if (samples > 1) {
         SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1));
-        SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, property.msaa));
+        SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, samples));
     }
 
-    m_window = SDL_CreateWindow(property.title.c_str(), property.x, property.y,
-                                property.width, property.height, sdl_flags);
+    m_window = SDL_CreateWindow(info.title.c_str(), info.x, info.y, info.width,
+                                info.height, sdl_flags);
     SD_CORE_ASSERT(m_window != nullptr, SDL_GetError());
 
     m_context = SDL_GL_CreateContext(m_window);
     SD_CORE_ASSERT(m_context != nullptr, SDL_GetError());
 
-    SDL(SDL_GL_SetSwapInterval(property.vsync ? 1 : 0));
+    SDL(SDL_GL_SetSwapInterval(info.vsync ? 1 : 0));
 
     SD_CORE_ASSERT(glewInit() == GLEW_OK, "glewInit failed!");
 }
@@ -60,10 +61,10 @@ void GLWindow::ImGuiRenderDrawData() {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-uint8_t GLWindow::GetMSAA() const {
+MultiSampleLevel GLWindow::GetMSAA() const {
     int value = 1;
     SDL(SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &value));
-    return value;
+    return static_cast<MultiSampleLevel>(value);
 }
 
 bool GLWindow::GetIsVSync() const { return SDL_GL_GetSwapInterval() == 1; }

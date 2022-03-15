@@ -10,13 +10,13 @@ namespace SD {
 
 class SD_CORE_API GLWindow : public Window {
    public:
-    GLWindow(const WindowProp &property);
+    GLWindow(const WindowCreateInfo &info);
     ~GLWindow();
 
     glm::ivec2 GetSize() const override;
     int GetWidth() const override;
     int GetHeight() const override;
-    uint8_t GetMSAA() const override;
+    MultiSampleLevel GetMSAA() const override;
 
     bool GetIsVSync() const override;
 

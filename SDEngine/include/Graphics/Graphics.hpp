@@ -42,6 +42,8 @@ enum class MeshTopology {
 
 enum class PolygonMode { POINT, LINE, FILL };
 
+enum class MultiSampleLevel { X1 = 1, x2 = 2, x4 = 4, x8 = 8 };
+
 enum class TextureType {
     TEX_2D,
     TEX_2D_MULTISAMPLE,

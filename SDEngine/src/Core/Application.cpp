@@ -42,20 +42,23 @@ Application::Application(const std::string &title, Device::API api) {
 
     SDL(SDL_Init(SDL_INIT_EVERYTHING));
 
-    WindowProp property(
-        title, setting->GetInteger("window", "x", SDL_WINDOWPOS_CENTERED),
+    WindowCreateInfo property{
+        title,
+        setting->GetInteger("window", "x", SDL_WINDOWPOS_CENTERED),
         setting->GetInteger("window", "y", SDL_WINDOWPOS_CENTERED),
         setting->GetInteger("window", "width", 800),
         setting->GetInteger("window", "height", 600),
-        setting->GetInteger("window", "msaa", 4),
-        setting->GetBoolean("window", "vsync", true), SDL_WINDOW_RESIZABLE);
+        static_cast<MultiSampleLevel>(setting->GetInteger("window", "msaa", 4)),
+        setting->GetBoolean("window", "vsync", true),
+        SDL_WINDOW_RESIZABLE};
     m_window = Window::Create(property);
 
     EventSystem::Init();
     AssetStorage::Init();
     Device::Init();
     renderer = CreateRef<Renderer>(&Device::Get(), m_window->GetWidth(),
-                                   m_window->GetHeight(), m_window->GetMSAA());
+                                   m_window->GetHeight(),
+                                   MultiSampleLevel(m_window->GetMSAA()));
 
     auto &storage = AssetStorage::Get();
     RegisterAssets(&storage);
@@ -71,7 +74,8 @@ Application::~Application() {
     glm::ivec2 size = m_window->GetSize();
     setting->SetInteger("window", "width", size.x);
     setting->SetInteger("window", "height", size.y);
-    setting->SetInteger("window", "msaa", m_window->GetMSAA());
+    setting->SetInteger("window", "msaa",
+                        static_cast<int>(m_window->GetMSAA()));
     setting->SetBoolean("window", "vsync", m_window->GetIsVSync());
 
     setting->Save((GetAppDirectory() / SETTING_FILENAME).string());

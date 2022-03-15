@@ -10,8 +10,8 @@ namespace SD {
 class TextureAsset : public Asset {
    public:
     TextureAsset() {
-        m_texture =
-            Texture::Create(1, 1, 1, 1, TextureType::TEX_2D, DataFormat::RGB8);
+        m_texture = Texture::Create(1, 1, 1, MultiSampleLevel::X1,
+                                    TextureType::TEX_2D, DataFormat::RGB8);
     }
     ~TextureAsset() {}
 

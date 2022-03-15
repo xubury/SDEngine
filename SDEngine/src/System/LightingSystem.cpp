@@ -34,7 +34,8 @@ DataFormat GetTextureFormat(GeometryBufferType type) {
     }
 }
 
-LightingSystem::LightingSystem(int32_t width, int32_t height, int32_t msaa)
+LightingSystem::LightingSystem(int32_t width, int32_t height,
+                               MultiSampleLevel msaa)
     : System("LightingSystem"), m_width(width), m_height(height), m_msaa(msaa) {
     const float quadVertices[] = {
         -1.0f, -1.0f, 0.f, 0.f,  0.f,   // bottom left
@@ -104,15 +105,11 @@ void LightingSystem::InitShaders() {
 void LightingSystem::InitSSAO() {
     // ssao target
     AttachmentDescription attach_desc{AttachmentType::TEXTURE_2D,
-                                      DataFormat::R16F};
+                                      DataFormat::R16F, MultiSampleLevel::X1};
 
-    m_ssao_buffer = Framebuffer::Create(m_width, m_height, 1, 1);
-    m_ssao_buffer->Attach(attach_desc);
-    m_ssao_buffer->Setup();
-
-    m_ssao_blur_buffer = Framebuffer::Create(m_width, m_height, 1, 1);
-    m_ssao_blur_buffer->Attach(attach_desc);
-    m_ssao_blur_buffer->Setup();
+    m_ssao_buffer = Framebuffer::Create({m_width, m_height, 1, {attach_desc}});
+    m_ssao_blur_buffer =
+        Framebuffer::Create({m_width, m_height, 1, {attach_desc}});
 }
 
 void LightingSystem::InitSSAOKernel() {
@@ -138,9 +135,9 @@ void LightingSystem::InitSSAOKernel() {
         ssao_noise[i] = glm::normalize(noise);
     }
     m_ssao_noise =
-        Texture::Create(4, 4, 1, 1, TextureType::TEX_2D, DataFormat::RGB16F,
-                        TextureWrap::REPEAT, TextureMinFilter::NEAREST,
-                        TextureMagFilter::NEAREST);
+        Texture::Create(4, 4, 1, MultiSampleLevel::X1, TextureType::TEX_2D,
+                        DataFormat::RGB16F, TextureWrap::REPEAT,
+                        TextureMinFilter::NEAREST, TextureMagFilter::NEAREST);
     m_ssao_noise->SetPixels(0, 0, 0, 4, 4, 1, ssao_noise.data());
 
     for (uint32_t i = 0; i < kernel_size; ++i) {
@@ -151,26 +148,32 @@ void LightingSystem::InitSSAOKernel() {
 
 void LightingSystem::InitLighting() {
     for (int i = 0; i < 2; ++i) {
-        m_light_buffer[i] = Framebuffer::Create(m_width, m_height, 1, m_msaa);
-        m_light_buffer[i]->Attach(AttachmentDescription{
-            AttachmentType::TEXTURE_2D, DataFormat::RGB16F});
-        m_light_buffer[i]->Setup();
+        m_light_buffer[i] = Framebuffer::Create(
+            {m_width,
+             m_height,
+             1,
+             {{AttachmentType::TEXTURE_2D, DataFormat::RGB16F, m_msaa}}});
     }
 
-    m_gbuffer = Framebuffer::Create(m_width, m_height, 1, m_msaa);
+    FramebufferCreateInfo info;
+    info.width = m_width;
+    info.height = m_height;
+    info.depth = 1;
     for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
-        m_gbuffer->Attach(
-            AttachmentDescription{AttachmentType::TEXTURE_2D,
-                                  GetTextureFormat(GeometryBufferType(i))});
+        info.attachments.push_back(AttachmentDescription{
+            AttachmentType::TEXTURE_2D, GetTextureFormat(GeometryBufferType(i)),
+            m_msaa});
     }
-    m_gbuffer->Attach(AttachmentDescription{AttachmentType::RENDERBUFFER,
-                                            DataFormat::DEPTH24});
-    m_gbuffer->Setup();
+    info.attachments.push_back(AttachmentDescription{
+        AttachmentType::RENDERBUFFER, DataFormat::DEPTH24, m_msaa});
+    m_gbuffer = Framebuffer::Create(info);
 
-    m_cascade_debug_fb = Framebuffer::Create(m_width, m_height, 1, 1);
-    m_cascade_debug_fb->Attach(
-        AttachmentDescription{AttachmentType::TEXTURE_2D, DataFormat::RGB8});
-    m_cascade_debug_fb->Setup();
+    m_cascade_debug_fb = Framebuffer::Create(
+        {m_width,
+         m_height,
+         1,
+         {AttachmentDescription{AttachmentType::TEXTURE_2D, DataFormat::RGB8,
+                                MultiSampleLevel::X1}}});
 }
 
 void LightingSystem::OnSizeEvent(const ViewportSizeEvent &event) {
