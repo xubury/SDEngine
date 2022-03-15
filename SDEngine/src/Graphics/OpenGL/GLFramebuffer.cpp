@@ -7,22 +7,14 @@ namespace SD {
 GLFramebuffer::GLFramebuffer(const FramebufferCreateInfo &info)
     : Framebuffer(info) {
     glCreateFramebuffers(1, &m_id);
-    Setup();
+    SetupAttachments();
 }
 
 GLFramebuffer::~GLFramebuffer() { glDeleteFramebuffers(1, &m_id); }
 
-void GLFramebuffer::Invalidate() {
-    glInvalidateNamedFramebufferData(m_id, m_attachment_types.size(),
-                                     m_attachment_types.data());
-}
+void GLFramebuffer::DestoryAttachments() { m_attachments.clear(); }
 
-void GLFramebuffer::Clear() {
-    m_attachments.clear();
-    m_attachment_types.clear();
-}
-
-void GLFramebuffer::Setup() {
+void GLFramebuffer::SetupAttachments() {
     std::vector<GLenum> drawables;
     for (const auto &attachment : m_info.attachments) {
         GLenum gl_attachment = 0;
@@ -41,7 +33,6 @@ void GLFramebuffer::Setup() {
                 drawables.emplace_back(gl_attachment);
                 break;
         }
-        m_attachment_types.emplace_back(gl_attachment);
 
         switch (attachment.type) {
             case AttachmentType::TEXTURE_2D: {

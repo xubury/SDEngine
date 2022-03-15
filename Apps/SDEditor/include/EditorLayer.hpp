@@ -21,6 +21,7 @@
 
 namespace SD {
 
+enum class EditorMode { NONE, TWO_DIMENSIONAL, THREE_DIMENSIONAL };
 class EditorLayer : public Layer {
    public:
     EditorLayer(GraphicsLayer* graphics_layer, int width, int height);
@@ -52,8 +53,6 @@ class EditorLayer : public Layer {
 
     void ProcessDialog();
 
-    void PushSystems();
-
     void MenuBar();
 
     void DrawViewport();
@@ -61,6 +60,8 @@ class EditorLayer : public Layer {
     void DrawDebugBuffers();
 
     void Quit();
+
+    EditorMode m_mode;
     GraphicsLayer* m_graphics_layer;
 
     ScenePanel* m_scene_panel;

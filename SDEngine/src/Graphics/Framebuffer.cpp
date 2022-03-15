@@ -25,8 +25,8 @@ void Framebuffer::Resize(int32_t width, int32_t height, int32_t depth) {
         m_info.width = width;
         m_info.height = height;
         m_info.depth = depth;
-        Clear();
-        Setup();
+        DestoryAttachments();
+        SetupAttachments();
     }
 }
 

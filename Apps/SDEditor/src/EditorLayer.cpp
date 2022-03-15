@@ -13,6 +13,7 @@ namespace SD {
 
 EditorLayer::EditorLayer(GraphicsLayer *graphics_layer, int width, int height)
     : Layer("EditorLayer"),
+      m_mode(EditorMode::NONE),
       m_graphics_layer(graphics_layer),
       m_viewport_pos(0, 0),
       m_viewport_size(width, height),
@@ -57,21 +58,6 @@ void EditorLayer::InitBuffers() {
         AttachmentType::TEXTURE_2D, DataFormat::R32UI, MultiSampleLevel::X1});
 
     m_viewport_buffer = Framebuffer::Create(info);
-}
-
-void EditorLayer::PushSystems() {
-    if (m_graphics_layer->GetGraphicsMode() ==
-        GraphicsMode::THREE_DIMENSIONAL) {
-        m_editor_camera_system->AllowRotate(true);
-    } else {
-        m_tile_map_system = CreateSystem<TileMapSystem>();
-        m_animation_editor = CreateSystem<AnimationEditor>();
-
-        PushSystem(m_tile_map_system);
-        PushSystem(m_animation_editor);
-
-        m_editor_camera_system->AllowRotate(false);
-    }
 }
 
 void EditorLayer::OnPush() {
@@ -135,26 +121,33 @@ void EditorLayer::OnImGui() {
         ImGui::EndPopup();
     }
 
-    if (!m_quitting &&
-        m_graphics_layer->GetGraphicsMode() == GraphicsMode::NONE) {
+    if (!m_quitting && m_mode == EditorMode::NONE) {
         ImGui::OpenPopup("Select Editor Mode");
     }
     if (ImGui::BeginCenterPopupModal("Select Editor Mode")) {
-        static GraphicsMode mode = GraphicsMode::TWO_DIMENSIONAL;
+        static EditorMode mode = EditorMode::TWO_DIMENSIONAL;
         ImGui::TextUnformatted("Please select an editor mode(2D/3D):");
         ImGui::TextUnformatted("Mode:");
         ImGui::SameLine();
-        if (ImGui::RadioButton("2D", mode == GraphicsMode::TWO_DIMENSIONAL)) {
-            mode = GraphicsMode::TWO_DIMENSIONAL;
+        if (ImGui::RadioButton("2D", mode == EditorMode::TWO_DIMENSIONAL)) {
+            mode = EditorMode::TWO_DIMENSIONAL;
         }
         ImGui::SameLine();
-        if (ImGui::RadioButton("3D", mode == GraphicsMode::THREE_DIMENSIONAL)) {
-            mode = GraphicsMode::THREE_DIMENSIONAL;
+        if (ImGui::RadioButton("3D", mode == EditorMode::THREE_DIMENSIONAL)) {
+            mode = EditorMode::THREE_DIMENSIONAL;
         }
         if (ImGui::Button("OK")) {
-            m_graphics_layer->SetGraphicsMode(mode);
-            m_graphics_layer->InitPipeline();
-            PushSystems();
+            m_mode = mode;
+            if (mode == EditorMode::TWO_DIMENSIONAL) {
+                m_tile_map_system = CreateSystem<TileMapSystem>();
+                m_animation_editor = CreateSystem<AnimationEditor>();
+
+                PushSystem(m_tile_map_system);
+                PushSystem(m_animation_editor);
+
+                m_editor_camera_system->AllowRotate(false);
+            }
+
             ImGui::CloseCurrentPopup();
         }
         ImGui::SameLine();

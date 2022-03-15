@@ -14,9 +14,6 @@ class GLFramebuffer : public Framebuffer {
     GLFramebuffer(const FramebufferCreateInfo &info);
     virtual ~GLFramebuffer();
 
-    void Clear() override;
-    void Invalidate() override;
-
     void ReadPixels(uint32_t attachment_id, int level, int x, int y, int z,
                     int w, int h, int d, size_t size,
                     void *data) const override;
@@ -32,9 +29,9 @@ class GLFramebuffer : public Framebuffer {
     const Texture *GetTexture(uint32_t attachment_id) const override;
 
    private:
-    void Setup() override;
+    void SetupAttachments() override;
+    void DestoryAttachments() override;
     std::vector<Ref<void>> m_attachments;
-    std::vector<GLenum> m_attachment_types;
 };
 
 }  // namespace SD

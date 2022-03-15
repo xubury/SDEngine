@@ -16,13 +16,6 @@ enum class AttachmentType {
     RENDERBUFFER = 2
 };
 
-enum class AttachmentLoadOp {
-    CLEAR,
-    LOAD,
-    DONT_CARE,
-};
-enum class AttachmentStoreOp { STORE, DONT_CARE };
-
 struct AttachmentDescription {
     AttachmentType type;
     DataFormat format;
@@ -49,8 +42,6 @@ class SD_GRAPHICS_API Framebuffer : public Resource {
     int GetHeight() const { return m_info.height; };
 
     void Resize(int32_t width, int32_t height, int32_t depth = 1);
-    virtual void Invalidate() = 0;
-    virtual void Clear() = 0;
 
     virtual void ReadPixels(uint32_t attachment_id, int level, int x, int y,
                             int z, int w, int h, int d, size_t size,
@@ -68,7 +59,8 @@ class SD_GRAPHICS_API Framebuffer : public Resource {
     virtual const Texture *GetTexture(uint32_t attachment_id = 0) const = 0;
 
    protected:
-    virtual void Setup() = 0;
+    virtual void SetupAttachments() = 0;
+    virtual void DestoryAttachments() = 0;
     FramebufferCreateInfo m_info;
 };
 

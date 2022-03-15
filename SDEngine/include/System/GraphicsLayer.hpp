@@ -11,8 +11,6 @@
 
 namespace SD {
 
-enum class GraphicsMode { NONE, TWO_DIMENSIONAL, THREE_DIMENSIONAL };
-
 class SD_SYSTEM_API GraphicsLayer : public Layer {
    public:
     GraphicsLayer(int32_t width, int32_t height, MultiSampleLevel msaa);
@@ -25,11 +23,6 @@ class SD_SYSTEM_API GraphicsLayer : public Layer {
     void OnRender() override;
     void OnTick(float dt) override;
 
-    GraphicsMode GetGraphicsMode() { return m_mode; }
-    void SetGraphicsMode(GraphicsMode mode) { m_mode = mode; }
-
-    void InitPipeline();
-
     void Resize();
 
     void SetDebug(bool debug) { m_debug = debug; }
@@ -37,7 +30,6 @@ class SD_SYSTEM_API GraphicsLayer : public Layer {
    private:
     void BlitGeometryBuffers();
 
-    GraphicsMode m_mode;
     int32_t m_width;
     int32_t m_height;
     MultiSampleLevel m_msaa;

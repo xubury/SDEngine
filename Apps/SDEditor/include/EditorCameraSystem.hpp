@@ -43,7 +43,7 @@ class EditorCameraSystem : public System {
 
     Camera m_camera;
 
-    bool m_allow_rotate{false};
+    bool m_allow_rotate{true};
 };
 
 }  // namespace SD
