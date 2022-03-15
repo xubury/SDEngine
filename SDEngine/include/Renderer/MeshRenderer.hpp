@@ -13,7 +13,7 @@ struct SD_RENDERER_API ShadowData {
 class SD_RENDERER_API MeshRenderer : protected Renderer {
    public:
     static void Init();
-    static void Begin(Framebuffer *framebuffer, Shader &shader, Camera &camera);
+    static void Begin(Shader &shader, Camera &camera);
     static void Begin(Light &light, const Transform &light_trans,
                       Camera &camera, Shader &shader);
     static void End();

@@ -18,11 +18,7 @@ void MeshRenderer::DrawMesh(const Shader& shader, const Mesh& mesh) {
            0);
 }
 
-void MeshRenderer::Begin(Framebuffer* framebuffer, Shader& shader,
-                         Camera& camera) {
-    m_device->SetFramebuffer(framebuffer);
-    m_device->SetViewport(0, 0, framebuffer->GetWidth(),
-                          framebuffer->GetHeight());
+void MeshRenderer::Begin(Shader& shader, Camera& camera) {
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
@@ -32,9 +28,9 @@ void MeshRenderer::Begin(Framebuffer* framebuffer, Shader& shader,
 
 void MeshRenderer::Begin(Light& light, const Transform& light_trans,
                          Camera& camera, Shader& shader) {
-    Framebuffer* fb = light.GetCascadeMap();
-    m_device->SetFramebuffer(fb);
-    m_device->SetViewport(0, 0, fb->GetWidth(), fb->GetHeight());
+    // Framebuffer* fb = light.GetCascadeMap();
+    // m_device->SetFramebuffer(fb);
+    // m_device->SetViewport(0, 0, fb->GetWidth(), fb->GetHeight());
     m_device->Clear(BufferBitMask::DEPTH_BUFFER_BIT);
 
     light.ComputeCascadeLightMatrix(light_trans, camera);

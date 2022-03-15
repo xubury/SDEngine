@@ -15,31 +15,35 @@ Ref<UniformBuffer> Renderer::m_camera_UBO;
 
 CameraData Renderer::m_camera_data;
 
-static std::stack<Framebuffer*> s_current_buffer;
+static std::stack<Framebuffer*> s_buffer_stacks;
+Framebuffer* s_current_buffer;
 
 void Renderer::BeginRenderPass(const RenderPassInfo& info) {
-    s_current_buffer.push(info.framebuffer);
+    s_buffer_stacks.push(info.framebuffer);
+    s_current_buffer = GetBufferStackTop();
+    m_device->SetFramebuffer(s_current_buffer);
+    m_device->SetViewport(0, 0, s_current_buffer->GetWidth(),
+                          s_current_buffer->GetHeight());
 }
 
 void Renderer::BeginRenderSubpass(const RenderSubpassInfo& info) {
-    Framebuffer* framebuffer = GetCurrentBuffer();
-    m_device->SetFramebuffer(framebuffer);
-    m_device->SetViewport(0, 0, framebuffer->GetWidth(),
-                          framebuffer->GetHeight());
-    m_device->DrawBuffers(framebuffer, info.draw_buffer_count,
+    s_current_buffer = GetBufferStackTop();
+    m_device->SetFramebuffer(s_current_buffer);
+    m_device->DrawBuffers(s_current_buffer, info.draw_buffer_count,
                           info.draw_buffer);
 }
 
 void Renderer::EndRenderSubpass() { m_device->SetFramebuffer(nullptr); }
 
-void Renderer::EndRenderPass() { s_current_buffer.pop(); }
+void Renderer::EndRenderPass() { s_buffer_stacks.pop(); }
 
-Framebuffer* Renderer::GetCurrentBuffer() { return s_current_buffer.top(); }
+Framebuffer* Renderer::GetBufferStackTop() { return s_buffer_stacks.top(); }
 
 glm::vec2 Renderer::GetCurrentBufferSize() {
-    Framebuffer* framebuffer = GetCurrentBuffer();
-    return {framebuffer->GetWidth(), framebuffer->GetHeight()};
+    return {s_current_buffer->GetWidth(), s_current_buffer->GetHeight()};
 }
+
+bool Renderer::IsEmptyStack() { return s_buffer_stacks.empty(); }
 
 void Renderer::Init(Device* device) {
     m_device = device;
@@ -53,6 +57,7 @@ void Renderer::Init(Device* device) {
 void Renderer::Submit(const Shader& shader, const VertexArray& vao,
                       MeshTopology topology, size_t count, size_t offset,
                       bool index) {
+    SD_CORE_ASSERT(s_current_buffer != nullptr);
     m_device->SetShader(&shader);
     vao.Bind();
     if (index) {

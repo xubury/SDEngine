@@ -161,6 +161,7 @@ void Application::Render() {
     for (auto &layer : m_layers) {
         layer->OnRender();
     }
+    SD_CORE_ASSERT(Renderer::IsEmptyStack())
 
     m_imgui->Begin();
     for (auto &layer : m_layers) {

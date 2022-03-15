@@ -236,6 +236,7 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
     auto modelView = scene->view<TransformComponent, ModelComponent>();
     device->SetCullFace(Face::FRONT);
 
+    Renderer::BeginRenderPass(RenderPassInfo{light.GetCascadeMap()});
     MeshRenderer::Begin(light, transform, *scene->GetCamera(),
                         *m_cascade_shader);
 
@@ -266,14 +267,16 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
                                      scene->GetCamera()->GetFarZ());
     Renderer::Submit(*m_cascade_debug_shader, *m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
+
+    Renderer::EndRenderPass();
 }
 
 void LightingSystem::RenderSSAO() {
     const float clear_value = 1.0f;
-
     m_ssao_buffer->ClearAttachment(0, &clear_value);
-    MeshRenderer::Begin(m_ssao_buffer.get(), *m_ssao_shader,
-                        *scene->GetCamera());
+
+    Renderer::BeginRenderPass(RenderPassInfo{m_ssao_buffer.get()});
+    MeshRenderer::Begin(*m_ssao_shader, *scene->GetCamera());
     m_ssao_shader->SetFloat("u_radius", m_ssao_radius);
     m_ssao_shader->SetFloat("u_bias", m_ssao_bias);
     m_ssao_shader->SetUint("u_power", m_ssao_power);
@@ -285,13 +288,15 @@ void LightingSystem::RenderSSAO() {
     Renderer::Submit(*m_ssao_shader, *m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
     MeshRenderer::End();
+    Renderer::EndRenderPass();
 
     // blur
-    device->SetFramebuffer(m_ssao_blur_buffer.get());
+    Renderer::BeginRenderPass(RenderPassInfo{m_ssao_blur_buffer.get()});
     m_ssao_blur_buffer->ClearAttachment(0, &clear_value);
     m_ssao_blur_shader->SetTexture("u_ssao", m_ssao_buffer->GetTexture());
     Renderer::Submit(*m_ssao_blur_shader, *m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
+    Renderer::EndRenderPass();
 }
 
 void LightingSystem::RenderEmissive() {
@@ -299,7 +304,6 @@ void LightingSystem::RenderEmissive() {
     if (lightView.begin() != lightView.end()) {
         const int buffer = 0;
         Renderer::BeginRenderSubpass(RenderSubpassInfo{&buffer, 1});
-        device->DrawBuffers(m_main_buffer, 1, &buffer);
         m_emssive_shader->SetTexture("u_lighting",
                                      GetLightingBuffer()->GetTexture());
         m_emssive_shader->SetTexture(
@@ -339,8 +343,9 @@ void LightingSystem::RenderDeferred() {
         const Transform &transform = transformComp.GetWorldTransform();
         RenderShadowMap(light, transform);
 
-        MeshRenderer::Begin(m_light_buffer[output_id].get(), *m_deferred_shader,
-                            *scene->GetCamera());
+        Renderer::BeginRenderPass(
+            RenderPassInfo{m_light_buffer[output_id].get()});
+        MeshRenderer::Begin(*m_deferred_shader, *scene->GetCamera());
         m_deferred_shader->SetTexture("u_lighting",
                                       m_light_buffer[input_id]->GetTexture());
         m_deferred_shader->SetVec3("u_light.direction", transform.GetFront());
@@ -374,14 +379,15 @@ void LightingSystem::RenderDeferred() {
                          m_quad->GetIndexBuffer()->GetCount(), 0);
         MeshRenderer::End();
         std::swap(m_light_buffer[input_id], m_light_buffer[output_id]);
+        Renderer::EndRenderPass();
     });
 }
 
 void LightingSystem::RenderGBuffer() {
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
-    MeshRenderer::Begin(m_gbuffer.get(), *m_gbuffer_shader,
-                        *scene->GetCamera());
+    Renderer::BeginRenderPass(RenderPassInfo{m_gbuffer.get()});
+    MeshRenderer::Begin(*m_gbuffer_shader, *scene->GetCamera());
     device->Clear(BufferBitMask::COLOR_BUFFER_BIT |
                   BufferBitMask::DEPTH_BUFFER_BIT);
     uint32_t id = static_cast<uint32_t>(entt::null);
@@ -417,6 +423,7 @@ void LightingSystem::RenderGBuffer() {
         }
     });
     MeshRenderer::End();
+    Renderer::EndRenderPass();
 }
 
 void LightingSystem::SetSSAORadius(float radius) { m_ssao_radius = radius; }

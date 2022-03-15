@@ -45,7 +45,7 @@ void GraphicsLayer::OnInit() {
     // normal render systems
     m_lighting_system =
         CreateSystem<LightingSystem>(m_main_framebuffer.get(), m_msaa);
-    m_skybox_system = CreateSystem<SkyboxSystem>(m_main_framebuffer.get());
+    m_skybox_system = CreateSystem<SkyboxSystem>();
     m_sprite_system = CreateSystem<SpriteRenderSystem>();
     m_post_process_system =
         CreateSystem<PostProcessSystem>(m_main_framebuffer.get());

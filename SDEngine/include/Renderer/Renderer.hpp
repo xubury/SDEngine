@@ -41,8 +41,9 @@ class SD_RENDERER_API Renderer {
     static void Init(Device *device);
 
     static glm::vec2 GetCurrentBufferSize();
-    static Framebuffer *GetCurrentBuffer();
+    static Framebuffer *GetBufferStackTop();
 
+    static bool IsEmptyStack();
    protected:
     static Device *m_device;
 
