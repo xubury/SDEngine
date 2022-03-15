@@ -19,13 +19,29 @@ struct SD_RENDERER_API CameraData {
     glm::mat4 view;
 };
 
+struct RenderPassInfo {
+    Framebuffer *framebuffer;
+};
+
+struct RenderSubpassInfo {
+    const int *draw_buffer;
+    int draw_buffer_count;
+};
+
 class SD_RENDERER_API Renderer {
    public:
+    static void BeginRenderPass(const RenderPassInfo &info);
+    static void BeginRenderSubpass(const RenderSubpassInfo &info);
+    static void EndRenderSubpass();
+    static void EndRenderPass();
     static void Submit(const Shader &shader, const VertexArray &vao,
                        MeshTopology topology, size_t count, size_t offset,
                        bool index = true);
 
     static void Init(Device *device);
+
+    static glm::vec2 GetCurrentBufferSize();
+    static Framebuffer *GetCurrentBuffer();
 
    protected:
     static Device *m_device;

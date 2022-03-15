@@ -2,6 +2,7 @@
 #include "Renderer/MeshRenderer.hpp"
 
 namespace SD {
+
 Ref<UniformBuffer> MeshRenderer::m_shadow_UBO;
 
 void MeshRenderer::Init() {
@@ -28,6 +29,7 @@ void MeshRenderer::Begin(Framebuffer* framebuffer, Shader& shader,
 
     SetupShaderUBO(shader);
 }
+
 void MeshRenderer::Begin(Light& light, const Transform& light_trans,
                          Camera& camera, Shader& shader) {
     Framebuffer* fb = light.GetCascadeMap();

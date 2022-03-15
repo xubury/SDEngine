@@ -57,25 +57,24 @@ struct SD_RENDERER_API Renderer2DData {
     Ref<VertexArray> line_vao;
     size_t line_vertex_cnt = 0;
     std::array<Line, MAX_LINES> line_buffer;
-    Line *line_buffer_ptr = nullptr;
+    Line* line_buffer_ptr = nullptr;
 
     Ref<VertexArray> quad_vao;
     size_t quad_index_cnt = 0;
     std::array<Quad, MAX_QUADS> quad_buffer;
-    Quad *quad_buffer_ptr = nullptr;
+    Quad* quad_buffer_ptr = nullptr;
 
     uint32_t texture_index = 1;
-    std::array<const Texture *, MAX_TEXTURE_SLOTS> texture_slots;
+    std::array<const Texture*, MAX_TEXTURE_SLOTS> texture_slots;
 
     Ref<VertexArray> circle_vao;
     size_t circle_index_cnt = 0;
     std::array<Circle, MAX_QUADS> circle_buffer;
-    Circle *circle_buffer_ptr = nullptr;
+    Circle* circle_buffer_ptr = nullptr;
 
     glm::ivec2 text_origin;
     glm::ivec2 text_cursor;
 };
-
 
 const static std::array<glm::vec4, 4> QUAD_VERTEX_POS = {
     glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f), glm::vec4(0.5f, -0.5f, 0.0f, 1.0f),
@@ -175,10 +174,7 @@ void SpriteRenderer::SetupShaderUBO(Shader& shader) {
     shader.SetUniformBuffer("Camera", *m_camera_UBO);
 }
 
-void SpriteRenderer::Begin(Framebuffer* framebuffer, Camera& camera) {
-    m_device->SetFramebuffer(framebuffer);
-    m_device->SetViewport(0, 0, framebuffer->GetWidth(),
-                          framebuffer->GetHeight());
+void SpriteRenderer::Begin(Camera& camera) {
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));

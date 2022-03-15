@@ -166,9 +166,9 @@ void TileMapSystem::OnImGui() {
 
 void TileMapSystem::OnRender() {
     device->Disable(SD::Operation::DEPTH_TEST);
-    SpriteRenderer::Begin(m_framebuffer, *scene->GetCamera());
-    // only draw colors
-    device->DrawBuffer(m_framebuffer, 0);
+    const int index = 0;
+    Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1});
+    SpriteRenderer::Begin(*scene->GetCamera());
 
     // draw brush & outline
     const glm::ivec2 &tile_size = m_brush.tile_size;
@@ -223,6 +223,7 @@ void TileMapSystem::OnRender() {
     }
     SpriteRenderer::End();
     device->Enable(SD::Operation::DEPTH_TEST);
+    Renderer::EndRenderSubpass();
 }
 
 }  // namespace SD

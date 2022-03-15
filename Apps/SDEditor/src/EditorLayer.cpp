@@ -43,7 +43,7 @@ void EditorLayer::OnInit() {
     PushSystem(CreateSystem<ContentBrowser>());
     PushSystem(m_scene_panel);
     PushSystem(m_editor_camera_system);
-    PushSystem(CreateSystem<ProfileSystem>(m_graphics_layer->GetFramebuffer()));
+    PushSystem(CreateSystem<ProfileSystem>());
 }
 
 void EditorLayer::InitBuffers() {
@@ -76,9 +76,11 @@ void EditorLayer::OnPop() {
 }
 
 void EditorLayer::OnRender() {
+    Renderer::BeginRenderPass({m_graphics_layer->GetFramebuffer()});
     for (auto &system : GetSystems()) {
         system->OnRender();
     }
+    Renderer::EndRenderPass();
     BlitViewportBuffers();
 }
 

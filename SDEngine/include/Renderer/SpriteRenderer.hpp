@@ -8,7 +8,7 @@ namespace SD {
 class SpriteRenderer : protected Renderer {
    public:
     static void Init();
-    static void Begin(Framebuffer *framebuffer, Camera &camera);
+    static void Begin(Camera &camera);
     static void End();
 
     static void SetTextOrigin(int x, int y);

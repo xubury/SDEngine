@@ -7,11 +7,10 @@ namespace SD {
 
 const uint32_t FPS_CAPACITY = 50;
 
-ProfileSystem::ProfileSystem(Framebuffer *framebuffer)
+ProfileSystem::ProfileSystem()
     : System("ProfileSystem"),
-      m_camera(CameraType::ORTHOGRAPHIC, glm::radians(45.f),
-               framebuffer->GetWidth(), framebuffer->GetHeight(), 0.f, 1000.f),
-      m_framebuffer(framebuffer),
+      m_camera(CameraType::ORTHOGRAPHIC, glm::radians(45.f), 100, 100, 0.f,
+               1000.f),
       m_fps(FPS_CAPACITY),
       m_is_show_message(true) {}
 
@@ -47,8 +46,11 @@ void ProfileSystem::OnRender() {
     snprintf(fps_str.data(), fps_str.size(), "FPS: %.2f(%.2f ms)",
              m_fps.GetFPS(), m_fps.GetFrameTime());
     // only draw colors
-    device->DrawBuffer(m_framebuffer, 0);
-    SpriteRenderer::Begin(m_framebuffer, m_camera);
+    const int index = 0;
+    Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1});
+    glm::vec2 size = Renderer::GetCurrentBufferSize();
+    m_camera.Resize(size.x, size.y);
+    SpriteRenderer::Begin(m_camera);
     SpriteRenderer::SetTextOrigin(
         -m_camera.GetNearWidth() / 2,
         m_camera.GetNearHeight() / 2 - m_font->GetPixelHeight());
@@ -99,6 +101,7 @@ void ProfileSystem::OnRender() {
         pos.x += PRIMITIVE_SIZE;
     }
     SpriteRenderer::End();
+    Renderer::EndRenderSubpass();
 }
 
 }  // namespace SD

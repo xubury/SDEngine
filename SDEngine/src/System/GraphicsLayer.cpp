@@ -46,8 +46,7 @@ void GraphicsLayer::OnInit() {
     m_lighting_system =
         CreateSystem<LightingSystem>(m_main_framebuffer.get(), m_msaa);
     m_skybox_system = CreateSystem<SkyboxSystem>(m_main_framebuffer.get());
-    m_sprite_system =
-        CreateSystem<SpriteRenderSystem>(m_main_framebuffer.get());
+    m_sprite_system = CreateSystem<SpriteRenderSystem>();
     m_post_process_system =
         CreateSystem<PostProcessSystem>(m_main_framebuffer.get());
 
@@ -81,6 +80,7 @@ void GraphicsLayer::OnPop() {
 }
 
 void GraphicsLayer::OnRender() {
+    Renderer::BeginRenderPass({m_main_framebuffer.get()});
     device->SetFramebuffer(m_main_framebuffer.get());
     device->Clear();
     uint32_t id = static_cast<uint32_t>(entt::null);
@@ -92,10 +92,12 @@ void GraphicsLayer::OnRender() {
         BlitGeometryBuffers();
     }
     if (m_debug) {
+        const int index = 0;
+        Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1});
         device->Disable(Operation::DEPTH_TEST);
 
         Camera *cam = scene->GetCamera();
-        SpriteRenderer::Begin(m_main_framebuffer.get(), *cam);
+        SpriteRenderer::Begin(*cam);
         auto lightView = scene->view<LightComponent, TransformComponent>();
         lightView.each([this, &cam](const LightComponent &,
                                     const TransformComponent &transComp) {
@@ -107,7 +109,9 @@ void GraphicsLayer::OnRender() {
 
         SpriteRenderer::End();
         device->Enable(Operation::DEPTH_TEST);
+        Renderer::EndRenderSubpass();
     }
+    Renderer::EndRenderPass();
 }
 
 void GraphicsLayer::OnImGui() {

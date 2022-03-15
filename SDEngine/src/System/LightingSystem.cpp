@@ -297,8 +297,9 @@ void LightingSystem::RenderSSAO() {
 void LightingSystem::RenderEmissive() {
     auto lightView = scene->view<TransformComponent, LightComponent>();
     if (lightView.begin() != lightView.end()) {
-        device->SetFramebuffer(m_main_buffer);
-        device->DrawBuffer(m_main_buffer, 0);
+        const int buffer = 0;
+        Renderer::BeginRenderSubpass(RenderSubpassInfo{&buffer, 1});
+        device->DrawBuffers(m_main_buffer, 1, &buffer);
         m_emssive_shader->SetTexture("u_lighting",
                                      GetLightingBuffer()->GetTexture());
         m_emssive_shader->SetTexture(
@@ -306,6 +307,7 @@ void LightingSystem::RenderEmissive() {
             m_gbuffer->GetTexture(GeometryBufferType::G_EMISSIVE));
         Renderer::Submit(*m_emssive_shader, *m_quad, MeshTopology::TRIANGLES,
                          m_quad->GetIndexBuffer()->GetCount(), 0);
+        Renderer::EndRenderSubpass();
     }
 }
 

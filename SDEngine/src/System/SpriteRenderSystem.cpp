@@ -8,8 +8,7 @@
 
 namespace SD {
 
-SpriteRenderSystem::SpriteRenderSystem(Framebuffer *framebuffer)
-    : System("SpriteRenderSystem"), m_framebuffer(framebuffer) {}
+SpriteRenderSystem::SpriteRenderSystem() : System("SpriteRenderSystem") {}
 
 void SpriteRenderSystem::OnPush() {}
 
@@ -34,10 +33,10 @@ struct SpriteDrawData {
     int priority;
 };
 void SpriteRenderSystem::OnRender() {
-    device->SetDepthMask(false);
-    SpriteRenderer::Begin(m_framebuffer, *scene->GetCamera());
     int index[] = {0, 1};
-    device->DrawBuffers(m_framebuffer, 2, index);
+    Renderer::BeginRenderSubpass(RenderSubpassInfo{index, 2});
+    device->SetDepthMask(false);
+    SpriteRenderer::Begin(*scene->GetCamera());
     std::vector<SpriteDrawData> datas;
     auto sprite_view = scene->view<SpriteComponent, TransformComponent>();
     sprite_view.each([&datas](entt::entity entity_id,
@@ -116,6 +115,7 @@ void SpriteRenderSystem::OnRender() {
     });
     SpriteRenderer::End();
     device->SetDepthMask(true);
+    Renderer::EndRenderSubpass();
 }
 
 }  // namespace SD

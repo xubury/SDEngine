@@ -9,10 +9,8 @@
 
 namespace SD {
 
-ParticleSystem::ParticleSystem(Framebuffer *framebuffer, int poolSize)
-    : System("Particle"),
-      m_poolIndex(poolSize - 1),
-      m_framebuffer(framebuffer) {
+ParticleSystem::ParticleSystem(int poolSize)
+    : System("Particle"), m_poolIndex(poolSize - 1) {
     m_particles.resize(poolSize);
 }
 
@@ -21,7 +19,9 @@ void ParticleSystem::OnPush() {}
 void ParticleSystem::OnPop() {}
 
 void ParticleSystem::OnRender() {
-    SpriteRenderer::Begin(m_framebuffer, *scene->GetCamera());
+    int index = 0;
+    Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1});
+    SpriteRenderer::Begin(*scene->GetCamera());
     for (const auto &particle : m_particles) {
         if (!particle.active) continue;
 
@@ -38,6 +38,7 @@ void ParticleSystem::OnRender() {
             glm::scale(glm::mat4(1.0f), glm::vec3(size, size, 1.0f));
         SpriteRenderer::DrawQuad(transform, color);
     }
+    Renderer::EndRenderSubpass();
 }
 
 void ParticleSystem::OnTick(float dt) {
