@@ -11,7 +11,7 @@ namespace SD {
 
 class SD_SYSTEM_API ProfileSystem : public System {
    public:
-    ProfileSystem(int width, int height);
+    ProfileSystem(Framebuffer *framebuffer);
 
     void OnInit() override;
 
@@ -23,6 +23,7 @@ class SD_SYSTEM_API ProfileSystem : public System {
 
    private:
     Camera m_camera;
+    Framebuffer *m_framebuffer;
     FPSCounter m_fps;
     Ref<Font> m_font;
 

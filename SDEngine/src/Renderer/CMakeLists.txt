@@ -7,6 +7,8 @@ set(Renderer_Include
     ${Include_Root}/Renderer.hpp)
 
 set(Renderer_Src
+    ${Src_Root}/SpriteRenderer.cpp
+    ${Src_Root}/MeshRenderer.cpp
     ${Src_Root}/Renderer.cpp)
 
 add_library(sd-renderer ${Renderer_Src})

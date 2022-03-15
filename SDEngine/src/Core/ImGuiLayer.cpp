@@ -14,7 +14,7 @@ void ImGuiLayer::Begin() {
     m_window->ImGuiNewFrame();
     ImGui::NewFrame();
     ImGuizmo::BeginFrame();
-    Device::Get().SetFramebuffer(nullptr);
+    device->SetFramebuffer(nullptr);
 
     static bool dockspaceOpen = true;
     static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
@@ -23,7 +23,7 @@ void ImGuiLayer::Begin() {
     ImGuiWindowFlags windowFlags =
         ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
     if (fullScreen) {
-        ImGuiViewport *viewport = ImGui::GetMainViewport();
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->Pos);
         ImGui::SetNextWindowSize(viewport->Size);
         ImGui::SetNextWindowViewport(viewport->ID);
@@ -47,8 +47,8 @@ void ImGuiLayer::Begin() {
         ImGui::PopStyleVar(2);
     }
 
-    ImGuiIO &io = ImGui::GetIO();
-    ImGuiStyle &style = ImGui::GetStyle();
+    ImGuiIO& io = ImGui::GetIO();
+    ImGuiStyle& style = ImGui::GetStyle();
     float minWinSizeX = style.WindowMinSize.x;
     style.WindowMinSize.x = 370.0f;
     if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {

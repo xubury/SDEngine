@@ -6,10 +6,11 @@
 
 namespace SD {
 
-PostProcessSystem::PostProcessSystem(int width, int height)
+PostProcessSystem::PostProcessSystem(Framebuffer *framebuffer)
     : System("PostProcessSystem"),
-      m_width(width),
-      m_height(height),
+      m_width(framebuffer->GetWidth()),
+      m_height(framebuffer->GetHeight()),
+      m_framebuffer(framebuffer),
       m_blur_result(nullptr),
       m_is_bloom(true),
       m_bloom_factor(1.0f),
@@ -88,20 +89,19 @@ void PostProcessSystem::OnImGui() {
 }
 
 void PostProcessSystem::OnRender() {
-    Device::Get().SetDepthMask(false);
-    Device::Get().ReadBuffer(renderer->GetFramebuffer(), 0);
-    Device::Get().DrawBuffer(m_post_buffer.get(), 0);
-    Device::Get().BlitFramebuffer(
-        renderer->GetFramebuffer(), 0, 0,
-        renderer->GetFramebuffer()->GetWidth(),
-        renderer->GetFramebuffer()->GetHeight(), m_post_buffer.get(), 0, 0,
+    device->SetDepthMask(false);
+    device->ReadBuffer(m_framebuffer, 0);
+    device->DrawBuffer(m_post_buffer.get(), 0);
+    device->BlitFramebuffer(
+        m_framebuffer, 0, 0, m_framebuffer->GetWidth(),
+        m_framebuffer->GetHeight(), m_post_buffer.get(), 0, 0,
         m_post_buffer->GetWidth(), m_post_buffer->GetHeight(),
         BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
     if (m_is_bloom) {
         RenderBlur();
     }
     RenderPost();
-    Device::Get().SetDepthMask(true);
+    device->SetDepthMask(true);
 }
 
 void PostProcessSystem::OnSizeEvent(const ViewportSizeEvent &event) {
@@ -119,22 +119,22 @@ void PostProcessSystem::RenderBlur() {
     for (int i = 0; i < amount; ++i) {
         const int inputId = horizontal;
         const int outputId = !horizontal;
-        Device::Get().SetFramebuffer(m_blur_buffer[outputId].get());
+        device->SetFramebuffer(m_blur_buffer[outputId].get());
         m_blur_result = m_blur_buffer[outputId]->GetTexture();
         m_blur_shader->SetBool("u_horizontal", horizontal);
         m_blur_shader->SetTexture(
             "u_image", i == 0 ? m_post_buffer->GetTexture()
                               : m_blur_buffer[inputId]->GetTexture());
-        renderer->Submit(*m_blur_shader, *m_quad, MeshTopology::TRIANGLES,
+        Renderer::Submit(*m_blur_shader, *m_quad, MeshTopology::TRIANGLES,
                          m_quad->GetIndexBuffer()->GetCount(), 0);
         horizontal = !horizontal;
     }
 }
 
 void PostProcessSystem::RenderPost() {
-    Device::Get().SetFramebuffer(renderer->GetFramebuffer());
-    Device::Get().DrawBuffer(renderer->GetFramebuffer(),
-                             0);  // only draw colors
+    device->SetFramebuffer(m_framebuffer);
+    device->DrawBuffer(m_framebuffer,
+                       0);  // only draw colors
     m_post_shader->SetBool("u_bloom", m_is_bloom);
     m_post_shader->SetFloat("u_bloomFactor", m_bloom_factor);
     m_post_shader->SetTexture("u_blur", m_blur_result);
@@ -144,7 +144,7 @@ void PostProcessSystem::RenderPost() {
 
     m_post_shader->SetFloat("u_gamma", m_gamma_correction);
 
-    renderer->Submit(*m_post_shader, *m_quad, MeshTopology::TRIANGLES,
+    Renderer::Submit(*m_post_shader, *m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
 }
 

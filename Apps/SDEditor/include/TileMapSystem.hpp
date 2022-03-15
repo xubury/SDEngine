@@ -16,7 +16,7 @@ class TileMapSystem : public System {
     enum Operation { NONE, ADD_ENTITY, REMOVE_ENTITY };
 
    public:
-    TileMapSystem();
+    TileMapSystem(Framebuffer *framebuffer);
     void OnPush() override;
     void OnPop() override;
     void OnImGui() override;
@@ -26,6 +26,7 @@ class TileMapSystem : public System {
     void ManipulateScene();
 
    private:
+    Framebuffer *m_framebuffer;
     Ref<Texture> m_outline_texture;
 
     TileBrush m_brush;

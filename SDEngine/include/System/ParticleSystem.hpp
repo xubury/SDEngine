@@ -34,7 +34,7 @@ struct SD_SYSTEM_API ParticleProp {
 
 class SD_SYSTEM_API ParticleSystem : public System {
    public:
-    ParticleSystem(int poolSize = 1000);
+    ParticleSystem(Framebuffer *framebuffer, int poolSize = 1000);
 
     void Emit(const ParticleProp &particle);
 
@@ -67,6 +67,7 @@ class SD_SYSTEM_API ParticleSystem : public System {
     };
     size_t m_poolIndex;
     std::vector<Particle> m_particles;
+    Framebuffer *m_framebuffer;
 };
 
 }  // namespace SD

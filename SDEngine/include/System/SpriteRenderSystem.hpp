@@ -8,7 +8,7 @@ namespace SD {
 
 class SD_SYSTEM_API SpriteRenderSystem : public System {
    public:
-    SpriteRenderSystem();
+    SpriteRenderSystem(Framebuffer *framebuffer);
 
     void OnTick(float dt) override;
 
@@ -17,6 +17,8 @@ class SD_SYSTEM_API SpriteRenderSystem : public System {
     void OnPop() override;
 
     void OnRender() override;
+   private:
+    Framebuffer *m_framebuffer;
 };
 
 }  // namespace SD

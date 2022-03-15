@@ -8,7 +8,8 @@
 
 namespace SD {
 
-SkyboxSystem::SkyboxSystem() : System("SkyboxSystem"), m_skybox(nullptr) {
+SkyboxSystem::SkyboxSystem(Framebuffer *framebuffer)
+    : System("SkyboxSystem"), m_framebuffer(framebuffer) {
     const float skybox_vertices[] = {
         // front
         -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0,
@@ -59,17 +60,17 @@ void SkyboxSystem::OnRender() {
                            glm::translate(glm::mat4(1.0f), pos);
     m_skybox_shader->SetMat4("u_projection", projection);
 
-    Device::Get().SetDepthfunc(DepthFunc::LESS_EQUAL);
+    device->SetDepthfunc(DepthFunc::LESS_EQUAL);
     if (m_skybox) {
         m_skybox_shader->SetTexture("u_skybox", m_skybox.get());
     }
 
-    Device::Get().SetFramebuffer(renderer->GetFramebuffer());
-    Device::Get().DrawBuffer(renderer->GetFramebuffer(),
-                             0);  // only draw colors
-    renderer->Submit(*m_skybox_shader, *m_box_vao, MeshTopology::TRIANGLES,
+    device->SetFramebuffer(m_framebuffer);
+    device->DrawBuffer(m_framebuffer,
+                       0);  // only draw colors
+    Renderer::Submit(*m_skybox_shader, *m_box_vao, MeshTopology::TRIANGLES,
                      m_box_vao->GetIndexBuffer()->GetCount(), 0);
-    Device::Get().SetDepthfunc(DepthFunc::LESS);
+    device->SetDepthfunc(DepthFunc::LESS);
 }
 
 }  // namespace SD

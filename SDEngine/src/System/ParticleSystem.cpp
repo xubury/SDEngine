@@ -1,5 +1,5 @@
 #include "System/ParticleSystem.hpp"
-#include "Renderer/Renderer.hpp"
+#include "Renderer/SpriteRenderer.hpp"
 #include "Utility/Random.hpp"
 #include "Utility/Math.hpp"
 
@@ -9,8 +9,10 @@
 
 namespace SD {
 
-ParticleSystem::ParticleSystem(int poolSize)
-    : System("Particle"), m_poolIndex(poolSize - 1) {
+ParticleSystem::ParticleSystem(Framebuffer *framebuffer, int poolSize)
+    : System("Particle"),
+      m_poolIndex(poolSize - 1),
+      m_framebuffer(framebuffer) {
     m_particles.resize(poolSize);
 }
 
@@ -19,6 +21,7 @@ void ParticleSystem::OnPush() {}
 void ParticleSystem::OnPop() {}
 
 void ParticleSystem::OnRender() {
+    SpriteRenderer::Begin(m_framebuffer, *scene->GetCamera());
     for (const auto &particle : m_particles) {
         if (!particle.active) continue;
 
@@ -33,7 +36,7 @@ void ParticleSystem::OnRender() {
             glm::rotate(glm::mat4(1.0f), particle.rotation,
                         glm::vec3(0.0f, 0.0f, 1.0f)) *
             glm::scale(glm::mat4(1.0f), glm::vec3(size, size, 1.0f));
-        renderer->DrawQuad(transform, color);
+        SpriteRenderer::DrawQuad(transform, color);
     }
 }
 

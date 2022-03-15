@@ -1,6 +1,7 @@
 #include "System/GraphicsLayer.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "Loader/TextureLoader.hpp"
+#include "Renderer/SpriteRenderer.hpp"
 
 namespace SD {
 
@@ -11,25 +12,44 @@ GraphicsLayer::GraphicsLayer(int32_t width, int32_t height,
 void GraphicsLayer::OnInit() {
     Layer::OnInit();
 
-    m_light_icon = TextureLoader::LoadTexture2D("assets/icons/light.png");
-    FramebufferCreateInfo info;
-    info.width = m_width;
-    info.height = m_height;
-    info.depth = 1;
-    for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
+    {
+        FramebufferCreateInfo info;
+        info.width = m_width;
+        info.height = m_height;
+        info.depth = 1;
         info.attachments.push_back(AttachmentDescription{
-            AttachmentType::TEXTURE_2D, GetTextureFormat(GeometryBufferType(i)),
-            MultiSampleLevel::X1});
+            AttachmentType::TEXTURE_2D, DataFormat::RGBA8, m_msaa});
+        info.attachments.push_back(AttachmentDescription{
+            AttachmentType::TEXTURE_2D, DataFormat::R32UI, m_msaa});
+        info.attachments.push_back(AttachmentDescription{
+            AttachmentType::RENDERBUFFER, DataFormat::DEPTH24, m_msaa});
+        m_main_framebuffer = Framebuffer::Create(info);
     }
-    m_debug_gbuffer = Framebuffer::Create(info);
+
+    {
+        FramebufferCreateInfo info;
+        m_light_icon = TextureLoader::LoadTexture2D("assets/icons/light.png");
+        info.width = m_width;
+        info.height = m_height;
+        info.depth = 1;
+        for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
+            info.attachments.push_back(AttachmentDescription{
+                AttachmentType::TEXTURE_2D,
+                GetTextureFormat(GeometryBufferType(i)), MultiSampleLevel::X1});
+        }
+        m_debug_gbuffer = Framebuffer::Create(info);
+    }
 
     // engine logic system
     m_camera_system = CreateSystem<CameraSystem>();
     // normal render systems
-    m_lighting_system = CreateSystem<LightingSystem>(m_width, m_height, m_msaa);
-    m_skybox_system = CreateSystem<SkyboxSystem>();
-    m_sprite_system = CreateSystem<SpriteRenderSystem>();
-    m_post_process_system = CreateSystem<PostProcessSystem>(m_width, m_height);
+    m_lighting_system =
+        CreateSystem<LightingSystem>(m_main_framebuffer.get(), m_msaa);
+    m_skybox_system = CreateSystem<SkyboxSystem>(m_main_framebuffer.get());
+    m_sprite_system =
+        CreateSystem<SpriteRenderSystem>(m_main_framebuffer.get());
+    m_post_process_system =
+        CreateSystem<PostProcessSystem>(m_main_framebuffer.get());
 
     PushSystem(m_camera_system);
     PushSystem(m_skybox_system);
@@ -52,7 +72,7 @@ void GraphicsLayer::OnPush() {
             m_width = e.width;
             m_height = e.height;
             m_debug_gbuffer->Resize(e.width, e.height);
-            renderer->SetSize(e.width, e.height);
+            m_main_framebuffer->Resize(e.width, e.height);
         });
 }
 
@@ -61,10 +81,10 @@ void GraphicsLayer::OnPop() {
 }
 
 void GraphicsLayer::OnRender() {
-    Device::Get().SetFramebuffer(renderer->GetFramebuffer());
-    Device::Get().Clear();
+    device->SetFramebuffer(m_main_framebuffer.get());
+    device->Clear();
     uint32_t id = static_cast<uint32_t>(entt::null);
-    renderer->GetFramebuffer()->ClearAttachment(1, &id);
+    m_main_framebuffer->ClearAttachment(1, &id);
     for (auto &system : GetSystems()) {
         system->OnRender();
     }
@@ -72,21 +92,21 @@ void GraphicsLayer::OnRender() {
         BlitGeometryBuffers();
     }
     if (m_debug) {
-        Device::Get().Disable(Operation::DEPTH_TEST);
+        device->Disable(Operation::DEPTH_TEST);
 
         Camera *cam = scene->GetCamera();
-        renderer->Begin(renderer->GetFramebuffer(), *cam);
+        SpriteRenderer::Begin(m_main_framebuffer.get(), *cam);
         auto lightView = scene->view<LightComponent, TransformComponent>();
         lightView.each([this, &cam](const LightComponent &,
                                     const TransformComponent &transComp) {
             glm::vec3 pos = transComp.GetWorldPosition();
             float dist = glm::distance(pos, cam->GetWorldPosition());
             float scale = (dist - cam->GetNearZ()) / 20;
-            renderer->DrawBillboard(*m_light_icon, pos, glm::vec2(scale));
+            SpriteRenderer::DrawBillboard(*m_light_icon, pos, glm::vec2(scale));
         });
 
-        renderer->End();
-        Device::Get().Enable(Operation::DEPTH_TEST);
+        SpriteRenderer::End();
+        device->Enable(Operation::DEPTH_TEST);
     }
 }
 
@@ -116,9 +136,9 @@ void GraphicsLayer::OnImGui() {
 
 void GraphicsLayer::BlitGeometryBuffers() {
     for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
-        Device::Get().ReadBuffer(m_lighting_system->GetGBuffer(), i);
-        Device::Get().DrawBuffer(m_debug_gbuffer.get(), i);
-        Device::Get().BlitFramebuffer(
+        device->ReadBuffer(m_lighting_system->GetGBuffer(), i);
+        device->DrawBuffer(m_debug_gbuffer.get(), i);
+        device->BlitFramebuffer(
             m_lighting_system->GetGBuffer(), 0, 0,
             m_lighting_system->GetGBuffer()->GetWidth(),
             m_lighting_system->GetGBuffer()->GetHeight(), m_debug_gbuffer.get(),

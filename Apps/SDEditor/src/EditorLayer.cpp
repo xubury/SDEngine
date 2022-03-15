@@ -43,8 +43,7 @@ void EditorLayer::OnInit() {
     PushSystem(CreateSystem<ContentBrowser>());
     PushSystem(m_scene_panel);
     PushSystem(m_editor_camera_system);
-    PushSystem(
-        CreateSystem<ProfileSystem>(m_viewport_size.x, m_viewport_size.y));
+    PushSystem(CreateSystem<ProfileSystem>(m_graphics_layer->GetFramebuffer()));
 }
 
 void EditorLayer::InitBuffers() {
@@ -139,7 +138,8 @@ void EditorLayer::OnImGui() {
         if (ImGui::Button("OK")) {
             m_mode = mode;
             if (mode == EditorMode::TWO_DIMENSIONAL) {
-                m_tile_map_system = CreateSystem<TileMapSystem>();
+                m_tile_map_system = CreateSystem<TileMapSystem>(
+                    m_graphics_layer->GetFramebuffer());
                 m_animation_editor = CreateSystem<AnimationEditor>();
 
                 PushSystem(m_tile_map_system);
@@ -277,24 +277,23 @@ void EditorLayer::MenuBar() {
 }
 
 void EditorLayer::BlitViewportBuffers() {
+    auto *framebuffer = m_graphics_layer->GetFramebuffer();
     // blit the render color result
-    Device::Get().ReadBuffer(renderer->GetFramebuffer(), 0);
-    Device::Get().DrawBuffer(m_viewport_buffer.get(), 0);
-    Device::Get().BlitFramebuffer(
-        renderer->GetFramebuffer(), 0, 0,
-        renderer->GetFramebuffer()->GetWidth(),
-        renderer->GetFramebuffer()->GetHeight(), m_viewport_buffer.get(), 0, 0,
-        m_viewport_buffer->GetWidth(), m_viewport_buffer->GetHeight(),
-        BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
+    device->ReadBuffer(framebuffer, 0);
+    device->DrawBuffer(m_viewport_buffer.get(), 0);
+    device->BlitFramebuffer(
+        framebuffer, 0, 0, framebuffer->GetWidth(), framebuffer->GetHeight(),
+        m_viewport_buffer.get(), 0, 0, m_viewport_buffer->GetWidth(),
+        m_viewport_buffer->GetHeight(), BufferBitMask::COLOR_BUFFER_BIT,
+        BlitFilter::NEAREST);
     // blit the entity id result
-    Device::Get().ReadBuffer(renderer->GetFramebuffer(), 1);
-    Device::Get().DrawBuffer(m_viewport_buffer.get(), 1);
-    Device::Get().BlitFramebuffer(
-        renderer->GetFramebuffer(), 0, 0,
-        renderer->GetFramebuffer()->GetWidth(),
-        renderer->GetFramebuffer()->GetHeight(), m_viewport_buffer.get(), 0, 0,
-        m_viewport_buffer->GetWidth(), m_viewport_buffer->GetHeight(),
-        BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
+    device->ReadBuffer(framebuffer, 1);
+    device->DrawBuffer(m_viewport_buffer.get(), 1);
+    device->BlitFramebuffer(
+        framebuffer, 0, 0, framebuffer->GetWidth(), framebuffer->GetHeight(),
+        m_viewport_buffer.get(), 0, 0, m_viewport_buffer->GetWidth(),
+        m_viewport_buffer->GetHeight(), BufferBitMask::COLOR_BUFFER_BIT,
+        BlitFilter::NEAREST);
 }
 
 void EditorLayer::DrawViewport() {

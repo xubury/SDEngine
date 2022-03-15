@@ -27,6 +27,8 @@ class SD_SYSTEM_API GraphicsLayer : public Layer {
 
     void SetDebug(bool debug) { m_debug = debug; }
 
+    Framebuffer* GetFramebuffer() { return m_main_framebuffer.get(); }
+
    private:
     void BlitGeometryBuffers();
 
@@ -34,6 +36,7 @@ class SD_SYSTEM_API GraphicsLayer : public Layer {
     int32_t m_height;
     MultiSampleLevel m_msaa;
     bool m_debug;
+    Ref<Framebuffer> m_main_framebuffer;
 
     Ref<Framebuffer> m_debug_gbuffer;
     Ref<Texture> m_light_icon;

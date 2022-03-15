@@ -1,5 +1,5 @@
 #include "System/ProfileSystem.hpp"
-#include "Renderer/Renderer.hpp"
+#include "Renderer/SpriteRenderer.hpp"
 #include "Core/Input.hpp"
 #include "Loader/FontLoader.hpp"
 
@@ -7,10 +7,11 @@ namespace SD {
 
 const uint32_t FPS_CAPACITY = 50;
 
-ProfileSystem::ProfileSystem(int width, int height)
+ProfileSystem::ProfileSystem(Framebuffer *framebuffer)
     : System("ProfileSystem"),
-      m_camera(CameraType::ORTHOGRAPHIC, glm::radians(45.f), width, height, 0.f,
-               1000.f),
+      m_camera(CameraType::ORTHOGRAPHIC, glm::radians(45.f),
+               framebuffer->GetWidth(), framebuffer->GetHeight(), 0.f, 1000.f),
+      m_framebuffer(framebuffer),
       m_fps(FPS_CAPACITY),
       m_is_show_message(true) {}
 
@@ -46,55 +47,58 @@ void ProfileSystem::OnRender() {
     snprintf(fps_str.data(), fps_str.size(), "FPS: %.2f(%.2f ms)",
              m_fps.GetFPS(), m_fps.GetFrameTime());
     // only draw colors
-    Device::Get().DrawBuffer(renderer->GetFramebuffer(), 0);
-    renderer->Begin(renderer->GetFramebuffer(), m_camera);
-    renderer->SetTextOrigin(
+    device->DrawBuffer(m_framebuffer, 0);
+    SpriteRenderer::Begin(m_framebuffer, m_camera);
+    SpriteRenderer::SetTextOrigin(
         -m_camera.GetNearWidth() / 2,
         m_camera.GetNearHeight() / 2 - m_font->GetPixelHeight());
 
-    renderer->DrawText(*m_font, fps_str, glm::mat4(1.0f));
-    renderer->DrawText(*m_font, "\n中文测试: 你好", glm::mat4(1.0f));
-    renderer->DrawText(*m_font, "\n中文測試: 你好", glm::mat4(1.0f));
-    renderer->DrawText(*m_font, "\n日本語テスト: こんにちは", glm::mat4(1.0f));
+    SpriteRenderer::DrawText(*m_font, fps_str, glm::mat4(1.0f));
+    SpriteRenderer::DrawText(*m_font, "\n中文测试: 你好", glm::mat4(1.0f));
+    SpriteRenderer::DrawText(*m_font, "\n中文測試: 你好", glm::mat4(1.0f));
+    SpriteRenderer::DrawText(*m_font, "\n日本語テスト: こんにちは",
+                             glm::mat4(1.0f));
     // Primitive test
     // Line
     const int PRIMITIVE_SIZE = 15;
-    renderer->DrawText(*m_font, "\nLine test: ", glm::mat4(1.0f));
-    glm::vec2 pos = renderer->GetTextCursor();
+    SpriteRenderer::DrawText(*m_font, "\nLine test: ", glm::mat4(1.0f));
+    glm::vec2 pos = SpriteRenderer::GetTextCursor();
     pos.y += m_font->GetPixelHeight() / 4.f;
     for (int i = 0; i < 10; ++i) {
         glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
         color[i % 3] = 1.0f;
-        renderer->DrawLine(glm::vec3(pos.x + PRIMITIVE_SIZE * i,
-                                     pos.y + i % 2 * PRIMITIVE_SIZE, 0),
-                           glm::vec3(pos.x + PRIMITIVE_SIZE * (i + 1),
-                                     pos.y + (i + 1) % 2 * PRIMITIVE_SIZE, 0),
-                           color);
+        SpriteRenderer::DrawLine(
+            glm::vec3(pos.x + PRIMITIVE_SIZE * i,
+                      pos.y + i % 2 * PRIMITIVE_SIZE, 0),
+            glm::vec3(pos.x + PRIMITIVE_SIZE * (i + 1),
+                      pos.y + (i + 1) % 2 * PRIMITIVE_SIZE, 0),
+            color);
     }
     // Quad
-    renderer->DrawText(*m_font, "\nQuad test: ", glm::mat4(1.0f));
-    pos = renderer->GetTextCursor();
+    SpriteRenderer::DrawText(*m_font, "\nQuad test: ", glm::mat4(1.0f));
+    pos = SpriteRenderer::GetTextCursor();
     pos.y += m_font->GetPixelHeight() / 4.f;
     for (int i = 0; i < 10; ++i) {
         glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
         color[i % 3] = 1.0f;
-        renderer->DrawQuad(glm::vec3(pos.x, pos.y, 0), glm::quat(1, 0, 0, 0),
-                           glm::vec3(PRIMITIVE_SIZE, PRIMITIVE_SIZE, 1), color);
+        SpriteRenderer::DrawQuad(
+            glm::vec3(pos.x, pos.y, 0), glm::quat(1, 0, 0, 0),
+            glm::vec3(PRIMITIVE_SIZE, PRIMITIVE_SIZE, 1), color);
         pos.x += PRIMITIVE_SIZE;
     }
     // Circle
-    renderer->DrawText(*m_font, "\nCircle test: ", glm::mat4(1.0f));
-    pos = renderer->GetTextCursor();
+    SpriteRenderer::DrawText(*m_font, "\nCircle test: ", glm::mat4(1.0f));
+    pos = SpriteRenderer::GetTextCursor();
     pos.y += m_font->GetPixelHeight() / 4.f;
     for (int i = 0; i < 10; ++i) {
         glm::vec4 color(0, 0, 0, (i + 1) / 10.f);
         color[i % 3] = 1.0f;
-        renderer->DrawCircle(glm::vec3(pos.x, pos.y, 0),
-                             glm::vec2(PRIMITIVE_SIZE, PRIMITIVE_SIZE), color,
-                             1.0f, 0.1f);
+        SpriteRenderer::DrawCircle(glm::vec3(pos.x, pos.y, 0),
+                                   glm::vec2(PRIMITIVE_SIZE, PRIMITIVE_SIZE),
+                                   color, 1.0f, 0.1f);
         pos.x += PRIMITIVE_SIZE;
     }
-    renderer->End();
+    SpriteRenderer::End();
 }
 
 }  // namespace SD

@@ -17,11 +17,7 @@ class SD_GRAPHICS_API Device {
     static API GetAPI();
     static void SetAPI(API api);
 
-    static void Init();
-
-    static void Shutdown();
-
-    static Device &Get();
+    static Ref<Device> Create();
 
     virtual ~Device() = default;
 

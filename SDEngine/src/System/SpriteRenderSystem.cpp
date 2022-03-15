@@ -1,5 +1,5 @@
 #include "System/SpriteRenderSystem.hpp"
-#include "Renderer/Renderer.hpp"
+#include "Renderer/SpriteRenderer.hpp"
 #include "Graphics/Font.hpp"
 
 #include "Asset/AssetStorage.hpp"
@@ -8,7 +8,7 @@
 
 namespace SD {
 
-SpriteRenderSystem::SpriteRenderSystem() : System("SpriteRenderSystem") {}
+SpriteRenderSystem::SpriteRenderSystem(Framebuffer *framebuffer) : System("SpriteRenderSystem") , m_framebuffer(framebuffer){}
 
 void SpriteRenderSystem::OnPush() {}
 
@@ -33,8 +33,8 @@ struct SpriteDrawData {
     int priority;
 };
 void SpriteRenderSystem::OnRender() {
-    Device::Get().SetDepthMask(false);
-    renderer->Begin(renderer->GetFramebuffer(), *scene->GetCamera());
+    device->SetDepthMask(false);
+    SpriteRenderer::Begin(m_framebuffer, *scene->GetCamera());
     std::vector<SpriteDrawData> datas;
     auto sprite_view =
         scene->view<PriorityComponent, SpriteComponent, TransformComponent>();
@@ -93,28 +93,28 @@ void SpriteRenderSystem::OnRender() {
         }
     });
     for (const auto &data : datas) {
-        renderer->DrawTexture(*data.texture, data.uvs, data.pos, data.rot,
-                              data.size, glm::vec4(1.0f), data.entity_id);
+        SpriteRenderer::DrawTexture(*data.texture, data.uvs, data.pos, data.rot,
+                                    data.size, glm::vec4(1.0f), data.entity_id);
     }
 
     auto textView = scene->view<TransformComponent, TextComponent>();
 
-    textView.each([this](entt::entity entity_id,
-                         const TransformComponent &transformComp,
-                         const TextComponent &textComp) {
-        renderer->SetTextOrigin(0, 0);
+    textView.each([](entt::entity entity_id,
+                     const TransformComponent &transformComp,
+                     const TextComponent &textComp) {
+        SpriteRenderer::SetTextOrigin(0, 0);
         if (AssetStorage::Get().Exists<FontAsset>(textComp.font_id)) {
             auto font = AssetStorage::Get()
                             .GetAsset<FontAsset>(textComp.font_id)
                             ->GetFont();
-            renderer->DrawText(*font, textComp.text,
-                               transformComp.GetWorldTransform().GetMatrix(),
-                               textComp.color,
-                               static_cast<uint32_t>(entity_id));
+            SpriteRenderer::DrawText(
+                *font, textComp.text,
+                transformComp.GetWorldTransform().GetMatrix(), textComp.color,
+                static_cast<uint32_t>(entity_id));
         }
     });
-    renderer->End();
-    Device::Get().SetDepthMask(true);
+    SpriteRenderer::End();
+    device->SetDepthMask(true);
 }
 
 }  // namespace SD

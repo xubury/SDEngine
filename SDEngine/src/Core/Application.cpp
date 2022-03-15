@@ -55,10 +55,8 @@ Application::Application(const std::string &title, Device::API api) {
 
     EventSystem::Init();
     AssetStorage::Init();
-    Device::Init();
-    renderer = CreateRef<Renderer>(&Device::Get(), m_window->GetWidth(),
-                                   m_window->GetHeight(),
-                                   MultiSampleLevel(m_window->GetMSAA()));
+    device = Device::Create();
+    Renderer::Init(device.get());
 
     auto &storage = AssetStorage::Get();
     RegisterAssets(&storage);
@@ -67,7 +65,6 @@ Application::Application(const std::string &title, Device::API api) {
 }
 
 Application::~Application() {
-    Device::Shutdown();
     AssetStorage::Shutdown();
     EventSystem::Shutdown();
 
