@@ -82,7 +82,7 @@ void AnimationEditor::OnImGui() {
                 }
                 if (ImGui::Button("Add Frame")) {
                     anim_comp.animations[m_anim_index].PushBack(SpriteFrame{
-                        m_texture_id, m_uvs, m_count * m_tile_size});
+                        m_texture_id, m_uvs, m_count * m_tile_size, 0});
                 }
             }
         }

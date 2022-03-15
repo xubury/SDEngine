@@ -116,15 +116,11 @@ struct SD_ECS_API CameraComponent {
 
 struct SD_ECS_API SpriteFrame {
     ResourceId texture_id;
-    std::array<glm::vec2, 2> uvs;
-    glm::vec2 size;
-
-    SERIALIZE(texture_id, uvs, size)
-};
-
-struct SD_ECS_API PriorityComponent {
+    std::array<glm::vec2, 2> uvs{glm::vec2(0), glm::vec2(1)};
+    glm::vec2 size{10.0f};
     int priority;
-    SERIALIZE(priority)
+
+    SERIALIZE(texture_id, uvs, size, priority)
 };
 
 struct SD_ECS_API SpriteComponent {
@@ -160,19 +156,8 @@ inline void OnComponentAdded<LightComponent>(entt::registry& reg,
 }
 
 template <>
-inline void OnComponentAdded<SpriteComponent>(entt::registry& reg,
-                                              entt::entity ent) {
-    if (!reg.all_of<PriorityComponent>(ent)) {
-        reg.emplace<PriorityComponent>(ent);
-    }
-}
-
-template <>
 inline void OnComponentAdded<SpriteAnimationComponent>(entt::registry& reg,
                                                        entt::entity ent) {
-    if (!reg.all_of<PriorityComponent>(ent)) {
-        reg.emplace<PriorityComponent>(ent);
-    }
     auto& anim = reg.get<SpriteAnimationComponent>(ent);
     anim.animations.push_back(FrameAnimation<SpriteFrame>());
 }

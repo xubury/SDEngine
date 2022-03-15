@@ -8,7 +8,8 @@
 
 namespace SD {
 
-SpriteRenderSystem::SpriteRenderSystem(Framebuffer *framebuffer) : System("SpriteRenderSystem") , m_framebuffer(framebuffer){}
+SpriteRenderSystem::SpriteRenderSystem(Framebuffer *framebuffer)
+    : System("SpriteRenderSystem"), m_framebuffer(framebuffer) {}
 
 void SpriteRenderSystem::OnPush() {}
 
@@ -35,11 +36,12 @@ struct SpriteDrawData {
 void SpriteRenderSystem::OnRender() {
     device->SetDepthMask(false);
     SpriteRenderer::Begin(m_framebuffer, *scene->GetCamera());
+    int index[] = {0, 1};
+    device->DrawBuffers(m_framebuffer, 2, index);
     std::vector<SpriteDrawData> datas;
-    auto sprite_view =
-        scene->view<PriorityComponent, SpriteComponent, TransformComponent>();
+    auto sprite_view = scene->view<SpriteComponent, TransformComponent>();
     sprite_view.each([&datas](entt::entity entity_id,
-                              const PriorityComponent &priority_comp,
+
                               const SpriteComponent &sprite_comp,
                               const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
@@ -51,13 +53,12 @@ void SpriteRenderSystem::OnRender() {
             datas.push_back({texture, frame.uvs,
                              transform_comp.GetWorldPosition(),
                              transform_comp.GetWorldRotation(), frame.size, id,
-                             priority_comp.priority});
+                             frame.priority});
         }
     });
-    auto anim_view = scene->view<PriorityComponent, SpriteAnimationComponent,
-                                 TransformComponent>();
+    auto anim_view =
+        scene->view<SpriteAnimationComponent, TransformComponent>();
     anim_view.each([&datas](entt::entity entity_id,
-                            const PriorityComponent &priority_comp,
                             const SpriteAnimationComponent &anim_comp,
                             const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
@@ -73,7 +74,7 @@ void SpriteRenderSystem::OnRender() {
                     datas.push_back({texture, frame.uvs,
                                      transform_comp.GetWorldPosition(),
                                      transform_comp.GetWorldRotation(),
-                                     frame.size, id, priority_comp.priority});
+                                     frame.size, id, frame.priority});
                 }
             }
         }

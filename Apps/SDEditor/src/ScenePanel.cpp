@@ -288,6 +288,13 @@ void ScenePanel::DrawComponents(Entity &entity) {
                 SD_CORE_WARN("This entity already has the Camera Component!");
             ImGui::CloseCurrentPopup();
         }
+        if (ImGui::MenuItem("Sprite")) {
+            if (!entity.HasComponent<SpriteComponent>())
+                entity.AddComponent<SpriteComponent>();
+            else
+                SD_CORE_WARN("This entity already has the Sprite Component!");
+            ImGui::CloseCurrentPopup();
+        }
         if (ImGui::MenuItem("Sprite Animation")) {
             if (!entity.HasComponent<SpriteAnimationComponent>())
                 entity.AddComponent<SpriteAnimationComponent>();
@@ -450,14 +457,14 @@ void ScenePanel::DrawComponents(Entity &entity) {
                 cameraComp.camera.SetFarZ(far_z);
             }
         });
-    DrawComponent<PriorityComponent>(
-        "Priority", entity, [&](PriorityComponent &priority_comp) {
-            ImGui::TextUnformatted("Prioirty");
-            ImGui::InputInt("##Priority", &priority_comp.priority);
-        });
     DrawComponent<SpriteComponent>(
         "Sprite", entity, [&](SpriteComponent &sprite_comp) {
             auto &frame = sprite_comp.frame;
+            SelectAsset<TextureAsset>(&frame.texture_id);
+            ImGui::TextUnformatted("Size");
+            ImGui::InputFloat2("##Size", &frame.size[0]);
+            ImGui::TextUnformatted("Prioirty");
+            ImGui::InputInt("##Priority", &frame.priority);
             if (AssetStorage::Get().Exists<TextureAsset>(frame.texture_id)) {
                 auto texture = AssetStorage::Get()
                                    .GetAsset<TextureAsset>(frame.texture_id)

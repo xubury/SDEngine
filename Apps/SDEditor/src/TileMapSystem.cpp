@@ -100,8 +100,7 @@ void TileMapSystem::ManipulateScene() {
                     frame.texture_id = m_texture_id;
                     frame.uvs = m_uvs;
                     frame.size = m_brush.tile_size * m_brush.count;
-                    child.GetComponent<PriorityComponent>().priority =
-                        m_priority;
+                    frame.priority = m_priority;
                 }
             } break;
             case Operation::REMOVE_ENTITY: {
