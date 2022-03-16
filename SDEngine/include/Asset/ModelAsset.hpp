@@ -40,7 +40,7 @@ class ModelAsset : public Asset {
         auto &storage = AssetStorage::Get();
         m_model_path = storage.GetRelativePath(m_model->GetPath());
         // import materials as asset
-        for (const auto &[path, texture] : m_model->GetImportedTexture()) {
+        for (const auto &[path, texture] : m_model->GetTextures()) {
             const std::string name =
                 fmt::format("{}_{}", GetName(), m_textures_cnt);
             auto asset = storage.CreateAsset<TextureAsset>(name);

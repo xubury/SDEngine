@@ -161,7 +161,8 @@ void Application::Render() {
     for (auto &layer : m_layers) {
         layer->OnRender();
     }
-    SD_CORE_ASSERT(Renderer::IsEmptyStack())
+    SD_CORE_ASSERT(Renderer::IsEmptyStack(),
+                   "DEBUG: RenderPass Begin/End not pair!")
 
     m_imgui->Begin();
     for (auto &layer : m_layers) {

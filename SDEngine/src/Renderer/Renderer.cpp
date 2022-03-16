@@ -57,7 +57,6 @@ void Renderer::Init(Device* device) {
 void Renderer::Submit(const Shader& shader, const VertexArray& vao,
                       MeshTopology topology, size_t count, size_t offset,
                       bool index) {
-    SD_CORE_ASSERT(s_current_buffer != nullptr);
     m_device->SetShader(&shader);
     vao.Bind();
     if (index) {

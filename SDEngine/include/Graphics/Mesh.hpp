@@ -19,9 +19,8 @@ struct SD_GRAPHICS_API Vertex {
 
 class SD_GRAPHICS_API Mesh {
    public:
-    Mesh();
     Mesh(const std::vector<Vertex> &vertices,
-         const std::vector<uint32_t> &indices);
+               const std::vector<uint32_t> &indices);
 
     void Update();
     void Clear();
@@ -38,9 +37,6 @@ class SD_GRAPHICS_API Mesh {
     void SetPolygonMode(PolygonMode wireframe);
     PolygonMode GetPolygonMode() const;
 
-    void SetMaterialIndex(int index) { m_materialId = index; }
-    uint32_t GetMaterialIndex() const { return m_materialId; };
-
     const std::vector<Vertex> &GetVertices() const;
     std::vector<Vertex> &GetVertices();
 
@@ -51,7 +47,6 @@ class SD_GRAPHICS_API Mesh {
     Ref<IndexBuffer> m_indexBuffer;
     Ref<VertexArray> m_vertexArray;
     MeshTopology m_topology;
-    uint32_t m_materialId;
     PolygonMode m_polygonMode;
 };
 

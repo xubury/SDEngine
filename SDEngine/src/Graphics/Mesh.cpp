@@ -2,36 +2,11 @@
 
 namespace SD {
 
-Mesh::Mesh()
-    : m_vertices(0),
-      m_indices(0),
-      m_topology(MeshTopology::TRIANGLES),
-      m_materialId(0),
-      m_polygonMode(PolygonMode::FILL) {
-    m_vertexBuffer = VertexBuffer::Create(m_vertices.data(),
-                                          m_vertices.size() * sizeof(Vertex),
-                                          BufferIOType::DYNAMIC);
-
-    m_indexBuffer = IndexBuffer::Create(m_indices.data(), m_indices.size(),
-                                        BufferIOType::DYNAMIC);
-
-    m_vertexArray = VertexArray::Create();
-    VertexBufferLayout layout;
-    layout.Push(BufferLayoutType::FLOAT3);
-    layout.Push(BufferLayoutType::FLOAT2);
-    layout.Push(BufferLayoutType::FLOAT3);
-    layout.Push(BufferLayoutType::FLOAT3);
-    layout.Push(BufferLayoutType::FLOAT3);
-    m_vertexArray->AddVertexBuffer(m_vertexBuffer, layout);
-    m_vertexArray->SetIndexBuffer(m_indexBuffer);
-}
-
 Mesh::Mesh(const std::vector<Vertex> &vertices,
            const std::vector<uint32_t> &indices)
     : m_vertices(vertices),
       m_indices(indices),
       m_topology(MeshTopology::TRIANGLES),
-      m_materialId(0),
       m_polygonMode(PolygonMode::FILL) {
     m_vertexBuffer = VertexBuffer::Create(m_vertices.data(),
                                           m_vertices.size() * sizeof(Vertex),

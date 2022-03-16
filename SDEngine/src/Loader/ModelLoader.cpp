@@ -7,6 +7,28 @@
 
 namespace SD {
 
+static inline glm::mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4 &from) {
+    glm::mat4 to;
+    // the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
+    to[0][0] = from.a1;
+    to[1][0] = from.a2;
+    to[2][0] = from.a3;
+    to[3][0] = from.a4;
+    to[0][1] = from.b1;
+    to[1][1] = from.b2;
+    to[2][1] = from.b3;
+    to[3][1] = from.b4;
+    to[0][2] = from.c1;
+    to[1][2] = from.c2;
+    to[2][2] = from.c3;
+    to[3][2] = from.c4;
+    to[0][3] = from.d1;
+    to[1][3] = from.d2;
+    to[2][3] = from.d3;
+    to[3][3] = from.d4;
+    return to;
+}
+
 static Vertex ConstructVertex(const aiVector3D &pos, const aiVector3D &uv,
                               const aiVector3D &normal,
                               const aiVector3D &tangent,
@@ -75,7 +97,6 @@ static Mesh ProcessAiMesh(const aiMesh *assimpMesh) {
     Mesh mesh(vertices, indices);
     mesh.SetTopology(ConvertAssimpPrimitive(
         static_cast<aiPrimitiveType>(assimpMesh->mPrimitiveTypes)));
-    mesh.SetMaterialIndex(assimpMesh->mMaterialIndex);
     return mesh;
 }
 
@@ -118,8 +139,7 @@ static inline MaterialType ConvertAssimpTextureType(aiTextureType textureType) {
 }
 
 static Material ProcessAiMaterial(const std::filesystem::path &directory,
-                                  const aiMaterial *ai_material,
-                                  ImportedTexture &imported_textures) {
+                                  const aiMaterial *ai_material, Model *model) {
     Material material;
     for (int type = aiTextureType_NONE + 1; type < aiTextureType_SHININESS;
          ++type) {
@@ -143,15 +163,13 @@ static Material ProcessAiMaterial(const std::filesystem::path &directory,
         }
         std::string full_path =
             (directory / texture_path.C_Str()).generic_string();
-        Ref<Texture> texture;
-        if (imported_textures.count(full_path) == 0) {
-            texture = TextureLoader::LoadTexture2D(full_path);
+        if (!model->HasTexture(full_path)) {
+            auto texture = TextureLoader::LoadTexture2D(full_path);
             texture->SetWrap(ConvertAssimpMapMode(ai_map_mode));
-            imported_textures.emplace(full_path, texture);
-        } else {
-            texture = imported_textures.at(full_path);
+            model->AddTexture(full_path, texture);
         }
-        material.SetTexture(ConvertAssimpTextureType(ai_type), texture.get());
+        material.SetTexture(ConvertAssimpTextureType(ai_type),
+                            model->GetTexture(full_path));
     }
     return material;
 }
@@ -161,9 +179,15 @@ static void ProcessNode(const aiScene *scene, const aiNode *node,
     if (node == nullptr) return;
     for (uint32_t i = 0; i < node->mNumChildren; ++i) {
         const aiNode *child = node->mChildren[i];
+        model->AddTransform(ConvertMatrixToGLMFormat(child->mTransformation));
         for (uint32_t j = 0; j < child->mNumMeshes; ++j) {
-            uint32_t id = child->mMeshes[j];
-            model->AddMesh(ProcessAiMesh(scene->mMeshes[id]));
+            uint32_t mesh_id = child->mMeshes[j];
+            ModelNode node;
+            node.mesh_id = mesh_id;
+            node.transform_id = i;
+            model->AddModelNode(
+                model->GetMaterial(scene->mMeshes[mesh_id]->mMaterialIndex),
+                std::move(node));
         }
         ProcessNode(scene, child, model);
     }
@@ -182,15 +206,21 @@ Ref<Model> ModelLoader::LoadModel(const std::string &path) {
     } else {
         model = CreateRef<Model>();
         model->SetPath(path);
-        ProcessNode(scene, scene->mRootNode, model.get());
+        // Process materials
         std::filesystem::path directory =
             std::filesystem::path(path).parent_path();
-        ImportedTexture imported_textures;
         for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
             model->AddMaterial(ProcessAiMaterial(
-                directory, scene->mMaterials[i], imported_textures));
+                directory, scene->mMaterials[i], model.get()));
         }
-        model->SetImportedTexture(imported_textures);
+
+        // Process meshes
+        for (uint32_t i = 0; i < scene->mNumMeshes; ++i) {
+            model->AddMesh(ProcessAiMesh(scene->mMeshes[i]));
+        }
+
+        // Process node
+        ProcessNode(scene, scene->mRootNode, model.get());
     }
 
     return model;

@@ -4,8 +4,6 @@
 #include "Utility/Base.hpp"
 #include "Graphics/Export.hpp"
 #include "Graphics/Texture.hpp"
-#include "Graphics/Shader.hpp"
-
 #include <string>
 #include <unordered_map>
 

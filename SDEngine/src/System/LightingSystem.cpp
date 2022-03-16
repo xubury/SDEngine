@@ -240,16 +240,21 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
     MeshRenderer::Begin(light, transform, *scene->GetCamera(),
                         *m_cascade_shader);
 
-    modelView.each([this](const TransformComponent &transformComp,
-                          const ModelComponent &modelComp) {
-        if (AssetStorage::Get().Exists<ModelAsset>(modelComp.model_id)) {
-            m_cascade_shader->SetMat4(
-                "u_model", transformComp.GetWorldTransform().GetMatrix());
-            auto model = AssetStorage::Get()
-                             .GetAsset<ModelAsset>(modelComp.model_id)
-                             ->GetModel();
-            for (const auto &mesh : model->GetMeshes()) {
-                MeshRenderer::DrawMesh(*m_cascade_shader, mesh);
+    auto &storage = AssetStorage::Get();
+    modelView.each([&](const TransformComponent &transformComp,
+                       const ModelComponent &modelComp) {
+        if (storage.Exists<ModelAsset>(modelComp.model_id)) {
+            auto model =
+                storage.GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
+            for (const auto &[material, nodes] : model->GetNodes()) {
+                for (const auto &node : nodes) {
+                    m_cascade_shader->SetMat4(
+                        "u_model",
+                        model->GetTransform(node.transform_id) *
+                            transformComp.GetWorldTransform().GetMatrix());
+                    MeshRenderer::DrawMesh(*m_cascade_shader,
+                                           *model->GetMesh(node.mesh_id));
+                }
             }
         }
     });
@@ -393,32 +398,36 @@ void LightingSystem::RenderGBuffer() {
     uint32_t id = static_cast<uint32_t>(entt::null);
     m_gbuffer->ClearAttachment(GeometryBufferType::G_ENTITY_ID, &id);
 
-    modelView.each([this](const entt::entity &entity,
-                          const TransformComponent &transformComp,
-                          const ModelComponent &modelComp) {
-        m_gbuffer_shader->SetMat4(
-            "u_model", transformComp.GetWorldTransform().GetMatrix());
+    auto &storage = AssetStorage::Get();
+    modelView.each([&](const entt::entity &entity,
+                       const TransformComponent &transformComp,
+                       const ModelComponent &modelComp) {
         m_gbuffer_shader->SetUint("u_entity_id", static_cast<uint32_t>(entity));
         m_gbuffer_shader->SetVec3("u_color", modelComp.color);
-        if (AssetStorage::Get().Exists<ModelAsset>(modelComp.model_id)) {
-            auto model = AssetStorage::Get()
-                             .GetAsset<ModelAsset>(modelComp.model_id)
-                             ->GetModel();
-            for (const auto &mesh : model->GetMeshes()) {
-                auto &material = model->GetMaterials()[mesh.GetMaterialIndex()];
+        if (storage.Exists<ModelAsset>(modelComp.model_id)) {
+            auto model =
+                storage.GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
+            for (const auto &[material, nodes] : model->GetNodes()) {
                 m_gbuffer_shader->SetTexture(
                     "u_material.diffuse",
-                    material.GetTexture(MaterialType::DIFFUSE));
+                    material->GetTexture(MaterialType::DIFFUSE));
                 m_gbuffer_shader->SetTexture(
                     "u_material.specular",
-                    material.GetTexture(MaterialType::SPECULAR));
+                    material->GetTexture(MaterialType::SPECULAR));
                 m_gbuffer_shader->SetTexture(
                     "u_material.ambient",
-                    material.GetTexture(MaterialType::AMBIENT));
+                    material->GetTexture(MaterialType::AMBIENT));
                 m_gbuffer_shader->SetTexture(
                     "u_material.emissive",
-                    material.GetTexture(MaterialType::EMISSIVE));
-                MeshRenderer::DrawMesh(*m_gbuffer_shader, mesh);
+                    material->GetTexture(MaterialType::EMISSIVE));
+                for (const auto &node : nodes) {
+                    m_gbuffer_shader->SetMat4(
+                        "u_model",
+                        model->GetTransform(node.transform_id) *
+                            transformComp.GetWorldTransform().GetMatrix());
+                    MeshRenderer::DrawMesh(*m_gbuffer_shader,
+                                           *model->GetMesh(node.mesh_id));
+                }
             }
         }
     });
