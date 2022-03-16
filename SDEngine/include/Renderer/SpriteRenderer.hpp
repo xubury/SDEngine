@@ -5,7 +5,7 @@
 
 namespace SD {
 
-class SpriteRenderer : protected Renderer {
+class SD_RENDERER_API SpriteRenderer : protected Renderer {
    public:
     static void Init();
     static void Begin(Camera &camera);

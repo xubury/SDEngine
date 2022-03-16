@@ -100,7 +100,7 @@ enum class TextureMinFilter {
     LINEAR_LINEAR,
 };
 
-enum class BufferLayoutType { UBYTE, UINT, INT, FLOAT, FLOAT2, FLOAT3, FLOAT4 };
+enum class BufferLayoutType { UBYTE, UINT, INT, FLOAT, FLOAT2, FLOAT3, FLOAT4, MAT4 };
 
 enum class BufferIOType { STATIC, DYNAMIC };
 

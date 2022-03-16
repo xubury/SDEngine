@@ -2,7 +2,7 @@
 
 namespace SD {
 
-uint32_t GetBufferDataSize(BufferLayoutType type) {
+static uint32_t GetBufferDataSize(BufferLayoutType type) {
     switch (type) {
         case BufferLayoutType::UBYTE:
             return 1;
@@ -16,10 +16,13 @@ uint32_t GetBufferDataSize(BufferLayoutType type) {
             return 3 * 4;
         case BufferLayoutType::FLOAT4:
             return 4 * 4;
+        case BufferLayoutType::MAT4:
+            return 4 * 4 * 4;
     }
     return 0;
 }
-uint32_t GetComponentCount(BufferLayoutType type) {
+
+static uint32_t GetComponentCount(BufferLayoutType type) {
     switch (type) {
         case BufferLayoutType::UBYTE:
         case BufferLayoutType::UINT:
@@ -32,6 +35,8 @@ uint32_t GetComponentCount(BufferLayoutType type) {
             return 3;
         case BufferLayoutType::FLOAT4:
             return 4;
+        case BufferLayoutType::MAT4:
+            return 4;
     }
     return 0;
 }
@@ -40,7 +45,7 @@ VertexBufferLayout::VertexBufferLayout(uint32_t instance_stride)
     : m_stride(0), m_instance_stride(instance_stride) {}
 
 void VertexBufferLayout::Push(BufferLayoutType type, bool normalized) {
-    m_elements.push_back({type, GetComponentCount(type), normalized});
+    m_elements.push_back({type, GetComponentCount(type), m_stride, normalized});
     m_stride += GetBufferDataSize(type);
 }
 
@@ -56,9 +61,5 @@ const std::vector<VertexBufferLayoutElement> &VertexBufferLayout::GetElements()
 }
 
 uint32_t VertexBufferLayout::GetStride() const { return m_stride; }
-
-uint32_t VertexBufferLayout::GetInstanceStride() const {
-    return m_instance_stride;
-}
 
 }  // namespace SD

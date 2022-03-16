@@ -11,6 +11,9 @@ class GLDevice : public Device {
 
     void DrawElements(MeshTopology topology, int count, size_t offset) override;
 
+    void DrawElementsInstanced(MeshTopology topology, int count, size_t offset,
+                               size_t amount) override;
+
     void DrawArrays(MeshTopology topology, int first, int count) override;
 
     void SetLineWidth(float width) override;

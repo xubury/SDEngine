@@ -16,37 +16,52 @@ void GLVertexArray::Bind() const { glBindVertexArray(m_id); }
 
 void GLVertexArray::AddVertexBuffer(const Ref<VertexBuffer> &buffer,
                                     const VertexBufferLayout &layout) {
-    size_t offset = 0;
+    int binding_index = m_vertex_buffers.size();
+    glVertexArrayVertexBuffer(m_id, binding_index, buffer->GetId(), 0,
+                              layout.GetStride());
+    glVertexArrayBindingDivisor(m_id, binding_index,
+                                layout.GetInstanceStride());
     for (const auto &element : layout.GetElements()) {
-        glVertexArrayVertexBuffer(m_id, m_attrib_id, buffer->GetId(), 0,
-                                  layout.GetStride());
-        glVertexArrayBindingDivisor(m_id, m_attrib_id,
-                                    layout.GetInstanceStride());
-        glVertexArrayAttribBinding(m_id, m_attrib_id, m_attrib_id);
-
-        glEnableVertexArrayAttrib(m_id, m_attrib_id);
         switch (element.type) {
             case BufferLayoutType::FLOAT:
             case BufferLayoutType::FLOAT2:
             case BufferLayoutType::FLOAT3:
-            case BufferLayoutType::FLOAT4:
+            case BufferLayoutType::FLOAT4: {
+                glEnableVertexArrayAttrib(m_id, m_attrib_id);
+                glVertexArrayAttribBinding(m_id, m_attrib_id, binding_index);
                 glVertexArrayAttribFormat(m_id, m_attrib_id, element.count,
                                           Translate(element.type),
-                                          element.normalized, offset);
-                break;
+                                          element.normalized, element.offset);
+                ++m_attrib_id;
+            } break;
+            case BufferLayoutType::MAT4: {
+                for (int i = 0; i < 4; ++i) {
+                    glEnableVertexArrayAttrib(m_id, m_attrib_id);
+                    glVertexArrayAttribBinding(m_id, m_attrib_id,
+                                               binding_index);
+                    glVertexArrayAttribFormat(
+                        m_id, m_attrib_id, element.count,
+                        Translate(element.type), element.normalized,
+                        element.offset + sizeof(float) * 4 * i);
+                    ++m_attrib_id;
+                }
+            } break;
             case BufferLayoutType::UBYTE:
             case BufferLayoutType::UINT:
-            case BufferLayoutType::INT:
+            case BufferLayoutType::INT: {
+                glVertexArrayVertexBuffer(m_id, binding_index, buffer->GetId(),
+                                          0, layout.GetStride());
+                glEnableVertexArrayAttrib(m_id, m_attrib_id);
+                glVertexArrayAttribBinding(m_id, m_attrib_id, binding_index);
                 glVertexArrayAttribIFormat(m_id, m_attrib_id, element.count,
-                                           Translate(element.type), offset);
+                                           Translate(element.type),
+                                           element.offset);
 
-                break;
+                ++m_attrib_id;
+            } break;
         }
-        offset += GetBufferDataSize(element.type);
-        ++m_attrib_id;
     }
     m_vertex_buffers.push_back(buffer);
-    m_layouts.push_back(layout);
 }
 
 void GLVertexArray::UpdateBuffer(size_t index, const void *data, size_t size,

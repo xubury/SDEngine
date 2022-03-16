@@ -27,6 +27,8 @@ class SD_GRAPHICS_API Device {
 
     virtual void DrawElements(MeshTopology topology, int count,
                               size_t offset) = 0;
+    virtual void DrawElementsInstanced(MeshTopology topology, int count,
+                                       size_t offset, size_t amount) = 0;
 
     virtual void DrawArrays(MeshTopology topology, int first, int count) = 0;
 

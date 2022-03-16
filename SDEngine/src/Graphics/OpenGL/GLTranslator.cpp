@@ -8,6 +8,7 @@ GLenum Translate(BufferLayoutType data_type) {
         case BufferLayoutType::FLOAT2:
         case BufferLayoutType::FLOAT3:
         case BufferLayoutType::FLOAT4:
+        case BufferLayoutType::MAT4:
             return GL_FLOAT;
         case BufferLayoutType::UINT:
             return GL_UNSIGNED_INT;

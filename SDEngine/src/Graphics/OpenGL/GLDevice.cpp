@@ -57,6 +57,12 @@ void GLDevice::DrawElements(MeshTopology topology, int count, size_t offset) {
                    (const void *)offset);
 }
 
+void GLDevice::DrawElementsInstanced(MeshTopology topology, int count,
+                                     size_t offset, size_t amount) {
+    glDrawElementsInstanced(Translate(topology), count, GL_UNSIGNED_INT,
+                            (const void *)offset, amount);
+}
+
 void GLDevice::DrawArrays(MeshTopology topology, int first, int count) {
     glDrawArrays(Translate(topology), first, count);
 }

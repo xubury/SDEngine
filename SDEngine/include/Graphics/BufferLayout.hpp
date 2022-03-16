@@ -12,12 +12,9 @@ namespace SD {
 struct SD_GRAPHICS_API VertexBufferLayoutElement {
     BufferLayoutType type;
     uint32_t count;
+    size_t offset;
     bool normalized;
 };
-
-uint32_t SD_GRAPHICS_API GetBufferDataSize(BufferLayoutType type);
-
-uint32_t SD_GRAPHICS_API GetComponentCount(BufferLayoutType type);
 
 class SD_GRAPHICS_API VertexBufferLayout {
    public:
@@ -29,9 +26,8 @@ class SD_GRAPHICS_API VertexBufferLayout {
 
     const std::vector<VertexBufferLayoutElement>& GetElements() const;
 
+    uint32_t GetInstanceStride() const { return m_instance_stride; }
     uint32_t GetStride() const;
-
-    uint32_t GetInstanceStride() const;
 
    private:
     std::vector<VertexBufferLayoutElement> m_elements;
