@@ -12,8 +12,6 @@ GLVertexArray::GLVertexArray() : m_attrib_id(0) {
 
 GLVertexArray::~GLVertexArray() { glDeleteVertexArrays(1, &m_id); }
 
-void GLVertexArray::Bind() const { glBindVertexArray(m_id); }
-
 void GLVertexArray::AddVertexBuffer(const Ref<VertexBuffer> &buffer,
                                     const VertexBufferLayout &layout) {
     int binding_index = m_vertex_buffers.size();

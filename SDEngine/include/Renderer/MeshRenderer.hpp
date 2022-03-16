@@ -4,6 +4,7 @@
 #include "Renderer/Export.hpp"
 #include "Renderer/Renderer.hpp"
 
+#include "Graphics/Material.hpp"
 namespace SD {
 
 struct SD_RENDERER_API ShadowData {
@@ -19,6 +20,7 @@ class SD_RENDERER_API MeshRenderer : protected Renderer {
     static void End();
 
     static void DrawMesh(const Shader &shader, const Mesh &mesh);
+    static void SetMaterial(Shader &shader, const Material &material);
 
    private:
     static void SetupShaderUBO(Shader &shader);

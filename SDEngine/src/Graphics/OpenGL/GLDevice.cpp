@@ -4,6 +4,7 @@
 #include "Graphics/Texture.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/Framebuffer.hpp"
+#include "Graphics/VertexArray.hpp"
 #include <GL/glew.h>
 
 namespace SD {
@@ -78,6 +79,14 @@ void GLDevice::Clear(BufferBitMask bit) {
     glClear(Translate(bit & BufferBitMask::COLOR_BUFFER_BIT) |
             Translate(bit & BufferBitMask::DEPTH_BUFFER_BIT) |
             Translate(bit & BufferBitMask::STENCIL_BUFFER_BIT));
+}
+
+void GLDevice::SetVertexArray(const VertexArray *vertexArray) {
+    if (vertexArray) {
+        glBindVertexArray(vertexArray->GetId());
+    } else {
+        glBindVertexArray(0);
+    }
 }
 
 void GLDevice::SetShader(const Shader *shader) {

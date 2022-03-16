@@ -14,8 +14,6 @@ class SD_GRAPHICS_API GLVertexArray : public VertexArray {
 
     ~GLVertexArray();
 
-    void Bind() const override;
-
     void AddVertexBuffer(const Ref<VertexBuffer> &buffer,
                          const VertexBufferLayout &layout) override;
 
@@ -29,6 +27,7 @@ class SD_GRAPHICS_API GLVertexArray : public VertexArray {
    private:
     std::vector<Ref<VertexBuffer>> m_vertex_buffers;
     Ref<IndexBuffer> m_indexBuffer;
+    std::vector<VertexBufferLayout> m_layouts;
 
     uint32_t m_attrib_id;
 };

@@ -270,7 +270,8 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
                                      scene->GetCamera()->GetNearZ());
     m_cascade_debug_shader->SetFloat("far_plane",
                                      scene->GetCamera()->GetFarZ());
-    Renderer::Submit(*m_cascade_debug_shader, *m_quad, MeshTopology::TRIANGLES,
+    device->SetShader(m_cascade_debug_shader.get());
+    Renderer::Submit(*m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
 
     Renderer::EndRenderPass();
@@ -290,7 +291,8 @@ void LightingSystem::RenderSSAO() {
     m_ssao_shader->SetTexture(
         "u_normal", m_gbuffer->GetTexture(GeometryBufferType::G_NORMAL));
     m_ssao_shader->SetTexture("u_noise", m_ssao_noise.get());
-    Renderer::Submit(*m_ssao_shader, *m_quad, MeshTopology::TRIANGLES,
+    device->SetShader(m_ssao_shader.get());
+    Renderer::Submit(*m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
     MeshRenderer::End();
     Renderer::EndRenderPass();
@@ -299,7 +301,8 @@ void LightingSystem::RenderSSAO() {
     Renderer::BeginRenderPass(RenderPassInfo{m_ssao_blur_buffer.get()});
     m_ssao_blur_buffer->ClearAttachment(0, &clear_value);
     m_ssao_blur_shader->SetTexture("u_ssao", m_ssao_buffer->GetTexture());
-    Renderer::Submit(*m_ssao_blur_shader, *m_quad, MeshTopology::TRIANGLES,
+    device->SetShader(m_ssao_blur_shader.get());
+    Renderer::Submit(*m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
     Renderer::EndRenderPass();
 }
@@ -314,7 +317,8 @@ void LightingSystem::RenderEmissive() {
         m_emssive_shader->SetTexture(
             "u_emissive",
             m_gbuffer->GetTexture(GeometryBufferType::G_EMISSIVE));
-        Renderer::Submit(*m_emssive_shader, *m_quad, MeshTopology::TRIANGLES,
+        device->SetShader(m_emssive_shader.get());
+        Renderer::Submit(*m_quad, MeshTopology::TRIANGLES,
                          m_quad->GetIndexBuffer()->GetCount(), 0);
         Renderer::EndRenderSubpass();
     }
@@ -380,7 +384,8 @@ void LightingSystem::RenderDeferred() {
                     "u_cascade_planes[" + std::to_string(i) + "]", planes[i]);
             }
         }
-        Renderer::Submit(*m_deferred_shader, *m_quad, MeshTopology::TRIANGLES,
+        device->SetShader(m_deferred_shader.get());
+        Renderer::Submit(*m_quad, MeshTopology::TRIANGLES,
                          m_quad->GetIndexBuffer()->GetCount(), 0);
         MeshRenderer::End();
         std::swap(m_light_buffer[input_id], m_light_buffer[output_id]);
@@ -408,18 +413,7 @@ void LightingSystem::RenderGBuffer() {
             auto model =
                 storage.GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
             for (const auto &[material, nodes] : model->GetNodes()) {
-                m_gbuffer_shader->SetTexture(
-                    "u_material.diffuse",
-                    material->GetTexture(MaterialType::DIFFUSE));
-                m_gbuffer_shader->SetTexture(
-                    "u_material.specular",
-                    material->GetTexture(MaterialType::SPECULAR));
-                m_gbuffer_shader->SetTexture(
-                    "u_material.ambient",
-                    material->GetTexture(MaterialType::AMBIENT));
-                m_gbuffer_shader->SetTexture(
-                    "u_material.emissive",
-                    material->GetTexture(MaterialType::EMISSIVE));
+                MeshRenderer::SetMaterial(*m_gbuffer_shader, *material);
                 for (const auto &node : nodes) {
                     m_gbuffer_shader->SetMat4(
                         "u_model",

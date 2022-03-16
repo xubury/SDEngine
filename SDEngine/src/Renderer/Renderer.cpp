@@ -54,11 +54,9 @@ void Renderer::Init(Device* device) {
     MeshRenderer::Init();
 }
 
-void Renderer::Submit(const Shader& shader, const VertexArray& vao,
-                      MeshTopology topology, size_t count, size_t offset,
-                      bool index) {
-    m_device->SetShader(&shader);
-    vao.Bind();
+void Renderer::Submit(const VertexArray& vao, MeshTopology topology,
+                      size_t count, size_t offset, bool index) {
+    m_device->SetVertexArray(&vao);
     if (index) {
         m_device->DrawElements(topology, count, offset);
     } else {

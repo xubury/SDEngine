@@ -66,7 +66,8 @@ void SkyboxSystem::OnRender() {
         m_skybox_shader->SetTexture("u_skybox", m_skybox.get());
     }
 
-    Renderer::Submit(*m_skybox_shader, *m_box_vao, MeshTopology::TRIANGLES,
+    device->SetShader(m_skybox_shader.get());
+    Renderer::Submit(*m_box_vao, MeshTopology::TRIANGLES,
                      m_box_vao->GetIndexBuffer()->GetCount(), 0);
     device->SetDepthfunc(DepthFunc::LESS);
     Renderer::EndRenderSubpass();

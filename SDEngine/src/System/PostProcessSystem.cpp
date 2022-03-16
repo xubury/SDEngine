@@ -125,7 +125,8 @@ void PostProcessSystem::RenderBlur() {
         m_blur_shader->SetTexture(
             "u_image", i == 0 ? m_post_buffer->GetTexture()
                               : m_blur_buffer[inputId]->GetTexture());
-        Renderer::Submit(*m_blur_shader, *m_quad, MeshTopology::TRIANGLES,
+        device->SetShader(m_blur_shader.get());
+        Renderer::Submit(*m_quad, MeshTopology::TRIANGLES,
                          m_quad->GetIndexBuffer()->GetCount(), 0);
         horizontal = !horizontal;
     }
@@ -144,7 +145,8 @@ void PostProcessSystem::RenderPost() {
 
     m_post_shader->SetFloat("u_gamma", m_gamma_correction);
 
-    Renderer::Submit(*m_post_shader, *m_quad, MeshTopology::TRIANGLES,
+    device->SetShader(m_post_shader.get());
+    Renderer::Submit(*m_quad, MeshTopology::TRIANGLES,
                      m_quad->GetIndexBuffer()->GetCount(), 0);
 }
 

@@ -19,6 +19,7 @@ class SD_GRAPHICS_API Device {
 
     static Ref<Device> Create();
 
+    Device() = default;
     virtual ~Device() = default;
 
     Device(const Device &) = delete;
@@ -40,6 +41,8 @@ class SD_GRAPHICS_API Device {
         BufferBitMask bit = BufferBitMask::COLOR_BUFFER_BIT |
                             BufferBitMask::DEPTH_BUFFER_BIT |
                             BufferBitMask::STENCIL_BUFFER_BIT) = 0;
+
+    virtual void SetVertexArray(const VertexArray *vertex_array) = 0;
 
     virtual void SetShader(const Shader *shader) = 0;
 
@@ -70,8 +73,6 @@ class SD_GRAPHICS_API Device {
                                  int dst_width, int dst_height,
                                  BufferBitMask mask, BlitFilter filter) = 0;
 
-   protected:
-    Device() = default;
 };
 
 }  // namespace SD

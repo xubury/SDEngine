@@ -14,8 +14,21 @@ void MeshRenderer::DrawMesh(const Shader& shader, const Mesh& mesh) {
     m_device->SetPolygonMode(mesh.GetPolygonMode(), Face::BOTH);
     VertexArray* vao = mesh.GetVertexArray();
     SD_CORE_ASSERT(vao, "Invalid mesh!");
-    Submit(shader, *vao, mesh.GetTopology(), vao->GetIndexBuffer()->GetCount(),
-           0);
+    m_device->SetShader(&shader);
+    Submit(*vao, mesh.GetTopology(), vao->GetIndexBuffer()->GetCount(), 0);
+}
+
+void MeshRenderer::SetMaterial(Shader& shader, const Material& material) {
+    m_device->SetShader(&shader);
+
+    shader.SetTexture("u_material.diffuse",
+                      material.GetTexture(MaterialType::DIFFUSE));
+    shader.SetTexture("u_material.specular",
+                      material.GetTexture(MaterialType::SPECULAR));
+    shader.SetTexture("u_material.ambient",
+                      material.GetTexture(MaterialType::AMBIENT));
+    shader.SetTexture("u_material.emissive",
+                      material.GetTexture(MaterialType::EMISSIVE));
 }
 
 void MeshRenderer::Begin(Shader& shader, Camera& camera) {

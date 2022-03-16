@@ -22,6 +22,8 @@ class GLDevice : public Device {
 
     void Clear(BufferBitMask bit) override;
 
+    void SetVertexArray(const VertexArray *vertexArray) override;
+
     void SetShader(const Shader *shader) override;
 
     void SetViewport(int x, int y, int width, int height) override;

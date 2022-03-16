@@ -237,8 +237,9 @@ void SpriteRenderer::FlushLines() {
         size_t offset = m_data.line_buffer_ptr - m_data.line_buffer.data();
         m_data.line_vao->UpdateBuffer(0, m_data.line_buffer.data(),
                                       sizeof(Line) * offset);
-        Submit(*m_line_shader, *m_data.line_vao, MeshTopology::LINES,
-               m_data.line_vertex_cnt, 0, false);
+        m_device->SetShader(m_line_shader.get());
+        Submit(*m_data.line_vao, MeshTopology::LINES, m_data.line_vertex_cnt, 0,
+               false);
     }
 }
 
@@ -252,8 +253,9 @@ void SpriteRenderer::FlushQuads() {
             m_sprite_shader->SetTexture(i, m_data.texture_slots[i]);
         }
 
-        Submit(*m_sprite_shader, *m_data.quad_vao, MeshTopology::TRIANGLES,
-               m_data.quad_index_cnt, 0);
+        m_device->SetShader(m_sprite_shader.get());
+        Submit(*m_data.quad_vao, MeshTopology::TRIANGLES, m_data.quad_index_cnt,
+               0);
     }
 }
 
@@ -264,7 +266,8 @@ void SpriteRenderer::FlushCircles() {
         m_data.circle_vao->UpdateBuffer(0, m_data.circle_buffer.data(),
                                         offset * sizeof(Circle));
 
-        Submit(*m_circle_shader, *m_data.circle_vao, MeshTopology::TRIANGLES,
+        m_device->SetShader(m_circle_shader.get());
+        Submit(*m_data.circle_vao, MeshTopology::TRIANGLES,
                m_data.circle_index_cnt, 0);
     }
 }
