@@ -243,9 +243,9 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
     });
     MeshRenderer::End();
     device->SetCullFace(Face::BACK);
+    Renderer::EndRenderPass();
 
-    device->SetFramebuffer(m_cascade_debug_fb.get());
-    device->SetViewport(0, 0, m_width, m_height);
+    Renderer::BeginRenderPass(RenderPassInfo{m_cascade_debug_fb.get()});
     m_cascade_debug_shader->GetParam("depthMap")
         ->SetAsTexture(light.GetCascadeMap()->GetTexture());
     m_cascade_debug_shader->GetParam("layer")->SetAsInt(m_debug_layer);
