@@ -174,12 +174,14 @@ static Material ProcessAiMaterial(const std::filesystem::path &directory,
     return material;
 }
 
-static void ProcessNode(const aiScene *scene, const aiNode *node,
-                        Model *model) {
+static void ProcessNode(const aiScene *scene, const aiNode *node, Model *model,
+                        const glm::mat4 &parent_trans) {
     if (node == nullptr) return;
     for (uint32_t i = 0; i < node->mNumChildren; ++i) {
         const aiNode *child = node->mChildren[i];
-        model->AddTransform(ConvertMatrixToGLMFormat(child->mTransformation));
+        glm::mat4 trans =
+            parent_trans * ConvertMatrixToGLMFormat(child->mTransformation);
+        model->AddTransform(trans);
         for (uint32_t j = 0; j < child->mNumMeshes; ++j) {
             uint32_t mesh_id = child->mMeshes[j];
             ModelNode node;
@@ -189,7 +191,7 @@ static void ProcessNode(const aiScene *scene, const aiNode *node,
                 model->GetMaterial(scene->mMeshes[mesh_id]->mMaterialIndex),
                 std::move(node));
         }
-        ProcessNode(scene, child, model);
+        ProcessNode(scene, child, model, trans);
     }
 }
 
@@ -220,7 +222,7 @@ Ref<Model> ModelLoader::LoadModel(const std::string &path) {
         }
 
         // Process node
-        ProcessNode(scene, scene->mRootNode, model.get());
+        ProcessNode(scene, scene->mRootNode, model.get(), glm::mat4(1.0f));
     }
 
     return model;
