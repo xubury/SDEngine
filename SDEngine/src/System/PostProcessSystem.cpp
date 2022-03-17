@@ -99,15 +99,16 @@ void PostProcessSystem::OnSizeEvent(const ViewportSizeEvent &event) {
 void PostProcessSystem::RenderBlur() {
     const int amount = 10;
     bool horizontal = true;
+    ShaderParam *horizontal_param = m_blur_shader->GetParam("u_horizontal");
+    ShaderParam *image = m_blur_shader->GetParam("u_image");
     for (int i = 0; i < amount; ++i) {
         const int inputId = horizontal;
         const int outputId = !horizontal;
         device->SetFramebuffer(m_blur_buffer[outputId].get());
         m_blur_result = m_blur_buffer[outputId]->GetTexture();
-        m_blur_shader->SetBool("u_horizontal", horizontal);
-        m_blur_shader->SetTexture(
-            "u_image", i == 0 ? m_post_buffer->GetTexture()
-                              : m_blur_buffer[inputId]->GetTexture());
+        horizontal_param->SetAsBool(horizontal);
+        image->SetAsTexture(i == 0 ? m_post_buffer->GetTexture()
+                                   : m_blur_buffer[inputId]->GetTexture());
         device->SetShader(m_blur_shader.get());
         Renderer::DrawNDCQuad();
         horizontal = !horizontal;
@@ -118,14 +119,15 @@ void PostProcessSystem::RenderPost() {
     device->SetFramebuffer(m_framebuffer);
     device->DrawBuffer(m_framebuffer,
                        0);  // only draw colors
-    m_post_shader->SetBool("u_bloom", m_is_bloom);
-    m_post_shader->SetFloat("u_bloomFactor", m_bloom_factor);
-    m_post_shader->SetTexture("u_blur", m_blur_result);
+    m_post_shader->GetParam("u_bloom")->SetAsBool(m_is_bloom);
+    m_post_shader->GetParam("u_bloomFactor")->SetAsFloat(m_bloom_factor);
+    m_post_shader->GetParam("u_blur")->SetAsTexture(m_blur_result);
 
-    m_post_shader->SetTexture("u_lighting", m_post_buffer->GetTexture());
-    m_post_shader->SetFloat("u_exposure", m_exposure);
+    m_post_shader->GetParam("u_lighting")
+        ->SetAsTexture(m_post_buffer->GetTexture());
+    m_post_shader->GetParam("u_exposure")->SetAsFloat(m_exposure);
 
-    m_post_shader->SetFloat("u_gamma", m_gamma_correction);
+    m_post_shader->GetParam("u_gamma")->SetAsFloat(m_gamma_correction);
 
     device->SetShader(m_post_shader.get());
     Renderer::DrawNDCQuad();

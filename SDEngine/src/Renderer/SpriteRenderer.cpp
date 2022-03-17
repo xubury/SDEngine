@@ -107,7 +107,6 @@ void SpriteRenderer::Init() {
     m_data.line_vao->AddBufferLayout(layout);
     m_data.line_vao->BindVertexBuffer(*m_data.line_vbo, 0);
 
-
     // Initializing quad ibo
     std::array<uint32_t, Renderer2DData::MAX_INDICES> quad_indices;
     uint32_t offset = 0;
@@ -260,9 +259,10 @@ void SpriteRenderer::FlushQuads() {
         m_data.quad_vbo->UpdateData(m_data.quad_buffer.data(),
                                     offset * sizeof(Quad));
 
-        for (uint32_t i = 0; i < m_data.texture_index; ++i) {
-            m_sprite_shader->SetTexture(i, m_data.texture_slots[i]);
-        }
+        // int32_t texture_id_offset =
+        //     m_sprite_shader->GetParam("u_textures[0]")->GetIndex();
+        m_sprite_shader->GetParam("u_textures[0]")
+            ->SetAsTextures(m_data.texture_slots.data(), m_data.texture_index);
 
         m_device->SetShader(m_sprite_shader.get());
         Submit(*m_data.quad_vao, MeshTopology::TRIANGLES, m_data.quad_index_cnt,

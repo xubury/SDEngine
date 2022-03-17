@@ -21,31 +21,12 @@ class SD_GRAPHICS_API GLShader : public Shader {
 
     uint32_t GetId() const override { return m_id; }
 
+    ShaderParam* GetParam(int32_t index) override;
+    ShaderParam* GetParam(const std::string& name) override;
+
     void CompileShader(ShaderType type, const std::string& code) override;
 
     void LinkShaders() override;
-
-    void SetBool(const std::string& name, bool value) override;
-
-    void SetInt(const std::string& name, int value) override;
-
-    void SetUint(const std::string& name, uint32_t value) override;
-
-    void SetFloat(const std::string& name, float value) override;
-
-    void SetVec2(const std::string& name, const glm::vec2& value) override;
-
-    void SetVec3(const std::string& name, const glm::vec3& value) override;
-
-    void SetVec4(const std::string& name, const glm::vec4& value) override;
-
-    void SetMat3(const std::string& name, const glm::mat3& value) override;
-
-    void SetMat4(const std::string& name, const glm::mat4& value) override;
-
-    void SetTexture(const std::string& name, const Texture* texture) override;
-
-    void SetTexture(uint32_t id, const Texture* texture) override;
 
     void SetUniformBuffer(const std::string& name,
                           const UniformBuffer& buffer) override;
@@ -57,11 +38,17 @@ class SD_GRAPHICS_API GLShader : public Shader {
 
     void DestroyShaders();
 
+    int32_t GetUniformCount() const;
+    int32_t GetUniformBufferCount() const;
+
     GLuint m_id;
     GLuint m_vertexId;
     GLuint m_fragmentId;
     GLuint m_geometryId;
     GLuint m_computeId;
+
+    std::unordered_map<std::string, ShaderParam*> m_params;
+    uint32_t m_texture_cnt;
 };
 
 }  // namespace SD

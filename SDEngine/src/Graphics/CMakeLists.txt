@@ -11,6 +11,7 @@ set(OpenGL_Include
     ${Include_Root}/OpenGL/GLFramebuffer.hpp
     ${Include_Root}/OpenGL/GLRenderbuffer.hpp
     ${Include_Root}/OpenGL/GLShader.hpp
+    ${Include_Root}/OpenGL/GLShaderParam.hpp
     ${Include_Root}/OpenGL/GLTexture.hpp
     ${Include_Root}/OpenGL/GLTranslator.hpp
     ${Include_Root}/OpenGL/GLVertexArray.hpp)
@@ -21,6 +22,7 @@ set(OpenGL_Src
     ${Src_Root}/OpenGL/GLFramebuffer.cpp
     ${Src_Root}/OpenGL/GLRenderbuffer.cpp
     ${Src_Root}/OpenGL/GLShader.cpp
+    ${Src_Root}/OpenGL/GLShaderParam.cpp
     ${Src_Root}/OpenGL/GLTexture.cpp
     ${Src_Root}/OpenGL/GLTranslator.cpp
     ${Src_Root}/OpenGL/GLVertexArray.cpp)
@@ -43,6 +45,7 @@ set(Graphics_Include
     ${Include_Root}/Renderbuffer.hpp
     ${Include_Root}/Graphics.hpp
     ${Include_Root}/Shader.hpp
+    ${Include_Root}/ShaderParam.hpp
     ${Include_Root}/Texture.hpp
     ${Include_Root}/Viewport.hpp
     ${Include_Root}/VertexArray.hpp)

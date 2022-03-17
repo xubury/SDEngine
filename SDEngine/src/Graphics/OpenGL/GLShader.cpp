@@ -1,20 +1,149 @@
 #include "Graphics/OpenGL/GLShader.hpp"
 #include "Graphics/OpenGL/GLBuffer.hpp"
 #include "Graphics/OpenGL/GLTexture.hpp"
+#include "Graphics/OpenGL/GLShaderParam.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
 namespace SD {
 
-const uint8_t MAX_TEXTURES = 32;
+UniformType GetUniformType(GLenum gl_type) {
+    switch (gl_type) {
+        default:
+            return UniformType::Unknown;
+        case GL_BOOL_VEC2:
+        case GL_BOOL_VEC3:
+        case GL_BOOL_VEC4:
+        case GL_BOOL:
+            return UniformType::Bool;
+
+        case GL_INT_VEC2:
+        case GL_INT_VEC3:
+        case GL_INT_VEC4:
+        case GL_INT:
+            return UniformType::Bool;
+
+        case GL_UNSIGNED_INT_VEC2:
+        case GL_UNSIGNED_INT_VEC3:
+        case GL_UNSIGNED_INT_VEC4:
+        case GL_UNSIGNED_INT:
+            return UniformType::Int;
+
+        case GL_FLOAT_MAT2:
+        case GL_FLOAT_MAT2x3:
+        case GL_FLOAT_MAT2x4:
+        case GL_FLOAT_MAT3:
+        case GL_FLOAT_MAT3x2:
+        case GL_FLOAT_MAT3x4:
+        case GL_FLOAT_MAT4:
+        case GL_FLOAT_MAT4x2:
+        case GL_FLOAT_MAT4x3:
+        case GL_FLOAT_VEC2:
+        case GL_FLOAT_VEC3:
+        case GL_FLOAT_VEC4:
+        case GL_FLOAT:
+            return UniformType::Float;
+
+        case GL_DOUBLE_MAT2:
+        case GL_DOUBLE_MAT2x3:
+        case GL_DOUBLE_MAT2x4:
+        case GL_DOUBLE_MAT3:
+        case GL_DOUBLE_MAT3x2:
+        case GL_DOUBLE_MAT3x4:
+        case GL_DOUBLE_MAT4:
+        case GL_DOUBLE_MAT4x2:
+        case GL_DOUBLE_MAT4x3:
+        case GL_DOUBLE_VEC2:
+        case GL_DOUBLE_VEC3:
+        case GL_DOUBLE_VEC4:
+        case GL_DOUBLE:
+            return UniformType::Double;
+
+        case GL_SAMPLER_3D:
+        case GL_SAMPLER_2D:
+        case GL_SAMPLER_CUBE:
+        case GL_SAMPLER_2D_MULTISAMPLE:
+            return UniformType::Sampler;
+    }
+}
 
 GLShader::GLShader()
-    : m_vertexId(0), m_fragmentId(0), m_geometryId(0), m_computeId(0) {
+    : m_vertexId(0),
+      m_fragmentId(0),
+      m_geometryId(0),
+      m_computeId(0),
+      m_texture_cnt(0) {
     m_id = glCreateProgram();
 }
 
 GLShader::~GLShader() {
     glDeleteProgram(m_id);
     DestroyShaders();
+
+    for (auto& [_, param] : m_params) {
+        delete param;
+    }
+}
+
+int32_t GLShader::GetUniformCount() const {
+    int32_t count;
+    glGetProgramiv(m_id, GL_ACTIVE_UNIFORMS, &count);
+    return count;
+}
+
+int32_t GLShader::GetUniformBufferCount() const {
+    int32_t count;
+    glGetProgramiv(m_id, GL_ACTIVE_UNIFORM_BLOCKS, &count);
+    return count;
+}
+
+ShaderParam* GLShader::GetParam(const std::string& name) {
+    auto itr = m_params.find(name);
+    if (itr != m_params.end()) {
+        return itr->second;
+    }
+
+    SD_CORE_ASSERT(
+        false,
+        fmt::format("No shader uniform variable corresponding to: \"{}\"",
+                    name));
+    return nullptr;
+}
+
+ShaderParam* GLShader::GetParam(int32_t index) {
+    int32_t name_size;
+    int32_t size;
+    GLenum gl_type;
+    char name[128];
+    memset(name, '\0', 128);
+
+    glGetActiveUniform(m_id, index, 128, &name_size, &size, &gl_type, name);
+    int32_t location = glGetUniformLocation(m_id, name);
+
+    if (location == -1) {
+        // glGetActiveUniform returns -1 if name does not correspond to an
+        // active uniform variable in program, if name starts with the reserved
+        // prefix "gl_", or if name is associated with an atomic counter or a
+        // named uniform block
+        return nullptr;
+    }
+    std::string s(name);
+
+    auto itr = m_params.find(s);
+    if (itr != m_params.end()) {
+        return itr->second;
+    }
+
+    UniformType type = GetUniformType(gl_type);
+    int32_t tex_binding_id = -1;
+
+    if (type == UniformType::Sampler) {
+        tex_binding_id = m_texture_cnt;
+        m_texture_cnt += size;
+    }
+    ShaderParam* p =
+        new GLShaderParam(type, s, index, m_id, location, tex_binding_id);
+
+    return m_params.emplace(s, p).first->second;
 }
 
 void GLShader::CompileShader(ShaderType type, const std::string& code) {
@@ -73,6 +202,20 @@ void GLShader::LinkShaders() {
     glLinkProgram(m_id);
     CheckCompileErrors(m_id, "Program");
     DestroyShaders();
+
+    int32_t uniform_cnt = GetUniformCount();
+    int32_t ubuffer_cnt = GetUniformBufferCount();
+    SD_CORE_TRACE(
+        "Shader program #{} linked successfully, uniform count: {}, uniform "
+        "buffer count:{}",
+        m_id, uniform_cnt, ubuffer_cnt);
+    for (int32_t i = 0; i < uniform_cnt; ++i) {
+        GLShaderParam* param = dynamic_cast<GLShaderParam*>(GetParam(i));
+        if (param) {
+            SD_CORE_TRACE("Uniform name: {}, location: {}, index:{}",
+                          param->GetName(), param->GetLocation(), i);
+        }
+    }
 }
 
 void GLShader::CheckCompileErrors(uint32_t shader, const std::string& type) {
@@ -99,61 +242,6 @@ void GLShader::CheckCompileErrors(uint32_t shader, const std::string& type) {
         }
     }
     SD_CORE_ASSERT(success, infoLog);
-}
-
-void GLShader::SetBool(const std::string& name, bool value) {
-    glProgramUniform1i(m_id, glGetUniformLocation(m_id, name.c_str()), value);
-}
-
-void GLShader::SetInt(const std::string& name, int value) {
-    glProgramUniform1i(m_id, glGetUniformLocation(m_id, name.c_str()), value);
-}
-
-void GLShader::SetUint(const std::string& name, uint32_t value) {
-    glProgramUniform1ui(m_id, glGetUniformLocation(m_id, name.c_str()), value);
-}
-
-void GLShader::SetFloat(const std::string& name, float value) {
-    glProgramUniform1f(m_id, glGetUniformLocation(m_id, name.c_str()), value);
-}
-
-void GLShader::SetVec2(const std::string& name, const glm::vec2& value) {
-    glProgramUniform2fv(m_id, glGetUniformLocation(m_id, name.c_str()), 1,
-                        &value[0]);
-}
-
-void GLShader::SetVec3(const std::string& name, const glm::vec3& value) {
-    glProgramUniform3fv(m_id, glGetUniformLocation(m_id, name.c_str()), 1,
-                        &value[0]);
-}
-
-void GLShader::SetVec4(const std::string& name, const glm::vec4& value) {
-    glProgramUniform4fv(m_id, glGetUniformLocation(m_id, name.c_str()), 1,
-                        &value[0]);
-}
-
-void GLShader::SetMat3(const std::string& name, const glm::mat3& value) {
-    glProgramUniformMatrix3fv(m_id, glGetUniformLocation(m_id, name.c_str()), 1,
-                              GL_FALSE, glm::value_ptr(value));
-}
-
-void GLShader::SetMat4(const std::string& name, const glm::mat4& value) {
-    glProgramUniformMatrix4fv(m_id, glGetUniformLocation(m_id, name.c_str()), 1,
-                              GL_FALSE, glm::value_ptr(value));
-}
-
-void GLShader::SetTexture(const std::string& name, const Texture* texture) {
-    int id = glGetUniformLocation(m_id, name.c_str()) % MAX_TEXTURES;
-    SetInt(name, id);
-    SetTexture(id, texture);
-}
-
-void GLShader::SetTexture(uint32_t id, const Texture* texture) {
-    if (texture) {
-        texture->SetSlot(id);
-    } else {
-        glBindTextureUnit(id, 0);
-    }
 }
 
 void GLShader::SetUniformBuffer(const std::string& name,

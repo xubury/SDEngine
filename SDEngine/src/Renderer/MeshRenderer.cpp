@@ -31,14 +31,14 @@ void MeshRenderer::DrawMesh(const Shader& shader, const Mesh& mesh) {
 void MeshRenderer::SetMaterial(Shader& shader, const Material& material) {
     m_device->SetShader(&shader);
 
-    shader.SetTexture("u_material.diffuse",
-                      material.GetTexture(MaterialType::DIFFUSE));
-    shader.SetTexture("u_material.specular",
-                      material.GetTexture(MaterialType::SPECULAR));
-    shader.SetTexture("u_material.ambient",
-                      material.GetTexture(MaterialType::AMBIENT));
-    shader.SetTexture("u_material.emissive",
-                      material.GetTexture(MaterialType::EMISSIVE));
+    shader.GetParam("u_material.diffuse")
+        ->SetAsTexture(material.GetTexture(MaterialType::DIFFUSE));
+    shader.GetParam("u_material.specular")
+        ->SetAsTexture(material.GetTexture(MaterialType::SPECULAR));
+    shader.GetParam("u_material.ambient")
+        ->SetAsTexture(material.GetTexture(MaterialType::AMBIENT));
+    shader.GetParam("u_material.emissive")
+        ->SetAsTexture(material.GetTexture(MaterialType::EMISSIVE));
 }
 
 void MeshRenderer::Begin(Shader& shader, Camera& camera) {

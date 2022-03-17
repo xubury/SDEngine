@@ -141,8 +141,6 @@ void GLTexture::Allocate() {
     }
 }
 
-void GLTexture::SetSlot(uint32_t slot) const { glBindTextureUnit(slot, m_id); }
-
 void GLTexture::SetPixels(int x, int y, int z, int width, int height, int depth,
                           const void *data) {
     switch (m_type) {

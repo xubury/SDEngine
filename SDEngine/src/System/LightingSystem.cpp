@@ -15,6 +15,8 @@
 #include "Asset/AssetStorage.hpp"
 #include "Asset/ModelAsset.hpp"
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace SD {
 
 DataFormat GetTextureFormat(GeometryBufferType type) {
@@ -126,10 +128,8 @@ void LightingSystem::InitSSAOKernel() {
                         TextureMinFilter::NEAREST, TextureMagFilter::NEAREST);
     m_ssao_noise->SetPixels(0, 0, 0, 4, 4, 1, ssao_noise.data());
 
-    for (uint32_t i = 0; i < kernel_size; ++i) {
-        m_ssao_shader->SetVec3("u_samples[" + std::to_string(i) + "]",
-                               m_ssao_kernel[i]);
-    }
+    m_ssao_shader->GetParam("u_samples[0]")
+        ->SetAsVec3(&m_ssao_kernel[0][0], kernel_size);
 }
 
 void LightingSystem::InitLighting() {
@@ -224,6 +224,7 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
                         *m_cascade_shader);
 
     auto &storage = AssetStorage::Get();
+    ShaderParam *model_param = m_cascade_shader->GetParam("u_model");
     modelView.each([&](const TransformComponent &transformComp,
                        const ModelComponent &modelComp) {
         if (storage.Exists<ModelAsset>(modelComp.model_id)) {
@@ -231,10 +232,9 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
                 storage.GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
             for (const auto &[material, nodes] : model->GetNodes()) {
                 for (const auto &node : nodes) {
-                    m_cascade_shader->SetMat4(
-                        "u_model",
+                    model_param->SetAsMat4(glm::value_ptr(
                         model->GetTransform(node.transform_id) *
-                            transformComp.GetWorldTransform().GetMatrix());
+                        transformComp.GetWorldTransform().GetMatrix()));
                     MeshRenderer::DrawMesh(*m_cascade_shader,
                                            *model->GetMesh(node.mesh_id));
                 }
@@ -246,13 +246,13 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
 
     device->SetFramebuffer(m_cascade_debug_fb.get());
     device->SetViewport(0, 0, m_width, m_height);
-    m_cascade_debug_shader->SetTexture("depthMap",
-                                       light.GetCascadeMap()->GetTexture());
-    m_cascade_debug_shader->SetInt("layer", m_debug_layer);
-    m_cascade_debug_shader->SetFloat("near_plane",
-                                     scene->GetCamera()->GetNearZ());
-    m_cascade_debug_shader->SetFloat("far_plane",
-                                     scene->GetCamera()->GetFarZ());
+    m_cascade_debug_shader->GetParam("depthMap")
+        ->SetAsTexture(light.GetCascadeMap()->GetTexture());
+    m_cascade_debug_shader->GetParam("layer")->SetAsInt(m_debug_layer);
+    m_cascade_debug_shader->GetParam("near_plane")
+        ->SetAsFloat(scene->GetCamera()->GetNearZ());
+    m_cascade_debug_shader->GetParam("far_plane")
+        ->SetAsFloat(scene->GetCamera()->GetFarZ());
     device->SetShader(m_cascade_debug_shader.get());
     Renderer::DrawNDCQuad();
 
@@ -265,14 +265,14 @@ void LightingSystem::RenderSSAO() {
 
     Renderer::BeginRenderPass(RenderPassInfo{m_ssao_buffer.get()});
     MeshRenderer::Begin(*m_ssao_shader, *scene->GetCamera());
-    m_ssao_shader->SetFloat("u_radius", m_ssao_radius);
-    m_ssao_shader->SetFloat("u_bias", m_ssao_bias);
-    m_ssao_shader->SetUint("u_power", m_ssao_power);
-    m_ssao_shader->SetTexture(
-        "u_position", m_gbuffer->GetTexture(GeometryBufferType::G_POSITION));
-    m_ssao_shader->SetTexture(
-        "u_normal", m_gbuffer->GetTexture(GeometryBufferType::G_NORMAL));
-    m_ssao_shader->SetTexture("u_noise", m_ssao_noise.get());
+    m_ssao_shader->GetParam("u_radius")->SetAsFloat(m_ssao_radius);
+    m_ssao_shader->GetParam("u_bias")->SetAsFloat(m_ssao_bias);
+    m_ssao_shader->GetParam("u_power")->SetAsUint(m_ssao_power);
+    m_ssao_shader->GetParam("u_position")
+        ->SetAsTexture(m_gbuffer->GetTexture(GeometryBufferType::G_POSITION));
+    m_ssao_shader->GetParam("u_normal")
+        ->SetAsTexture(m_gbuffer->GetTexture(GeometryBufferType::G_NORMAL));
+    m_ssao_shader->GetParam("u_noise")->SetAsTexture(m_ssao_noise.get());
     device->SetShader(m_ssao_shader.get());
     Renderer::DrawNDCQuad();
 
@@ -282,7 +282,8 @@ void LightingSystem::RenderSSAO() {
     // blur
     Renderer::BeginRenderPass(RenderPassInfo{m_ssao_blur_buffer.get()});
     m_ssao_blur_buffer->ClearAttachment(0, &clear_value);
-    m_ssao_blur_shader->SetTexture("u_ssao", m_ssao_buffer->GetTexture());
+    m_ssao_blur_shader->GetParam("u_ssao")->SetAsTexture(
+        m_ssao_buffer->GetTexture());
     device->SetShader(m_ssao_blur_shader.get());
     Renderer::DrawNDCQuad();
     Renderer::EndRenderPass();
@@ -293,11 +294,11 @@ void LightingSystem::RenderEmissive() {
     if (lightView.begin() != lightView.end()) {
         const int buffer = 0;
         Renderer::BeginRenderSubpass(RenderSubpassInfo{&buffer, 1});
-        m_emssive_shader->SetTexture("u_lighting",
-                                     GetLightingBuffer()->GetTexture());
-        m_emssive_shader->SetTexture(
-            "u_emissive",
-            m_gbuffer->GetTexture(GeometryBufferType::G_EMISSIVE));
+        m_emssive_shader->GetParam("u_lighting")
+            ->SetAsTexture(GetLightingBuffer()->GetTexture());
+        m_emssive_shader->GetParam("u_emissive")
+            ->SetAsTexture(
+                m_gbuffer->GetTexture(GeometryBufferType::G_EMISSIVE));
         device->SetShader(m_emssive_shader.get());
         Renderer::DrawNDCQuad();
         Renderer::EndRenderSubpass();
@@ -313,19 +314,43 @@ void LightingSystem::RenderDeferred() {
         device->Clear(BufferBitMask::COLOR_BUFFER_BIT);
     }
 
-    m_deferred_shader->SetTexture(
-        "u_position", m_gbuffer->GetTexture(GeometryBufferType::G_POSITION));
-    m_deferred_shader->SetTexture(
-        "u_normal", m_gbuffer->GetTexture(GeometryBufferType::G_NORMAL));
-    m_deferred_shader->SetTexture(
-        "u_albedo", m_gbuffer->GetTexture(GeometryBufferType::G_ALBEDO));
-    m_deferred_shader->SetTexture(
-        "u_ambient", m_gbuffer->GetTexture(GeometryBufferType::G_AMBIENT));
-    m_deferred_shader->SetTexture("u_background", m_main_buffer->GetTexture());
-    m_deferred_shader->SetTexture("u_ssao", m_ssao_blur_buffer->GetTexture());
-    m_deferred_shader->SetBool("u_ssao_state", m_ssao_state);
+    m_deferred_shader->GetParam("u_position")
+        ->SetAsTexture(m_gbuffer->GetTexture(GeometryBufferType::G_POSITION));
+    m_deferred_shader->GetParam("u_normal")
+        ->SetAsTexture(m_gbuffer->GetTexture(GeometryBufferType::G_NORMAL));
+    m_deferred_shader->GetParam("u_albedo")
+        ->SetAsTexture(m_gbuffer->GetTexture(GeometryBufferType::G_ALBEDO));
+    m_deferred_shader->GetParam("u_ambient")
+        ->SetAsTexture(m_gbuffer->GetTexture(GeometryBufferType::G_AMBIENT));
+    m_deferred_shader->GetParam("u_background")
+        ->SetAsTexture(m_main_buffer->GetTexture());
+    m_deferred_shader->GetParam("u_ssao")->SetAsTexture(
+        m_ssao_blur_buffer->GetTexture());
+    m_deferred_shader->GetParam("u_ssao_state")->SetAsBool(m_ssao_state);
     const uint8_t input_id = 0;
     const uint8_t output_id = 1;
+
+    ShaderParam *lighting = m_deferred_shader->GetParam("u_lighting");
+    ShaderParam *ambient = m_deferred_shader->GetParam("u_light.ambient");
+    ShaderParam *diffuse = m_deferred_shader->GetParam("u_light.diffuse");
+    ShaderParam *specular = m_deferred_shader->GetParam("u_light.specular");
+    ShaderParam *position = m_deferred_shader->GetParam("u_light.position");
+    ShaderParam *direction = m_deferred_shader->GetParam("u_light.direction");
+    ShaderParam *cutoff = m_deferred_shader->GetParam("u_light.cutoff");
+    ShaderParam *outer_cutoff =
+        m_deferred_shader->GetParam("u_light.outer_cutoff");
+    ShaderParam *constant = m_deferred_shader->GetParam("u_light.constant");
+    ShaderParam *linear = m_deferred_shader->GetParam("u_light.linear");
+    ShaderParam *quadratic = m_deferred_shader->GetParam("u_light.quadratic");
+    ShaderParam *is_directional =
+        m_deferred_shader->GetParam("u_light.is_directional");
+    ShaderParam *is_cast_shadow =
+        m_deferred_shader->GetParam("u_light.is_cast_shadow");
+    ShaderParam *cascade_map = m_deferred_shader->GetParam("u_cascade_map");
+    ShaderParam *num_of_cascades =
+        m_deferred_shader->GetParam("u_num_of_cascades");
+    ShaderParam *cascade_planes =
+        m_deferred_shader->GetParam("u_cascade_planes[0]");
     lightView.each([&](const TransformComponent &transformComp,
                        LightComponent &lightComp) {
         Light &light = lightComp.light;
@@ -335,34 +360,25 @@ void LightingSystem::RenderDeferred() {
         Renderer::BeginRenderPass(
             RenderPassInfo{m_light_buffer[output_id].get()});
         MeshRenderer::Begin(*m_deferred_shader, *scene->GetCamera());
-        m_deferred_shader->SetTexture("u_lighting",
-                                      m_light_buffer[input_id]->GetTexture());
-        m_deferred_shader->SetVec3("u_light.direction", transform.GetFront());
-        m_deferred_shader->SetVec3("u_light.ambient", light.GetAmbient());
-        m_deferred_shader->SetVec3("u_light.diffuse", light.GetDiffuse());
-        m_deferred_shader->SetVec3("u_light.specular", light.GetSpecular());
-        m_deferred_shader->SetVec3("u_light.position", transform.GetPosition());
-        m_deferred_shader->SetFloat("u_light.cutoff",
-                                    glm::cos(light.GetCutoff()));
-        m_deferred_shader->SetFloat("u_light.outer_cutoff",
-                                    glm::cos(light.GetOuterCutoff()));
-        m_deferred_shader->SetFloat("u_light.constant", light.GetConstant());
-        m_deferred_shader->SetFloat("u_light.linear", light.GetLinear());
-        m_deferred_shader->SetFloat("u_light.quadratic", light.GetQuadratic());
+        lighting->SetAsTexture(m_light_buffer[input_id]->GetTexture());
+        direction->SetAsVec3(&transform.GetFront()[0]);
+        position->SetAsVec3(&transform.GetPosition()[0]);
+        ambient->SetAsVec3(&light.GetAmbient()[0]);
+        diffuse->SetAsVec3(&light.GetDiffuse()[0]);
+        specular->SetAsVec3(&light.GetSpecular()[0]);
+        cutoff->SetAsFloat(glm::cos(light.GetCutoff()));
+        outer_cutoff->SetAsFloat(glm::cos(light.GetOuterCutoff()));
+        constant->SetAsFloat(light.GetConstant());
+        linear->SetAsFloat(light.GetLinear());
+        quadratic->SetAsFloat(light.GetQuadratic());
 
-        m_deferred_shader->SetBool("u_light.is_directional",
-                                   light.IsDirectional());
-        m_deferred_shader->SetBool("u_light.is_cast_shadow",
-                                   light.IsCastShadow());
+        is_directional->SetAsBool(light.IsDirectional());
+        is_cast_shadow->SetAsBool(light.IsCastShadow());
         if (light.IsCastShadow()) {
-            m_deferred_shader->SetTexture("u_cascade_map",
-                                          light.GetCascadeMap()->GetTexture());
+            cascade_map->SetAsTexture(light.GetCascadeMap()->GetTexture());
             auto &planes = light.GetCascadePlanes();
-            m_deferred_shader->SetInt("u_num_of_cascades", planes.size());
-            for (size_t i = 0; i < planes.size(); ++i) {
-                m_deferred_shader->SetFloat(
-                    "u_cascade_planes[" + std::to_string(i) + "]", planes[i]);
-            }
+            num_of_cascades->SetAsInt(planes.size());
+            cascade_planes->SetAsVec(&planes[0]);
         }
         device->SetShader(m_deferred_shader.get());
         Renderer::DrawNDCQuad();
@@ -383,21 +399,23 @@ void LightingSystem::RenderGBuffer() {
     m_gbuffer->ClearAttachment(GeometryBufferType::G_ENTITY_ID, &id);
 
     auto &storage = AssetStorage::Get();
+    ShaderParam *entity_id = m_gbuffer_shader->GetParam("u_entity_id");
+    ShaderParam *base_color = m_gbuffer_shader->GetParam("u_color");
+    ShaderParam *model_param = m_gbuffer_shader->GetParam("u_model");
     modelView.each([&](const entt::entity &entity,
                        const TransformComponent &transformComp,
                        const ModelComponent &modelComp) {
-        m_gbuffer_shader->SetUint("u_entity_id", static_cast<uint32_t>(entity));
-        m_gbuffer_shader->SetVec3("u_color", modelComp.color);
+        entity_id->SetAsUint(static_cast<uint32_t>(entity));
+        base_color->SetAsVec3(&modelComp.color[0]);
         if (storage.Exists<ModelAsset>(modelComp.model_id)) {
             auto model =
                 storage.GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
             for (const auto &[material, nodes] : model->GetNodes()) {
                 MeshRenderer::SetMaterial(*m_gbuffer_shader, *material);
                 for (const auto &node : nodes) {
-                    m_gbuffer_shader->SetMat4(
-                        "u_model",
+                    model_param->SetAsMat4(glm::value_ptr(
                         model->GetTransform(node.transform_id) *
-                            transformComp.GetWorldTransform().GetMatrix());
+                        transformComp.GetWorldTransform().GetMatrix()));
                     MeshRenderer::DrawMesh(*m_gbuffer_shader,
                                            *model->GetMesh(node.mesh_id));
                 }

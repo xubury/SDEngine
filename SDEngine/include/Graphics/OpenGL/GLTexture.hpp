@@ -16,7 +16,6 @@ class GLTexture : public Texture {
 
 
     uint32_t GetId() const override { return m_id; }
-    void SetSlot(uint32_t slot) const override;
 
     void SetPixels(int x, int y, int z, int width, int height, int depth,
                    const void *data) override;

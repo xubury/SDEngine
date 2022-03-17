@@ -6,6 +6,8 @@
 #include "Loader/ShaderLoader.hpp"
 #include "Loader/TextureLoader.hpp"
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace SD {
 
 SkyboxSystem::SkyboxSystem() : System("SkyboxSystem") {}
@@ -32,11 +34,12 @@ void SkyboxSystem::OnRender() {
     glm::vec3 pos = scene->GetCamera()->GetWorldPosition();
     glm::mat4 projection = scene->GetCamera()->GetViewPorjection() *
                            glm::translate(glm::mat4(1.0f), pos);
-    m_skybox_shader->SetMat4("u_projection", projection);
+    m_skybox_shader->GetParam("u_projection")
+        ->SetAsMat4(glm::value_ptr(projection));
 
     device->SetDepthfunc(DepthFunc::LESS_EQUAL);
     if (m_skybox) {
-        m_skybox_shader->SetTexture("u_skybox", m_skybox.get());
+        m_skybox_shader->GetParam("u_skybox")->SetAsTexture(m_skybox.get());
     }
 
     device->SetShader(m_skybox_shader.get());
