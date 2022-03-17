@@ -8,8 +8,6 @@ namespace SD {
 
 UniformType GetUniformType(GLenum gl_type) {
     switch (gl_type) {
-        default:
-            return UniformType::Unknown;
         case GL_BOOL_VEC2:
         case GL_BOOL_VEC3:
         case GL_BOOL_VEC4:
@@ -20,7 +18,7 @@ UniformType GetUniformType(GLenum gl_type) {
         case GL_INT_VEC3:
         case GL_INT_VEC4:
         case GL_INT:
-            return UniformType::Bool;
+            return UniformType::Int;
 
         case GL_UNSIGNED_INT_VEC2:
         case GL_UNSIGNED_INT_VEC3:
@@ -58,11 +56,14 @@ UniformType GetUniformType(GLenum gl_type) {
         case GL_DOUBLE:
             return UniformType::Double;
 
-        case GL_SAMPLER_3D:
         case GL_SAMPLER_2D:
+        case GL_SAMPLER_2D_ARRAY:
         case GL_SAMPLER_CUBE:
         case GL_SAMPLER_2D_MULTISAMPLE:
+        case GL_SAMPLER_3D:
             return UniformType::Sampler;
+        default:
+            return UniformType::Unknown;
     }
 }
 
@@ -134,6 +135,11 @@ ShaderParam* GLShader::GetParam(int32_t index) {
     }
 
     UniformType type = GetUniformType(gl_type);
+    if (type == UniformType::Unknown) {
+        SD_CORE_ERROR("Unknown shader uniform type:{} for uniform:\"{}\"!",
+                      gl_type, s);
+        return nullptr;
+    }
     int32_t tex_binding_id = -1;
 
     if (type == UniformType::Sampler) {

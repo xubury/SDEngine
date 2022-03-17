@@ -378,7 +378,7 @@ void LightingSystem::RenderDeferred() {
             cascade_map->SetAsTexture(light.GetCascadeMap()->GetTexture());
             auto &planes = light.GetCascadePlanes();
             num_of_cascades->SetAsInt(planes.size());
-            cascade_planes->SetAsVec(&planes[0]);
+            cascade_planes->SetAsVec(&planes[0], planes.size());
         }
         device->SetShader(m_deferred_shader.get());
         Renderer::DrawNDCQuad();

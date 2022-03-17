@@ -4,7 +4,7 @@ layout (std140) uniform ShadowData
 };
 
 uniform int u_num_of_cascades;
-uniform float u_cascade_planes[4] ;
+uniform float u_cascade_planes[4];
 uniform sampler2DArray u_cascade_map;
 
 const int half_kernel_width = 1;

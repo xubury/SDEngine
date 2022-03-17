@@ -2,7 +2,7 @@
 #define GL_RENDERBUFFER_HPP
 
 #include "Graphics/Renderbuffer.hpp"
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 namespace SD {
 

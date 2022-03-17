@@ -10,11 +10,7 @@ GLShaderParam::GLShaderParam(UniformType type, const std::string& name,
     : ShaderParam(type, name, index),
       m_program(program_id),
       m_location(location),
-      m_tex_binding_id(tex_binding_id) {
-    if (UniformType::Sampler == type) {
-        SD_CORE_TRACE("sampler: {} at binding = {}", name, tex_binding_id);
-    }
-}
+      m_tex_binding_id(tex_binding_id) {}
 
 void GLShaderParam::SetAsBool(bool value) {
     glProgramUniform1i(m_program, m_location, value);
