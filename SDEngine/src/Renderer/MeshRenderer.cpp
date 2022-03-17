@@ -1,4 +1,3 @@
-
 #include "Renderer/MeshRenderer.hpp"
 
 namespace SD {
