@@ -23,14 +23,6 @@ void GLBuffer::UpdateData(const void *data, size_t size, size_t offset) {
     }
 }
 
-void GLBuffer::Bind() const { glBindBuffer(m_type, m_id); }
-
-void GLBuffer::BindBase(uint32_t index) const {
-    glBindBufferBase(m_type, index, m_id);
-}
-
-void GLBuffer::Unbind() const { glBindBuffer(m_type, 0); }
-
 GLVertexBuffer::GLVertexBuffer(const void *data, size_t size, BufferIOType io)
     : GLBuffer(GL_ARRAY_BUFFER, Translate(io), data, size) {}
 
@@ -50,13 +42,9 @@ uint32_t GLUniformBuffer::s_count = 0;
 GLUniformBuffer::GLUniformBuffer(const void *data, size_t size, BufferIOType io)
     : GLBuffer(GL_UNIFORM_BUFFER, Translate(io), data, size) {
     m_base = s_count++;
+    glBindBufferBase(m_type, m_base, m_id);
 }
 
 uint32_t GLUniformBuffer::GetBindingPoint() const { return m_base; }
-
-void GLUniformBuffer::Bind() const {
-    GLBuffer::Bind();
-    GLBuffer::BindBase(m_base);
-}
 
 }  // namespace SD

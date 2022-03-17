@@ -12,12 +12,6 @@ class SD_GRAPHICS_API GLBuffer : virtual public Buffer {
    public:
     void UpdateData(const void *data, size_t size, size_t offset) override;
 
-    void Bind() const override;
-
-    void BindBase(uint32_t index) const override;
-
-    void Unbind() const override;
-
     uint32_t GetId() const override { return m_id; }
 
    protected:
@@ -56,8 +50,6 @@ class SD_GRAPHICS_API GLUniformBuffer : public UniformBuffer, public GLBuffer {
     ~GLUniformBuffer() = default;
 
     uint32_t GetBindingPoint() const override;
-
-    void Bind() const override;
 
    private:
     uint32_t m_base;

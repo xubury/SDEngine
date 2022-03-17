@@ -18,12 +18,6 @@ class SD_GRAPHICS_API Buffer : public Resource {
     virtual void UpdateData(const void *data, size_t size,
                             size_t offset = 0) = 0;
 
-    virtual void Bind() const = 0;
-
-    virtual void BindBase(uint32_t index) const = 0;
-
-    virtual void Unbind() const = 0;
-
    protected:
     Buffer() = default;
 };
