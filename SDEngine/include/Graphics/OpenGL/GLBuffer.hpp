@@ -18,6 +18,8 @@ class SD_GRAPHICS_API GLBuffer : virtual public Buffer {
 
     void Unbind() const override;
 
+    uint32_t GetId() const override { return m_id; }
+
    protected:
     GLBuffer(GLenum type, GLenum io, const void *data, size_t size);
 
@@ -28,6 +30,7 @@ class SD_GRAPHICS_API GLBuffer : virtual public Buffer {
     GLenum m_io;
 
     size_t m_size;
+    GLuint m_id;
 };
 
 class SD_GRAPHICS_API GLVertexBuffer : public VertexBuffer, public GLBuffer {

@@ -14,6 +14,8 @@ class GLFramebuffer : public Framebuffer {
     GLFramebuffer(const FramebufferCreateInfo &info);
     virtual ~GLFramebuffer();
 
+    uint32_t GetId() const override { return m_id; }
+
     void ReadPixels(uint32_t attachment_id, int level, int x, int y, int z,
                     int w, int h, int d, size_t size,
                     void *data) const override;
@@ -32,6 +34,7 @@ class GLFramebuffer : public Framebuffer {
     void SetupAttachments() override;
     void DestoryAttachments() override;
     std::vector<Ref<void>> m_attachments;
+    GLuint m_id;
 };
 
 }  // namespace SD

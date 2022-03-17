@@ -19,6 +19,8 @@ class SD_GRAPHICS_API GLShader : public Shader {
 
     ~GLShader();
 
+    uint32_t GetId() const override { return m_id; }
+
     void CompileShader(ShaderType type, const std::string& code) override;
 
     void LinkShaders() override;
@@ -55,6 +57,7 @@ class SD_GRAPHICS_API GLShader : public Shader {
 
     void DestroyShaders();
 
+    GLuint m_id;
     GLuint m_vertexId;
     GLuint m_fragmentId;
     GLuint m_geometryId;

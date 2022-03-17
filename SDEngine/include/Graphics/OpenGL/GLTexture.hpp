@@ -14,9 +14,8 @@ class GLTexture : public Texture {
 
     ~GLTexture();
 
-    // void Bind() const override;
-    // void Unbind() const override;
 
+    uint32_t GetId() const override { return m_id; }
     void SetSlot(uint32_t slot) const override;
 
     void SetPixels(int x, int y, int z, int width, int height, int depth,
@@ -34,6 +33,7 @@ class GLTexture : public Texture {
 
     GLenum gl_format;
     GLenum gl_format_type;
+    GLuint m_id;
 };
 
 }  // namespace SD
