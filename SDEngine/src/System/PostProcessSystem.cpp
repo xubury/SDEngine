@@ -15,24 +15,7 @@ PostProcessSystem::PostProcessSystem(Framebuffer *framebuffer)
       m_is_bloom(true),
       m_bloom_factor(1.0f),
       m_exposure(1.2),
-      m_gamma_correction(1.2) {
-    const float quadVertices[] = {
-        -1.0f, -1.0f, 0.f, 0.f,  0.f,   // bottom left
-        1.0f,  -1.0f, 0.f, 1.0f, 0.f,   // bottom right
-        1.0f,  1.0f,  0.f, 1.0f, 1.0f,  // top right
-        -1.0f, 1.0f,  0.f, 0.f,  1.0f,  // top left
-    };
-    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
-    auto buffer = VertexBuffer::Create(quadVertices, sizeof(quadVertices),
-                                       BufferIOType::STATIC);
-    auto indexBuffer = IndexBuffer::Create(indices, 6, BufferIOType::STATIC);
-    m_quad = VertexArray::Create();
-    VertexBufferLayout layout;
-    layout.Push(BufferLayoutType::FLOAT3);
-    layout.Push(BufferLayoutType::FLOAT2);
-    m_quad->AddVertexBuffer(buffer, layout);
-    m_quad->SetIndexBuffer(indexBuffer);
-}
+      m_gamma_correction(1.2) {}
 
 void PostProcessSystem::OnInit() {
     System::OnInit();
@@ -126,8 +109,7 @@ void PostProcessSystem::RenderBlur() {
             "u_image", i == 0 ? m_post_buffer->GetTexture()
                               : m_blur_buffer[inputId]->GetTexture());
         device->SetShader(m_blur_shader.get());
-        Renderer::Submit(*m_quad, MeshTopology::TRIANGLES,
-                         m_quad->GetIndexBuffer()->GetCount(), 0);
+        Renderer::DrawNDCQuad();
         horizontal = !horizontal;
     }
 }
@@ -146,8 +128,7 @@ void PostProcessSystem::RenderPost() {
     m_post_shader->SetFloat("u_gamma", m_gamma_correction);
 
     device->SetShader(m_post_shader.get());
-    Renderer::Submit(*m_quad, MeshTopology::TRIANGLES,
-                     m_quad->GetIndexBuffer()->GetCount(), 0);
+    Renderer::DrawNDCQuad();
 }
 
 void PostProcessSystem::SetExposure(float exposure) { m_exposure = exposure; }

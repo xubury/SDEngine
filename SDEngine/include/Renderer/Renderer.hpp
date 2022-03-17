@@ -44,12 +44,22 @@ class SD_RENDERER_API Renderer {
 
     static bool IsEmptyStack();
 
+    static void DrawNDCQuad();
+    static void DrawNDCBox();
    protected:
     static Device *m_device;
 
     static Ref<UniformBuffer> m_camera_UBO;
 
     static CameraData m_camera_data;
+
+    static Ref<VertexArray> m_quad_vao;
+    static Ref<VertexBuffer> m_quad_vbo;
+    static Ref<IndexBuffer> m_quad_ibo;
+
+    static Ref<VertexArray> m_box_vao;
+    static Ref<VertexBuffer> m_box_vbo;
+    static Ref<IndexBuffer> m_box_ibo;
 };
 
 }  // namespace SD

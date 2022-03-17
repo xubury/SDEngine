@@ -56,10 +56,13 @@ struct SD_RENDERER_API Renderer2DData {
 
     Ref<VertexArray> line_vao;
     size_t line_vertex_cnt = 0;
+    Ref<VertexBuffer> line_vbo;
     std::array<Line, MAX_LINES> line_buffer;
     Line* line_buffer_ptr = nullptr;
 
     Ref<VertexArray> quad_vao;
+    Ref<VertexBuffer> quad_vbo;
+    Ref<IndexBuffer> quad_ibo;
     size_t quad_index_cnt = 0;
     std::array<Quad, MAX_QUADS> quad_buffer;
     Quad* quad_buffer_ptr = nullptr;
@@ -68,6 +71,7 @@ struct SD_RENDERER_API Renderer2DData {
     std::array<const Texture*, MAX_TEXTURE_SLOTS> texture_slots;
 
     Ref<VertexArray> circle_vao;
+    Ref<VertexBuffer> circle_vbo;
     size_t circle_index_cnt = 0;
     std::array<Circle, MAX_QUADS> circle_buffer;
     Circle* circle_buffer_ptr = nullptr;
@@ -89,19 +93,22 @@ static Ref<Shader> m_circle_shader;
 static Ref<Shader> m_sprite_shader;
 
 void SpriteRenderer::Init() {
-    // Initializing line vao
-    m_data.line_vao = VertexArray::Create();
-    auto line_vbo = VertexBuffer::Create(
+    // Initializing line vbo
+    m_data.line_vbo = VertexBuffer::Create(
         m_data.line_buffer.data(), m_data.line_buffer.size() * sizeof(Line),
         BufferIOType::DYNAMIC);
 
+    // Initializing line vao
     VertexBufferLayout layout;
     layout.Push(BufferLayoutType::FLOAT3);
     layout.Push(BufferLayoutType::FLOAT4);
     layout.Push(BufferLayoutType::UINT);  // entity index
-    m_data.line_vao->AddVertexBuffer(line_vbo, layout);
+    m_data.line_vao = VertexArray::Create();
+    m_data.line_vao->AddBufferLayout(layout);
+    m_data.line_vao->BindVertexBuffer(*m_data.line_vbo, 0);
 
-    // Initialize quad vao
+
+    // Initializing quad ibo
     std::array<uint32_t, Renderer2DData::MAX_INDICES> quad_indices;
     uint32_t offset = 0;
     for (uint32_t i = 0; i < Renderer2DData::MAX_INDICES; i += 6) {
@@ -115,29 +122,32 @@ void SpriteRenderer::Init() {
 
         offset += 4;
     }
-    auto quad_ebo = IndexBuffer::Create(
+    m_data.quad_ibo = IndexBuffer::Create(
         quad_indices.data(), quad_indices.size(), BufferIOType::STATIC);
 
-    auto quad_vbo = VertexBuffer::Create(
+    // Initialize quad vbo
+    m_data.quad_vbo = VertexBuffer::Create(
         m_data.quad_buffer.data(), m_data.quad_buffer.size() * sizeof(Quad),
         BufferIOType::DYNAMIC);
 
+    // Initialize quad vao
     layout.Clear();
     layout.Push(BufferLayoutType::FLOAT3);  // position
     layout.Push(BufferLayoutType::FLOAT4);  // color
     layout.Push(BufferLayoutType::FLOAT2);  // texCoord
     layout.Push(BufferLayoutType::INT);     // texIndex
     layout.Push(BufferLayoutType::UINT);    // entity index
-
     m_data.quad_vao = VertexArray::Create();
-    m_data.quad_vao->AddVertexBuffer(quad_vbo, layout);
-    m_data.quad_vao->SetIndexBuffer(quad_ebo);
+    m_data.quad_vao->AddBufferLayout(layout);
+    m_data.quad_vao->BindVertexBuffer(*m_data.quad_vbo, 0);
+    m_data.quad_vao->BindIndexBuffer(*m_data.quad_ibo);
 
-    // Initialize circle vao
-    auto circle_vbo = VertexBuffer::Create(
+    // Initialize circle vbo
+    m_data.circle_vbo = VertexBuffer::Create(
         m_data.circle_buffer.data(),
         m_data.circle_buffer.size() * sizeof(Circle), BufferIOType::DYNAMIC);
 
+    // Initialize circle vao
     layout.Clear();
     layout.Push(BufferLayoutType::FLOAT3);  // world_pos
     layout.Push(BufferLayoutType::FLOAT3);  // local_pos
@@ -146,8 +156,9 @@ void SpriteRenderer::Init() {
     layout.Push(BufferLayoutType::FLOAT);   // fade
     layout.Push(BufferLayoutType::UINT);    // entity index
     m_data.circle_vao = VertexArray::Create();
-    m_data.circle_vao->AddVertexBuffer(circle_vbo, layout);
-    m_data.circle_vao->SetIndexBuffer(quad_ebo);
+    m_data.circle_vao->AddBufferLayout(layout);
+    m_data.circle_vao->BindVertexBuffer(*m_data.circle_vbo, 0);
+    m_data.circle_vao->BindIndexBuffer(*m_data.quad_ibo);
 
     m_data.default_texture =
         Texture::Create(1, 1, 1, MultiSampleLevel::X1, TextureType::TEX_2D,
@@ -235,8 +246,8 @@ void SpriteRenderer::Flush() {
 void SpriteRenderer::FlushLines() {
     if (m_data.line_vertex_cnt) {
         size_t offset = m_data.line_buffer_ptr - m_data.line_buffer.data();
-        m_data.line_vao->UpdateBuffer(0, m_data.line_buffer.data(),
-                                      sizeof(Line) * offset);
+        m_data.line_vbo->UpdateData(m_data.line_buffer.data(),
+                                    sizeof(Line) * offset);
         m_device->SetShader(m_line_shader.get());
         Submit(*m_data.line_vao, MeshTopology::LINES, m_data.line_vertex_cnt, 0,
                false);
@@ -246,8 +257,8 @@ void SpriteRenderer::FlushLines() {
 void SpriteRenderer::FlushQuads() {
     if (m_data.quad_index_cnt) {
         size_t offset = m_data.quad_buffer_ptr - m_data.quad_buffer.data();
-        m_data.quad_vao->UpdateBuffer(0, m_data.quad_buffer.data(),
-                                      offset * sizeof(Quad));
+        m_data.quad_vbo->UpdateData(m_data.quad_buffer.data(),
+                                    offset * sizeof(Quad));
 
         for (uint32_t i = 0; i < m_data.texture_index; ++i) {
             m_sprite_shader->SetTexture(i, m_data.texture_slots[i]);
@@ -263,8 +274,8 @@ void SpriteRenderer::FlushCircles() {
     if (m_data.circle_index_cnt) {
         size_t offset = m_data.circle_buffer_ptr - m_data.circle_buffer.data();
 
-        m_data.circle_vao->UpdateBuffer(0, m_data.circle_buffer.data(),
-                                        offset * sizeof(Circle));
+        m_data.circle_vbo->UpdateData(m_data.circle_buffer.data(),
+                                      offset * sizeof(Circle));
 
         m_device->SetShader(m_circle_shader.get());
         Submit(*m_data.circle_vao, MeshTopology::TRIANGLES,

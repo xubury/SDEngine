@@ -39,24 +39,7 @@ LightingSystem::LightingSystem(Framebuffer *framebuffer, MultiSampleLevel msaa)
       m_main_buffer(framebuffer),
       m_width(framebuffer->GetWidth()),
       m_height(framebuffer->GetHeight()),
-      m_msaa(msaa) {
-    const float quadVertices[] = {
-        -1.0f, -1.0f, 0.f, 0.f,  0.f,   // bottom left
-        1.0f,  -1.0f, 0.f, 1.0f, 0.f,   // bottom right
-        1.0f,  1.0f,  0.f, 1.0f, 1.0f,  // top right
-        -1.0f, 1.0f,  0.f, 0.f,  1.0f,  // top left
-    };
-    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
-    auto buffer = VertexBuffer::Create(quadVertices, sizeof(quadVertices),
-                                       BufferIOType::STATIC);
-    auto indexBuffer = IndexBuffer::Create(indices, 6, BufferIOType::STATIC);
-    m_quad = VertexArray::Create();
-    VertexBufferLayout layout;
-    layout.Push(BufferLayoutType::FLOAT3);
-    layout.Push(BufferLayoutType::FLOAT2);
-    m_quad->AddVertexBuffer(buffer, layout);
-    m_quad->SetIndexBuffer(indexBuffer);
-}
+      m_msaa(msaa) {}
 
 void LightingSystem::OnInit() {
     System::OnInit();
@@ -271,8 +254,7 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
     m_cascade_debug_shader->SetFloat("far_plane",
                                      scene->GetCamera()->GetFarZ());
     device->SetShader(m_cascade_debug_shader.get());
-    Renderer::Submit(*m_quad, MeshTopology::TRIANGLES,
-                     m_quad->GetIndexBuffer()->GetCount(), 0);
+    Renderer::DrawNDCQuad();
 
     Renderer::EndRenderPass();
 }
@@ -292,8 +274,8 @@ void LightingSystem::RenderSSAO() {
         "u_normal", m_gbuffer->GetTexture(GeometryBufferType::G_NORMAL));
     m_ssao_shader->SetTexture("u_noise", m_ssao_noise.get());
     device->SetShader(m_ssao_shader.get());
-    Renderer::Submit(*m_quad, MeshTopology::TRIANGLES,
-                     m_quad->GetIndexBuffer()->GetCount(), 0);
+    Renderer::DrawNDCQuad();
+
     MeshRenderer::End();
     Renderer::EndRenderPass();
 
@@ -302,8 +284,7 @@ void LightingSystem::RenderSSAO() {
     m_ssao_blur_buffer->ClearAttachment(0, &clear_value);
     m_ssao_blur_shader->SetTexture("u_ssao", m_ssao_buffer->GetTexture());
     device->SetShader(m_ssao_blur_shader.get());
-    Renderer::Submit(*m_quad, MeshTopology::TRIANGLES,
-                     m_quad->GetIndexBuffer()->GetCount(), 0);
+    Renderer::DrawNDCQuad();
     Renderer::EndRenderPass();
 }
 
@@ -318,8 +299,7 @@ void LightingSystem::RenderEmissive() {
             "u_emissive",
             m_gbuffer->GetTexture(GeometryBufferType::G_EMISSIVE));
         device->SetShader(m_emssive_shader.get());
-        Renderer::Submit(*m_quad, MeshTopology::TRIANGLES,
-                         m_quad->GetIndexBuffer()->GetCount(), 0);
+        Renderer::DrawNDCQuad();
         Renderer::EndRenderSubpass();
     }
 }
@@ -385,8 +365,7 @@ void LightingSystem::RenderDeferred() {
             }
         }
         device->SetShader(m_deferred_shader.get());
-        Renderer::Submit(*m_quad, MeshTopology::TRIANGLES,
-                         m_quad->GetIndexBuffer()->GetCount(), 0);
+        Renderer::DrawNDCQuad();
         MeshRenderer::End();
         std::swap(m_light_buffer[input_id], m_light_buffer[output_id]);
         Renderer::EndRenderPass();

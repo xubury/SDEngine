@@ -25,7 +25,6 @@ class SD_SYSTEM_API SkyboxSystem : public System {
 
    private:
     Ref<Shader> m_skybox_shader;
-    Ref<VertexArray> m_box_vao;
     Ref<Texture> m_skybox;
 };
 

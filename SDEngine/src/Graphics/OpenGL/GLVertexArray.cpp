@@ -12,11 +12,14 @@ GLVertexArray::GLVertexArray() : m_attrib_id(0) {
 
 GLVertexArray::~GLVertexArray() { glDeleteVertexArrays(1, &m_id); }
 
-void GLVertexArray::AddVertexBuffer(const Ref<VertexBuffer> &buffer,
-                                    const VertexBufferLayout &layout) {
-    int binding_index = m_vertex_buffers.size();
-    glVertexArrayVertexBuffer(m_id, binding_index, buffer->GetId(), 0,
-                              layout.GetStride());
+void GLVertexArray::BindVertexBuffer(const VertexBuffer &buffer,
+                                     int32_t index) {
+    glVertexArrayVertexBuffer(m_id, index, buffer.GetId(), 0,
+                              m_layouts[index].GetStride());
+}
+
+void GLVertexArray::AddBufferLayout(const VertexBufferLayout &layout) {
+    int binding_index = m_layouts.size();
     glVertexArrayBindingDivisor(m_id, binding_index,
                                 layout.GetInstanceStride());
     for (const auto &element : layout.GetElements()) {
@@ -47,8 +50,6 @@ void GLVertexArray::AddVertexBuffer(const Ref<VertexBuffer> &buffer,
             case BufferLayoutType::UBYTE:
             case BufferLayoutType::UINT:
             case BufferLayoutType::INT: {
-                glVertexArrayVertexBuffer(m_id, binding_index, buffer->GetId(),
-                                          0, layout.GetStride());
                 glEnableVertexArrayAttrib(m_id, m_attrib_id);
                 glVertexArrayAttribBinding(m_id, m_attrib_id, binding_index);
                 glVertexArrayAttribIFormat(m_id, m_attrib_id, element.count,
@@ -59,20 +60,11 @@ void GLVertexArray::AddVertexBuffer(const Ref<VertexBuffer> &buffer,
             } break;
         }
     }
-    m_vertex_buffers.push_back(buffer);
+    m_layouts.push_back(layout);
 }
 
-void GLVertexArray::UpdateBuffer(size_t index, const void *data, size_t size,
-                                 size_t offset) {
-    m_vertex_buffers[index]->UpdateData(data, size, offset);
+void GLVertexArray::BindIndexBuffer(const IndexBuffer &buffer) {
+    glVertexArrayElementBuffer(m_id, buffer.GetId());
 }
-
-void GLVertexArray::SetIndexBuffer(const Ref<IndexBuffer> &buffer) {
-    glVertexArrayElementBuffer(
-        m_id, std::static_pointer_cast<GLIndexBuffer>(buffer)->GetId());
-    m_indexBuffer = buffer;
-}
-
-Ref<IndexBuffer> GLVertexArray::GetIndexBuffer() { return m_indexBuffer; }
 
 }  // namespace SD

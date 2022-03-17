@@ -101,8 +101,6 @@ class SD_SYSTEM_API LightingSystem : public System {
     Ref<Texture> m_ssao_noise;
     std::vector<glm::vec3> m_ssao_kernel;
 
-    Ref<VertexArray> m_quad;
-
     HandlerRegistration m_size_handler;
 };
 

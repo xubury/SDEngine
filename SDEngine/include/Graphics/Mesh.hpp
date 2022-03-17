@@ -29,7 +29,8 @@ class SD_GRAPHICS_API Mesh {
 
     void SetIndices(const std::vector<uint32_t> &indices);
 
-    VertexArray *GetVertexArray() const;
+    VertexBuffer *GetVertexBuffer() const;
+    IndexBuffer *GetIndexBuffer() const;
 
     void SetTopology(MeshTopology topology);
     MeshTopology GetTopology() const { return m_topology; }
@@ -45,7 +46,6 @@ class SD_GRAPHICS_API Mesh {
     std::vector<uint32_t> m_indices;
     Ref<VertexBuffer> m_vertexBuffer;
     Ref<IndexBuffer> m_indexBuffer;
-    Ref<VertexArray> m_vertexArray;
     MeshTopology m_topology;
     PolygonMode m_polygonMode;
 };

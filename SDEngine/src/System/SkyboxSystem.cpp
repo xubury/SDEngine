@@ -8,34 +8,7 @@
 
 namespace SD {
 
-SkyboxSystem::SkyboxSystem() : System("SkyboxSystem") {
-    const float skybox_vertices[] = {
-        // front
-        -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0,
-        // back
-        -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0};
-
-    const uint32_t skybox_indices[] = {// front
-                                       0, 1, 2, 2, 3, 0,
-                                       // right
-                                       1, 5, 6, 6, 2, 1,
-                                       // back
-                                       7, 6, 5, 5, 4, 7,
-                                       // left
-                                       4, 0, 3, 3, 7, 4,
-                                       // bottom
-                                       4, 5, 1, 1, 0, 4,
-                                       // top
-                                       3, 2, 6, 6, 7, 3};
-    m_box_vao = VertexArray::Create();
-    VertexBufferLayout layout;
-    layout.Push(BufferLayoutType::FLOAT3);
-    auto vbo = VertexBuffer::Create(skybox_vertices, sizeof(skybox_vertices),
-                                    BufferIOType::STATIC);
-    auto ibo = IndexBuffer::Create(skybox_indices, 36, BufferIOType::STATIC);
-    m_box_vao->AddVertexBuffer(vbo, layout);
-    m_box_vao->SetIndexBuffer(ibo);
-}
+SkyboxSystem::SkyboxSystem() : System("SkyboxSystem") {}
 
 void SkyboxSystem::OnInit() {
     System::OnInit();
@@ -67,8 +40,7 @@ void SkyboxSystem::OnRender() {
     }
 
     device->SetShader(m_skybox_shader.get());
-    Renderer::Submit(*m_box_vao, MeshTopology::TRIANGLES,
-                     m_box_vao->GetIndexBuffer()->GetCount(), 0);
+    Renderer::DrawNDCBox();
     device->SetDepthfunc(DepthFunc::LESS);
     Renderer::EndRenderSubpass();
 }

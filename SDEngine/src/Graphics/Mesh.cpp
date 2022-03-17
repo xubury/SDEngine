@@ -14,16 +14,6 @@ Mesh::Mesh(const std::vector<Vertex> &vertices,
 
     m_indexBuffer = IndexBuffer::Create(m_indices.data(), m_indices.size(),
                                         BufferIOType::DYNAMIC);
-
-    m_vertexArray = VertexArray::Create();
-    VertexBufferLayout layout;
-    layout.Push(BufferLayoutType::FLOAT3);
-    layout.Push(BufferLayoutType::FLOAT2);
-    layout.Push(BufferLayoutType::FLOAT3);
-    layout.Push(BufferLayoutType::FLOAT3);
-    layout.Push(BufferLayoutType::FLOAT3);
-    m_vertexArray->AddVertexBuffer(m_vertexBuffer, layout);
-    m_vertexArray->SetIndexBuffer(m_indexBuffer);
 }
 
 void Mesh::SetVerices(const std::vector<Vertex> &vertices) {
@@ -46,7 +36,8 @@ void Mesh::Clear() {
     m_indices.clear();
 }
 
-VertexArray *Mesh::GetVertexArray() const { return m_vertexArray.get(); }
+VertexBuffer *Mesh::GetVertexBuffer() const { return m_vertexBuffer.get(); }
+IndexBuffer *Mesh::GetIndexBuffer() const { return m_indexBuffer.get(); }
 
 void Mesh::SetTopology(MeshTopology topology) { m_topology = topology; }
 

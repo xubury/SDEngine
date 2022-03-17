@@ -54,8 +54,6 @@ class SD_SYSTEM_API PostProcessSystem : public System {
 
     Ref<Framebuffer> m_post_buffer;
 
-    Ref<VertexArray> m_quad;
-
     bool m_is_bloom;
     float m_bloom_factor;
     float m_exposure;

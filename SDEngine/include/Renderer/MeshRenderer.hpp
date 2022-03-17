@@ -25,6 +25,8 @@ class SD_RENDERER_API MeshRenderer : protected Renderer {
    private:
     static void SetupShaderUBO(Shader &shader);
     static Ref<UniformBuffer> m_shadow_UBO;
+
+    static Ref<VertexArray> m_mesh_vao;
 };
 
 }  // namespace SD

@@ -4,18 +4,28 @@
 namespace SD {
 
 Ref<UniformBuffer> MeshRenderer::m_shadow_UBO;
+Ref<VertexArray> MeshRenderer::m_mesh_vao;
 
 void MeshRenderer::Init() {
     m_shadow_UBO = UniformBuffer::Create(nullptr, sizeof(ShadowData),
                                          BufferIOType::DYNAMIC);
+    m_mesh_vao = VertexArray::Create();
+    VertexBufferLayout layout;
+    layout.Push(BufferLayoutType::FLOAT3);
+    layout.Push(BufferLayoutType::FLOAT2);
+    layout.Push(BufferLayoutType::FLOAT3);
+    layout.Push(BufferLayoutType::FLOAT3);
+    layout.Push(BufferLayoutType::FLOAT3);
+    m_mesh_vao->AddBufferLayout(layout);
 }
 
 void MeshRenderer::DrawMesh(const Shader& shader, const Mesh& mesh) {
     m_device->SetPolygonMode(mesh.GetPolygonMode(), Face::BOTH);
-    VertexArray* vao = mesh.GetVertexArray();
-    SD_CORE_ASSERT(vao, "Invalid mesh!");
     m_device->SetShader(&shader);
-    Submit(*vao, mesh.GetTopology(), vao->GetIndexBuffer()->GetCount(), 0);
+    m_mesh_vao->BindVertexBuffer(*mesh.GetVertexBuffer(), 0);
+    m_mesh_vao->BindIndexBuffer(*mesh.GetIndexBuffer());
+    Submit(*m_mesh_vao, mesh.GetTopology(), mesh.GetIndexBuffer()->GetCount(),
+           0);
 }
 
 void MeshRenderer::SetMaterial(Shader& shader, const Material& material) {

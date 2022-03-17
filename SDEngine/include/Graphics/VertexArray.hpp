@@ -17,14 +17,10 @@ class SD_GRAPHICS_API VertexArray : public Resource {
 
     VertexArray &operator=(const VertexArray &) = delete;
 
-    virtual void AddVertexBuffer(const Ref<VertexBuffer> &buffer,
-                                 const VertexBufferLayout &layout) = 0;
+    virtual void BindVertexBuffer(const VertexBuffer &buffer, int index) = 0;
+    virtual void AddBufferLayout(const VertexBufferLayout &layout) = 0;
 
-    virtual void UpdateBuffer(size_t index, const void *data, size_t size,
-                              size_t offset = 0) = 0;
-
-    virtual void SetIndexBuffer(const Ref<IndexBuffer> &buffer) = 0;
-    virtual Ref<IndexBuffer> GetIndexBuffer() = 0;
+    virtual void BindIndexBuffer(const IndexBuffer &buffer) = 0;
 
    protected:
     VertexArray() = default;
