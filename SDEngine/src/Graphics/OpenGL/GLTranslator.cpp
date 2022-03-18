@@ -4,17 +4,17 @@ namespace SD {
 
 GLenum Translate(BufferLayoutType data_type) {
     switch (data_type) {
-        case BufferLayoutType::FLOAT:
-        case BufferLayoutType::FLOAT2:
-        case BufferLayoutType::FLOAT3:
-        case BufferLayoutType::FLOAT4:
-        case BufferLayoutType::MAT4:
+        case BufferLayoutType::Float:
+        case BufferLayoutType::Float2:
+        case BufferLayoutType::Float3:
+        case BufferLayoutType::Float4:
+        case BufferLayoutType::Mat4:
             return GL_FLOAT;
-        case BufferLayoutType::UINT:
+        case BufferLayoutType::UInt:
             return GL_UNSIGNED_INT;
-        case BufferLayoutType::INT:
+        case BufferLayoutType::Int:
             return GL_INT;
-        case BufferLayoutType::UBYTE:
+        case BufferLayoutType::UByte:
             return GL_UNSIGNED_BYTE;
     }
     return 0;
@@ -22,17 +22,17 @@ GLenum Translate(BufferLayoutType data_type) {
 
 GLenum Translate(MeshTopology mesh_type) {
     switch (mesh_type) {
-        case MeshTopology::TRIANGLES:
+        case MeshTopology::Triangles:
             return GL_TRIANGLES;
-        case MeshTopology::LINES:
+        case MeshTopology::Lines:
             return GL_LINES;
-        case MeshTopology::POINTS:
+        case MeshTopology::Points:
             return GL_POINTS;
-        case MeshTopology::LOOP:
+        case MeshTopology::Loop:
             return GL_LINE_LOOP;
-        case MeshTopology::QUADS:
+        case MeshTopology::Quads:
             return GL_QUADS;
-        case MeshTopology::SEGMENTS:
+        case MeshTopology::Segments:
             return GL_LINE_STRIP;
     }
     return 0;
@@ -40,11 +40,11 @@ GLenum Translate(MeshTopology mesh_type) {
 
 GLenum Translate(PolygonMode mode) {
     switch (mode) {
-        case PolygonMode::POINT:
+        case PolygonMode::Point:
             return GL_POINT;
-        case PolygonMode::LINE:
+        case PolygonMode::Line:
             return GL_LINE;
-        case PolygonMode::FILL:
+        case PolygonMode::Fill:
             return GL_FILL;
     }
     return 0;
@@ -52,9 +52,9 @@ GLenum Translate(PolygonMode mode) {
 
 GLint Translate(BufferIOType io_type) {
     switch (io_type) {
-        case BufferIOType::STATIC:
+        case BufferIOType::Static:
             return GL_STATIC_DRAW;
-        case BufferIOType::DYNAMIC:
+        case BufferIOType::Dynamic:
             return GL_DYNAMIC_DRAW;
     }
     return 0;
@@ -79,7 +79,7 @@ GLenum Translate(TextureType texture_type) {
 
 GLenum Translate(DataFormat format) {
     switch (format) {
-        case DataFormat::ALPHA8:
+        case DataFormat::Alpha8:
         case DataFormat::R8:
             return GL_R8;
         case DataFormat::RG8:
@@ -88,7 +88,7 @@ GLenum Translate(DataFormat format) {
             return GL_RGB8;
         case DataFormat::RGBA8:
             return GL_RGBA8;
-        case DataFormat::ALPHA32I:
+        case DataFormat::Alpha32I:
         case DataFormat::R32I:
             return GL_R32I;
         case DataFormat::RG32I:
@@ -97,7 +97,7 @@ GLenum Translate(DataFormat format) {
             return GL_RGB32I;
         case DataFormat::RGBA32I:
             return GL_RGBA32I;
-        case DataFormat::ALPHA32UI:
+        case DataFormat::Alpha32UI:
         case DataFormat::R32UI:
             return GL_R32UI;
         case DataFormat::RG32UI:
@@ -106,7 +106,7 @@ GLenum Translate(DataFormat format) {
             return GL_RGB32UI;
         case DataFormat::RGBA32UI:
             return GL_RGBA32UI;
-        case DataFormat::ALPHA16F:
+        case DataFormat::Alpha16F:
         case DataFormat::R16F:
             return GL_R16F;
         case DataFormat::RG16F:
@@ -115,7 +115,7 @@ GLenum Translate(DataFormat format) {
             return GL_RGB16F;
         case DataFormat::RGBA16F:
             return GL_RGBA16F;
-        case DataFormat::ALPHA32F:
+        case DataFormat::Alpha32F:
         case DataFormat::R32F:
             return GL_R32F;
         case DataFormat::RG32F:
@@ -124,11 +124,11 @@ GLenum Translate(DataFormat format) {
             return GL_RGB32F;
         case DataFormat::RGBA32F:
             return GL_RGBA32F;
-        case DataFormat::DEPTH24:
+        case DataFormat::Depth24:
             return GL_DEPTH_COMPONENT24;
-        case DataFormat::STENCIL8:
+        case DataFormat::Stencil8:
             return GL_STENCIL_INDEX8;
-        case DataFormat::DEPTH24_STENCIL8:
+        case DataFormat::Depth24Stencil8:
             return GL_DEPTH24_STENCIL8;
     }
     return 0;
@@ -136,15 +136,15 @@ GLenum Translate(DataFormat format) {
 
 GLint Translate(TextureWrap wrap) {
     switch (wrap) {
-        case TextureWrap::EDGE:
+        case TextureWrap::Edge:
             return GL_CLAMP_TO_EDGE;
-        case TextureWrap::BORDER:
+        case TextureWrap::Border:
             return GL_CLAMP_TO_BORDER;
-        case TextureWrap::MIRROR:
+        case TextureWrap::Mirror:
             return GL_MIRRORED_REPEAT;
-        case TextureWrap::REPEAT:
+        case TextureWrap::Repeat:
             return GL_REPEAT;
-        case TextureWrap::MIRROR_EDGE:
+        case TextureWrap::MirrorEdge:
             return GL_MIRROR_CLAMP_TO_EDGE;
     }
 
@@ -153,44 +153,50 @@ GLint Translate(TextureWrap wrap) {
 
 GLint Translate(TextureMagFilter filter) {
     switch (filter) {
-        case TextureMagFilter::NEAREST:
+        case TextureMagFilter::Nearest:
             return GL_NEAREST;
-        case TextureMagFilter::LINEAR:
+        case TextureMagFilter::Linear:
             return GL_LINEAR;
     }
 
     return 0;
 }
 
-GLint Translate(TextureMinFilter min_filter) {
-    switch (min_filter) {
-        case TextureMinFilter::LINEAR:
-            return GL_LINEAR;
-        case TextureMinFilter::NEAREST:
-            return GL_NEAREST;
-        case TextureMinFilter::NEAREST_NEAREST:
-            return GL_NEAREST_MIPMAP_NEAREST;
-        case TextureMinFilter::NEAREST_LINEAR:
-            return GL_NEAREST_MIPMAP_LINEAR;
-        case TextureMinFilter::LINEAR_NEAREST:
-            return GL_LINEAR_MIPMAP_NEAREST;
-        case TextureMinFilter::LINEAR_LINEAR:
-            return GL_LINEAR_MIPMAP_LINEAR;
+GLint Translate(TextureMinFilter filter, MipmapMode mode) {
+    switch (filter) {
+        case TextureMinFilter::Linear:
+            switch (mode) {
+                case MipmapMode::None:
+                    return GL_LINEAR;
+                case MipmapMode::Linear:
+                    return GL_LINEAR_MIPMAP_LINEAR;
+                case MipmapMode::Nearest:
+                    return GL_LINEAR_MIPMAP_NEAREST;
+            }
+        case TextureMinFilter::Nearest:
+            switch (mode) {
+                case MipmapMode::None:
+                    return GL_NEAREST;
+                case MipmapMode::Linear:
+                    return GL_NEAREST_MIPMAP_LINEAR;
+                case MipmapMode::Nearest:
+                    return GL_NEAREST_MIPMAP_NEAREST;
+            }
     }
     return 0;
 }
 
 GLenum Translate(Operation operation) {
     switch (operation) {
-        case Operation::DEPTH_TEST:
+        case Operation::DepthTest:
             return GL_DEPTH_TEST;
-        case Operation::BLEND:
+        case Operation::Blend:
             return GL_BLEND;
-        case Operation::STENCIL_TEST:
+        case Operation::StencilTest:
             return GL_STENCIL_TEST;
-        case Operation::MULTISAMPLE:
+        case Operation::MSAA:
             return GL_MULTISAMPLE;
-        case Operation::CULL_FACE:
+        case Operation::FaceCulling:
             return GL_CULL_FACE;
     }
     return 0;
@@ -198,11 +204,11 @@ GLenum Translate(Operation operation) {
 
 GLenum Translate(Face face) {
     switch (face) {
-        case Face::FRONT:
+        case Face::Front:
             return GL_FRONT;
-        case Face::BACK:
+        case Face::Back:
             return GL_BACK;
-        case Face::BOTH:
+        case Face::Both:
             return GL_FRONT_AND_BACK;
     }
     return 0;
@@ -210,9 +216,9 @@ GLenum Translate(Face face) {
 
 GLenum Translate(BlitFilter filter) {
     switch (filter) {
-        case BlitFilter::NEAREST:
+        case BlitFilter::Nearest:
             return GL_NEAREST;
-        case BlitFilter::LINEAR:
+        case BlitFilter::Linear:
             return GL_LINEAR;
     }
     return 0;
@@ -220,11 +226,13 @@ GLenum Translate(BlitFilter filter) {
 
 GLint Translate(BufferBitMask bit) {
     switch (bit) {
-        case BufferBitMask::COLOR_BUFFER_BIT:
+        case BufferBitMask::None:
+            return 0;
+        case BufferBitMask::ColorBufferBit:
             return GL_COLOR_BUFFER_BIT;
-        case BufferBitMask::DEPTH_BUFFER_BIT:
+        case BufferBitMask::DepthBufferBit:
             return GL_DEPTH_BUFFER_BIT;
-        case BufferBitMask::STENCIL_BUFFER_BIT:
+        case BufferBitMask::StencilBufferBit:
             return GL_STENCIL_BUFFER_BIT;
     }
     return 0;
@@ -232,17 +240,17 @@ GLint Translate(BufferBitMask bit) {
 
 GLenum Translate(DepthFunc depth_func) {
     switch (depth_func) {
-        case DepthFunc::EQUAL:
+        case DepthFunc::Equal:
             return GL_EQUAL;
-        case DepthFunc::NOT_EQUAL:
+        case DepthFunc::NotEqual:
             return GL_NOTEQUAL;
-        case DepthFunc::GREATER:
+        case DepthFunc::Greater:
             return GL_GREATER;
-        case DepthFunc::GREATER_EQUAL:
+        case DepthFunc::GreaterEqual:
             return GL_GEQUAL;
-        case DepthFunc::LESS:
+        case DepthFunc::Less:
             return GL_LESS;
-        case DepthFunc::LESS_EQUAL:
+        case DepthFunc::LessEqual:
             return GL_LEQUAL;
     }
     return 0;

@@ -31,7 +31,7 @@ void SkyboxSystem::OnImGui() {}
 void SkyboxSystem::OnRender() {
     int index = 0;
     RenderOperation op;
-    op.depth_func = DepthFunc::LESS_EQUAL;
+    op.depth_func = DepthFunc::LessEqual;
     Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1, op});
 
     glm::vec3 pos = scene->GetCamera()->GetWorldPosition();

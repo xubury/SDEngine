@@ -54,17 +54,17 @@ static Vertex ConstructVertex(const aiVector3D &pos, const aiVector3D &uv,
 static MeshTopology ConvertAssimpPrimitive(aiPrimitiveType type) {
     switch (type) {
         case aiPrimitiveType_LINE:
-            return MeshTopology::LINES;
+            return MeshTopology::Lines;
         case aiPrimitiveType_POINT:
-            return MeshTopology::POINTS;
+            return MeshTopology::Points;
         case aiPrimitiveType_TRIANGLE:
-            return MeshTopology::TRIANGLES;
+            return MeshTopology::Triangles;
         case aiPrimitiveType_POLYGON:
-            return MeshTopology::QUADS;
+            return MeshTopology::Quads;
         default:
             SD_CORE_WARN("[ConvertAssimpPrimitive] Unknown mesh topology: {}!",
                          type);
-            return MeshTopology::TRIANGLES;
+            return MeshTopology::Triangles;
     };
 }
 
@@ -103,16 +103,16 @@ static Mesh ProcessAiMesh(const aiMesh *assimpMesh) {
 static inline TextureWrap ConvertAssimpMapMode(aiTextureMapMode mode) {
     switch (mode) {
         case aiTextureMapMode_Clamp:
-            return TextureWrap::EDGE;
+            return TextureWrap::Edge;
         case aiTextureMapMode_Decal:
-            return TextureWrap::BORDER;
+            return TextureWrap::Border;
         case aiTextureMapMode_Mirror:
-            return TextureWrap::MIRROR;
+            return TextureWrap::Mirror;
         case aiTextureMapMode_Wrap:
-            return TextureWrap::REPEAT;
+            return TextureWrap::Repeat;
         default:
             SD_CORE_WARN("[ConvertAssimpMapMode] invalid wrap mode: {}!", mode);
-            return TextureWrap::REPEAT;
+            return TextureWrap::Repeat;
     }
 }
 

@@ -10,7 +10,7 @@
 
 namespace SD {
 
-enum class UniformType { Unknown = 0, Bool, Int, Uint, Float, Double, Sampler };
+enum class UniformType { Unknown = 0, Bool, Int, UInt, Float, Double, Sampler };
 
 class SD_GRAPHICS_API ShaderParam {
    public:

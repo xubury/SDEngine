@@ -10,10 +10,10 @@ class GLTexture : public Texture {
    public:
     GLTexture(int width, int height, int depth, MultiSampleLevel samples,
               TextureType type, DataFormat format, TextureWrap wrap,
-              TextureMinFilter min_filter, TextureMagFilter mag_filter);
+              TextureMinFilter min_filter, MipmapMode mode,
+              TextureMagFilter mag_filter);
 
     ~GLTexture();
-
 
     uint32_t GetId() const override { return m_id; }
 
@@ -23,6 +23,7 @@ class GLTexture : public Texture {
     void SetWrap(TextureWrap wrap) override;
     void SetMagFilter(TextureMagFilter filter) override;
     void SetMinFilter(TextureMinFilter min_filter) override;
+    void SetMipmapMode(MipmapMode mode) override;
 
     void ReadPixels(int level, int x, int y, int z, int w, int h, int d,
                     size_t size, void *data) const override;

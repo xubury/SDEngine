@@ -5,15 +5,15 @@ namespace SD {
 
 GLenum GetFormatType(DataFormat format) {
     switch (format) {
-        case DataFormat::ALPHA8:
-        case DataFormat::ALPHA16F:
-        case DataFormat::ALPHA32F:
+        case DataFormat::Alpha8:
+        case DataFormat::Alpha16F:
+        case DataFormat::Alpha32F:
         case DataFormat::R8:
         case DataFormat::R16F:
         case DataFormat::R32F:
             return GL_RED;
-        case DataFormat::ALPHA32I:
-        case DataFormat::ALPHA32UI:
+        case DataFormat::Alpha32I:
+        case DataFormat::Alpha32UI:
         case DataFormat::R32I:
         case DataFormat::R32UI:
             return GL_RED_INTEGER;
@@ -38,11 +38,11 @@ GLenum GetFormatType(DataFormat format) {
         case DataFormat::RGBA32I:
         case DataFormat::RGBA32UI:
             return GL_RGBA_INTEGER;
-        case DataFormat::DEPTH24:
+        case DataFormat::Depth24:
             return GL_DEPTH;
-        case DataFormat::STENCIL8:
+        case DataFormat::Stencil8:
             return GL_STENCIL_INDEX;
-        case DataFormat::DEPTH24_STENCIL8:
+        case DataFormat::Depth24Stencil8:
             return GL_DEPTH_STENCIL;
     }
     return 0;
@@ -50,37 +50,37 @@ GLenum GetFormatType(DataFormat format) {
 
 GLenum GetDataType(DataFormat format) {
     switch (format) {
-        case DataFormat::ALPHA8:
+        case DataFormat::Alpha8:
         case DataFormat::R8:
         case DataFormat::RG8:
         case DataFormat::RGB8:
         case DataFormat::RGBA8:
-        case DataFormat::STENCIL8:
+        case DataFormat::Stencil8:
             return GL_UNSIGNED_BYTE;
-        case DataFormat::ALPHA32I:
+        case DataFormat::Alpha32I:
         case DataFormat::R32I:
         case DataFormat::RG32I:
         case DataFormat::RGB32I:
         case DataFormat::RGBA32I:
             return GL_INT;
-        case DataFormat::ALPHA32UI:
+        case DataFormat::Alpha32UI:
         case DataFormat::R32UI:
         case DataFormat::RG32UI:
         case DataFormat::RGB32UI:
         case DataFormat::RGBA32UI:
             return GL_UNSIGNED_INT;
-        case DataFormat::ALPHA16F:
+        case DataFormat::Alpha16F:
         case DataFormat::R16F:
         case DataFormat::RG16F:
         case DataFormat::RGB16F:
         case DataFormat::RGBA16F:
-        case DataFormat::ALPHA32F:
+        case DataFormat::Alpha32F:
         case DataFormat::R32F:
         case DataFormat::RG32F:
         case DataFormat::RGB32F:
         case DataFormat::RGBA32F:
-        case DataFormat::DEPTH24:
-        case DataFormat::DEPTH24_STENCIL8:
+        case DataFormat::Depth24:
+        case DataFormat::Depth24Stencil8:
             return GL_FLOAT;
     }
     return 0;
@@ -88,9 +88,10 @@ GLenum GetDataType(DataFormat format) {
 
 GLTexture::GLTexture(int width, int height, int depth, MultiSampleLevel samples,
                      TextureType type, DataFormat format, TextureWrap wrap,
-                     TextureMinFilter min_filter, TextureMagFilter mag_filter)
+                     TextureMinFilter min_filter, MipmapMode mode,
+                     TextureMagFilter mag_filter)
     : Texture(width, height, depth, samples, type, format, wrap, min_filter,
-              mag_filter),
+              mode, mag_filter),
       gl_format(0),
       gl_format_type(0) {
     gl_format = GetFormatType(m_format);
@@ -112,9 +113,9 @@ void GLTexture::Allocate() {
     GLenum gl_sized_format = Translate(m_format);
     glCreateTextures(gl_type, 1, &m_id);
 
-    if (m_format == DataFormat::ALPHA8 || m_format == DataFormat::ALPHA32I ||
-        m_format == DataFormat::ALPHA32UI || m_format == DataFormat::ALPHA16F ||
-        m_format == DataFormat::ALPHA32F) {
+    if (m_format == DataFormat::Alpha8 || m_format == DataFormat::Alpha32I ||
+        m_format == DataFormat::Alpha32UI || m_format == DataFormat::Alpha16F ||
+        m_format == DataFormat::Alpha32F) {
         const GLint swizzle_mask[] = {GL_ONE, GL_ONE, GL_ONE, GL_RED};
         glTextureParameteriv(m_id, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
     }
@@ -193,7 +194,13 @@ void GLTexture::SetMagFilter(TextureMagFilter filter) {
 
 void GLTexture::SetMinFilter(TextureMinFilter min_filter) {
     m_min_filter = min_filter;
-    GLint gl_min_filter = Translate(m_min_filter);
+    GLint gl_min_filter = Translate(m_min_filter, m_mipmap_mode);
+    glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, gl_min_filter);
+}
+
+void GLTexture::SetMipmapMode(MipmapMode mode) {
+    m_mipmap_mode = mode;
+    GLint gl_min_filter = Translate(m_min_filter, m_mipmap_mode);
     glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, gl_min_filter);
 }
 

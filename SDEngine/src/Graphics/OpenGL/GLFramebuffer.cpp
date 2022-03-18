@@ -19,13 +19,13 @@ void GLFramebuffer::SetupAttachments() {
     for (const auto &attachment : m_info.attachments) {
         GLenum gl_attachment = 0;
         switch (attachment.format) {
-            case DataFormat::DEPTH24:
+            case DataFormat::Depth24:
                 gl_attachment = GL_DEPTH_ATTACHMENT;
                 break;
-            case DataFormat::STENCIL8:
+            case DataFormat::Stencil8:
                 gl_attachment = GL_STENCIL_ATTACHMENT;
                 break;
-            case DataFormat::DEPTH24_STENCIL8:
+            case DataFormat::Depth24Stencil8:
                 gl_attachment = GL_DEPTH_STENCIL_ATTACHMENT;
                 break;
             default:

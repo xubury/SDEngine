@@ -22,7 +22,7 @@ void GraphicsLayer::OnInit() {
         info.attachments.push_back(AttachmentDescription{
             AttachmentType::TEXTURE_2D, DataFormat::R32UI, m_msaa});
         info.attachments.push_back(AttachmentDescription{
-            AttachmentType::RENDERBUFFER, DataFormat::DEPTH24, m_msaa});
+            AttachmentType::RENDERBUFFER, DataFormat::Depth24, m_msaa});
         m_main_framebuffer = Framebuffer::Create(info);
     }
 
@@ -141,7 +141,7 @@ void GraphicsLayer::BlitGeometryBuffers() {
     Renderer::BeginRenderPass({m_debug_gbuffer.get(), m_width, m_height});
     for (int i = 0; i < static_cast<int>(GeometryBufferType::EntityId); ++i) {
         Renderer::DrawFromBuffer(i, m_lighting_system->GetGBuffer(), i,
-                                 BufferBitMask::COLOR_BUFFER_BIT);
+                                 BufferBitMask::ColorBufferBit);
     }
     Renderer::EndRenderPass();
 }

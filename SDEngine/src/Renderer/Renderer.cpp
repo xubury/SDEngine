@@ -25,16 +25,16 @@ Ref<IndexBuffer> Renderer::m_box_ibo;
 static std::stack<RenderPassInfo> s_render_pass_stacks;
 
 void Renderer::SetRenderOperation(const RenderOperation& op) {
-    op.depth_test ? m_device->Enable(Operation::DEPTH_TEST)
-                  : m_device->Disable(Operation::DEPTH_TEST);
+    op.depth_test ? m_device->Enable(Operation::DepthTest)
+                  : m_device->Disable(Operation::DepthTest);
     m_device->SetDepthMask(op.depth_mask);
 
     m_device->SetDepthfunc(op.depth_func);
-    op.blend ? m_device->Enable(Operation::BLEND)
-             : m_device->Disable(Operation::BLEND);
+    op.blend ? m_device->Enable(Operation::Blend)
+             : m_device->Disable(Operation::Blend);
 
-    op.face_culling ? m_device->Enable(Operation::CULL_FACE)
-                    : m_device->Disable(Operation::CULL_FACE);
+    op.face_culling ? m_device->Enable(Operation::FaceCulling)
+                    : m_device->Disable(Operation::FaceCulling);
     m_device->SetCullFace(op.cull_face);
 }
 
@@ -44,7 +44,7 @@ void Renderer::BeginRenderPass(const RenderPassInfo& info) {
     m_device->SetViewport(0, 0, info.viewport_width, info.viewport_height);
     m_device->SetClearColor(info.clear_value[0], info.clear_value[1],
                             info.clear_value[2], info.clear_value[3]);
-    if (info.clear_mask != BufferBitMask::NONE) {
+    if (info.clear_mask != BufferBitMask::None) {
         m_device->Clear(info.clear_mask);
     }
     SetRenderOperation(info.op);
@@ -84,7 +84,7 @@ void Renderer::Init() {
     m_device = Device::Create();
     SD_CORE_TRACE("Initializing Renderer");
     m_camera_UBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
-                                         BufferIOType::DYNAMIC);
+                                         BufferIOType::Dynamic);
 
     // NDC quad
     {
@@ -96,12 +96,12 @@ void Renderer::Init() {
         };
         const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
         m_quad_vbo = VertexBuffer::Create(quad_vert, sizeof(quad_vert),
-                                          BufferIOType::STATIC);
-        m_quad_ibo = IndexBuffer::Create(indices, 6, BufferIOType::STATIC);
+                                          BufferIOType::Static);
+        m_quad_ibo = IndexBuffer::Create(indices, 6, BufferIOType::Static);
         m_quad_vao = VertexArray::Create();
         VertexBufferLayout layout;
-        layout.Push(BufferLayoutType::FLOAT3);
-        layout.Push(BufferLayoutType::FLOAT2);
+        layout.Push(BufferLayoutType::Float3);
+        layout.Push(BufferLayoutType::Float2);
         m_quad_vao->AddBufferLayout(layout);
         m_quad_vao->BindVertexBuffer(*m_quad_vbo, 0);
         m_quad_vao->BindIndexBuffer(*m_quad_ibo);
@@ -130,10 +130,10 @@ void Renderer::Init() {
         m_box_vao = VertexArray::Create();
 
         VertexBufferLayout layout;
-        layout.Push(BufferLayoutType::FLOAT3);
+        layout.Push(BufferLayoutType::Float3);
         m_box_vbo = VertexBuffer::Create(box_vert, sizeof(box_vert),
-                                         BufferIOType::STATIC);
-        m_box_ibo = IndexBuffer::Create(box_indices, 36, BufferIOType::STATIC);
+                                         BufferIOType::Static);
+        m_box_ibo = IndexBuffer::Create(box_indices, 36, BufferIOType::Static);
         m_box_vao->AddBufferLayout(layout);
         m_box_vao->BindVertexBuffer(*m_box_vbo, 0);
         m_box_vao->BindIndexBuffer(*m_box_ibo);
@@ -154,12 +154,12 @@ void Renderer::Submit(const VertexArray& vao, MeshTopology topology,
 
 void Renderer::DrawNDCQuad(const Shader& shader) {
     m_device->SetShader(&shader);
-    Submit(*m_quad_vao, MeshTopology::TRIANGLES, m_quad_ibo->GetCount(), 0);
+    Submit(*m_quad_vao, MeshTopology::Triangles, m_quad_ibo->GetCount(), 0);
 }
 
 void Renderer::DrawNDCBox(const Shader& shader) {
     m_device->SetShader(&shader);
-    Submit(*m_box_vao, MeshTopology::TRIANGLES, m_box_ibo->GetCount(), 0);
+    Submit(*m_box_vao, MeshTopology::Triangles, m_box_ibo->GetCount(), 0);
 }
 
 void Renderer::DrawToBuffer(int read_attachment, Framebuffer* draw_fb,
@@ -170,7 +170,7 @@ void Renderer::DrawToBuffer(int read_attachment, Framebuffer* draw_fb,
     m_device->BlitFramebuffer(framebuffer, 0, 0, framebuffer->GetWidth(),
                               framebuffer->GetHeight(), draw_fb, 0, 0,
                               framebuffer->GetWidth(), framebuffer->GetHeight(),
-                              mask, BlitFilter::NEAREST);
+                              mask, BlitFilter::Nearest);
 }
 
 void Renderer::DrawFromBuffer(int draw_attachment, Framebuffer* read_fb,
@@ -181,7 +181,7 @@ void Renderer::DrawFromBuffer(int draw_attachment, Framebuffer* read_fb,
     m_device->BlitFramebuffer(read_fb, 0, 0, framebuffer->GetWidth(),
                               framebuffer->GetHeight(), framebuffer, 0, 0,
                               framebuffer->GetWidth(), framebuffer->GetHeight(),
-                              mask, BlitFilter::NEAREST);
+                              mask, BlitFilter::Nearest);
 }
 
 }  // namespace SD

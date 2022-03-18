@@ -7,19 +7,19 @@ Ref<VertexArray> MeshRenderer::m_mesh_vao;
 
 void MeshRenderer::Init() {
     m_shadow_UBO = UniformBuffer::Create(nullptr, sizeof(ShadowData),
-                                         BufferIOType::DYNAMIC);
+                                         BufferIOType::Dynamic);
     m_mesh_vao = VertexArray::Create();
     VertexBufferLayout layout;
-    layout.Push(BufferLayoutType::FLOAT3);
-    layout.Push(BufferLayoutType::FLOAT2);
-    layout.Push(BufferLayoutType::FLOAT3);
-    layout.Push(BufferLayoutType::FLOAT3);
-    layout.Push(BufferLayoutType::FLOAT3);
+    layout.Push(BufferLayoutType::Float3);
+    layout.Push(BufferLayoutType::Float2);
+    layout.Push(BufferLayoutType::Float3);
+    layout.Push(BufferLayoutType::Float3);
+    layout.Push(BufferLayoutType::Float3);
     m_mesh_vao->AddBufferLayout(layout);
 }
 
 void MeshRenderer::DrawMesh(const Shader& shader, const Mesh& mesh) {
-    m_device->SetPolygonMode(mesh.GetPolygonMode(), Face::BOTH);
+    m_device->SetPolygonMode(mesh.GetPolygonMode(), Face::Both);
     m_device->SetShader(&shader);
     m_mesh_vao->BindVertexBuffer(*mesh.GetVertexBuffer(), 0);
     m_mesh_vao->BindIndexBuffer(*mesh.GetIndexBuffer());
@@ -53,7 +53,7 @@ void MeshRenderer::Begin(Light& light, const Transform& light_trans,
     // Framebuffer* fb = light.GetCascadeMap();
     // m_device->SetFramebuffer(fb);
     // m_device->SetViewport(0, 0, fb->GetWidth(), fb->GetHeight());
-    m_device->Clear(BufferBitMask::DEPTH_BUFFER_BIT);
+    m_device->Clear(BufferBitMask::DepthBufferBit);
 
     light.ComputeCascadeLightMatrix(light_trans, camera);
 

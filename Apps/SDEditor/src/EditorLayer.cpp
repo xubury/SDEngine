@@ -81,17 +81,17 @@ void EditorLayer::OnRender() {
     info.framebuffer = framebuffer;
     info.viewport_width = framebuffer->GetWidth();
     info.viewport_height = framebuffer->GetHeight();
-    info.clear_mask = BufferBitMask::NONE;
+    info.clear_mask = BufferBitMask::None;
     Renderer::BeginRenderPass(info);
     for (auto &system : GetSystems()) {
         system->OnRender();
     }
     // blit the render color result
     Renderer::DrawToBuffer(0, m_viewport_buffer.get(), 0,
-                           BufferBitMask::COLOR_BUFFER_BIT);
+                           BufferBitMask::ColorBufferBit);
     // blit the entity id result
     Renderer::DrawToBuffer(1, m_viewport_buffer.get(), 1,
-                           BufferBitMask::COLOR_BUFFER_BIT);
+                           BufferBitMask::ColorBufferBit);
     Renderer::EndRenderPass();
 }
 

@@ -123,8 +123,7 @@ void LightingSystem::InitSSAOKernel() {
     }
     m_ssao_noise =
         Texture::Create(4, 4, 1, MultiSampleLevel::X1, TextureType::TEX_2D,
-                        DataFormat::RGB16F, TextureWrap::REPEAT,
-                        TextureMinFilter::NEAREST, TextureMagFilter::NEAREST);
+                        DataFormat::RGB16F, TextureWrap::Repeat);
     m_ssao_noise->SetPixels(0, 0, 0, 4, 4, 1, ssao_noise.data());
 
     m_ssao_shader->GetParam("u_samples[0]")
@@ -150,7 +149,7 @@ void LightingSystem::InitLighting() {
             m_msaa});
     }
     info.attachments.push_back(AttachmentDescription{
-        AttachmentType::RENDERBUFFER, DataFormat::DEPTH24, m_msaa});
+        AttachmentType::RENDERBUFFER, DataFormat::Depth24, m_msaa});
     m_gbuffer = Framebuffer::Create(info);
 
     m_cascade_debug_fb = Framebuffer::Create(
@@ -202,7 +201,7 @@ void LightingSystem::OnRender() {
 
     Renderer::DrawFromBuffer(
         1, m_gbuffer.get(), static_cast<int>(GeometryBufferType::EntityId),
-        BufferBitMask::COLOR_BUFFER_BIT | BufferBitMask::DEPTH_BUFFER_BIT);
+        BufferBitMask::ColorBufferBit | BufferBitMask::DepthBufferBit);
 }
 
 void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
@@ -210,7 +209,7 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
 
     auto modelView = scene->view<TransformComponent, ModelComponent>();
     RenderOperation op;
-    op.cull_face = Face::FRONT;
+    op.cull_face = Face::Front;
     Framebuffer *depth_map = light.GetCascadeMap();
     Renderer::BeginRenderPass(RenderPassInfo{depth_map, depth_map->GetWidth(),
                                              depth_map->GetHeight(), op});
@@ -364,7 +363,7 @@ void LightingSystem::RenderDeferred() {
                             m_light_buffer[output_id]->GetWidth(),
                             m_light_buffer[output_id]->GetHeight(),
                             op,
-                            BufferBitMask::COLOR_BUFFER_BIT,
+                            BufferBitMask::ColorBufferBit,
                             {0, 0, 0, 0}};
 
         Renderer::BeginRenderPass(info);
@@ -406,7 +405,7 @@ void LightingSystem::RenderGBuffer() {
         m_gbuffer->GetWidth(),
         m_gbuffer->GetHeight(),
         op,
-        BufferBitMask::COLOR_BUFFER_BIT | BufferBitMask::DEPTH_BUFFER_BIT,
+        BufferBitMask::ColorBufferBit | BufferBitMask::DepthBufferBit,
         {0, 0, 0, 0}};
     Renderer::BeginRenderPass(info);
     MeshRenderer::Begin(*m_gbuffer_shader, *scene->GetCamera());

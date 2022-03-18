@@ -23,12 +23,12 @@ struct RenderOperation {
     bool depth_test{true};
     bool depth_mask{true};
 
-    DepthFunc depth_func{DepthFunc::LESS};
+    DepthFunc depth_func{DepthFunc::Less};
 
     bool blend{true};
 
     bool face_culling{true};
-    Face cull_face{Face::BACK};
+    Face cull_face{Face::Back};
 };
 
 struct RenderPassInfo {
@@ -37,8 +37,8 @@ struct RenderPassInfo {
     int32_t viewport_height;
 
     RenderOperation op{};
-    BufferBitMask clear_mask{BufferBitMask::COLOR_BUFFER_BIT |
-                             BufferBitMask::DEPTH_BUFFER_BIT};
+    BufferBitMask clear_mask{BufferBitMask::ColorBufferBit |
+                             BufferBitMask::DepthBufferBit};
     float clear_value[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 };
 

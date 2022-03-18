@@ -96,13 +96,13 @@ void SpriteRenderer::Init() {
     // Initializing line vbo
     m_data.line_vbo = VertexBuffer::Create(
         m_data.line_buffer.data(), m_data.line_buffer.size() * sizeof(Line),
-        BufferIOType::DYNAMIC);
+        BufferIOType::Dynamic);
 
     // Initializing line vao
     VertexBufferLayout layout;
-    layout.Push(BufferLayoutType::FLOAT3);
-    layout.Push(BufferLayoutType::FLOAT4);
-    layout.Push(BufferLayoutType::UINT);  // entity index
+    layout.Push(BufferLayoutType::Float3);
+    layout.Push(BufferLayoutType::Float4);
+    layout.Push(BufferLayoutType::UInt);  // entity index
     m_data.line_vao = VertexArray::Create();
     m_data.line_vao->AddBufferLayout(layout);
     m_data.line_vao->BindVertexBuffer(*m_data.line_vbo, 0);
@@ -122,20 +122,20 @@ void SpriteRenderer::Init() {
         offset += 4;
     }
     m_data.quad_ibo = IndexBuffer::Create(
-        quad_indices.data(), quad_indices.size(), BufferIOType::STATIC);
+        quad_indices.data(), quad_indices.size(), BufferIOType::Static);
 
     // Initialize quad vbo
     m_data.quad_vbo = VertexBuffer::Create(
         m_data.quad_buffer.data(), m_data.quad_buffer.size() * sizeof(Quad),
-        BufferIOType::DYNAMIC);
+        BufferIOType::Dynamic);
 
     // Initialize quad vao
     layout.Clear();
-    layout.Push(BufferLayoutType::FLOAT3);  // position
-    layout.Push(BufferLayoutType::FLOAT4);  // color
-    layout.Push(BufferLayoutType::FLOAT2);  // texCoord
-    layout.Push(BufferLayoutType::INT);     // texIndex
-    layout.Push(BufferLayoutType::UINT);    // entity index
+    layout.Push(BufferLayoutType::Float3);  // position
+    layout.Push(BufferLayoutType::Float4);  // color
+    layout.Push(BufferLayoutType::Float2);  // texCoord
+    layout.Push(BufferLayoutType::Int);     // texIndex
+    layout.Push(BufferLayoutType::UInt);    // entity index
     m_data.quad_vao = VertexArray::Create();
     m_data.quad_vao->AddBufferLayout(layout);
     m_data.quad_vao->BindVertexBuffer(*m_data.quad_vbo, 0);
@@ -144,25 +144,25 @@ void SpriteRenderer::Init() {
     // Initialize circle vbo
     m_data.circle_vbo = VertexBuffer::Create(
         m_data.circle_buffer.data(),
-        m_data.circle_buffer.size() * sizeof(Circle), BufferIOType::DYNAMIC);
+        m_data.circle_buffer.size() * sizeof(Circle), BufferIOType::Dynamic);
 
     // Initialize circle vao
     layout.Clear();
-    layout.Push(BufferLayoutType::FLOAT3);  // world_pos
-    layout.Push(BufferLayoutType::FLOAT3);  // local_pos
-    layout.Push(BufferLayoutType::FLOAT4);  // color
-    layout.Push(BufferLayoutType::FLOAT);   // thickness
-    layout.Push(BufferLayoutType::FLOAT);   // fade
-    layout.Push(BufferLayoutType::UINT);    // entity index
+    layout.Push(BufferLayoutType::Float3);  // world_pos
+    layout.Push(BufferLayoutType::Float3);  // local_pos
+    layout.Push(BufferLayoutType::Float4);  // color
+    layout.Push(BufferLayoutType::Float);   // thickness
+    layout.Push(BufferLayoutType::Float);   // fade
+    layout.Push(BufferLayoutType::UInt);    // entity index
     m_data.circle_vao = VertexArray::Create();
     m_data.circle_vao->AddBufferLayout(layout);
     m_data.circle_vao->BindVertexBuffer(*m_data.circle_vbo, 0);
     m_data.circle_vao->BindIndexBuffer(*m_data.quad_ibo);
 
-    m_data.default_texture =
-        Texture::Create(1, 1, 1, MultiSampleLevel::X1, TextureType::TEX_2D,
-                        DataFormat::RGBA32F, TextureWrap::REPEAT,
-                        TextureMinFilter::LINEAR, TextureMagFilter::LINEAR);
+    m_data.default_texture = Texture::Create(
+        1, 1, 1, MultiSampleLevel::X1, TextureType::TEX_2D, DataFormat::RGBA32F,
+        TextureWrap::Repeat, TextureMinFilter::Linear, MipmapMode::None,
+        TextureMagFilter::Linear);
     const float color[4] = {1, 1, 1, 1};
     m_data.default_texture->SetPixels(0, 0, 0, 1, 1, 1, color);
 
@@ -248,7 +248,7 @@ void SpriteRenderer::FlushLines() {
         m_data.line_vbo->UpdateData(m_data.line_buffer.data(),
                                     sizeof(Line) * offset);
         m_device->SetShader(m_line_shader.get());
-        Submit(*m_data.line_vao, MeshTopology::LINES, m_data.line_vertex_cnt, 0,
+        Submit(*m_data.line_vao, MeshTopology::Lines, m_data.line_vertex_cnt, 0,
                false);
     }
 }
@@ -265,7 +265,7 @@ void SpriteRenderer::FlushQuads() {
             ->SetAsTextures(m_data.texture_slots.data(), m_data.texture_index);
 
         m_device->SetShader(m_sprite_shader.get());
-        Submit(*m_data.quad_vao, MeshTopology::TRIANGLES, m_data.quad_index_cnt,
+        Submit(*m_data.quad_vao, MeshTopology::Triangles, m_data.quad_index_cnt,
                0);
     }
 }
@@ -278,7 +278,7 @@ void SpriteRenderer::FlushCircles() {
                                       offset * sizeof(Circle));
 
         m_device->SetShader(m_circle_shader.get());
-        Submit(*m_data.circle_vao, MeshTopology::TRIANGLES,
+        Submit(*m_data.circle_vao, MeshTopology::Triangles,
                m_data.circle_index_cnt, 0);
     }
 }

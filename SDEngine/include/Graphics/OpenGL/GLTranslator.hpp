@@ -23,7 +23,7 @@ GLint SD_GRAPHICS_API Translate(TextureWrap wrap);
 
 GLint SD_GRAPHICS_API Translate(TextureMagFilter filter);
 
-GLint SD_GRAPHICS_API Translate(TextureMinFilter min_filter);
+GLint SD_GRAPHICS_API Translate(TextureMinFilter filter, MipmapMode mode);
 
 GLenum SD_GRAPHICS_API Translate(Operation operation);
 

@@ -44,13 +44,13 @@ GLDevice::GLDevice() {
                           GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 #endif
     // Depth Test
-    Enable(Operation::DEPTH_TEST);
+    Enable(Operation::DepthTest);
 
     // Blend
-    Enable(Operation::BLEND);
+    Enable(Operation::Blend);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Enable(Operation::CULL_FACE);
+    Enable(Operation::FaceCulling);
 }
 
 void GLDevice::DrawElements(MeshTopology topology, int count, size_t offset) {
@@ -76,9 +76,9 @@ void GLDevice::SetClearColor(float r, float g, float b, float a) {
 
 void GLDevice::Clear(BufferBitMask bit) {
     // glUseProgram(0);
-    glClear(Translate(bit & BufferBitMask::COLOR_BUFFER_BIT) |
-            Translate(bit & BufferBitMask::DEPTH_BUFFER_BIT) |
-            Translate(bit & BufferBitMask::STENCIL_BUFFER_BIT));
+    glClear(Translate(bit & BufferBitMask::ColorBufferBit) |
+            Translate(bit & BufferBitMask::DepthBufferBit) |
+            Translate(bit & BufferBitMask::StencilBufferBit));
 }
 
 void GLDevice::SetVertexArray(const VertexArray *vertexArray) {
@@ -165,9 +165,9 @@ void GLDevice::BlitFramebuffer(const Framebuffer *src, int src_x, int src_y,
                                BlitFilter filter) {
     uint32_t src_id = src ? src->GetId() : 0;
     uint32_t dst_id = dst ? dst->GetId() : 0;
-    GLint gl_mask = Translate(mask & BufferBitMask::COLOR_BUFFER_BIT) |
-                    Translate(mask & BufferBitMask::DEPTH_BUFFER_BIT) |
-                    Translate(mask & BufferBitMask::STENCIL_BUFFER_BIT);
+    GLint gl_mask = Translate(mask & BufferBitMask::ColorBufferBit) |
+                    Translate(mask & BufferBitMask::DepthBufferBit) |
+                    Translate(mask & BufferBitMask::StencilBufferBit);
     GLenum gl_filter = Translate(filter);
     glBlitNamedFramebuffer(src_id, dst_id, src_x, src_y, src_x + src_width,
                            src_y + src_height, dst_x, dst_y, dst_x + dst_width,

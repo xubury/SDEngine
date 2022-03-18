@@ -4,19 +4,19 @@ namespace SD {
 
 static uint32_t GetBufferDataSize(BufferLayoutType type) {
     switch (type) {
-        case BufferLayoutType::UBYTE:
+        case BufferLayoutType::UByte:
             return 1;
-        case BufferLayoutType::UINT:
-        case BufferLayoutType::INT:
-        case BufferLayoutType::FLOAT:
+        case BufferLayoutType::UInt:
+        case BufferLayoutType::Int:
+        case BufferLayoutType::Float:
             return 4;
-        case BufferLayoutType::FLOAT2:
+        case BufferLayoutType::Float2:
             return 2 * 4;
-        case BufferLayoutType::FLOAT3:
+        case BufferLayoutType::Float3:
             return 3 * 4;
-        case BufferLayoutType::FLOAT4:
+        case BufferLayoutType::Float4:
             return 4 * 4;
-        case BufferLayoutType::MAT4:
+        case BufferLayoutType::Mat4:
             return 4 * 4 * 4;
     }
     return 0;
@@ -24,18 +24,18 @@ static uint32_t GetBufferDataSize(BufferLayoutType type) {
 
 static uint32_t GetComponentCount(BufferLayoutType type) {
     switch (type) {
-        case BufferLayoutType::UBYTE:
-        case BufferLayoutType::UINT:
-        case BufferLayoutType::INT:
-        case BufferLayoutType::FLOAT:
+        case BufferLayoutType::UByte:
+        case BufferLayoutType::UInt:
+        case BufferLayoutType::Int:
+        case BufferLayoutType::Float:
             return 1;
-        case BufferLayoutType::FLOAT2:
+        case BufferLayoutType::Float2:
             return 2;
-        case BufferLayoutType::FLOAT3:
+        case BufferLayoutType::Float3:
             return 3;
-        case BufferLayoutType::FLOAT4:
+        case BufferLayoutType::Float4:
             return 4;
-        case BufferLayoutType::MAT4:
+        case BufferLayoutType::Mat4:
             return 4;
     }
     return 0;

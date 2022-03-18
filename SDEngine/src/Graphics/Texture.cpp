@@ -8,14 +8,14 @@ namespace SD {
 Ref<Texture> Texture::Create(int width, int height, int depth,
                              MultiSampleLevel samples, TextureType type,
                              DataFormat format, TextureWrap wrap,
-                             TextureMinFilter min_filter,
+                             TextureMinFilter min_filter, MipmapMode mode,
                              TextureMagFilter mag_filter) {
     Ref<Texture> texture;
     switch (Device::GetAPI()) {
         case Device::API::OpenGL:
-            texture =
-                CreateRef<GLTexture>(width, height, depth, samples, type,
-                                     format, wrap, min_filter, mag_filter);
+            texture = CreateRef<GLTexture>(width, height, depth, samples, type,
+                                           format, wrap, min_filter, mode,
+                                           mag_filter);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
@@ -26,7 +26,8 @@ Ref<Texture> Texture::Create(int width, int height, int depth,
 
 Texture::Texture(int width, int height, int depth, MultiSampleLevel samples,
                  TextureType type, DataFormat format, TextureWrap wrap,
-                 TextureMinFilter min_filter, TextureMagFilter mag_filter)
+                 TextureMinFilter min_filter, MipmapMode mode,
+                 TextureMagFilter mag_filter)
     : m_width(width),
       m_height(height),
       m_depth(depth),
@@ -34,6 +35,7 @@ Texture::Texture(int width, int height, int depth, MultiSampleLevel samples,
       m_type(type),
       m_format(format),
       m_wrap(wrap),
+      m_mipmap_mode(mode),
       m_min_filter(min_filter),
       m_mag_filter(mag_filter) {
     m_mipmap_levels = std::max(

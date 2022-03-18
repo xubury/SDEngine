@@ -6,14 +6,14 @@ Mesh::Mesh(const std::vector<Vertex> &vertices,
            const std::vector<uint32_t> &indices)
     : m_vertices(vertices),
       m_indices(indices),
-      m_topology(MeshTopology::TRIANGLES),
-      m_polygonMode(PolygonMode::FILL) {
+      m_topology(MeshTopology::Triangles),
+      m_polygonMode(PolygonMode::Fill) {
     m_vertexBuffer = VertexBuffer::Create(m_vertices.data(),
                                           m_vertices.size() * sizeof(Vertex),
-                                          BufferIOType::DYNAMIC);
+                                          BufferIOType::Dynamic);
 
     m_indexBuffer = IndexBuffer::Create(m_indices.data(), m_indices.size(),
-                                        BufferIOType::DYNAMIC);
+                                        BufferIOType::Dynamic);
 }
 
 void Mesh::SetVerices(const std::vector<Vertex> &vertices) {

@@ -12,9 +12,10 @@ class SD_GRAPHICS_API Texture : public Resource {
     static Ref<Texture> Create(
         int width, int height, int depth, MultiSampleLevel samples,
         TextureType type, DataFormat format,
-        TextureWrap wrap = TextureWrap::EDGE,
-        TextureMinFilter min_filter = TextureMinFilter::NEAREST,
-        TextureMagFilter mag_filter = TextureMagFilter::NEAREST);
+        TextureWrap wrap = TextureWrap::Edge,
+        TextureMinFilter min_filter = TextureMinFilter::Nearest,
+        MipmapMode mode = MipmapMode::None,
+        TextureMagFilter mag_filter = TextureMagFilter::Nearest);
 
     virtual ~Texture() = default;
 
@@ -26,6 +27,7 @@ class SD_GRAPHICS_API Texture : public Resource {
     virtual void SetWrap(TextureWrap wrap) = 0;
     virtual void SetMagFilter(TextureMagFilter filter) = 0;
     virtual void SetMinFilter(TextureMinFilter filter) = 0;
+    virtual void SetMipmapMode(MipmapMode mode) = 0;
 
     virtual void ReadPixels(int level, int x, int y, int z, int w, int h, int d,
                             size_t size, void *data) const = 0;
@@ -46,7 +48,8 @@ class SD_GRAPHICS_API Texture : public Resource {
    protected:
     Texture(int width, int height, int depth, MultiSampleLevel samples,
             TextureType type, DataFormat format, TextureWrap wrap,
-            TextureMinFilter min_filter, TextureMagFilter mag_filter);
+            TextureMinFilter min_filter, MipmapMode mode,
+            TextureMagFilter mag_filter);
 
     int m_width;
     int m_height;
@@ -57,6 +60,7 @@ class SD_GRAPHICS_API Texture : public Resource {
     TextureType m_type;
     DataFormat m_format;
     TextureWrap m_wrap;
+    MipmapMode m_mipmap_mode;
     TextureMinFilter m_min_filter;
     TextureMagFilter m_mag_filter;
 

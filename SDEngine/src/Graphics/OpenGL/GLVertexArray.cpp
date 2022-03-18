@@ -24,10 +24,10 @@ void GLVertexArray::AddBufferLayout(const VertexBufferLayout &layout) {
                                 layout.GetInstanceStride());
     for (const auto &element : layout.GetElements()) {
         switch (element.type) {
-            case BufferLayoutType::FLOAT:
-            case BufferLayoutType::FLOAT2:
-            case BufferLayoutType::FLOAT3:
-            case BufferLayoutType::FLOAT4: {
+            case BufferLayoutType::Float:
+            case BufferLayoutType::Float2:
+            case BufferLayoutType::Float3:
+            case BufferLayoutType::Float4: {
                 glEnableVertexArrayAttrib(m_id, m_attrib_id);
                 glVertexArrayAttribBinding(m_id, m_attrib_id, binding_index);
                 glVertexArrayAttribFormat(m_id, m_attrib_id, element.count,
@@ -35,7 +35,7 @@ void GLVertexArray::AddBufferLayout(const VertexBufferLayout &layout) {
                                           element.normalized, element.offset);
                 ++m_attrib_id;
             } break;
-            case BufferLayoutType::MAT4: {
+            case BufferLayoutType::Mat4: {
                 for (int i = 0; i < 4; ++i) {
                     glEnableVertexArrayAttrib(m_id, m_attrib_id);
                     glVertexArrayAttribBinding(m_id, m_attrib_id,
@@ -47,9 +47,9 @@ void GLVertexArray::AddBufferLayout(const VertexBufferLayout &layout) {
                     ++m_attrib_id;
                 }
             } break;
-            case BufferLayoutType::UBYTE:
-            case BufferLayoutType::UINT:
-            case BufferLayoutType::INT: {
+            case BufferLayoutType::UByte:
+            case BufferLayoutType::UInt:
+            case BufferLayoutType::Int: {
                 glEnableVertexArrayAttrib(m_id, m_attrib_id);
                 glVertexArrayAttribBinding(m_id, m_attrib_id, binding_index);
                 glVertexArrayAttribIFormat(m_id, m_attrib_id, element.count,
