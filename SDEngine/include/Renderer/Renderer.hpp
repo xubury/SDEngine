@@ -37,7 +37,8 @@ struct RenderPassInfo {
     int32_t viewport_height;
 
     RenderOperation op{};
-    BufferBitMask clear_mask{BufferBitMask::COLOR_BUFFER_BIT | BufferBitMask::DEPTH_BUFFER_BIT};
+    BufferBitMask clear_mask{BufferBitMask::COLOR_BUFFER_BIT |
+                             BufferBitMask::DEPTH_BUFFER_BIT};
     float clear_value[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 };
 
@@ -67,8 +68,8 @@ class SD_RENDERER_API Renderer {
     static void DrawNDCQuad(const Shader &shader);
     static void DrawNDCBox(const Shader &shader);
 
-    static void DrawToBuffer(int draw_attachment, Framebuffer *draw_fb,
-                             int read_attachment, BufferBitMask mask);
+    static void DrawToBuffer(int read_attachment, Framebuffer *draw_fb,
+                             int draw_attachment, BufferBitMask mask);
     static void DrawFromBuffer(int draw_attachment, Framebuffer *read_fb,
                                int read_attachment, BufferBitMask mask);
     // static void Write(int32_t x, int32_t y, int32_t width, int32_t height,
