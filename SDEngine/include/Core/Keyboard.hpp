@@ -10,24 +10,24 @@ namespace SD {
 namespace Keymod {
 
 enum {
-    NONE = 0x0000,
-    LSHIFT = 0x0001,
-    RSHIFT = 0x0002,
-    LCTRL = 0x0040,
-    RCTRL = 0x0080,
-    LALT = 0x0100,
-    RALT = 0x0200,
-    LGUI = 0x0400,
-    RGUI = 0x0800,
-    NUM = 0x1000,
-    CAPS = 0x2000,
-    MODE = 0x4000,
-    RESERVED = 0x8000,
+    None = 0x0000,
+    LShift = 0x0001,
+    RShift = 0x0002,
+    LCtrl = 0x0040,
+    RCtrl = 0x0080,
+    LAlt = 0x0100,
+    RAlt = 0x0200,
+    LGui = 0x0400,
+    RGui = 0x0800,
+    Num = 0x1000,
+    Caps = 0x2000,
+    Mode = 0x4000,
+    Reserved = 0x8000,
 
-    CTRL = LCTRL | RCTRL,
-    SHIFT = LSHIFT | RSHIFT,
-    ALT = LALT | RALT,
-    GUI = LGUI | RGUI
+    Ctrl = LCtrl | RCtrl,
+    Shift = LShift | RShift,
+    Alt = LAlt | RAlt,
+    Gui = LGui | RGui
 };
 
 }
@@ -84,17 +84,17 @@ enum class Scancode : uint16_t {
     D9 = 38,
     D0 = 39,
 
-    RETURN = 40,
-    ESCAPE = 41,
-    BACKSPACE = 42,
-    TAB = 43,
-    SPACE = 44,
+    Return = 40,
+    Escape = 41,
+    Backspace = 42,
+    Tab = 43,
+    Space = 44,
 
-    MINUS = 45,
-    EQUALS = 46,
-    LEFTBRACKET = 47,
-    RIGHTBRACKET = 48,
-    BACKSLASH = 49, /**< Located at the lower left of the return
+    Minus = 45,
+    Equals = 46,
+    LeftBracket = 47,
+    RightBracket = 48,
+    BackSlash = 49, /**< Located at the lower left of the return
                      *   key on ISO keyboards and at the right end
                      *   of the QWERTY row on ANSI keyboards.
                      *   Produces REVERSE SOLIDUS (backslash) and
@@ -108,7 +108,7 @@ enum class Scancode : uint16_t {
                      *   layout, and ASTERISK and MICRO SIGN in a
                      *   French Windows layout.
                      */
-    NONUSHASH = 50, /**< ISO USB keyboards actually use this code
+    NonUSHash = 50, /**< ISO USB keyboards actually use this code
                      *   instead of 49 for the same key, but all
                      *   OSes I've seen treat the two codes
                      *   identically. So, as an implementor, unless
@@ -120,9 +120,9 @@ enum class Scancode : uint16_t {
                      *   will never generate it with most (all?)
                      *   keyboards.
                      */
-    SEMICOLON = 51,
-    APOSTROPHE = 52,
-    GRAVE = 53, /**< Located in the top left corner (on both ANSI
+    Semicolon = 51,
+    Apostrophe = 52,
+    Grave = 53, /**< Located in the top left corner (on both ANSI
                  *   and ISO keyboards). Produces GRAVE ACCENT and
                  *   TILDE in a US Windows layout and in US and UK
                  *   Mac layouts on ANSI keyboards, GRAVE ACCENT
@@ -139,11 +139,11 @@ enum class Scancode : uint16_t {
                  *   SIGN in a Swiss German, German, or French Mac
                  *   layout on ANSI keyboards.
                  */
-    COMMA = 54,
-    PERIOD = 55,
-    SLASH = 56,
+    Comma = 54,
+    Period = 55,
+    Slash = 56,
 
-    CAPSLOCK = 57,
+    Capslock = 57,
 
     F1 = 58,
     F2 = 59,
@@ -158,40 +158,40 @@ enum class Scancode : uint16_t {
     F11 = 68,
     F12 = 69,
 
-    PRINTSCREEN = 70,
-    SCROLLLOCK = 71,
-    PAUSE = 72,
-    INSERT = 73, /**< insert on PC, help on some Mac keyboards (but
+    Printscreen = 70,
+    Scrolllock = 71,
+    Pause = 72,
+    Insert = 73, /**< insert on PC, help on some Mac keyboards (but
                                    does send code 73, not 117) */
-    HOME = 74,
-    PAGEUP = 75,
-    DELETE = 76,
-    END = 77,
-    PAGEDOWN = 78,
-    RIGHT = 79,
-    LEFT = 80,
-    DOWN = 81,
-    UP = 82,
+    Home = 74,
+    PageUp = 75,
+    Delete = 76,
+    End = 77,
+    PageDown = 78,
+    Right = 79,
+    Left = 80,
+    Down = 81,
+    Up = 82,
 
-    NUMLOCKCLEAR = 83, /**< num lock on PC, clear on Mac keyboards */
-    KP_DIVIDE = 84,
-    KP_MULTIPLY = 85,
-    KP_MINUS = 86,
-    KP_PLUS = 87,
-    KP_ENTER = 88,
-    KP_1 = 89,
-    KP_2 = 90,
-    KP_3 = 91,
-    KP_4 = 92,
-    KP_5 = 93,
-    KP_6 = 94,
-    KP_7 = 95,
-    KP_8 = 96,
-    KP_9 = 97,
-    KP_0 = 98,
-    KP_PERIOD = 99,
+    NumLockClear = 83, /**< num lock on PC, clear on Mac keyboards */
+    KPDivide = 84,
+    KPMultiply = 85,
+    KPMinus = 86,
+    KPPlus = 87,
+    KPEnter = 88,
+    KP1 = 89,
+    KP2 = 90,
+    KP3 = 91,
+    KP4 = 92,
+    KP5 = 93,
+    KP6 = 94,
+    KP7 = 95,
+    KP8 = 96,
+    KP9 = 97,
+    KP0 = 98,
+    KPPeriod = 99,
 
-    NONUSBACKSLASH = 100, /**< This is the additional key that ISO
+    NonUSBackslash = 100, /**< This is the additional key that ISO
                            *   keyboards have over ANSI ones,
                            *   located between left shift and Y.
                            *   Produces GRAVE ACCENT and TILDE in a
@@ -201,11 +201,11 @@ enum class Scancode : uint16_t {
                            *   LESS-THAN SIGN and GREATER-THAN SIGN
                            *   in a Swiss German, German, or French
                            *   layout. */
-    APPLICATION = 101,    /**< windows contextual menu, compose */
-    POWER = 102,          /**< The USB document says this is a status flag,
+    Application = 101,    /**< windows contextual menu, compose */
+    Power = 102,          /**< The USB document says this is a status flag,
                            *   not a physical key - but some Mac keyboards
                            *   do have a power key. */
-    KP_EQUALS = 103,
+    KPEquals = 103,
     F13 = 104,
     F14 = 105,
     F15 = 106,
@@ -218,117 +218,117 @@ enum class Scancode : uint16_t {
     F22 = 113,
     F23 = 114,
     F24 = 115,
-    EXECUTE = 116,
-    HELP = 117,
-    MENU = 118,
-    SELECT = 119,
-    STOP = 120,
-    AGAIN = 121, /**< redo */
-    UNDO = 122,
-    CUT = 123,
-    COPY = 124,
-    PASTE = 125,
-    FIND = 126,
-    MUTE = 127,
-    VOLUMEUP = 128,
-    VOLUMEDOWN = 129,
+    Execute = 116,
+    Help = 117,
+    Menu = 118,
+    Select = 119,
+    Stop = 120,
+    Again = 121, /**< redo */
+    Undo = 122,
+    Cut = 123,
+    Copy = 124,
+    Paste = 125,
+    Find = 126,
+    Mute = 127,
+    VolumeUp = 128,
+    VolumeDown = 129,
     /* not sure whether there's a reason to enable these */
     /*     LOCKINGCAPSLOCK = 130,  */
     /*     LOCKINGNUMLOCK = 131, */
     /*     LOCKINGSCROLLLOCK = 132, */
-    KP_COMMA = 133,
-    KP_EQUALSAS400 = 134,
+    KPComma = 133,
+    KPEqualSAS400 = 134,
 
-    INTERNATIONAL1 = 135, /**< used on Asian keyboards, see
+    InternationaL1 = 135, /**< used on Asian keyboards, see
                                             footnotes in USB doc */
-    INTERNATIONAL2 = 136,
-    INTERNATIONAL3 = 137, /**< Yen */
-    INTERNATIONAL4 = 138,
-    INTERNATIONAL5 = 139,
-    INTERNATIONAL6 = 140,
-    INTERNATIONAL7 = 141,
-    INTERNATIONAL8 = 142,
-    INTERNATIONAL9 = 143,
-    LANG1 = 144, /**< Hangul/English toggle */
-    LANG2 = 145, /**< Hanja conversion */
-    LANG3 = 146, /**< Katakana */
-    LANG4 = 147, /**< Hiragana */
-    LANG5 = 148, /**< Zenkaku/Hankaku */
-    LANG6 = 149, /**< reserved */
-    LANG7 = 150, /**< reserved */
-    LANG8 = 151, /**< reserved */
-    LANG9 = 152, /**< reserved */
+    InternationaL2 = 136,
+    InternationaL3 = 137, /**< Yen */
+    InternationaL4 = 138,
+    InternationaL5 = 139,
+    InternationaL6 = 140,
+    InternationaL7 = 141,
+    InternationaL8 = 142,
+    InternationaL9 = 143,
+    Lang1 = 144, /**< Hangul/English toggle */
+    Lang2 = 145, /**< Hanja conversion */
+    Lang3 = 146, /**< Katakana */
+    Lang4 = 147, /**< Hiragana */
+    Lang5 = 148, /**< Zenkaku/Hankaku */
+    Lang6 = 149, /**< reserved */
+    Lang7 = 150, /**< reserved */
+    Lang8 = 151, /**< reserved */
+    Lang9 = 152, /**< reserved */
 
-    ALTERASE = 153, /**< Erase-Eaze */
-    SYSREQ = 154,
-    CANCEL = 155,
-    CLEAR = 156,
-    PRIOR = 157,
-    RETURN2 = 158,
-    SEPARATOR = 159,
-    OUT = 160,
-    OPER = 161,
-    CLEARAGAIN = 162,
-    CRSEL = 163,
-    EXSEL = 164,
+    AltErase = 153, /**< Erase-Eaze */
+    SysReq = 154,
+    Cancel = 155,
+    Clear = 156,
+    Prior = 157,
+    Return2 = 158,
+    Separator = 159,
+    Out = 160,
+    Oper = 161,
+    ClearAgain = 162,
+    CrSel = 163,
+    ExSel = 164,
 
-    KP_00 = 176,
-    KP_000 = 177,
-    THOUSANDSSEPARATOR = 178,
-    DECIMALSEPARATOR = 179,
-    CURRENCYUNIT = 180,
-    CURRENCYSUBUNIT = 181,
-    KP_LEFTPAREN = 182,
-    KP_RIGHTPAREN = 183,
-    KP_LEFTBRACE = 184,
-    KP_RIGHTBRACE = 185,
-    KP_TAB = 186,
-    KP_BACKSPACE = 187,
-    KP_A = 188,
-    KP_B = 189,
-    KP_C = 190,
-    KP_D = 191,
-    KP_E = 192,
-    KP_F = 193,
-    KP_XOR = 194,
-    KP_POWER = 195,
-    KP_PERCENT = 196,
-    KP_LESS = 197,
-    KP_GREATER = 198,
-    KP_AMPERSAND = 199,
-    KP_DBLAMPERSAND = 200,
-    KP_VERTICALBAR = 201,
-    KP_DBLVERTICALBAR = 202,
-    KP_COLON = 203,
-    KP_HASH = 204,
-    KP_SPACE = 205,
-    KP_AT = 206,
-    KP_EXCLAM = 207,
-    KP_MEMSTORE = 208,
-    KP_MEMRECALL = 209,
-    KP_MEMCLEAR = 210,
-    KP_MEMADD = 211,
-    KP_MEMSUBTRACT = 212,
-    KP_MEMMULTIPLY = 213,
-    KP_MEMDIVIDE = 214,
-    KP_PLUSMINUS = 215,
-    KP_CLEAR = 216,
-    KP_CLEARENTRY = 217,
-    KP_BINARY = 218,
-    KP_OCTAL = 219,
-    KP_DECIMAL = 220,
-    KP_HEXADECIMAL = 221,
+    KP00 = 176,
+    KP000 = 177,
+    ThousandsSeparator = 178,
+    DecimalSeparator = 179,
+    CurrencyUnit = 180,
+    CurrencySubunit = 181,
+    KPLeftParen = 182,
+    KPRightParen = 183,
+    KPLeftBrace = 184,
+    KPRightBrace = 185,
+    KPTab = 186,
+    KPBackspace = 187,
+    KPA = 188,
+    KPB = 189,
+    KPC = 190,
+    KPD = 191,
+    KPE = 192,
+    KPF = 193,
+    KPXor = 194,
+    KPPower = 195,
+    KPPercent = 196,
+    KPLess = 197,
+    KPGreater = 198,
+    KPAmpersand = 199,
+    KPDblampersand = 200,
+    KPVerticalbar = 201,
+    KPDBLVerticalbar = 202,
+    KPColon = 203,
+    KPHash = 204,
+    KPSpace = 205,
+    KPAt = 206,
+    KPExclam = 207,
+    KPMemStore = 208,
+    KPMemRecall = 209,
+    KPMemClear = 210,
+    KPMemAdd = 211,
+    KPMemSubtract = 212,
+    KPMemMultiply = 213,
+    KPMemDivide = 214,
+    KPPlusMinus = 215,
+    KPClear = 216,
+    KPClearEntry = 217,
+    KPBinary = 218,
+    KPOctal = 219,
+    KPDecimal = 220,
+    KPHexadecimal = 221,
 
-    LCTRL = 224,
-    LSHIFT = 225,
-    LALT = 226, /**< alt, option */
-    LGUI = 227, /**< windows, command (apple), meta */
-    RCTRL = 228,
-    RSHIFT = 229,
-    RALT = 230, /**< alt gr, option */
+    LCtrl = 224,
+    LShift = 225,
+    LAlt = 226, /**< alt, option */
+    LGui = 227, /**< windows, command (apple), meta */
+    RCtrl = 228,
+    RShift = 229,
+    RAlt = 230, /**< alt gr, option */
     RGUI = 231, /**< windows, command (apple), meta */
 
-    MODE = 257, /**< I'm not sure if this is really not covered
+    Mode = 257, /**< I'm not sure if this is really not covered
                  *   by any of the above, but since there's a
                  *   special KMOD_MODE for it I'm adding it here
                  */
@@ -342,23 +342,23 @@ enum class Scancode : uint16_t {
      */
     /* @{ */
 
-    AUDIONEXT = 258,
-    AUDIOPREV = 259,
-    AUDIOSTOP = 260,
-    AUDIOPLAY = 261,
-    AUDIOMUTE = 262,
-    MEDIASELECT = 263,
+    AudioNext = 258,
+    AudioPrev = 259,
+    AudioStop = 260,
+    AudioPlay = 261,
+    AudioMute = 262,
+    MediaSelect = 263,
     WWW = 264,
-    MAIL = 265,
-    CALCULATOR = 266,
-    COMPUTER = 267,
-    AC_SEARCH = 268,
-    AC_HOME = 269,
-    AC_BACK = 270,
-    AC_FORWARD = 271,
-    AC_STOP = 272,
-    AC_REFRESH = 273,
-    AC_BOOKMARKS = 274,
+    Mail = 265,
+    Calculator = 266,
+    Computer = 267,
+    ACSearch = 268,
+    ACHome = 269,
+    ACBack = 270,
+    ACForward = 271,
+    ACStop = 272,
+    ACRefresh = 273,
+    ACBookmarks = 274,
 
     /* @} */ /* Usage page 0x0C */
 
@@ -369,15 +369,15 @@ enum class Scancode : uint16_t {
      */
     /* @{ */
 
-    BRIGHTNESSDOWN = 275,
-    BRIGHTNESSUP = 276,
-    DISPLAYSWITCH = 277, /**< display mirroring/dual display
+    BrightnessDown = 275,
+    BrightnessUp = 276,
+    DisplaySwitch = 277, /**< display mirroring/dual display
                                            switch, video mode switch */
-    KBDILLUMTOGGLE = 278,
-    KBDILLUMDOWN = 279,
-    KBDILLUMUP = 280,
-    EJECT = 281,
-    SLEEP = 282,
+    KbdillumToggle = 278,
+    KbdillumDown = 279,
+    KbdillumUP = 280,
+    Eject = 281,
+    Sleep = 282,
 
     APP1 = 283,
     APP2 = 284,
@@ -391,14 +391,14 @@ enum class Scancode : uint16_t {
      */
     /* @{ */
 
-    AUDIOREWIND = 285,
-    AUDIOFASTFORWARD = 286,
+    AudioRewind = 285,
+    AudioFastforward = 286,
 
     /* @} */ /* Usage page 0x0C (additional media keys) */
 
     /* Add any other keys here. */
 
-    NUM_SCANCODES = 512 /**< not a key, just marks the number of scancodes
+    NumOfScancodes = 512 /**< not a key, just marks the number of scancodes
                                  for array bounds */
 };
 
@@ -480,7 +480,7 @@ enum class Keycode : uint32_t {
     X = 'x',
     Y = 'y',
     Z = 'z',
-    CAPSLOCK = SCANCODE_TO_KEYCODE(Scancode::CAPSLOCK),
+    CAPSLOCK = SCANCODE_TO_KEYCODE(Scancode::Capslock),
 
     F1 = SCANCODE_TO_KEYCODE(Scancode::F1),
     F2 = SCANCODE_TO_KEYCODE(Scancode::F2),
@@ -495,41 +495,41 @@ enum class Keycode : uint32_t {
     F11 = SCANCODE_TO_KEYCODE(Scancode::F11),
     F12 = SCANCODE_TO_KEYCODE(Scancode::F12),
 
-    PRINTSCREEN = SCANCODE_TO_KEYCODE(Scancode::PRINTSCREEN),
-    SCROLLLOCK = SCANCODE_TO_KEYCODE(Scancode::SCROLLLOCK),
-    PAUSE = SCANCODE_TO_KEYCODE(Scancode::PAUSE),
-    INSERT = SCANCODE_TO_KEYCODE(Scancode::INSERT),
-    HOME = SCANCODE_TO_KEYCODE(Scancode::HOME),
-    PAGEUP = SCANCODE_TO_KEYCODE(Scancode::PAGEUP),
+    PRINTSCREEN = SCANCODE_TO_KEYCODE(Scancode::Printscreen),
+    SCROLLLOCK = SCANCODE_TO_KEYCODE(Scancode::Scrolllock),
+    PAUSE = SCANCODE_TO_KEYCODE(Scancode::Pause),
+    INSERT = SCANCODE_TO_KEYCODE(Scancode::Insert),
+    HOME = SCANCODE_TO_KEYCODE(Scancode::Home),
+    PAGEUP = SCANCODE_TO_KEYCODE(Scancode::PageUp),
     DELETE = '\x7F',
-    END = SCANCODE_TO_KEYCODE(Scancode::END),
-    PAGEDOWN = SCANCODE_TO_KEYCODE(Scancode::PAGEDOWN),
-    RIGHT = SCANCODE_TO_KEYCODE(Scancode::RIGHT),
-    LEFT = SCANCODE_TO_KEYCODE(Scancode::LEFT),
-    DOWN = SCANCODE_TO_KEYCODE(Scancode::DOWN),
-    UP = SCANCODE_TO_KEYCODE(Scancode::UP),
+    END = SCANCODE_TO_KEYCODE(Scancode::End),
+    PAGEDOWN = SCANCODE_TO_KEYCODE(Scancode::PageDown),
+    RIGHT = SCANCODE_TO_KEYCODE(Scancode::Right),
+    LEFT = SCANCODE_TO_KEYCODE(Scancode::Left),
+    DOWN = SCANCODE_TO_KEYCODE(Scancode::Down),
+    UP = SCANCODE_TO_KEYCODE(Scancode::Up),
 
-    NUMLOCKCLEAR = SCANCODE_TO_KEYCODE(Scancode::NUMLOCKCLEAR),
-    KP_DIVIDE = SCANCODE_TO_KEYCODE(Scancode::KP_DIVIDE),
-    KP_MULTIPLY = SCANCODE_TO_KEYCODE(Scancode::KP_MULTIPLY),
-    KP_MINUS = SCANCODE_TO_KEYCODE(Scancode::KP_MINUS),
-    KP_PLUS = SCANCODE_TO_KEYCODE(Scancode::KP_PLUS),
-    KP_ENTER = SCANCODE_TO_KEYCODE(Scancode::KP_ENTER),
-    KP_1 = SCANCODE_TO_KEYCODE(Scancode::KP_1),
-    KP_2 = SCANCODE_TO_KEYCODE(Scancode::KP_2),
-    KP_3 = SCANCODE_TO_KEYCODE(Scancode::KP_3),
-    KP_4 = SCANCODE_TO_KEYCODE(Scancode::KP_4),
-    KP_5 = SCANCODE_TO_KEYCODE(Scancode::KP_5),
-    KP_6 = SCANCODE_TO_KEYCODE(Scancode::KP_6),
-    KP_7 = SCANCODE_TO_KEYCODE(Scancode::KP_7),
-    KP_8 = SCANCODE_TO_KEYCODE(Scancode::KP_8),
-    KP_9 = SCANCODE_TO_KEYCODE(Scancode::KP_9),
-    KP_0 = SCANCODE_TO_KEYCODE(Scancode::KP_0),
-    KP_PERIOD = SCANCODE_TO_KEYCODE(Scancode::KP_PERIOD),
+    NUMLOCKCLEAR = SCANCODE_TO_KEYCODE(Scancode::NumLockClear),
+    KP_DIVIDE = SCANCODE_TO_KEYCODE(Scancode::KPDivide),
+    KP_MULTIPLY = SCANCODE_TO_KEYCODE(Scancode::KPMultiply),
+    KP_MINUS = SCANCODE_TO_KEYCODE(Scancode::KPMinus),
+    KP_PLUS = SCANCODE_TO_KEYCODE(Scancode::KPPlus),
+    KP_ENTER = SCANCODE_TO_KEYCODE(Scancode::KPEnter),
+    KP_1 = SCANCODE_TO_KEYCODE(Scancode::KP1),
+    KP_2 = SCANCODE_TO_KEYCODE(Scancode::KP2),
+    KP_3 = SCANCODE_TO_KEYCODE(Scancode::KP3),
+    KP_4 = SCANCODE_TO_KEYCODE(Scancode::KP4),
+    KP_5 = SCANCODE_TO_KEYCODE(Scancode::KP5),
+    KP_6 = SCANCODE_TO_KEYCODE(Scancode::KP6),
+    KP_7 = SCANCODE_TO_KEYCODE(Scancode::KP7),
+    KP_8 = SCANCODE_TO_KEYCODE(Scancode::KP8),
+    KP_9 = SCANCODE_TO_KEYCODE(Scancode::KP9),
+    KP_0 = SCANCODE_TO_KEYCODE(Scancode::KP0),
+    KP_PERIOD = SCANCODE_TO_KEYCODE(Scancode::KPPeriod),
 
-    APPLICATION = SCANCODE_TO_KEYCODE(Scancode::APPLICATION),
-    POWER = SCANCODE_TO_KEYCODE(Scancode::POWER),
-    KP_EQUALS = SCANCODE_TO_KEYCODE(Scancode::KP_EQUALS),
+    APPLICATION = SCANCODE_TO_KEYCODE(Scancode::Application),
+    POWER = SCANCODE_TO_KEYCODE(Scancode::Power),
+    KP_EQUALS = SCANCODE_TO_KEYCODE(Scancode::KPEquals),
     F13 = SCANCODE_TO_KEYCODE(Scancode::F13),
     F14 = SCANCODE_TO_KEYCODE(Scancode::F14),
     F15 = SCANCODE_TO_KEYCODE(Scancode::F15),
@@ -542,40 +542,40 @@ enum class Keycode : uint32_t {
     F22 = SCANCODE_TO_KEYCODE(Scancode::F22),
     F23 = SCANCODE_TO_KEYCODE(Scancode::F23),
     F24 = SCANCODE_TO_KEYCODE(Scancode::F24),
-    EXECUTE = SCANCODE_TO_KEYCODE(Scancode::EXECUTE),
-    HELP = SCANCODE_TO_KEYCODE(Scancode::HELP),
-    MENU = SCANCODE_TO_KEYCODE(Scancode::MENU),
-    SELECT = SCANCODE_TO_KEYCODE(Scancode::SELECT),
-    STOP = SCANCODE_TO_KEYCODE(Scancode::STOP),
-    AGAIN = SCANCODE_TO_KEYCODE(Scancode::AGAIN),
-    UNDO = SCANCODE_TO_KEYCODE(Scancode::UNDO),
-    CUT = SCANCODE_TO_KEYCODE(Scancode::CUT),
-    COPY = SCANCODE_TO_KEYCODE(Scancode::COPY),
-    PASTE = SCANCODE_TO_KEYCODE(Scancode::PASTE),
-    FIND = SCANCODE_TO_KEYCODE(Scancode::FIND),
-    MUTE = SCANCODE_TO_KEYCODE(Scancode::MUTE),
-    VOLUMEUP = SCANCODE_TO_KEYCODE(Scancode::VOLUMEUP),
-    VOLUMEDOWN = SCANCODE_TO_KEYCODE(Scancode::VOLUMEDOWN),
-    KP_COMMA = SCANCODE_TO_KEYCODE(Scancode::KP_COMMA),
-    KP_EQUALSAS400 = SCANCODE_TO_KEYCODE(Scancode::KP_EQUALSAS400),
+    EXECUTE = SCANCODE_TO_KEYCODE(Scancode::Execute),
+    HELP = SCANCODE_TO_KEYCODE(Scancode::Help),
+    MENU = SCANCODE_TO_KEYCODE(Scancode::Menu),
+    SELECT = SCANCODE_TO_KEYCODE(Scancode::Select),
+    STOP = SCANCODE_TO_KEYCODE(Scancode::Stop),
+    AGAIN = SCANCODE_TO_KEYCODE(Scancode::Again),
+    UNDO = SCANCODE_TO_KEYCODE(Scancode::Undo),
+    CUT = SCANCODE_TO_KEYCODE(Scancode::Cut),
+    COPY = SCANCODE_TO_KEYCODE(Scancode::Copy),
+    PASTE = SCANCODE_TO_KEYCODE(Scancode::Paste),
+    FIND = SCANCODE_TO_KEYCODE(Scancode::Find),
+    MUTE = SCANCODE_TO_KEYCODE(Scancode::Mute),
+    VOLUMEUP = SCANCODE_TO_KEYCODE(Scancode::VolumeUp),
+    VOLUMEDOWN = SCANCODE_TO_KEYCODE(Scancode::VolumeDown),
+    KP_COMMA = SCANCODE_TO_KEYCODE(Scancode::KPComma),
+    KP_EQUALSAS400 = SCANCODE_TO_KEYCODE(Scancode::KPEqualSAS400),
 
-    ALTERASE = SCANCODE_TO_KEYCODE(Scancode::ALTERASE),
-    SYSREQ = SCANCODE_TO_KEYCODE(Scancode::SYSREQ),
-    CANCEL = SCANCODE_TO_KEYCODE(Scancode::CANCEL),
-    CLEAR = SCANCODE_TO_KEYCODE(Scancode::CLEAR),
-    PRIOR = SCANCODE_TO_KEYCODE(Scancode::PRIOR),
-    RETURN2 = SCANCODE_TO_KEYCODE(Scancode::RETURN2),
-    SEPARATOR = SCANCODE_TO_KEYCODE(Scancode::SEPARATOR),
-    OUT = SCANCODE_TO_KEYCODE(Scancode::OUT),
-    OPER = SCANCODE_TO_KEYCODE(Scancode::OPER),
-    CLEARAGAIN = SCANCODE_TO_KEYCODE(Scancode::CLEARAGAIN),
-    CRSEL = SCANCODE_TO_KEYCODE(Scancode::CRSEL),
-    EXSEL = SCANCODE_TO_KEYCODE(Scancode::EXSEL),
+    ALTERASE = SCANCODE_TO_KEYCODE(Scancode::AltErase),
+    SYSREQ = SCANCODE_TO_KEYCODE(Scancode::SysReq),
+    CANCEL = SCANCODE_TO_KEYCODE(Scancode::Cancel),
+    CLEAR = SCANCODE_TO_KEYCODE(Scancode::Clear),
+    PRIOR = SCANCODE_TO_KEYCODE(Scancode::Prior),
+    RETURN2 = SCANCODE_TO_KEYCODE(Scancode::Return2),
+    SEPARATOR = SCANCODE_TO_KEYCODE(Scancode::Separator),
+    OUT = SCANCODE_TO_KEYCODE(Scancode::Out),
+    OPER = SCANCODE_TO_KEYCODE(Scancode::Oper),
+    CLEARAGAIN = SCANCODE_TO_KEYCODE(Scancode::ClearAgain),
+    CRSEL = SCANCODE_TO_KEYCODE(Scancode::CrSel),
+    EXSEL = SCANCODE_TO_KEYCODE(Scancode::ExSel),
 
-    KP_00 = SCANCODE_TO_KEYCODE(Scancode::KP_00),
-    KP_000 = SCANCODE_TO_KEYCODE(Scancode::KP_000),
-    THOUSANDSSEPARATOR = SCANCODE_TO_KEYCODE(Scancode::THOUSANDSSEPARATOR),
-    DECIMALSEPARATOR = SCANCODE_TO_KEYCODE(Scancode::DECIMALSEPARATOR),
+    KP_00 = SCANCODE_TO_KEYCODE(Scancode::KP00),
+    KP_000 = SCANCODE_TO_KEYCODE(Scancode::KP000),
+    THOUSANDSSEPARATOR = SCANCODE_TO_KEYCODE(Scancode::ThousandsSeparator),
+    DECIMALSEPARATOR = SCANCODE_TO_KEYCODE(Scancode::DecimalSeparator),
     CURRENCYUNIT = SCANCODE_TO_KEYCODE(Scancode::CURRENCYUNIT),
     CURRENCYSUBUNIT = SCANCODE_TO_KEYCODE(Scancode::CURRENCYSUBUNIT),
     KP_LEFTPAREN = SCANCODE_TO_KEYCODE(Scancode::KP_LEFTPAREN),
