@@ -73,8 +73,8 @@ void Light::CreateShadowMap() {
         {SHADOW_MAP_WIDTH,
          SHADOW_MAP_HEIGHT,
          (int)m_cascade_planes.size(),
-         {AttachmentDescription{AttachmentType::TEXTURE_2D_ARRAY,
-                                DataFormat::Depth24, MultiSampleLevel::X1}}});
+         {AttachmentDescription{AttachmentType::Array, DataFormat::Depth24,
+                                MultiSampleLevel::X1}}});
     m_cascade_map->GetTexture()->SetWrap(TextureWrap::Border);
     m_cascade_map->GetTexture()->SetBorderColor(&color);
 }

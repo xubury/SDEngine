@@ -44,13 +44,7 @@ enum class PolygonMode { Point, Line, Fill };
 
 enum class MultiSampleLevel { X1 = 1, X2 = 2, X4 = 4, X8 = 8 };
 
-enum class TextureType {
-    TEX_2D,
-    TEX_2D_MULTISAMPLE,
-    TEX_2D_ARRAY,
-    TEX_3D,
-    TEX_CUBE
-};
+enum class TextureType { Normal, Array, Cube, CubeArray };
 
 enum class DataFormat {
     Alpha8,

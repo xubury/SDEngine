@@ -10,11 +10,7 @@
 
 namespace SD {
 
-enum class AttachmentType {
-    TEXTURE_2D = 0,
-    TEXTURE_2D_ARRAY = 1,
-    RENDERBUFFER = 2
-};
+enum class AttachmentType { Normal, Array, ReadOnly };
 
 struct AttachmentDescription {
     AttachmentType type;
@@ -25,7 +21,7 @@ struct AttachmentDescription {
 struct FramebufferCreateInfo {
     int32_t width;
     int32_t height;
-    int32_t depth;
+    int32_t depth{0};
     std::vector<AttachmentDescription> attachments;
 };
 
@@ -41,7 +37,7 @@ class SD_GRAPHICS_API Framebuffer : public Resource {
     int GetWidth() const { return m_info.width; };
     int GetHeight() const { return m_info.height; };
 
-    void Resize(int32_t width, int32_t height, int32_t depth = 1);
+    void Resize(int32_t width, int32_t height, int32_t depth = 0);
 
     virtual void ReadPixels(uint32_t attachment_id, int level, int x, int y,
                             int z, int w, int h, int d, size_t size,

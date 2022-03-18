@@ -42,11 +42,11 @@ Ref<Texture> TextureLoader::LoadTextureCube(
         uint8_t* img =
             stbi_load(pathes[face].c_str(), &width, &height, &channels, 0);
         if (face == 0) {
-            texture = Texture::Create(
-                width, height, 1, MultiSampleLevel::X1, TextureType::TEX_CUBE,
-                Get8BitDataFormat(channels), TextureWrap::Edge,
-                TextureMinFilter::Linear, MipmapMode::Linear,
-                TextureMagFilter::Linear);
+            texture =
+                Texture::Create(width, height, 0, MultiSampleLevel::X1,
+                                TextureType::Cube, Get8BitDataFormat(channels),
+                                TextureWrap::Edge, TextureMinFilter::Linear,
+                                MipmapMode::Linear, TextureMagFilter::Linear);
         }
         texture->SetPixels(0, 0, face, width, height, 1, img);
         texture->SetPath(pathes[face]);
@@ -64,7 +64,7 @@ Ref<Texture> TextureLoader::LoadTexture2D(const std::string& path) {
     int32_t channels;
     uint8_t* img = stbi_load(path.c_str(), &width, &height, &channels, 0);
     Ref<Texture> texture = Texture::Create(
-        width, height, 1, MultiSampleLevel::X1, TextureType::TEX_2D,
+        width, height, 0, MultiSampleLevel::X1, TextureType::Normal,
         Get8BitDataFormat(channels), TextureWrap::Edge,
         TextureMinFilter::Linear, MipmapMode::Linear, TextureMagFilter::Linear);
     texture->SetPixels(0, 0, 0, width, height, 1, img);

@@ -31,6 +31,7 @@ class GLTexture : public Texture {
    private:
     void Allocate();
 
+    GLenum gl_type;
     GLenum gl_format;
     GLenum gl_format_type;
     GLuint m_id;

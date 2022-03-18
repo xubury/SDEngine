@@ -16,13 +16,13 @@ void GraphicsLayer::OnInit() {
         FramebufferCreateInfo info;
         info.width = m_width;
         info.height = m_height;
-        info.depth = 1;
+        info.depth = 0;
         info.attachments.push_back(AttachmentDescription{
-            AttachmentType::TEXTURE_2D, DataFormat::RGBA8, m_msaa});
+            AttachmentType::Normal, DataFormat::RGBA8, m_msaa});
         info.attachments.push_back(AttachmentDescription{
-            AttachmentType::TEXTURE_2D, DataFormat::R32UI, m_msaa});
+            AttachmentType::Normal, DataFormat::R32UI, m_msaa});
         info.attachments.push_back(AttachmentDescription{
-            AttachmentType::RENDERBUFFER, DataFormat::Depth24, m_msaa});
+            AttachmentType::ReadOnly, DataFormat::Depth24, m_msaa});
         m_main_framebuffer = Framebuffer::Create(info);
     }
 
@@ -31,12 +31,12 @@ void GraphicsLayer::OnInit() {
         m_light_icon = TextureLoader::LoadTexture2D("assets/icons/light.png");
         info.width = m_width;
         info.height = m_height;
-        info.depth = 1;
+        info.depth = 0;
         for (int i = 0; i < static_cast<int>(GeometryBufferType::EntityId);
              ++i) {
             info.attachments.push_back(AttachmentDescription{
-                AttachmentType::TEXTURE_2D,
-                GetTextureFormat(GeometryBufferType(i)), MultiSampleLevel::X1});
+                AttachmentType::Normal, GetTextureFormat(GeometryBufferType(i)),
+                MultiSampleLevel::X1});
         }
         m_debug_gbuffer = Framebuffer::Create(info);
     }

@@ -99,7 +99,7 @@ GLTexture::GLTexture(int width, int height, int depth, MultiSampleLevel samples,
 
     Allocate();
 
-    if (m_type != TextureType::TEX_2D_MULTISAMPLE) {
+    if (m_samples == MultiSampleLevel::X1) {
         SetWrap(m_wrap);
         SetMinFilter(m_min_filter);
         SetMagFilter(m_mag_filter);
@@ -109,7 +109,8 @@ GLTexture::GLTexture(int width, int height, int depth, MultiSampleLevel samples,
 GLTexture::~GLTexture() { glDeleteTextures(1, &m_id); }
 
 void GLTexture::Allocate() {
-    GLenum gl_type = Translate(m_type);
+    int32_t dimension = (m_width != 0) + (m_height != 0) + (m_depth != 0);
+    gl_type = Translate(m_type, dimension, m_samples);
     GLenum gl_sized_format = Translate(m_format);
     glCreateTextures(gl_type, 1, &m_id);
 
@@ -120,22 +121,25 @@ void GLTexture::Allocate() {
         glTextureParameteriv(m_id, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
     }
 
-    switch (m_type) {
-        case TextureType::TEX_2D:
-        case TextureType::TEX_CUBE: {
+    SD_CORE_TRACE("{}", gl_type);
+    switch (gl_type) {
+        default:
+            SD_CORE_ERROR("Unimplemented Allocate() for texture type: {}",
+                          gl_type);
+            break;
+        case GL_TEXTURE_2D:
+        case GL_TEXTURE_CUBE_MAP:
             glTextureStorage2D(m_id, m_mipmap_levels, gl_sized_format, m_width,
                                m_height);
-        } break;
-        case TextureType::TEX_2D_MULTISAMPLE:
+            break;
+        case GL_TEXTURE_2D_MULTISAMPLE:
             glTextureStorage2DMultisample(m_id, static_cast<GLsizei>(m_samples),
                                           gl_sized_format, m_width, m_height,
                                           GL_TRUE);
             break;
-        case TextureType::TEX_2D_ARRAY:
-            glTextureStorage3D(m_id, m_mipmap_levels, gl_sized_format, m_width,
-                               m_height, m_depth);
-            break;
-        case TextureType::TEX_3D:
+        case GL_TEXTURE_3D:
+            SD_CORE_ASSERT(false);
+        case GL_TEXTURE_2D_ARRAY:
             glTextureStorage3D(m_id, m_mipmap_levels, gl_sized_format, m_width,
                                m_height, m_depth);
             break;
@@ -144,18 +148,17 @@ void GLTexture::Allocate() {
 
 void GLTexture::SetPixels(int x, int y, int z, int width, int height, int depth,
                           const void *data) {
-    switch (m_type) {
-        case TextureType::TEX_2D:
+    switch (gl_type) {
+        default:
+            SD_CORE_ERROR("Unimplemented SetPixels() for texture type: {}",
+                          gl_type);
+            break;
+        case GL_TEXTURE_2D:
             glTextureSubImage2D(m_id, 0, x, y, width, height, gl_format,
                                 gl_format_type, data);
             break;
-        case TextureType::TEX_2D_MULTISAMPLE:
-            SD_CORE_ASSERT(false,
-                           "TEX_2D_MULTISAMPLE is not allowed to set pixels!");
-            break;
-        case TextureType::TEX_2D_ARRAY:
-        case TextureType::TEX_3D:
-        case TextureType::TEX_CUBE:
+        case GL_TEXTURE_2D_ARRAY:
+        case GL_TEXTURE_CUBE_MAP:
             glTextureSubImage3D(m_id, 0, x, y, z, width, height, depth,
                                 gl_format, gl_format_type, data);
             break;

@@ -46,8 +46,8 @@ TileMapSystem::TileMapSystem(Framebuffer *framebuffer)
       m_draw_outline(true),
       m_operation(Operation::NONE) {
     m_outline_texture = Texture::Create(
-        GRID_TEXTURE_SIZE, GRID_TEXTURE_SIZE, 1, MultiSampleLevel::X1,
-        TextureType::TEX_2D, DataFormat::RGBA8, TextureWrap::Repeat);
+        GRID_TEXTURE_SIZE, GRID_TEXTURE_SIZE, 0, MultiSampleLevel::X1,
+        TextureType::Normal, DataFormat::RGBA8, TextureWrap::Repeat);
     size_t pixel_size =
         4 * m_outline_texture->GetWidth() * m_outline_texture->GetHeight();
     void *data = malloc(pixel_size);
@@ -166,7 +166,7 @@ void TileMapSystem::OnImGui() {
 void TileMapSystem::OnRender() {
     const int index = 0;
     RenderOperation op;
-    op.depth_test= false;
+    op.depth_test = false;
     Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1, op});
     SpriteRenderer::Begin(*scene->GetCamera());
 

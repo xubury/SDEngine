@@ -60,18 +60,26 @@ GLint Translate(BufferIOType io_type) {
     return 0;
 }
 
-GLenum Translate(TextureType texture_type) {
-    switch (texture_type) {
-        case TextureType::TEX_2D:
-            return GL_TEXTURE_2D;
-        case TextureType::TEX_2D_MULTISAMPLE:
-            return GL_TEXTURE_2D_MULTISAMPLE;
-        case TextureType::TEX_2D_ARRAY:
-            return GL_TEXTURE_2D_ARRAY;
-        case TextureType::TEX_3D:
-            return GL_TEXTURE_3D;
-        case TextureType::TEX_CUBE:
+GLenum Translate(TextureType type, int dimension, MultiSampleLevel msaa) {
+    switch (type) {
+        case TextureType::Normal: {
+            if (dimension == 1) {
+                return GL_TEXTURE_1D;
+            } else if (dimension == 2) {
+                return msaa == MultiSampleLevel::X1 ? GL_TEXTURE_2D
+                                                    : GL_TEXTURE_2D_MULTISAMPLE;
+            } else if (dimension == 3) {
+                return GL_TEXTURE_3D;
+            }
+        } break;
+        case TextureType::Array:
+            return msaa == MultiSampleLevel::X1
+                       ? GL_TEXTURE_2D_ARRAY
+                       : GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
+        case TextureType::Cube:
             return GL_TEXTURE_CUBE_MAP;
+        case TextureType::CubeArray:
+            return GL_TEXTURE_CUBE_MAP_ARRAY;
     }
 
     return 0;
@@ -173,6 +181,7 @@ GLint Translate(TextureMinFilter filter, MipmapMode mode) {
                 case MipmapMode::Nearest:
                     return GL_LINEAR_MIPMAP_NEAREST;
             }
+            break;
         case TextureMinFilter::Nearest:
             switch (mode) {
                 case MipmapMode::None:
@@ -182,6 +191,7 @@ GLint Translate(TextureMinFilter filter, MipmapMode mode) {
                 case MipmapMode::Nearest:
                     return GL_NEAREST_MIPMAP_NEAREST;
             }
+            break;
     }
     return 0;
 }

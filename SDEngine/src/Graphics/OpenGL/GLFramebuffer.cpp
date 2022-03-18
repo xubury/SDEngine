@@ -35,28 +35,23 @@ void GLFramebuffer::SetupAttachments() {
         }
 
         switch (attachment.type) {
-            case AttachmentType::TEXTURE_2D: {
-                auto texture =
-                    Texture::Create(m_info.width, m_info.height, m_info.depth,
-                                    attachment.samples,
-                                    static_cast<GLsizei>(attachment.samples) > 1
-                                        ? TextureType::TEX_2D_MULTISAMPLE
-                                        : TextureType::TEX_2D,
-                                    attachment.format);
+            case AttachmentType::Normal: {
+                auto texture = Texture::Create(
+                    m_info.width, m_info.height, m_info.depth,
+                    attachment.samples, TextureType::Normal, attachment.format);
                 m_attachments.emplace_back(texture);
                 glNamedFramebufferTexture(m_id, gl_attachment, texture->GetId(),
                                           0);
             } break;
-            case AttachmentType::TEXTURE_2D_ARRAY: {
-                auto texture = Texture::Create(m_info.width, m_info.height,
-                                               m_info.depth, attachment.samples,
-                                               TextureType::TEX_2D_ARRAY,
-                                               attachment.format);
+            case AttachmentType::Array: {
+                auto texture = Texture::Create(
+                    m_info.width, m_info.height, m_info.depth,
+                    attachment.samples, TextureType::Array, attachment.format);
                 m_attachments.emplace_back(texture);
                 glNamedFramebufferTexture(m_id, gl_attachment, texture->GetId(),
                                           0);
             } break;
-            case AttachmentType::RENDERBUFFER: {
+            case AttachmentType::ReadOnly: {
                 auto renderbuffer =
                     Renderbuffer::Create(m_info.width, m_info.height,
                                          attachment.samples, attachment.format);

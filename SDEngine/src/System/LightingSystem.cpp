@@ -91,12 +91,12 @@ void LightingSystem::InitShaders() {
 
 void LightingSystem::InitSSAO() {
     // ssao target
-    AttachmentDescription attach_desc{AttachmentType::TEXTURE_2D,
-                                      DataFormat::R16F, MultiSampleLevel::X1};
+    AttachmentDescription attach_desc{AttachmentType::Normal, DataFormat::R16F,
+                                      MultiSampleLevel::X1};
 
-    m_ssao_buffer = Framebuffer::Create({m_width, m_height, 1, {attach_desc}});
+    m_ssao_buffer = Framebuffer::Create({m_width, m_height, 0, {attach_desc}});
     m_ssao_blur_buffer =
-        Framebuffer::Create({m_width, m_height, 1, {attach_desc}});
+        Framebuffer::Create({m_width, m_height, 0, {attach_desc}});
 }
 
 void LightingSystem::InitSSAOKernel() {
@@ -122,7 +122,7 @@ void LightingSystem::InitSSAOKernel() {
         ssao_noise[i] = glm::normalize(noise);
     }
     m_ssao_noise =
-        Texture::Create(4, 4, 1, MultiSampleLevel::X1, TextureType::TEX_2D,
+        Texture::Create(4, 4, 0, MultiSampleLevel::X1, TextureType::Normal,
                         DataFormat::RGB16F, TextureWrap::Repeat);
     m_ssao_noise->SetPixels(0, 0, 0, 4, 4, 1, ssao_noise.data());
 
@@ -135,28 +135,27 @@ void LightingSystem::InitLighting() {
         m_light_buffer[i] = Framebuffer::Create(
             {m_width,
              m_height,
-             1,
-             {{AttachmentType::TEXTURE_2D, DataFormat::RGB16F, m_msaa}}});
+             0,
+             {{AttachmentType::Normal, DataFormat::RGB16F, m_msaa}}});
     }
 
     FramebufferCreateInfo info;
     info.width = m_width;
     info.height = m_height;
-    info.depth = 1;
     for (int i = 0; i < int(GeometryBufferType::GBufferCount); ++i) {
         info.attachments.push_back(AttachmentDescription{
-            AttachmentType::TEXTURE_2D, GetTextureFormat(GeometryBufferType(i)),
+            AttachmentType::Normal, GetTextureFormat(GeometryBufferType(i)),
             m_msaa});
     }
     info.attachments.push_back(AttachmentDescription{
-        AttachmentType::RENDERBUFFER, DataFormat::Depth24, m_msaa});
+        AttachmentType::ReadOnly, DataFormat::Depth24, m_msaa});
     m_gbuffer = Framebuffer::Create(info);
 
     m_cascade_debug_fb = Framebuffer::Create(
         {m_width,
          m_height,
-         1,
-         {AttachmentDescription{AttachmentType::TEXTURE_2D, DataFormat::RGB8,
+         0,
+         {AttachmentDescription{AttachmentType::Normal, DataFormat::RGB8,
                                 MultiSampleLevel::X1}}});
 }
 
