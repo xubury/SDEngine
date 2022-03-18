@@ -9,14 +9,14 @@
 
 namespace SD {
 
-enum GeometryBufferType {
-    G_POSITION = 0,
-    G_NORMAL,
-    G_ALBEDO,
-    G_AMBIENT,
-    G_EMISSIVE,
-    G_ENTITY_ID,
-    GBUFFER_COUNT
+enum class GeometryBufferType {
+    Position = 0,
+    Normal,
+    Albedo,
+    Ambient,
+    Emissive,
+    EntityId,
+    GBufferCount
 };
 
 DataFormat SD_SYSTEM_API GetTextureFormat(GeometryBufferType type);

@@ -21,14 +21,14 @@ namespace SD {
 
 DataFormat GetTextureFormat(GeometryBufferType type) {
     switch (type) {
-        case GeometryBufferType::G_POSITION:
-        case GeometryBufferType::G_NORMAL:
+        case GeometryBufferType::Position:
+        case GeometryBufferType::Normal:
             return DataFormat::RGB16F;
-        case GeometryBufferType::G_ALBEDO:
-        case GeometryBufferType::G_AMBIENT:
-        case GeometryBufferType::G_EMISSIVE:
+        case GeometryBufferType::Albedo:
+        case GeometryBufferType::Ambient:
+        case GeometryBufferType::Emissive:
             return DataFormat::RGB8;
-        case GeometryBufferType::G_ENTITY_ID:
+        case GeometryBufferType::EntityId:
             return DataFormat::R32UI;
         default:
             SD_CORE_WARN("Unknown GBuffer!");
@@ -144,7 +144,7 @@ void LightingSystem::InitLighting() {
     info.width = m_width;
     info.height = m_height;
     info.depth = 1;
-    for (int i = 0; i < GeometryBufferType::GBUFFER_COUNT; ++i) {
+    for (int i = 0; i < int(GeometryBufferType::GBufferCount); ++i) {
         info.attachments.push_back(AttachmentDescription{
             AttachmentType::TEXTURE_2D, GetTextureFormat(GeometryBufferType(i)),
             m_msaa});
@@ -201,7 +201,7 @@ void LightingSystem::OnRender() {
     RenderEmissive();
 
     Renderer::DrawFromBuffer(
-        1, m_gbuffer.get(), G_ENTITY_ID,
+        1, m_gbuffer.get(), static_cast<int>(GeometryBufferType::EntityId),
         BufferBitMask::COLOR_BUFFER_BIT | BufferBitMask::DEPTH_BUFFER_BIT);
 }
 
@@ -265,9 +265,11 @@ void LightingSystem::RenderSSAO() {
     m_ssao_shader->GetParam("u_bias")->SetAsFloat(m_ssao_bias);
     m_ssao_shader->GetParam("u_power")->SetAsUint(m_ssao_power);
     m_ssao_shader->GetParam("u_position")
-        ->SetAsTexture(m_gbuffer->GetTexture(GeometryBufferType::G_POSITION));
+        ->SetAsTexture(m_gbuffer->GetTexture(
+            static_cast<int>(GeometryBufferType::Position)));
     m_ssao_shader->GetParam("u_normal")
-        ->SetAsTexture(m_gbuffer->GetTexture(GeometryBufferType::G_NORMAL));
+        ->SetAsTexture(m_gbuffer->GetTexture(
+            static_cast<int>(GeometryBufferType::Normal)));
     m_ssao_shader->GetParam("u_noise")->SetAsTexture(m_ssao_noise.get());
     Renderer::DrawNDCQuad(*m_ssao_shader);
 
@@ -294,8 +296,8 @@ void LightingSystem::RenderEmissive() {
         m_emssive_shader->GetParam("u_lighting")
             ->SetAsTexture(GetLightingBuffer()->GetTexture());
         m_emssive_shader->GetParam("u_emissive")
-            ->SetAsTexture(
-                m_gbuffer->GetTexture(GeometryBufferType::G_EMISSIVE));
+            ->SetAsTexture(m_gbuffer->GetTexture(
+                static_cast<int>(GeometryBufferType::Emissive)));
         Renderer::DrawNDCQuad(*m_emssive_shader);
         Renderer::EndRenderSubpass();
     }
@@ -305,13 +307,17 @@ void LightingSystem::RenderDeferred() {
     auto lightView = scene->view<TransformComponent, LightComponent>();
 
     m_deferred_shader->GetParam("u_position")
-        ->SetAsTexture(m_gbuffer->GetTexture(GeometryBufferType::G_POSITION));
+        ->SetAsTexture(m_gbuffer->GetTexture(
+            static_cast<int>(GeometryBufferType::Position)));
     m_deferred_shader->GetParam("u_normal")
-        ->SetAsTexture(m_gbuffer->GetTexture(GeometryBufferType::G_NORMAL));
+        ->SetAsTexture(m_gbuffer->GetTexture(
+            static_cast<int>(GeometryBufferType::Normal)));
     m_deferred_shader->GetParam("u_albedo")
-        ->SetAsTexture(m_gbuffer->GetTexture(GeometryBufferType::G_ALBEDO));
+        ->SetAsTexture(m_gbuffer->GetTexture(
+            static_cast<int>(GeometryBufferType::Albedo)));
     m_deferred_shader->GetParam("u_ambient")
-        ->SetAsTexture(m_gbuffer->GetTexture(GeometryBufferType::G_AMBIENT));
+        ->SetAsTexture(m_gbuffer->GetTexture(
+            static_cast<int>(GeometryBufferType::Ambient)));
     m_deferred_shader->GetParam("u_background")
         ->SetAsTexture(
             Renderer::GetCurrentRenderPass().framebuffer->GetTexture());
@@ -405,7 +411,8 @@ void LightingSystem::RenderGBuffer() {
     Renderer::BeginRenderPass(info);
     MeshRenderer::Begin(*m_gbuffer_shader, *scene->GetCamera());
     uint32_t id = static_cast<uint32_t>(entt::null);
-    m_gbuffer->ClearAttachment(GeometryBufferType::G_ENTITY_ID, &id);
+    m_gbuffer->ClearAttachment(static_cast<int>(GeometryBufferType::EntityId),
+                               &id);
 
     auto &storage = AssetStorage::Get();
     ShaderParam *entity_id = m_gbuffer_shader->GetParam("u_entity_id");

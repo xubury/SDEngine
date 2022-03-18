@@ -32,7 +32,8 @@ void GraphicsLayer::OnInit() {
         info.width = m_width;
         info.height = m_height;
         info.depth = 1;
-        for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
+        for (int i = 0; i < static_cast<int>(GeometryBufferType::EntityId);
+             ++i) {
             info.attachments.push_back(AttachmentDescription{
                 AttachmentType::TEXTURE_2D,
                 GetTextureFormat(GeometryBufferType(i)), MultiSampleLevel::X1});
@@ -119,7 +120,8 @@ void GraphicsLayer::OnImGui() {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
         ImGui::Begin("GBuffer");
         {
-            for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
+            for (int i = 0; i < static_cast<int>(GeometryBufferType::EntityId);
+                 ++i) {
                 ImGui::DrawTexture(*m_debug_gbuffer->GetTexture(i),
                                    ImVec2(0, 1), ImVec2(1, 0));
             }
@@ -137,7 +139,7 @@ void GraphicsLayer::OnImGui() {
 
 void GraphicsLayer::BlitGeometryBuffers() {
     Renderer::BeginRenderPass({m_debug_gbuffer.get(), m_width, m_height});
-    for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
+    for (int i = 0; i < static_cast<int>(GeometryBufferType::EntityId); ++i) {
         Renderer::DrawFromBuffer(i, m_lighting_system->GetGBuffer(), i,
                                  BufferBitMask::COLOR_BUFFER_BIT);
     }
