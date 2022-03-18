@@ -43,12 +43,10 @@ void GraphicsLayer::OnInit() {
     // engine logic system
     m_camera_system = CreateSystem<CameraSystem>();
     // normal render systems
-    m_lighting_system =
-        CreateSystem<LightingSystem>(m_main_framebuffer.get(), m_msaa);
+    m_lighting_system = CreateSystem<LightingSystem>(m_width, m_height, m_msaa);
     m_skybox_system = CreateSystem<SkyboxSystem>();
     m_sprite_system = CreateSystem<SpriteRenderSystem>();
-    m_post_process_system =
-        CreateSystem<PostProcessSystem>(m_main_framebuffer.get());
+    m_post_process_system = CreateSystem<PostProcessSystem>(m_width, m_height);
 
     PushSystem(m_camera_system);
     PushSystem(m_skybox_system);
@@ -80,21 +78,17 @@ void GraphicsLayer::OnPop() {
 }
 
 void GraphicsLayer::OnRender() {
-    Renderer::BeginRenderPass({m_main_framebuffer.get()});
-    device->SetFramebuffer(m_main_framebuffer.get());
-    device->Clear();
+    Renderer::BeginRenderPass({m_main_framebuffer.get(), m_width, m_height});
     uint32_t id = static_cast<uint32_t>(entt::null);
     m_main_framebuffer->ClearAttachment(1, &id);
     for (auto &system : GetSystems()) {
         system->OnRender();
     }
     if (m_debug) {
-        BlitGeometryBuffers();
-    }
-    if (m_debug) {
         const int index = 0;
-        Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1});
-        device->Disable(Operation::DEPTH_TEST);
+        RenderOperation op;
+        op.depth_test = false;
+        Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1, op});
 
         Camera *cam = scene->GetCamera();
         SpriteRenderer::Begin(*cam);
@@ -108,10 +102,13 @@ void GraphicsLayer::OnRender() {
         });
 
         SpriteRenderer::End();
-        device->Enable(Operation::DEPTH_TEST);
         Renderer::EndRenderSubpass();
     }
     Renderer::EndRenderPass();
+
+    if (m_debug) {
+        BlitGeometryBuffers();
+    }
 }
 
 void GraphicsLayer::OnImGui() {
@@ -139,16 +136,12 @@ void GraphicsLayer::OnImGui() {
 }
 
 void GraphicsLayer::BlitGeometryBuffers() {
+    Renderer::BeginRenderPass({m_debug_gbuffer.get(), m_width, m_height});
     for (int i = 0; i < GeometryBufferType::G_ENTITY_ID; ++i) {
-        device->ReadBuffer(m_lighting_system->GetGBuffer(), i);
-        device->DrawBuffer(m_debug_gbuffer.get(), i);
-        device->BlitFramebuffer(
-            m_lighting_system->GetGBuffer(), 0, 0,
-            m_lighting_system->GetGBuffer()->GetWidth(),
-            m_lighting_system->GetGBuffer()->GetHeight(), m_debug_gbuffer.get(),
-            0, 0, m_debug_gbuffer->GetWidth(), m_debug_gbuffer->GetHeight(),
-            BufferBitMask::COLOR_BUFFER_BIT, BlitFilter::NEAREST);
+        Renderer::DrawFromBuffer(i, m_lighting_system->GetGBuffer(), i,
+                                 BufferBitMask::COLOR_BUFFER_BIT);
     }
+    Renderer::EndRenderPass();
 }
 
 }  // namespace SD

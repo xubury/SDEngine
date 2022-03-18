@@ -10,7 +10,7 @@ namespace SD {
 
 class SD_SYSTEM_API PostProcessSystem : public System {
    public:
-    PostProcessSystem(Framebuffer *framebuffer);
+    PostProcessSystem(int32_t width, int32_t height);
 
     void OnInit() override;
 
@@ -44,7 +44,6 @@ class SD_SYSTEM_API PostProcessSystem : public System {
 
     int m_width;
     int m_height;
-    Framebuffer *m_framebuffer;
 
     Ref<Shader> m_post_shader;
     Ref<Shader> m_blur_shader;

@@ -105,6 +105,7 @@ enum class BufferLayoutType { UBYTE, UINT, INT, FLOAT, FLOAT2, FLOAT3, FLOAT4, M
 enum class BufferIOType { STATIC, DYNAMIC };
 
 enum class BufferBitMask {
+    NONE = 0,
     COLOR_BUFFER_BIT = 1,
     DEPTH_BUFFER_BIT = 1 << 1,
     STENCIL_BUFFER_BIT = 1 << 2

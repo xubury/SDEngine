@@ -9,7 +9,7 @@
 
 namespace SD {
 
-Device* Renderer::m_device;
+Scope<Device> Renderer::m_device;
 
 Ref<UniformBuffer> Renderer::m_camera_UBO;
 CameraData Renderer::m_camera_data;
@@ -22,38 +22,66 @@ Ref<VertexArray> Renderer::m_box_vao;
 Ref<VertexBuffer> Renderer::m_box_vbo;
 Ref<IndexBuffer> Renderer::m_box_ibo;
 
-static std::stack<Framebuffer*> s_buffer_stacks;
-Framebuffer* s_current_buffer;
+static std::stack<RenderPassInfo> s_render_pass_stacks;
+
+void Renderer::SetRenderOperation(const RenderOperation& op) {
+    op.depth_test ? m_device->Enable(Operation::DEPTH_TEST)
+                  : m_device->Disable(Operation::DEPTH_TEST);
+    m_device->SetDepthMask(op.depth_mask);
+
+    m_device->SetDepthfunc(op.depth_func);
+    op.blend ? m_device->Enable(Operation::BLEND)
+             : m_device->Disable(Operation::BLEND);
+
+    op.face_culling ? m_device->Enable(Operation::CULL_FACE)
+                    : m_device->Disable(Operation::CULL_FACE);
+    m_device->SetCullFace(op.cull_face);
+}
 
 void Renderer::BeginRenderPass(const RenderPassInfo& info) {
-    s_buffer_stacks.push(info.framebuffer);
-    s_current_buffer = GetBufferStackTop();
-    m_device->SetFramebuffer(s_current_buffer);
-    m_device->SetViewport(0, 0, s_current_buffer->GetWidth(),
-                          s_current_buffer->GetHeight());
+    s_render_pass_stacks.push(info);
+    m_device->SetFramebuffer(info.framebuffer);
+    m_device->SetViewport(0, 0, info.viewport_width, info.viewport_height);
+    m_device->SetClearColor(info.clear_value[0], info.clear_value[1],
+                            info.clear_value[2], info.clear_value[3]);
+    if (info.clear_mask != BufferBitMask::NONE) {
+        m_device->Clear(info.clear_mask);
+    }
+    SetRenderOperation(info.op);
 }
 
 void Renderer::BeginRenderSubpass(const RenderSubpassInfo& info) {
-    s_current_buffer = GetBufferStackTop();
-    m_device->SetFramebuffer(s_current_buffer);
-    m_device->DrawBuffers(s_current_buffer, info.draw_buffer_count,
+    auto& render_pass = GetCurrentRenderPass();
+    m_device->SetFramebuffer(render_pass.framebuffer);
+    m_device->SetViewport(0, 0, render_pass.viewport_width,
+                          render_pass.viewport_height);
+
+    m_device->DrawBuffers(render_pass.framebuffer, info.draw_buffer_count,
                           info.draw_buffer);
+    SetRenderOperation(info.op);
 }
 
 void Renderer::EndRenderSubpass() { m_device->SetFramebuffer(nullptr); }
 
-void Renderer::EndRenderPass() { s_buffer_stacks.pop(); }
-
-Framebuffer* Renderer::GetBufferStackTop() { return s_buffer_stacks.top(); }
-
-glm::vec2 Renderer::GetCurrentBufferSize() {
-    return {s_current_buffer->GetWidth(), s_current_buffer->GetHeight()};
+void Renderer::EndRenderPass() {
+    m_device->SetFramebuffer(nullptr);
+    s_render_pass_stacks.pop();
 }
 
-bool Renderer::IsEmptyStack() { return s_buffer_stacks.empty(); }
+const RenderPassInfo& Renderer::GetCurrentRenderPass() {
+    return s_render_pass_stacks.top();
+}
 
-void Renderer::Init(Device* device) {
-    m_device = device;
+glm::vec2 Renderer::GetCurrentBufferSize() {
+    auto& render_pass = GetCurrentRenderPass();
+    return {render_pass.framebuffer->GetWidth(),
+            render_pass.framebuffer->GetHeight()};
+}
+
+bool Renderer::IsEmptyStack() { return s_render_pass_stacks.empty(); }
+
+void Renderer::Init() {
+    m_device = Device::Create();
     SD_CORE_TRACE("Initializing Renderer");
     m_camera_UBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
                                          BufferIOType::DYNAMIC);
@@ -124,12 +152,36 @@ void Renderer::Submit(const VertexArray& vao, MeshTopology topology,
     }
 }
 
-void Renderer::DrawNDCQuad() {
+void Renderer::DrawNDCQuad(const Shader& shader) {
+    m_device->SetShader(&shader);
     Submit(*m_quad_vao, MeshTopology::TRIANGLES, m_quad_ibo->GetCount(), 0);
 }
 
-void Renderer::DrawNDCBox() {
+void Renderer::DrawNDCBox(const Shader& shader) {
+    m_device->SetShader(&shader);
     Submit(*m_box_vao, MeshTopology::TRIANGLES, m_box_ibo->GetCount(), 0);
+}
+
+void Renderer::DrawToBuffer(int read_attachment, Framebuffer* draw_fb,
+                            int draw_attachment, BufferBitMask mask) {
+    Framebuffer* framebuffer = GetCurrentRenderPass().framebuffer;
+    m_device->DrawBuffer(draw_fb, draw_attachment);
+    m_device->ReadBuffer(framebuffer, read_attachment);
+    m_device->BlitFramebuffer(framebuffer, 0, 0, framebuffer->GetWidth(),
+                              framebuffer->GetHeight(), draw_fb, 0, 0,
+                              framebuffer->GetWidth(), framebuffer->GetHeight(),
+                              mask, BlitFilter::NEAREST);
+}
+
+void Renderer::DrawFromBuffer(int draw_attachment, Framebuffer* read_fb,
+                              int read_attachment, BufferBitMask mask) {
+    Framebuffer* framebuffer = GetCurrentRenderPass().framebuffer;
+    m_device->DrawBuffer(framebuffer, draw_attachment);
+    m_device->ReadBuffer(read_fb, read_attachment);
+    m_device->BlitFramebuffer(read_fb, 0, 0, framebuffer->GetWidth(),
+                              framebuffer->GetHeight(), framebuffer, 0, 0,
+                              framebuffer->GetWidth(), framebuffer->GetHeight(),
+                              mask, BlitFilter::NEAREST);
 }
 
 }  // namespace SD

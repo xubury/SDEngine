@@ -34,9 +34,11 @@ struct SpriteDrawData {
 };
 void SpriteRenderSystem::OnRender() {
     int index[] = {0, 1};
-    Renderer::BeginRenderSubpass(RenderSubpassInfo{index, 2});
-    device->SetDepthMask(false);
+    RenderOperation op;
+    op.depth_mask = false;
+    Renderer::BeginRenderSubpass(RenderSubpassInfo{index, 2, op});
     SpriteRenderer::Begin(*scene->GetCamera());
+
     std::vector<SpriteDrawData> datas;
     auto sprite_view = scene->view<SpriteComponent, TransformComponent>();
     sprite_view.each([&datas](entt::entity entity_id,
@@ -114,7 +116,7 @@ void SpriteRenderSystem::OnRender() {
         }
     });
     SpriteRenderer::End();
-    device->SetDepthMask(true);
+
     Renderer::EndRenderSubpass();
 }
 

@@ -9,12 +9,12 @@ Device::API Device::GetAPI() { return s_api; }
 
 void Device::SetAPI(API api) { s_api = api; }
 
-Ref<Device> Device::Create() {
+Scope<Device> Device::Create() {
     SD_CORE_TRACE("Initializing Graphics Deivce...");
-    Ref<Device> device;
+    Scope<Device> device;
     switch (s_api) {
         case API::OpenGL:
-            device = CreateRef<GLDevice>();
+            device = CreateScope<GLDevice>();
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");

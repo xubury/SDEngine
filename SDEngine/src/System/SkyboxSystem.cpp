@@ -30,21 +30,22 @@ void SkyboxSystem::OnImGui() {}
 
 void SkyboxSystem::OnRender() {
     int index = 0;
-    Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1});
+    RenderOperation op;
+    op.depth_func = DepthFunc::LESS_EQUAL;
+    Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1, op});
+
     glm::vec3 pos = scene->GetCamera()->GetWorldPosition();
     glm::mat4 projection = scene->GetCamera()->GetViewPorjection() *
                            glm::translate(glm::mat4(1.0f), pos);
     m_skybox_shader->GetParam("u_projection")
         ->SetAsMat4(glm::value_ptr(projection));
 
-    device->SetDepthfunc(DepthFunc::LESS_EQUAL);
     if (m_skybox) {
         m_skybox_shader->GetParam("u_skybox")->SetAsTexture(m_skybox.get());
     }
 
-    device->SetShader(m_skybox_shader.get());
-    Renderer::DrawNDCBox();
-    device->SetDepthfunc(DepthFunc::LESS);
+    Renderer::DrawNDCBox(*m_skybox_shader);
+
     Renderer::EndRenderSubpass();
 }
 

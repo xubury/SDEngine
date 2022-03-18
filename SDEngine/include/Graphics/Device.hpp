@@ -17,7 +17,7 @@ class SD_GRAPHICS_API Device {
     static API GetAPI();
     static void SetAPI(API api);
 
-    static Ref<Device> Create();
+    static Scope<Device> Create();
 
     Device() = default;
     virtual ~Device() = default;

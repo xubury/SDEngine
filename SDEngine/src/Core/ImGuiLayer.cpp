@@ -14,7 +14,6 @@ void ImGuiLayer::Begin() {
     m_window->ImGuiNewFrame();
     ImGui::NewFrame();
     ImGuizmo::BeginFrame();
-    device->SetFramebuffer(nullptr);
 
     static bool dockspaceOpen = true;
     static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;

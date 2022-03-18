@@ -4,7 +4,6 @@
 #include "Core/Export.hpp"
 #include "Utility/Ini.hpp"
 #include "ECS/Scene.hpp"
-#include "Graphics/Device.hpp"
 
 namespace SD {
 
@@ -12,13 +11,11 @@ std::filesystem::path SD_CORE_API GetAppDirectory();
 
 #define APP_VARS        \
     Ref<Ini> setting;   \
-    Ref<Device> device; \
     Scene *scene;
 
 #define SET_APP_VARS                       \
     void SetAppVars(const AppVars &vars) { \
         setting = vars.setting;            \
-        device = vars.device;              \
         scene = vars.scene;                \
     }
 
@@ -26,7 +23,6 @@ std::filesystem::path SD_CORE_API GetAppDirectory();
     AppVars MakeAppVars() {     \
         AppVars vars;           \
         vars.setting = setting; \
-        vars.device = device;   \
         vars.scene = scene;     \
         return vars;            \
     }

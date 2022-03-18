@@ -4,6 +4,7 @@
 #include "Core/Vars.hpp"
 #include "Core/Window.hpp"
 #include "Core/ImGuiLayer.hpp"
+#include "Graphics/Device.hpp"
 
 int main(int argc, char **argv);
 

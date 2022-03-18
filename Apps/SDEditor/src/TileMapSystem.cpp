@@ -165,9 +165,10 @@ void TileMapSystem::OnImGui() {
 }
 
 void TileMapSystem::OnRender() {
-    device->Disable(SD::Operation::DEPTH_TEST);
     const int index = 0;
-    Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1});
+    RenderOperation op;
+    op.depth_test= false;
+    Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1, op});
     SpriteRenderer::Begin(*scene->GetCamera());
 
     // draw brush & outline
@@ -222,7 +223,6 @@ void TileMapSystem::OnRender() {
             outline_pos, glm::quat(), tex_size, glm::vec4(1, 1, 1, 0.7));
     }
     SpriteRenderer::End();
-    device->Enable(SD::Operation::DEPTH_TEST);
     Renderer::EndRenderSubpass();
 }
 

@@ -36,11 +36,10 @@ DataFormat GetTextureFormat(GeometryBufferType type) {
     }
 }
 
-LightingSystem::LightingSystem(Framebuffer *framebuffer, MultiSampleLevel msaa)
+LightingSystem::LightingSystem(int width, int height, MultiSampleLevel msaa)
     : System("LightingSystem"),
-      m_main_buffer(framebuffer),
-      m_width(framebuffer->GetWidth()),
-      m_height(framebuffer->GetHeight()),
+      m_width(width),
+      m_height(height),
       m_msaa(msaa) {}
 
 void LightingSystem::OnInit() {
@@ -194,32 +193,27 @@ void LightingSystem::OnImGui() {
 void LightingSystem::OnRender() {
     SD_CORE_ASSERT(scene->GetCamera(), "No camera is set!");
 
-    device->Disable(Operation::BLEND);
     RenderGBuffer();
     if (m_ssao_state) {
         RenderSSAO();
     }
     RenderDeferred();
     RenderEmissive();
-    device->Enable(Operation::BLEND);
 
-    device->ReadBuffer(m_gbuffer.get(), G_ENTITY_ID);
-    device->DrawBuffer(m_main_buffer, 1);
-    device->BlitFramebuffer(
-        m_gbuffer.get(), 0, 0, m_gbuffer->GetWidth(), m_gbuffer->GetHeight(),
-        m_main_buffer, 0, 0, m_main_buffer->GetWidth(),
-        m_main_buffer->GetHeight(),
-        BufferBitMask::COLOR_BUFFER_BIT | BufferBitMask::DEPTH_BUFFER_BIT,
-        BlitFilter::NEAREST);
+    Renderer::DrawFromBuffer(
+        1, m_gbuffer.get(), G_ENTITY_ID,
+        BufferBitMask::COLOR_BUFFER_BIT | BufferBitMask::DEPTH_BUFFER_BIT);
 }
 
 void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
     if (!light.IsCastShadow()) return;
 
     auto modelView = scene->view<TransformComponent, ModelComponent>();
-    device->SetCullFace(Face::FRONT);
-
-    Renderer::BeginRenderPass(RenderPassInfo{light.GetCascadeMap()});
+    RenderOperation op;
+    op.cull_face = Face::FRONT;
+    Framebuffer *depth_map = light.GetCascadeMap();
+    Renderer::BeginRenderPass(RenderPassInfo{depth_map, depth_map->GetWidth(),
+                                             depth_map->GetHeight(), op});
     MeshRenderer::Begin(light, transform, *scene->GetCamera(),
                         *m_cascade_shader);
 
@@ -242,28 +236,30 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
         }
     });
     MeshRenderer::End();
-    device->SetCullFace(Face::BACK);
     Renderer::EndRenderPass();
 
-    Renderer::BeginRenderPass(RenderPassInfo{m_cascade_debug_fb.get()});
-    m_cascade_debug_shader->GetParam("depthMap")
-        ->SetAsTexture(light.GetCascadeMap()->GetTexture());
-    m_cascade_debug_shader->GetParam("layer")->SetAsInt(m_debug_layer);
-    m_cascade_debug_shader->GetParam("near_plane")
-        ->SetAsFloat(scene->GetCamera()->GetNearZ());
-    m_cascade_debug_shader->GetParam("far_plane")
-        ->SetAsFloat(scene->GetCamera()->GetFarZ());
-    device->SetShader(m_cascade_debug_shader.get());
-    Renderer::DrawNDCQuad();
+    // debug
+    {
+        Renderer::BeginRenderPass(RenderPassInfo{
+            m_cascade_debug_fb.get(), m_cascade_debug_fb->GetWidth(),
+            m_cascade_debug_fb->GetHeight(), RenderOperation{}});
+        m_cascade_debug_shader->GetParam("depthMap")
+            ->SetAsTexture(light.GetCascadeMap()->GetTexture());
+        m_cascade_debug_shader->GetParam("layer")->SetAsInt(m_debug_layer);
+        m_cascade_debug_shader->GetParam("near_plane")
+            ->SetAsFloat(scene->GetCamera()->GetNearZ());
+        m_cascade_debug_shader->GetParam("far_plane")
+            ->SetAsFloat(scene->GetCamera()->GetFarZ());
+        Renderer::DrawNDCQuad(*m_cascade_debug_shader);
 
-    Renderer::EndRenderPass();
+        Renderer::EndRenderPass();
+    }
 }
 
 void LightingSystem::RenderSSAO() {
-    const float clear_value = 1.0f;
-    m_ssao_buffer->ClearAttachment(0, &clear_value);
-
-    Renderer::BeginRenderPass(RenderPassInfo{m_ssao_buffer.get()});
+    Renderer::BeginRenderPass(RenderPassInfo{m_ssao_buffer.get(),
+                                             m_ssao_buffer->GetWidth(),
+                                             m_ssao_buffer->GetHeight()});
     MeshRenderer::Begin(*m_ssao_shader, *scene->GetCamera());
     m_ssao_shader->GetParam("u_radius")->SetAsFloat(m_ssao_radius);
     m_ssao_shader->GetParam("u_bias")->SetAsFloat(m_ssao_bias);
@@ -273,46 +269,40 @@ void LightingSystem::RenderSSAO() {
     m_ssao_shader->GetParam("u_normal")
         ->SetAsTexture(m_gbuffer->GetTexture(GeometryBufferType::G_NORMAL));
     m_ssao_shader->GetParam("u_noise")->SetAsTexture(m_ssao_noise.get());
-    device->SetShader(m_ssao_shader.get());
-    Renderer::DrawNDCQuad();
+    Renderer::DrawNDCQuad(*m_ssao_shader);
 
     MeshRenderer::End();
     Renderer::EndRenderPass();
 
     // blur
-    Renderer::BeginRenderPass(RenderPassInfo{m_ssao_blur_buffer.get()});
-    m_ssao_blur_buffer->ClearAttachment(0, &clear_value);
+    Renderer::BeginRenderPass(RenderPassInfo{m_ssao_blur_buffer.get(),
+                                             m_ssao_blur_buffer->GetWidth(),
+                                             m_ssao_blur_buffer->GetHeight()});
     m_ssao_blur_shader->GetParam("u_ssao")->SetAsTexture(
         m_ssao_buffer->GetTexture());
-    device->SetShader(m_ssao_blur_shader.get());
-    Renderer::DrawNDCQuad();
+    Renderer::DrawNDCQuad(*m_ssao_blur_shader);
     Renderer::EndRenderPass();
 }
 
 void LightingSystem::RenderEmissive() {
     auto lightView = scene->view<TransformComponent, LightComponent>();
+    RenderOperation op;
+    op.blend = false;
     if (lightView.begin() != lightView.end()) {
         const int buffer = 0;
-        Renderer::BeginRenderSubpass(RenderSubpassInfo{&buffer, 1});
+        Renderer::BeginRenderSubpass(RenderSubpassInfo{&buffer, 1, op});
         m_emssive_shader->GetParam("u_lighting")
             ->SetAsTexture(GetLightingBuffer()->GetTexture());
         m_emssive_shader->GetParam("u_emissive")
             ->SetAsTexture(
                 m_gbuffer->GetTexture(GeometryBufferType::G_EMISSIVE));
-        device->SetShader(m_emssive_shader.get());
-        Renderer::DrawNDCQuad();
+        Renderer::DrawNDCQuad(*m_emssive_shader);
         Renderer::EndRenderSubpass();
     }
 }
 
 void LightingSystem::RenderDeferred() {
     auto lightView = scene->view<TransformComponent, LightComponent>();
-
-    // clear the last lighting pass' result
-    for (int i = 0; i < 2; ++i) {
-        device->SetFramebuffer(m_light_buffer[i].get());
-        device->Clear(BufferBitMask::COLOR_BUFFER_BIT);
-    }
 
     m_deferred_shader->GetParam("u_position")
         ->SetAsTexture(m_gbuffer->GetTexture(GeometryBufferType::G_POSITION));
@@ -323,12 +313,11 @@ void LightingSystem::RenderDeferred() {
     m_deferred_shader->GetParam("u_ambient")
         ->SetAsTexture(m_gbuffer->GetTexture(GeometryBufferType::G_AMBIENT));
     m_deferred_shader->GetParam("u_background")
-        ->SetAsTexture(m_main_buffer->GetTexture());
+        ->SetAsTexture(
+            Renderer::GetCurrentRenderPass().framebuffer->GetTexture());
     m_deferred_shader->GetParam("u_ssao")->SetAsTexture(
         m_ssao_blur_buffer->GetTexture());
     m_deferred_shader->GetParam("u_ssao_state")->SetAsBool(m_ssao_state);
-    const uint8_t input_id = 0;
-    const uint8_t output_id = 1;
 
     ShaderParam *lighting = m_deferred_shader->GetParam("u_lighting");
     ShaderParam *ambient = m_deferred_shader->GetParam("u_light.ambient");
@@ -351,14 +340,28 @@ void LightingSystem::RenderDeferred() {
         m_deferred_shader->GetParam("u_num_of_cascades");
     ShaderParam *cascade_planes =
         m_deferred_shader->GetParam("u_cascade_planes[0]");
+
+    RenderOperation op;
+    op.blend = false;
+
+    const uint8_t input_id = 0;
+    const uint8_t output_id = 1;
+    // clear the last lighting pass' result
+    float value[]{0, 0, 0, 0};
+    m_light_buffer[input_id]->ClearAttachment(0, value);
     lightView.each([&](const TransformComponent &transformComp,
                        LightComponent &lightComp) {
         Light &light = lightComp.light;
         const Transform &transform = transformComp.GetWorldTransform();
         RenderShadowMap(light, transform);
+        RenderPassInfo info{m_light_buffer[output_id].get(),
+                            m_light_buffer[output_id]->GetWidth(),
+                            m_light_buffer[output_id]->GetHeight(),
+                            op,
+                            BufferBitMask::COLOR_BUFFER_BIT,
+                            {0, 0, 0, 0}};
 
-        Renderer::BeginRenderPass(
-            RenderPassInfo{m_light_buffer[output_id].get()});
+        Renderer::BeginRenderPass(info);
         MeshRenderer::Begin(*m_deferred_shader, *scene->GetCamera());
         lighting->SetAsTexture(m_light_buffer[input_id]->GetTexture());
         direction->SetAsVec3(&transform.GetFront()[0]);
@@ -380,8 +383,7 @@ void LightingSystem::RenderDeferred() {
             num_of_cascades->SetAsInt(planes.size());
             cascade_planes->SetAsVec(&planes[0], planes.size());
         }
-        device->SetShader(m_deferred_shader.get());
-        Renderer::DrawNDCQuad();
+        Renderer::DrawNDCQuad(*m_deferred_shader);
         MeshRenderer::End();
         std::swap(m_light_buffer[input_id], m_light_buffer[output_id]);
         Renderer::EndRenderPass();
@@ -391,10 +393,17 @@ void LightingSystem::RenderDeferred() {
 void LightingSystem::RenderGBuffer() {
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
-    Renderer::BeginRenderPass(RenderPassInfo{m_gbuffer.get()});
+    RenderOperation op;
+    op.blend = false;
+    RenderPassInfo info{
+        m_gbuffer.get(),
+        m_gbuffer->GetWidth(),
+        m_gbuffer->GetHeight(),
+        op,
+        BufferBitMask::COLOR_BUFFER_BIT | BufferBitMask::DEPTH_BUFFER_BIT,
+        {0, 0, 0, 0}};
+    Renderer::BeginRenderPass(info);
     MeshRenderer::Begin(*m_gbuffer_shader, *scene->GetCamera());
-    device->Clear(BufferBitMask::COLOR_BUFFER_BIT |
-                  BufferBitMask::DEPTH_BUFFER_BIT);
     uint32_t id = static_cast<uint32_t>(entt::null);
     m_gbuffer->ClearAttachment(GeometryBufferType::G_ENTITY_ID, &id);
 

@@ -55,8 +55,7 @@ Application::Application(const std::string &title, Device::API api) {
 
     EventSystem::Init();
     AssetStorage::Init();
-    device = Device::Create();
-    Renderer::Init(device.get());
+    Renderer::Init();
 
     auto &storage = AssetStorage::Get();
     RegisterAssets(&storage);
