@@ -447,16 +447,17 @@ void ScenePanel::DrawComponents(Entity &entity)
     });
     DrawComponent<CameraComponent>(
         "Camera", entity, [&](CameraComponent &cameraComp) {
+            using underlying = std::underlying_type<CameraType>::type;
             CameraType type = cameraComp.camera.GetCameraType();
-            if (ImGui::RadioButton("Perspective",
-                                   reinterpret_cast<int *>(&type),
-                                   static_cast<int>(CameraType::Perspective))) {
+            if (ImGui::RadioButton(
+                    "Perspective", reinterpret_cast<underlying *>(&type),
+                    static_cast<underlying>(CameraType::Perspective))) {
                 cameraComp.camera.SetCameraType(type);
             }
             ImGui::SameLine();
             if (ImGui::RadioButton(
-                    "Ortho", reinterpret_cast<int *>(&type),
-                    static_cast<int>(CameraType::Orthographic))) {
+                    "Ortho", reinterpret_cast<underlying *>(&type),
+                    static_cast<underlying>(CameraType::Orthographic))) {
                 cameraComp.camera.SetCameraType(type);
             }
             float fov = cameraComp.camera.GetFOV();

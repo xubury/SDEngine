@@ -17,48 +17,55 @@ EditorCameraSystem::EditorCameraSystem(int32_t width, int32_t height)
       m_mouse_smooth_movement(0),
       m_mouse_movement(0),
       m_camera(CameraType::Perspective, glm::radians(45.f), m_width, m_height,
-               0.1f, MAX_FAR_Z) {
+               0.1f, MAX_FAR_Z)
+{
     m_camera.SetWorldPosition(glm::vec3(0, 0, 1));
 }
 
 void EditorCameraSystem::OnInit() { System::OnInit(); }
 
-void EditorCameraSystem::OnPush() {
+void EditorCameraSystem::OnPush()
+{
     m_key_handler =
         EventSystem::Get().Register(this, &EditorCameraSystem::OnMouseMotion);
     m_size_handler =
         EventSystem::Get().Register(this, &EditorCameraSystem::OnSizeEvent);
 }
 
-void EditorCameraSystem::OnPop() {
+void EditorCameraSystem::OnPop()
+{
     EventSystem::Get().RemoveHandler(m_key_handler);
     EventSystem::Get().RemoveHandler(m_size_handler);
 }
 
-void EditorCameraSystem::OnMouseMotion(const MouseMotionEvent &event) {
+void EditorCameraSystem::OnMouseMotion(const MouseMotionEvent &event)
+{
     if (Input::IsMouseDown(MouseButton::Right)) {
         m_mouse_movement.x += event.x_rel;
         m_mouse_movement.y += event.y_rel;
     }
 }
 
-void EditorCameraSystem::OnSizeEvent(const ViewportSizeEvent &event) {
+void EditorCameraSystem::OnSizeEvent(const ViewportSizeEvent &event)
+{
     m_camera.Resize(event.width, event.height);
 }
 
-void EditorCameraSystem::OnImGui() {
+void EditorCameraSystem::OnImGui()
+{
     ImGui::Begin("Editor Camera Sysetm");
     {
+        using underlying = std::underlying_type<CameraType>::type;
         CameraType type = m_camera.GetCameraType();
-        if (ImGui::RadioButton("Perspective",
-                               reinterpret_cast<int32_t *>(&type),
-                               static_cast<int32_t>(CameraType::Perspective))) {
+        if (ImGui::RadioButton(
+                "Perspective", reinterpret_cast<underlying *>(&type),
+                static_cast<underlying>(CameraType::Perspective))) {
             m_camera.SetCameraType(type);
         }
         ImGui::SameLine();
         if (ImGui::RadioButton(
-                "Ortho", reinterpret_cast<int32_t *>(&type),
-                static_cast<int32_t>(CameraType::Orthographic))) {
+                "Ortho", reinterpret_cast<underlying *>(&type),
+                static_cast<underlying>(CameraType::Orthographic))) {
             m_camera.SetCameraType(type);
         }
         float fov = m_camera.GetFOV();
@@ -80,7 +87,8 @@ void EditorCameraSystem::OnImGui() {
     ImGui::End();
 }
 
-void EditorCameraSystem::OnTick(float dt) {
+void EditorCameraSystem::OnTick(float dt)
+{
     float step = TRANSLATION_SPEED * dt;
     if (Input::IsKeyDown(Keycode::W) &&
         m_camera.GetCameraType() == CameraType::Perspective) {
@@ -112,7 +120,8 @@ void EditorCameraSystem::OnTick(float dt) {
     m_mouse_movement.y = 0;
 }
 
-void EditorCameraSystem::Rotate(float yaw, float pitch) {
+void EditorCameraSystem::Rotate(float yaw, float pitch)
+{
     yaw = glm::radians(yaw);
     pitch = glm::radians(pitch);
 
@@ -120,7 +129,8 @@ void EditorCameraSystem::Rotate(float yaw, float pitch) {
     m_pitch += pitch;
     if (std::abs(m_pitch) < glm::radians(89.f)) {
         rotation = glm::angleAxis(pitch, m_camera.GetWorldRight()) * rotation;
-    } else {
+    }
+    else {
         m_pitch -= pitch;
     }
     rotation = glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotation;

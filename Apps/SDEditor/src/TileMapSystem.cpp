@@ -5,7 +5,8 @@
 namespace SD {
 
 template <typename T>
-void SelectAsset(ResourceId *selected_id) {
+void SelectAsset(ResourceId *selected_id)
+{
     auto &storage = AssetStorage::Get();
 
     if (!storage.Empty<T>()) {
@@ -42,7 +43,8 @@ TileMapSystem::TileMapSystem(Framebuffer *framebuffer)
       m_file_dialog_open(false),
       m_priority(0),
       m_draw_outline(true),
-      m_operation(Operation::None) {
+      m_operation(Operation::None)
+{
     m_outline_texture = Texture::Create(
         GRID_TEXTURE_SIZE, GRID_TEXTURE_SIZE, 0, MultiSampleLevel::X1,
         TextureType::Normal, DataFormat::RGBA8, TextureWrap::Repeat);
@@ -66,12 +68,14 @@ void TileMapSystem::OnPush() {}
 void TileMapSystem::OnPop() {}
 
 void TileMapSystem::SetViewport(float left, float top, float width,
-                                float height) {
+                                float height)
+{
     m_viewport.SetPos(left, top);
     m_viewport.SetSize(width, height);
 }
 
-void TileMapSystem::ManipulateScene() {
+void TileMapSystem::ManipulateScene()
+{
     if (!ImGui::IsWindowHovered()) {
         return;
     }
@@ -104,24 +108,28 @@ void TileMapSystem::ManipulateScene() {
                 // m_brush.Clear();
             } break;
         }
-    } else if (ImGui::IsMouseClicked(1)) {
+    }
+    else if (ImGui::IsMouseClicked(1)) {
         m_operation = Operation::None;
     }
 }
 
-void TileMapSystem::OnImGui() {
+void TileMapSystem::OnImGui()
+{
     ImGui::Begin("TileMap System");
     {
+        using underlying = std::underlying_type<Operation>::type;
         ImGui::Checkbox("Outline", &m_draw_outline);
-        ImGui::RadioButton("None", reinterpret_cast<int *>(&m_operation),
-                           Operation::None);
+        ImGui::RadioButton("None", reinterpret_cast<underlying *>(&m_operation),
+                           static_cast<underlying>(Operation::None));
         ImGui::SameLine();
-        ImGui::RadioButton("Add Sprite", reinterpret_cast<int *>(&m_operation),
-                           Operation::AddEntity);
+        ImGui::RadioButton("Add Sprite",
+                           reinterpret_cast<underlying *>(&m_operation),
+                           static_cast<underlying>(Operation::AddEntity));
         ImGui::SameLine();
         ImGui::RadioButton("Clear Sprite",
-                           reinterpret_cast<int *>(&m_operation),
-                           Operation::RemoveEntity);
+                           reinterpret_cast<underlying *>(&m_operation),
+                           static_cast<underlying>(Operation::RemoveEntity));
         // ImGui::InputText("##Path", m_texture_path.data(),
         // m_texture_path.size(),
         //                  ImGuiInputTextFlags_ReadOnly);
@@ -161,7 +169,8 @@ void TileMapSystem::OnImGui() {
     ImGui::End();
 }
 
-void TileMapSystem::OnRender() {
+void TileMapSystem::OnRender()
+{
     const int index = 0;
     RenderOperation op;
     op.depth_test = false;
@@ -194,8 +203,7 @@ void TileMapSystem::OnRender() {
             } break;
         }
         if (m_operation != Operation::None) {
-            Renderer2D::DrawQuad(world, glm::quat(), brush_size,
-                                     select_color);
+            Renderer2D::DrawQuad(world, glm::quat(), brush_size, select_color);
         }
     }
 

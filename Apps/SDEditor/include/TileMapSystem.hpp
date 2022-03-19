@@ -13,7 +13,7 @@
 namespace SD {
 
 class TileMapSystem : public System {
-    enum Operation { None, AddEntity, RemoveEntity };
+    enum class Operation { None, AddEntity, RemoveEntity };
 
    public:
     TileMapSystem(Framebuffer *framebuffer);
