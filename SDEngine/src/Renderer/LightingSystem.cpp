@@ -1,4 +1,5 @@
 #include "Renderer/LightingSystem.hpp"
+#include "Core/Application.hpp"
 #include "Renderer/Renderer3D.hpp"
 #include "ECS/Component.hpp"
 
@@ -57,7 +58,7 @@ void LightingSystem::OnPush()
     auto &dispatcher = GetEventDispatcher();
     m_size_handler = dispatcher.Register(this, &LightingSystem::OnSizeEvent);
 
-    auto &settings = GetApp().GetSettings();
+    auto &settings = Application::GetApp().GetSettings();
     m_ssao_state = settings.GetBoolean("ssao", "state", true);
     m_ssao_radius = settings.GetFloat("ssao", "radius", 0.5);
     m_ssao_bias = settings.GetFloat("ssao", "bias", 0.25);
@@ -69,7 +70,7 @@ void LightingSystem::OnPop()
     auto &dispatcher = GetEventDispatcher();
     dispatcher.RemoveHandler(m_size_handler);
 
-    auto &settings = GetApp().GetSettings();
+    auto &settings = Application::GetApp().GetSettings();
     settings.SetBoolean("ssao", "state", m_ssao_state);
     settings.SetFloat("ssao", "radius", m_ssao_radius);
     settings.SetFloat("ssao", "bias", m_ssao_bias);

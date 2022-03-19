@@ -1,3 +1,5 @@
+
+
 #include "Core/Application.hpp"
 #include "Core/SDL.hpp"
 #include "Core/Input.hpp"
@@ -10,9 +12,40 @@
 #include "Asset/TextureAsset.hpp"
 #include "Asset/SceneAsset.hpp"
 
+#if defined(SD_PLATFORM_LINUX)
+#include <unistd.h>
+#endif
+
+#if defined(SD_PLATFORM_WINDOWS)
+#include <libloaderapi.h>
+#endif
+
 namespace SD {
 
+std::filesystem::path Application::GetAppDirectory()
+{
+    static std::filesystem::path path;
+    if (path.empty()) {
+#if defined(SD_PLATFORM_LINUX)
+        char buffer[260];
+        size_t size = readlink("/proc/self/exe", buffer, sizeof(buffer));
+        if (size > 0) {
+            path.assign(std::begin(buffer), std::begin(buffer) + size);
+        }
+#elif defined(SD_PLATFORM_WINDOWS)
+        char buffer[255];
+        size_t size = GetModuleFileNameA(NULL, buffer, sizeof(path));
+        if (size > 0) {
+            path.assign(std::begin(buffer), std::begin(buffer) + size);
+        }
+#endif
+    }
+    return path.parent_path();
+}
+
 const std::string SETTING_FILENAME = "setting.ini";
+
+Application *Application::s_instance;
 
 static void RegisterAssets(AssetStorage *storage)
 {

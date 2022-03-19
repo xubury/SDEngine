@@ -1,7 +1,6 @@
 #ifndef SD_APPLICATION_HPP
 #define SD_APPLICATION_HPP
 
-#include "Core/Vars.hpp"
 #include "Core/Window.hpp"
 #include "Core/ImGuiLayer.hpp"
 #include "Graphics/Device.hpp"
@@ -11,8 +10,25 @@ int main(int argc, char **argv);
 
 namespace SD {
 
+#define IMPLEMENT_APP(X)                          \
+    int main(int, char **)                        \
+    {                                             \
+        SD::Application::s_instance = new X;      \
+        SD::Application::s_instance->OnInit();    \
+        SD::Application::s_instance->Run();       \
+        SD::Application::s_instance->OnDestroy(); \
+        delete SD::Application::s_instance;       \
+        return 0;                                 \
+    }
+
 class SD_CORE_API Application {
    public:
+    template <typename T = Application>
+    static T &GetApp()
+    {
+        return *dynamic_cast<T *>(s_instance);
+    }
+
     void Shutdown();
 
     ImGuiLayer *GetImGuiLayer() const { return m_imgui; }
@@ -78,6 +94,9 @@ class SD_CORE_API Application {
     Ini m_settings;
 
     HandlerRegistration m_quit_handler;
+    static Application *s_instance;
+
+    std::filesystem::path GetAppDirectory();
 };
 
 }  // namespace SD

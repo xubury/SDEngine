@@ -38,7 +38,6 @@ set(Core_Src
     ${Src_Root}/System.cpp
     ${Src_Root}/Keyboard.cpp
     ${Src_Root}/ImGuiLayer.cpp
-    ${Src_Root}/Vars.cpp
     ${Src_Root}/Input.cpp)
 
 add_library(sd-core ${Core_Src})

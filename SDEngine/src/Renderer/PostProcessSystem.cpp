@@ -45,7 +45,7 @@ void PostProcessSystem::InitBuffers()
 void PostProcessSystem::OnPush()
 {
     auto &dispatcher = GetEventDispatcher();
-    auto &settings = GetApp().GetSettings();
+    auto &settings = Application::GetApp().GetSettings();
     m_is_bloom = settings.GetBoolean("post process", "bloom", m_is_bloom);
     m_bloom_factor =
         settings.GetFloat("post process", "bloom factor", m_bloom_factor);
@@ -58,7 +58,7 @@ void PostProcessSystem::OnPush()
 void PostProcessSystem::OnPop()
 {
     auto &dispatcher = GetEventDispatcher();
-    auto &settings = GetApp().GetSettings();
+    auto &settings = Application::GetApp().GetSettings();
     settings.SetBoolean("post process", "bloom", m_is_bloom);
     settings.SetFloat("post process", "bloom factor", m_bloom_factor);
     settings.SetFloat("post process", "exposure", m_exposure);

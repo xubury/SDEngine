@@ -9,7 +9,7 @@
 
 namespace SD {
 
-class CascadeShadow {
+class SD_GRAPHICS_API CascadeShadow {
    public:
     CascadeShadow();
     void CreateShadowMap();

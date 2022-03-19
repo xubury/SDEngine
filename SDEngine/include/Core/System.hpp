@@ -4,7 +4,6 @@
 #include "Core/Export.hpp"
 #include "Utility/Base.hpp"
 #include "Utility/EventDispatcher.hpp"
-#include "Core/Vars.hpp"
 #include "Core/Event/Event.hpp"
 
 namespace SD {
