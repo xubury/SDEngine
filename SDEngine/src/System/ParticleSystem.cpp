@@ -10,7 +10,8 @@
 namespace SD {
 
 ParticleSystem::ParticleSystem(int poolSize)
-    : System("Particle"), m_poolIndex(poolSize - 1) {
+    : System("Particle"), m_poolIndex(poolSize - 1)
+{
     m_particles.resize(poolSize);
 }
 
@@ -18,7 +19,8 @@ void ParticleSystem::OnPush() {}
 
 void ParticleSystem::OnPop() {}
 
-void ParticleSystem::OnRender() {
+void ParticleSystem::OnRender()
+{
     int index = 0;
     Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1});
     SpriteRenderer::Begin(*scene->GetCamera());
@@ -41,7 +43,8 @@ void ParticleSystem::OnRender() {
     Renderer::EndRenderSubpass();
 }
 
-void ParticleSystem::OnTick(float dt) {
+void ParticleSystem::OnTick(float dt)
+{
     for (auto &particle : m_particles) {
         if (!particle.active) continue;
 
@@ -56,7 +59,8 @@ void ParticleSystem::OnTick(float dt) {
     }
 }
 
-void ParticleSystem::Emit(const ParticleProp &particleProps) {
+void ParticleSystem::Emit(const ParticleProp &particleProps)
+{
     Particle &particle = m_particles[m_poolIndex];
 
     particle.active = true;

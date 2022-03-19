@@ -5,7 +5,8 @@
 
 namespace SD {
 
-Scene::Scene() : m_selected_entity(entt::null) {
+Scene::Scene() : m_selected_entity(entt::null)
+{
     RegisterComponent<IdComponent>();
     RegisterComponent<TagComponent>();
     RegisterComponent<TransformComponent>();
@@ -17,7 +18,8 @@ Scene::Scene() : m_selected_entity(entt::null) {
     RegisterComponent<SpriteAnimationComponent>();
 }
 
-Entity Scene::CreateEntity(const std::string &name) {
+Entity Scene::CreateEntity(const std::string &name)
+{
     Entity entity(create(), this);
     entity.AddComponent<IdComponent>();
     entity.AddComponent<TagComponent>(name);
@@ -25,7 +27,8 @@ Entity Scene::CreateEntity(const std::string &name) {
     return entity;
 }
 
-Entity Scene::CloneEntity(EntityId from) {
+Entity Scene::CloneEntity(EntityId from)
+{
     EntityId to = create();
     for (auto &&curr : storage()) {
         if (auto &storage = curr.second; storage.contains(from)) {
@@ -42,7 +45,8 @@ Entity Scene::CloneEntity(EntityId from) {
     return to_entity;
 }
 
-void Scene::Serialize(cereal::PortableBinaryOutputArchive &archive) {
+void Scene::Serialize(cereal::PortableBinaryOutputArchive &archive)
+{
     entt::snapshot loader{*this};
     loader.entities(archive);
     for (auto &func : m_serialize_functions) {
@@ -50,7 +54,8 @@ void Scene::Serialize(cereal::PortableBinaryOutputArchive &archive) {
     }
 }
 
-void Scene::Deserialize(cereal::PortableBinaryInputArchive &archive) {
+void Scene::Deserialize(cereal::PortableBinaryInputArchive &archive)
+{
     entt::snapshot_loader loader{*this};
     loader.entities(archive);
     for (auto &func : m_serialize_functions) {
@@ -60,7 +65,8 @@ void Scene::Deserialize(cereal::PortableBinaryInputArchive &archive) {
 
 void Scene::OnEditor(float, Camera *camera) { m_camera = camera; }
 
-void Scene::OnRuntime(float) {
+void Scene::OnRuntime(float)
+{
     auto view = this->view<CameraComponent>();
     view.each([&](CameraComponent &cam_comp) {
         if (cam_comp.primary) {

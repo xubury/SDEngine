@@ -22,7 +22,7 @@ class SD_UTILITY_API Log {
 
     static std::shared_ptr<spdlog::logger>& GetClientLogger();
 
-    static void EmplaceSink(const std::shared_ptr<BasicSink> &sink);
+    static void EmplaceSink(const std::shared_ptr<BasicSink>& sink);
 
    private:
     static std::shared_ptr<spdlog::logger> s_core_logger;
@@ -33,26 +33,30 @@ class SD_UTILITY_API Log {
 
 template <glm::length_t L, typename T, glm::qualifier Q>
 struct fmt::formatter<glm::vec<L, T, Q>> {
-    constexpr auto parse(format_parse_context& ctx) -> decltype(ctx.begin()) {
+    constexpr auto parse(format_parse_context& ctx) -> decltype(ctx.begin())
+    {
         return ctx.end();
     }
 
     template <typename FormatContext>
     auto format(const glm::vec<L, T, Q>& input, FormatContext& ctx)
-        -> decltype(ctx.out()) {
+        -> decltype(ctx.out())
+    {
         return format_to(ctx.out(), glm::to_string(input));
     }
 };
 
 template <typename T, glm::qualifier Q>
 struct fmt::formatter<glm::qua<T, Q>> {
-    constexpr auto parse(format_parse_context& ctx) -> decltype(ctx.begin()) {
+    constexpr auto parse(format_parse_context& ctx) -> decltype(ctx.begin())
+    {
         return ctx.end();
     }
 
     template <typename FormatContext>
     auto format(const glm::qua<T, Q>& input, FormatContext& ctx)
-        -> decltype(ctx.out()) {
+        -> decltype(ctx.out())
+    {
         return format_to(ctx.out(), "quat({}, {}, {}, {})", input.w, input.x,
                          input.y, input.z);
     }
@@ -60,13 +64,15 @@ struct fmt::formatter<glm::qua<T, Q>> {
 
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
 struct fmt::formatter<glm::mat<C, R, T, Q>> {
-    constexpr auto parse(format_parse_context& ctx) -> decltype(ctx.begin()) {
+    constexpr auto parse(format_parse_context& ctx) -> decltype(ctx.begin())
+    {
         return ctx.end();
     }
 
     template <typename FormatContext>
     auto format(const glm::mat<C, R, T, Q>& input, FormatContext& ctx)
-        -> decltype(ctx.out()) {
+        -> decltype(ctx.out())
+    {
         return format_to(ctx.out(), glm::to_string(input));
     }
 };

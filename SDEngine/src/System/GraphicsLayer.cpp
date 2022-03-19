@@ -7,9 +7,12 @@ namespace SD {
 
 GraphicsLayer::GraphicsLayer(int32_t width, int32_t height,
                              MultiSampleLevel msaa)
-    : Layer("Graphics Layer"), m_width(width), m_height(height), m_msaa(msaa) {}
+    : Layer("Graphics Layer"), m_width(width), m_height(height), m_msaa(msaa)
+{
+}
 
-void GraphicsLayer::OnInit() {
+void GraphicsLayer::OnInit()
+{
     Layer::OnInit();
 
     {
@@ -58,13 +61,15 @@ void GraphicsLayer::OnInit() {
     PushSystem(m_post_process_system);
 }
 
-void GraphicsLayer::OnTick(float dt) {
+void GraphicsLayer::OnTick(float dt)
+{
     for (auto &system : GetSystems()) {
         system->OnTick(dt);
     }
 }
 
-void GraphicsLayer::OnPush() {
+void GraphicsLayer::OnPush()
+{
     m_viewport_handler = EventSystem::Get().Register<ViewportSizeEvent>(
         [this](const ViewportSizeEvent &e) {
             m_width = e.width;
@@ -74,11 +79,13 @@ void GraphicsLayer::OnPush() {
         });
 }
 
-void GraphicsLayer::OnPop() {
+void GraphicsLayer::OnPop()
+{
     EventSystem::Get().RemoveHandler(m_viewport_handler);
 }
 
-void GraphicsLayer::OnRender() {
+void GraphicsLayer::OnRender()
+{
     Renderer::BeginRenderPass({m_main_framebuffer.get(), m_width, m_height});
     uint32_t id = static_cast<uint32_t>(entt::null);
     m_main_framebuffer->ClearAttachment(1, &id);
@@ -112,7 +119,8 @@ void GraphicsLayer::OnRender() {
     }
 }
 
-void GraphicsLayer::OnImGui() {
+void GraphicsLayer::OnImGui()
+{
     if (m_debug) {
         for (auto &system : GetSystems()) {
             system->OnImGui();
@@ -137,7 +145,8 @@ void GraphicsLayer::OnImGui() {
     }
 }
 
-void GraphicsLayer::BlitGeometryBuffers() {
+void GraphicsLayer::BlitGeometryBuffers()
+{
     Renderer::BeginRenderPass({m_debug_gbuffer.get(), m_width, m_height});
     for (int i = 0; i < static_cast<int>(GeometryBufferType::EntityId); ++i) {
         Renderer::DrawFromBuffer(i, m_lighting_system->GetGBuffer(), i,

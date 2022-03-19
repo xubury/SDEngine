@@ -52,31 +52,36 @@ class SD_ECS_API Entity {
 };
 
 template <typename T, typename... Args>
-T &Entity::AddComponent(Args &&...args) {
+T &Entity::AddComponent(Args &&...args)
+{
     SD_CORE_ASSERT(!HasComponent<T>(), "Entity already has this component!");
     T &component = m_scene->emplace<T>(m_handle, std::forward<Args>(args)...);
     return component;
 }
 
 template <typename T>
-bool Entity::HasComponent() const {
+bool Entity::HasComponent() const
+{
     return m_scene->all_of<T>(m_handle);
 }
 
 template <typename T>
-void Entity::RemoveComponent() {
+void Entity::RemoveComponent()
+{
     SD_CORE_ASSERT(HasComponent<T>(), "Entity does not have this component!");
     m_scene->remove<T>(m_handle);
 }
 
 template <typename T>
-T &Entity::GetComponent() {
+T &Entity::GetComponent()
+{
     SD_CORE_ASSERT(HasComponent<T>(), "Entity does not have this component!");
     return m_scene->get<T>(m_handle);
 }
 
 template <typename T>
-const T &Entity::GetComponent() const {
+const T &Entity::GetComponent() const
+{
     SD_CORE_ASSERT(HasComponent<T>(), "Entity does not have this component!");
     return m_scene->get<T>(m_handle);
 }

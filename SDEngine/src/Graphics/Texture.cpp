@@ -9,7 +9,8 @@ Ref<Texture> Texture::Create(int width, int height, int depth,
                              MultiSampleLevel samples, TextureType type,
                              DataFormat format, TextureWrap wrap,
                              TextureMinFilter min_filter, MipmapMode mode,
-                             TextureMagFilter mag_filter) {
+                             TextureMagFilter mag_filter)
+{
     Ref<Texture> texture;
     switch (Device::GetAPI()) {
         case Device::API::OpenGL:
@@ -37,17 +38,20 @@ Texture::Texture(int width, int height, int depth, MultiSampleLevel samples,
       m_wrap(wrap),
       m_mipmap_mode(mode),
       m_min_filter(min_filter),
-      m_mag_filter(mag_filter) {
+      m_mag_filter(mag_filter)
+{
     m_mipmap_levels = std::max(
         static_cast<int>(std::floor(std::log2(std::max(m_width, m_height)))),
         1);
 }
 
-bool Texture::operator==(const Texture &other) const {
+bool Texture::operator==(const Texture &other) const
+{
     return GetId() == other.GetId();
 }
 
-bool Texture::operator!=(const Texture &other) const {
+bool Texture::operator!=(const Texture &other) const
+{
     return !(*this == other);
 }
 

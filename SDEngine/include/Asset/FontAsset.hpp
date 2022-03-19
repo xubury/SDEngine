@@ -12,11 +12,13 @@ class FontAsset : public Asset {
    public:
     FontAsset() : m_pixel_height(20){};
 
-    void Serialize(cereal::PortableBinaryOutputArchive &archive) override {
+    void Serialize(cereal::PortableBinaryOutputArchive &archive) override
+    {
         archive(*this);
     }
 
-    void Deserialize(cereal::PortableBinaryInputArchive &archive) override {
+    void Deserialize(cereal::PortableBinaryInputArchive &archive) override
+    {
         archive(*this);
         auto &storage = AssetStorage::Get();
         m_font = FontLoader::LoadFont(storage.GetAbsolutePath(m_font_path),

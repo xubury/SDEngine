@@ -16,14 +16,16 @@ class SD_UTILITY_API EventStack {
 
     ~EventStack() = default;
 
-    void Push(T item) {
+    void Push(T item)
+    {
         m_items.emplace(m_items.begin() + m_insertId, item);
         ++m_insertId;
     }
 
     void PushOverlay(T item) { m_items.emplace_back(item); }
 
-    void Pop(T item) {
+    void Pop(T item)
+    {
         auto iter = m_items.begin();
         for (; iter != m_items.end(); iter++) {
             if (*iter == item) {
@@ -36,12 +38,14 @@ class SD_UTILITY_API EventStack {
             if (id < m_insertId) {
                 --m_insertId;
             }
-        } else {
+        }
+        else {
             SD_CORE_ERROR("EventStack::PopLayer Failed! No layer found!");
         }
     }
 
-    bool Has(T item) const {
+    bool Has(T item) const
+    {
         return std::find(m_items.begin(), m_items.end(), item) != m_items.end();
     }
 

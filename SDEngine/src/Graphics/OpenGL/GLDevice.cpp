@@ -11,7 +11,8 @@ namespace SD {
 
 #ifdef DEBUG_BUILD
 static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
-                                  int, const char *message, const void *) {
+                                  int, const char *message, const void *)
+{
     switch (severity) {
         case GL_DEBUG_SEVERITY_HIGH:
             SD_CORE_ASSERT(false, message);
@@ -32,7 +33,8 @@ static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
 }
 #endif
 
-GLDevice::GLDevice() {
+GLDevice::GLDevice()
+{
     SD_CORE_INFO("---Graphics Card Info---");
     SD_CORE_INFO("Vendor: {}", glGetString(GL_VENDOR));
     SD_CORE_INFO("Renderer: {}", glGetString(GL_RENDERER));
@@ -53,65 +55,77 @@ GLDevice::GLDevice() {
     Enable(Operation::FaceCulling);
 }
 
-void GLDevice::DrawElements(MeshTopology topology, int count, size_t offset) {
+void GLDevice::DrawElements(MeshTopology topology, int count, size_t offset)
+{
     glDrawElements(Translate(topology), count, GL_UNSIGNED_INT,
                    (const void *)offset);
 }
 
 void GLDevice::DrawElementsInstanced(MeshTopology topology, int count,
-                                     size_t offset, size_t amount) {
+                                     size_t offset, size_t amount)
+{
     glDrawElementsInstanced(Translate(topology), count, GL_UNSIGNED_INT,
                             (const void *)offset, amount);
 }
 
-void GLDevice::DrawArrays(MeshTopology topology, int first, int count) {
+void GLDevice::DrawArrays(MeshTopology topology, int first, int count)
+{
     glDrawArrays(Translate(topology), first, count);
 }
 
 void GLDevice::SetLineWidth(float width) { glLineWidth(width); }
 
-void GLDevice::SetClearColor(float r, float g, float b, float a) {
+void GLDevice::SetClearColor(float r, float g, float b, float a)
+{
     glClearColor(r, g, b, a);
 }
 
-void GLDevice::Clear(BufferBitMask bit) {
+void GLDevice::Clear(BufferBitMask bit)
+{
     // glUseProgram(0);
     glClear(Translate(bit & BufferBitMask::ColorBufferBit) |
             Translate(bit & BufferBitMask::DepthBufferBit) |
             Translate(bit & BufferBitMask::StencilBufferBit));
 }
 
-void GLDevice::SetVertexArray(const VertexArray *vertexArray) {
+void GLDevice::SetVertexArray(const VertexArray *vertexArray)
+{
     if (vertexArray) {
         glBindVertexArray(vertexArray->GetId());
-    } else {
+    }
+    else {
         glBindVertexArray(0);
     }
 }
 
-void GLDevice::SetShader(const Shader *shader) {
+void GLDevice::SetShader(const Shader *shader)
+{
     if (shader) {
         glUseProgram(shader->GetId());
-    } else {
+    }
+    else {
         glUseProgram(0);
     }
 }
 
-void GLDevice::SetViewport(int x, int y, int width, int height) {
+void GLDevice::SetViewport(int x, int y, int width, int height)
+{
     // opengl define viewport origin at bottom-left
     glViewport(x, y, width, height);
 }
 
-void GLDevice::SetFramebuffer(const Framebuffer *framebuffer) {
+void GLDevice::SetFramebuffer(const Framebuffer *framebuffer)
+{
     if (framebuffer) {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->GetId());
-
-    } else {
+    }
+    else {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 }
 
-void GLDevice::SetPolygonMode(PolygonMode mode, Face face) {
+void GLDevice::SetPolygonMode(PolygonMode mode, Face face)
+{
     glPolygonMode(Translate(face), Translate(mode));
 }
 
@@ -123,26 +137,31 @@ void GLDevice::Enable(Operation operation) { glEnable(Translate(operation)); }
 
 void GLDevice::SetCullFace(Face face) { glCullFace(Translate(face)); }
 
-void GLDevice::SetDepthfunc(DepthFunc depth_func) {
+void GLDevice::SetDepthfunc(DepthFunc depth_func)
+{
     glDepthFunc(Translate(depth_func));
 }
 
-void GLDevice::DrawBuffer(Framebuffer *fb, int buf) {
+void GLDevice::DrawBuffer(Framebuffer *fb, int buf)
+{
     if (fb) {
         glNamedFramebufferDrawBuffer(fb->GetId(), GL_COLOR_ATTACHMENT0 + buf);
-    } else {
+    }
+    else {
         glNamedFramebufferDrawBuffer(0, GL_FRONT_LEFT + buf);
     }
 }
 
-void GLDevice::DrawBuffers(Framebuffer *fb, int n, const int *buf) {
+void GLDevice::DrawBuffers(Framebuffer *fb, int n, const int *buf)
+{
     std::vector<GLenum> glbuf(n);
     if (fb) {
         std::generate(glbuf.begin(), glbuf.end(), [i = 0, buf]() mutable {
             return buf[i++] + GL_COLOR_ATTACHMENT0;
         });
         glNamedFramebufferDrawBuffers(fb->GetId(), n, glbuf.data());
-    } else {
+    }
+    else {
         std::generate(glbuf.begin(), glbuf.end(), [i = 0, buf]() mutable {
             return buf[i++] + GL_FRONT_LEFT;
         });
@@ -150,10 +169,12 @@ void GLDevice::DrawBuffers(Framebuffer *fb, int n, const int *buf) {
     }
 }
 
-void GLDevice::ReadBuffer(const Framebuffer *fb, int buf) {
+void GLDevice::ReadBuffer(const Framebuffer *fb, int buf)
+{
     if (fb) {
         glNamedFramebufferReadBuffer(fb->GetId(), GL_COLOR_ATTACHMENT0 + buf);
-    } else {
+    }
+    else {
         glNamedFramebufferReadBuffer(0, GL_FRONT_LEFT + buf);
     }
 }
@@ -162,7 +183,8 @@ void GLDevice::BlitFramebuffer(const Framebuffer *src, int src_x, int src_y,
                                int src_width, int src_height, Framebuffer *dst,
                                int dst_x, int dst_y, int dst_width,
                                int dst_height, BufferBitMask mask,
-                               BlitFilter filter) {
+                               BlitFilter filter)
+{
     uint32_t src_id = src ? src->GetId() : 0;
     uint32_t dst_id = dst ? dst->GetId() : 0;
     GLint gl_mask = Translate(mask & BufferBitMask::ColorBufferBit) |

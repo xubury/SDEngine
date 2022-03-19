@@ -36,7 +36,8 @@ class FrameAnimation : public Animation {
     FrameAnimation()
         : m_frame_index(0), m_frame_per_second(30.0f), m_frame_progress(0.f){};
 
-    void Tick(float time) override {
+    void Tick(float time) override
+    {
         float progess = m_frame_per_second * time;
         if (m_frame_index + 1 <= m_frame_progress + progess) {
             // new frame
@@ -47,19 +48,23 @@ class FrameAnimation : public Animation {
                 if (m_is_loop) {
                     m_frame_index = 0;
                     m_frame_progress = 0.f;
-                } else {
+                }
+                else {
                     m_frame_progress = m_frames.size();
                 }
-            } else {
+            }
+            else {
                 ++m_frame_index;
                 m_frame_progress += progess;
             }
-        } else {
+        }
+        else {
             m_frame_progress += progess;
         }
     }
 
-    void SetSpeed(float fps) {
+    void SetSpeed(float fps)
+    {
         m_frame_per_second = fps;
         SetDuration(m_frames.size() / m_frame_per_second);
     }
@@ -68,14 +73,16 @@ class FrameAnimation : public Animation {
 
     void SetFrameIndex(int index) { m_frame_index = index; }
 
-    void PushBack(const FRAME& frame) {
+    void PushBack(const FRAME& frame)
+    {
         m_frames.push_back(frame);
         SetDuration(m_frames.size() / m_frame_per_second);
     }
 
     void SetFrame(const FRAME& frame, int index) { m_frames.at(index) = frame; }
 
-    const FRAME& GetFrame(int index = -1) const {
+    const FRAME& GetFrame(int index = -1) const
+    {
         return index == -1 ? m_frames.at(m_frame_index) : m_frames.at(index);
     }
     size_t GetFrameSize() const { return m_frames.size(); }

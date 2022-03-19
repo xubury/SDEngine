@@ -52,7 +52,8 @@ struct TextInputEvent {
     char text[32];  // std::string is not allowed in union
 };
 
-struct AppQuitEvent {};
+struct AppQuitEvent {
+};
 
 struct EntitySelectEvent {
     EntityId entity_id;

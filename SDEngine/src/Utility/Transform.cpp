@@ -8,7 +8,8 @@
 namespace SD {
 
 bool Decompose(const glm::mat4 &transform, glm::vec3 &translation,
-               glm::quat &rotation, glm::vec3 &scale) {
+               glm::quat &rotation, glm::vec3 &scale)
+{
     // From glm::decompose in matrix_decompose.inl
 
     using namespace glm;
@@ -79,19 +80,24 @@ bool Decompose(const glm::mat4 &transform, glm::vec3 &translation,
 }
 
 Transform::Transform()
-    : m_position(0.f), m_rotation(1.f, 0.f, 0.f, 0.f), m_scale(1.0f) {}
+    : m_position(0.f), m_rotation(1.f, 0.f, 0.f, 0.f), m_scale(1.0f)
+{
+}
 
-void Transform::SetPosition(const glm::vec3 &position) {
+void Transform::SetPosition(const glm::vec3 &position)
+{
     m_position = position;
 }
 
-void Transform::SetRotation(const glm::quat &rotation) {
+void Transform::SetRotation(const glm::quat &rotation)
+{
     m_rotation = rotation;
 }
 
 void Transform::SetScale(const glm::vec3 &scale) { m_scale = scale; }
 
-void Transform::SetTransform(const glm::mat4 &transform) {
+void Transform::SetTransform(const glm::mat4 &transform)
+{
     Decompose(transform, m_position, m_rotation, m_scale);
 }
 
@@ -101,37 +107,45 @@ glm::quat Transform::GetRotation() const { return m_rotation; }
 
 glm::vec3 Transform::GetScale() const { return m_scale; }
 
-glm::mat4 Transform::GetMatrix() const {
+glm::mat4 Transform::GetMatrix() const
+{
     return glm::translate(glm::mat4(1.0f), m_position) *
            glm::toMat4(m_rotation) * glm::scale(glm::mat4(1.0f), m_scale);
 }
 
-glm::vec3 Transform::GetRight() const {
+glm::vec3 Transform::GetRight() const
+{
     return m_rotation * glm::vec3(1.f, 0.f, 0.f);
 }
 
-glm::vec3 Transform::GetUp() const {
+glm::vec3 Transform::GetUp() const
+{
     return m_rotation * glm::vec3(0.f, 1.f, 0.f);
 }
 
-glm::vec3 Transform::GetFront() const {
+glm::vec3 Transform::GetFront() const
+{
     return m_rotation * glm::vec3(0.f, 0.f, 1.f);
 }
 
-glm::vec3 Transform::WorldToLocal(const glm::vec3 &world) const {
+glm::vec3 Transform::WorldToLocal(const glm::vec3 &world) const
+{
     glm::mat3 rotation = glm::toMat3(GetRotation());
     return glm::transpose(rotation) * (world - GetPosition());
 }
 
-glm::vec3 Transform::LocalToWorld(const glm::vec3 &local) const {
+glm::vec3 Transform::LocalToWorld(const glm::vec3 &local) const
+{
     return GetRotation() * local + GetPosition();
 }
 
-glm::vec3 Transform::WorldToLocalVector(const glm::vec3 &world_vec) const {
+glm::vec3 Transform::WorldToLocalVector(const glm::vec3 &world_vec) const
+{
     return glm::transpose(glm::toMat3(GetRotation())) * world_vec;
 }
 
-glm::vec3 Transform::LocalToWorldVector(const glm::vec3 &local_vec) const {
+glm::vec3 Transform::LocalToWorldVector(const glm::vec3 &local_vec) const
+{
     return GetRotation() * local_vec;
 }
 

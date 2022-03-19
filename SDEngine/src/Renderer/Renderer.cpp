@@ -24,7 +24,8 @@ Ref<IndexBuffer> Renderer::m_box_ibo;
 
 static std::stack<RenderPassInfo> s_render_pass_stacks;
 
-void Renderer::SetRenderOperation(const RenderOperation& op) {
+void Renderer::SetRenderOperation(const RenderOperation& op)
+{
     op.depth_test ? m_device->Enable(Operation::DepthTest)
                   : m_device->Disable(Operation::DepthTest);
     m_device->SetDepthMask(op.depth_mask);
@@ -38,7 +39,8 @@ void Renderer::SetRenderOperation(const RenderOperation& op) {
     m_device->SetCullFace(op.cull_face);
 }
 
-void Renderer::BeginRenderPass(const RenderPassInfo& info) {
+void Renderer::BeginRenderPass(const RenderPassInfo& info)
+{
     s_render_pass_stacks.push(info);
     m_device->SetFramebuffer(info.framebuffer);
     m_device->SetViewport(0, 0, info.viewport_width, info.viewport_height);
@@ -50,7 +52,8 @@ void Renderer::BeginRenderPass(const RenderPassInfo& info) {
     SetRenderOperation(info.op);
 }
 
-void Renderer::BeginRenderSubpass(const RenderSubpassInfo& info) {
+void Renderer::BeginRenderSubpass(const RenderSubpassInfo& info)
+{
     auto& render_pass = GetCurrentRenderPass();
     m_device->SetFramebuffer(render_pass.framebuffer);
     m_device->SetViewport(0, 0, render_pass.viewport_width,
@@ -63,16 +66,19 @@ void Renderer::BeginRenderSubpass(const RenderSubpassInfo& info) {
 
 void Renderer::EndRenderSubpass() { m_device->SetFramebuffer(nullptr); }
 
-void Renderer::EndRenderPass() {
+void Renderer::EndRenderPass()
+{
     m_device->SetFramebuffer(nullptr);
     s_render_pass_stacks.pop();
 }
 
-const RenderPassInfo& Renderer::GetCurrentRenderPass() {
+const RenderPassInfo& Renderer::GetCurrentRenderPass()
+{
     return s_render_pass_stacks.top();
 }
 
-glm::vec2 Renderer::GetCurrentBufferSize() {
+glm::vec2 Renderer::GetCurrentBufferSize()
+{
     auto& render_pass = GetCurrentRenderPass();
     return {render_pass.framebuffer->GetWidth(),
             render_pass.framebuffer->GetHeight()};
@@ -80,7 +86,8 @@ glm::vec2 Renderer::GetCurrentBufferSize() {
 
 bool Renderer::IsEmptyStack() { return s_render_pass_stacks.empty(); }
 
-void Renderer::Init() {
+void Renderer::Init()
+{
     m_device = Device::Create();
     SD_CORE_TRACE("Initializing Renderer");
     m_camera_UBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
@@ -143,27 +150,32 @@ void Renderer::Init() {
 }
 
 void Renderer::Submit(const VertexArray& vao, MeshTopology topology,
-                      size_t count, size_t offset, bool index) {
+                      size_t count, size_t offset, bool index)
+{
     m_device->SetVertexArray(&vao);
     if (index) {
         m_device->DrawElements(topology, count, offset);
-    } else {
+    }
+    else {
         m_device->DrawArrays(topology, offset, count);
     }
 }
 
-void Renderer::DrawNDCQuad(const Shader& shader) {
+void Renderer::DrawNDCQuad(const Shader& shader)
+{
     m_device->SetShader(&shader);
     Submit(*m_quad_vao, MeshTopology::Triangles, m_quad_ibo->GetCount(), 0);
 }
 
-void Renderer::DrawNDCBox(const Shader& shader) {
+void Renderer::DrawNDCBox(const Shader& shader)
+{
     m_device->SetShader(&shader);
     Submit(*m_box_vao, MeshTopology::Triangles, m_box_ibo->GetCount(), 0);
 }
 
 void Renderer::DrawToBuffer(int read_attachment, Framebuffer* draw_fb,
-                            int draw_attachment, BufferBitMask mask) {
+                            int draw_attachment, BufferBitMask mask)
+{
     Framebuffer* framebuffer = GetCurrentRenderPass().framebuffer;
     m_device->DrawBuffer(draw_fb, draw_attachment);
     m_device->ReadBuffer(framebuffer, read_attachment);
@@ -174,7 +186,8 @@ void Renderer::DrawToBuffer(int read_attachment, Framebuffer* draw_fb,
 }
 
 void Renderer::DrawFromBuffer(int draw_attachment, Framebuffer* read_fb,
-                              int read_attachment, BufferBitMask mask) {
+                              int read_attachment, BufferBitMask mask)
+{
     Framebuffer* framebuffer = GetCurrentRenderPass().framebuffer;
     m_device->DrawBuffer(framebuffer, draw_attachment);
     m_device->ReadBuffer(read_fb, read_attachment);

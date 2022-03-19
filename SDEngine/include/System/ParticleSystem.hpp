@@ -29,7 +29,9 @@ struct SD_SYSTEM_API ParticleProp {
           sizeBegin(1.0f),
           sizeEnd(1.0f),
           sizeVariation(0.f),
-          lifeTime(1.0f) {}
+          lifeTime(1.0f)
+    {
+    }
 };
 
 class SD_SYSTEM_API ParticleSystem : public System {

@@ -666,7 +666,8 @@ enum class Keycode : uint32_t {
 Keycode SD_CORE_API GetKeycodeFromScancode(Scancode scancode);
 Scancode SD_CORE_API GetScancodeFromKeycode(Keycode keycode);
 
-inline bool IsKeyModActive(uint16_t src, uint16_t dst) {
+inline bool IsKeyModActive(uint16_t src, uint16_t dst)
+{
     return (src & dst) == dst;
 }
 

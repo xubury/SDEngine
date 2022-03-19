@@ -11,4 +11,4 @@
 #define SD_ANIMATION_API
 #endif
 
-#endif // !SD_ANIMATION_EXPORT_HPP
+#endif  // !SD_ANIMATION_EXPORT_HPP

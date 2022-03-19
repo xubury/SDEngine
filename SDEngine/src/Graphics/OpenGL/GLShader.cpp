@@ -5,7 +5,8 @@
 
 namespace SD {
 
-UniformType GetUniformType(GLenum gl_type) {
+UniformType GetUniformType(GLenum gl_type)
+{
     switch (gl_type) {
         case GL_BOOL_VEC2:
         case GL_BOOL_VEC3:
@@ -71,11 +72,13 @@ GLShader::GLShader()
       m_fragmentId(0),
       m_geometryId(0),
       m_computeId(0),
-      m_texture_cnt(0) {
+      m_texture_cnt(0)
+{
     m_id = glCreateProgram();
 }
 
-GLShader::~GLShader() {
+GLShader::~GLShader()
+{
     glDeleteProgram(m_id);
     DestroyShaders();
 
@@ -84,19 +87,22 @@ GLShader::~GLShader() {
     }
 }
 
-int32_t GLShader::GetUniformCount() const {
+int32_t GLShader::GetUniformCount() const
+{
     int32_t count;
     glGetProgramiv(m_id, GL_ACTIVE_UNIFORMS, &count);
     return count;
 }
 
-int32_t GLShader::GetUniformBufferCount() const {
+int32_t GLShader::GetUniformBufferCount() const
+{
     int32_t count;
     glGetProgramiv(m_id, GL_ACTIVE_UNIFORM_BLOCKS, &count);
     return count;
 }
 
-ShaderParam* GLShader::GetParam(const std::string& name) {
+ShaderParam* GLShader::GetParam(const std::string& name)
+{
     auto itr = m_params.find(name);
     if (itr != m_params.end()) {
         return itr->second;
@@ -109,7 +115,8 @@ ShaderParam* GLShader::GetParam(const std::string& name) {
     return nullptr;
 }
 
-ShaderParam* GLShader::GetParam(int32_t index) {
+ShaderParam* GLShader::GetParam(int32_t index)
+{
     int32_t name_size;
     int32_t size;
     GLenum gl_type;
@@ -151,7 +158,8 @@ ShaderParam* GLShader::GetParam(int32_t index) {
     return m_params.emplace(s, p).first->second;
 }
 
-void GLShader::CompileShader(ShaderType type, const std::string& code) {
+void GLShader::CompileShader(ShaderType type, const std::string& code)
+{
     const char* c_code = code.c_str();
     switch (type) {
         case ShaderType::Vertex:
@@ -192,7 +200,8 @@ void GLShader::CompileShader(ShaderType type, const std::string& code) {
     }
 }
 
-void GLShader::DestroyShaders() {
+void GLShader::DestroyShaders()
+{
     if (m_vertexId != 0) glDeleteShader(m_vertexId);
     if (m_fragmentId != 0) glDeleteShader(m_fragmentId);
     if (m_geometryId != 0) glDeleteShader(m_geometryId);
@@ -203,7 +212,8 @@ void GLShader::DestroyShaders() {
     m_computeId = 0;
 }
 
-void GLShader::LinkShaders() {
+void GLShader::LinkShaders()
+{
     glLinkProgram(m_id);
     CheckCompileErrors(m_id, "Program");
     DestroyShaders();
@@ -223,7 +233,8 @@ void GLShader::LinkShaders() {
     }
 }
 
-void GLShader::CheckCompileErrors(uint32_t shader, const std::string& type) {
+void GLShader::CheckCompileErrors(uint32_t shader, const std::string& type)
+{
     int success;
     int logSize = 0;
     std::string infoLog;
@@ -236,7 +247,8 @@ void GLShader::CheckCompileErrors(uint32_t shader, const std::string& type) {
             infoLog = fmt::format("\n{} Shader compilation error\n:{}", type,
                                   infoLog);
         }
-    } else {
+    }
+    else {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         glGetProgramiv(shader, GL_INFO_LOG_LENGTH, &logSize);
         infoLog.resize(logSize);
@@ -250,14 +262,16 @@ void GLShader::CheckCompileErrors(uint32_t shader, const std::string& type) {
 }
 
 void GLShader::SetUniformBuffer(const std::string& name,
-                                const UniformBuffer& buffer) {
+                                const UniformBuffer& buffer)
+{
     uint32_t index = glGetUniformBlockIndex(m_id, name.c_str());
     if (index != GL_INVALID_INDEX) {
         glUniformBlockBinding(m_id, index, buffer.GetBindingPoint());
     }
 }
 
-uint32_t GLShader::GetUint(const std::string& name) const {
+uint32_t GLShader::GetUint(const std::string& name) const
+{
     uint32_t value = 0;
     glGetUniformuiv(m_id, glGetUniformLocation(m_id, name.c_str()), &value);
     return value;

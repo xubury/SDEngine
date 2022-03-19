@@ -6,7 +6,8 @@
 
 namespace SD {
 
-GLWindow::GLWindow(const WindowCreateInfo &info) {
+GLWindow::GLWindow(const WindowCreateInfo &info)
+{
     uint32_t sdl_flags = info.flag | SDL_WINDOW_OPENGL;
 
     // Double buffer
@@ -37,31 +38,37 @@ GLWindow::GLWindow(const WindowCreateInfo &info) {
     SD_CORE_ASSERT(glewInit() == GLEW_OK, "glewInit failed!");
 }
 
-GLWindow::~GLWindow() {
+GLWindow::~GLWindow()
+{
     SDL_GL_DeleteContext(m_context);
     SDL_DestroyWindow(m_window);
 }
 
-void GLWindow::ImGuiInitBackend() {
+void GLWindow::ImGuiInitBackend()
+{
     ImGui_ImplSDL2_InitForOpenGL(m_window, m_context);
     ImGui_ImplOpenGL3_Init("#version 450");
 }
 
-void GLWindow::ImGuiShutdown() {
+void GLWindow::ImGuiShutdown()
+{
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
 }
 
-void GLWindow::ImGuiNewFrame() {
+void GLWindow::ImGuiNewFrame()
+{
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame();
 }
 
-void GLWindow::ImGuiRenderDrawData() {
+void GLWindow::ImGuiRenderDrawData()
+{
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-MultiSampleLevel GLWindow::GetMSAA() const {
+MultiSampleLevel GLWindow::GetMSAA() const
+{
     int value = 1;
     SDL(SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &value));
     return static_cast<MultiSampleLevel>(value);
@@ -69,19 +76,22 @@ MultiSampleLevel GLWindow::GetMSAA() const {
 
 bool GLWindow::GetIsVSync() const { return SDL_GL_GetSwapInterval() == 1; }
 
-glm::ivec2 GLWindow::GetSize() const {
+glm::ivec2 GLWindow::GetSize() const
+{
     glm::ivec2 size;
     SDL_GetWindowSize(m_window, &size.x, &size.y);
     return size;
 }
 
-int GLWindow::GetWidth() const {
+int GLWindow::GetWidth() const
+{
     int width = 0;
     SDL_GetWindowSize(m_window, &width, nullptr);
     return width;
 }
 
-int GLWindow::GetHeight() const {
+int GLWindow::GetHeight() const
+{
     int height = 0;
     SDL_GetWindowSize(m_window, nullptr, &height);
     return height;

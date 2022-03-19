@@ -11,7 +11,8 @@ class Animator {
    public:
     Animator() : m_is_playing(false), m_animation(nullptr) {}
 
-    void Play(ANIM *animation) {
+    void Play(ANIM *animation)
+    {
         static_assert(std::is_base_of_v<Animation, ANIM>,
                       "Template must be derived from Animation class");
         m_is_playing = true;
@@ -20,7 +21,8 @@ class Animator {
 
     void Stop() { m_is_playing = false; }
 
-    void Tick(float dt) {
+    void Tick(float dt)
+    {
         if (m_animation && m_is_playing) {
             m_animation->Tick(dt);
         }

@@ -37,10 +37,9 @@ class SD_GRAPHICS_API Device {
 
     virtual void SetClearColor(float r, float g, float b, float a) = 0;
 
-    virtual void Clear(
-        BufferBitMask bit = BufferBitMask::ColorBufferBit |
-                            BufferBitMask::DepthBufferBit |
-                            BufferBitMask::StencilBufferBit) = 0;
+    virtual void Clear(BufferBitMask bit = BufferBitMask::ColorBufferBit |
+                                           BufferBitMask::DepthBufferBit |
+                                           BufferBitMask::StencilBufferBit) = 0;
 
     virtual void SetVertexArray(const VertexArray *vertex_array) = 0;
 
@@ -72,7 +71,6 @@ class SD_GRAPHICS_API Device {
                                  Framebuffer *dst, int dst_x, int dst_y,
                                  int dst_width, int dst_height,
                                  BufferBitMask mask, BlitFilter filter) = 0;
-
 };
 
 }  // namespace SD

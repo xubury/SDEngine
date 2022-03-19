@@ -24,23 +24,28 @@ class SD_GRAPHICS_API Model {
     Model() = default;
 
     const std::vector<Material> &GetMaterials() const { return m_materials; };
-    const Material *GetMaterials(uint32_t id) const {
+    const Material *GetMaterials(uint32_t id) const
+    {
         return &m_materials[id];
     };
 
     const ModelTree &GetNodes() const { return m_nodes; }
 
-    void AddModelNode(const Material *mat, const ModelNode &node) {
+    void AddModelNode(const Material *mat, const ModelNode &node)
+    {
         m_nodes[mat].emplace_back(node);
     }
-    void AddModelNode(const Material *mat, ModelNode &&node) {
+    void AddModelNode(const Material *mat, ModelNode &&node)
+    {
         m_nodes[mat].emplace_back(node);
     }
 
-    void AddTransform(const glm::mat4 &transform) {
+    void AddTransform(const glm::mat4 &transform)
+    {
         m_transforms.emplace_back(transform);
     }
-    const glm::mat4 &GetTransform(uint32_t id) const {
+    const glm::mat4 &GetTransform(uint32_t id) const
+    {
         return m_transforms.at(id);
     }
     const std::vector<Mesh> &GetMeshes() const { return m_meshes; }
@@ -56,13 +61,16 @@ class SD_GRAPHICS_API Model {
 
     const TextureList &GetTextures() const { return m_textures; }
 
-    void AddTexture(std::string &path, const Ref<Texture> &texture) {
+    void AddTexture(std::string &path, const Ref<Texture> &texture)
+    {
         m_textures.emplace(path, texture);
     }
-    const Texture *GetTexture(const std::string &path) const {
+    const Texture *GetTexture(const std::string &path) const
+    {
         return m_textures.at(path).get();
     }
-    bool HasTexture(const std::string &path) {
+    bool HasTexture(const std::string &path)
+    {
         return m_textures.count(path) != 0;
     }
 

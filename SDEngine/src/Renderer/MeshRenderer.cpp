@@ -5,7 +5,8 @@ namespace SD {
 Ref<UniformBuffer> MeshRenderer::m_shadow_UBO;
 Ref<VertexArray> MeshRenderer::m_mesh_vao;
 
-void MeshRenderer::Init() {
+void MeshRenderer::Init()
+{
     m_shadow_UBO = UniformBuffer::Create(nullptr, sizeof(ShadowData),
                                          BufferIOType::Dynamic);
     m_mesh_vao = VertexArray::Create();
@@ -18,7 +19,8 @@ void MeshRenderer::Init() {
     m_mesh_vao->AddBufferLayout(layout);
 }
 
-void MeshRenderer::DrawMesh(const Shader& shader, const Mesh& mesh) {
+void MeshRenderer::DrawMesh(const Shader& shader, const Mesh& mesh)
+{
     m_device->SetPolygonMode(mesh.GetPolygonMode(), Face::Both);
     m_device->SetShader(&shader);
     m_mesh_vao->BindVertexBuffer(*mesh.GetVertexBuffer(), 0);
@@ -27,7 +29,8 @@ void MeshRenderer::DrawMesh(const Shader& shader, const Mesh& mesh) {
            0);
 }
 
-void MeshRenderer::SetMaterial(Shader& shader, const Material& material) {
+void MeshRenderer::SetMaterial(Shader& shader, const Material& material)
+{
     m_device->SetShader(&shader);
 
     shader.GetParam("u_material.diffuse")
@@ -40,7 +43,8 @@ void MeshRenderer::SetMaterial(Shader& shader, const Material& material) {
         ->SetAsTexture(material.GetTexture(MaterialType::EMISSIVE));
 }
 
-void MeshRenderer::Begin(Shader& shader, Camera& camera) {
+void MeshRenderer::Begin(Shader& shader, Camera& camera)
+{
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
@@ -49,7 +53,8 @@ void MeshRenderer::Begin(Shader& shader, Camera& camera) {
 }
 
 void MeshRenderer::Begin(Light& light, const Transform& light_trans,
-                         Camera& camera, Shader& shader) {
+                         Camera& camera, Shader& shader)
+{
     // Framebuffer* fb = light.GetCascadeMap();
     // m_device->SetFramebuffer(fb);
     // m_device->SetViewport(0, 0, fb->GetWidth(), fb->GetHeight());
@@ -63,7 +68,8 @@ void MeshRenderer::Begin(Light& light, const Transform& light_trans,
     SetupShaderUBO(shader);
 }
 
-void MeshRenderer::SetupShaderUBO(Shader& shader) {
+void MeshRenderer::SetupShaderUBO(Shader& shader)
+{
     shader.SetUniformBuffer("ShadowData", *m_shadow_UBO);
     shader.SetUniformBuffer("Camera", *m_camera_UBO);
 }

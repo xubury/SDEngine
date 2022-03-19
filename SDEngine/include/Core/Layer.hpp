@@ -14,7 +14,8 @@ namespace SD {
 
 class SD_CORE_API Layer {
    public:
-    Layer(const std::string &name) : m_name(name) {
+    Layer(const std::string &name) : m_name(name)
+    {
         SD_CORE_TRACE("Initializing layer: {}", name);
     }
 
@@ -24,12 +25,14 @@ class SD_CORE_API Layer {
 
     Layer &operator=(const Layer &) = delete;
 
-    virtual void OnInit() {
+    virtual void OnInit()
+    {
         m_scene_handler = EventSystem::Get().Register<NewSceneEvent>(
             [&](const NewSceneEvent &event) { scene = event.scene; });
     }
 
-    virtual void OnDestroy() {
+    virtual void OnDestroy()
+    {
         while (m_systems.Size()) {
             auto system = m_systems.Front();
             PopSystem(system);
@@ -49,7 +52,8 @@ class SD_CORE_API Layer {
     virtual void OnImGui() {}
 
     template <typename T, typename... ARGS>
-    T *CreateSystem(ARGS &&...args) {
+    T *CreateSystem(ARGS &&...args)
+    {
         T *system = new T(std::forward<ARGS>(args)...);
         system->SetAppVars(MakeAppVars());
         system->OnInit();
@@ -58,12 +62,14 @@ class SD_CORE_API Layer {
 
     void DestorySystem(System *system) { delete system; }
 
-    void PushSystem(System *system) {
+    void PushSystem(System *system)
+    {
         system->OnPush();
         m_systems.Push(system);
     }
 
-    void PopSystem(System *system) {
+    void PopSystem(System *system)
+    {
         system->OnPop();
         m_systems.Pop(system);
     }

@@ -25,7 +25,8 @@ struct SD_RENDERER_API QuadVertex {
 
 struct SD_RENDERER_API Quad {
     std::array<QuadVertex, 4> vertices;
-    glm::vec3 GetCenter() const {
+    glm::vec3 GetCenter() const
+    {
         return (vertices[0].position + vertices[1].position +
                 vertices[2].position + vertices[3].position) /
                glm::vec3(4);
@@ -92,7 +93,8 @@ static Ref<Shader> m_line_shader;
 static Ref<Shader> m_circle_shader;
 static Ref<Shader> m_sprite_shader;
 
-void SpriteRenderer::Init() {
+void SpriteRenderer::Init()
+{
     // Initializing line vbo
     m_data.line_vbo = VertexBuffer::Create(
         m_data.line_buffer.data(), m_data.line_buffer.size() * sizeof(Line),
@@ -180,23 +182,27 @@ void SpriteRenderer::Init() {
     SetupShaderUBO(*m_circle_shader);
 }
 
-void SpriteRenderer::SetupShaderUBO(Shader& shader) {
+void SpriteRenderer::SetupShaderUBO(Shader& shader)
+{
     shader.SetUniformBuffer("Camera", *m_camera_UBO);
 }
 
-void SpriteRenderer::Begin(Camera& camera) {
+void SpriteRenderer::Begin(Camera& camera)
+{
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
 }
 
-void SpriteRenderer::End() {
+void SpriteRenderer::End()
+{
     Flush();
     StartBatch();
     m_device->SetShader(nullptr);
 }
 
-void SpriteRenderer::StartBatch() {
+void SpriteRenderer::StartBatch()
+{
     // Reset text
     SetTextOrigin(0, 0);
     m_data.text_cursor.x = 0;
@@ -207,12 +213,14 @@ void SpriteRenderer::StartBatch() {
     StartCircleBatch();
 }
 
-void SpriteRenderer::StartLineBatch() {
+void SpriteRenderer::StartLineBatch()
+{
     m_data.line_vertex_cnt = 0;
     m_data.line_buffer_ptr = m_data.line_buffer.data();
 }
 
-void SpriteRenderer::StartQuadBatch() {
+void SpriteRenderer::StartQuadBatch()
+{
     // Reset texture
     m_data.texture_index = 1;
 
@@ -221,28 +229,33 @@ void SpriteRenderer::StartQuadBatch() {
     m_data.quad_buffer_ptr = m_data.quad_buffer.data();
 }
 
-void SpriteRenderer::StartCircleBatch() {
+void SpriteRenderer::StartCircleBatch()
+{
     // Reset circle
     m_data.circle_index_cnt = 0;
     m_data.circle_buffer_ptr = m_data.circle_buffer.data();
 }
 
-void SpriteRenderer::SetTextOrigin(int x, int y) {
+void SpriteRenderer::SetTextOrigin(int x, int y)
+{
     m_data.text_origin.x = x;
     m_data.text_origin.y = y;
 }
 
-glm::ivec2 SpriteRenderer::GetTextCursor() {
+glm::ivec2 SpriteRenderer::GetTextCursor()
+{
     return m_data.text_cursor + m_data.text_origin;
 }
 
-void SpriteRenderer::Flush() {
+void SpriteRenderer::Flush()
+{
     FlushLines();
     FlushQuads();
     FlushCircles();
 }
 
-void SpriteRenderer::FlushLines() {
+void SpriteRenderer::FlushLines()
+{
     if (m_data.line_vertex_cnt) {
         size_t offset = m_data.line_buffer_ptr - m_data.line_buffer.data();
         m_data.line_vbo->UpdateData(m_data.line_buffer.data(),
@@ -253,7 +266,8 @@ void SpriteRenderer::FlushLines() {
     }
 }
 
-void SpriteRenderer::FlushQuads() {
+void SpriteRenderer::FlushQuads()
+{
     if (m_data.quad_index_cnt) {
         size_t offset = m_data.quad_buffer_ptr - m_data.quad_buffer.data();
         m_data.quad_vbo->UpdateData(m_data.quad_buffer.data(),
@@ -270,7 +284,8 @@ void SpriteRenderer::FlushQuads() {
     }
 }
 
-void SpriteRenderer::FlushCircles() {
+void SpriteRenderer::FlushCircles()
+{
     if (m_data.circle_index_cnt) {
         size_t offset = m_data.circle_buffer_ptr - m_data.circle_buffer.data();
 
@@ -283,23 +298,27 @@ void SpriteRenderer::FlushCircles() {
     }
 }
 
-void SpriteRenderer::NextLineBatch() {
+void SpriteRenderer::NextLineBatch()
+{
     FlushLines();
     StartLineBatch();
 }
 
-void SpriteRenderer::NextQuadBatch() {
+void SpriteRenderer::NextQuadBatch()
+{
     FlushQuads();
     StartQuadBatch();
 }
 
-void SpriteRenderer::NextCircleBatch() {
+void SpriteRenderer::NextCircleBatch()
+{
     FlushCircles();
     StartCircleBatch();
 }
 
 void SpriteRenderer::DrawLine(const glm::vec3& start, const glm::vec3& end,
-                              const glm::vec4& color, uint32_t entity_id) {
+                              const glm::vec4& color, uint32_t entity_id)
+{
     if (m_data.line_vertex_cnt >= Renderer2DData::MAX_LINES_VERTICES) {
         NextLineBatch();
     }
@@ -317,14 +336,16 @@ void SpriteRenderer::DrawLine(const glm::vec3& start, const glm::vec3& end,
 
 void SpriteRenderer::DrawQuad(const glm::vec3& pos, const glm::quat& rot,
                               const glm::vec2& scale, const glm::vec4& color,
-                              uint32_t entity_id) {
+                              uint32_t entity_id)
+{
     DrawQuad(glm::translate(glm::mat4(1.0f), pos) * glm::toMat4(rot) *
                  glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
              color, entity_id);
 }
 
 void SpriteRenderer::DrawQuad(const glm::mat4& transform,
-                              const glm::vec4& color, uint32_t entity_id) {
+                              const glm::vec4& color, uint32_t entity_id)
+{
     if (m_data.quad_index_cnt >= Renderer2DData::MAX_INDICES) {
         NextQuadBatch();
     }
@@ -345,7 +366,8 @@ void SpriteRenderer::DrawTexture(const Texture& texture,
                                  const std::array<glm::vec2, 2>& uv,
                                  const glm::vec3& pos, const glm::quat& rot,
                                  const glm::vec2& scale, const glm::vec4& color,
-                                 uint32_t entity_id) {
+                                 uint32_t entity_id)
+{
     DrawTexture(
         texture, uv,
         glm::translate(glm::mat4(1.0f), pos) * glm::toMat4(rot) *
@@ -356,7 +378,8 @@ void SpriteRenderer::DrawTexture(const Texture& texture,
 void SpriteRenderer::DrawTexture(const Texture& texture,
                                  const std::array<glm::vec2, 2>& uv,
                                  const glm::mat4& transform,
-                                 const glm::vec4& color, uint32_t entity_id) {
+                                 const glm::vec4& color, uint32_t entity_id)
+{
     if (m_data.quad_index_cnt >= Renderer2DData::MAX_INDICES) {
         NextQuadBatch();
     }
@@ -392,7 +415,8 @@ void SpriteRenderer::DrawTexture(const Texture& texture,
 
 void SpriteRenderer::DrawTexture(const Texture& texture, const glm::vec3& pos,
                                  const glm::quat& rot, const glm::vec2& scale,
-                                 const glm::vec4& color, uint32_t entity_id) {
+                                 const glm::vec4& color, uint32_t entity_id)
+{
     DrawTexture(
         texture, {glm::vec2(0), glm::vec2(1)},
         glm::translate(glm::mat4(1.0f), pos) * glm::toMat4(rot) *
@@ -402,7 +426,8 @@ void SpriteRenderer::DrawTexture(const Texture& texture, const glm::vec3& pos,
 
 void SpriteRenderer::DrawTexture(const Texture& texture,
                                  const glm::mat4& transform,
-                                 const glm::vec4& color, uint32_t entity_id) {
+                                 const glm::vec4& color, uint32_t entity_id)
+{
     DrawTexture(texture, {glm::vec2(0), glm::vec2(1)}, transform, color,
                 entity_id);
 }
@@ -410,7 +435,8 @@ void SpriteRenderer::DrawTexture(const Texture& texture,
 void SpriteRenderer::DrawBillboard(const Texture& texture,
                                    const std::array<glm::vec2, 2>& uv,
                                    const glm::vec3& pos, const glm::vec2& scale,
-                                   const glm::vec4& color, uint32_t entity_id) {
+                                   const glm::vec4& color, uint32_t entity_id)
+{
     DrawTexture(
         texture, uv,
         glm::translate(glm::mat4(1.0f), pos) *
@@ -421,7 +447,8 @@ void SpriteRenderer::DrawBillboard(const Texture& texture,
 
 void SpriteRenderer::DrawBillboard(const Texture& texture, const glm::vec3& pos,
                                    const glm::vec2& scale,
-                                   const glm::vec4& color, uint32_t entity_id) {
+                                   const glm::vec4& color, uint32_t entity_id)
+{
     DrawTexture(
         texture,
         glm::translate(glm::mat4(1.0f), pos) *
@@ -432,7 +459,8 @@ void SpriteRenderer::DrawBillboard(const Texture& texture, const glm::vec3& pos,
 
 void SpriteRenderer::DrawText(const Font& font, const std::string& text,
                               const glm::mat4& transform,
-                              const glm::vec4& color, uint32_t entity_id) {
+                              const glm::vec4& color, uint32_t entity_id)
+{
     glm::mat4 t =
         glm::translate(glm::mat4(1.0f), glm::vec3(m_data.text_origin.x,
                                                   m_data.text_origin.y, 0)) *
@@ -443,7 +471,8 @@ void SpriteRenderer::DrawText(const Font& font, const std::string& text,
             m_data.text_cursor.x = 0;
             m_data.text_cursor.y -= font.GetPixelHeight();
             continue;
-        } else if (c <= 128 && std::iscntrl(c)) {
+        }
+        else if (c <= 128 && std::iscntrl(c)) {
             continue;
         }
         const Character& ch = font.GetCharacter(c);
@@ -462,7 +491,8 @@ void SpriteRenderer::DrawText(const Font& font, const std::string& text,
 
 void SpriteRenderer::DrawCircle(const glm::vec3& pos, const glm::vec2& scale,
                                 const glm::vec4& color, float thickness,
-                                float fade, uint32_t entity_id) {
+                                float fade, uint32_t entity_id)
+{
     DrawCircle(
         glm::translate(glm::mat4(1.0f), pos) *
             glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
@@ -471,7 +501,8 @@ void SpriteRenderer::DrawCircle(const glm::vec3& pos, const glm::vec2& scale,
 
 void SpriteRenderer::DrawCircle(const glm::mat4& transform,
                                 const glm::vec4& color, float thickness,
-                                float fade, uint32_t entity_id) {
+                                float fade, uint32_t entity_id)
+{
     if (m_data.circle_index_cnt >= Renderer2DData::MAX_INDICES) {
         NextCircleBatch();
     }

@@ -4,7 +4,8 @@
 
 namespace SD {
 
-static void ParseShaderCode(const std::string& path, std::string& code) {
+static void ParseShaderCode(const std::string& path, std::string& code)
+{
     std::filesystem::path directory = std::filesystem::path(path).parent_path();
     const char identifier[] = "#include";
     SD_CORE_TRACE("Building shader code from {}", path);
@@ -25,7 +26,8 @@ static void ParseShaderCode(const std::string& path, std::string& code) {
         const std::string include_path = (directory / include).string();
         try {
             File::Read(include_path, include_code);
-        } catch (const FileException& e) {
+        }
+        catch (const FileException& e) {
             throw FileException(
                 path, fmt::format("Invalid include path: {}", include_path));
         }
@@ -36,7 +38,8 @@ static void ParseShaderCode(const std::string& path, std::string& code) {
 }
 
 Ref<Shader> ShaderLoader::LoadShader(const std::string& vert_path,
-                                     const std::string& frag_path) {
+                                     const std::string& frag_path)
+{
     Ref<Shader> shader = Shader::Create();
     std::string vert_code;
     std::string frag_code;
@@ -53,7 +56,8 @@ Ref<Shader> ShaderLoader::LoadShader(const std::string& vert_path,
 }
 Ref<Shader> ShaderLoader::LoadShader(const std::string& vert_path,
                                      const std::string& frag_path,
-                                     const std::string& geo_path) {
+                                     const std::string& geo_path)
+{
     Ref<Shader> shader = Shader::Create();
     std::string vert_code;
     std::string frag_code;

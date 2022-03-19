@@ -6,19 +6,21 @@
 
 namespace SD {
 
-GLVertexArray::GLVertexArray() : m_attrib_id(0) {
+GLVertexArray::GLVertexArray() : m_attrib_id(0)
+{
     glCreateVertexArrays(1, &m_id);
 }
 
 GLVertexArray::~GLVertexArray() { glDeleteVertexArrays(1, &m_id); }
 
-void GLVertexArray::BindVertexBuffer(const VertexBuffer &buffer,
-                                     int32_t index) {
+void GLVertexArray::BindVertexBuffer(const VertexBuffer &buffer, int32_t index)
+{
     glVertexArrayVertexBuffer(m_id, index, buffer.GetId(), 0,
                               m_layouts[index].GetStride());
 }
 
-void GLVertexArray::AddBufferLayout(const VertexBufferLayout &layout) {
+void GLVertexArray::AddBufferLayout(const VertexBufferLayout &layout)
+{
     int binding_index = m_layouts.size();
     glVertexArrayBindingDivisor(m_id, binding_index,
                                 layout.GetInstanceStride());
@@ -63,7 +65,8 @@ void GLVertexArray::AddBufferLayout(const VertexBufferLayout &layout) {
     m_layouts.push_back(layout);
 }
 
-void GLVertexArray::BindIndexBuffer(const IndexBuffer &buffer) {
+void GLVertexArray::BindIndexBuffer(const IndexBuffer &buffer)
+{
     glVertexArrayElementBuffer(m_id, buffer.GetId());
 }
 

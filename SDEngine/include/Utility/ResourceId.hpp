@@ -30,7 +30,8 @@ class SD_UTILITY_API ResourceId {
 namespace std {
 template <>
 struct hash<SD::ResourceId> {
-    std::size_t operator()(const SD::ResourceId &resource_id) const {
+    std::size_t operator()(const SD::ResourceId &resource_id) const
+    {
         return hash<uint64_t>()(static_cast<uint64_t>(resource_id));
     }
 };

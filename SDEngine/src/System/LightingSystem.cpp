@@ -19,7 +19,8 @@
 
 namespace SD {
 
-DataFormat GetTextureFormat(GeometryBufferType type) {
+DataFormat GetTextureFormat(GeometryBufferType type)
+{
     switch (type) {
         case GeometryBufferType::Position:
         case GeometryBufferType::Normal:
@@ -37,12 +38,12 @@ DataFormat GetTextureFormat(GeometryBufferType type) {
 }
 
 LightingSystem::LightingSystem(int width, int height, MultiSampleLevel msaa)
-    : System("LightingSystem"),
-      m_width(width),
-      m_height(height),
-      m_msaa(msaa) {}
+    : System("LightingSystem"), m_width(width), m_height(height), m_msaa(msaa)
+{
+}
 
-void LightingSystem::OnInit() {
+void LightingSystem::OnInit()
+{
     System::OnInit();
     InitShaders();
     InitSSAOKernel();
@@ -50,7 +51,8 @@ void LightingSystem::OnInit() {
     InitLighting();
 }
 
-void LightingSystem::OnPush() {
+void LightingSystem::OnPush()
+{
     m_size_handler =
         EventSystem::Get().Register(this, &LightingSystem::OnSizeEvent);
 
@@ -60,7 +62,8 @@ void LightingSystem::OnPush() {
     m_ssao_power = setting->GetInteger("ssao", "power", 1);
 }
 
-void LightingSystem::OnPop() {
+void LightingSystem::OnPop()
+{
     EventSystem::Get().RemoveHandler(m_size_handler);
 
     setting->SetBoolean("ssao", "state", m_ssao_state);
@@ -69,7 +72,8 @@ void LightingSystem::OnPop() {
     setting->SetInteger("ssao", "power", m_ssao_power);
 }
 
-void LightingSystem::InitShaders() {
+void LightingSystem::InitShaders()
+{
     m_emssive_shader = ShaderLoader::LoadShader(
         "assets/shaders/quad.vert.glsl", "assets/shaders/emissive.frag.glsl");
     m_deferred_shader = ShaderLoader::LoadShader(
@@ -89,7 +93,8 @@ void LightingSystem::InitShaders() {
                                  "assets/shaders/debug_depth.frag.glsl");
 }
 
-void LightingSystem::InitSSAO() {
+void LightingSystem::InitSSAO()
+{
     // ssao target
     AttachmentDescription attach_desc{AttachmentType::Normal, DataFormat::R16F,
                                       MultiSampleLevel::X1};
@@ -99,7 +104,8 @@ void LightingSystem::InitSSAO() {
         Framebuffer::Create({m_width, m_height, 0, {attach_desc}});
 }
 
-void LightingSystem::InitSSAOKernel() {
+void LightingSystem::InitSSAOKernel()
+{
     uint32_t kernel_size = m_ssao_shader->GetUint("u_kernel_size");
     m_ssao_kernel.resize(kernel_size);
     for (uint32_t i = 0; i < kernel_size; ++i) {
@@ -130,7 +136,8 @@ void LightingSystem::InitSSAOKernel() {
         ->SetAsVec3(&m_ssao_kernel[0][0], kernel_size);
 }
 
-void LightingSystem::InitLighting() {
+void LightingSystem::InitLighting()
+{
     for (int i = 0; i < 2; ++i) {
         m_light_buffer[i] = Framebuffer::Create(
             {m_width,
@@ -159,7 +166,8 @@ void LightingSystem::InitLighting() {
                                 MultiSampleLevel::X1}}});
 }
 
-void LightingSystem::OnSizeEvent(const ViewportSizeEvent &event) {
+void LightingSystem::OnSizeEvent(const ViewportSizeEvent &event)
+{
     m_width = event.width;
     m_height = event.height;
     for (auto &buffer : m_light_buffer) {
@@ -170,7 +178,8 @@ void LightingSystem::OnSizeEvent(const ViewportSizeEvent &event) {
     m_ssao_blur_buffer->Resize(event.width, event.height);
 }
 
-void LightingSystem::OnImGui() {
+void LightingSystem::OnImGui()
+{
     ImGui::Begin("Lighting System");
     {
         ImGui::Checkbox("SSAO", &m_ssao_state);
@@ -188,7 +197,8 @@ void LightingSystem::OnImGui() {
     ImGui::End();
 }
 
-void LightingSystem::OnRender() {
+void LightingSystem::OnRender()
+{
     SD_CORE_ASSERT(scene->GetCamera(), "No camera is set!");
 
     RenderGBuffer();
@@ -203,7 +213,8 @@ void LightingSystem::OnRender() {
         BufferBitMask::ColorBufferBit | BufferBitMask::DepthBufferBit);
 }
 
-void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
+void LightingSystem::RenderShadowMap(Light &light, const Transform &transform)
+{
     if (!light.IsCastShadow()) return;
 
     auto modelView = scene->view<TransformComponent, ModelComponent>();
@@ -254,7 +265,8 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform) {
     }
 }
 
-void LightingSystem::RenderSSAO() {
+void LightingSystem::RenderSSAO()
+{
     Renderer::BeginRenderPass(RenderPassInfo{m_ssao_buffer.get(),
                                              m_ssao_buffer->GetWidth(),
                                              m_ssao_buffer->GetHeight()});
@@ -284,7 +296,8 @@ void LightingSystem::RenderSSAO() {
     Renderer::EndRenderPass();
 }
 
-void LightingSystem::RenderEmissive() {
+void LightingSystem::RenderEmissive()
+{
     auto lightView = scene->view<TransformComponent, LightComponent>();
     RenderOperation op;
     op.blend = false;
@@ -301,7 +314,8 @@ void LightingSystem::RenderEmissive() {
     }
 }
 
-void LightingSystem::RenderDeferred() {
+void LightingSystem::RenderDeferred()
+{
     auto lightView = scene->view<TransformComponent, LightComponent>();
 
     m_deferred_shader->GetParam("u_position")
@@ -394,7 +408,8 @@ void LightingSystem::RenderDeferred() {
     });
 }
 
-void LightingSystem::RenderGBuffer() {
+void LightingSystem::RenderGBuffer()
+{
     auto modelView = scene->view<TransformComponent, ModelComponent>();
 
     RenderOperation op;

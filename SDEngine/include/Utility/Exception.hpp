@@ -24,7 +24,9 @@ class SD_UTILITY_API FileException : public Exception {
    public:
     FileException(const std::string& file_path, const std::string& msg) throw()
         : Exception(fmt::format("File exception from \"{}\", error: {}",
-                                file_path, msg)) {}
+                                file_path, msg))
+    {
+    }
 
     virtual ~FileException(void) throw() {}
 };

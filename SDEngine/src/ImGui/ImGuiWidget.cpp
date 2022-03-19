@@ -5,7 +5,8 @@
 namespace ImGui {
 
 bool DrawVec3Control(const std::string &label, glm::vec3 &values,
-                     float resetValue, float columnWidth) {
+                     float resetValue, float columnWidth)
+{
     bool ret = false;
     ImGuiIO &io = ImGui::GetIO();
     auto boldFont = io.Fonts->Fonts[0];
@@ -87,7 +88,8 @@ bool DrawVec3Control(const std::string &label, glm::vec3 &values,
 }
 
 void DrawTexture(const SD::Texture &texture, const ImVec2 &uv0,
-                 const ImVec2 &uv1) {
+                 const ImVec2 &uv1)
+{
     ImVec2 wsize = ImGui::GetContentRegionAvail();
     const float width = texture.GetWidth() * std::abs(uv1.x - uv0.x);
     const float height = texture.GetHeight() * std::abs(uv1.y - uv0.y);
@@ -99,7 +101,8 @@ void DrawTexture(const SD::Texture &texture, const ImVec2 &uv0,
 
 void DrawTileTexture(const SD::Texture &texture, glm::ivec2 &tile_size,
                      std::array<glm::vec2, 2> &uvs, glm::ivec2 *selected_cnt,
-                     glm::ivec2 *pivot) {
+                     glm::ivec2 *pivot)
+{
     ImGui::TextUnformatted("Tile Size:");
     ImGui::InputInt2("##Size", &tile_size.x);
     tile_size.x = std::clamp(tile_size.x, 1, texture.GetWidth());
@@ -156,7 +159,8 @@ void DrawTileTexture(const SD::Texture &texture, glm::ivec2 &tile_size,
                     selected_cnt->x = 1;
                     selected_cnt->y = 1;
                 }
-            } else if (ImGui::IsMouseClicked(1)) {
+            }
+            else if (ImGui::IsMouseClicked(1)) {
                 if (pivot) {
                     *pivot = glm::floor(image_pos / glm::vec2(tile_size));
                     pivot->x -=
@@ -177,12 +181,14 @@ void DrawTileTexture(const SD::Texture &texture, glm::ivec2 &tile_size,
 
                 if (uvs[1].x > first_uvs[0].x) {
                     uvs[0].x = first_uvs[0].x;
-                } else {
+                }
+                else {
                     uvs[1].x = first_uvs[1].x;
                 }
                 if (uvs[1].y > first_uvs[0].y) {
                     uvs[0].y = first_uvs[0].y;
-                } else {
+                }
+                else {
                     uvs[1].y = first_uvs[1].y;
                 }
                 if (selected_cnt) {
@@ -221,7 +227,8 @@ void DrawTileTexture(const SD::Texture &texture, glm::ivec2 &tile_size,
 }
 
 bool BeginCenterPopupModal(const char *name, bool *p_open,
-                           ImGuiWindowFlags flags) {
+                           ImGuiWindowFlags flags)
+{
     ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
                             ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
     return ImGui::BeginPopupModal(name, p_open,

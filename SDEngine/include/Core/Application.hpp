@@ -21,7 +21,8 @@ class SD_CORE_API Application {
     virtual void OnDestroy();
 
     template <typename T>
-    T *GetLayer(const std::string &name) {
+    T *GetLayer(const std::string &name)
+    {
         auto iter = std::find_if(
             m_layers.begin(), m_layers.end(),
             [&name](const auto &lhs) { return lhs->GetName() == name; });
@@ -32,7 +33,8 @@ class SD_CORE_API Application {
     }
 
     template <typename T, typename... ARGS>
-    T *CreateLayer(ARGS &&...args) {
+    T *CreateLayer(ARGS &&...args)
+    {
         T *layer = new T(std::forward<ARGS>(args)...);
         layer->SetAppVars(MakeAppVars());
         layer->OnInit();

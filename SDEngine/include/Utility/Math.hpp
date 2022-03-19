@@ -15,20 +15,25 @@ constexpr float PI = 3.14159265358979323846;
 struct SD_UTILITY_API Ray {
     Ray() = default;
     Ray(const glm::vec3 &origin, const glm::vec3 &direction)
-        : origin(origin), direction(direction) {}
+        : origin(origin), direction(direction)
+    {
+    }
     glm::vec3 origin;
     glm::vec3 direction;
 };
 
 struct SD_UTILITY_API Plane {
     Plane(const glm::vec3 &normal, const glm::vec3 &point)
-        : normal(normal), point(point) {}
+        : normal(normal), point(point)
+    {
+    }
     glm::vec3 normal;
     glm::vec3 point;
 };
 
 template <typename T>
-inline T Lerp(T a, T b, float f) {
+inline T Lerp(T a, T b, float f)
+{
     return a + f * (b - a);
 }
 
@@ -36,7 +41,8 @@ template <glm::length_t L, typename T, glm::qualifier Q>
 inline void BaryCentric(const glm::vec<L, T, Q> &a, const glm::vec<L, T, Q> &b,
                         const glm::vec<L, T, Q> &c,
                         const glm::vec<L, T, Q> &pos, float &u, float &v,
-                        float &w) {
+                        float &w)
+{
     glm::vec<L, T, Q> v0 = b - a;
     glm::vec<L, T, Q> v1 = c - a;
     glm::vec<L, T, Q> v2 = pos - a;
@@ -52,7 +58,8 @@ inline void BaryCentric(const glm::vec<L, T, Q> &a, const glm::vec<L, T, Q> &b,
 }
 
 inline bool IntersectRayPlane(const Ray &ray, const Plane &plane,
-                              glm::vec3 &world) {
+                              glm::vec3 &world)
+{
     float numer = glm::dot(plane.normal, ray.origin) -
                   glm::dot(plane.normal, plane.point);
     float denom = glm::dot(plane.normal, ray.direction);

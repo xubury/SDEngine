@@ -46,16 +46,19 @@ class SD_GRAPHICS_API Light {
     void CreateShadowMap();
     void DestroyShadowMap();
 
-    const std::vector<glm::mat4> &GetLevelProjectionView() const {
+    const std::vector<glm::mat4> &GetLevelProjectionView() const
+    {
         return m_projection_views;
     }
 
-    void SetCascadePlanes(const std::vector<float> &planes) {
+    void SetCascadePlanes(const std::vector<float> &planes)
+    {
         m_cascade_planes = planes;
     }
 
     void SetNumOfCascades(int32_t num_of_cascades);
-    const std::vector<float> &GetCascadePlanes() const {
+    const std::vector<float> &GetCascadePlanes() const
+    {
         return m_cascade_planes;
     }
 

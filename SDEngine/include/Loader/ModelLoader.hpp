@@ -14,7 +14,6 @@ class SD_LOADER_API ModelLoader {
     static Ref<Model> LoadModel(const std::string &path);
 };
 
-
 }  // namespace SD
 
 #endif /* SD_MODEL_LOADER_HPP */

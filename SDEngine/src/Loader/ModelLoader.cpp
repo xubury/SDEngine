@@ -7,7 +7,8 @@
 
 namespace SD {
 
-static inline glm::mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4 &from) {
+static inline glm::mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4 &from)
+{
     glm::mat4 to;
     // the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
     to[0][0] = from.a1;
@@ -32,7 +33,8 @@ static inline glm::mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4 &from) {
 static Vertex ConstructVertex(const aiVector3D &pos, const aiVector3D &uv,
                               const aiVector3D &normal,
                               const aiVector3D &tangent,
-                              const aiVector3D &bi_tangent) {
+                              const aiVector3D &bi_tangent)
+{
     Vertex vertex;
     vertex.position.x = pos.x;
     vertex.position.y = pos.y;
@@ -51,7 +53,8 @@ static Vertex ConstructVertex(const aiVector3D &pos, const aiVector3D &uv,
     return vertex;
 }
 
-static MeshTopology ConvertAssimpPrimitive(aiPrimitiveType type) {
+static MeshTopology ConvertAssimpPrimitive(aiPrimitiveType type)
+{
     switch (type) {
         case aiPrimitiveType_LINE:
             return MeshTopology::Lines;
@@ -68,7 +71,8 @@ static MeshTopology ConvertAssimpPrimitive(aiPrimitiveType type) {
     };
 }
 
-static Mesh ProcessAiMesh(const aiMesh *assimpMesh) {
+static Mesh ProcessAiMesh(const aiMesh *assimpMesh)
+{
     const aiVector3D aiZeroVector(0.0f, 0.0f, 0.0f);
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
@@ -100,7 +104,8 @@ static Mesh ProcessAiMesh(const aiMesh *assimpMesh) {
     return mesh;
 }
 
-static inline TextureWrap ConvertAssimpMapMode(aiTextureMapMode mode) {
+static inline TextureWrap ConvertAssimpMapMode(aiTextureMapMode mode)
+{
     switch (mode) {
         case aiTextureMapMode_Clamp:
             return TextureWrap::Edge;
@@ -116,7 +121,8 @@ static inline TextureWrap ConvertAssimpMapMode(aiTextureMapMode mode) {
     }
 }
 
-static inline MaterialType ConvertAssimpTextureType(aiTextureType textureType) {
+static inline MaterialType ConvertAssimpTextureType(aiTextureType textureType)
+{
     switch (textureType) {
         case aiTextureType_DIFFUSE:
             return MaterialType::DIFFUSE;
@@ -139,7 +145,8 @@ static inline MaterialType ConvertAssimpTextureType(aiTextureType textureType) {
 }
 
 static Material ProcessAiMaterial(const std::filesystem::path &directory,
-                                  const aiMaterial *ai_material, Model *model) {
+                                  const aiMaterial *ai_material, Model *model)
+{
     Material material;
     for (int type = aiTextureType_NONE + 1; type < aiTextureType_SHININESS;
          ++type) {
@@ -147,7 +154,8 @@ static Material ProcessAiMaterial(const std::filesystem::path &directory,
         uint32_t count = ai_material->GetTextureCount(ai_type);
         if (count < 1) {
             continue;
-        } else if (count > 1) {
+        }
+        else if (count > 1) {
             SD_CORE_WARN(
                 "[ProcessAiMaterials] Cannot handle multiple texture of same "
                 "type!");
@@ -175,7 +183,8 @@ static Material ProcessAiMaterial(const std::filesystem::path &directory,
 }
 
 static void ProcessNode(const aiScene *scene, const aiNode *node, Model *model,
-                        const glm::mat4 &parent_trans) {
+                        const glm::mat4 &parent_trans)
+{
     if (node == nullptr) return;
     for (uint32_t i = 0; i < node->mNumChildren; ++i) {
         const aiNode *child = node->mChildren[i];
@@ -195,7 +204,8 @@ static void ProcessNode(const aiScene *scene, const aiNode *node, Model *model,
     }
 }
 
-Ref<Model> ModelLoader::LoadModel(const std::string &path) {
+Ref<Model> ModelLoader::LoadModel(const std::string &path)
+{
     Ref<Model> model;
     SD_CORE_TRACE("Loading model form: {}...", path);
 
@@ -205,7 +215,8 @@ Ref<Model> ModelLoader::LoadModel(const std::string &path) {
     if (scene == nullptr) {
         throw Exception(
             fmt::format("Model loading failed: {}", importer.GetErrorString()));
-    } else {
+    }
+    else {
         model = CreateRef<Model>();
         model->SetPath(path);
         // Process materials

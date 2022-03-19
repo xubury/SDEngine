@@ -2,7 +2,8 @@
 
 namespace SD {
 
-ThreadPool::ThreadPool(uint32_t threads) : m_stop(false) {
+ThreadPool::ThreadPool(uint32_t threads) : m_stop(false)
+{
     for (uint32_t i = 0; i < threads; ++i) {
         m_workers.emplace_back([this] {
             while (true) {
@@ -24,7 +25,8 @@ ThreadPool::ThreadPool(uint32_t threads) : m_stop(false) {
     }
 }
 
-ThreadPool::~ThreadPool() {
+ThreadPool::~ThreadPool()
+{
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         m_stop = true;

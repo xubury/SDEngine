@@ -3,14 +3,18 @@
 namespace SD {
 
 Rect::Rect(float x, float y, float width, float height)
-    : x(x), y(y), width(width), height(height) {}
+    : x(x), y(y), width(width), height(height)
+{
+}
 
-bool Rect::Contains(const Rect &other) const {
+bool Rect::Contains(const Rect &other) const
+{
     return x <= other.x && y <= other.y && x + width >= other.x + other.width &&
            y + height >= other.y + other.height;
 }
 
-bool Rect::Intersects(const Rect &other) const {
+bool Rect::Intersects(const Rect &other) const
+{
     return x <= other.x + other.width && x + width >= other.x &&
            y <= other.y + other.height && y + height >= other.y;
 }

@@ -10,7 +10,8 @@
 
 namespace SD {
 
-std::filesystem::path GetAppDirectory() {
+std::filesystem::path GetAppDirectory()
+{
     static std::filesystem::path path;
     if (path.empty()) {
 #if defined(SD_PLATFORM_LINUX)

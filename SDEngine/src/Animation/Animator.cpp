@@ -2,4 +2,5 @@
 
 #include <cmath>
 
-namespace SD {}  // namespace SD
+namespace SD {
+}  // namespace SD

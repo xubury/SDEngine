@@ -4,3 +4,4 @@ Language:        Cpp
 BasedOnStyle:  Google
 IndentWidth:   4
 SortIncludes: false
+BreakBeforeBraces: Stroustrup

@@ -12,7 +12,8 @@ namespace SD {
 
 SkyboxSystem::SkyboxSystem() : System("SkyboxSystem") {}
 
-void SkyboxSystem::OnInit() {
+void SkyboxSystem::OnInit()
+{
     System::OnInit();
     m_skybox_shader = ShaderLoader::LoadShader(
         "assets/shaders/skybox.vert.glsl", "assets/shaders/skybox.frag.glsl");
@@ -28,7 +29,8 @@ void SkyboxSystem::OnPop() {}
 
 void SkyboxSystem::OnImGui() {}
 
-void SkyboxSystem::OnRender() {
+void SkyboxSystem::OnRender()
+{
     int index = 0;
     RenderOperation op;
     op.depth_func = DepthFunc::LessEqual;

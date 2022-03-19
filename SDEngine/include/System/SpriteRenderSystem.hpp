@@ -17,6 +17,7 @@ class SD_SYSTEM_API SpriteRenderSystem : public System {
     void OnPop() override;
 
     void OnRender() override;
+
    private:
 };
 

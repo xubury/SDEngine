@@ -16,15 +16,19 @@ Light::Light()
       m_outer_cutoff(glm::radians(35.f)),
       m_constant(1.0f),
       m_linear(0.09f),
-      m_quadratic(0.032) {}
+      m_quadratic(0.032)
+{
+}
 
 bool Light::IsCastShadow() const { return m_is_cast_shadow; }
 
-void Light::SetCastShadow(bool cast) {
+void Light::SetCastShadow(bool cast)
+{
     m_is_cast_shadow = cast;
     if (cast) {
         CreateShadowMap();
-    } else {
+    }
+    else {
         DestroyShadowMap();
     }
 }
@@ -49,7 +53,8 @@ void Light::SetCutoff(float cutoff) { m_cutoff = cutoff; }
 
 float Light::GetCutoff() const { return m_cutoff; }
 
-void Light::SetOuterCutoff(float outer_cutoff) {
+void Light::SetOuterCutoff(float outer_cutoff)
+{
     m_outer_cutoff = outer_cutoff;
 }
 
@@ -67,7 +72,8 @@ void Light::SetQuadratic(float quadratic) { m_quadratic = quadratic; }
 
 float Light::GetQuadratic() const { return m_quadratic; }
 
-void Light::CreateShadowMap() {
+void Light::CreateShadowMap()
+{
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
     m_cascade_map = Framebuffer::Create(
         {SHADOW_MAP_WIDTH,
@@ -81,7 +87,8 @@ void Light::CreateShadowMap() {
 
 void Light::DestroyShadowMap() { m_cascade_map.reset(); }
 
-void Light::SetNumOfCascades(int32_t num_of_cascades) {
+void Light::SetNumOfCascades(int32_t num_of_cascades)
+{
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
     m_cascade_planes.resize(num_of_cascades);
     m_cascade_map->Resize(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT,
@@ -90,7 +97,8 @@ void Light::SetNumOfCascades(int32_t num_of_cascades) {
     m_cascade_map->GetTexture()->SetBorderColor(&color);
 }
 
-static std::vector<glm::vec4> GetFrustumCorners(const glm::mat4 &project_view) {
+static std::vector<glm::vec4> GetFrustumCorners(const glm::mat4 &project_view)
+{
     const auto &inv_pv = glm::inverse(project_view);
     std::vector<glm::vec4> corners;
     for (int x = 0; x <= 1; ++x) {
@@ -107,7 +115,8 @@ static std::vector<glm::vec4> GetFrustumCorners(const glm::mat4 &project_view) {
 }
 
 static glm::mat4 GetLightSpaceMatrix(const Transform &transform,
-                                     const glm::mat4 &projection_view) {
+                                     const glm::mat4 &projection_view)
+{
     glm::vec3 center(0);
     auto corners = GetFrustumCorners(projection_view);
     for (const auto &c : corners) {
@@ -142,7 +151,8 @@ static glm::mat4 GetLightSpaceMatrix(const Transform &transform,
 }
 
 void Light::ComputeCascadeLightMatrix(const Transform &transform,
-                                      const Camera &camera) {
+                                      const Camera &camera)
+{
     const float fov = camera.GetFOV();
     const float aspect = camera.GetNearWidth() / camera.GetNearHeight();
     const uint32_t size = m_cascade_planes.size();

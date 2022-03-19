@@ -6,7 +6,8 @@
 namespace SD {
 
 Ref<VertexBuffer> VertexBuffer::Create(const void *data, size_t size,
-                                       BufferIOType io) {
+                                       BufferIOType io)
+{
     Ref<VertexBuffer> vb;
     switch (Device::GetAPI()) {
         case Device::API::OpenGL:
@@ -20,7 +21,8 @@ Ref<VertexBuffer> VertexBuffer::Create(const void *data, size_t size,
 }
 
 Ref<IndexBuffer> IndexBuffer::Create(const uint32_t *data, uint32_t count,
-                                     BufferIOType io) {
+                                     BufferIOType io)
+{
     Ref<IndexBuffer> eb;
     switch (Device::GetAPI()) {
         case Device::API::OpenGL:
@@ -34,7 +36,8 @@ Ref<IndexBuffer> IndexBuffer::Create(const uint32_t *data, uint32_t count,
 }
 
 Ref<UniformBuffer> UniformBuffer::Create(const void *data, size_t size,
-                                         BufferIOType io) {
+                                         BufferIOType io)
+{
     Ref<UniformBuffer> ub;
     switch (Device::GetAPI()) {
         case Device::API::OpenGL:

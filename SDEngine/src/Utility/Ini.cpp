@@ -10,15 +10,18 @@ static const char SECTION_SEP = '.';
 static const char COMMENTS_SYMBOL0 = '#';
 static const char COMMENTS_SYMBOL1 = ';';
 
-inline bool IsCommentSymbol(char ch) {
+inline bool IsCommentSymbol(char ch)
+{
     return ch == COMMENTS_SYMBOL0 || ch == COMMENTS_SYMBOL1;
 }
 
-inline Exception GetException(size_t line_number, const std::string& msg) {
+inline Exception GetException(size_t line_number, const std::string& msg)
+{
     return Exception(fmt::format("Line {}: {}", line_number, msg));
 }
 
-void Ini::OutputStream(std::ostream& stream) const {
+void Ini::OutputStream(std::ostream& stream) const
+{
     std::string last_section;
     bool is_first_line = true;
     for (auto iter = m_values.begin(); iter != m_values.end(); iter++) {
@@ -47,12 +50,14 @@ void Ini::OutputStream(std::ostream& stream) const {
     std::flush(stream);
 }
 
-void Ini::Load(const std::string& filename) {
+void Ini::Load(const std::string& filename)
+{
     std::ifstream file;
     file.exceptions(std::ifstream::badbit | std::ifstream::failbit);
     try {
         file.open(filename);
-    } catch (std::ifstream::failure& e) {
+    }
+    catch (std::ifstream::failure& e) {
         throw FileException(filename, std::strerror(errno));
     }
     file.exceptions(std::ifstream::badbit);
@@ -60,56 +65,66 @@ void Ini::Load(const std::string& filename) {
     ParseStream(file);
 }
 
-void Ini::Save(const std::string& filename) const {
+void Ini::Save(const std::string& filename) const
+{
     std::ofstream file;
     file.exceptions(std::ofstream::badbit | std::ofstream::failbit);
     try {
         file.open(filename);
-    } catch (std::ofstream::failure& e) {
+    }
+    catch (std::ofstream::failure& e) {
         throw FileException(filename, std::strerror(errno));
     }
     OutputStream(file);
 }
 
-void Ini::Clear() {
+void Ini::Clear()
+{
     m_values.clear();
     m_sections.clear();
 }
 
 void Ini::Set(const std::string& section, const std::string& name,
-              const std::string& value) {
+              const std::string& value)
+{
     std::string key = MakeKey(section, name);
     m_values[key] = value;
 }
 
 void Ini::SetInteger(const std::string& section, const std::string& name,
-                     int value) {
+                     int value)
+{
     Set(section, name, std::to_string(value));
 }
 
 void Ini::SetReal(const std::string& section, const std::string& name,
-                  double value) {
+                  double value)
+{
     Set(section, name, std::to_string(value));
 }
 
 void Ini::SetFloat(const std::string& section, const std::string& name,
-                   float value) {
+                   float value)
+{
     Set(section, name, std::to_string(value));
 }
 
 void Ini::SetBoolean(const std::string& section, const std::string& name,
-                     bool value) {
+                     bool value)
+{
     Set(section, name, value ? "true" : "false");
 }
 
 std::string Ini::Get(const std::string& section, const std::string& name,
-                     const std::string& default_value) const {
+                     const std::string& default_value) const
+{
     std::string key = MakeKey(section, name);
     return m_values.count(key) ? m_values.at(key) : default_value;
 }
 
 int Ini::GetInteger(const std::string& section, const std::string& name,
-                    int default_value) const {
+                    int default_value) const
+{
     std::string val_str = Get(section, name, std::to_string(default_value));
     const char* value = val_str.c_str();
     char* end;
@@ -119,7 +134,8 @@ int Ini::GetInteger(const std::string& section, const std::string& name,
 }
 
 double Ini::GetReal(const std::string& section, const std::string& name,
-                    double default_value) const {
+                    double default_value) const
+{
     std::string val_str = Get(section, name, std::to_string(default_value));
     const char* value = val_str.c_str();
     char* end;
@@ -128,7 +144,8 @@ double Ini::GetReal(const std::string& section, const std::string& name,
 }
 
 float Ini::GetFloat(const std::string& section, const std::string& name,
-                    float default_value) const {
+                    float default_value) const
+{
     std::string val_str = Get(section, name, std::to_string(default_value));
     const char* value = val_str.c_str();
     char* end;
@@ -137,7 +154,8 @@ float Ini::GetFloat(const std::string& section, const std::string& name,
 }
 
 bool Ini::GetBoolean(const std::string& section, const std::string& name,
-                     bool default_value) const {
+                     bool default_value) const
+{
     std::string val_str = Get(section, name, std::to_string(default_value));
     // Convert to lower case to make string comparisons case-insensitive
     std::transform(val_str.begin(), val_str.end(), val_str.begin(), ::tolower);
@@ -151,7 +169,8 @@ bool Ini::GetBoolean(const std::string& section, const std::string& name,
         return default_value;
 }
 
-void Ini::ParseStream(std::istream& stream) {
+void Ini::ParseStream(std::istream& stream)
+{
     int line_number = 0;
     std::string section;
     for (std::string line; std::getline(stream, line); ++line_number) {
@@ -188,7 +207,8 @@ void Ini::ParseStream(std::istream& stream) {
     }
 }
 
-std::string Ini::MakeKey(const std::string& section, const std::string& name) {
+std::string Ini::MakeKey(const std::string& section, const std::string& name)
+{
     std::string key = section + SECTION_SEP + name;
     // Convert to lower case to make section/name lookups case-insensitive
     std::transform(key.begin(), key.end(), key.begin(), ::tolower);

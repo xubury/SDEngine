@@ -20,7 +20,7 @@ struct SD_GRAPHICS_API Vertex {
 class SD_GRAPHICS_API Mesh {
    public:
     Mesh(const std::vector<Vertex> &vertices,
-               const std::vector<uint32_t> &indices);
+         const std::vector<uint32_t> &indices);
 
     void Update();
     void Clear();

@@ -14,7 +14,8 @@ void SpriteRenderSystem::OnPush() {}
 
 void SpriteRenderSystem::OnPop() {}
 
-void SpriteRenderSystem::OnTick(float dt) {
+void SpriteRenderSystem::OnTick(float dt)
+{
     auto anim_view = scene->view<SpriteAnimationComponent>();
     anim_view.each([&](SpriteAnimationComponent &anim_comp) {
         if (!anim_comp.animations.empty()) {
@@ -32,7 +33,8 @@ struct SpriteDrawData {
     uint32_t entity_id;
     int priority;
 };
-void SpriteRenderSystem::OnRender() {
+void SpriteRenderSystem::OnRender()
+{
     int index[] = {0, 1};
     RenderOperation op;
     op.depth_mask = false;
@@ -88,9 +90,11 @@ void SpriteRenderSystem::OnRender() {
         auto r_p = rhs.priority;
         if (l_z < r_z) {
             return true;
-        } else if (l_z > r_z) {
+        }
+        else if (l_z > r_z) {
             return false;
-        } else {
+        }
+        else {
             return l_p < r_p;
         }
     });

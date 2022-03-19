@@ -12,7 +12,8 @@ class ModelAsset : public Asset {
    public:
     ModelAsset() : m_textures_cnt(0) { m_model = CreateRef<Model>(); };
 
-    void Serialize(cereal::PortableBinaryOutputArchive &archive) override {
+    void Serialize(cereal::PortableBinaryOutputArchive &archive) override
+    {
         archive(*this);
         auto &storage = AssetStorage::Get();
         for (const auto &obj : m_textures) {
@@ -20,7 +21,8 @@ class ModelAsset : public Asset {
         }
     }
 
-    void Deserialize(cereal::PortableBinaryInputArchive &archive) override {
+    void Deserialize(cereal::PortableBinaryInputArchive &archive) override
+    {
         archive(*this);
         m_textures.resize(m_textures_cnt);
         auto &storage = AssetStorage::Get();
@@ -35,7 +37,8 @@ class ModelAsset : public Asset {
         m_model = ModelLoader::LoadModel(storage.GetAbsolutePath(m_model_path));
     }
 
-    void Import(const Ref<Model> &model) {
+    void Import(const Ref<Model> &model)
+    {
         m_model = model;
         auto &storage = AssetStorage::Get();
         m_model_path = storage.GetRelativePath(m_model->GetPath());

@@ -5,7 +5,8 @@
 
 namespace SD {
 
-Ref<VertexArray> VertexArray::Create() {
+Ref<VertexArray> VertexArray::Create()
+{
     Ref<VertexArray> va;
     switch (Device::GetAPI()) {
         case Device::API::OpenGL:

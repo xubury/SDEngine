@@ -5,7 +5,8 @@
 
 namespace SD {
 
-Ref<Shader> Shader::Create() {
+Ref<Shader> Shader::Create()
+{
     Ref<Shader> shader;
     switch (Device::GetAPI()) {
         case Device::API::OpenGL:

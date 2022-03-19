@@ -15,7 +15,8 @@ enum ImGuiFileDialogSortOrder_ {
     ImGuiFileDialogSortOrder_None
 };
 
-static void RefreshInfo(ImFileDialogInfo* dialogInfo) {
+static void RefreshInfo(ImFileDialogInfo* dialogInfo)
+{
     dialogInfo->refresh_info = false;
     dialogInfo->current_index = 0;
     dialogInfo->current_files.clear();
@@ -25,7 +26,8 @@ static void RefreshInfo(ImFileDialogInfo* dialogInfo) {
          std::filesystem::directory_iterator(dialogInfo->directory_path)) {
         if (entry.is_directory()) {
             dialogInfo->current_directories.push_back(entry);
-        } else {
+        }
+        else {
             if (std::regex_match(entry.path().string(),
                                  dialogInfo->regex_match)) {
                 dialogInfo->current_files.push_back(entry);
@@ -34,7 +36,8 @@ static void RefreshInfo(ImFileDialogInfo* dialogInfo) {
     }
 }
 
-bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
+bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo)
+{
     if (!*open) return false;
 
     static float initialSpacingColumn0 = 230.0f;
@@ -145,7 +148,8 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
 
                     return a.path().filename() < b.path().filename();
                 });
-        } else if (dateSortOrder != ImGuiFileDialogSortOrder_None) {
+        }
+        else if (dateSortOrder != ImGuiFileDialogSortOrder_None) {
             std::sort(directories->begin(), directories->end(),
                       [](const std::filesystem::directory_entry& a,
                          const std::filesystem::directory_entry& b) {
@@ -170,7 +174,8 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
 
                     return a.path().filename() < b.path().filename();
                 });
-        } else if (sizeSortOrder != ImGuiFileDialogSortOrder_None) {
+        }
+        else if (sizeSortOrder != ImGuiFileDialogSortOrder_None) {
             std::sort(files->begin(), files->end(),
                       [](const std::filesystem::directory_entry& a,
                          const std::filesystem::directory_entry& b) {
@@ -179,7 +184,8 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
                           }
                           return a.file_size() < b.file_size();
                       });
-        } else if (typeSortOrder != ImGuiFileDialogSortOrder_None) {
+        }
+        else if (typeSortOrder != ImGuiFileDialogSortOrder_None) {
             std::sort(files->begin(), files->end(),
                       [](const std::filesystem::directory_entry& a,
                          const std::filesystem::directory_entry& b) {
@@ -190,7 +196,8 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
 
                           return a.path().extension() < b.path().extension();
                       });
-        } else if (dateSortOrder != ImGuiFileDialogSortOrder_None) {
+        }
+        else if (dateSortOrder != ImGuiFileDialogSortOrder_None) {
             std::sort(files->begin(), files->end(),
                       [](const std::filesystem::directory_entry& a,
                          const std::filesystem::directory_entry& b) {
@@ -374,7 +381,8 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
                     *open = false;
                 }
             }
-        } else if (dialogInfo->type == ImGuiFileDialogType::SaveFile) {
+        }
+        else if (dialogInfo->type == ImGuiFileDialogType::SaveFile) {
             if (ImGui::Button("Save")) {
                 dialogInfo->result_path =
                     dialogInfo->directory_path / dialogInfo->file_name;

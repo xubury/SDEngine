@@ -7,7 +7,8 @@ namespace SD {
 
 namespace File {
 
-void Read(const std::string &filePath, std::string &content) {
+void Read(const std::string &filePath, std::string &content)
+{
     std::ifstream file;
     file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     try {
@@ -16,7 +17,8 @@ void Read(const std::string &filePath, std::string &content) {
         fileStream << file.rdbuf();
         file.close();
         content = fileStream.str();
-    } catch (std::ifstream::failure &e) {
+    }
+    catch (std::ifstream::failure &e) {
         throw FileException(filePath, std::strerror(errno));
     }
 }

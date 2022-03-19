@@ -10,11 +10,13 @@ class SceneAsset : public Asset {
    public:
     SceneAsset() { m_scene = CreateRef<Scene>(); };
 
-    void Serialize(cereal::PortableBinaryOutputArchive &archive) override {
+    void Serialize(cereal::PortableBinaryOutputArchive &archive) override
+    {
         m_scene->Serialize(archive);
     }
 
-    void Deserialize(cereal::PortableBinaryInputArchive &archive) override {
+    void Deserialize(cereal::PortableBinaryInputArchive &archive) override
+    {
         m_scene->Deserialize(archive);
     }
 

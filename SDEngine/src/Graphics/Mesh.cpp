@@ -7,7 +7,8 @@ Mesh::Mesh(const std::vector<Vertex> &vertices,
     : m_vertices(vertices),
       m_indices(indices),
       m_topology(MeshTopology::Triangles),
-      m_polygonMode(PolygonMode::Fill) {
+      m_polygonMode(PolygonMode::Fill)
+{
     m_vertexBuffer = VertexBuffer::Create(m_vertices.data(),
                                           m_vertices.size() * sizeof(Vertex),
                                           BufferIOType::Dynamic);
@@ -16,22 +17,26 @@ Mesh::Mesh(const std::vector<Vertex> &vertices,
                                         BufferIOType::Dynamic);
 }
 
-void Mesh::SetVerices(const std::vector<Vertex> &vertices) {
+void Mesh::SetVerices(const std::vector<Vertex> &vertices)
+{
     m_vertices = vertices;
 }
 
-void Mesh::SetIndices(const std::vector<uint32_t> &indices) {
+void Mesh::SetIndices(const std::vector<uint32_t> &indices)
+{
     m_indices = indices;
 }
 
-void Mesh::Update() {
+void Mesh::Update()
+{
     m_indexBuffer->UpdateData(m_indices.data(),
                               m_indices.size() * sizeof(uint32_t));
     m_vertexBuffer->UpdateData(m_vertices.data(),
                                m_vertices.size() * sizeof(Vertex));
 }
 
-void Mesh::Clear() {
+void Mesh::Clear()
+{
     m_vertices.clear();
     m_indices.clear();
 }
@@ -41,7 +46,8 @@ IndexBuffer *Mesh::GetIndexBuffer() const { return m_indexBuffer.get(); }
 
 void Mesh::SetTopology(MeshTopology topology) { m_topology = topology; }
 
-void Mesh::SetPolygonMode(PolygonMode polygonMode) {
+void Mesh::SetPolygonMode(PolygonMode polygonMode)
+{
     m_polygonMode = polygonMode;
 }
 

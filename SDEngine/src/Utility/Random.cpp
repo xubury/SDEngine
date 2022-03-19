@@ -10,11 +10,13 @@ void Random::Init(uint32_t seed) { s_random_engine.seed(seed); }
 
 double Random::Uniform() { return s_distribution(s_random_engine); }
 
-float Random::Rnd(float min, float max) {
+float Random::Rnd(float min, float max)
+{
     return Uniform() * (max - min) + min;
 }
 
-double Random::Rnd(double min, double max) {
+double Random::Rnd(double min, double max)
+{
     return Uniform() * (max - min) + min;
 }
 

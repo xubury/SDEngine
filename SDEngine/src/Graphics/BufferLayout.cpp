@@ -2,7 +2,8 @@
 
 namespace SD {
 
-static uint32_t GetBufferDataSize(BufferLayoutType type) {
+static uint32_t GetBufferDataSize(BufferLayoutType type)
+{
     switch (type) {
         case BufferLayoutType::UByte:
             return 1;
@@ -22,7 +23,8 @@ static uint32_t GetBufferDataSize(BufferLayoutType type) {
     return 0;
 }
 
-static uint32_t GetComponentCount(BufferLayoutType type) {
+static uint32_t GetComponentCount(BufferLayoutType type)
+{
     switch (type) {
         case BufferLayoutType::UByte:
         case BufferLayoutType::UInt:
@@ -42,21 +44,26 @@ static uint32_t GetComponentCount(BufferLayoutType type) {
 }
 
 VertexBufferLayout::VertexBufferLayout(uint32_t instance_stride)
-    : m_stride(0), m_instance_stride(instance_stride) {}
+    : m_stride(0), m_instance_stride(instance_stride)
+{
+}
 
-void VertexBufferLayout::Push(BufferLayoutType type, bool normalized) {
+void VertexBufferLayout::Push(BufferLayoutType type, bool normalized)
+{
     m_elements.push_back({type, GetComponentCount(type), m_stride, normalized});
     m_stride += GetBufferDataSize(type);
 }
 
-void VertexBufferLayout::Clear() {
+void VertexBufferLayout::Clear()
+{
     m_elements.clear();
     m_elements.shrink_to_fit();
     m_stride = 0;
 }
 
 const std::vector<VertexBufferLayoutElement> &VertexBufferLayout::GetElements()
-    const {
+    const
+{
     return m_elements;
 }
 

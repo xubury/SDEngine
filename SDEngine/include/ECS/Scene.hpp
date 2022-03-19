@@ -44,7 +44,8 @@ class SD_ECS_API Scene : public entt::registry {
     // Registering a component enables serialization as well as duplication
     // functionality in & out editor.
     template <typename T>
-    void RegisterComponent() {
+    void RegisterComponent()
+    {
         auto id = entt::type_hash<T>::value();
         m_serialize_functions[id]
             .first.template connect<&Scene::SerializeComponent<T>>(this);
@@ -56,18 +57,21 @@ class SD_ECS_API Scene : public entt::registry {
    private:
     template <typename T>
     void SerializeComponent(entt::snapshot &snapshot,
-                            cereal::PortableBinaryOutputArchive &archive) {
+                            cereal::PortableBinaryOutputArchive &archive)
+    {
         snapshot.component<T>(archive);
     }
 
     template <typename T>
     void DeserializeComponent(entt::snapshot_loader &loader,
-                              cereal::PortableBinaryInputArchive &archive) {
+                              cereal::PortableBinaryInputArchive &archive)
+    {
         loader.component<T>(archive);
     }
 
     template <typename T>
-    void CloneComponent(EntityId from, EntityId to) {
+    void CloneComponent(EntityId from, EntityId to)
+    {
         T component = get<T>(from);
         emplace<T>(to, component);
     }

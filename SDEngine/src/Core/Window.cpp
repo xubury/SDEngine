@@ -6,8 +6,8 @@
 
 namespace SD {
 
-
-Scope<Window> Window::Create(const WindowCreateInfo &info) {
+Scope<Window> Window::Create(const WindowCreateInfo &info)
+{
     SD_CORE_TRACE("Initializing Window...");
     Scope<Window> window;
     switch (Device::GetAPI()) {
@@ -21,7 +21,8 @@ Scope<Window> Window::Create(const WindowCreateInfo &info) {
     return window;
 }
 
-void Window::PollEvents() {
+void Window::PollEvents()
+{
     SDL_Event sdl_event;
     while (SDL_PollEvent(&sdl_event) == 1) {
         switch (sdl_event.type) {

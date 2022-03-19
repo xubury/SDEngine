@@ -10,18 +10,21 @@ namespace SD {
 
 class SD_CORE_API System {
    public:
-    System(const std::string &name) : m_name(name) {
+    System(const std::string &name) : m_name(name)
+    {
         SD_CORE_TRACE("Initializing system: {}", name);
     }
 
     virtual ~System() { SD_CORE_TRACE("Deleting system: {}", m_name); };
 
-    virtual void OnInit() {
+    virtual void OnInit()
+    {
         m_scene_handler = EventSystem::Get().Register<NewSceneEvent>(
             [&](const NewSceneEvent &event) { scene = event.scene; });
     };
 
-    virtual void OnDestroy() {
+    virtual void OnDestroy()
+    {
         EventSystem::Get().RemoveHandler(m_scene_handler);
     }
 

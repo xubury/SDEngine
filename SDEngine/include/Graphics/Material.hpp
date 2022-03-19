@@ -32,8 +32,8 @@ class SD_GRAPHICS_API Material {
 
     const Texture *GetTexture(MaterialType type) const;
 
-    const std::unordered_map<MaterialType, const Texture *> &GetTextures()
-        const {
+    const std::unordered_map<MaterialType, const Texture *> &GetTextures() const
+    {
         return m_textures;
     };
 

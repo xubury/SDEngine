@@ -5,7 +5,8 @@
 namespace SD {
 
 GLFramebuffer::GLFramebuffer(const FramebufferCreateInfo &info)
-    : Framebuffer(info) {
+    : Framebuffer(info)
+{
     glCreateFramebuffers(1, &m_id);
     SetupAttachments();
 }
@@ -14,7 +15,8 @@ GLFramebuffer::~GLFramebuffer() { glDeleteFramebuffers(1, &m_id); }
 
 void GLFramebuffer::DestoryAttachments() { m_attachments.clear(); }
 
-void GLFramebuffer::SetupAttachments() {
+void GLFramebuffer::SetupAttachments()
+{
     std::vector<GLenum> drawables;
     for (const auto &attachment : m_info.attachments) {
         GLenum gl_attachment = 0;
@@ -70,33 +72,39 @@ void GLFramebuffer::SetupAttachments() {
 
 void GLFramebuffer::ReadPixels(uint32_t attachment_id, int level, int x, int y,
                                int z, int w, int h, int d, size_t size,
-                               void *data) const {
+                               void *data) const
+{
     GetTexture(attachment_id)->ReadPixels(level, x, y, z, w, h, d, size, data);
 }
 
-void GLFramebuffer::ClearDepth(const float depth) {
+void GLFramebuffer::ClearDepth(const float depth)
+{
     glClearNamedFramebufferfv(m_id, GL_DEPTH, 0, &depth);
 }
 
-void GLFramebuffer::ClearAttachment(uint32_t attachment_id, const int *value) {
+void GLFramebuffer::ClearAttachment(uint32_t attachment_id, const int *value)
+{
     glClearNamedFramebufferiv(m_id, GL_COLOR, attachment_id, value);
 }
 
 void GLFramebuffer::ClearAttachment(uint32_t attachment_id,
-                                    const uint32_t *value) {
+                                    const uint32_t *value)
+{
     glClearNamedFramebufferuiv(m_id, GL_COLOR, attachment_id, value);
 }
 
-void GLFramebuffer::ClearAttachment(uint32_t attachment_id,
-                                    const float *value) {
+void GLFramebuffer::ClearAttachment(uint32_t attachment_id, const float *value)
+{
     glClearNamedFramebufferfv(m_id, GL_COLOR, attachment_id, value);
 }
 
-Texture *GLFramebuffer::GetTexture(uint32_t attachment_id) {
+Texture *GLFramebuffer::GetTexture(uint32_t attachment_id)
+{
     return static_cast<Texture *>(m_attachments[attachment_id].get());
 }
 
-const Texture *GLFramebuffer::GetTexture(uint32_t attachment_id) const {
+const Texture *GLFramebuffer::GetTexture(uint32_t attachment_id) const
+{
     return static_cast<const Texture *>(m_attachments[attachment_id].get());
 }
 }  // namespace SD

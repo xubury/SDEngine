@@ -12,7 +12,8 @@ namespace SD {
 
 using TypeId = size_t;
 template <typename T>
-inline TypeId GetTypeId() {
+inline TypeId GetTypeId()
+{
     return typeid(T).hash_code();
 }
 
@@ -25,7 +26,8 @@ class SD_ASSET_API Asset {
     virtual void Serialize(cereal::PortableBinaryOutputArchive &archive) = 0;
 
     template <typename T, typename... ARGS>
-    static Asset *Create(ARGS &&...args) {
+    static Asset *Create(ARGS &&...args)
+    {
         return dynamic_cast<Asset *>(new T(std::forward(args)...));
     }
 
@@ -36,7 +38,8 @@ class SD_ASSET_API Asset {
     std::string GetName() const { return m_name; }
 
     template <typename T>
-    bool IsTypeOf() {
+    bool IsTypeOf()
+    {
         return GetTypeId<T>() == m_tid;
     }
 

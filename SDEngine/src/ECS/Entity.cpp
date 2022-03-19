@@ -6,9 +6,12 @@ namespace SD {
 Entity::Entity() : m_handle(entt::null), m_scene(nullptr) {}
 
 Entity::Entity(entt::entity handle, Scene *scene)
-    : m_handle(handle), m_scene(scene) {}
+    : m_handle(handle), m_scene(scene)
+{
+}
 
-void Entity::Destroy(bool is_root) {
+void Entity::Destroy(bool is_root)
+{
     auto &data = GetComponent<TransformComponent>();
     for (entt::entity entity_id : data.children) {
         Entity child(entity_id, m_scene);
@@ -21,7 +24,8 @@ void Entity::Destroy(bool is_root) {
     m_scene->destroy(*this);
 }
 
-void Entity::AddChild(Entity &child) {
+void Entity::AddChild(Entity &child)
+{
     if (*this == child) return;
     auto &parent_data = GetComponent<TransformComponent>();
     auto &child_data = child.GetComponent<TransformComponent>();
@@ -38,7 +42,8 @@ void Entity::AddChild(Entity &child) {
     child_data.UpdateLocalScale();
 }
 
-void Entity::RemoveChild(Entity &child) {
+void Entity::RemoveChild(Entity &child)
+{
     auto &children = GetComponent<TransformComponent>().children;
     auto iter = children.find(child);
     if (iter != children.end()) {
@@ -51,7 +56,8 @@ void Entity::RemoveChild(Entity &child) {
     child_data.UpdateLocalScale();
 }
 
-Entity::operator bool() const {
+Entity::operator bool() const
+{
     return m_handle != entt::null && m_scene != nullptr;
 }
 
@@ -59,11 +65,13 @@ Entity::operator entt::entity() const { return m_handle; }
 
 bool Entity::operator!=(const Entity &other) const { return !(*this == other); }
 
-bool Entity::operator==(const Entity &other) const {
+bool Entity::operator==(const Entity &other) const
+{
     return m_handle == other.m_handle && m_scene == other.m_scene;
 }
 
-bool Entity::operator<(const Entity &other) const {
+bool Entity::operator<(const Entity &other) const
+{
     return m_handle < other.m_handle;
 }
 

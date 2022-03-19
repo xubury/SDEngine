@@ -9,23 +9,27 @@ namespace SD {
 
 class TextureAsset : public Asset {
    public:
-    TextureAsset() {
+    TextureAsset()
+    {
         m_texture = Texture::Create(1, 1, 0, MultiSampleLevel::X1,
                                     TextureType::Normal, DataFormat::RGB8);
     }
     ~TextureAsset() {}
 
-    void Serialize(cereal::PortableBinaryOutputArchive &archive) override {
+    void Serialize(cereal::PortableBinaryOutputArchive &archive) override
+    {
         archive(*this);
     }
 
-    void Deserialize(cereal::PortableBinaryInputArchive &archive) override {
+    void Deserialize(cereal::PortableBinaryInputArchive &archive) override
+    {
         archive(*this);
         auto &storage = AssetStorage::Get();
         m_texture = TextureLoader::LoadTexture2D(
             storage.GetAbsolutePath(m_texture_path));
     }
-    void Import(const Ref<Texture> &texture) {
+    void Import(const Ref<Texture> &texture)
+    {
         auto &storage = AssetStorage::Get();
         m_texture_path = storage.GetRelativePath(texture->GetPath());
         m_texture = texture;

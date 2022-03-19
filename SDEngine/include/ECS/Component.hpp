@@ -109,7 +109,9 @@ struct SD_ECS_API CameraComponent {
     CameraComponent() = default;
     CameraComponent(CameraType type, float fov, float width, float height,
                     float near_z, float far_z)
-        : camera(type, fov, width, height, near_z, far_z) {}
+        : camera(type, fov, width, height, near_z, far_z)
+    {
+    }
 
     SERIALIZE(camera, primary)
 };
@@ -137,18 +139,22 @@ struct SD_ECS_API SpriteAnimationComponent {
 };
 
 template <typename T>
-void OnComponentAdded(entt::registry&, entt::entity) {}
+void OnComponentAdded(entt::registry&, entt::entity)
+{
+}
 
 template <>
 inline void OnComponentAdded<TransformComponent>(entt::registry& reg,
-                                                 entt::entity ent) {
+                                                 entt::entity ent)
+{
     auto& data = reg.get<TransformComponent>(ent);
     data.ecs = &reg;
 }
 
 template <>
 inline void OnComponentAdded<LightComponent>(entt::registry& reg,
-                                             entt::entity ent) {
+                                             entt::entity ent)
+{
     auto& lightComp = reg.get<LightComponent>(ent);
     if (lightComp.light.IsCastShadow()) {
         lightComp.light.CreateShadowMap();
@@ -157,7 +163,8 @@ inline void OnComponentAdded<LightComponent>(entt::registry& reg,
 
 template <>
 inline void OnComponentAdded<SpriteAnimationComponent>(entt::registry& reg,
-                                                       entt::entity ent) {
+                                                       entt::entity ent)
+{
     auto& anim = reg.get<SpriteAnimationComponent>(ent);
     anim.animations.push_back(FrameAnimation<SpriteFrame>());
 }

@@ -9,18 +9,20 @@ namespace SD {
 
 std::filesystem::path SD_CORE_API GetAppDirectory();
 
-#define APP_VARS        \
-    Ref<Ini> setting;   \
+#define APP_VARS      \
+    Ref<Ini> setting; \
     Scene *scene;
 
-#define SET_APP_VARS                       \
-    void SetAppVars(const AppVars &vars) { \
-        setting = vars.setting;            \
-        scene = vars.scene;                \
+#define SET_APP_VARS                     \
+    void SetAppVars(const AppVars &vars) \
+    {                                    \
+        setting = vars.setting;          \
+        scene = vars.scene;              \
     }
 
 #define MAKE_APP_VARS           \
-    AppVars MakeAppVars() {     \
+    AppVars MakeAppVars()       \
+    {                           \
         AppVars vars;           \
         vars.setting = setting; \
         vars.scene = scene;     \
@@ -35,16 +37,18 @@ class Application;
 
 Application &GetApp();
 
-#define IMPLEMENT_APP(x)                 \
-    ::SD::Application & ::SD::GetApp() { \
-        static x s_instance;             \
-        return s_instance;               \
-    }                                    \
-    int main(int, char **) {             \
-        SD::GetApp().OnInit();           \
-        SD::GetApp().Run();              \
-        SD::GetApp().OnDestroy();        \
-        return 0;                        \
+#define IMPLEMENT_APP(x)               \
+    ::SD::Application & ::SD::GetApp() \
+    {                                  \
+        static x s_instance;           \
+        return s_instance;             \
+    }                                  \
+    int main(int, char **)             \
+    {                                  \
+        SD::GetApp().OnInit();         \
+        SD::GetApp().Run();            \
+        SD::GetApp().OnDestroy();      \
+        return 0;                      \
     }
 
 }  // namespace SD

@@ -23,7 +23,8 @@ class BlockingQueue {
      *
      * @param item The item to push.
      */
-    void Push(const T& item) {
+    void Push(const T& item)
+    {
         std::unique_lock<std::mutex> lock(m_mutex);
         m_queue.push(item);
         m_condition.notify_one();
@@ -32,7 +33,8 @@ class BlockingQueue {
     /**
      * Pops an item from the front of the queue.
      */
-    T Pop() {
+    T Pop()
+    {
         std::unique_lock<std::mutex> lock(m_mutex);
         while (m_queue.empty()) {
             m_condition.wait(lock, [this] { return !m_queue.empty(); });
@@ -43,19 +45,22 @@ class BlockingQueue {
         return item;
     }
 
-    void Clear() {
+    void Clear()
+    {
         std::unique_lock<std::mutex> lock(m_mutex);
         m_queue.clear();
 
         m_condition.notify_one();
     }
 
-    bool Empty() {
+    bool Empty()
+    {
         std::unique_lock<std::mutex> lock(m_mutex);
         return m_queue.empty();
     }
 
-    size_t Size() {
+    size_t Size()
+    {
         std::unique_lock<std::mutex> lock(m_mutex);
         return m_queue.size();
     }

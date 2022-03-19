@@ -21,13 +21,18 @@ class HandlerRegistration {
    public:
     HandlerRegistration() : m_handle(nullptr), m_dispatcher(nullptr){};
     HandlerRegistration(const void* handle, EventDispatcher* bus)
-        : m_handle(handle), m_dispatcher(bus) {}
+        : m_handle(handle), m_dispatcher(bus)
+    {
+    }
     HandlerRegistration(const HandlerRegistration& other) = delete;
     HandlerRegistration(HandlerRegistration&& other) noexcept
         : m_handle(std::exchange(other.m_handle, nullptr)),
-          m_dispatcher(std::exchange(other.m_dispatcher, nullptr)) {}
+          m_dispatcher(std::exchange(other.m_dispatcher, nullptr))
+    {
+    }
     HandlerRegistration& operator=(const HandlerRegistration& other) = delete;
-    HandlerRegistration& operator=(HandlerRegistration&& other) {
+    HandlerRegistration& operator=(HandlerRegistration&& other)
+    {
         m_handle = std::exchange(other.m_handle, nullptr);
         m_dispatcher = std::exchange(other.m_dispatcher, nullptr);
         return *this;
@@ -46,8 +51,9 @@ class HandlerRegistration {
 class EventDispatcher {
    public:
     template <typename EVENT, typename F>
-    [[nodiscard]] HandlerRegistration Register(
-        F* object, void (F::*method)(const EVENT&)) {
+    [[nodiscard]] HandlerRegistration Register(F* object,
+                                               void (F::*method)(const EVENT&))
+    {
         const auto type_idx = std::type_index(typeid(EVENT));
         const void* handle;
         SafeUniqueAccess([&]() {
@@ -64,7 +70,8 @@ class EventDispatcher {
     // compiler to dedcut it
     template <typename EVENT>
     [[nodiscard]] HandlerRegistration Register(
-        std::function<void(const EVENT&)>&& method) {
+        std::function<void(const EVENT&)>&& method)
+    {
         const auto type_idx = std::type_index(typeid(EVENT));
         const void* handle;
         SafeUniqueAccess([&]() {
@@ -77,7 +84,8 @@ class EventDispatcher {
         return {handle, this};
     }
 
-    bool RemoveHandler(HandlerRegistration& registration) {
+    bool RemoveHandler(HandlerRegistration& registration)
+    {
         if (!registration.GetHandle()) return false;
         bool res = false;
 
@@ -96,7 +104,8 @@ class EventDispatcher {
     }
 
     template <typename EVENT>
-    void PublishEvent(EVENT&& e) {
+    void PublishEvent(EVENT&& e)
+    {
         SafeSharedAccess([this, local_evt = std::forward<EVENT>(e)]() {
             auto [begin, end] =
                 m_callbacks.equal_range(std::type_index(typeid(EVENT)));
@@ -112,25 +121,29 @@ class EventDispatcher {
     MutexType m_mutex;
 
     template <typename CALLBACK>
-    void SafeUniqueAccess(CALLBACK&& callback) {
+    void SafeUniqueAccess(CALLBACK&& callback)
+    {
         std::lock_guard<MutexType> lock(m_mutex);
         callback();
     }
 
     template <typename CALLBACK>
-    void SafeSharedAccess(CALLBACK&& callback) {
+    void SafeSharedAccess(CALLBACK&& callback)
+    {
         std::shared_lock<MutexType> lock(m_mutex);
         callback();
     }
 };
 
-inline void HandlerRegistration::Unregister() noexcept {
+inline void HandlerRegistration::Unregister() noexcept
+{
     if (m_dispatcher && m_handle) {
         m_dispatcher->RemoveHandler(*this);
     }
 }
 
-inline void HandlerRegistration::Reset() {
+inline void HandlerRegistration::Reset()
+{
     m_dispatcher = nullptr;
     m_handle = nullptr;
 }

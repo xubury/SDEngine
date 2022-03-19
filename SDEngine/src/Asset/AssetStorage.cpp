@@ -11,12 +11,14 @@ AssetStorage &AssetStorage::Get() { return *s_storage; }
 
 void AssetStorage::Init() { s_storage = new AssetStorage; }
 
-void AssetStorage::Shutdown() {
+void AssetStorage::Shutdown()
+{
     delete s_storage;
     s_storage = nullptr;
 }
 
-AssetStorage::~AssetStorage() {
+AssetStorage::~AssetStorage()
+{
     for (auto &[res_type, cache] : m_assets) {
         for (auto &[sid, ptr] : cache) {
             GetTypeData(res_type).destroy_func(ptr);
@@ -26,12 +28,14 @@ AssetStorage::~AssetStorage() {
     m_assets.clear();
 }
 
-void AssetStorage::ScanDirectory(const std::filesystem::path &dir) {
+void AssetStorage::ScanDirectory(const std::filesystem::path &dir)
+{
     for (auto &entry : std::filesystem::directory_iterator(dir)) {
         if (entry.is_directory()) {
             ScanDirectory(entry);
-        } else if (entry.is_regular_file() &&
-                   entry.path().extension() == ASSET_POSFIX) {
+        }
+        else if (entry.is_regular_file() &&
+                 entry.path().extension() == ASSET_POSFIX) {
             LoadAsset(entry.path().generic_string());
         }
     }

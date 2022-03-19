@@ -3,7 +3,8 @@
 
 namespace SD {
 
-GLenum GetFormatType(DataFormat format) {
+GLenum GetFormatType(DataFormat format)
+{
     switch (format) {
         case DataFormat::Alpha8:
         case DataFormat::Alpha16F:
@@ -48,7 +49,8 @@ GLenum GetFormatType(DataFormat format) {
     return 0;
 }
 
-GLenum GetDataType(DataFormat format) {
+GLenum GetDataType(DataFormat format)
+{
     switch (format) {
         case DataFormat::Alpha8:
         case DataFormat::R8:
@@ -93,7 +95,8 @@ GLTexture::GLTexture(int width, int height, int depth, MultiSampleLevel samples,
     : Texture(width, height, depth, samples, type, format, wrap, min_filter,
               mode, mag_filter),
       gl_format(0),
-      gl_format_type(0) {
+      gl_format_type(0)
+{
     gl_format = GetFormatType(m_format);
     gl_format_type = GetDataType(m_format);
 
@@ -108,7 +111,8 @@ GLTexture::GLTexture(int width, int height, int depth, MultiSampleLevel samples,
 
 GLTexture::~GLTexture() { glDeleteTextures(1, &m_id); }
 
-void GLTexture::Allocate() {
+void GLTexture::Allocate()
+{
     int32_t dimension = (m_width != 0) + (m_height != 0) + (m_depth != 0);
     gl_type = Translate(m_type, dimension, m_samples);
     GLenum gl_sized_format = Translate(m_format);
@@ -126,6 +130,8 @@ void GLTexture::Allocate() {
             SD_CORE_ERROR("Unimplemented Allocate() for texture type: {}",
                           gl_type);
             break;
+        case GL_TEXTURE_1D:
+            glTextureStorage1D(m_id, m_mipmap_levels, gl_sized_format, m_width);
         case GL_TEXTURE_2D:
         case GL_TEXTURE_CUBE_MAP:
             glTextureStorage2D(m_id, m_mipmap_levels, gl_sized_format, m_width,
@@ -145,7 +151,8 @@ void GLTexture::Allocate() {
 }
 
 void GLTexture::SetPixels(int x, int y, int z, int width, int height, int depth,
-                          const void *data) {
+                          const void *data)
+{
     switch (gl_type) {
         default:
             SD_CORE_ERROR("Unimplemented SetPixels() for texture type: {}",
@@ -164,7 +171,8 @@ void GLTexture::SetPixels(int x, int y, int z, int width, int height, int depth,
     glGenerateTextureMipmap(m_id);
 }
 
-void GLTexture::SetBorderColor(const void *color) {
+void GLTexture::SetBorderColor(const void *color)
+{
     switch (gl_format_type) {
         case GL_FLOAT:
             glTextureParameterfv(m_id, GL_TEXTURE_BORDER_COLOR, (float *)color);
@@ -177,7 +185,8 @@ void GLTexture::SetBorderColor(const void *color) {
     }
 }
 
-void GLTexture::SetWrap(TextureWrap wrap) {
+void GLTexture::SetWrap(TextureWrap wrap)
+{
     m_wrap = wrap;
 
     GLint gl_wrap = Translate(m_wrap);
@@ -186,27 +195,31 @@ void GLTexture::SetWrap(TextureWrap wrap) {
     glTextureParameteri(m_id, GL_TEXTURE_WRAP_T, gl_wrap);
 }
 
-void GLTexture::SetMagFilter(TextureMagFilter filter) {
+void GLTexture::SetMagFilter(TextureMagFilter filter)
+{
     m_mag_filter = filter;
 
     GLint gl_filter = Translate(m_mag_filter);
     glTextureParameteri(m_id, GL_TEXTURE_MAG_FILTER, gl_filter);
 }
 
-void GLTexture::SetMinFilter(TextureMinFilter min_filter) {
+void GLTexture::SetMinFilter(TextureMinFilter min_filter)
+{
     m_min_filter = min_filter;
     GLint gl_min_filter = Translate(m_min_filter, m_mipmap_mode);
     glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, gl_min_filter);
 }
 
-void GLTexture::SetMipmapMode(MipmapMode mode) {
+void GLTexture::SetMipmapMode(MipmapMode mode)
+{
     m_mipmap_mode = mode;
     GLint gl_min_filter = Translate(m_min_filter, m_mipmap_mode);
     glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, gl_min_filter);
 }
 
 void GLTexture::ReadPixels(int level, int x, int y, int z, int w, int h, int d,
-                           size_t size, void *data) const {
+                           size_t size, void *data) const
+{
     glGetTextureSubImage(m_id, level, x, y, z, w, h, d, gl_format,
                          gl_format_type, size, data);
 }

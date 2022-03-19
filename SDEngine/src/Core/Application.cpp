@@ -15,7 +15,8 @@ namespace SD {
 
 const std::string SETTING_FILENAME = "setting.ini";
 
-static void RegisterAssets(AssetStorage *storage) {
+static void RegisterAssets(AssetStorage *storage)
+{
     storage->RegisterAsset<FontAsset>(
         AssetTypeData{0, std::bind(Asset::Create<FontAsset>),
                       std::bind(Asset::Destroy, std::placeholders::_1)});
@@ -30,7 +31,8 @@ static void RegisterAssets(AssetStorage *storage) {
                       std::bind(Asset::Destroy, std::placeholders::_1)});
 }
 
-Application::Application(const std::string &title, Device::API api) {
+Application::Application(const std::string &title, Device::API api)
+{
     std::string debug_path = (GetAppDirectory() / "Debug.txt").generic_string();
     Log::Init(debug_path);
     SD_CORE_INFO("Debug info is output to: {}", debug_path);
@@ -63,7 +65,8 @@ Application::Application(const std::string &title, Device::API api) {
     storage.ScanDirectory(storage.GetDirectory());
 }
 
-Application::~Application() {
+Application::~Application()
+{
     AssetStorage::Shutdown();
     EventSystem::Shutdown();
 
@@ -79,7 +82,8 @@ Application::~Application() {
     SDL_Quit();
 }
 
-void Application::OnInit() {
+void Application::OnInit()
+{
     m_quit_handler = EventSystem::Get().Register<AppQuitEvent>(
         [this](const AppQuitEvent &) { Shutdown(); });
 
@@ -87,7 +91,8 @@ void Application::OnInit() {
     PushOverlay(m_imgui);
 }
 
-void Application::OnDestroy() {
+void Application::OnDestroy()
+{
     EventSystem::Get().RemoveHandler(m_quit_handler);
     while (m_layers.Size()) {
         auto layer = m_layers.Front();
@@ -96,39 +101,46 @@ void Application::OnDestroy() {
     }
 }
 
-void Application::PushLayer(Layer *layer) {
+void Application::PushLayer(Layer *layer)
+{
     layer->OnPush();
     m_layers.Push(layer);
 }
 
-void Application::PushOverlay(Layer *layer) {
+void Application::PushOverlay(Layer *layer)
+{
     layer->OnPush();
     m_layers.PushOverlay(layer);
 }
 
-void Application::PopLayer(Layer *layer) {
+void Application::PopLayer(Layer *layer)
+{
     layer->OnPop();
     m_layers.Pop(layer);
 }
 
-void Application::DestroyLayer(Layer *layer) {
+void Application::DestroyLayer(Layer *layer)
+{
     layer->OnDestroy();
     delete layer;
 }
 
-void Application::InitSettings() {
+void Application::InitSettings()
+{
     setting = CreateRef<Ini>();
     std::filesystem::path ini_path = GetAppDirectory() / SETTING_FILENAME;
     if (std::filesystem::exists(ini_path)) {
         setting->Load(ini_path.string());
-    } else {
+    }
+    else {
         SD_CORE_WARN(
             "No such ini file: {}. The application will create a new one.",
             ini_path);
     }
 }
 
-void Application::Run() {
+void Application::Run()
+{
     Clock clock;
     float min_fps = 30;
     float ms_per_frame = 1000.f / min_fps;
@@ -149,14 +161,16 @@ void Application::Run() {
 
 void Application::Shutdown() { m_window->SetShouldClose(true); }
 
-void Application::Tick(float dt) {
+void Application::Tick(float dt)
+{
     for (auto iter = m_layers.rbegin(); iter != m_layers.rend(); ++iter) {
         (*iter)->OnTick(dt);
     }
     Input::Tick();
 }
 
-void Application::Render() {
+void Application::Render()
+{
     for (auto &layer : m_layers) {
         layer->OnRender();
     }

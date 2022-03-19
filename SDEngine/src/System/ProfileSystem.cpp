@@ -12,31 +12,38 @@ ProfileSystem::ProfileSystem()
       m_camera(CameraType::Orthographic, glm::radians(45.f), 100, 100, 0.f,
                1000.f),
       m_fps(FPS_CAPACITY),
-      m_is_show_message(true) {}
+      m_is_show_message(true)
+{
+}
 
-void ProfileSystem::OnInit() {
+void ProfileSystem::OnInit()
+{
     System::OnInit();
     m_font = FontLoader::LoadFont("assets/fonts/msyh.ttc", 20, true);
 }
 
-void ProfileSystem::OnPush() {
+void ProfileSystem::OnPush()
+{
     m_size_handler = EventSystem::Get().Register<ViewportSizeEvent>(
         [this](const ViewportSizeEvent &e) {
             m_camera.Resize(e.width, e.height);
         });
 }
 
-void ProfileSystem::OnPop() {
+void ProfileSystem::OnPop()
+{
     EventSystem::Get().RemoveHandler(m_size_handler);
 }
 
-void ProfileSystem::OnTick(float) {
+void ProfileSystem::OnTick(float)
+{
     if (Input::IsKeyPressed(Keycode::F12)) {
         m_is_show_message = !m_is_show_message;
     }
 }
 
-void ProfileSystem::OnRender() {
+void ProfileSystem::OnRender()
+{
     if (!m_is_show_message) return;
 
     m_fps.Probe();

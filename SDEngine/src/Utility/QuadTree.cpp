@@ -6,7 +6,9 @@ namespace SD {
 Collidable::Collidable() : qt(nullptr) {}
 
 Collidable::Collidable(const Rect &rect, std::any data)
-    : bound(rect), data(data), qt(nullptr) {}
+    : bound(rect), data(data), qt(nullptr)
+{
+}
 
 QuadTree::QuadTree()
     : m_isLeaf(true),
@@ -14,7 +16,9 @@ QuadTree::QuadTree()
       m_capacity(0),
       m_maxLevel(0),
       m_parent(nullptr),
-      m_children{nullptr, nullptr, nullptr, nullptr} {}
+      m_children{nullptr, nullptr, nullptr, nullptr}
+{
+}
 
 QuadTree::QuadTree(const Rect &bound, uint32_t capacity, uint32_t maxLevel)
     : m_isLeaf(true),
@@ -23,12 +27,14 @@ QuadTree::QuadTree(const Rect &bound, uint32_t capacity, uint32_t maxLevel)
       m_capacity(capacity),
       m_maxLevel(maxLevel),
       m_parent(nullptr),
-      m_children{nullptr, nullptr, nullptr, nullptr} {
+      m_children{nullptr, nullptr, nullptr, nullptr}
+{
     m_objects.reserve(m_capacity);
     m_foundObjects.reserve(m_capacity);
 }
 
-QuadTree::~QuadTree() {
+QuadTree::~QuadTree()
+{
     Clear();
     for (int i = 0; i < 4; ++i) {
         if (m_children[i]) {
@@ -37,7 +43,8 @@ QuadTree::~QuadTree() {
     }
 }
 
-bool QuadTree::Insert(Collidable *obj) {
+bool QuadTree::Insert(Collidable *obj)
+{
     if (obj->qt != nullptr) return false;
 
     if (!m_isLeaf) {
@@ -56,7 +63,8 @@ bool QuadTree::Insert(Collidable *obj) {
     return true;
 }
 
-bool QuadTree::Remove(Collidable *obj) {
+bool QuadTree::Remove(Collidable *obj)
+{
     if (obj->qt == nullptr) return false;
     if (obj->qt != this) return obj->qt->Remove(obj);
 
@@ -70,7 +78,8 @@ bool QuadTree::Remove(Collidable *obj) {
     return false;
 }
 
-bool QuadTree::Update(Collidable *obj) {
+bool QuadTree::Update(Collidable *obj)
+{
     if (!Remove(obj)) return false;
 
     if (m_parent != nullptr && !m_bound.Contains(obj->bound)) {
@@ -85,7 +94,8 @@ bool QuadTree::Update(Collidable *obj) {
     return Insert(obj);
 }
 
-void QuadTree::Clear() {
+void QuadTree::Clear()
+{
     for (auto &obj : m_objects) {
         obj->qt = nullptr;
     }
@@ -98,7 +108,8 @@ void QuadTree::Clear() {
     }
 }
 
-void QuadTree::Subdivide() {
+void QuadTree::Subdivide()
+{
     float width = m_bound.width * 0.5f;
     float height = m_bound.height * 0.5f;
     float x = 0, y = 0;
@@ -129,7 +140,8 @@ void QuadTree::Subdivide() {
     m_isLeaf = false;
 }
 
-void QuadTree::DiscardEmptyBuckets() {
+void QuadTree::DiscardEmptyBuckets()
+{
     if (m_objects.size()) return;
     if (!m_isLeaf) {
         for (QuadTree *child : m_children)
@@ -139,14 +151,16 @@ void QuadTree::DiscardEmptyBuckets() {
     if (m_parent != nullptr) m_parent->DiscardEmptyBuckets();
 }
 
-QuadTree *QuadTree::GetChild(const Rect &bound) const {
+QuadTree *QuadTree::GetChild(const Rect &bound) const
+{
     bool left = bound.x + bound.width < m_bound.GetRight();
     bool right = bound.x > m_bound.GetRight();
 
     if (bound.y + bound.height < m_bound.GetTop()) {
         if (left) return m_children[1];   // Top left
         if (right) return m_children[0];  // Top right
-    } else if (bound.y > m_bound.GetTop()) {
+    }
+    else if (bound.y > m_bound.GetTop()) {
         if (left) return m_children[2];   // Bottom left
         if (right) return m_children[3];  // Bottom right
     }
@@ -155,7 +169,8 @@ QuadTree *QuadTree::GetChild(const Rect &bound) const {
 
 bool QuadTree::IsLeaf() const { return m_isLeaf; }
 
-const std::array<QuadTree *, 4> &QuadTree::GetChildren() const {
+const std::array<QuadTree *, 4> &QuadTree::GetChildren() const
+{
     return m_children;
 }
 

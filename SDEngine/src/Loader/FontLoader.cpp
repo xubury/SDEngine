@@ -28,7 +28,8 @@ const char32_t UNICODE_RANGE[] = {
     0};
 
 Ref<Font> FontLoader::LoadFont(const std::string &path, int32_t pixel_height,
-                               bool flip_uv) {
+                               bool flip_uv)
+{
     FT_Library ft;
     FT_Face face;
     if (FT_Init_FreeType(&ft)) {
@@ -38,7 +39,8 @@ Ref<Font> FontLoader::LoadFont(const std::string &path, int32_t pixel_height,
     SD_CORE_TRACE("Loading font form: {}...", path);
     if (FT_New_Face(ft, path.c_str(), 0, &face)) {
         SD_CORE_ERROR("Failed to load font {}!", path);
-    } else {
+    }
+    else {
         font = CreateRef<Font>(pixel_height);
         FT_Set_Pixel_Sizes(face, 0, pixel_height);
         LoadGlyph(face, font.get(), flip_uv);
@@ -48,7 +50,8 @@ Ref<Font> FontLoader::LoadFont(const std::string &path, int32_t pixel_height,
     return font;
 }
 
-void FontLoader::LoadGlyph(FT_Face face, Font *font, bool flip_uv) {
+void FontLoader::LoadGlyph(FT_Face face, Font *font, bool flip_uv)
+{
     for (size_t i = 0; UNICODE_RANGE[i] != 0; i += 2) {
         LoadRangedGlyph(face, font, UNICODE_RANGE[i], UNICODE_RANGE[i + 1] + 1,
                         flip_uv);
@@ -56,7 +59,8 @@ void FontLoader::LoadGlyph(FT_Face face, Font *font, bool flip_uv) {
 }
 
 void FontLoader::LoadRangedGlyph(FT_Face face, Font *font, char32_t start,
-                                 char32_t end, bool flip_uv) {
+                                 char32_t end, bool flip_uv)
+{
     const int64_t NUM_GLYPHS = end - start;
     if (NUM_GLYPHS < 0) return;
 

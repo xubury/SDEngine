@@ -5,12 +5,14 @@
 
 namespace SD {
 
-ImGuiLayer::ImGuiLayer(Window* window)
-    : Layer("ImGuiLayer"), m_window(window) {}
+ImGuiLayer::ImGuiLayer(Window* window) : Layer("ImGuiLayer"), m_window(window)
+{
+}
 
 ImGuiLayer::~ImGuiLayer() { m_window->ImGuiShutdown(); }
 
-void ImGuiLayer::Begin() {
+void ImGuiLayer::Begin()
+{
     m_window->ImGuiNewFrame();
     ImGui::NewFrame();
     ImGuizmo::BeginFrame();
@@ -58,13 +60,15 @@ void ImGuiLayer::Begin() {
     style.WindowMinSize.x = minWinSizeX;
 }
 
-void ImGuiLayer::End() {
+void ImGuiLayer::End()
+{
     ImGui::End();
     ImGui::Render();
     m_window->ImGuiRenderDrawData();
 }
 
-void ImGuiLayer::OnInit() {
+void ImGuiLayer::OnInit()
+{
     Layer::OnInit();
 
     IMGUI_CHECKVERSION();
@@ -92,7 +96,8 @@ void ImGuiLayer::OnInit() {
     m_window->ImGuiInitBackend();
 }
 
-void ImGuiLayer::OnPush() {
+void ImGuiLayer::OnPush()
+{
     ImGuiIO& io = ImGui::GetIO();
     m_handlers.push_back(EventSystem::Get().Register<WindowSizeEvent>(
         [&](const WindowSizeEvent& e) {
@@ -132,7 +137,8 @@ void ImGuiLayer::OnPush() {
 
 void ImGuiLayer::OnPop() { m_handlers.clear(); }
 
-void ImGuiLayer::SetDarkThemeColor() {
+void ImGuiLayer::SetDarkThemeColor()
+{
     auto& colors = ImGui::GetStyle().Colors;
     colors[ImGuiCol_WindowBg] = ImVec4{0.1f, 0.105f, 0.11f, 1.0f};
 

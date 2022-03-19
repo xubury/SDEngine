@@ -9,7 +9,8 @@
 
 namespace SD {
 
-static DataFormat Get8BitDataFormat(int32_t channels) {
+static DataFormat Get8BitDataFormat(int32_t channels)
+{
     DataFormat format = DataFormat::RGB8;
     switch (channels) {
         case 1:
@@ -29,7 +30,8 @@ static DataFormat Get8BitDataFormat(int32_t channels) {
 }
 
 Ref<Texture> TextureLoader::LoadTextureCube(
-    const std::vector<std::string>& pathes) {
+    const std::vector<std::string>& pathes)
+{
     Ref<Texture> texture;
     if (pathes.size() < 6) {
         throw Exception("Not enough images to load a texture cube!");
@@ -57,7 +59,8 @@ Ref<Texture> TextureLoader::LoadTextureCube(
 
 // FIXME: 16bit should use this stbi_load_16();
 
-Ref<Texture> TextureLoader::LoadTexture2D(const std::string& path) {
+Ref<Texture> TextureLoader::LoadTexture2D(const std::string& path)
+{
     SD_CORE_TRACE("Loading image from {}", path);
     int32_t width;
     int32_t height;

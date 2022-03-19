@@ -9,7 +9,8 @@ Device::API Device::GetAPI() { return s_api; }
 
 void Device::SetAPI(API api) { s_api = api; }
 
-Scope<Device> Device::Create() {
+Scope<Device> Device::Create()
+{
     SD_CORE_TRACE("Initializing Graphics Deivce...");
     Scope<Device> device;
     switch (s_api) {

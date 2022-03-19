@@ -14,9 +14,12 @@ PostProcessSystem::PostProcessSystem(int32_t width, int32_t height)
       m_is_bloom(true),
       m_bloom_factor(1.0f),
       m_exposure(1.2),
-      m_gamma_correction(1.2) {}
+      m_gamma_correction(1.2)
+{
+}
 
-void PostProcessSystem::OnInit() {
+void PostProcessSystem::OnInit()
+{
     System::OnInit();
     m_blur_shader = ShaderLoader::LoadShader("assets/shaders/quad.vert.glsl",
                                              "assets/shaders/blur.frag.glsl");
@@ -26,7 +29,8 @@ void PostProcessSystem::OnInit() {
     InitBuffers();
 }
 
-void PostProcessSystem::InitBuffers() {
+void PostProcessSystem::InitBuffers()
+{
     AttachmentDescription attach_desc{
         AttachmentType::Normal, DataFormat::RGBA16F, MultiSampleLevel::X1};
     for (int i = 0; i < 2; ++i) {
@@ -36,7 +40,8 @@ void PostProcessSystem::InitBuffers() {
     m_post_buffer = Framebuffer::Create({m_width, m_height, 0, {attach_desc}});
 }
 
-void PostProcessSystem::OnPush() {
+void PostProcessSystem::OnPush()
+{
     m_is_bloom = setting->GetBoolean("post process", "bloom", m_is_bloom);
     m_bloom_factor =
         setting->GetFloat("post process", "bloom factor", m_bloom_factor);
@@ -47,7 +52,8 @@ void PostProcessSystem::OnPush() {
         EventSystem::Get().Register(this, &PostProcessSystem::OnSizeEvent);
 }
 
-void PostProcessSystem::OnPop() {
+void PostProcessSystem::OnPop()
+{
     setting->SetBoolean("post process", "bloom", m_is_bloom);
     setting->SetFloat("post process", "bloom factor", m_bloom_factor);
     setting->SetFloat("post process", "exposure", m_exposure);
@@ -55,7 +61,8 @@ void PostProcessSystem::OnPop() {
     EventSystem::Get().RemoveHandler(m_size_handler);
 }
 
-void PostProcessSystem::OnImGui() {
+void PostProcessSystem::OnImGui()
+{
     ImGui::Begin("PostProcess System");
     {
         ImGui::TextUnformatted("Exposure");
@@ -70,7 +77,8 @@ void PostProcessSystem::OnImGui() {
     ImGui::End();
 }
 
-void PostProcessSystem::OnRender() {
+void PostProcessSystem::OnRender()
+{
     Renderer::DrawToBuffer(0, m_post_buffer.get(), 0,
                            BufferBitMask::ColorBufferBit);
     if (m_is_bloom) {
@@ -79,7 +87,8 @@ void PostProcessSystem::OnRender() {
     RenderPost();
 }
 
-void PostProcessSystem::OnSizeEvent(const ViewportSizeEvent &event) {
+void PostProcessSystem::OnSizeEvent(const ViewportSizeEvent &event)
+{
     m_width = event.width;
     m_height = event.height;
     for (auto &buffer : m_blur_buffer) {
@@ -88,7 +97,8 @@ void PostProcessSystem::OnSizeEvent(const ViewportSizeEvent &event) {
     m_post_buffer->Resize(event.width, event.height);
 }
 
-void PostProcessSystem::RenderBlur() {
+void PostProcessSystem::RenderBlur()
+{
     const int amount = 10;
     bool horizontal = true;
     ShaderParam *horizontal_param = m_blur_shader->GetParam("u_horizontal");
@@ -110,7 +120,8 @@ void PostProcessSystem::RenderBlur() {
     }
 }
 
-void PostProcessSystem::RenderPost() {
+void PostProcessSystem::RenderPost()
+{
     int index = 0;
     RenderSubpassInfo info{&index, 1};
     Renderer::BeginRenderSubpass(info);
@@ -141,7 +152,8 @@ void PostProcessSystem::SetBloomFactor(float bloom) { m_bloom_factor = bloom; }
 
 float PostProcessSystem::GetBloomFactor() { return m_bloom_factor; }
 
-void PostProcessSystem::SetGammaCorrection(float gamma) {
+void PostProcessSystem::SetGammaCorrection(float gamma)
+{
     m_gamma_correction = gamma;
 }
 

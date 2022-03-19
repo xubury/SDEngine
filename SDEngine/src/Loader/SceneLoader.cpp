@@ -2,7 +2,8 @@
 
 namespace SD {
 
-Ref<Scene> SceneLoader::LoadScene(const std::string &path) {
+Ref<Scene> SceneLoader::LoadScene(const std::string &path)
+{
     Ref<Scene> scene = CreateRef<Scene>();
     std::ifstream is(path, std::ios::binary);
     cereal::PortableBinaryInputArchive archive(is);
