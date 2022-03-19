@@ -2,8 +2,8 @@
 #define SD_VARIABLES_HPP
 
 #include "Core/Export.hpp"
-#include "Utility/Ini.hpp"
-#include "ECS/Scene.hpp"
+
+#include <filesystem>
 
 namespace SD {
 

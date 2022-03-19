@@ -5,6 +5,7 @@
 #include "Core/Window.hpp"
 #include "Core/ImGuiLayer.hpp"
 #include "Graphics/Device.hpp"
+#include "Utility/Ini.hpp"
 
 int main(int argc, char **argv);
 
