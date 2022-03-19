@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <regex>
 
-enum class ImGuiFileDialogType { OPEN_FILE, SAVE_FILE, TYPE_COUNT = 2 };
+enum class ImGuiFileDialogType { OpenFile, SaveFile, TypeCount = 2 };
 
 // TODO: model filter?
 const std::regex IMG_FILTER("(.*\\.jpg)|(.*\\.png)|(.*\\.tif)|(.*\\.bmp)");

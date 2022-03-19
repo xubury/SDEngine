@@ -105,9 +105,9 @@ void ImGuiLayer::OnPush() {
         EventSystem::Get().Register<KeyEvent>([&](const KeyEvent& e) {
             io.KeysDown[static_cast<uint16_t>(
                 GetScancodeFromKeycode(e.keycode))] = e.state;
-            io.KeyShift = e.mod == Keymod::SHIFT;
-            io.KeyCtrl = e.mod == Keymod::CTRL;
-            io.KeyAlt = e.mod == Keymod::ALT;
+            io.KeyShift = e.mod == Keymod::Shift;
+            io.KeyCtrl = e.mod == Keymod::Ctrl;
+            io.KeyAlt = e.mod == Keymod::Alt;
             io.KeySuper = e.mod == Keymod::GUI;
 #if defined(SD_PLATFORM_WINDOWS)
             io.KeySuper = false;
@@ -123,7 +123,7 @@ void ImGuiLayer::OnPush() {
     m_handlers.push_back(EventSystem::Get().Register<MouseButtonEvent>(
         [&](const MouseButtonEvent& e) {
             int button = static_cast<int>(e.button) -
-                         static_cast<int>(MouseButton::LEFT);
+                         static_cast<int>(MouseButton::Left);
             io.MouseDown[button] = e.state;
         }));
     m_handlers.push_back(EventSystem::Get().Register<MouseWheelEvent>(

@@ -121,7 +121,6 @@ void GLTexture::Allocate() {
         glTextureParameteriv(m_id, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
     }
 
-    SD_CORE_TRACE("{}", gl_type);
     switch (gl_type) {
         default:
             SD_CORE_ERROR("Unimplemented Allocate() for texture type: {}",
@@ -138,7 +137,6 @@ void GLTexture::Allocate() {
                                           GL_TRUE);
             break;
         case GL_TEXTURE_3D:
-            SD_CORE_ASSERT(false);
         case GL_TEXTURE_2D_ARRAY:
             glTextureStorage3D(m_id, m_mipmap_levels, gl_sized_format, m_width,
                                m_height, m_depth);

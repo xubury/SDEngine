@@ -282,7 +282,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
         if (ImGui::MenuItem("Camera")) {
             if (!entity.HasComponent<CameraComponent>())
                 entity.AddComponent<CameraComponent>(
-                    CameraType::PERSPECTIVE, glm::radians(45.f), m_width,
+                    CameraType::Perspective, glm::radians(45.f), m_width,
                     m_height, 0.1f, 1000.f);
             else
                 SD_CORE_WARN("This entity already has the Camera Component!");
@@ -432,13 +432,13 @@ void ScenePanel::DrawComponents(Entity &entity) {
             CameraType type = cameraComp.camera.GetCameraType();
             if (ImGui::RadioButton("Perspective",
                                    reinterpret_cast<int *>(&type),
-                                   static_cast<int>(CameraType::PERSPECTIVE))) {
+                                   static_cast<int>(CameraType::Perspective))) {
                 cameraComp.camera.SetCameraType(type);
             }
             ImGui::SameLine();
             if (ImGui::RadioButton(
                     "Ortho", reinterpret_cast<int *>(&type),
-                    static_cast<int>(CameraType::ORTHOGRAPHIC))) {
+                    static_cast<int>(CameraType::Orthographic))) {
                 cameraComp.camera.SetCameraType(type);
             }
             float fov = cameraComp.camera.GetFOV();

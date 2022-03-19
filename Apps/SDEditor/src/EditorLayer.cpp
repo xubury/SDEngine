@@ -187,37 +187,37 @@ void EditorLayer::OnKeyEvent(const KeyEvent &e) {
         default:
             break;
         case Keycode::Z: {
-            if (IsKeyModActive(e.mod, Keymod::LCTRL)) {
+            if (IsKeyModActive(e.mod, Keymod::LCtrl)) {
                 m_is_runtime = !m_is_runtime;
             }
         } break;
         case Keycode::S: {
-            if (IsKeyModActive(e.mod, (Keymod::LCTRL | Keymod::LSHIFT))) {
+            if (IsKeyModActive(e.mod, (Keymod::LCtrl | Keymod::LShift))) {
                 OpenSaveSceneDialog();
-            } else if (IsKeyModActive(e.mod, Keymod::LSHIFT)) {
+            } else if (IsKeyModActive(e.mod, Keymod::LShift)) {
                 m_scene_panel->SetGizmoOperation(ImGuizmo::SCALE);
             }
         } break;
         case Keycode::N: {
-            if (IsKeyModActive(e.mod, Keymod::LCTRL)) {
+            if (IsKeyModActive(e.mod, Keymod::LCtrl)) {
                 NewScene();
             }
         } break;
         case Keycode::L: {
-            if (IsKeyModActive(e.mod, Keymod::LCTRL)) {
+            if (IsKeyModActive(e.mod, Keymod::LCtrl)) {
                 OpenLoadSceneDialog();
             }
         } break;
-        case Keycode::ESCAPE: {
+        case Keycode::Escape: {
             Quit();
         } break;
         case Keycode::T: {
-            if (IsKeyModActive(e.mod, Keymod::LSHIFT)) {
+            if (IsKeyModActive(e.mod, Keymod::LShift)) {
                 m_scene_panel->SetGizmoOperation(ImGuizmo::TRANSLATE);
             }
         } break;
         case Keycode::R: {
-            if (IsKeyModActive(e.mod, Keymod::LSHIFT)) {
+            if (IsKeyModActive(e.mod, Keymod::LShift)) {
                 m_scene_panel->SetGizmoOperation(ImGuizmo::ROTATE);
             }
         } break;
@@ -238,7 +238,7 @@ void EditorLayer::NewScene() {
 
 void EditorLayer::OpenLoadSceneDialog() {
     m_load_scene_open = true;
-    m_file_dialog_info.type = ImGuiFileDialogType::OPEN_FILE;
+    m_file_dialog_info.type = ImGuiFileDialogType::OpenFile;
     m_file_dialog_info.title = "Load Scene";
     m_file_dialog_info.file_name = "";
     m_file_dialog_info.regex_match = SCENE_FILTER;
@@ -247,7 +247,7 @@ void EditorLayer::OpenLoadSceneDialog() {
 
 void EditorLayer::OpenSaveSceneDialog() {
     m_save_scene_open = true;
-    m_file_dialog_info.type = ImGuiFileDialogType::SAVE_FILE;
+    m_file_dialog_info.type = ImGuiFileDialogType::SaveFile;
     m_file_dialog_info.title = "Save Scene";
     m_file_dialog_info.file_name = m_scene_asset->GetName();
     m_file_dialog_info.regex_match = SCENE_FILTER;
@@ -328,7 +328,7 @@ void EditorLayer::DrawViewport() {
         if (m_selected_entity) {
             Camera *cam = scene->GetCamera();
             ImGuizmo::SetOrthographic(cam->GetCameraType() ==
-                                      CameraType::ORTHOGRAPHIC);
+                                      CameraType::Orthographic);
             const glm::mat4 &view = cam->GetView();
             const glm::mat4 &projection = cam->GetProjection();
 

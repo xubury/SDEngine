@@ -80,11 +80,11 @@ void Camera::SetWorldTransform(const glm::mat4 &transform) {
 }
 
 void Camera::UpdateProjection() {
-    if (m_type == CameraType::ORTHOGRAPHIC) {
+    if (m_type == CameraType::Orthographic) {
         m_projection = glm::ortho(-m_near_width / 2.f, m_near_width / 2.f,
                                   -m_near_height / 2.f, m_near_height / 2.f,
                                   m_near_z, m_far_z);
-    } else if (m_type == CameraType::PERSPECTIVE) {
+    } else if (m_type == CameraType::Perspective) {
         m_projection = glm::perspective(m_fov, m_near_width / m_near_height,
                                         m_near_z, m_far_z);
     } else {
@@ -176,7 +176,7 @@ void Camera::SetNearHeight(float height) {
 
 float Camera::GetNearWidth() const {
     switch (m_type) {
-        case CameraType::PERSPECTIVE:
+        case CameraType::Perspective:
             return GetNearHeight() * m_near_width / m_near_height;
         default:
             return m_near_width;
@@ -185,7 +185,7 @@ float Camera::GetNearWidth() const {
 
 float Camera::GetNearHeight() const {
     switch (m_type) {
-        case CameraType::PERSPECTIVE:
+        case CameraType::Perspective:
             return std::tan(m_fov / 2.f) * m_near_z * 2.f;
         default:
             return m_near_height;
@@ -194,7 +194,7 @@ float Camera::GetNearHeight() const {
 
 float Camera::GetFarWidth() const {
     switch (m_type) {
-        case CameraType::PERSPECTIVE:
+        case CameraType::Perspective:
             return GetFarHeight() * m_near_width / m_near_height;
         default:
             return m_near_width;
@@ -203,7 +203,7 @@ float Camera::GetFarWidth() const {
 
 float Camera::GetFarHeight() const {
     switch (m_type) {
-        case CameraType::PERSPECTIVE:
+        case CameraType::Perspective:
             return std::tan(m_fov / 2.f) * m_far_z * 2.f;
         default:
             return m_near_height;

@@ -9,7 +9,7 @@ const uint32_t FPS_CAPACITY = 50;
 
 ProfileSystem::ProfileSystem()
     : System("ProfileSystem"),
-      m_camera(CameraType::ORTHOGRAPHIC, glm::radians(45.f), 100, 100, 0.f,
+      m_camera(CameraType::Orthographic, glm::radians(45.f), 100, 100, 0.f,
                1000.f),
       m_fps(FPS_CAPACITY),
       m_is_show_message(true) {}

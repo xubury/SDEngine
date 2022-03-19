@@ -354,7 +354,7 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
 
         ImGui::SameLine();
 
-        if (dialogInfo->type == ImGuiFileDialogType::OPEN_FILE) {
+        if (dialogInfo->type == ImGuiFileDialogType::OpenFile) {
             if (ImGui::Button("Open")) {
                 dialogInfo->result_path =
                     dialogInfo->directory_path / dialogInfo->file_name;
@@ -374,7 +374,7 @@ bool ImGui::FileDialog(bool* open, ImFileDialogInfo* dialogInfo) {
                     *open = false;
                 }
             }
-        } else if (dialogInfo->type == ImGuiFileDialogType::SAVE_FILE) {
+        } else if (dialogInfo->type == ImGuiFileDialogType::SaveFile) {
             if (ImGui::Button("Save")) {
                 dialogInfo->result_path =
                     dialogInfo->directory_path / dialogInfo->file_name;

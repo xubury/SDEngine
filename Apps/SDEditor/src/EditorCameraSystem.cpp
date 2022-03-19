@@ -16,7 +16,7 @@ EditorCameraSystem::EditorCameraSystem(int32_t width, int32_t height)
       m_pitch(0),
       m_mouse_smooth_movement(0),
       m_mouse_movement(0),
-      m_camera(CameraType::PERSPECTIVE, glm::radians(45.f), m_width, m_height,
+      m_camera(CameraType::Perspective, glm::radians(45.f), m_width, m_height,
                0.1f, MAX_FAR_Z) {
     m_camera.SetWorldPosition(glm::vec3(0, 0, 1));
 }
@@ -36,7 +36,7 @@ void EditorCameraSystem::OnPop() {
 }
 
 void EditorCameraSystem::OnMouseMotion(const MouseMotionEvent &event) {
-    if (Input::IsMouseDown(MouseButton::RIGHT)) {
+    if (Input::IsMouseDown(MouseButton::Right)) {
         m_mouse_movement.x += event.x_rel;
         m_mouse_movement.y += event.y_rel;
     }
@@ -51,12 +51,12 @@ void EditorCameraSystem::OnImGui() {
     {
         CameraType type = m_camera.GetCameraType();
         if (ImGui::RadioButton("Perspective", reinterpret_cast<int *>(&type),
-                               static_cast<int>(CameraType::PERSPECTIVE))) {
+                               static_cast<int>(CameraType::Perspective))) {
             m_camera.SetCameraType(type);
         }
         ImGui::SameLine();
         if (ImGui::RadioButton("Ortho", reinterpret_cast<int *>(&type),
-                               static_cast<int>(CameraType::ORTHOGRAPHIC))) {
+                               static_cast<int>(CameraType::Orthographic))) {
             m_camera.SetCameraType(type);
         }
         float fov = m_camera.GetFOV();
@@ -81,11 +81,11 @@ void EditorCameraSystem::OnImGui() {
 void EditorCameraSystem::OnTick(float dt) {
     float step = TRANSLATION_SPEED * dt;
     if (Input::IsKeyDown(Keycode::W) &&
-        m_camera.GetCameraType() == CameraType::PERSPECTIVE) {
+        m_camera.GetCameraType() == CameraType::Perspective) {
         m_camera.TranslateWorld(-m_camera.GetWorldFront() * step);
     }
     if (Input::IsKeyDown(Keycode::S) &&
-        m_camera.GetCameraType() == CameraType::PERSPECTIVE) {
+        m_camera.GetCameraType() == CameraType::Perspective) {
         m_camera.TranslateWorld(m_camera.GetWorldFront() * step);
     }
     if (Input::IsKeyDown(Keycode::A)) {
@@ -94,10 +94,10 @@ void EditorCameraSystem::OnTick(float dt) {
     if (Input::IsKeyDown(Keycode::D)) {
         m_camera.TranslateWorld(m_camera.GetWorldRight() * step);
     }
-    if (Input::IsKeyDown(Keycode::LSHIFT)) {
+    if (Input::IsKeyDown(Keycode::LShift)) {
         m_camera.TranslateWorld(m_camera.GetWorldUp() * step);
     }
-    if (Input::IsKeyDown(Keycode::LCTRL)) {
+    if (Input::IsKeyDown(Keycode::LCtrl)) {
         m_camera.TranslateWorld(-m_camera.GetWorldUp() * step);
     }
     m_mouse_smooth_movement =

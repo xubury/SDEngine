@@ -89,7 +89,7 @@ static void DrawModelCreation(const std::filesystem::path& directory,
             static std::string model_path = "None";
             if (ImGui::Button(model_path.c_str())) {
                 filedlg_open = true;
-                filedlg_info.type = ImGuiFileDialogType::OPEN_FILE;
+                filedlg_info.type = ImGuiFileDialogType::OpenFile;
                 filedlg_info.title = "Open File";
                 // filedlg_info.regex_match = FONT_FILTER;
                 filedlg_info.file_name = "";

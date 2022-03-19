@@ -6,9 +6,9 @@
 namespace SD {
 
 enum class MouseButton : uint8_t {
-    LEFT = 1,
-    MIDDLE = 2,
-    RIGHT = 3,
+    Left = 1,
+    Middle = 2,
+    Right = 3,
     X1 = 4,
     X2 = 5,
 };
