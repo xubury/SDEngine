@@ -87,10 +87,10 @@ void EditorLayer::OnRender() {
         system->OnRender();
     }
     // blit the render color result
-    Renderer::DrawToBuffer(0, m_viewport_buffer.get(), 0,
+    Renderer::BlitToBuffer(0, m_viewport_buffer.get(), 0,
                            BufferBitMask::ColorBufferBit);
     // blit the entity id result
-    Renderer::DrawToBuffer(1, m_viewport_buffer.get(), 1,
+    Renderer::BlitToBuffer(1, m_viewport_buffer.get(), 1,
                            BufferBitMask::ColorBufferBit);
     Renderer::EndRenderPass();
 }

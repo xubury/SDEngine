@@ -13,7 +13,8 @@
 namespace SD {
 
 template <typename T>
-void SelectAsset(ResourceId *selected_id) {
+void SelectAsset(ResourceId *selected_id)
+{
     auto &storage = AssetStorage::Get();
 
     if (!storage.Empty<T>()) {
@@ -41,9 +42,12 @@ void SelectAsset(ResourceId *selected_id) {
 ScenePanel::ScenePanel()
     : System("ScenePanel"),
       m_gizmo_mode(ImGuizmo::WORLD),
-      m_gizmo_op(ImGuizmo::TRANSLATE) {}
+      m_gizmo_op(ImGuizmo::TRANSLATE)
+{
+}
 
-void ScenePanel::OnPush() {
+void ScenePanel::OnPush()
+{
     m_size_handler =
         EventSystem::Get().Register(this, &ScenePanel::OnSizeEvent);
     m_entity_select_handler = EventSystem::Get().Register<EntitySelectEvent>(
@@ -52,17 +56,20 @@ void ScenePanel::OnPush() {
         });
 }
 
-void ScenePanel::OnPop() {
+void ScenePanel::OnPop()
+{
     EventSystem::Get().RemoveHandler(m_size_handler);
     EventSystem::Get().RemoveHandler(m_entity_select_handler);
 }
 
-void ScenePanel::OnSizeEvent(const ViewportSizeEvent &event) {
+void ScenePanel::OnSizeEvent(const ViewportSizeEvent &event)
+{
     m_width = event.width;
     m_height = event.height;
 }
 
-void ScenePanel::Reset() {
+void ScenePanel::Reset()
+{
     m_selected_material_id_map.clear();
     m_selected_anim_id_map.clear();
 }
@@ -71,7 +78,8 @@ ImGuizmo::MODE ScenePanel::GetGizmoMode() const { return m_gizmo_mode; }
 
 ImGuizmo::OPERATION ScenePanel::GetGizmoOperation() const { return m_gizmo_op; }
 
-void ScenePanel::OnImGui() {
+void ScenePanel::OnImGui()
+{
     ImGui::Begin("Scene Hierarchy");
 
     scene->each([&](auto entityID) {
@@ -132,7 +140,8 @@ void ScenePanel::OnImGui() {
     ImGui::End();
 }
 
-void ScenePanel::DrawEntityNode(Entity &entity) {
+void ScenePanel::DrawEntityNode(Entity &entity)
+{
     auto &data = entity.GetComponent<TransformComponent>();
 
     auto &tag = entity.GetComponent<TagComponent>().tag;
@@ -197,7 +206,8 @@ void ScenePanel::DrawEntityNode(Entity &entity) {
 
 template <typename T, typename UIFunction>
 static void DrawComponent(const std::string &name, Entity entity,
-                          UIFunction uiFunction, bool removeable = true) {
+                          UIFunction uiFunction, bool removeable = true)
+{
     const ImGuiTreeNodeFlags treeNodeFlags =
         ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed |
         ImGuiTreeNodeFlags_SpanAvailWidth |
@@ -237,7 +247,8 @@ static void DrawComponent(const std::string &name, Entity entity,
     }
 }
 
-void ScenePanel::DrawComponents(Entity &entity) {
+void ScenePanel::DrawComponents(Entity &entity)
+{
     if (entity.HasComponent<TagComponent>()) {
         auto &id = entity.GetComponent<IdComponent>().id;
         std::string idString = "Resource Id: " + std::to_string(id);
@@ -359,6 +370,7 @@ void ScenePanel::DrawComponents(Entity &entity) {
     DrawComponent<LightComponent>(
         "Light", entity, [&](LightComponent &lightComp) {
             Light &light = lightComp.light;
+            CascadeShadow &shadow = lightComp.shadow;
             glm::vec3 diffuse = light.GetDiffuse();
             if (ImGui::ColorEdit3("Diffuse", &diffuse[0])) {
                 light.SetDiffuse(diffuse);
@@ -379,16 +391,22 @@ void ScenePanel::DrawComponents(Entity &entity) {
             bool is_cast_shadow = light.IsCastShadow();
             if (ImGui::Checkbox("Cast Shadow", &is_cast_shadow)) {
                 light.SetCastShadow(is_cast_shadow);
+                if (is_cast_shadow) {
+                    shadow.CreateShadowMap();
+                }
+                else {
+                    shadow.DestroyShadowMap();
+                }
             }
             if (is_cast_shadow) {
-                auto planes = light.GetCascadePlanes();
+                auto planes = shadow.GetCascadePlanes();
                 int num_of_cascades = planes.size();
                 if (ImGui::SliderInt("Num of Cascades", &num_of_cascades, 1,
                                      4)) {
-                    light.SetNumOfCascades(num_of_cascades);
+                    shadow.SetNumOfCascades(num_of_cascades);
                 }
                 if (ImGui::InputFloat4("Cascades", planes.data())) {
-                    light.SetCascadePlanes(planes);
+                    shadow.SetCascadePlanes(planes);
                 }
             }
             if (!light.IsDirectional()) {
@@ -511,7 +529,8 @@ void ScenePanel::DrawComponents(Entity &entity) {
             if (ImGui::Button(button_str.c_str())) {
                 if (is_playing) {
                     anim_comp.animator.Stop();
-                } else {
+                }
+                else {
                     anim_comp.animator.Play(&anim);
                 }
             }
@@ -519,7 +538,8 @@ void ScenePanel::DrawComponents(Entity &entity) {
 }
 
 void ScenePanel::DrawMaterialsList(const std::vector<Material> &materials,
-                                   int *selected) {
+                                   int *selected)
+{
     int itemSize = materials.size();
     if (!itemSize) return;
 
@@ -548,7 +568,8 @@ void ScenePanel::DrawMaterialsList(const std::vector<Material> &materials,
 }
 
 void ScenePanel::DrawAnimList(
-    const std::vector<FrameAnimation<SpriteFrame>> &anims, int *selected) {
+    const std::vector<FrameAnimation<SpriteFrame>> &anims, int *selected)
+{
     int itemSize = anims.size();
     if (!itemSize) return;
 

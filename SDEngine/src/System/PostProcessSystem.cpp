@@ -79,7 +79,7 @@ void PostProcessSystem::OnImGui()
 
 void PostProcessSystem::OnRender()
 {
-    Renderer::DrawToBuffer(0, m_post_buffer.get(), 0,
+    Renderer::BlitToBuffer(0, m_post_buffer.get(), 0,
                            BufferBitMask::ColorBufferBit);
     if (m_is_bloom) {
         RenderBlur();

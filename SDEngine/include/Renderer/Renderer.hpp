@@ -68,14 +68,12 @@ class SD_RENDERER_API Renderer {
     static void DrawNDCQuad(const Shader &shader);
     static void DrawNDCBox(const Shader &shader);
 
-    static void DrawToBuffer(int read_attachment, Framebuffer *draw_fb,
+    // blit current renderpass framebuffer content to draw_fb
+    static void BlitToBuffer(int read_attachment, Framebuffer *draw_fb,
                              int draw_attachment, BufferBitMask mask);
-    static void DrawFromBuffer(int draw_attachment, Framebuffer *read_fb,
+    // blit read_fb content to current renderpass's framebuffer
+    static void BlitFromBuffer(int draw_attachment, Framebuffer *read_fb,
                                int read_attachment, BufferBitMask mask);
-    // static void Write(int32_t x, int32_t y, int32_t width, int32_t height,
-    //                   Framebuffer *from, int32_t form_x, int32_t from_y,
-    //                   int32_t from_width, int32_t from_height,
-    //                   BufferBitMask mask);
 
    protected:
     static Scope<Device> m_device;
@@ -85,7 +83,9 @@ class SD_RENDERER_API Renderer {
     static CameraData m_camera_data;
 
    private:
-    static void SetRenderOperation(const RenderOperation &op);
+    static void SetRenderState(Framebuffer *framebuffer, int32_t viewport_width,
+                               int32_t viewport_height,
+                               const RenderOperation &op);
 
     static Ref<VertexArray> m_quad_vao;
     static Ref<VertexBuffer> m_quad_vbo;
@@ -94,6 +94,8 @@ class SD_RENDERER_API Renderer {
     static Ref<VertexArray> m_box_vao;
     static Ref<VertexBuffer> m_box_vbo;
     static Ref<IndexBuffer> m_box_ibo;
+
+    static bool s_is_subpass_begin;
 };
 
 }  // namespace SD

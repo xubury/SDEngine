@@ -59,7 +59,7 @@ class SD_SYSTEM_API LightingSystem : public System {
     void InitSSAOKernel();
     void InitLighting();
 
-    void RenderShadowMap(Light &light, const Transform &transform);
+    void RenderShadowMap(CascadeShadow &shadow, const Transform &transform);
     void RenderGBuffer();
 
     void RenderSSAO();

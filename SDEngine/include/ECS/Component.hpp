@@ -10,6 +10,7 @@
 #include "Graphics/Model.hpp"
 #include "Graphics/Font.hpp"
 #include "Graphics/Light.hpp"
+#include "Graphics/CascadeShadow.hpp"
 #include "Animation/Animation.hpp"
 #include "Animation/Animator.hpp"
 
@@ -91,8 +92,9 @@ struct SD_ECS_API ModelComponent {
 
 struct SD_ECS_API LightComponent {
     Light light;
+    CascadeShadow shadow;
 
-    SERIALIZE(light)
+    SERIALIZE(light, shadow)
 };
 
 struct SD_ECS_API TextComponent {
@@ -157,7 +159,7 @@ inline void OnComponentAdded<LightComponent>(entt::registry& reg,
 {
     auto& lightComp = reg.get<LightComponent>(ent);
     if (lightComp.light.IsCastShadow()) {
-        lightComp.light.CreateShadowMap();
+        lightComp.shadow.CreateShadowMap();
     }
 }
 

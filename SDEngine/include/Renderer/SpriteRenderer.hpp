@@ -80,8 +80,6 @@ class SD_RENDERER_API SpriteRenderer : protected Renderer {
     static void NextLineBatch();
     static void NextQuadBatch();
     static void NextCircleBatch();
-
-    static void SetupShaderUBO(Shader &shader);
 };
 
 }  // namespace SD

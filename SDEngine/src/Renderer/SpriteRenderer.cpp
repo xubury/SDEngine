@@ -177,14 +177,9 @@ void SpriteRenderer::Init()
     m_circle_shader = ShaderLoader::LoadShader(
         "assets/shaders/circle.vert.glsl", "assets/shaders/circle.frag.glsl");
 
-    SetupShaderUBO(*m_line_shader);
-    SetupShaderUBO(*m_sprite_shader);
-    SetupShaderUBO(*m_circle_shader);
-}
-
-void SpriteRenderer::SetupShaderUBO(Shader& shader)
-{
-    shader.SetUniformBuffer("Camera", *m_camera_UBO);
+    m_line_shader->SetUniformBuffer("Camera", *m_camera_UBO);
+    m_circle_shader->SetUniformBuffer("Camera", *m_camera_UBO);
+    m_sprite_shader->SetUniformBuffer("Camera", *m_camera_UBO);
 }
 
 void SpriteRenderer::Begin(Camera& camera)

@@ -3,6 +3,7 @@
 #include "Renderer/MeshRenderer.hpp"
 #include "Graphics/Graphics.hpp"
 #include "Graphics/Device.hpp"
+#include "Graphics/Framebuffer.hpp"
 #include "Utility/String.hpp"
 
 #include "Loader/ShaderLoader.hpp"
@@ -22,10 +23,16 @@ Ref<VertexArray> Renderer::m_box_vao;
 Ref<VertexBuffer> Renderer::m_box_vbo;
 Ref<IndexBuffer> Renderer::m_box_ibo;
 
+bool Renderer::s_is_subpass_begin = false;
+
 static std::stack<RenderPassInfo> s_render_pass_stacks;
 
-void Renderer::SetRenderOperation(const RenderOperation& op)
+void Renderer::SetRenderState(Framebuffer* framebuffer, int32_t viewport_width,
+                              int32_t viewport_height,
+                              const RenderOperation& op)
 {
+    m_device->SetFramebuffer(framebuffer);
+    m_device->SetViewport(0, 0, viewport_width, viewport_height);
     op.depth_test ? m_device->Enable(Operation::DepthTest)
                   : m_device->Disable(Operation::DepthTest);
     m_device->SetDepthMask(op.depth_mask);
@@ -42,39 +49,43 @@ void Renderer::SetRenderOperation(const RenderOperation& op)
 void Renderer::BeginRenderPass(const RenderPassInfo& info)
 {
     s_render_pass_stacks.push(info);
-    m_device->SetFramebuffer(info.framebuffer);
-    m_device->SetViewport(0, 0, info.viewport_width, info.viewport_height);
+    SetRenderState(info.framebuffer, info.viewport_width, info.viewport_height,
+                   info.op);
+
     m_device->SetClearColor(info.clear_value[0], info.clear_value[1],
                             info.clear_value[2], info.clear_value[3]);
     if (info.clear_mask != BufferBitMask::None) {
         m_device->Clear(info.clear_mask);
     }
-    SetRenderOperation(info.op);
 }
 
 void Renderer::BeginRenderSubpass(const RenderSubpassInfo& info)
 {
+    SD_CORE_ASSERT(s_is_subpass_begin == false,
+                   "Nested render subpass is not allowed!")
+    s_is_subpass_begin = true;
+
+    // restore render pass state
     auto& render_pass = GetCurrentRenderPass();
-    m_device->SetFramebuffer(render_pass.framebuffer);
-    m_device->SetViewport(0, 0, render_pass.viewport_width,
-                          render_pass.viewport_height);
+    SetRenderState(render_pass.framebuffer, render_pass.viewport_width,
+                   render_pass.viewport_height, info.op);
 
     m_device->DrawBuffers(render_pass.framebuffer, info.draw_buffer_count,
                           info.draw_buffer);
-    SetRenderOperation(info.op);
 }
 
 void Renderer::EndRenderSubpass()
 {
     m_device->SetFramebuffer(nullptr);
     m_device->SetShader(nullptr);
+    s_is_subpass_begin = false;
 }
 
 void Renderer::EndRenderPass()
 {
+    s_render_pass_stacks.pop();
     m_device->SetFramebuffer(nullptr);
     m_device->SetShader(nullptr);
-    s_render_pass_stacks.pop();
 }
 
 const RenderPassInfo& Renderer::GetCurrentRenderPass()
@@ -178,7 +189,7 @@ void Renderer::DrawNDCBox(const Shader& shader)
     Submit(*m_box_vao, MeshTopology::Triangles, m_box_ibo->GetCount(), 0);
 }
 
-void Renderer::DrawToBuffer(int read_attachment, Framebuffer* draw_fb,
+void Renderer::BlitToBuffer(int read_attachment, Framebuffer* draw_fb,
                             int draw_attachment, BufferBitMask mask)
 {
     Framebuffer* framebuffer = GetCurrentRenderPass().framebuffer;
@@ -190,7 +201,7 @@ void Renderer::DrawToBuffer(int read_attachment, Framebuffer* draw_fb,
                               mask, BlitFilter::Nearest);
 }
 
-void Renderer::DrawFromBuffer(int draw_attachment, Framebuffer* read_fb,
+void Renderer::BlitFromBuffer(int draw_attachment, Framebuffer* read_fb,
                               int read_attachment, BufferBitMask mask)
 {
     Framebuffer* framebuffer = GetCurrentRenderPass().framebuffer;

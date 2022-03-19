@@ -149,7 +149,7 @@ void GraphicsLayer::BlitGeometryBuffers()
 {
     Renderer::BeginRenderPass({m_debug_gbuffer.get(), m_width, m_height});
     for (int i = 0; i < static_cast<int>(GeometryBufferType::EntityId); ++i) {
-        Renderer::DrawFromBuffer(i, m_lighting_system->GetGBuffer(), i,
+        Renderer::BlitFromBuffer(i, m_lighting_system->GetGBuffer(), i,
                                  BufferBitMask::ColorBufferBit);
     }
     Renderer::EndRenderPass();

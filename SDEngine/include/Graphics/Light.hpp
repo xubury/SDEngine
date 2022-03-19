@@ -1,11 +1,9 @@
 #ifndef SD_LIGHT_HPP
 #define SD_LIGHT_HPP
 
+#include "Graphics/Export.hpp"
 #include "Utility/Base.hpp"
 #include "Utility/Serialize.hpp"
-#include "Utility/Transform.hpp"
-#include "Graphics/Framebuffer.hpp"
-#include "Graphics/Camera.hpp"
 
 namespace SD {
 
@@ -43,41 +41,11 @@ class SD_GRAPHICS_API Light {
     void SetQuadratic(float quadratic);
     float GetQuadratic() const;
 
-    void CreateShadowMap();
-    void DestroyShadowMap();
-
-    const std::vector<glm::mat4> &GetLevelProjectionView() const
-    {
-        return m_projection_views;
-    }
-
-    void SetCascadePlanes(const std::vector<float> &planes)
-    {
-        m_cascade_planes = planes;
-    }
-
-    void SetNumOfCascades(int32_t num_of_cascades);
-    const std::vector<float> &GetCascadePlanes() const
-    {
-        return m_cascade_planes;
-    }
-
-    void ComputeCascadeLightMatrix(const Transform &transform,
-                                   const Camera &camera);
-
-    Framebuffer *GetCascadeMap() const { return m_cascade_map.get(); }
-
     SERIALIZE(m_ambient, m_diffuse, m_specular, m_cutoff, m_outer_cutoff,
               m_constant, m_linear, m_quadratic, m_is_directional,
-              m_is_cast_shadow, m_cascade_planes)
+              m_is_cast_shadow)
 
    private:
-    Ref<Framebuffer> m_cascade_map;
-    glm::mat4 m_projection_view;
-    // cascade light pv
-    std::vector<glm::mat4> m_projection_views;
-    std::vector<float> m_cascade_planes;
-
     bool m_is_cast_shadow;
     bool m_is_directional;
 

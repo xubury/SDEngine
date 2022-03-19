@@ -208,23 +208,22 @@ void LightingSystem::OnRender()
     RenderDeferred();
     RenderEmissive();
 
-    Renderer::DrawFromBuffer(
+    Renderer::BlitFromBuffer(
         1, m_gbuffer.get(), static_cast<int>(GeometryBufferType::EntityId),
         BufferBitMask::ColorBufferBit | BufferBitMask::DepthBufferBit);
 }
 
-void LightingSystem::RenderShadowMap(Light &light, const Transform &transform)
+void LightingSystem::RenderShadowMap(CascadeShadow &shadow,
+                                     const Transform &transform)
 {
-    if (!light.IsCastShadow()) return;
-
     auto modelView = scene->view<TransformComponent, ModelComponent>();
     RenderOperation op;
     op.cull_face = Face::Front;
-    Framebuffer *depth_map = light.GetCascadeMap();
+    Framebuffer *depth_map = shadow.GetCascadeMap();
     Renderer::BeginRenderPass(RenderPassInfo{depth_map, depth_map->GetWidth(),
                                              depth_map->GetHeight(), op});
-    MeshRenderer::Begin(light, transform, *scene->GetCamera(),
-                        *m_cascade_shader);
+    shadow.ComputeCascadeLightMatrix(transform, *scene->GetCamera());
+    MeshRenderer::SetShadowCaster(*m_cascade_shader, shadow);
 
     auto &storage = AssetStorage::Get();
     ShaderParam *model_param = m_cascade_shader->GetParam("u_model");
@@ -244,7 +243,6 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform)
             }
         }
     });
-    MeshRenderer::End();
     Renderer::EndRenderPass();
 
     // debug
@@ -253,7 +251,7 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform)
             m_cascade_debug_fb.get(), m_cascade_debug_fb->GetWidth(),
             m_cascade_debug_fb->GetHeight(), RenderOperation{}});
         m_cascade_debug_shader->GetParam("depthMap")
-            ->SetAsTexture(light.GetCascadeMap()->GetTexture());
+            ->SetAsTexture(shadow.GetCascadeMap()->GetTexture());
         m_cascade_debug_shader->GetParam("layer")->SetAsInt(m_debug_layer);
         m_cascade_debug_shader->GetParam("near_plane")
             ->SetAsFloat(scene->GetCamera()->GetNearZ());
@@ -277,7 +275,7 @@ void LightingSystem::RenderSSAO()
     Texture *normal =
         m_gbuffer->GetTexture(static_cast<int>(GeometryBufferType::Normal));
     Renderer::BeginRenderPass(info);
-    MeshRenderer::Begin(*m_ssao_shader, *scene->GetCamera());
+    MeshRenderer::SetCamera(*m_ssao_shader, *scene->GetCamera());
     m_ssao_shader->GetParam("u_radius")->SetAsFloat(m_ssao_radius);
     m_ssao_shader->GetParam("u_bias")->SetAsFloat(m_ssao_bias);
     m_ssao_shader->GetParam("u_power")->SetAsUint(m_ssao_power);
@@ -286,7 +284,6 @@ void LightingSystem::RenderSSAO()
     m_ssao_shader->GetParam("u_noise")->SetAsTexture(m_ssao_noise.get());
     Renderer::DrawNDCQuad(*m_ssao_shader);
 
-    MeshRenderer::End();
     Renderer::EndRenderPass();
 
     // blur
@@ -358,6 +355,7 @@ void LightingSystem::RenderDeferred()
         m_deferred_shader->GetParam("u_light.is_directional");
     ShaderParam *is_cast_shadow =
         m_deferred_shader->GetParam("u_light.is_cast_shadow");
+
     ShaderParam *cascade_map = m_deferred_shader->GetParam("u_cascade_map");
     ShaderParam *num_of_cascades =
         m_deferred_shader->GetParam("u_num_of_cascades");
@@ -375,8 +373,19 @@ void LightingSystem::RenderDeferred()
     lightView.each([&](const TransformComponent &transformComp,
                        LightComponent &lightComp) {
         Light &light = lightComp.light;
+        CascadeShadow &shadow = lightComp.shadow;
         const Transform &transform = transformComp.GetWorldTransform();
-        RenderShadowMap(light, transform);
+
+        if (light.IsCastShadow()) {
+            RenderShadowMap(shadow, transform);
+
+            cascade_map->SetAsTexture(shadow.GetCascadeMap()->GetTexture());
+            auto &planes = shadow.GetCascadePlanes();
+            num_of_cascades->SetAsInt(planes.size());
+            cascade_planes->SetAsVec(&planes[0], planes.size());
+            MeshRenderer::SetShadowCaster(*m_deferred_shader, shadow);
+        }
+
         RenderPassInfo info{m_light_buffer[output_id].get(),
                             m_light_buffer[output_id]->GetWidth(),
                             m_light_buffer[output_id]->GetHeight(),
@@ -385,7 +394,7 @@ void LightingSystem::RenderDeferred()
                             {0, 0, 0, 0}};
 
         Renderer::BeginRenderPass(info);
-        MeshRenderer::Begin(*m_deferred_shader, *scene->GetCamera());
+        MeshRenderer::SetCamera(*m_deferred_shader, *scene->GetCamera());
         lighting->SetAsTexture(m_light_buffer[input_id]->GetTexture());
         direction->SetAsVec3(&transform.GetFront()[0]);
         position->SetAsVec3(&transform.GetPosition()[0]);
@@ -400,14 +409,7 @@ void LightingSystem::RenderDeferred()
 
         is_directional->SetAsBool(light.IsDirectional());
         is_cast_shadow->SetAsBool(light.IsCastShadow());
-        if (light.IsCastShadow()) {
-            cascade_map->SetAsTexture(light.GetCascadeMap()->GetTexture());
-            auto &planes = light.GetCascadePlanes();
-            num_of_cascades->SetAsInt(planes.size());
-            cascade_planes->SetAsVec(&planes[0], planes.size());
-        }
         Renderer::DrawNDCQuad(*m_deferred_shader);
-        MeshRenderer::End();
         std::swap(m_light_buffer[input_id], m_light_buffer[output_id]);
         Renderer::EndRenderPass();
     });
@@ -427,7 +429,7 @@ void LightingSystem::RenderGBuffer()
         BufferBitMask::ColorBufferBit | BufferBitMask::DepthBufferBit,
         {0, 0, 0, 0}};
     Renderer::BeginRenderPass(info);
-    MeshRenderer::Begin(*m_gbuffer_shader, *scene->GetCamera());
+    MeshRenderer::SetCamera(*m_gbuffer_shader, *scene->GetCamera());
     uint32_t id = static_cast<uint32_t>(entt::null);
     m_gbuffer->ClearAttachment(static_cast<int>(GeometryBufferType::EntityId),
                                &id);
@@ -456,7 +458,6 @@ void LightingSystem::RenderGBuffer()
             }
         }
     });
-    MeshRenderer::End();
     Renderer::EndRenderPass();
 }
 
