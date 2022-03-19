@@ -64,11 +64,16 @@ void Renderer::BeginRenderSubpass(const RenderSubpassInfo& info)
     SetRenderOperation(info.op);
 }
 
-void Renderer::EndRenderSubpass() { m_device->SetFramebuffer(nullptr); }
+void Renderer::EndRenderSubpass()
+{
+    m_device->SetFramebuffer(nullptr);
+    m_device->SetShader(nullptr);
+}
 
 void Renderer::EndRenderPass()
 {
     m_device->SetFramebuffer(nullptr);
+    m_device->SetShader(nullptr);
     s_render_pass_stacks.pop();
 }
 
