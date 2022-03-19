@@ -272,6 +272,7 @@ void LightingSystem::RenderSSAO()
     info.viewport_width = m_ssao_buffer->GetWidth();
     info.viewport_height = m_ssao_buffer->GetHeight();
     info.op.blend = false;
+    info.clear_value = {1.0f, 1.0f, 1.0f, 1.f};
     Texture *position =
         m_gbuffer->GetTexture(static_cast<int>(GeometryBufferType::Position));
     Texture *normal =
@@ -292,6 +293,7 @@ void LightingSystem::RenderSSAO()
     info.framebuffer = m_ssao_blur_buffer.get();
     info.viewport_width = m_ssao_blur_buffer->GetWidth();
     info.viewport_height = m_ssao_blur_buffer->GetHeight();
+    info.clear_value = {1.0f, 1.0f, 1.0f, 1.f};
     info.op.blend = false;
     Renderer::BeginRenderPass(info);
     m_ssao_blur_shader->GetParam("u_ssao")->SetAsTexture(
@@ -421,15 +423,13 @@ void LightingSystem::RenderGBuffer()
 {
     auto modelView = GetScene().view<TransformComponent, ModelComponent>();
 
-    RenderOperation op;
-    op.blend = false;
-    RenderPassInfo info{
-        m_gbuffer.get(),
-        m_gbuffer->GetWidth(),
-        m_gbuffer->GetHeight(),
-        op,
-        BufferBitMask::ColorBufferBit | BufferBitMask::DepthBufferBit,
-        {0, 0, 0, 0}};
+    RenderPassInfo info;
+    info.framebuffer = m_gbuffer.get();
+    info.viewport_width = m_gbuffer->GetWidth();
+    info.viewport_height = m_gbuffer->GetHeight();
+    info.clear_mask =
+        BufferBitMask::ColorBufferBit | BufferBitMask::DepthBufferBit;
+    info.op.blend = false;
     Renderer::BeginRenderPass(info);
     Renderer::SetCamera(*m_gbuffer_shader, GetCamera());
     uint32_t id = static_cast<uint32_t>(entt::null);

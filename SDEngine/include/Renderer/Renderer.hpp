@@ -39,7 +39,7 @@ struct RenderPassInfo {
     RenderOperation op{};
     BufferBitMask clear_mask{BufferBitMask::ColorBufferBit |
                              BufferBitMask::DepthBufferBit};
-    float clear_value[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    std::array<float, 4> clear_value{0.f, 0.f, 0.f, 1.0f};
 };
 
 struct RenderSubpassInfo {
