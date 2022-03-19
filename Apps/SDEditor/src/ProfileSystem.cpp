@@ -1,4 +1,5 @@
 #include "ProfileSystem.hpp"
+#include "Renderer/Event.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Core/Input.hpp"
 #include "Loader/FontLoader.hpp"
@@ -24,15 +25,15 @@ void ProfileSystem::OnInit()
 
 void ProfileSystem::OnPush()
 {
-    m_size_handler = EventSystem::Get().Register<ViewportSizeEvent>(
-        [this](const ViewportSizeEvent &e) {
+    m_size_handler = GetEventDispatcher().Register<RenderSizeEvent>(
+        [this](const RenderSizeEvent &e) {
             m_camera.Resize(e.width, e.height);
         });
 }
 
 void ProfileSystem::OnPop()
 {
-    EventSystem::Get().RemoveHandler(m_size_handler);
+    GetEventDispatcher().RemoveHandler(m_size_handler);
 }
 
 void ProfileSystem::OnTick(float)

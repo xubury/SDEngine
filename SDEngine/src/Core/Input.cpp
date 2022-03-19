@@ -1,15 +1,32 @@
 #include "Core/Input.hpp"
-#include <unordered_map>
+#include "Core/Event/Event.hpp"
 
 namespace SD {
 
-static std::unordered_map<Keycode, bool> s_key;
-static std::unordered_map<Keycode, bool> s_last_key;
+std::unordered_map<Keycode, bool> Input::s_key;
+std::unordered_map<Keycode, bool> Input::s_last_key;
 
-static std::unordered_map<MouseButton, bool> s_mouse_button;
-static std::unordered_map<MouseButton, bool> s_last_mouse_button;
+std::unordered_map<MouseButton, bool> Input::s_mouse_button;
+std::unordered_map<MouseButton, bool> Input::s_last_mouse_button;
 
-static glm::vec2 s_mouse_coord;
+glm::vec2 Input::s_mouse_coord;
+
+std::vector<HandlerRegistration> Input::s_handlers;
+
+void Input::Init(EventDispatcher* dispatcher)
+{
+    // TODO: mouse wheel event
+    s_handlers.push_back(dispatcher->Register<MouseMotionEvent>(
+        [&](const MouseMotionEvent& e) { SetMouseCoord(e.x, e.y); }));
+    s_handlers.push_back(
+        dispatcher->Register<MouseButtonEvent>([&](const MouseButtonEvent& e) {
+            SetMouseButtonState(e.button, e.state);
+        }));
+    s_handlers.push_back(dispatcher->Register<KeyEvent>(
+        [&](const KeyEvent& e) { SetKeyState(e.keycode, e.state); }));
+}
+
+void Input::Shutdown() { s_handlers.clear(); }
 
 bool Input::IsKeyDown(Keycode keycode)
 {
@@ -69,10 +86,10 @@ glm::vec2 Input::GetMouseCoord() { return s_mouse_coord; }
 
 void Input::Tick()
 {
-    for (auto &[key, press] : s_key) {
+    for (auto& [key, press] : s_key) {
         s_last_key[key] = press;
     }
-    for (auto &[button, press] : s_mouse_button) {
+    for (auto& [button, press] : s_mouse_button) {
         s_last_mouse_button[button] = press;
     }
 }

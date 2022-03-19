@@ -37,6 +37,7 @@ class SD_CORE_API Application {
     {
         T *layer = new T(std::forward<ARGS>(args)...);
         layer->SetAppVars(MakeAppVars());
+        layer->m_dispatcher = m_dispatcher;
         layer->OnInit();
         return layer;
     }
@@ -73,6 +74,7 @@ class SD_CORE_API Application {
     void Render();
 
     EventStack<Layer *> m_layers;
+    Ref<EventDispatcher> m_dispatcher;
     ImGuiLayer *m_imgui;
 
     HandlerRegistration m_quit_handler;

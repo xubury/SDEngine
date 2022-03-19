@@ -3,6 +3,7 @@
 
 #include "Core/Export.hpp"
 #include "Utility/Base.hpp"
+#include "Utility/EventDispatcher.hpp"
 #include "Core/Vars.hpp"
 #include "Core/Event/Event.hpp"
 
@@ -19,14 +20,11 @@ class SD_CORE_API System {
 
     virtual void OnInit()
     {
-        m_scene_handler = EventSystem::Get().Register<NewSceneEvent>(
+        m_scene_handler = m_dispatcher->Register<NewSceneEvent>(
             [&](const NewSceneEvent &event) { scene = event.scene; });
     };
 
-    virtual void OnDestroy()
-    {
-        EventSystem::Get().RemoveHandler(m_scene_handler);
-    }
+    virtual void OnDestroy() { m_dispatcher->RemoveHandler(m_scene_handler); }
 
     virtual void OnPush(){};
 
@@ -40,12 +38,16 @@ class SD_CORE_API System {
 
     const std::string &GetName() const { return m_name; }
 
+    EventDispatcher &GetEventDispatcher() { return *m_dispatcher; }
+
    protected:
     APP_VARS
     MAKE_APP_VARS
 
    private:
     friend class Layer;
+
+    Ref<EventDispatcher> m_dispatcher;
 
     std::string m_name;
 

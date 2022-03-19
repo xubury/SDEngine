@@ -4,7 +4,8 @@
 namespace SD {
 
 template <typename T>
-void SelectAsset(ResourceId *selected_id) {
+void SelectAsset(ResourceId *selected_id)
+{
     auto &storage = AssetStorage::Get();
 
     if (!storage.Empty<T>()) {
@@ -29,23 +30,29 @@ void SelectAsset(ResourceId *selected_id) {
     }
 }
 
-AnimationEditor::AnimationEditor()
-    : System("Anmiation Editor"), m_anim_index(0) {}
+AnimationEditor::AnimationEditor() : System("Anmiation Editor"), m_anim_index(0)
+{
+}
 
 void AnimationEditor::OnInit() { System::OnInit(); }
 
-void AnimationEditor::OnPush() {
-    m_entity_handler = EventSystem::Get().Register<EntitySelectEvent>(
+void AnimationEditor::OnPush()
+{
+    auto &dispatcher = GetEventDispatcher();
+    m_entity_handler = dispatcher.Register<EntitySelectEvent>(
         [this](const EntitySelectEvent &e) {
             this->m_selected_entity = {e.entity_id, e.scene};
         });
 }
 
-void AnimationEditor::OnPop() {
-    EventSystem::Get().RemoveHandler(m_entity_handler);
+void AnimationEditor::OnPop()
+{
+    auto &dispatcher = GetEventDispatcher();
+    dispatcher.RemoveHandler(m_entity_handler);
 }
 
-void AnimationEditor::OnImGui() {
+void AnimationEditor::OnImGui()
+{
     ImGui::Begin("Anmiation Editor");
     {
         SelectAsset<TextureAsset>(&m_texture_id);

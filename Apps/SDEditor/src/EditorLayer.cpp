@@ -20,18 +20,21 @@ EditorLayer::EditorLayer(GraphicsLayer *graphics_layer, int width, int height)
       m_is_runtime(false),
       m_quitting(false),
       m_load_scene_open(false),
-      m_save_scene_open(false) {
+      m_save_scene_open(false)
+{
     ImGuizmo::SetGizmoSizeClipSpace(0.2);
 }
 
 EditorLayer::~EditorLayer() {}
 
-void EditorLayer::OnInit() {
+void EditorLayer::OnInit()
+{
+    auto &dispatcher = GetEventDispatcher();
     Layer::OnInit();
     auto &storage = AssetStorage::Get();
     m_scene_asset = storage.CreateAsset<SceneAsset>("default scene");
     scene = m_scene_asset->GetScene();
-    EventSystem::Get().PublishEvent(NewSceneEvent{scene});
+    dispatcher.PublishEvent(NewSceneEvent{scene});
 
     InitBuffers();
     // editor related system
@@ -45,7 +48,8 @@ void EditorLayer::OnInit() {
     PushSystem(CreateSystem<ProfileSystem>());
 }
 
-void EditorLayer::InitBuffers() {
+void EditorLayer::InitBuffers()
+{
     FramebufferCreateInfo info;
     info.width = m_viewport_size.x;
     info.height = m_viewport_size.y;
@@ -58,23 +62,28 @@ void EditorLayer::InitBuffers() {
     m_viewport_buffer = Framebuffer::Create(info);
 }
 
-void EditorLayer::OnPush() {
-    m_entity_select_handler = EventSystem::Get().Register<EntitySelectEvent>(
+void EditorLayer::OnPush()
+{
+    auto &dispatcher = GetEventDispatcher();
+    m_entity_select_handler = dispatcher.Register<EntitySelectEvent>(
         [this](const EntitySelectEvent &e) {
             m_selected_entity = {e.entity_id, e.scene};
         });
     m_window_size_handler =
-        EventSystem::Get().Register(this, &EditorLayer::OnWindowSizeEvent);
-    m_key_handler = EventSystem::Get().Register(this, &EditorLayer::OnKeyEvent);
+        dispatcher.Register(this, &EditorLayer::OnWindowSizeEvent);
+    m_key_handler = dispatcher.Register(this, &EditorLayer::OnKeyEvent);
 }
 
-void EditorLayer::OnPop() {
-    EventSystem::Get().RemoveHandler(m_entity_select_handler);
-    EventSystem::Get().RemoveHandler(m_window_size_handler);
-    EventSystem::Get().RemoveHandler(m_key_handler);
+void EditorLayer::OnPop()
+{
+    auto &dispatcher = GetEventDispatcher();
+    dispatcher.RemoveHandler(m_entity_select_handler);
+    dispatcher.RemoveHandler(m_window_size_handler);
+    dispatcher.RemoveHandler(m_key_handler);
 }
 
-void EditorLayer::OnRender() {
+void EditorLayer::OnRender()
+{
     auto *framebuffer = m_graphics_layer->GetFramebuffer();
     RenderPassInfo info;
     info.framebuffer = framebuffer;
@@ -94,11 +103,13 @@ void EditorLayer::OnRender() {
     Renderer::EndRenderPass();
 }
 
-void EditorLayer::OnTick(float dt) {
+void EditorLayer::OnTick(float dt)
+{
     OnViewportUpdate();
     if (m_is_runtime) {
         scene->OnRuntime(dt);
-    } else {
+    }
+    else {
         scene->OnEditor(dt, m_editor_camera_system->GetCamera());
     }
     for (auto &system : GetSystems()) {
@@ -106,15 +117,18 @@ void EditorLayer::OnTick(float dt) {
     }
 }
 
-void EditorLayer::OnViewportUpdate() {
+void EditorLayer::OnViewportUpdate()
+{
     if (m_viewport_size_update) {
-        ViewportSizeEvent event{m_viewport_size.x, m_viewport_size.y};
-        EventSystem::Get().PublishEvent(event);
+        auto &dispatcher = GetEventDispatcher();
+        RenderSizeEvent event{m_viewport_size.x, m_viewport_size.y};
+        dispatcher.PublishEvent(event);
         m_viewport_size_update = false;
     }
 }
 
-void EditorLayer::OnImGui() {
+void EditorLayer::OnImGui()
+{
     if (m_quitting) {
         ImGui::OpenPopup("Quit?");
     }
@@ -179,7 +193,8 @@ void EditorLayer::OnImGui() {
 
 void EditorLayer::Quit() { m_quitting = true; }
 
-void EditorLayer::OnKeyEvent(const KeyEvent &e) {
+void EditorLayer::OnKeyEvent(const KeyEvent &e)
+{
     if (!e.state) return;
 
     switch (e.keycode) {
@@ -193,7 +208,8 @@ void EditorLayer::OnKeyEvent(const KeyEvent &e) {
         case Keycode::S: {
             if (IsKeyModActive(e.mod, (Keymod::LCtrl | Keymod::LShift))) {
                 OpenSaveSceneDialog();
-            } else if (IsKeyModActive(e.mod, Keymod::LShift)) {
+            }
+            else if (IsKeyModActive(e.mod, Keymod::LShift)) {
                 m_scene_panel->SetGizmoOperation(ImGuizmo::SCALE);
             }
         } break;
@@ -223,19 +239,22 @@ void EditorLayer::OnKeyEvent(const KeyEvent &e) {
     }
 }
 
-void EditorLayer::OnWindowSizeEvent(const WindowSizeEvent &e) {
+void EditorLayer::OnWindowSizeEvent(const WindowSizeEvent &e)
+{
     if (m_is_runtime) {
         m_viewport_size.x = e.width;
         m_viewport_size.y = e.height;
     }
 }
 
-void EditorLayer::NewScene() {
+void EditorLayer::NewScene()
+{
     // scene = CreateRef<Scene>();
-    // EventSystem::Get().PublishEvent(EntitySelectEvent{entt::null, scene});
+    // dispatcher.PublishEvent(EntitySelectEvent{entt::null, scene});
 }
 
-void EditorLayer::OpenLoadSceneDialog() {
+void EditorLayer::OpenLoadSceneDialog()
+{
     m_load_scene_open = true;
     m_file_dialog_info.type = ImGuiFileDialogType::OpenFile;
     m_file_dialog_info.title = "Load Scene";
@@ -244,7 +263,8 @@ void EditorLayer::OpenLoadSceneDialog() {
     m_file_dialog_info.directory_path = AssetStorage::Get().GetDirectory();
 }
 
-void EditorLayer::OpenSaveSceneDialog() {
+void EditorLayer::OpenSaveSceneDialog()
+{
     m_save_scene_open = true;
     m_file_dialog_info.type = ImGuiFileDialogType::SaveFile;
     m_file_dialog_info.title = "Save Scene";
@@ -253,7 +273,8 @@ void EditorLayer::OpenSaveSceneDialog() {
     m_file_dialog_info.directory_path = AssetStorage::Get().GetDirectory();
 }
 
-void EditorLayer::ProcessDialog() {
+void EditorLayer::ProcessDialog()
+{
     if (ImGui::FileDialog(&m_load_scene_open, &m_file_dialog_info)) {
         // AssetStorage::Get().LoadAsset(m_file_dialog_info.result_path.string());
     }
@@ -263,7 +284,8 @@ void EditorLayer::ProcessDialog() {
     }
 }
 
-void EditorLayer::MenuBar() {
+void EditorLayer::MenuBar()
+{
     if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             if (ImGui::MenuItem("New Scene", "Ctrl+N")) {
@@ -288,7 +310,9 @@ void EditorLayer::MenuBar() {
     }
 }
 
-void EditorLayer::DrawViewport() {
+void EditorLayer::DrawViewport()
+{
+    auto &dispatcher = GetEventDispatcher();
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
     ImGui::Begin("Scene");
     {
@@ -355,8 +379,7 @@ void EditorLayer::DrawViewport() {
                                        sizeof(entity_id), &entity_id);
             }
             if (entity_id != entt::null) {
-                EventSystem::Get().PublishEvent(
-                    EntitySelectEvent{entity_id, scene});
+                dispatcher.PublishEvent(EntitySelectEvent{entity_id, scene});
             }
         }
         if (ImGui::BeginDragDropTarget()) {
@@ -368,10 +391,11 @@ void EditorLayer::DrawViewport() {
                     if (asset->IsTypeOf<SceneAsset>()) {
                         m_scene_asset = dynamic_cast<SceneAsset *>(asset);
                         NewSceneEvent e{m_scene_asset->GetScene()};
-                        EventSystem::Get().PublishEvent(e);
+                        dispatcher.PublishEvent(e);
                         SD_TRACE("load scene asset");
                     }
-                } catch (const Exception &e) {
+                }
+                catch (const Exception &e) {
                     SD_ERROR(e.what());
                 }
             }

@@ -43,6 +43,11 @@ Application::Application(const std::string &title, Device::API api)
 
     SDL(SDL_Init(SDL_INIT_EVERYTHING));
 
+    m_dispatcher = CreateRef<EventDispatcher>();
+
+    Input::Init(m_dispatcher.get());
+    Input::Init(m_dispatcher.get());
+
     WindowCreateInfo property{
         title,
         setting->GetInteger("window", "x", SDL_WINDOWPOS_CENTERED),
@@ -53,8 +58,8 @@ Application::Application(const std::string &title, Device::API api)
         setting->GetBoolean("window", "vsync", true),
         SDL_WINDOW_RESIZABLE};
     m_window = Window::Create(property);
+    m_window->SetDispatcher(m_dispatcher.get());
 
-    EventSystem::Init();
     AssetStorage::Init();
 
     auto &storage = AssetStorage::Get();
@@ -66,7 +71,6 @@ Application::Application(const std::string &title, Device::API api)
 Application::~Application()
 {
     AssetStorage::Shutdown();
-    EventSystem::Shutdown();
 
     glm::ivec2 size = m_window->GetSize();
     setting->SetInteger("window", "width", size.x);
@@ -82,7 +86,7 @@ Application::~Application()
 
 void Application::OnInit()
 {
-    m_quit_handler = EventSystem::Get().Register<AppQuitEvent>(
+    m_quit_handler = m_dispatcher->Register<AppQuitEvent>(
         [this](const AppQuitEvent &) { Shutdown(); });
 
     m_imgui = CreateLayer<ImGuiLayer>(m_window.get());
@@ -91,7 +95,7 @@ void Application::OnInit()
 
 void Application::OnDestroy()
 {
-    EventSystem::Get().RemoveHandler(m_quit_handler);
+    m_dispatcher->RemoveHandler(m_quit_handler);
     while (m_layers.Size()) {
         auto layer = m_layers.Front();
         PopLayer(layer);

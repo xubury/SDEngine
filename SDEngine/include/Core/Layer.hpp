@@ -3,6 +3,7 @@
 
 #include "Utility/Base.hpp"
 #include "Utility/EventStack.hpp"
+#include "Utility/EventDispatcher.hpp"
 #include "Core/Export.hpp"
 #include "Core/Event/Event.hpp"
 #include "Core/System.hpp"
@@ -27,7 +28,7 @@ class SD_CORE_API Layer {
 
     virtual void OnInit()
     {
-        m_scene_handler = EventSystem::Get().Register<NewSceneEvent>(
+        m_scene_handler = m_dispatcher->Register<NewSceneEvent>(
             [&](const NewSceneEvent &event) { scene = event.scene; });
     }
 
@@ -38,7 +39,7 @@ class SD_CORE_API Layer {
             PopSystem(system);
             DestorySystem(system);
         }
-        EventSystem::Get().RemoveHandler(m_scene_handler);
+        m_dispatcher->RemoveHandler(m_scene_handler);
     }
 
     virtual void OnPush() {}
@@ -56,6 +57,7 @@ class SD_CORE_API Layer {
     {
         T *system = new T(std::forward<ARGS>(args)...);
         system->SetAppVars(MakeAppVars());
+        system->m_dispatcher = m_dispatcher;
         system->OnInit();
         return system;
     }
@@ -79,6 +81,8 @@ class SD_CORE_API Layer {
 
     const std::string &GetName() const { return m_name; }
 
+    EventDispatcher &GetEventDispatcher() { return *m_dispatcher; }
+
    protected:
     APP_VARS
     MAKE_APP_VARS;
@@ -89,6 +93,7 @@ class SD_CORE_API Layer {
     SET_APP_VARS;
     std::string m_name;
     EventStack<System *> m_systems;
+    Ref<EventDispatcher> m_dispatcher;
 
     HandlerRegistration m_scene_handler;
 };

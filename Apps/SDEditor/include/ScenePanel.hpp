@@ -2,6 +2,7 @@
 #define SD_SCENE_PANEL_HPP
 
 #include "Utility/Base.hpp"
+#include "Renderer/Event.hpp"
 #include "Core/System.hpp"
 #include "ECS/Scene.hpp"
 #include "ECS/Entity.hpp"
@@ -21,7 +22,7 @@ class ScenePanel : public System {
 
     void OnImGui() override;
 
-    void OnSizeEvent(const ViewportSizeEvent &event);
+    void OnSizeEvent(const RenderSizeEvent &event);
 
     void SetGizmoMode(ImGuizmo::MODE mode) { m_gizmo_mode = mode; }
     ImGuizmo::MODE GetGizmoMode() const;

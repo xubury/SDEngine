@@ -48,9 +48,9 @@ ScenePanel::ScenePanel()
 
 void ScenePanel::OnPush()
 {
-    m_size_handler =
-        EventSystem::Get().Register(this, &ScenePanel::OnSizeEvent);
-    m_entity_select_handler = EventSystem::Get().Register<EntitySelectEvent>(
+    auto &dispatcher = GetEventDispatcher();
+    m_size_handler = dispatcher.Register(this, &ScenePanel::OnSizeEvent);
+    m_entity_select_handler = dispatcher.Register<EntitySelectEvent>(
         [this](const EntitySelectEvent &e) {
             this->m_selected_entity = {e.entity_id, e.scene};
         });
@@ -58,11 +58,12 @@ void ScenePanel::OnPush()
 
 void ScenePanel::OnPop()
 {
-    EventSystem::Get().RemoveHandler(m_size_handler);
-    EventSystem::Get().RemoveHandler(m_entity_select_handler);
+    auto &dispatcher = GetEventDispatcher();
+    dispatcher.RemoveHandler(m_size_handler);
+    dispatcher.RemoveHandler(m_entity_select_handler);
 }
 
-void ScenePanel::OnSizeEvent(const ViewportSizeEvent &event)
+void ScenePanel::OnSizeEvent(const RenderSizeEvent &event)
 {
     m_width = event.width;
     m_height = event.height;
@@ -81,6 +82,7 @@ ImGuizmo::OPERATION ScenePanel::GetGizmoOperation() const { return m_gizmo_op; }
 void ScenePanel::OnImGui()
 {
     ImGui::Begin("Scene Hierarchy");
+    auto &dispatcher = GetEventDispatcher();
 
     scene->each([&](auto entityID) {
         Entity entity{entityID, scene};
@@ -94,13 +96,13 @@ void ScenePanel::OnImGui()
 
     if (m_entity_to_destroy) {
         if (m_selected_entity == m_entity_to_destroy)
-            EventSystem::Get().PublishEvent(EntitySelectEvent());
+            dispatcher.PublishEvent(EntitySelectEvent());
         m_entity_to_destroy.Destroy();
         m_entity_to_destroy = {};
     }
 
     if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-        EventSystem::Get().PublishEvent(EntitySelectEvent());
+        dispatcher.PublishEvent(EntitySelectEvent());
 
     // Right-click on blank space
     if (ImGui::BeginPopupContextWindow(0, 1, false)) {
@@ -142,8 +144,8 @@ void ScenePanel::OnImGui()
 
 void ScenePanel::DrawEntityNode(Entity &entity)
 {
+    auto &dispatcher = GetEventDispatcher();
     auto &data = entity.GetComponent<TransformComponent>();
-
     auto &tag = entity.GetComponent<TagComponent>().tag;
 
     static ImGuiTreeNodeFlags base_flags =
@@ -158,8 +160,7 @@ void ScenePanel::DrawEntityNode(Entity &entity)
     bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(entt::entity)entity,
                                     flags, "%s", tag.c_str());
     if (ImGui::IsItemClicked(0)) {
-        EventSystem::Get().PublishEvent(
-            EntitySelectEvent{entity, entity.GetScene()});
+        dispatcher.PublishEvent(EntitySelectEvent{entity, entity.GetScene()});
     }
 
     if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
@@ -179,7 +180,7 @@ void ScenePanel::DrawEntityNode(Entity &entity)
     }
 
     if (ImGui::BeginPopupContextItem()) {
-        EventSystem::Get().PublishEvent(
+        dispatcher.PublishEvent(
             EntitySelectEvent{m_selected_entity, m_selected_entity.GetScene()});
         if (ImGui::MenuItem("Delete Entity")) {
             m_entity_to_destroy = entity;

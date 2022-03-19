@@ -49,8 +49,8 @@ void LightingSystem::OnInit()
 
 void LightingSystem::OnPush()
 {
-    m_size_handler =
-        EventSystem::Get().Register(this, &LightingSystem::OnSizeEvent);
+    auto &dispatcher = GetEventDispatcher();
+    m_size_handler = dispatcher.Register(this, &LightingSystem::OnSizeEvent);
 
     m_ssao_state = setting->GetBoolean("ssao", "state", true);
     m_ssao_radius = setting->GetFloat("ssao", "radius", 0.5);
@@ -60,7 +60,8 @@ void LightingSystem::OnPush()
 
 void LightingSystem::OnPop()
 {
-    EventSystem::Get().RemoveHandler(m_size_handler);
+    auto &dispatcher = GetEventDispatcher();
+    dispatcher.RemoveHandler(m_size_handler);
 
     setting->SetBoolean("ssao", "state", m_ssao_state);
     setting->SetFloat("ssao", "radius", m_ssao_radius);
@@ -162,7 +163,7 @@ void LightingSystem::InitLighting()
                                 MultiSampleLevel::X1}}});
 }
 
-void LightingSystem::OnSizeEvent(const ViewportSizeEvent &event)
+void LightingSystem::OnSizeEvent(const RenderSizeEvent &event)
 {
     m_width = event.width;
     m_height = event.height;

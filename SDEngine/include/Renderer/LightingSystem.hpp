@@ -2,6 +2,7 @@
 #define SD_LIGHTING_SYSTEM_HPP
 
 #include "Renderer/Export.hpp"
+#include "Renderer/Event.hpp"
 #include "Core/System.hpp"
 #include "ECS/Scene.hpp"
 #include "Graphics/Shader.hpp"
@@ -35,7 +36,7 @@ class SD_RENDERER_API LightingSystem : public System {
 
     void OnRender() override;
 
-    void OnSizeEvent(const ViewportSizeEvent &event);
+    void OnSizeEvent(const RenderSizeEvent &event);
 
     Framebuffer *GetGBuffer() { return m_gbuffer.get(); }
 

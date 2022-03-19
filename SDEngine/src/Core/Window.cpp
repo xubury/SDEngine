@@ -1,8 +1,8 @@
 #include "Core/Window.hpp"
 #include "Core/SDL.hpp"
-#include "Core/Input.hpp"
 #include "Core/OpenGL/GLWindow.hpp"
 #include "Graphics/Device.hpp"
+#include "Utility/EventDispatcher.hpp"
 
 namespace SD {
 
@@ -32,8 +32,7 @@ void Window::PollEvents()
                 event.y = sdl_event.motion.y;
                 event.x_rel = sdl_event.motion.xrel;
                 event.y_rel = sdl_event.motion.yrel;
-                Input::SetMouseCoord(event.x, event.y);
-                EventSystem::Get().PublishEvent(event);
+                m_dispatcher->PublishEvent(event);
             } break;
             case SDL_MOUSEBUTTONDOWN:
             case SDL_MOUSEBUTTONUP: {
@@ -44,14 +43,13 @@ void Window::PollEvents()
                 event.y = sdl_event.button.y;
                 event.clicks = sdl_event.button.clicks;
                 event.state = sdl_event.button.state;
-                Input::SetMouseButtonState(event.button, event.state);
-                EventSystem::Get().PublishEvent(event);
+                m_dispatcher->PublishEvent(event);
             } break;
             case SDL_MOUSEWHEEL: {
                 MouseWheelEvent event;
                 event.x = sdl_event.wheel.x;
                 event.y = sdl_event.wheel.y;
-                EventSystem::Get().PublishEvent(event);
+                m_dispatcher->PublishEvent(event);
             } break;
             case SDL_KEYDOWN:
             case SDL_KEYUP: {
@@ -59,8 +57,7 @@ void Window::PollEvents()
                 event.keycode = static_cast<Keycode>(sdl_event.key.keysym.sym);
                 event.mod = sdl_event.key.keysym.mod;
                 event.state = sdl_event.key.state;
-                Input::SetKeyState(event.keycode, event.state);
-                EventSystem::Get().PublishEvent(event);
+                m_dispatcher->PublishEvent(event);
             } break;
             case SDL_WINDOWEVENT: {
                 switch (sdl_event.window.event) {
@@ -69,7 +66,7 @@ void Window::PollEvents()
                         WindowSizeEvent event;
                         event.width = sdl_event.window.data1;
                         event.height = sdl_event.window.data2;
-                        EventSystem::Get().PublishEvent(event);
+                        m_dispatcher->PublishEvent(event);
                     } break;
                 }
             } break;
@@ -77,11 +74,11 @@ void Window::PollEvents()
                 TextInputEvent event;
                 std::copy(std::begin(sdl_event.text.text),
                           std::end(sdl_event.text.text), event.text);
-                EventSystem::Get().PublishEvent(event);
+                m_dispatcher->PublishEvent(event);
             } break;
             case SDL_QUIT: {
                 AppQuitEvent event;
-                EventSystem::Get().PublishEvent(event);
+                m_dispatcher->PublishEvent(event);
             } break;
         }
     }

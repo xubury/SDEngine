@@ -46,7 +46,7 @@ class SD_RENDERER_API GraphicsLayer : public Layer {
     SpriteRenderSystem* m_sprite_system;
     PostProcessSystem* m_post_process_system;
 
-    HandlerRegistration m_viewport_handler;
+    HandlerRegistration m_size_handler;
 };
 
 }  // namespace SD

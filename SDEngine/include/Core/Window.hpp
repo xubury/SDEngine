@@ -21,6 +21,8 @@ struct SD_CORE_API WindowCreateInfo {
     uint32_t flag;
 };
 
+class EventDispatcher;
+
 class SD_CORE_API Window {
    public:
     static Scope<Window> Create(const WindowCreateInfo &info);
@@ -51,8 +53,14 @@ class SD_CORE_API Window {
     bool ShouldClose();
     void SetShouldClose(bool shouldClose);
 
+    void SetDispatcher(EventDispatcher *dispatcher)
+    {
+        m_dispatcher = dispatcher;
+    }
+
    private:
     bool m_should_close;
+    EventDispatcher *m_dispatcher;
 };
 
 }  // namespace SD

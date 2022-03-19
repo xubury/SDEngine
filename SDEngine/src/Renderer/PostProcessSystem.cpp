@@ -42,23 +42,24 @@ void PostProcessSystem::InitBuffers()
 
 void PostProcessSystem::OnPush()
 {
+    auto &dispatcher = GetEventDispatcher();
     m_is_bloom = setting->GetBoolean("post process", "bloom", m_is_bloom);
     m_bloom_factor =
         setting->GetFloat("post process", "bloom factor", m_bloom_factor);
     m_exposure = setting->GetFloat("post process", "exposure", m_exposure);
     m_gamma_correction = setting->GetFloat("post process", "gamma correction",
                                            m_gamma_correction);
-    m_size_handler =
-        EventSystem::Get().Register(this, &PostProcessSystem::OnSizeEvent);
+    m_size_handler = dispatcher.Register(this, &PostProcessSystem::OnSizeEvent);
 }
 
 void PostProcessSystem::OnPop()
 {
+    auto &dispatcher = GetEventDispatcher();
     setting->SetBoolean("post process", "bloom", m_is_bloom);
     setting->SetFloat("post process", "bloom factor", m_bloom_factor);
     setting->SetFloat("post process", "exposure", m_exposure);
     setting->SetFloat("post process", "gamma correction", m_gamma_correction);
-    EventSystem::Get().RemoveHandler(m_size_handler);
+    dispatcher.RemoveHandler(m_size_handler);
 }
 
 void PostProcessSystem::OnImGui()
@@ -87,7 +88,7 @@ void PostProcessSystem::OnRender()
     RenderPost();
 }
 
-void PostProcessSystem::OnSizeEvent(const ViewportSizeEvent &event)
+void PostProcessSystem::OnSizeEvent(const RenderSizeEvent &event)
 {
     m_width = event.width;
     m_height = event.height;

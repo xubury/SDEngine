@@ -2,6 +2,7 @@
 #define SD_EDITOR_CAMERA_SYSTEM_HPP
 
 #include "Core/System.hpp"
+#include "Renderer/Event.hpp"
 #include "ECS/Entity.hpp"
 
 namespace SD {
@@ -20,7 +21,7 @@ class EditorCameraSystem : public System {
 
     void OnTick(float dt) override;
 
-    void OnSizeEvent(const ViewportSizeEvent &event);
+    void OnSizeEvent(const RenderSizeEvent &event);
     void OnMouseMotion(const MouseMotionEvent &event);
 
     void Rotate(float yaw, float pitch);

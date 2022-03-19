@@ -3,6 +3,7 @@
 
 #include "Core/System.hpp"
 #include "Renderer/Export.hpp"
+#include "Renderer/Event.hpp"
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/Shader.hpp"
 
@@ -22,7 +23,7 @@ class SD_RENDERER_API PostProcessSystem : public System {
 
     void OnRender() override;
 
-    void OnSizeEvent(const ViewportSizeEvent &event);
+    void OnSizeEvent(const RenderSizeEvent &event);
 
     void SetExposure(float exposure);
     float GetExposure();

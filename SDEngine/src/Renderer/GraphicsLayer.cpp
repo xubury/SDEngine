@@ -1,4 +1,5 @@
 #include "Renderer/GraphicsLayer.hpp"
+#include "Renderer/Event.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "Loader/TextureLoader.hpp"
 #include "Renderer/Renderer2D.hpp"
@@ -71,8 +72,9 @@ void GraphicsLayer::OnTick(float dt)
 
 void GraphicsLayer::OnPush()
 {
-    m_viewport_handler = EventSystem::Get().Register<ViewportSizeEvent>(
-        [this](const ViewportSizeEvent &e) {
+    auto &dispatcher = GetEventDispatcher();
+    m_size_handler =
+        dispatcher.Register<RenderSizeEvent>([this](const RenderSizeEvent &e) {
             m_width = e.width;
             m_height = e.height;
             m_debug_gbuffer->Resize(e.width, e.height);
@@ -82,7 +84,8 @@ void GraphicsLayer::OnPush()
 
 void GraphicsLayer::OnPop()
 {
-    EventSystem::Get().RemoveHandler(m_viewport_handler);
+    auto &dispatcher = GetEventDispatcher();
+    dispatcher.RemoveHandler(m_size_handler);
 }
 
 void GraphicsLayer::OnRender()
