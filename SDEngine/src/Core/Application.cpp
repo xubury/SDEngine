@@ -50,12 +50,13 @@ Application::Application(const std::string &title, Device::API api)
 
     WindowCreateInfo property{
         title,
-        setting->GetInteger("window", "x", SDL_WINDOWPOS_CENTERED),
-        setting->GetInteger("window", "y", SDL_WINDOWPOS_CENTERED),
-        setting->GetInteger("window", "width", 800),
-        setting->GetInteger("window", "height", 600),
-        static_cast<MultiSampleLevel>(setting->GetInteger("window", "msaa", 4)),
-        setting->GetBoolean("window", "vsync", true),
+        m_settings.GetInteger("window", "x", SDL_WINDOWPOS_CENTERED),
+        m_settings.GetInteger("window", "y", SDL_WINDOWPOS_CENTERED),
+        m_settings.GetInteger("window", "width", 800),
+        m_settings.GetInteger("window", "height", 600),
+        static_cast<MultiSampleLevel>(
+            m_settings.GetInteger("window", "msaa", 4)),
+        m_settings.GetBoolean("window", "vsync", true),
         SDL_WINDOW_RESIZABLE};
     m_window = Window::Create(property);
     m_window->SetDispatcher(m_dispatcher.get());
@@ -73,13 +74,13 @@ Application::~Application()
     AssetStorage::Shutdown();
 
     glm::ivec2 size = m_window->GetSize();
-    setting->SetInteger("window", "width", size.x);
-    setting->SetInteger("window", "height", size.y);
-    setting->SetInteger("window", "msaa",
-                        static_cast<int>(m_window->GetMSAA()));
-    setting->SetBoolean("window", "vsync", m_window->GetIsVSync());
+    m_settings.SetInteger("window", "width", size.x);
+    m_settings.SetInteger("window", "height", size.y);
+    m_settings.SetInteger("window", "msaa",
+                          static_cast<int>(m_window->GetMSAA()));
+    m_settings.SetBoolean("window", "vsync", m_window->GetIsVSync());
 
-    setting->Save((GetAppDirectory() / SETTING_FILENAME).string());
+    m_settings.Save((GetAppDirectory() / SETTING_FILENAME).string());
 
     SDL_Quit();
 }
@@ -129,10 +130,9 @@ void Application::DestroyLayer(Layer *layer)
 
 void Application::InitSettings()
 {
-    setting = CreateRef<Ini>();
     std::filesystem::path ini_path = GetAppDirectory() / SETTING_FILENAME;
     if (std::filesystem::exists(ini_path)) {
-        setting->Load(ini_path.string());
+        m_settings.Load(ini_path.string());
     }
     else {
         SD_CORE_WARN(

@@ -11,6 +11,8 @@
 #include "Asset/AssetStorage.hpp"
 #include "Asset/ModelAsset.hpp"
 
+#include "Core/Application.hpp"
+
 #include <glm/gtc/type_ptr.hpp>
 
 namespace SD {
@@ -55,10 +57,11 @@ void LightingSystem::OnPush()
     auto &dispatcher = GetEventDispatcher();
     m_size_handler = dispatcher.Register(this, &LightingSystem::OnSizeEvent);
 
-    m_ssao_state = setting->GetBoolean("ssao", "state", true);
-    m_ssao_radius = setting->GetFloat("ssao", "radius", 0.5);
-    m_ssao_bias = setting->GetFloat("ssao", "bias", 0.25);
-    m_ssao_power = setting->GetInteger("ssao", "power", 1);
+    auto &settings = GetApp().GetSettings();
+    m_ssao_state = settings.GetBoolean("ssao", "state", true);
+    m_ssao_radius = settings.GetFloat("ssao", "radius", 0.5);
+    m_ssao_bias = settings.GetFloat("ssao", "bias", 0.25);
+    m_ssao_power = settings.GetInteger("ssao", "power", 1);
 }
 
 void LightingSystem::OnPop()
@@ -66,10 +69,11 @@ void LightingSystem::OnPop()
     auto &dispatcher = GetEventDispatcher();
     dispatcher.RemoveHandler(m_size_handler);
 
-    setting->SetBoolean("ssao", "state", m_ssao_state);
-    setting->SetFloat("ssao", "radius", m_ssao_radius);
-    setting->SetFloat("ssao", "bias", m_ssao_bias);
-    setting->SetInteger("ssao", "power", m_ssao_power);
+    auto &settings = GetApp().GetSettings();
+    settings.SetBoolean("ssao", "state", m_ssao_state);
+    settings.SetFloat("ssao", "radius", m_ssao_radius);
+    settings.SetFloat("ssao", "bias", m_ssao_bias);
+    settings.SetInteger("ssao", "power", m_ssao_power);
 }
 
 void LightingSystem::InitShaders()
@@ -214,7 +218,7 @@ void LightingSystem::OnRender()
 void LightingSystem::RenderShadowMap(CascadeShadow &shadow,
                                      const Transform &transform)
 {
-    auto modelView = scene->view<TransformComponent, ModelComponent>();
+    auto modelView = GetScene().view<TransformComponent, ModelComponent>();
     RenderOperation op;
     op.cull_face = Face::Front;
     Framebuffer *depth_map = shadow.GetCascadeMap();
@@ -298,7 +302,7 @@ void LightingSystem::RenderSSAO()
 
 void LightingSystem::RenderEmissive()
 {
-    auto lightView = scene->view<TransformComponent, LightComponent>();
+    auto lightView = GetScene().view<TransformComponent, LightComponent>();
     RenderOperation op;
     op.blend = false;
     if (lightView.begin() != lightView.end()) {
@@ -316,7 +320,7 @@ void LightingSystem::RenderEmissive()
 
 void LightingSystem::RenderDeferred()
 {
-    auto lightView = scene->view<TransformComponent, LightComponent>();
+    auto lightView = GetScene().view<TransformComponent, LightComponent>();
 
     m_deferred_shader->GetParam("u_position")
         ->SetAsTexture(m_gbuffer->GetTexture(
@@ -415,7 +419,7 @@ void LightingSystem::RenderDeferred()
 
 void LightingSystem::RenderGBuffer()
 {
-    auto modelView = scene->view<TransformComponent, ModelComponent>();
+    auto modelView = GetScene().view<TransformComponent, ModelComponent>();
 
     RenderOperation op;
     op.blend = false;

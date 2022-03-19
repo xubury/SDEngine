@@ -93,7 +93,7 @@ void TileMapSystem::ManipulateScene()
             case Operation::AddEntity: {
                 glm::vec3 world;
                 if (m_brush.GetSelectPos(world)) {
-                    Entity child = scene->CreateEntity("Tile");
+                    Entity child = GetScene().CreateEntity("Tile");
                     auto &comp = child.AddComponent<SpriteComponent>();
                     auto &frame = comp.frame;
                     child.GetComponent<TransformComponent>().SetWorldPosition(

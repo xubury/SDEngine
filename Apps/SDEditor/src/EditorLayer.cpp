@@ -31,10 +31,6 @@ void EditorLayer::OnInit()
 {
     auto &dispatcher = GetEventDispatcher();
     Layer::OnInit();
-    auto &storage = AssetStorage::Get();
-    m_scene_asset = storage.CreateAsset<SceneAsset>("default scene");
-    scene = m_scene_asset->GetScene();
-    dispatcher.PublishEvent(NewSceneEvent{scene});
 
     InitBuffers();
     // editor related system
@@ -47,6 +43,9 @@ void EditorLayer::OnInit()
     PushSystem(m_editor_camera_system);
     PushSystem(CreateSystem<ProfileSystem>());
 
+    auto &storage = AssetStorage::Get();
+    m_scene_asset = storage.CreateAsset<SceneAsset>("default scene");
+    dispatcher.PublishEvent(NewSceneEvent{m_scene_asset->GetScene()});
     dispatcher.PublishEvent(CameraEvent{m_editor_camera_system->GetCamera()});
 }
 
@@ -204,7 +203,7 @@ void EditorLayer::OnKeyEvent(const KeyEvent &e)
                 Camera *cam = m_editor_camera_system->GetCamera();
                 m_is_runtime = !m_is_runtime;
                 if (m_is_runtime) {
-                    auto view = scene->view<CameraComponent>();
+                    auto view = GetScene().view<CameraComponent>();
                     view.each([&](CameraComponent &cam_comp) {
                         if (cam_comp.primary) {
                             cam = &cam_comp.camera;
@@ -393,7 +392,8 @@ void EditorLayer::DrawViewport()
                                        sizeof(entity_id), &entity_id);
             }
             if (entity_id != entt::null) {
-                dispatcher.PublishEvent(EntitySelectEvent{entity_id, scene});
+                dispatcher.PublishEvent(
+                    EntitySelectEvent{entity_id, &GetScene()});
             }
         }
         if (ImGui::BeginDragDropTarget()) {

@@ -16,6 +16,8 @@ class SD_CORE_API Application {
 
     ImGuiLayer *GetImGuiLayer() const { return m_imgui; }
 
+    Ini &GetSettings() { return m_settings; };
+
    protected:
     virtual void OnInit();
     virtual void OnDestroy();
@@ -36,7 +38,6 @@ class SD_CORE_API Application {
     T *CreateLayer(ARGS &&...args)
     {
         T *layer = new T(std::forward<ARGS>(args)...);
-        layer->SetAppVars(MakeAppVars());
         layer->m_dispatcher = m_dispatcher;
         layer->OnInit();
         return layer;
@@ -56,13 +57,9 @@ class SD_CORE_API Application {
     Application(const Application &application) = delete;
     Application &operator=(const Application &application) = delete;
 
-    APP_VARS
     Scope<Window> m_window;
 
    private:
-    SET_APP_VARS
-    MAKE_APP_VARS
-
     friend int ::main(int argc, char **argv);
 
     void InitSettings();
@@ -76,6 +73,8 @@ class SD_CORE_API Application {
     EventStack<Layer *> m_layers;
     Ref<EventDispatcher> m_dispatcher;
     ImGuiLayer *m_imgui;
+
+    Ini m_settings;
 
     HandlerRegistration m_quit_handler;
 };

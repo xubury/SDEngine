@@ -20,8 +20,9 @@ void SDEditor::OnInit()
     lua.script("beep()");
     SD_CORE_INFO("lua test: x={}", x);
 
-    int viewport_width = setting->GetInteger("editor", "viewport width", 800);
-    int viewport_height = setting->GetInteger("editor", "viewport height", 600);
+    auto &settings = GetSettings();
+    int viewport_width = settings.GetInteger("editor", "viewport width", 800);
+    int viewport_height = settings.GetInteger("editor", "viewport height", 600);
 #ifdef SD_IMGUI_IMPORT
     // for DLL context
     ImGui::SetCurrentContext(GetImGuiLayer()->GetContext());

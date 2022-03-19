@@ -106,7 +106,7 @@ void GraphicsLayer::OnRender()
         Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1, op});
 
         Renderer2D::Begin(*m_camera);
-        auto lightView = scene->view<LightComponent, TransformComponent>();
+        auto lightView = GetScene().view<LightComponent, TransformComponent>();
         lightView.each([this](const LightComponent &,
                               const TransformComponent &transComp) {
             glm::vec3 pos = transComp.GetWorldPosition();

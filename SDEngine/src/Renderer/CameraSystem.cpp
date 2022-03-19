@@ -7,7 +7,7 @@ CameraSystem::CameraSystem() : System("CameraSystem") {}
 
 void CameraSystem::OnRender()
 {
-    auto view = scene->view<CameraComponent, TransformComponent>();
+    auto view = GetScene().view<CameraComponent, TransformComponent>();
     view.each([](CameraComponent &camComp, TransformComponent &trans) {
         camComp.camera.SetWorldTransform(trans.GetWorldTransform().GetMatrix());
     });

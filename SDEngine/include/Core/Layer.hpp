@@ -29,7 +29,7 @@ class SD_CORE_API Layer {
     virtual void OnInit()
     {
         m_scene_handler = m_dispatcher->Register<NewSceneEvent>(
-            [&](const NewSceneEvent &event) { scene = event.scene; });
+            [&](const NewSceneEvent &event) { m_scene = event.scene; });
     }
 
     virtual void OnDestroy()
@@ -56,7 +56,6 @@ class SD_CORE_API Layer {
     T *CreateSystem(ARGS &&...args)
     {
         T *system = new T(std::forward<ARGS>(args)...);
-        system->SetAppVars(MakeAppVars());
         system->m_dispatcher = m_dispatcher;
         system->OnInit();
         return system;
@@ -83,19 +82,18 @@ class SD_CORE_API Layer {
 
     EventDispatcher &GetEventDispatcher() { return *m_dispatcher; }
 
-   protected:
-    APP_VARS
-    MAKE_APP_VARS;
+    Scene &GetScene() { return *m_scene; }
 
    private:
     friend class Application;
 
-    SET_APP_VARS;
     std::string m_name;
     EventStack<System *> m_systems;
     Ref<EventDispatcher> m_dispatcher;
 
     HandlerRegistration m_scene_handler;
+
+    Scene *m_scene;
 };
 
 }  // namespace SD

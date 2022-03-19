@@ -81,14 +81,15 @@ ImGuizmo::OPERATION ScenePanel::GetGizmoOperation() const { return m_gizmo_op; }
 
 void ScenePanel::OnImGui()
 {
-    ImGui::Begin("Scene Hierarchy");
     auto &dispatcher = GetEventDispatcher();
+    auto &scene = GetScene();
+    ImGui::Begin("Scene Hierarchy");
 
-    scene->each([&](auto entityID) {
-        Entity entity{entityID, scene};
+    GetScene().each([&](auto entityID) {
+        Entity entity{entityID, &scene};
 
         TransformComponent &data = entity.GetComponent<TransformComponent>();
-        Entity parent(data.parent, scene);
+        Entity parent(data.parent, &scene);
         if (!parent) {
             DrawEntityNode(entity);
         }
@@ -107,7 +108,7 @@ void ScenePanel::OnImGui()
     // Right-click on blank space
     if (ImGui::BeginPopupContextWindow(0, 1, false)) {
         if (ImGui::MenuItem("Create Empty Entity"))
-            scene->CreateEntity("Empty Entity");
+            scene.CreateEntity("Empty Entity");
 
         ImGui::EndPopup();
     }
@@ -124,7 +125,7 @@ void ScenePanel::OnImGui()
             Entity entity = *(Entity *)payload->Data;
 
             Entity parent(entity.GetComponent<TransformComponent>().parent,
-                          scene);
+                          &scene);
             if (parent) {
                 parent.RemoveChild(entity);
             }
@@ -145,6 +146,7 @@ void ScenePanel::OnImGui()
 void ScenePanel::DrawEntityNode(Entity &entity)
 {
     auto &dispatcher = GetEventDispatcher();
+    auto &scene = GetScene();
     auto &data = entity.GetComponent<TransformComponent>();
     auto &tag = entity.GetComponent<TagComponent>().tag;
 
@@ -186,11 +188,11 @@ void ScenePanel::DrawEntityNode(Entity &entity)
             m_entity_to_destroy = entity;
         }
         if (ImGui::MenuItem("Create Empty Entity")) {
-            Entity child = scene->CreateEntity("Empty Entity");
+            Entity child = GetScene().CreateEntity("Empty Entity");
             entity.AddChild(child);
         }
         if (ImGui::MenuItem("Clone Entity")) {
-            scene->CloneEntity(entity);
+            scene.CloneEntity(entity);
         }
 
         ImGui::EndPopup();
@@ -198,7 +200,7 @@ void ScenePanel::DrawEntityNode(Entity &entity)
 
     if (opened) {
         for (entt::entity childId : data.children) {
-            Entity child(childId, scene);
+            Entity child(childId, &scene);
             DrawEntityNode(child);
         }
         ImGui::TreePop();

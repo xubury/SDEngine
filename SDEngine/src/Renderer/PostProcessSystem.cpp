@@ -4,6 +4,8 @@
 
 #include "Loader/ShaderLoader.hpp"
 
+#include "Core/Application.hpp"
+
 namespace SD {
 
 PostProcessSystem::PostProcessSystem(int32_t width, int32_t height)
@@ -43,11 +45,12 @@ void PostProcessSystem::InitBuffers()
 void PostProcessSystem::OnPush()
 {
     auto &dispatcher = GetEventDispatcher();
-    m_is_bloom = setting->GetBoolean("post process", "bloom", m_is_bloom);
+    auto &settings = GetApp().GetSettings();
+    m_is_bloom = settings.GetBoolean("post process", "bloom", m_is_bloom);
     m_bloom_factor =
-        setting->GetFloat("post process", "bloom factor", m_bloom_factor);
-    m_exposure = setting->GetFloat("post process", "exposure", m_exposure);
-    m_gamma_correction = setting->GetFloat("post process", "gamma correction",
+        settings.GetFloat("post process", "bloom factor", m_bloom_factor);
+    m_exposure = settings.GetFloat("post process", "exposure", m_exposure);
+    m_gamma_correction = settings.GetFloat("post process", "gamma correction",
                                            m_gamma_correction);
     m_size_handler = dispatcher.Register(this, &PostProcessSystem::OnSizeEvent);
 }
@@ -55,10 +58,11 @@ void PostProcessSystem::OnPush()
 void PostProcessSystem::OnPop()
 {
     auto &dispatcher = GetEventDispatcher();
-    setting->SetBoolean("post process", "bloom", m_is_bloom);
-    setting->SetFloat("post process", "bloom factor", m_bloom_factor);
-    setting->SetFloat("post process", "exposure", m_exposure);
-    setting->SetFloat("post process", "gamma correction", m_gamma_correction);
+    auto &settings = GetApp().GetSettings();
+    settings.SetBoolean("post process", "bloom", m_is_bloom);
+    settings.SetFloat("post process", "bloom factor", m_bloom_factor);
+    settings.SetFloat("post process", "exposure", m_exposure);
+    settings.SetFloat("post process", "gamma correction", m_gamma_correction);
     dispatcher.RemoveHandler(m_size_handler);
 }
 

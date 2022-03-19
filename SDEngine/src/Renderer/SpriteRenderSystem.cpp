@@ -17,7 +17,7 @@ void SpriteRenderSystem::OnPop() {}
 
 void SpriteRenderSystem::OnTick(float dt)
 {
-    auto anim_view = scene->view<SpriteAnimationComponent>();
+    auto anim_view = GetScene().view<SpriteAnimationComponent>();
     anim_view.each([&](SpriteAnimationComponent &anim_comp) {
         if (!anim_comp.animations.empty()) {
             anim_comp.animator.Tick(dt);
@@ -43,7 +43,7 @@ void SpriteRenderSystem::OnRender()
     Renderer2D::Begin(GetCamera());
 
     std::vector<SpriteDrawData> datas;
-    auto sprite_view = scene->view<SpriteComponent, TransformComponent>();
+    auto sprite_view = GetScene().view<SpriteComponent, TransformComponent>();
     sprite_view.each([&datas](entt::entity entity_id,
 
                               const SpriteComponent &sprite_comp,
@@ -61,7 +61,7 @@ void SpriteRenderSystem::OnRender()
         }
     });
     auto anim_view =
-        scene->view<SpriteAnimationComponent, TransformComponent>();
+        GetScene().view<SpriteAnimationComponent, TransformComponent>();
     anim_view.each([&datas](entt::entity entity_id,
                             const SpriteAnimationComponent &anim_comp,
                             const TransformComponent &transform_comp) {
@@ -104,7 +104,7 @@ void SpriteRenderSystem::OnRender()
                                 data.size, glm::vec4(1.0f), data.entity_id);
     }
 
-    auto textView = scene->view<TransformComponent, TextComponent>();
+    auto textView = GetScene().view<TransformComponent, TextComponent>();
 
     textView.each([](entt::entity entity_id,
                      const TransformComponent &transformComp,

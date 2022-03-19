@@ -9,30 +9,6 @@ namespace SD {
 
 std::filesystem::path SD_CORE_API GetAppDirectory();
 
-#define APP_VARS      \
-    Ref<Ini> setting; \
-    Scene *scene;
-
-#define SET_APP_VARS                     \
-    void SetAppVars(const AppVars &vars) \
-    {                                    \
-        setting = vars.setting;          \
-        scene = vars.scene;              \
-    }
-
-#define MAKE_APP_VARS           \
-    AppVars MakeAppVars()       \
-    {                           \
-        AppVars vars;           \
-        vars.setting = setting; \
-        vars.scene = scene;     \
-        return vars;            \
-    }
-
-struct AppVars {
-    APP_VARS
-};
-
 class Application;
 
 Application &GetApp();
