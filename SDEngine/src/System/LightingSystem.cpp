@@ -1,9 +1,5 @@
 #include "System/LightingSystem.hpp"
-#include "Core/Window.hpp"
-
-#include "Renderer/MeshRenderer.hpp"
-
-#include "ECS/Entity.hpp"
+#include "Renderer/Renderer3D.hpp"
 #include "ECS/Component.hpp"
 
 #include "Utility/Random.hpp"
@@ -223,7 +219,7 @@ void LightingSystem::RenderShadowMap(CascadeShadow &shadow,
     Renderer::BeginRenderPass(RenderPassInfo{depth_map, depth_map->GetWidth(),
                                              depth_map->GetHeight(), op});
     shadow.ComputeCascadeLightMatrix(transform, *scene->GetCamera());
-    MeshRenderer::SetShadowCaster(*m_cascade_shader, shadow);
+    Renderer3D::SetShadowCaster(*m_cascade_shader, shadow);
 
     auto &storage = AssetStorage::Get();
     ShaderParam *model_param = m_cascade_shader->GetParam("u_model");
@@ -237,8 +233,8 @@ void LightingSystem::RenderShadowMap(CascadeShadow &shadow,
                     model_param->SetAsMat4(glm::value_ptr(
                         model->GetTransform(node.transform_id) *
                         transformComp.GetWorldTransform().GetMatrix()));
-                    MeshRenderer::DrawMesh(*m_cascade_shader,
-                                           *model->GetMesh(node.mesh_id));
+                    Renderer3D::DrawMesh(*m_cascade_shader,
+                                         *model->GetMesh(node.mesh_id));
                 }
             }
         }
@@ -275,7 +271,7 @@ void LightingSystem::RenderSSAO()
     Texture *normal =
         m_gbuffer->GetTexture(static_cast<int>(GeometryBufferType::Normal));
     Renderer::BeginRenderPass(info);
-    MeshRenderer::SetCamera(*m_ssao_shader, *scene->GetCamera());
+    Renderer::SetCamera(*m_ssao_shader, *scene->GetCamera());
     m_ssao_shader->GetParam("u_radius")->SetAsFloat(m_ssao_radius);
     m_ssao_shader->GetParam("u_bias")->SetAsFloat(m_ssao_bias);
     m_ssao_shader->GetParam("u_power")->SetAsUint(m_ssao_power);
@@ -383,7 +379,7 @@ void LightingSystem::RenderDeferred()
             auto &planes = shadow.GetCascadePlanes();
             num_of_cascades->SetAsInt(planes.size());
             cascade_planes->SetAsVec(&planes[0], planes.size());
-            MeshRenderer::SetShadowCaster(*m_deferred_shader, shadow);
+            Renderer3D::SetShadowCaster(*m_deferred_shader, shadow);
         }
 
         RenderPassInfo info{m_light_buffer[output_id].get(),
@@ -394,7 +390,7 @@ void LightingSystem::RenderDeferred()
                             {0, 0, 0, 0}};
 
         Renderer::BeginRenderPass(info);
-        MeshRenderer::SetCamera(*m_deferred_shader, *scene->GetCamera());
+        Renderer::SetCamera(*m_deferred_shader, *scene->GetCamera());
         lighting->SetAsTexture(m_light_buffer[input_id]->GetTexture());
         direction->SetAsVec3(&transform.GetFront()[0]);
         position->SetAsVec3(&transform.GetPosition()[0]);
@@ -429,7 +425,7 @@ void LightingSystem::RenderGBuffer()
         BufferBitMask::ColorBufferBit | BufferBitMask::DepthBufferBit,
         {0, 0, 0, 0}};
     Renderer::BeginRenderPass(info);
-    MeshRenderer::SetCamera(*m_gbuffer_shader, *scene->GetCamera());
+    Renderer::SetCamera(*m_gbuffer_shader, *scene->GetCamera());
     uint32_t id = static_cast<uint32_t>(entt::null);
     m_gbuffer->ClearAttachment(static_cast<int>(GeometryBufferType::EntityId),
                                &id);
@@ -447,13 +443,13 @@ void LightingSystem::RenderGBuffer()
             auto model =
                 storage.GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
             for (const auto &[material, nodes] : model->GetNodes()) {
-                MeshRenderer::SetMaterial(*m_gbuffer_shader, *material);
+                Renderer3D::SetMaterial(*m_gbuffer_shader, *material);
                 for (const auto &node : nodes) {
                     model_param->SetAsMat4(glm::value_ptr(
                         model->GetTransform(node.transform_id) *
                         transformComp.GetWorldTransform().GetMatrix()));
-                    MeshRenderer::DrawMesh(*m_gbuffer_shader,
-                                           *model->GetMesh(node.mesh_id));
+                    Renderer3D::DrawMesh(*m_gbuffer_shader,
+                                         *model->GetMesh(node.mesh_id));
                 }
             }
         }

@@ -1,12 +1,6 @@
 #include "Renderer/Renderer.hpp"
-#include "Renderer/SpriteRenderer.hpp"
-#include "Renderer/MeshRenderer.hpp"
-#include "Graphics/Graphics.hpp"
-#include "Graphics/Device.hpp"
-#include "Graphics/Framebuffer.hpp"
-#include "Utility/String.hpp"
-
-#include "Loader/ShaderLoader.hpp"
+#include "Renderer/Renderer2D.hpp"
+#include "Renderer/Renderer3D.hpp"
 
 namespace SD {
 
@@ -161,8 +155,8 @@ void Renderer::Init()
         m_box_vao->BindVertexBuffer(*m_box_vbo, 0);
         m_box_vao->BindIndexBuffer(*m_box_ibo);
     }
-    SpriteRenderer::Init();
-    MeshRenderer::Init();
+    Renderer2D::Init();
+    Renderer3D::Init();
 }
 
 void Renderer::Submit(const VertexArray& vao, MeshTopology topology,
@@ -175,6 +169,15 @@ void Renderer::Submit(const VertexArray& vao, MeshTopology topology,
     else {
         m_device->DrawArrays(topology, offset, count);
     }
+}
+
+void Renderer::SetCamera(Shader& shader, Camera& camera)
+{
+    m_camera_data.view = camera.GetView();
+    m_camera_data.projection = camera.GetProjection();
+    m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
+
+    shader.SetUniformBuffer("Camera", *m_camera_UBO);
 }
 
 void Renderer::DrawNDCQuad(const Shader& shader)

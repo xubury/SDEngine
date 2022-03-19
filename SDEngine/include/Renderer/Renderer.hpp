@@ -65,6 +65,8 @@ class SD_RENDERER_API Renderer {
 
     static bool IsEmptyStack();
 
+    static void SetCamera(Shader &shader, Camera &camera);
+
     static void DrawNDCQuad(const Shader &shader);
     static void DrawNDCBox(const Shader &shader);
 
@@ -79,7 +81,6 @@ class SD_RENDERER_API Renderer {
     static Scope<Device> m_device;
 
     static Ref<UniformBuffer> m_camera_UBO;
-
     static CameraData m_camera_data;
 
    private:

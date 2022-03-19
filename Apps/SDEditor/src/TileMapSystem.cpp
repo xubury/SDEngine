@@ -1,7 +1,5 @@
 #include "TileMapSystem.hpp"
-#include "Core/Input.hpp"
-#include "Core/Window.hpp"
-#include "Renderer/SpriteRenderer.hpp"
+#include "Renderer/Renderer2D.hpp"
 #include "Asset/AssetStorage.hpp"
 
 namespace SD {
@@ -168,7 +166,7 @@ void TileMapSystem::OnRender() {
     RenderOperation op;
     op.depth_test = false;
     Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1, op});
-    SpriteRenderer::Begin(*scene->GetCamera());
+    Renderer2D::Begin(*scene->GetCamera());
 
     // draw brush & outline
     const glm::ivec2 &tile_size = m_brush.tile_size;
@@ -177,7 +175,7 @@ void TileMapSystem::OnRender() {
     if (m_brush.GetSelectPos(world)) {
         if (m_operation == Operation::AddEntity) {
             if (AssetStorage::Get().Exists<TextureAsset>(m_texture_id)) {
-                SpriteRenderer::DrawTexture(
+                Renderer2D::DrawTexture(
                     *AssetStorage::Get()
                          .GetAsset<TextureAsset>(m_texture_id)
                          ->GetTexture(),
@@ -196,7 +194,7 @@ void TileMapSystem::OnRender() {
             } break;
         }
         if (m_operation != Operation::None) {
-            SpriteRenderer::DrawQuad(world, glm::quat(), brush_size,
+            Renderer2D::DrawQuad(world, glm::quat(), brush_size,
                                      select_color);
         }
     }
@@ -217,11 +215,11 @@ void TileMapSystem::OnRender() {
             tex_size.y / 2.f + cam_pos.y - tile_size.y / 2.f -
                 tile_size.y * std::floor(tile_cnt.y / 2.f),
             0);
-        SpriteRenderer::DrawTexture(
+        Renderer2D::DrawTexture(
             *m_outline_texture, {uv_origin, glm::vec2(tile_cnt) + uv_origin},
             outline_pos, glm::quat(), tex_size, glm::vec4(1, 1, 1, 0.7));
     }
-    SpriteRenderer::End();
+    Renderer2D::End();
     Renderer::EndRenderSubpass();
 }
 

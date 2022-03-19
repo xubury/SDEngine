@@ -1,5 +1,5 @@
-#ifndef SD_MESH_RENDERER_HPP
-#define SD_MESH_RENDERER_HPP
+#ifndef SD_RENDERER_3D_HPP
+#define SD_RENDERER_3D_HPP
 
 #include "Graphics/CascadeShadow.hpp"
 #include "Renderer/Export.hpp"
@@ -12,10 +12,9 @@ struct SD_RENDERER_API ShadowData {
     glm::mat4 projection_view[16];
 };
 
-class SD_RENDERER_API MeshRenderer : protected Renderer {
+class SD_RENDERER_API Renderer3D : protected Renderer {
    public:
     static void Init();
-    static void SetCamera(Shader &shader, Camera &camera);
     static void SetShadowCaster(Shader &shader, CascadeShadow &shadow);
 
     static void DrawMesh(const Shader &shader, const Mesh &mesh);
@@ -27,4 +26,5 @@ class SD_RENDERER_API MeshRenderer : protected Renderer {
 };
 
 }  // namespace SD
+
 #endif

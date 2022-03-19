@@ -1,5 +1,5 @@
 #include "System/ParticleSystem.hpp"
-#include "Renderer/SpriteRenderer.hpp"
+#include "Renderer/Renderer2D.hpp"
 #include "Utility/Random.hpp"
 #include "Utility/Math.hpp"
 
@@ -23,7 +23,7 @@ void ParticleSystem::OnRender()
 {
     int index = 0;
     Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1});
-    SpriteRenderer::Begin(*scene->GetCamera());
+    Renderer2D::Begin(*scene->GetCamera());
     for (const auto &particle : m_particles) {
         if (!particle.active) continue;
 
@@ -38,7 +38,7 @@ void ParticleSystem::OnRender()
             glm::rotate(glm::mat4(1.0f), particle.rotation,
                         glm::vec3(0.0f, 0.0f, 1.0f)) *
             glm::scale(glm::mat4(1.0f), glm::vec3(size, size, 1.0f));
-        SpriteRenderer::DrawQuad(transform, color);
+        Renderer2D::DrawQuad(transform, color);
     }
     Renderer::EndRenderSubpass();
 }

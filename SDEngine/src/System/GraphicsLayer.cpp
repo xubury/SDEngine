@@ -1,7 +1,7 @@
 #include "System/GraphicsLayer.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "Loader/TextureLoader.hpp"
-#include "Renderer/SpriteRenderer.hpp"
+#include "Renderer/Renderer2D.hpp"
 
 namespace SD {
 
@@ -99,17 +99,17 @@ void GraphicsLayer::OnRender()
         Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1, op});
 
         Camera *cam = scene->GetCamera();
-        SpriteRenderer::Begin(*cam);
+        Renderer2D::Begin(*cam);
         auto lightView = scene->view<LightComponent, TransformComponent>();
         lightView.each([this, &cam](const LightComponent &,
                                     const TransformComponent &transComp) {
             glm::vec3 pos = transComp.GetWorldPosition();
             float dist = glm::distance(pos, cam->GetWorldPosition());
             float scale = (dist - cam->GetNearZ()) / 20;
-            SpriteRenderer::DrawBillboard(*m_light_icon, pos, glm::vec2(scale));
+            Renderer2D::DrawBillboard(*m_light_icon, pos, glm::vec2(scale));
         });
 
-        SpriteRenderer::End();
+        Renderer2D::End();
         Renderer::EndRenderSubpass();
     }
     Renderer::EndRenderPass();

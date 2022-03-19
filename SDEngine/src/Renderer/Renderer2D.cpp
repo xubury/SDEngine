@@ -1,4 +1,4 @@
-#include "Renderer/SpriteRenderer.hpp"
+#include "Renderer/Renderer2D.hpp"
 #include "Loader/ShaderLoader.hpp"
 #include "Utility/String.hpp"
 
@@ -93,7 +93,7 @@ static Ref<Shader> m_line_shader;
 static Ref<Shader> m_circle_shader;
 static Ref<Shader> m_sprite_shader;
 
-void SpriteRenderer::Init()
+void Renderer2D::Init()
 {
     // Initializing line vbo
     m_data.line_vbo = VertexBuffer::Create(
@@ -182,21 +182,21 @@ void SpriteRenderer::Init()
     m_sprite_shader->SetUniformBuffer("Camera", *m_camera_UBO);
 }
 
-void SpriteRenderer::Begin(Camera& camera)
+void Renderer2D::Begin(Camera& camera)
 {
     m_camera_data.view = camera.GetView();
     m_camera_data.projection = camera.GetProjection();
     m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
 }
 
-void SpriteRenderer::End()
+void Renderer2D::End()
 {
     Flush();
     StartBatch();
     m_device->SetShader(nullptr);
 }
 
-void SpriteRenderer::StartBatch()
+void Renderer2D::StartBatch()
 {
     // Reset text
     SetTextOrigin(0, 0);
@@ -208,13 +208,13 @@ void SpriteRenderer::StartBatch()
     StartCircleBatch();
 }
 
-void SpriteRenderer::StartLineBatch()
+void Renderer2D::StartLineBatch()
 {
     m_data.line_vertex_cnt = 0;
     m_data.line_buffer_ptr = m_data.line_buffer.data();
 }
 
-void SpriteRenderer::StartQuadBatch()
+void Renderer2D::StartQuadBatch()
 {
     // Reset texture
     m_data.texture_index = 1;
@@ -224,32 +224,32 @@ void SpriteRenderer::StartQuadBatch()
     m_data.quad_buffer_ptr = m_data.quad_buffer.data();
 }
 
-void SpriteRenderer::StartCircleBatch()
+void Renderer2D::StartCircleBatch()
 {
     // Reset circle
     m_data.circle_index_cnt = 0;
     m_data.circle_buffer_ptr = m_data.circle_buffer.data();
 }
 
-void SpriteRenderer::SetTextOrigin(int x, int y)
+void Renderer2D::SetTextOrigin(int x, int y)
 {
     m_data.text_origin.x = x;
     m_data.text_origin.y = y;
 }
 
-glm::ivec2 SpriteRenderer::GetTextCursor()
+glm::ivec2 Renderer2D::GetTextCursor()
 {
     return m_data.text_cursor + m_data.text_origin;
 }
 
-void SpriteRenderer::Flush()
+void Renderer2D::Flush()
 {
     FlushLines();
     FlushQuads();
     FlushCircles();
 }
 
-void SpriteRenderer::FlushLines()
+void Renderer2D::FlushLines()
 {
     if (m_data.line_vertex_cnt) {
         size_t offset = m_data.line_buffer_ptr - m_data.line_buffer.data();
@@ -261,7 +261,7 @@ void SpriteRenderer::FlushLines()
     }
 }
 
-void SpriteRenderer::FlushQuads()
+void Renderer2D::FlushQuads()
 {
     if (m_data.quad_index_cnt) {
         size_t offset = m_data.quad_buffer_ptr - m_data.quad_buffer.data();
@@ -279,7 +279,7 @@ void SpriteRenderer::FlushQuads()
     }
 }
 
-void SpriteRenderer::FlushCircles()
+void Renderer2D::FlushCircles()
 {
     if (m_data.circle_index_cnt) {
         size_t offset = m_data.circle_buffer_ptr - m_data.circle_buffer.data();
@@ -293,25 +293,25 @@ void SpriteRenderer::FlushCircles()
     }
 }
 
-void SpriteRenderer::NextLineBatch()
+void Renderer2D::NextLineBatch()
 {
     FlushLines();
     StartLineBatch();
 }
 
-void SpriteRenderer::NextQuadBatch()
+void Renderer2D::NextQuadBatch()
 {
     FlushQuads();
     StartQuadBatch();
 }
 
-void SpriteRenderer::NextCircleBatch()
+void Renderer2D::NextCircleBatch()
 {
     FlushCircles();
     StartCircleBatch();
 }
 
-void SpriteRenderer::DrawLine(const glm::vec3& start, const glm::vec3& end,
+void Renderer2D::DrawLine(const glm::vec3& start, const glm::vec3& end,
                               const glm::vec4& color, uint32_t entity_id)
 {
     if (m_data.line_vertex_cnt >= Renderer2DData::MAX_LINES_VERTICES) {
@@ -329,7 +329,7 @@ void SpriteRenderer::DrawLine(const glm::vec3& start, const glm::vec3& end,
     m_data.line_vertex_cnt += 2;
 }
 
-void SpriteRenderer::DrawQuad(const glm::vec3& pos, const glm::quat& rot,
+void Renderer2D::DrawQuad(const glm::vec3& pos, const glm::quat& rot,
                               const glm::vec2& scale, const glm::vec4& color,
                               uint32_t entity_id)
 {
@@ -338,7 +338,7 @@ void SpriteRenderer::DrawQuad(const glm::vec3& pos, const glm::quat& rot,
              color, entity_id);
 }
 
-void SpriteRenderer::DrawQuad(const glm::mat4& transform,
+void Renderer2D::DrawQuad(const glm::mat4& transform,
                               const glm::vec4& color, uint32_t entity_id)
 {
     if (m_data.quad_index_cnt >= Renderer2DData::MAX_INDICES) {
@@ -357,7 +357,7 @@ void SpriteRenderer::DrawQuad(const glm::mat4& transform,
     m_data.quad_index_cnt += 6;
 }
 
-void SpriteRenderer::DrawTexture(const Texture& texture,
+void Renderer2D::DrawTexture(const Texture& texture,
                                  const std::array<glm::vec2, 2>& uv,
                                  const glm::vec3& pos, const glm::quat& rot,
                                  const glm::vec2& scale, const glm::vec4& color,
@@ -370,7 +370,7 @@ void SpriteRenderer::DrawTexture(const Texture& texture,
         color, entity_id);
 }
 
-void SpriteRenderer::DrawTexture(const Texture& texture,
+void Renderer2D::DrawTexture(const Texture& texture,
                                  const std::array<glm::vec2, 2>& uv,
                                  const glm::mat4& transform,
                                  const glm::vec4& color, uint32_t entity_id)
@@ -408,7 +408,7 @@ void SpriteRenderer::DrawTexture(const Texture& texture,
     m_data.quad_index_cnt += 6;
 }
 
-void SpriteRenderer::DrawTexture(const Texture& texture, const glm::vec3& pos,
+void Renderer2D::DrawTexture(const Texture& texture, const glm::vec3& pos,
                                  const glm::quat& rot, const glm::vec2& scale,
                                  const glm::vec4& color, uint32_t entity_id)
 {
@@ -419,7 +419,7 @@ void SpriteRenderer::DrawTexture(const Texture& texture, const glm::vec3& pos,
         color, entity_id);
 }
 
-void SpriteRenderer::DrawTexture(const Texture& texture,
+void Renderer2D::DrawTexture(const Texture& texture,
                                  const glm::mat4& transform,
                                  const glm::vec4& color, uint32_t entity_id)
 {
@@ -427,7 +427,7 @@ void SpriteRenderer::DrawTexture(const Texture& texture,
                 entity_id);
 }
 
-void SpriteRenderer::DrawBillboard(const Texture& texture,
+void Renderer2D::DrawBillboard(const Texture& texture,
                                    const std::array<glm::vec2, 2>& uv,
                                    const glm::vec3& pos, const glm::vec2& scale,
                                    const glm::vec4& color, uint32_t entity_id)
@@ -440,7 +440,7 @@ void SpriteRenderer::DrawBillboard(const Texture& texture,
         color, entity_id);
 }
 
-void SpriteRenderer::DrawBillboard(const Texture& texture, const glm::vec3& pos,
+void Renderer2D::DrawBillboard(const Texture& texture, const glm::vec3& pos,
                                    const glm::vec2& scale,
                                    const glm::vec4& color, uint32_t entity_id)
 {
@@ -452,7 +452,7 @@ void SpriteRenderer::DrawBillboard(const Texture& texture, const glm::vec3& pos,
         color, entity_id);
 }
 
-void SpriteRenderer::DrawText(const Font& font, const std::string& text,
+void Renderer2D::DrawText(const Font& font, const std::string& text,
                               const glm::mat4& transform,
                               const glm::vec4& color, uint32_t entity_id)
 {
@@ -484,7 +484,7 @@ void SpriteRenderer::DrawText(const Font& font, const std::string& text,
     }
 }
 
-void SpriteRenderer::DrawCircle(const glm::vec3& pos, const glm::vec2& scale,
+void Renderer2D::DrawCircle(const glm::vec3& pos, const glm::vec2& scale,
                                 const glm::vec4& color, float thickness,
                                 float fade, uint32_t entity_id)
 {
@@ -494,7 +494,7 @@ void SpriteRenderer::DrawCircle(const glm::vec3& pos, const glm::vec2& scale,
         color, thickness, fade, entity_id);
 }
 
-void SpriteRenderer::DrawCircle(const glm::mat4& transform,
+void Renderer2D::DrawCircle(const glm::mat4& transform,
                                 const glm::vec4& color, float thickness,
                                 float fade, uint32_t entity_id)
 {

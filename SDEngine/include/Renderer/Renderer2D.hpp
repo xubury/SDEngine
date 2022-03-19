@@ -1,11 +1,11 @@
-#ifndef SD_SPRITE_RENDERER_HPP
-#define SD_SPRITE_RENDERER_HPP
+#ifndef SD_RENDERER_2D_HPP
+#define SD_RENDERER_2D_HPP
 
 #include "Renderer/Renderer.hpp"
 
 namespace SD {
 
-class SD_RENDERER_API SpriteRenderer : protected Renderer {
+class SD_RENDERER_API Renderer2D : protected Renderer {
    public:
     static void Init();
     static void Begin(Camera &camera);

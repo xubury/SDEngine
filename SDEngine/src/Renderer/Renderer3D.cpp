@@ -1,11 +1,11 @@
-#include "Renderer/MeshRenderer.hpp"
+#include "Renderer/Renderer3D.hpp"
 
 namespace SD {
 
-Ref<UniformBuffer> MeshRenderer::m_shadow_UBO;
-Ref<VertexArray> MeshRenderer::m_mesh_vao;
+Ref<UniformBuffer> Renderer3D::m_shadow_UBO;
+Ref<VertexArray> Renderer3D::m_mesh_vao;
 
-void MeshRenderer::Init()
+void Renderer3D::Init()
 {
     m_shadow_UBO = UniformBuffer::Create(nullptr, sizeof(ShadowData),
                                          BufferIOType::Dynamic);
@@ -19,7 +19,7 @@ void MeshRenderer::Init()
     m_mesh_vao->AddBufferLayout(layout);
 }
 
-void MeshRenderer::DrawMesh(const Shader& shader, const Mesh& mesh)
+void Renderer3D::DrawMesh(const Shader& shader, const Mesh& mesh)
 {
     m_device->SetPolygonMode(mesh.GetPolygonMode(), Face::Both);
     m_device->SetShader(&shader);
@@ -29,7 +29,7 @@ void MeshRenderer::DrawMesh(const Shader& shader, const Mesh& mesh)
            0);
 }
 
-void MeshRenderer::SetMaterial(Shader& shader, const Material& material)
+void Renderer3D::SetMaterial(Shader& shader, const Material& material)
 {
     m_device->SetShader(&shader);
 
@@ -43,16 +43,7 @@ void MeshRenderer::SetMaterial(Shader& shader, const Material& material)
         ->SetAsTexture(material.GetTexture(MaterialType::EMISSIVE));
 }
 
-void MeshRenderer::SetCamera(Shader& shader, Camera& camera)
-{
-    m_camera_data.view = camera.GetView();
-    m_camera_data.projection = camera.GetProjection();
-    m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
-
-    shader.SetUniformBuffer("Camera", *m_camera_UBO);
-}
-
-void MeshRenderer::SetShadowCaster(Shader& shader, CascadeShadow& shadow)
+void Renderer3D::SetShadowCaster(Shader& shader, CascadeShadow& shadow)
 {
     auto& pv = shadow.GetLevelProjectionView();
     m_shadow_UBO->UpdateData(pv.data(), sizeof(glm::mat4) * pv.size());

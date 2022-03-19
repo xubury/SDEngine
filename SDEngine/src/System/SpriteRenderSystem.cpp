@@ -1,5 +1,5 @@
 #include "System/SpriteRenderSystem.hpp"
-#include "Renderer/SpriteRenderer.hpp"
+#include "Renderer/Renderer2D.hpp"
 #include "Graphics/Font.hpp"
 
 #include "Asset/AssetStorage.hpp"
@@ -39,7 +39,7 @@ void SpriteRenderSystem::OnRender()
     RenderOperation op;
     op.depth_mask = false;
     Renderer::BeginRenderSubpass(RenderSubpassInfo{index, 2, op});
-    SpriteRenderer::Begin(*scene->GetCamera());
+    Renderer2D::Begin(*scene->GetCamera());
 
     std::vector<SpriteDrawData> datas;
     auto sprite_view = scene->view<SpriteComponent, TransformComponent>();
@@ -99,7 +99,7 @@ void SpriteRenderSystem::OnRender()
         }
     });
     for (const auto &data : datas) {
-        SpriteRenderer::DrawTexture(*data.texture, data.uvs, data.pos, data.rot,
+        Renderer2D::DrawTexture(*data.texture, data.uvs, data.pos, data.rot,
                                     data.size, glm::vec4(1.0f), data.entity_id);
     }
 
@@ -108,18 +108,18 @@ void SpriteRenderSystem::OnRender()
     textView.each([](entt::entity entity_id,
                      const TransformComponent &transformComp,
                      const TextComponent &textComp) {
-        SpriteRenderer::SetTextOrigin(0, 0);
+        Renderer2D::SetTextOrigin(0, 0);
         if (AssetStorage::Get().Exists<FontAsset>(textComp.font_id)) {
             auto font = AssetStorage::Get()
                             .GetAsset<FontAsset>(textComp.font_id)
                             ->GetFont();
-            SpriteRenderer::DrawText(
+            Renderer2D::DrawText(
                 *font, textComp.text,
                 transformComp.GetWorldTransform().GetMatrix(), textComp.color,
                 static_cast<uint32_t>(entity_id));
         }
     });
-    SpriteRenderer::End();
+    Renderer2D::End();
 
     Renderer::EndRenderSubpass();
 }

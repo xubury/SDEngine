@@ -4,12 +4,14 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Renderer)
 
 set(Renderer_Include
     ${Include_Root}/Export.hpp
-    ${Include_Root}/Renderer.hpp)
+    ${Include_Root}/Renderer.hpp
+    ${Include_Root}/Renderer2D.hpp
+    ${Include_Root}/Renderer3D.hpp)
 
 set(Renderer_Src
-    ${Src_Root}/SpriteRenderer.cpp
-    ${Src_Root}/MeshRenderer.cpp
-    ${Src_Root}/Renderer.cpp)
+    ${Src_Root}/Renderer.cpp
+    ${Src_Root}/Renderer2D.cpp
+    ${Src_Root}/Renderer3D.cpp)
 
 add_library(sd-renderer ${Renderer_Src})
 
