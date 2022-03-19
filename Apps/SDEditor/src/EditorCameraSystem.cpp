@@ -50,13 +50,15 @@ void EditorCameraSystem::OnImGui() {
     ImGui::Begin("Editor Camera Sysetm");
     {
         CameraType type = m_camera.GetCameraType();
-        if (ImGui::RadioButton("Perspective", reinterpret_cast<int *>(&type),
-                               static_cast<int>(CameraType::Perspective))) {
+        if (ImGui::RadioButton("Perspective",
+                               reinterpret_cast<int32_t *>(&type),
+                               static_cast<int32_t>(CameraType::Perspective))) {
             m_camera.SetCameraType(type);
         }
         ImGui::SameLine();
-        if (ImGui::RadioButton("Ortho", reinterpret_cast<int *>(&type),
-                               static_cast<int>(CameraType::Orthographic))) {
+        if (ImGui::RadioButton(
+                "Ortho", reinterpret_cast<int32_t *>(&type),
+                static_cast<int32_t>(CameraType::Orthographic))) {
             m_camera.SetCameraType(type);
         }
         float fov = m_camera.GetFOV();

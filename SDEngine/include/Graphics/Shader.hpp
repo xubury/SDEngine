@@ -17,7 +17,7 @@ namespace SD {
 class Texture;
 class UniformBuffer;
 
-enum class ShaderType { INVALID, VERTEX, FRAGMENT, GEOMETRY, COMPUTE };
+enum class ShaderType { Invalid, Vertex, Fragment, Geometry, Compute };
 
 class SD_GRAPHICS_API Shader : public Resource {
    public:

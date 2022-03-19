@@ -2,7 +2,6 @@
 #include "Graphics/OpenGL/GLBuffer.hpp"
 #include "Graphics/OpenGL/GLTexture.hpp"
 #include "Graphics/OpenGL/GLShaderParam.hpp"
-#include <glm/gtc/type_ptr.hpp>
 
 namespace SD {
 
@@ -155,7 +154,7 @@ ShaderParam* GLShader::GetParam(int32_t index) {
 void GLShader::CompileShader(ShaderType type, const std::string& code) {
     const char* c_code = code.c_str();
     switch (type) {
-        case ShaderType::VERTEX:
+        case ShaderType::Vertex:
             if (m_vertexId != 0) glDeleteShader(m_vertexId);
             m_vertexId = glCreateShader(GL_VERTEX_SHADER);
             glShaderSource(m_vertexId, 1, &c_code, nullptr);
@@ -163,7 +162,7 @@ void GLShader::CompileShader(ShaderType type, const std::string& code) {
             CheckCompileErrors(m_vertexId, "Vertex");
             glAttachShader(m_id, m_vertexId);
             break;
-        case ShaderType::FRAGMENT:
+        case ShaderType::Fragment:
             if (m_fragmentId != 0) glDeleteShader(m_fragmentId);
             m_fragmentId = glCreateShader(GL_FRAGMENT_SHADER);
             glShaderSource(m_fragmentId, 1, &c_code, nullptr);
@@ -171,7 +170,7 @@ void GLShader::CompileShader(ShaderType type, const std::string& code) {
             CheckCompileErrors(m_fragmentId, "Fragment");
             glAttachShader(m_id, m_fragmentId);
             break;
-        case ShaderType::GEOMETRY:
+        case ShaderType::Geometry:
             if (m_geometryId != 0) glDeleteShader(m_geometryId);
             m_geometryId = glCreateShader(GL_GEOMETRY_SHADER);
             glShaderSource(m_geometryId, 1, &c_code, nullptr);
@@ -179,7 +178,7 @@ void GLShader::CompileShader(ShaderType type, const std::string& code) {
             CheckCompileErrors(m_geometryId, "Geometry");
             glAttachShader(m_id, m_geometryId);
             break;
-        case ShaderType::COMPUTE:
+        case ShaderType::Compute:
             if (m_computeId != 0) glDeleteShader(m_computeId);
             m_computeId = glCreateShader(GL_COMPUTE_SHADER);
             glShaderSource(m_computeId, 1, &c_code, nullptr);
@@ -187,7 +186,7 @@ void GLShader::CompileShader(ShaderType type, const std::string& code) {
             CheckCompileErrors(m_computeId, "Compute");
             glAttachShader(m_id, m_computeId);
             break;
-        case ShaderType::INVALID:
+        case ShaderType::Invalid:
             SD_CORE_ERROR("Trying to add a invalid shader");
             break;
     }

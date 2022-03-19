@@ -21,7 +21,7 @@
 
 namespace SD {
 
-enum class EditorMode { NONE, TWO_DIMENSIONAL, THREE_DIMENSIONAL };
+enum class EditorMode { None, TwoDimensional, ThreeDimensional };
 class EditorLayer : public Layer {
    public:
     EditorLayer(GraphicsLayer* graphics_layer, int width, int height);

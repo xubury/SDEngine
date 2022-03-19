@@ -44,7 +44,7 @@ TileMapSystem::TileMapSystem(Framebuffer *framebuffer)
       m_file_dialog_open(false),
       m_priority(0),
       m_draw_outline(true),
-      m_operation(Operation::NONE) {
+      m_operation(Operation::None) {
     m_outline_texture = Texture::Create(
         GRID_TEXTURE_SIZE, GRID_TEXTURE_SIZE, 0, MultiSampleLevel::X1,
         TextureType::Normal, DataFormat::RGBA8, TextureWrap::Repeat);
@@ -88,7 +88,7 @@ void TileMapSystem::ManipulateScene() {
         switch (m_operation) {
             default: {
             } break;
-            case Operation::ADD_ENTITY: {
+            case Operation::AddEntity: {
                 glm::vec3 world;
                 if (m_brush.GetSelectPos(world)) {
                     Entity child = scene->CreateEntity("Tile");
@@ -102,12 +102,12 @@ void TileMapSystem::ManipulateScene() {
                     frame.priority = m_priority;
                 }
             } break;
-            case Operation::REMOVE_ENTITY: {
+            case Operation::RemoveEntity: {
                 // m_brush.Clear();
             } break;
         }
     } else if (ImGui::IsMouseClicked(1)) {
-        m_operation = Operation::NONE;
+        m_operation = Operation::None;
     }
 }
 
@@ -116,14 +116,14 @@ void TileMapSystem::OnImGui() {
     {
         ImGui::Checkbox("Outline", &m_draw_outline);
         ImGui::RadioButton("None", reinterpret_cast<int *>(&m_operation),
-                           Operation::NONE);
+                           Operation::None);
         ImGui::SameLine();
         ImGui::RadioButton("Add Sprite", reinterpret_cast<int *>(&m_operation),
-                           Operation::ADD_ENTITY);
+                           Operation::AddEntity);
         ImGui::SameLine();
         ImGui::RadioButton("Clear Sprite",
                            reinterpret_cast<int *>(&m_operation),
-                           Operation::REMOVE_ENTITY);
+                           Operation::RemoveEntity);
         // ImGui::InputText("##Path", m_texture_path.data(),
         // m_texture_path.size(),
         //                  ImGuiInputTextFlags_ReadOnly);
@@ -175,7 +175,7 @@ void TileMapSystem::OnRender() {
     const glm::vec2 &brush_size = tile_size * m_brush.count;
     glm::vec3 world;
     if (m_brush.GetSelectPos(world)) {
-        if (m_operation == Operation::ADD_ENTITY) {
+        if (m_operation == Operation::AddEntity) {
             if (AssetStorage::Get().Exists<TextureAsset>(m_texture_id)) {
                 SpriteRenderer::DrawTexture(
                     *AssetStorage::Get()
@@ -187,15 +187,15 @@ void TileMapSystem::OnRender() {
         // Draw selection
         glm::vec4 select_color(1.0);
         switch (m_operation) {
-            case Operation::NONE:
-            case Operation::ADD_ENTITY: {
+            case Operation::None:
+            case Operation::AddEntity: {
                 select_color = COLOR_GREEN;
             } break;
-            case Operation::REMOVE_ENTITY: {
+            case Operation::RemoveEntity: {
                 select_color = COLOR_RED;
             } break;
         }
-        if (m_operation != Operation::NONE) {
+        if (m_operation != Operation::None) {
             SpriteRenderer::DrawQuad(world, glm::quat(), brush_size,
                                      select_color);
         }

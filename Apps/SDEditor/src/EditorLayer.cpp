@@ -13,7 +13,7 @@ namespace SD {
 
 EditorLayer::EditorLayer(GraphicsLayer *graphics_layer, int width, int height)
     : Layer("EditorLayer"),
-      m_mode(EditorMode::NONE),
+      m_mode(EditorMode::None),
       m_graphics_layer(graphics_layer),
       m_viewport_pos(0, 0),
       m_viewport_size(width, height),
@@ -133,24 +133,24 @@ void EditorLayer::OnImGui() {
         ImGui::EndPopup();
     }
 
-    if (!m_quitting && m_mode == EditorMode::NONE) {
+    if (!m_quitting && m_mode == EditorMode::None) {
         ImGui::OpenPopup("Select Editor Mode");
     }
     if (ImGui::BeginCenterPopupModal("Select Editor Mode")) {
-        static EditorMode mode = EditorMode::TWO_DIMENSIONAL;
+        static EditorMode mode = EditorMode::TwoDimensional;
         ImGui::TextUnformatted("Please select an editor mode(2D/3D):");
         ImGui::TextUnformatted("Mode:");
         ImGui::SameLine();
-        if (ImGui::RadioButton("2D", mode == EditorMode::TWO_DIMENSIONAL)) {
-            mode = EditorMode::TWO_DIMENSIONAL;
+        if (ImGui::RadioButton("2D", mode == EditorMode::TwoDimensional)) {
+            mode = EditorMode::TwoDimensional;
         }
         ImGui::SameLine();
-        if (ImGui::RadioButton("3D", mode == EditorMode::THREE_DIMENSIONAL)) {
-            mode = EditorMode::THREE_DIMENSIONAL;
+        if (ImGui::RadioButton("3D", mode == EditorMode::ThreeDimensional)) {
+            mode = EditorMode::ThreeDimensional;
         }
         if (ImGui::Button("OK")) {
             m_mode = mode;
-            if (mode == EditorMode::TWO_DIMENSIONAL) {
+            if (mode == EditorMode::TwoDimensional) {
                 m_tile_map_system = CreateSystem<TileMapSystem>(
                     m_graphics_layer->GetFramebuffer());
                 m_animation_editor = CreateSystem<AnimationEditor>();

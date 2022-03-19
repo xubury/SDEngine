@@ -10,7 +10,7 @@
 
 namespace SD {
 
-enum class CameraType { Orthographic, Perspective };
+enum class CameraType : int32_t { Orthographic, Perspective };
 
 class SD_GRAPHICS_API Camera {
    public:

@@ -42,11 +42,11 @@ Ref<Shader> ShaderLoader::LoadShader(const std::string& vert_path,
     std::string frag_code;
     if (!vert_path.empty()) {
         ParseShaderCode(vert_path, vert_code);
-        shader->CompileShader(ShaderType::VERTEX, vert_code);
+        shader->CompileShader(ShaderType::Vertex, vert_code);
     }
     if (!frag_path.empty()) {
         ParseShaderCode(frag_path, frag_code);
-        shader->CompileShader(ShaderType::FRAGMENT, frag_code);
+        shader->CompileShader(ShaderType::Fragment, frag_code);
     }
     shader->LinkShaders();
     return shader;
@@ -60,15 +60,15 @@ Ref<Shader> ShaderLoader::LoadShader(const std::string& vert_path,
     std::string geo_code;
     if (!vert_path.empty()) {
         ParseShaderCode(vert_path, vert_code);
-        shader->CompileShader(ShaderType::VERTEX, vert_code);
+        shader->CompileShader(ShaderType::Vertex, vert_code);
     }
     if (!frag_path.empty()) {
         ParseShaderCode(frag_path, frag_code);
-        shader->CompileShader(ShaderType::FRAGMENT, frag_code);
+        shader->CompileShader(ShaderType::Fragment, frag_code);
     }
     if (!geo_path.empty()) {
         ParseShaderCode(geo_path, geo_code);
-        shader->CompileShader(ShaderType::GEOMETRY, geo_code);
+        shader->CompileShader(ShaderType::Geometry, geo_code);
     }
     shader->LinkShaders();
     return shader;
