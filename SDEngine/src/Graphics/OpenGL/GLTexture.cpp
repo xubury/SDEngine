@@ -132,6 +132,7 @@ void GLTexture::Allocate()
             break;
         case GL_TEXTURE_1D:
             glTextureStorage1D(m_id, m_mipmap_levels, gl_sized_format, m_width);
+            break;
         case GL_TEXTURE_2D:
         case GL_TEXTURE_CUBE_MAP:
             glTextureStorage2D(m_id, m_mipmap_levels, gl_sized_format, m_width,
