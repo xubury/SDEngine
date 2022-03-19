@@ -9,7 +9,7 @@ layout(location = 0) in vec2 in_uv;
 layout(binding = 0) uniform sampler2DMS u_position;
 layout(binding = 1) uniform sampler2DMS u_normal;
 
-const uint KERNEL_SIZE = 32;
+const uint KERNEL_SIZE = 64;
 uniform uint u_kernel_size = KERNEL_SIZE;
 
 uniform sampler2D u_noise;

@@ -267,19 +267,22 @@ void LightingSystem::RenderShadowMap(Light &light, const Transform &transform)
 
 void LightingSystem::RenderSSAO()
 {
-    Renderer::BeginRenderPass(RenderPassInfo{m_ssao_buffer.get(),
-                                             m_ssao_buffer->GetWidth(),
-                                             m_ssao_buffer->GetHeight()});
+    RenderPassInfo info;
+    info.framebuffer = m_ssao_buffer.get();
+    info.viewport_width = m_ssao_buffer->GetWidth();
+    info.viewport_height = m_ssao_buffer->GetHeight();
+    info.op.blend = false;
+    Texture *position =
+        m_gbuffer->GetTexture(static_cast<int>(GeometryBufferType::Position));
+    Texture *normal =
+        m_gbuffer->GetTexture(static_cast<int>(GeometryBufferType::Normal));
+    Renderer::BeginRenderPass(info);
     MeshRenderer::Begin(*m_ssao_shader, *scene->GetCamera());
     m_ssao_shader->GetParam("u_radius")->SetAsFloat(m_ssao_radius);
     m_ssao_shader->GetParam("u_bias")->SetAsFloat(m_ssao_bias);
     m_ssao_shader->GetParam("u_power")->SetAsUint(m_ssao_power);
-    m_ssao_shader->GetParam("u_position")
-        ->SetAsTexture(m_gbuffer->GetTexture(
-            static_cast<int>(GeometryBufferType::Position)));
-    m_ssao_shader->GetParam("u_normal")
-        ->SetAsTexture(m_gbuffer->GetTexture(
-            static_cast<int>(GeometryBufferType::Normal)));
+    m_ssao_shader->GetParam("u_position")->SetAsTexture(position);
+    m_ssao_shader->GetParam("u_normal")->SetAsTexture(normal);
     m_ssao_shader->GetParam("u_noise")->SetAsTexture(m_ssao_noise.get());
     Renderer::DrawNDCQuad(*m_ssao_shader);
 
@@ -287,9 +290,11 @@ void LightingSystem::RenderSSAO()
     Renderer::EndRenderPass();
 
     // blur
-    Renderer::BeginRenderPass(RenderPassInfo{m_ssao_blur_buffer.get(),
-                                             m_ssao_blur_buffer->GetWidth(),
-                                             m_ssao_blur_buffer->GetHeight()});
+    info.framebuffer = m_ssao_blur_buffer.get();
+    info.viewport_width = m_ssao_blur_buffer->GetWidth();
+    info.viewport_height = m_ssao_blur_buffer->GetHeight();
+    info.op.blend = false;
+    Renderer::BeginRenderPass(info);
     m_ssao_blur_shader->GetParam("u_ssao")->SetAsTexture(
         m_ssao_buffer->GetTexture());
     Renderer::DrawNDCQuad(*m_ssao_blur_shader);
