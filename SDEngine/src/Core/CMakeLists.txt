@@ -59,7 +59,6 @@ target_link_libraries(sd-core
     sd-utility
     sd-imgui
     sd-ecs
-    sd-renderer
     sd-asset
 
     ${LUA_LIBRARIES}

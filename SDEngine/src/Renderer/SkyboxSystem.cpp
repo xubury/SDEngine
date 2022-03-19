@@ -1,4 +1,4 @@
-#include "System/SkyboxSystem.hpp"
+#include "Renderer/SkyboxSystem.hpp"
 #include "ECS/Scene.hpp"
 #include "Renderer/Renderer.hpp"
 

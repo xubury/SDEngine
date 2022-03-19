@@ -2,7 +2,7 @@
 #define SD_EDITOR_HPP
 
 #include "Core/Application.hpp"
-#include "System/GraphicsLayer.hpp"
+#include "Renderer/GraphicsLayer.hpp"
 #include "EditorLayer.hpp"
 
 namespace SD {

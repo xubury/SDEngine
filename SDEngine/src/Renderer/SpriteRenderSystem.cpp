@@ -1,4 +1,4 @@
-#include "System/SpriteRenderSystem.hpp"
+#include "Renderer/SpriteRenderSystem.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Graphics/Font.hpp"
 

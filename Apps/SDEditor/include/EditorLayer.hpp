@@ -1,7 +1,7 @@
 #ifndef SD_EDITOR_LAYER_HPP
 #define SD_EDITOR_LAYER_HPP
 
-#include "System/GraphicsLayer.hpp"
+#include "Renderer/GraphicsLayer.hpp"
 #include "Core/Layer.hpp"
 #include "Graphics/Camera.hpp"
 
@@ -9,13 +9,7 @@
 #include "EditorCameraSystem.hpp"
 #include "AnimationEditor.hpp"
 #include "TileMapSystem.hpp"
-
-#include "System/CameraSystem.hpp"
-#include "System/LightingSystem.hpp"
-#include "System/SkyboxSystem.hpp"
-#include "System/ProfileSystem.hpp"
-#include "System/PostProcessSystem.hpp"
-#include "System/SpriteRenderSystem.hpp"
+#include "ProfileSystem.hpp"
 
 #include "Asset/SceneAsset.hpp"
 

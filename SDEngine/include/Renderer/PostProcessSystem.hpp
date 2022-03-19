@@ -1,14 +1,14 @@
 #ifndef SD_POST_PROCESS_SYSTEM_HPP
 #define SD_POST_PROCESS_SYSTEM_HPP
 
-#include "System/Export.hpp"
 #include "Core/System.hpp"
+#include "Renderer/Export.hpp"
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/Shader.hpp"
 
 namespace SD {
 
-class SD_SYSTEM_API PostProcessSystem : public System {
+class SD_RENDERER_API PostProcessSystem : public System {
    public:
     PostProcessSystem(int32_t width, int32_t height);
 

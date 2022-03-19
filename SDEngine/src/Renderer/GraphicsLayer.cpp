@@ -1,4 +1,4 @@
-#include "System/GraphicsLayer.hpp"
+#include "Renderer/GraphicsLayer.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "Loader/TextureLoader.hpp"
 #include "Renderer/Renderer2D.hpp"
@@ -14,6 +14,7 @@ GraphicsLayer::GraphicsLayer(int32_t width, int32_t height,
 void GraphicsLayer::OnInit()
 {
     Layer::OnInit();
+    Renderer::Init();
 
     {
         FramebufferCreateInfo info;
@@ -117,6 +118,8 @@ void GraphicsLayer::OnRender()
     if (m_debug) {
         BlitGeometryBuffers();
     }
+    SD_CORE_ASSERT(Renderer::IsEmptyStack(),
+                   "DEBUG: RenderPass Begin/End not pair!")
 }
 
 void GraphicsLayer::OnImGui()

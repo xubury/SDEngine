@@ -1,7 +1,7 @@
 #ifndef SD_SKYBOX_SYSTEM_HPP
 #define SD_SKYBOX_SYSTEM_HPP
 
-#include "System/Export.hpp"
+#include "Renderer/Export.hpp"
 #include "Core/System.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"
@@ -9,7 +9,7 @@
 
 namespace SD {
 
-class SD_SYSTEM_API SkyboxSystem : public System {
+class SD_RENDERER_API SkyboxSystem : public System {
    public:
     SkyboxSystem();
 

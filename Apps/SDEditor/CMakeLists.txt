@@ -13,6 +13,7 @@ add_executable(SDEditor
     src/ContentBrowser.cpp
     src/EditorCameraSystem.cpp
     src/AnimationEditor.cpp
+    src/ProfileSystem.cpp
     src/TileMapSystem.cpp
     src/TileBrush.cpp)
 
@@ -20,4 +21,4 @@ target_include_directories(SDEditor PUBLIC include)
 
 target_compile_options(SDEditor PUBLIC  -Wall -Wextra -Wundef -pedantic -std=c++17)
 
-target_link_libraries(SDEditor PUBLIC sd-core sd-system sd-animation)
+target_link_libraries(SDEditor PUBLIC sd-core sd-renderer sd-animation)

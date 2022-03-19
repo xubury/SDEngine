@@ -1,7 +1,6 @@
 #include "Core/Application.hpp"
 #include "Core/SDL.hpp"
 #include "Core/Input.hpp"
-#include "Renderer/Renderer.hpp"
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
 
@@ -57,7 +56,6 @@ Application::Application(const std::string &title, Device::API api)
 
     EventSystem::Init();
     AssetStorage::Init();
-    Renderer::Init();
 
     auto &storage = AssetStorage::Get();
     RegisterAssets(&storage);
@@ -174,8 +172,6 @@ void Application::Render()
     for (auto &layer : m_layers) {
         layer->OnRender();
     }
-    SD_CORE_ASSERT(Renderer::IsEmptyStack(),
-                   "DEBUG: RenderPass Begin/End not pair!")
 
     m_imgui->Begin();
     for (auto &layer : m_layers) {

@@ -1,4 +1,4 @@
-#include "System/CameraSystem.hpp"
+#include "Renderer/CameraSystem.hpp"
 #include "ECS/Scene.hpp"
 
 namespace SD {

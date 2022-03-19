@@ -2,16 +2,15 @@
 #define SD_GRAPHICS_LAYER_HPP
 
 #include "Core/Layer.hpp"
-#include "System/CameraSystem.hpp"
-#include "System/LightingSystem.hpp"
-#include "System/SkyboxSystem.hpp"
-#include "System/ProfileSystem.hpp"
-#include "System/PostProcessSystem.hpp"
-#include "System/SpriteRenderSystem.hpp"
+#include "Renderer/CameraSystem.hpp"
+#include "Renderer/LightingSystem.hpp"
+#include "Renderer/SkyboxSystem.hpp"
+#include "Renderer/PostProcessSystem.hpp"
+#include "Renderer/SpriteRenderSystem.hpp"
 
 namespace SD {
 
-class SD_SYSTEM_API GraphicsLayer : public Layer {
+class SD_RENDERER_API GraphicsLayer : public Layer {
    public:
     GraphicsLayer(int32_t width, int32_t height, MultiSampleLevel msaa);
     void OnInit() override;

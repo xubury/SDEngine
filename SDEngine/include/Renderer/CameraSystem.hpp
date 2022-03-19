@@ -1,12 +1,12 @@
 #ifndef SD_CAMERA_SYSTEM_HPP
 #define SD_CAMERA_SYSTEM_HPP
 
-#include "System/Export.hpp"
+#include "Renderer/Export.hpp"
 #include "Core/System.hpp"
 
 namespace SD {
 
-class SD_SYSTEM_API CameraSystem : public System {
+class SD_RENDERER_API CameraSystem : public System {
    public:
     CameraSystem();
 

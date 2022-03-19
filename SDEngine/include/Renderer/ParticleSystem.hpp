@@ -1,7 +1,7 @@
 #ifndef SD_PARTICLE_SYSTEM_HPP
 #define SD_PARTICLE_SYSTEM_HPP
 
-#include "System/Export.hpp"
+#include "Renderer/Export.hpp"
 #include "Core/System.hpp"
 #include "Graphics/Camera.hpp"
 
@@ -10,7 +10,7 @@
 
 namespace SD {
 
-struct SD_SYSTEM_API ParticleProp {
+struct SD_RENDERER_API ParticleProp {
     glm::vec3 position;
     glm::vec3 velocity;
     glm::vec3 velocityVariation;
@@ -34,7 +34,7 @@ struct SD_SYSTEM_API ParticleProp {
     }
 };
 
-class SD_SYSTEM_API ParticleSystem : public System {
+class SD_RENDERER_API ParticleSystem : public System {
    public:
     ParticleSystem(int poolSize = 1000);
 

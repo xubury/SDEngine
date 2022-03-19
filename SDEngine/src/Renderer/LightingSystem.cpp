@@ -1,4 +1,4 @@
-#include "System/LightingSystem.hpp"
+#include "Renderer/LightingSystem.hpp"
 #include "Renderer/Renderer3D.hpp"
 #include "ECS/Component.hpp"
 

@@ -1,7 +1,7 @@
 #ifndef SD_LIGHTING_SYSTEM_HPP
 #define SD_LIGHTING_SYSTEM_HPP
 
-#include "System/Export.hpp"
+#include "Renderer/Export.hpp"
 #include "Core/System.hpp"
 #include "ECS/Scene.hpp"
 #include "Graphics/Shader.hpp"
@@ -19,9 +19,9 @@ enum class GeometryBufferType {
     GBufferCount
 };
 
-DataFormat SD_SYSTEM_API GetTextureFormat(GeometryBufferType type);
+DataFormat SD_RENDERER_API GetTextureFormat(GeometryBufferType type);
 
-class SD_SYSTEM_API LightingSystem : public System {
+class SD_RENDERER_API LightingSystem : public System {
    public:
     LightingSystem(int width, int height, MultiSampleLevel msaa);
 

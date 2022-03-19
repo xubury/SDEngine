@@ -1,7 +1,6 @@
 #ifndef SD_PROFILE_SYSTEM_HPP
 #define SD_PROFILE_SYSTEM_HPP
 
-#include "System/Export.hpp"
 #include "Core/System.hpp"
 #include "Graphics/Font.hpp"
 #include "Graphics/Camera.hpp"
@@ -9,7 +8,7 @@
 
 namespace SD {
 
-class SD_SYSTEM_API ProfileSystem : public System {
+class ProfileSystem : public System {
    public:
     ProfileSystem();
 

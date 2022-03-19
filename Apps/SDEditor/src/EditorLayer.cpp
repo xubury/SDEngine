@@ -5,7 +5,6 @@
 #include "Core/Application.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGuizmo.h"
-#include "System/ScriptSystem.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 

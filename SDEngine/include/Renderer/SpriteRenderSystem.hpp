@@ -1,12 +1,12 @@
 #ifndef SD_SPRITE_RENDER_SYSTEM_HPP
 #define SD_SPRITE_RENDER_SYSTEM_HPP
 
-#include "System/Export.hpp"
+#include "Renderer/Export.hpp"
 #include "Core/System.hpp"
 
 namespace SD {
 
-class SD_SYSTEM_API SpriteRenderSystem : public System {
+class SD_RENDERER_API SpriteRenderSystem : public System {
    public:
     SpriteRenderSystem();
 
