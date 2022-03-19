@@ -1,5 +1,6 @@
 #include "Renderer/SpriteRenderSystem.hpp"
 #include "Renderer/Renderer2D.hpp"
+#include "Renderer/Event.hpp"
 #include "Graphics/Font.hpp"
 
 #include "Asset/AssetStorage.hpp"
@@ -8,7 +9,7 @@
 
 namespace SD {
 
-SpriteRenderSystem::SpriteRenderSystem() : System("SpriteRenderSystem") {}
+SpriteRenderSystem::SpriteRenderSystem() : RenderSystem("SpriteRenderSystem") {}
 
 void SpriteRenderSystem::OnPush() {}
 
@@ -39,7 +40,7 @@ void SpriteRenderSystem::OnRender()
     RenderOperation op;
     op.depth_mask = false;
     Renderer::BeginRenderSubpass(RenderSubpassInfo{index, 2, op});
-    Renderer2D::Begin(*scene->GetCamera());
+    Renderer2D::Begin(GetCamera());
 
     std::vector<SpriteDrawData> datas;
     auto sprite_view = scene->view<SpriteComponent, TransformComponent>();
@@ -100,7 +101,7 @@ void SpriteRenderSystem::OnRender()
     });
     for (const auto &data : datas) {
         Renderer2D::DrawTexture(*data.texture, data.uvs, data.pos, data.rot,
-                                    data.size, glm::vec4(1.0f), data.entity_id);
+                                data.size, glm::vec4(1.0f), data.entity_id);
     }
 
     auto textView = scene->view<TransformComponent, TextComponent>();
@@ -113,10 +114,10 @@ void SpriteRenderSystem::OnRender()
             auto font = AssetStorage::Get()
                             .GetAsset<FontAsset>(textComp.font_id)
                             ->GetFont();
-            Renderer2D::DrawText(
-                *font, textComp.text,
-                transformComp.GetWorldTransform().GetMatrix(), textComp.color,
-                static_cast<uint32_t>(entity_id));
+            Renderer2D::DrawText(*font, textComp.text,
+                                 transformComp.GetWorldTransform().GetMatrix(),
+                                 textComp.color,
+                                 static_cast<uint32_t>(entity_id));
         }
     });
     Renderer2D::End();

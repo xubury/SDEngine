@@ -2,7 +2,7 @@
 #define SD_PARTICLE_SYSTEM_HPP
 
 #include "Renderer/Export.hpp"
-#include "Core/System.hpp"
+#include "Renderer/System.hpp"
 #include "Graphics/Camera.hpp"
 
 #include <glm/glm.hpp>
@@ -34,7 +34,7 @@ struct SD_RENDERER_API ParticleProp {
     }
 };
 
-class SD_RENDERER_API ParticleSystem : public System {
+class SD_RENDERER_API ParticleSystem : public RenderSystem {
    public:
     ParticleSystem(int poolSize = 1000);
 

@@ -10,7 +10,7 @@
 namespace SD {
 
 ParticleSystem::ParticleSystem(int poolSize)
-    : System("Particle"), m_poolIndex(poolSize - 1)
+    : RenderSystem("Particle"), m_poolIndex(poolSize - 1)
 {
     m_particles.resize(poolSize);
 }
@@ -23,7 +23,7 @@ void ParticleSystem::OnRender()
 {
     int index = 0;
     Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1});
-    Renderer2D::Begin(*scene->GetCamera());
+    Renderer2D::Begin(GetCamera());
     for (const auto &particle : m_particles) {
         if (!particle.active) continue;
 

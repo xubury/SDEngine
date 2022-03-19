@@ -2,11 +2,11 @@
 #define SD_SPRITE_RENDER_SYSTEM_HPP
 
 #include "Renderer/Export.hpp"
-#include "Core/System.hpp"
+#include "Renderer/System.hpp"
 
 namespace SD {
 
-class SD_RENDERER_API SpriteRenderSystem : public System {
+class SD_RENDERER_API SpriteRenderSystem : public RenderSystem {
    public:
     SpriteRenderSystem();
 
@@ -17,8 +17,6 @@ class SD_RENDERER_API SpriteRenderSystem : public System {
     void OnPop() override;
 
     void OnRender() override;
-
-   private:
 };
 
 }  // namespace SD

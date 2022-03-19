@@ -3,7 +3,7 @@
 
 #include "Renderer/Export.hpp"
 #include "Renderer/Event.hpp"
-#include "Core/System.hpp"
+#include "Renderer/System.hpp"
 #include "ECS/Scene.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"
@@ -22,7 +22,7 @@ enum class GeometryBufferType {
 
 DataFormat SD_RENDERER_API GetTextureFormat(GeometryBufferType type);
 
-class SD_RENDERER_API LightingSystem : public System {
+class SD_RENDERER_API LightingSystem : public RenderSystem {
    public:
     LightingSystem(int width, int height, MultiSampleLevel msaa);
 

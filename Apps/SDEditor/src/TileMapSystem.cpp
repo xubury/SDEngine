@@ -38,7 +38,7 @@ const int GRID_TEXTURE_SIZE = 100;
 const int LINE_WIDTH = 5;
 
 TileMapSystem::TileMapSystem(Framebuffer *framebuffer)
-    : System("TileMapSystem"),
+    : RenderSystem("TileMapSystem"),
       m_framebuffer(framebuffer),
       m_file_dialog_open(false),
       m_priority(0),
@@ -84,7 +84,7 @@ void TileMapSystem::ManipulateScene()
     if (std::abs(clip.x) > 1 || std::abs(clip.y) > 1) {
         return;
     }
-    m_brush.SetRay(scene->GetCamera()->ComputeCameraRay(clip));
+    m_brush.SetRay(GetCamera().ComputeCameraRay(clip));
     if (ImGui::IsMouseClicked(0) &&
         AssetStorage::Get().Exists<TextureAsset>(m_texture_id)) {
         switch (m_operation) {
@@ -175,7 +175,7 @@ void TileMapSystem::OnRender()
     RenderOperation op;
     op.depth_test = false;
     Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1, op});
-    Renderer2D::Begin(*scene->GetCamera());
+    Renderer2D::Begin(GetCamera());
 
     // draw brush & outline
     const glm::ivec2 &tile_size = m_brush.tile_size;
@@ -215,7 +215,7 @@ void TileMapSystem::OnRender()
             std::ceil(static_cast<float>(render_height) / tile_size.y) + 1);
         const glm::vec2 tex_size = tile_cnt * tile_size;
 
-        const glm::vec3 cam_pos = scene->GetCamera()->GetWorldPosition();
+        const glm::vec3 cam_pos = GetCamera().GetWorldPosition();
         glm::vec2 uv_origin(cam_pos.x / tile_size.x, cam_pos.y / tile_size.y);
         const glm::vec3 outline_pos(
             tex_size.x / 2.f + cam_pos.x - tile_size.x / 2.f -

@@ -38,6 +38,7 @@ class EditorLayer : public Layer {
     void OpenSaveSceneDialog();
 
    private:
+
     void OnKeyEvent(const KeyEvent& e);
     void OnWindowSizeEvent(const WindowSizeEvent& e);
     void OnViewportUpdate();

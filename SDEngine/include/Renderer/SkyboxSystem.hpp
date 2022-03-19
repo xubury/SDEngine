@@ -2,14 +2,14 @@
 #define SD_SKYBOX_SYSTEM_HPP
 
 #include "Renderer/Export.hpp"
-#include "Core/System.hpp"
+#include "Renderer/System.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"
 #include "ImGui/FileDialog.hpp"
 
 namespace SD {
 
-class SD_RENDERER_API SkyboxSystem : public System {
+class SD_RENDERER_API SkyboxSystem : public RenderSystem {
    public:
     SkyboxSystem();
 

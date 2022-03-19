@@ -40,6 +40,7 @@ class SD_RENDERER_API GraphicsLayer : public Layer {
     Ref<Framebuffer> m_debug_gbuffer;
     Ref<Texture> m_light_icon;
 
+    Camera* m_camera;
     CameraSystem* m_camera_system;
     LightingSystem* m_lighting_system;
     SkyboxSystem* m_skybox_system;
@@ -47,6 +48,7 @@ class SD_RENDERER_API GraphicsLayer : public Layer {
     PostProcessSystem* m_post_process_system;
 
     HandlerRegistration m_size_handler;
+    HandlerRegistration m_camera_handler;
 };
 
 }  // namespace SD

@@ -34,11 +34,6 @@ class SD_ECS_API Scene : public entt::registry {
 
     void Deserialize(cereal::PortableBinaryInputArchive &archive);
 
-    void OnEditor(float dt, Camera *camera);
-
-    void OnRuntime(float dt);
-    Camera *GetCamera();
-
     Entity CloneEntity(EntityId from);
 
     // Registering a component enables serialization as well as duplication
@@ -76,7 +71,6 @@ class SD_ECS_API Scene : public entt::registry {
         emplace<T>(to, component);
     }
 
-    Camera *m_camera;
     EntityId m_selected_entity;
     std::unordered_map<EntityIdType, std::pair<ComponentSerializeFunction,
                                                ComponentDeserializeFunction>>

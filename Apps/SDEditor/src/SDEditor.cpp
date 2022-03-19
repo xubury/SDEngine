@@ -9,7 +9,8 @@ namespace SD {
 
 SDEditor::SDEditor() : Application("SD Editor", Device::API::OpenGL) {}
 
-void SDEditor::OnInit() {
+void SDEditor::OnInit()
+{
     Application::OnInit();
 
     // lua test

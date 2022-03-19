@@ -450,6 +450,7 @@ void ScenePanel::DrawComponents(Entity &entity)
         "Camera", entity, [&](CameraComponent &cameraComp) {
             using underlying = std::underlying_type<CameraType>::type;
             CameraType type = cameraComp.camera.GetCameraType();
+            ImGui::Checkbox("Primary", &cameraComp.primary);
             if (ImGui::RadioButton(
                     "Perspective", reinterpret_cast<underlying *>(&type),
                     static_cast<underlying>(CameraType::Perspective))) {

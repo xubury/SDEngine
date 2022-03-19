@@ -80,12 +80,15 @@ void GraphicsLayer::OnPush()
             m_debug_gbuffer->Resize(e.width, e.height);
             m_main_framebuffer->Resize(e.width, e.height);
         });
+    m_camera_handler = dispatcher.Register<CameraEvent>(
+        [this](const CameraEvent &e) { m_camera = e.camera; });
 }
 
 void GraphicsLayer::OnPop()
 {
     auto &dispatcher = GetEventDispatcher();
     dispatcher.RemoveHandler(m_size_handler);
+    dispatcher.RemoveHandler(m_camera_handler);
 }
 
 void GraphicsLayer::OnRender()
@@ -102,14 +105,13 @@ void GraphicsLayer::OnRender()
         op.depth_test = false;
         Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1, op});
 
-        Camera *cam = scene->GetCamera();
-        Renderer2D::Begin(*cam);
+        Renderer2D::Begin(*m_camera);
         auto lightView = scene->view<LightComponent, TransformComponent>();
-        lightView.each([this, &cam](const LightComponent &,
-                                    const TransformComponent &transComp) {
+        lightView.each([this](const LightComponent &,
+                              const TransformComponent &transComp) {
             glm::vec3 pos = transComp.GetWorldPosition();
-            float dist = glm::distance(pos, cam->GetWorldPosition());
-            float scale = (dist - cam->GetNearZ()) / 20;
+            float dist = glm::distance(pos, m_camera->GetWorldPosition());
+            float scale = (dist - m_camera->GetNearZ()) / 20;
             Renderer2D::DrawBillboard(*m_light_icon, pos, glm::vec2(scale));
         });
 

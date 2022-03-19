@@ -10,11 +10,11 @@
 
 namespace SD {
 
-SkyboxSystem::SkyboxSystem() : System("SkyboxSystem") {}
+SkyboxSystem::SkyboxSystem() : RenderSystem("SkyboxSystem") {}
 
 void SkyboxSystem::OnInit()
 {
-    System::OnInit();
+    RenderSystem::OnInit();
     m_skybox_shader = ShaderLoader::LoadShader(
         "assets/shaders/skybox.vert.glsl", "assets/shaders/skybox.frag.glsl");
     m_skybox = TextureLoader::LoadTextureCube(
@@ -36,9 +36,10 @@ void SkyboxSystem::OnRender()
     op.depth_func = DepthFunc::LessEqual;
     Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1, op});
 
-    glm::vec3 pos = scene->GetCamera()->GetWorldPosition();
-    glm::mat4 projection = scene->GetCamera()->GetViewPorjection() *
-                           glm::translate(glm::mat4(1.0f), pos);
+    Camera &cam = GetCamera();
+    glm::vec3 pos = cam.GetWorldPosition();
+    glm::mat4 projection =
+        cam.GetViewPorjection() * glm::translate(glm::mat4(1.0f), pos);
     m_skybox_shader->GetParam("u_projection")
         ->SetAsMat4(glm::value_ptr(projection));
 

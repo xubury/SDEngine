@@ -46,6 +46,8 @@ void EditorLayer::OnInit()
     PushSystem(m_scene_panel);
     PushSystem(m_editor_camera_system);
     PushSystem(CreateSystem<ProfileSystem>());
+
+    dispatcher.PublishEvent(CameraEvent{m_editor_camera_system->GetCamera()});
 }
 
 void EditorLayer::InitBuffers()
@@ -106,14 +108,10 @@ void EditorLayer::OnRender()
 void EditorLayer::OnTick(float dt)
 {
     OnViewportUpdate();
-    if (m_is_runtime) {
-        scene->OnRuntime(dt);
-    }
-    else {
-        scene->OnEditor(dt, m_editor_camera_system->GetCamera());
-    }
-    for (auto &system : GetSystems()) {
-        system->OnTick(dt);
+    if (!m_is_runtime) {
+        for (auto &system : GetSystems()) {
+            system->OnTick(dt);
+        }
     }
 }
 
@@ -201,8 +199,21 @@ void EditorLayer::OnKeyEvent(const KeyEvent &e)
         default:
             break;
         case Keycode::Z: {
+            // TODO: change it to a button
             if (IsKeyModActive(e.mod, Keymod::LCtrl)) {
+                Camera *cam = m_editor_camera_system->GetCamera();
                 m_is_runtime = !m_is_runtime;
+                if (m_is_runtime) {
+                    auto view = scene->view<CameraComponent>();
+                    view.each([&](CameraComponent &cam_comp) {
+                        if (cam_comp.primary) {
+                            cam = &cam_comp.camera;
+                            return;
+                        }
+                    });
+                }
+                // change to scene's camera or editor camera
+                GetEventDispatcher().PublishEvent(CameraEvent{cam});
             }
         } break;
         case Keycode::S: {
@@ -344,27 +355,30 @@ void EditorLayer::DrawViewport()
         ImGui::DrawTexture(*m_viewport_buffer->GetTexture(), ImVec2(0, 1),
                            ImVec2(1, 0));
 
-        ImGuizmo::SetRect(m_viewport_pos.x, m_viewport_pos.y, m_viewport_size.x,
-                          m_viewport_size.y);
-        ImGuizmo::SetDrawlist();
+        // disable ImGuizmo when in runtime
+        if (!m_is_runtime) {
+            ImGuizmo::SetRect(m_viewport_pos.x, m_viewport_pos.y,
+                              m_viewport_size.x, m_viewport_size.y);
+            ImGuizmo::SetDrawlist();
+            if (m_selected_entity) {
+                Camera *cam = m_editor_camera_system->GetCamera();
+                ImGuizmo::SetOrthographic(cam->GetCameraType() ==
+                                          CameraType::Orthographic);
+                const glm::mat4 &view = cam->GetView();
+                const glm::mat4 &projection = cam->GetProjection();
 
-        if (m_selected_entity) {
-            Camera *cam = scene->GetCamera();
-            ImGuizmo::SetOrthographic(cam->GetCameraType() ==
-                                      CameraType::Orthographic);
-            const glm::mat4 &view = cam->GetView();
-            const glm::mat4 &projection = cam->GetProjection();
-
-            auto &tc = m_selected_entity.GetComponent<TransformComponent>();
-            glm::mat4 transform = tc.GetWorldTransform().GetMatrix();
-            if (ImGuizmo::Manipulate(
-                    glm::value_ptr(view), glm::value_ptr(projection),
-                    m_scene_panel->GetGizmoOperation(),
-                    m_scene_panel->GetGizmoMode(), glm::value_ptr(transform),
-                    nullptr, nullptr)) {
-                tc.SetWorldTransform(transform);
+                auto &tc = m_selected_entity.GetComponent<TransformComponent>();
+                glm::mat4 transform = tc.GetWorldTransform().GetMatrix();
+                if (ImGuizmo::Manipulate(
+                        glm::value_ptr(view), glm::value_ptr(projection),
+                        m_scene_panel->GetGizmoOperation(),
+                        m_scene_panel->GetGizmoMode(),
+                        glm::value_ptr(transform), nullptr, nullptr)) {
+                    tc.SetWorldTransform(transform);
+                }
             }
         }
+
         if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered() &&
             !ImGuizmo::IsUsing()) {
             const auto [mouse_x, mouse_y] = ImGui::GetMousePos();

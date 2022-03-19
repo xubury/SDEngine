@@ -34,13 +34,16 @@ DataFormat GetTextureFormat(GeometryBufferType type)
 }
 
 LightingSystem::LightingSystem(int width, int height, MultiSampleLevel msaa)
-    : System("LightingSystem"), m_width(width), m_height(height), m_msaa(msaa)
+    : RenderSystem("LightingSystem"),
+      m_width(width),
+      m_height(height),
+      m_msaa(msaa)
 {
 }
 
 void LightingSystem::OnInit()
 {
-    System::OnInit();
+    RenderSystem::OnInit();
     InitShaders();
     InitSSAOKernel();
     InitSSAO();
@@ -196,8 +199,6 @@ void LightingSystem::OnImGui()
 
 void LightingSystem::OnRender()
 {
-    SD_CORE_ASSERT(scene->GetCamera(), "No camera is set!");
-
     RenderGBuffer();
     if (m_ssao_state) {
         RenderSSAO();
@@ -219,7 +220,7 @@ void LightingSystem::RenderShadowMap(CascadeShadow &shadow,
     Framebuffer *depth_map = shadow.GetCascadeMap();
     Renderer::BeginRenderPass(RenderPassInfo{depth_map, depth_map->GetWidth(),
                                              depth_map->GetHeight(), op});
-    shadow.ComputeCascadeLightMatrix(transform, *scene->GetCamera());
+    shadow.ComputeCascadeLightMatrix(transform, GetCamera());
     Renderer3D::SetShadowCaster(*m_cascade_shader, shadow);
 
     auto &storage = AssetStorage::Get();
@@ -251,9 +252,9 @@ void LightingSystem::RenderShadowMap(CascadeShadow &shadow,
             ->SetAsTexture(shadow.GetCascadeMap()->GetTexture());
         m_cascade_debug_shader->GetParam("layer")->SetAsInt(m_debug_layer);
         m_cascade_debug_shader->GetParam("near_plane")
-            ->SetAsFloat(scene->GetCamera()->GetNearZ());
+            ->SetAsFloat(GetCamera().GetNearZ());
         m_cascade_debug_shader->GetParam("far_plane")
-            ->SetAsFloat(scene->GetCamera()->GetFarZ());
+            ->SetAsFloat(GetCamera().GetFarZ());
         Renderer::DrawNDCQuad(*m_cascade_debug_shader);
 
         Renderer::EndRenderPass();
@@ -272,7 +273,7 @@ void LightingSystem::RenderSSAO()
     Texture *normal =
         m_gbuffer->GetTexture(static_cast<int>(GeometryBufferType::Normal));
     Renderer::BeginRenderPass(info);
-    Renderer::SetCamera(*m_ssao_shader, *scene->GetCamera());
+    Renderer::SetCamera(*m_ssao_shader, GetCamera());
     m_ssao_shader->GetParam("u_radius")->SetAsFloat(m_ssao_radius);
     m_ssao_shader->GetParam("u_bias")->SetAsFloat(m_ssao_bias);
     m_ssao_shader->GetParam("u_power")->SetAsUint(m_ssao_power);
@@ -391,7 +392,7 @@ void LightingSystem::RenderDeferred()
                             {0, 0, 0, 0}};
 
         Renderer::BeginRenderPass(info);
-        Renderer::SetCamera(*m_deferred_shader, *scene->GetCamera());
+        Renderer::SetCamera(*m_deferred_shader, GetCamera());
         lighting->SetAsTexture(m_light_buffer[input_id]->GetTexture());
         direction->SetAsVec3(&transform.GetFront()[0]);
         position->SetAsVec3(&transform.GetPosition()[0]);
@@ -426,7 +427,7 @@ void LightingSystem::RenderGBuffer()
         BufferBitMask::ColorBufferBit | BufferBitMask::DepthBufferBit,
         {0, 0, 0, 0}};
     Renderer::BeginRenderPass(info);
-    Renderer::SetCamera(*m_gbuffer_shader, *scene->GetCamera());
+    Renderer::SetCamera(*m_gbuffer_shader, GetCamera());
     uint32_t id = static_cast<uint32_t>(entt::null);
     m_gbuffer->ClearAttachment(static_cast<int>(GeometryBufferType::EntityId),
                                &id);
