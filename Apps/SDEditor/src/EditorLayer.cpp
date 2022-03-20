@@ -28,7 +28,6 @@ EditorLayer::~EditorLayer() {}
 
 void EditorLayer::OnInit()
 {
-    auto &dispatcher = GetEventDispatcher();
     Layer::OnInit();
 
     InitBuffers();
@@ -45,8 +44,7 @@ void EditorLayer::OnInit()
     m_animation_editor = CreateSystem<AnimationEditor>();
 
     auto &storage = AssetStorage::Get();
-    m_scene_asset = storage.CreateAsset<SceneAsset>("default scene");
-    dispatcher.PublishEvent(NewSceneEvent{m_scene_asset->GetScene()});
+    NewScene(storage.CreateAsset<SceneAsset>("default scene"));
     m_graphics_layer->SetRenderSize(m_viewport_size.x, m_viewport_size.y);
     m_graphics_layer->SetCamera(m_editor_camera_system->GetCamera());
 }
@@ -209,7 +207,8 @@ void EditorLayer::OnKeyEvent(const KeyEvent &e)
         } break;
         case Keycode::N: {
             if (IsKeyModActive(e.mod, Keymod::LCtrl)) {
-                NewScene();
+                NewScene(AssetStorage::Get().CreateAsset<SceneAsset>(
+                    "default scene"));
             }
         } break;
         case Keycode::L: {
@@ -233,10 +232,12 @@ void EditorLayer::OnKeyEvent(const KeyEvent &e)
     }
 }
 
-void EditorLayer::NewScene()
+void EditorLayer::NewScene(SceneAsset *scene)
 {
-    // scene = CreateRef<Scene>();
-    // dispatcher.PublishEvent(EntitySelectEvent{entt::null, scene});
+    m_scene_asset = scene;
+    NewSceneEvent e{m_scene_asset->GetScene()};
+    GetEventDispatcher().PublishEvent(e);
+    m_graphics_layer->SetRenderScene(m_scene_asset->GetScene());
 }
 
 void EditorLayer::OpenLoadSceneDialog()
@@ -275,7 +276,8 @@ void EditorLayer::MenuBar()
     if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             if (ImGui::MenuItem("New Scene", "Ctrl+N")) {
-                NewScene();
+                NewScene(AssetStorage::Get().CreateAsset<SceneAsset>(
+                    "default scene"));
             }
 
             if (ImGui::MenuItem("Load Scene...", "Ctrl+L")) {
@@ -380,9 +382,7 @@ void EditorLayer::DrawViewport()
                     std::string filename = static_cast<char *>(payload->Data);
                     Asset *asset = AssetStorage::Get().LoadAsset(filename);
                     if (asset->IsTypeOf<SceneAsset>()) {
-                        m_scene_asset = dynamic_cast<SceneAsset *>(asset);
-                        NewSceneEvent e{m_scene_asset->GetScene()};
-                        dispatcher.PublishEvent(e);
+                        NewScene(dynamic_cast<SceneAsset *>(asset));
                         SD_TRACE("load scene asset");
                     }
                 }

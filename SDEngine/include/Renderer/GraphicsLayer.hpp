@@ -23,6 +23,7 @@ class SD_RENDERER_API GraphicsLayer : public Layer {
 
     void SetRenderSize(int32_t width, int32_t height);
     void SetCamera(Camera* camera);
+    void SetRenderScene(Scene* scene);
     void SetDebug(bool debug) { m_debug = debug; }
 
     Framebuffer* GetFramebuffer() { return m_main_framebuffer.get(); }

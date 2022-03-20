@@ -33,7 +33,7 @@ class EditorLayer : public Layer {
 
     void OnImGui() override;
 
-    void NewScene();
+    void NewScene(SceneAsset *scene);
     void OpenLoadSceneDialog();
     void OpenSaveSceneDialog();
 

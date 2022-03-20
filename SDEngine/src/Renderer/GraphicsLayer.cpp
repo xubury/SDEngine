@@ -14,6 +14,7 @@ GraphicsLayer::GraphicsLayer(Device *device, int32_t width, int32_t height,
       m_height(height),
       m_msaa(msaa)
 {
+    CreateDispatcher();
 }
 
 void GraphicsLayer::OnInit()
@@ -87,6 +88,10 @@ void GraphicsLayer::SetCamera(Camera *camera)
 {
     m_camera = camera;
     GetEventDispatcher().PublishEvent(CameraEvent{m_camera});
+}
+
+void GraphicsLayer::SetRenderScene(Scene *scene) {
+    GetEventDispatcher().PublishEvent(NewSceneEvent{scene});
 }
 
 void GraphicsLayer::OnRender()

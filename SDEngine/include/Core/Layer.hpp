@@ -84,6 +84,9 @@ class SD_CORE_API Layer {
 
     Scene &GetScene() { return *m_scene; }
 
+   protected:
+    void CreateDispatcher() { m_dispatcher = CreateRef<EventDispatcher>(); }
+
    private:
     friend class Application;
 
