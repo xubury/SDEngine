@@ -29,15 +29,12 @@ void EditorCameraSystem::OnPush()
     auto &dispatcher = GetEventDispatcher();
     m_key_handler =
         dispatcher.Register(this, &EditorCameraSystem::OnMouseMotion);
-    m_size_handler =
-        dispatcher.Register(this, &EditorCameraSystem::OnSizeEvent);
 }
 
 void EditorCameraSystem::OnPop()
 {
     auto &dispatcher = GetEventDispatcher();
     dispatcher.RemoveHandler(m_key_handler);
-    dispatcher.RemoveHandler(m_size_handler);
 }
 
 void EditorCameraSystem::OnMouseMotion(const MouseMotionEvent &event)
@@ -46,11 +43,6 @@ void EditorCameraSystem::OnMouseMotion(const MouseMotionEvent &event)
         m_mouse_movement.x += event.x_rel;
         m_mouse_movement.y += event.y_rel;
     }
-}
-
-void EditorCameraSystem::OnSizeEvent(const RenderSizeEvent &event)
-{
-    m_camera.Resize(event.width, event.height);
 }
 
 void EditorCameraSystem::OnImGui()

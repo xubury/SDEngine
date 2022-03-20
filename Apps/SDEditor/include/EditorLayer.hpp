@@ -38,10 +38,7 @@ class EditorLayer : public Layer {
     void OpenSaveSceneDialog();
 
    private:
-
     void OnKeyEvent(const KeyEvent& e);
-    void OnWindowSizeEvent(const WindowSizeEvent& e);
-    void OnViewportUpdate();
 
     void InitBuffers();
 
@@ -66,7 +63,6 @@ class EditorLayer : public Layer {
     glm::ivec2 m_viewport_pos;
 
     glm::ivec2 m_viewport_size;
-    bool m_viewport_size_update;
 
     Ref<Framebuffer> m_viewport_buffer;
 
@@ -80,7 +76,6 @@ class EditorLayer : public Layer {
     SceneAsset* m_scene_asset;
     Entity m_selected_entity;
 
-    HandlerRegistration m_window_size_handler;
     HandlerRegistration m_key_handler;
     HandlerRegistration m_entity_select_handler;
 };

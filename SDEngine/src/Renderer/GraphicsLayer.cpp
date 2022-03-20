@@ -74,25 +74,19 @@ void GraphicsLayer::OnTick(float dt)
     }
 }
 
-void GraphicsLayer::OnPush()
+void GraphicsLayer::SetRenderSize(int32_t width, int32_t height)
 {
-    auto &dispatcher = GetEventDispatcher();
-    m_size_handler =
-        dispatcher.Register<RenderSizeEvent>([this](const RenderSizeEvent &e) {
-            m_width = e.width;
-            m_height = e.height;
-            m_debug_gbuffer->Resize(e.width, e.height);
-            m_main_framebuffer->Resize(e.width, e.height);
-        });
-    m_camera_handler = dispatcher.Register<CameraEvent>(
-        [this](const CameraEvent &e) { m_camera = e.camera; });
+    m_width = width;
+    m_height = height;
+    m_debug_gbuffer->Resize(m_width, m_height);
+    m_main_framebuffer->Resize(m_width, m_height);
+    GetEventDispatcher().PublishEvent(RenderSizeEvent{m_width, m_height});
 }
 
-void GraphicsLayer::OnPop()
+void GraphicsLayer::SetCamera(Camera *camera)
 {
-    auto &dispatcher = GetEventDispatcher();
-    dispatcher.RemoveHandler(m_size_handler);
-    dispatcher.RemoveHandler(m_camera_handler);
+    m_camera = camera;
+    GetEventDispatcher().PublishEvent(CameraEvent{m_camera});
 }
 
 void GraphicsLayer::OnRender()

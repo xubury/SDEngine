@@ -1,7 +1,7 @@
 #ifndef SD_TILE_MAP_SYSTEM_HPP
 #define SD_TILE_MAP_SYSTEM_HPP
 
-#include "Renderer/System.hpp"
+#include "Core/System.hpp"
 #include "Graphics/Viewport.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGui/FileDialog.hpp"
@@ -12,21 +12,20 @@
 
 namespace SD {
 
-class TileMapSystem : public RenderSystem {
+class TileMapSystem : public System {
     enum class Operation { None, AddEntity, RemoveEntity };
 
    public:
-    TileMapSystem(Framebuffer *framebuffer);
-    void OnPush() override;
-    void OnPop() override;
+    TileMapSystem();
     void OnImGui() override;
     void OnRender() override;
 
-    void SetViewport(float left, float top, float width, float height);
-    void ManipulateScene();
+    void ManipulateScene(Framebuffer *framebuffer, Camera *camera);
 
    private:
+    void SetViewport(float left, float top, float width, float height);
     Framebuffer *m_framebuffer;
+    Camera *m_camera;
     Ref<Texture> m_outline_texture;
 
     TileBrush m_brush;

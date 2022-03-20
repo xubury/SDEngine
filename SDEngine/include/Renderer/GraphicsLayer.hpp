@@ -13,18 +13,16 @@ namespace SD {
 
 class SD_RENDERER_API GraphicsLayer : public Layer {
    public:
-    GraphicsLayer(Device *device, int32_t width, int32_t height, MultiSampleLevel msaa);
+    GraphicsLayer(Device* device, int32_t width, int32_t height,
+                  MultiSampleLevel msaa);
     void OnInit() override;
-
-    void OnPush() override;
-    void OnPop() override;
 
     void OnImGui() override;
     void OnRender() override;
     void OnTick(float dt) override;
 
-    void Resize();
-
+    void SetRenderSize(int32_t width, int32_t height);
+    void SetCamera(Camera* camera);
     void SetDebug(bool debug) { m_debug = debug; }
 
     Framebuffer* GetFramebuffer() { return m_main_framebuffer.get(); }
@@ -32,7 +30,7 @@ class SD_RENDERER_API GraphicsLayer : public Layer {
    private:
     void BlitGeometryBuffers();
 
-    Device *m_device;
+    Device* m_device;
     int32_t m_width;
     int32_t m_height;
     MultiSampleLevel m_msaa;
@@ -49,7 +47,6 @@ class SD_RENDERER_API GraphicsLayer : public Layer {
     SpriteRenderSystem* m_sprite_system;
     PostProcessSystem* m_post_process_system;
 
-    HandlerRegistration m_size_handler;
     HandlerRegistration m_camera_handler;
 };
 

@@ -16,7 +16,6 @@ EditorLayer::EditorLayer(GraphicsLayer *graphics_layer, int width, int height)
       m_graphics_layer(graphics_layer),
       m_viewport_pos(0, 0),
       m_viewport_size(width, height),
-      m_viewport_size_update(true),
       m_is_runtime(false),
       m_quitting(false),
       m_load_scene_open(false),
@@ -42,11 +41,14 @@ void EditorLayer::OnInit()
     PushSystem(m_scene_panel);
     PushSystem(m_editor_camera_system);
     PushSystem(CreateSystem<ProfileSystem>());
+    m_tile_map_system = CreateSystem<TileMapSystem>();
+    m_animation_editor = CreateSystem<AnimationEditor>();
 
     auto &storage = AssetStorage::Get();
     m_scene_asset = storage.CreateAsset<SceneAsset>("default scene");
     dispatcher.PublishEvent(NewSceneEvent{m_scene_asset->GetScene()});
-    dispatcher.PublishEvent(CameraEvent{m_editor_camera_system->GetCamera()});
+    m_graphics_layer->SetRenderSize(m_viewport_size.x, m_viewport_size.y);
+    m_graphics_layer->SetCamera(m_editor_camera_system->GetCamera());
 }
 
 void EditorLayer::InitBuffers()
@@ -70,8 +72,6 @@ void EditorLayer::OnPush()
         [this](const EntitySelectEvent &e) {
             m_selected_entity = {e.entity_id, e.scene};
         });
-    m_window_size_handler =
-        dispatcher.Register(this, &EditorLayer::OnWindowSizeEvent);
     m_key_handler = dispatcher.Register(this, &EditorLayer::OnKeyEvent);
 }
 
@@ -79,7 +79,6 @@ void EditorLayer::OnPop()
 {
     auto &dispatcher = GetEventDispatcher();
     dispatcher.RemoveHandler(m_entity_select_handler);
-    dispatcher.RemoveHandler(m_window_size_handler);
     dispatcher.RemoveHandler(m_key_handler);
 }
 
@@ -106,21 +105,10 @@ void EditorLayer::OnRender()
 
 void EditorLayer::OnTick(float dt)
 {
-    OnViewportUpdate();
     if (!m_is_runtime) {
         for (auto &system : GetSystems()) {
             system->OnTick(dt);
         }
-    }
-}
-
-void EditorLayer::OnViewportUpdate()
-{
-    if (m_viewport_size_update) {
-        auto &dispatcher = GetEventDispatcher();
-        RenderSizeEvent event{m_viewport_size.x, m_viewport_size.y};
-        dispatcher.PublishEvent(event);
-        m_viewport_size_update = false;
     }
 }
 
@@ -161,10 +149,6 @@ void EditorLayer::OnImGui()
         if (ImGui::Button("OK")) {
             m_mode = mode;
             if (mode == EditorMode::TwoDimensional) {
-                m_tile_map_system = CreateSystem<TileMapSystem>(
-                    m_graphics_layer->GetFramebuffer());
-                m_animation_editor = CreateSystem<AnimationEditor>();
-
                 PushSystem(m_tile_map_system);
                 PushSystem(m_animation_editor);
 
@@ -212,7 +196,7 @@ void EditorLayer::OnKeyEvent(const KeyEvent &e)
                     });
                 }
                 // change to scene's camera or editor camera
-                GetEventDispatcher().PublishEvent(CameraEvent{cam});
+                m_graphics_layer->SetCamera(cam);
             }
         } break;
         case Keycode::S: {
@@ -246,14 +230,6 @@ void EditorLayer::OnKeyEvent(const KeyEvent &e)
                 m_scene_panel->SetGizmoOperation(ImGuizmo::ROTATE);
             }
         } break;
-    }
-}
-
-void EditorLayer::OnWindowSizeEvent(const WindowSizeEvent &e)
-{
-    if (m_is_runtime) {
-        m_viewport_size.x = e.width;
-        m_viewport_size.y = e.height;
     }
 }
 
@@ -337,18 +313,19 @@ void EditorLayer::DrawViewport()
             viewport_size.y > 0) {
             m_viewport_size = viewport_size;
             m_viewport_buffer->Resize(m_viewport_size.x, m_viewport_size.y);
-            m_viewport_size_update = true;
+            m_graphics_layer->SetRenderSize(m_viewport_size.x,
+                                            m_viewport_size.y);
+            m_editor_camera_system->GetCamera()->Resize(m_viewport_size.x,
+                                                        m_viewport_size.y);
         }
 
         if (m_viewport_pos != viewport_pos) {
             m_viewport_pos = viewport_pos;
         }
 
-        if (m_tile_map_system) {
-            m_tile_map_system->SetViewport(m_viewport_pos.x, m_viewport_pos.y,
-                                           m_viewport_size.x,
-                                           m_viewport_size.y);
-            m_tile_map_system->ManipulateScene();
+        if (!m_is_runtime && m_mode == EditorMode::TwoDimensional) {
+            m_tile_map_system->ManipulateScene(
+                m_viewport_buffer.get(), m_editor_camera_system->GetCamera());
         }
 
         ImGui::DrawTexture(*m_viewport_buffer->GetTexture(), ImVec2(0, 1),

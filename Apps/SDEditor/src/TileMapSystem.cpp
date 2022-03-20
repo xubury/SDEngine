@@ -37,9 +37,9 @@ const glm::vec4 COLOR_GREEN(0, 1, 0, 0.5);
 const int GRID_TEXTURE_SIZE = 100;
 const int LINE_WIDTH = 5;
 
-TileMapSystem::TileMapSystem(Framebuffer *framebuffer)
-    : RenderSystem("TileMapSystem"),
-      m_framebuffer(framebuffer),
+TileMapSystem::TileMapSystem()
+    : System("TileMapSystem"),
+      m_framebuffer(nullptr),
       m_file_dialog_open(false),
       m_priority(0),
       m_draw_outline(true),
@@ -63,28 +63,26 @@ TileMapSystem::TileMapSystem(Framebuffer *framebuffer)
     free(data);
 }
 
-void TileMapSystem::OnPush() {}
-
-void TileMapSystem::OnPop() {}
-
-void TileMapSystem::SetViewport(float left, float top, float width,
-                                float height)
+void TileMapSystem::ManipulateScene(Framebuffer *framebuffer, Camera *camera)
 {
-    m_viewport.SetPos(left, top);
-    m_viewport.SetSize(width, height);
-}
-
-void TileMapSystem::ManipulateScene()
-{
+    m_framebuffer = framebuffer;
+    m_camera = camera;
     if (!ImGui::IsWindowHovered()) {
         return;
     }
+    const auto &wsize = ImGui::GetContentRegionAvail();
+    const auto &min_region = ImGui::GetWindowContentRegionMin();
+    const auto &wpos = ImGui::GetWindowPos();
+    const glm::ivec2 viewport_pos = {min_region.x + wpos.x,
+                                     min_region.y + wpos.y};
+    m_viewport.SetPos(viewport_pos.x, viewport_pos.y);
+    m_viewport.SetSize(wsize.x, wsize.y);
     auto [mouse_x, mouse_y] = ImGui::GetMousePos();
     glm::vec2 clip = m_viewport.MapScreenToClip(glm::ivec2(mouse_x, mouse_y));
     if (std::abs(clip.x) > 1 || std::abs(clip.y) > 1) {
         return;
     }
-    m_brush.SetRay(GetCamera().ComputeCameraRay(clip));
+    m_brush.SetRay(m_camera->ComputeCameraRay(clip));
     if (ImGui::IsMouseClicked(0) &&
         AssetStorage::Get().Exists<TextureAsset>(m_texture_id)) {
         switch (m_operation) {
@@ -171,11 +169,13 @@ void TileMapSystem::OnImGui()
 
 void TileMapSystem::OnRender()
 {
+    if (m_framebuffer == nullptr) return;
+
     const int index = 0;
     RenderOperation op;
     op.depth_test = false;
     Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1, op});
-    Renderer2D::Begin(GetCamera());
+    Renderer2D::Begin(*m_camera);
 
     // draw brush & outline
     const glm::ivec2 &tile_size = m_brush.tile_size;
@@ -215,7 +215,7 @@ void TileMapSystem::OnRender()
             std::ceil(static_cast<float>(render_height) / tile_size.y) + 1);
         const glm::vec2 tex_size = tile_cnt * tile_size;
 
-        const glm::vec3 cam_pos = GetCamera().GetWorldPosition();
+        const glm::vec3 cam_pos = m_camera->GetWorldPosition();
         glm::vec2 uv_origin(cam_pos.x / tile_size.x, cam_pos.y / tile_size.y);
         const glm::vec3 outline_pos(
             tex_size.x / 2.f + cam_pos.x - tile_size.x / 2.f -
