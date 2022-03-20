@@ -2,14 +2,10 @@
 #define SD_LAYER_HPP
 
 #include "Utility/Base.hpp"
-#include "Utility/EventStack.hpp"
-#include "Utility/EventDispatcher.hpp"
+#include "Core/EventStack.hpp"
+#include "Core/EventDispatcher.hpp"
 #include "Core/Export.hpp"
-#include "Core/Event/Event.hpp"
 #include "Core/System.hpp"
-
-#include <string>
-#include <list>
 
 namespace SD {
 

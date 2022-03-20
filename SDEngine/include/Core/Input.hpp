@@ -5,7 +5,7 @@
 #include "Core/Keyboard.hpp"
 #include "Core/Mouse.hpp"
 #include "Core/Export.hpp"
-#include "Utility/EventDispatcher.hpp"
+#include "Core/EventDispatcher.hpp"
 
 #include <unordered_map>
 #include <glm/glm.hpp>

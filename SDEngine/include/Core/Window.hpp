@@ -3,7 +3,8 @@
 
 #include "Utility/Base.hpp"
 #include "Core/Export.hpp"
-#include "Core/Event/Event.hpp"
+#include "Core/Event.hpp"
+#include "Core/EventDispatcher.hpp"
 
 #include <glm/glm.hpp>
 #include <string>

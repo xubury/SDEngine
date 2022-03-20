@@ -10,17 +10,13 @@ set(OpenGL_Include
 set(OpenGL_Src
     ${Src_Root}/OpenGL/GLWindow.cpp)
 
-set(Event_Include
-    ${Include_Root}/Event/Event.hpp)
-
-set(Event_Src
-    ${Src_Root}/Event/Event.cpp)
 
 set(Core_Include
     ${OpenGL_Include}
-    ${Event_Include}
     ${Include_Root}/Application.hpp
     ${Include_Root}/Export.hpp
+    ${Include_Root}/Event.hpp
+    ${Include_Root}/EventDispatcher.hpp
     ${Include_Root}/Window.hpp
     ${Include_Root}/System.hpp
     ${Include_Root}/Keyboard.hpp
@@ -32,7 +28,6 @@ set(Core_Include
 
 set(Core_Src
     ${OpenGL_Src}
-    ${Event_Src}
     ${Src_Root}/Application.cpp
     ${Src_Root}/Window.cpp
     ${Src_Root}/System.cpp

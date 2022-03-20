@@ -1,10 +1,10 @@
 #ifndef SD_SYSTEM_HPP
 #define SD_SYSTEM_HPP
 
-#include "Core/Export.hpp"
 #include "Utility/Base.hpp"
-#include "Utility/EventDispatcher.hpp"
-#include "Core/Event/Event.hpp"
+#include "Core/Export.hpp"
+#include "Core/EventDispatcher.hpp"
+#include "Core/Event.hpp"
 
 namespace SD {
 
