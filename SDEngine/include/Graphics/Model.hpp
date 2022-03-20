@@ -61,13 +61,13 @@ class SD_GRAPHICS_API Model {
 
     const TextureList &GetTextures() const { return m_textures; }
 
-    void AddTexture(std::string &path, const Ref<Texture> &texture)
+    void AddTexture(const std::string &path, const Ref<Texture> &texture)
     {
         m_textures.emplace(path, texture);
     }
-    const Texture *GetTexture(const std::string &path) const
+    Ref<Texture> GetTexture(const std::string &path)
     {
-        return m_textures.at(path).get();
+        return m_textures.at(path);
     }
     bool HasTexture(const std::string &path)
     {

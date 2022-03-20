@@ -27,23 +27,32 @@ class TextureAsset : public Asset {
         auto &storage = AssetStorage::Get();
         m_texture = TextureLoader::LoadTexture2D(
             storage.GetAbsolutePath(m_texture_path));
+        m_texture->SetWrap(m_wrap);
+        m_texture->SetMagFilter(m_filter);
+        m_texture->SetMinFilter(m_min_filter);
+        m_texture->SetMipmapMode(m_mipmap_mode);
     }
     void Import(const Ref<Texture> &texture)
     {
         auto &storage = AssetStorage::Get();
         m_texture_path = storage.GetRelativePath(texture->GetPath());
         m_texture = texture;
+        m_wrap = m_texture->GetWrap();
+        m_filter = m_texture->GetMagFilter();
+        m_min_filter = m_texture->GetMinFilter();
+        m_mipmap_mode = m_texture->GetMipmapMode();
     }
 
-    Texture *GetTexture() { return m_texture.get(); }
+    Ref<Texture> GetTexture() { return m_texture; }
 
-    SERIALIZE(m_wrap, m_filter, m_min_filter, m_texture_path)
+    SERIALIZE(m_wrap, m_filter, m_min_filter, m_mipmap_mode, m_texture_path)
 
    private:
     Ref<Texture> m_texture;
     TextureWrap m_wrap;
     TextureMagFilter m_filter;
     TextureMinFilter m_min_filter;
+    MipmapMode m_mipmap_mode;
     std::string m_texture_path;
 };
 

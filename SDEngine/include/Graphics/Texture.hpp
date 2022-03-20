@@ -45,6 +45,11 @@ class SD_GRAPHICS_API Texture : public Resource {
     void SetPath(const std::string &path) { m_path = path; }
     const std::string &GetPath() const { return m_path; }
 
+    TextureWrap GetWrap() const { return m_wrap; }
+    TextureMinFilter GetMinFilter() const { return m_min_filter; }
+    TextureMagFilter GetMagFilter() const { return m_mag_filter; }
+    MipmapMode GetMipmapMode() const { return m_mipmap_mode; }
+
    protected:
     Texture(int width, int height, int depth, MultiSampleLevel samples,
             TextureType type, DataFormat format, TextureWrap wrap,

@@ -24,17 +24,18 @@ class ModelAsset : public Asset {
     void Deserialize(cereal::PortableBinaryInputArchive &archive) override
     {
         archive(*this);
-        m_textures.resize(m_textures_cnt);
         auto &storage = AssetStorage::Get();
-        for (auto &obj : m_textures) {
-            obj =
-                dynamic_cast<TextureAsset *>(storage.DeserializeAsset(archive));
-        }
 
+        m_textures.resize(m_textures_cnt);
+        for (auto &obj : m_textures) {
+            obj = storage.DeserializeAsset(archive);
+            auto texture = dynamic_cast<TextureAsset *>(obj)->GetTexture();
+            m_model->AddTexture(texture->GetPath(), texture);
+        }
         if (m_model_path.empty()) {
             throw Exception("Empty model asset");
         }
-        m_model = ModelLoader::LoadModel(storage.GetAbsolutePath(m_model_path));
+        ModelLoader::LoadModel(storage.GetAbsolutePath(m_model_path), *m_model);
     }
 
     void Import(const Ref<Model> &model)

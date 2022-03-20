@@ -11,7 +11,8 @@ namespace SD {
 
 ContentBrowser::ContentBrowser() : System("Content Browser") {}
 
-void ContentBrowser::OnInit() {
+void ContentBrowser::OnInit()
+{
     System::OnInit();
     m_file_icon = TextureLoader::LoadTexture2D("assets/icons/FileIcon.png");
     m_directory_icon =
@@ -20,7 +21,8 @@ void ContentBrowser::OnInit() {
 }
 
 static void DrawSceneCreation(const std::filesystem::path& directory,
-                              bool* open) {
+                              bool* open)
+{
     if (open) {
         ImGui::OpenPopup("Scene Creation");
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4, 4});
@@ -63,7 +65,8 @@ static void DrawSceneCreation(const std::filesystem::path& directory,
 }
 
 static void DrawModelCreation(const std::filesystem::path& directory,
-                              bool* open) {
+                              bool* open)
+{
     if (open) {
         ImGui::OpenPopup("Model Creation");
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4, 4});
@@ -107,7 +110,9 @@ static void DrawModelCreation(const std::filesystem::path& directory,
             if (ImGui::Button("Confirm")) {
                 auto& storage = AssetStorage::Get();
                 auto asset = storage.CreateAsset<ModelAsset>(asset_name);
-                asset->Import(ModelLoader::LoadModel(model_path));
+                auto model = CreateRef<Model>();
+                ModelLoader::LoadModel(model_path, *model);
+                asset->Import(model);
 
                 storage.SaveAsset(asset,
                                   (directory / asset_name).generic_string());
@@ -127,7 +132,8 @@ static void DrawModelCreation(const std::filesystem::path& directory,
     }
 }
 
-void ContentBrowser::OnImGui() {
+void ContentBrowser::OnImGui()
+{
     auto& storage = AssetStorage::Get();
     ImGui::Begin("Content Browser");
     static bool create_new_asset = false;
