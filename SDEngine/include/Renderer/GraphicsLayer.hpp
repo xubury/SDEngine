@@ -2,6 +2,7 @@
 #define SD_GRAPHICS_LAYER_HPP
 
 #include "Core/Layer.hpp"
+#include "Graphics/Device.hpp"
 #include "Renderer/CameraSystem.hpp"
 #include "Renderer/LightingSystem.hpp"
 #include "Renderer/SkyboxSystem.hpp"
@@ -12,7 +13,7 @@ namespace SD {
 
 class SD_RENDERER_API GraphicsLayer : public Layer {
    public:
-    GraphicsLayer(int32_t width, int32_t height, MultiSampleLevel msaa);
+    GraphicsLayer(Device *device, int32_t width, int32_t height, MultiSampleLevel msaa);
     void OnInit() override;
 
     void OnPush() override;
@@ -31,6 +32,7 @@ class SD_RENDERER_API GraphicsLayer : public Layer {
    private:
     void BlitGeometryBuffers();
 
+    Device *m_device;
     int32_t m_width;
     int32_t m_height;
     MultiSampleLevel m_msaa;

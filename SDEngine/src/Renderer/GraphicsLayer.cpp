@@ -6,16 +6,20 @@
 
 namespace SD {
 
-GraphicsLayer::GraphicsLayer(int32_t width, int32_t height,
+GraphicsLayer::GraphicsLayer(Device *device, int32_t width, int32_t height,
                              MultiSampleLevel msaa)
-    : Layer("Graphics Layer"), m_width(width), m_height(height), m_msaa(msaa)
+    : Layer("Graphics Layer"),
+      m_device(device),
+      m_width(width),
+      m_height(height),
+      m_msaa(msaa)
 {
 }
 
 void GraphicsLayer::OnInit()
 {
     Layer::OnInit();
-    Renderer::Init();
+    Renderer::Init(m_device);
 
     {
         FramebufferCreateInfo info;

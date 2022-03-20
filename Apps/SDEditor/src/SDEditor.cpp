@@ -29,7 +29,7 @@ void SDEditor::OnInit()
 #endif
 
     m_graphics_layer = CreateLayer<GraphicsLayer>(
-        viewport_width, viewport_height, m_window->GetMSAA());
+        m_device.get(), viewport_width, viewport_height, m_window->GetMSAA());
     m_graphics_layer->SetDebug(true);
     PushLayer(m_graphics_layer);
 

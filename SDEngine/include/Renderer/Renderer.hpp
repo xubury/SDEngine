@@ -57,7 +57,7 @@ class SD_RENDERER_API Renderer {
     static void Submit(const VertexArray &vao, MeshTopology topology,
                        size_t count, size_t offset, bool index = true);
 
-    static void Init();
+    static void Init(Device *device);
 
     static glm::vec2 GetCurrentBufferSize();
     static Framebuffer *GetBufferStackTop();
@@ -78,7 +78,7 @@ class SD_RENDERER_API Renderer {
                                int read_attachment, BufferBitMask mask);
 
    protected:
-    static Scope<Device> m_device;
+    static Device *m_device;
 
     static Ref<UniformBuffer> m_camera_UBO;
     static CameraData m_camera_data;

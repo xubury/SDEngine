@@ -1,14 +1,22 @@
 #include "Core/OpenGL/GLWindow.hpp"
-#include "Core/SDL.hpp"
+#include "Utility/EventDispatcher.hpp"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl.h"
-#include <GL/glew.h>
+
+#include <SDL.h>
+
+#ifdef DEBUG_BUILD
+#define SDL(stmt) SD_CORE_ASSERT(stmt == 0, SDL_GetError())
+#else
+#define SDL(stmt) stmt
+#endif
 
 namespace SD {
 
 GLWindow::GLWindow(const WindowCreateInfo &info)
 {
-    uint32_t sdl_flags = info.flag | SDL_WINDOW_OPENGL;
+    SDL(SDL_Init(SDL_INIT_EVERYTHING));
+    uint32_t sdl_flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
 
     // Double buffer
     SDL(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1));
@@ -26,22 +34,86 @@ GLWindow::GLWindow(const WindowCreateInfo &info)
         SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, samples));
     }
 
-    m_window = SDL_CreateWindow(info.title.c_str(), info.x, info.y, info.width,
-                                info.height, sdl_flags);
+    m_window = SDL_CreateWindow(info.title.c_str(), SDL_WINDOWPOS_CENTERED,
+                                SDL_WINDOWPOS_CENTERED, info.width, info.height,
+                                sdl_flags);
     SD_CORE_ASSERT(m_window != nullptr, SDL_GetError());
 
     m_context = SDL_GL_CreateContext(m_window);
     SD_CORE_ASSERT(m_context != nullptr, SDL_GetError());
 
     SDL(SDL_GL_SetSwapInterval(info.vsync ? 1 : 0));
-
-    SD_CORE_ASSERT(glewInit() == GLEW_OK, "glewInit failed!");
 }
 
 GLWindow::~GLWindow()
 {
     SDL_GL_DeleteContext(m_context);
     SDL_DestroyWindow(m_window);
+    SDL_Quit();
+}
+
+void GLWindow::PollEvents()
+{
+    SDL_Event sdl_event;
+    EventDispatcher &dispatcher = GetDispatcher();
+    while (SDL_PollEvent(&sdl_event) == 1) {
+        switch (sdl_event.type) {
+            case SDL_MOUSEMOTION: {
+                MouseMotionEvent event;
+                event.x = sdl_event.motion.x;
+                event.y = sdl_event.motion.y;
+                event.x_rel = sdl_event.motion.xrel;
+                event.y_rel = sdl_event.motion.yrel;
+                dispatcher.PublishEvent(event);
+            } break;
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP: {
+                MouseButtonEvent event;
+                event.button =
+                    static_cast<MouseButton>(sdl_event.button.button);
+                event.x = sdl_event.button.x;
+                event.y = sdl_event.button.y;
+                event.clicks = sdl_event.button.clicks;
+                event.state = sdl_event.button.state;
+                dispatcher.PublishEvent(event);
+            } break;
+            case SDL_MOUSEWHEEL: {
+                MouseWheelEvent event;
+                event.x = sdl_event.wheel.x;
+                event.y = sdl_event.wheel.y;
+                dispatcher.PublishEvent(event);
+            } break;
+            case SDL_KEYDOWN:
+            case SDL_KEYUP: {
+                KeyEvent event;
+                event.keycode = static_cast<Keycode>(sdl_event.key.keysym.sym);
+                event.mod = sdl_event.key.keysym.mod;
+                event.state = sdl_event.key.state;
+                dispatcher.PublishEvent(event);
+            } break;
+            case SDL_WINDOWEVENT: {
+                switch (sdl_event.window.event) {
+                    case SDL_WINDOWEVENT_RESIZED:
+                    case SDL_WINDOWEVENT_SIZE_CHANGED: {
+                        WindowSizeEvent event;
+                        event.width = sdl_event.window.data1;
+                        event.height = sdl_event.window.data2;
+                        dispatcher.PublishEvent(event);
+                    } break;
+                }
+            } break;
+            case SDL_TEXTINPUT: {
+                TextInputEvent event;
+                std::copy(std::begin(sdl_event.text.text),
+                          std::end(sdl_event.text.text), event.text);
+                dispatcher.PublishEvent(event);
+            } break;
+            case SDL_QUIT: {
+                AppQuitEvent event;
+                dispatcher.PublishEvent(event);
+            } break;
+        }
+    }
 }
 
 void GLWindow::ImGuiInitBackend()

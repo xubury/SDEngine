@@ -12,13 +12,10 @@ namespace SD {
 
 struct SD_CORE_API WindowCreateInfo {
     std::string title;
-    int x;
-    int y;
     int width;
     int height;
     MultiSampleLevel msaa;
     bool vsync;
-    uint32_t flag;
 };
 
 class EventDispatcher;
@@ -48,7 +45,7 @@ class SD_CORE_API Window {
 
     virtual void SwapBuffer() = 0;
 
-    void PollEvents();
+    virtual void PollEvents() = 0;
 
     bool ShouldClose();
     void SetShouldClose(bool shouldClose);
@@ -56,6 +53,9 @@ class SD_CORE_API Window {
     void SetDispatcher(EventDispatcher *dispatcher)
     {
         m_dispatcher = dispatcher;
+    }
+    EventDispatcher &GetDispatcher() {
+        return *m_dispatcher;
     }
 
    private:

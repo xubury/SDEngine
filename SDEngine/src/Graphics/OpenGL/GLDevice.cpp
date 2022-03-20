@@ -35,6 +35,8 @@ static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
 
 GLDevice::GLDevice()
 {
+    SD_CORE_ASSERT(glewInit() == GLEW_OK, "glewInit failed!");
+
     SD_CORE_INFO("---Graphics Card Info---");
     SD_CORE_INFO("Vendor: {}", glGetString(GL_VENDOR));
     SD_CORE_INFO("Renderer: {}", glGetString(GL_RENDERER));

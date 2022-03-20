@@ -4,7 +4,7 @@
 
 namespace SD {
 
-Scope<Device> Renderer::m_device;
+Device* Renderer::m_device;
 
 Ref<UniformBuffer> Renderer::m_camera_UBO;
 CameraData Renderer::m_camera_data;
@@ -96,9 +96,9 @@ glm::vec2 Renderer::GetCurrentBufferSize()
 
 bool Renderer::IsEmptyStack() { return s_render_pass_stacks.empty(); }
 
-void Renderer::Init()
+void Renderer::Init(Device* device)
 {
-    m_device = Device::Create();
+    m_device = device;
     SD_CORE_TRACE("Initializing Renderer");
     m_camera_UBO = UniformBuffer::Create(nullptr, sizeof(CameraData),
                                          BufferIOType::Dynamic);

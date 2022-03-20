@@ -1,7 +1,4 @@
-
-
 #include "Core/Application.hpp"
-#include "Core/SDL.hpp"
 #include "Core/Input.hpp"
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
@@ -72,28 +69,20 @@ Application::Application(const std::string &title, Device::API api)
     // Setting up which api to use
     Device::SetAPI(api);
 
-    InitSettings();
-
-    SDL(SDL_Init(SDL_INIT_EVERYTHING));
+    LoadSettingsFile();
 
     m_dispatcher = CreateRef<EventDispatcher>();
-
-    Input::Init(m_dispatcher.get());
-    Input::Init(m_dispatcher.get());
-
-    WindowCreateInfo property{
-        title,
-        m_settings.GetInteger("window", "x", SDL_WINDOWPOS_CENTERED),
-        m_settings.GetInteger("window", "y", SDL_WINDOWPOS_CENTERED),
-        m_settings.GetInteger("window", "width", 800),
-        m_settings.GetInteger("window", "height", 600),
-        static_cast<MultiSampleLevel>(
-            m_settings.GetInteger("window", "msaa", 4)),
-        m_settings.GetBoolean("window", "vsync", true),
-        SDL_WINDOW_RESIZABLE};
+    WindowCreateInfo property{title,
+                              m_settings.GetInteger("window", "width", 800),
+                              m_settings.GetInteger("window", "height", 600),
+                              static_cast<MultiSampleLevel>(
+                                  m_settings.GetInteger("window", "msaa", 4)),
+                              m_settings.GetBoolean("window", "vsync", true)};
     m_window = Window::Create(property);
     m_window->SetDispatcher(m_dispatcher.get());
+    m_device = Device::Create();
 
+    Input::Init(m_dispatcher.get());
     AssetStorage::Init();
 
     auto &storage = AssetStorage::Get();
@@ -105,6 +94,7 @@ Application::Application(const std::string &title, Device::API api)
 Application::~Application()
 {
     AssetStorage::Shutdown();
+    Input::Shutdown();
 
     glm::ivec2 size = m_window->GetSize();
     m_settings.SetInteger("window", "width", size.x);
@@ -114,8 +104,6 @@ Application::~Application()
     m_settings.SetBoolean("window", "vsync", m_window->GetIsVSync());
 
     m_settings.Save((GetAppDirectory() / SETTING_FILENAME).string());
-
-    SDL_Quit();
 }
 
 void Application::OnInit()
@@ -161,7 +149,7 @@ void Application::DestroyLayer(Layer *layer)
     delete layer;
 }
 
-void Application::InitSettings()
+void Application::LoadSettingsFile()
 {
     std::filesystem::path ini_path = GetAppDirectory() / SETTING_FILENAME;
     if (std::filesystem::exists(ini_path)) {

@@ -75,11 +75,12 @@ class SD_CORE_API Application {
     Application &operator=(const Application &application) = delete;
 
     Scope<Window> m_window;
+    Scope<Device> m_device;
 
    private:
     friend int ::main(int argc, char **argv);
 
-    void InitSettings();
+    void LoadSettingsFile();
 
     void Run();
 
