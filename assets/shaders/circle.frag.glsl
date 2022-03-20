@@ -13,7 +13,8 @@ struct VertexOutput {
 layout(location = 0) in VertexOutput in_vertex;
 layout(location = 5) in flat uint in_entity_id;
 
-void main() {
+void main()
+{
     float distance = 1.0 - length(in_vertex.local_pos);
     float circle = smoothstep(0.0, in_vertex.fade, distance);
     circle *= smoothstep(in_vertex.thickness + in_vertex.fade,

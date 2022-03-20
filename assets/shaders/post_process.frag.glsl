@@ -14,7 +14,8 @@ uniform float u_gamma;
 layout(binding = 0) uniform sampler2D u_lighting;
 layout(binding = 1) uniform sampler2D u_blur;
 
-void main() {
+void main()
+{
     vec3 result = texture(u_lighting, in_tex_coord).rgb;
 
     // bloom

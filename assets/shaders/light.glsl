@@ -15,11 +15,11 @@ struct Light {
 
     bool is_directional;
     bool is_cast_shadow;
-
 };
 
-vec3 dirLight(Light light, vec3 frag_pos, vec3 normal, vec3 viewDir,
-              vec3 ambient, vec4 albedo, float shadow) {
+vec3 DirLight(Light light, vec3 frag_pos, vec3 normal, vec3 viewDir,
+              vec3 ambient, vec4 albedo, float shadow)
+{
     vec3 lightDir = normalize(-light.direction);
 
     // ambient
@@ -38,8 +38,9 @@ vec3 dirLight(Light light, vec3 frag_pos, vec3 normal, vec3 viewDir,
     return ambient + (1.0f - shadow) * (diffuse + specular);
 }
 
-vec3 pointLight(Light light, vec3 frag_pos, vec3 normal, vec3 viewDir,
-                vec3 ambient, vec4 albedo, float shadow) {
+vec3 PointLight(Light light, vec3 frag_pos, vec3 normal, vec3 viewDir,
+                vec3 ambient, vec4 albedo, float shadow)
+{
     vec3 lightDir = normalize(light.position - frag_pos);
 
     // ambient
@@ -72,10 +73,11 @@ vec3 pointLight(Light light, vec3 frag_pos, vec3 normal, vec3 viewDir,
     return ambient + (1.0f - shadow) * (diffuse + specular);
 }
 
-vec3 calculateLight(Light light, vec3 frag_pos, vec3 normal, vec3 viewDir,
-                     vec3 ambient, vec4 albedo, float shadow) {
-    return light.is_directional ? dirLight(light, frag_pos, normal, viewDir,
-                                            ambient, albedo, shadow)
-                                  : pointLight(light, frag_pos, normal, viewDir,
-                                            ambient, albedo, shadow);
+vec3 CalculateLight(Light light, vec3 frag_pos, vec3 normal, vec3 viewDir,
+                    vec3 ambient, vec4 albedo, float shadow)
+{
+    return light.is_directional ? DirLight(light, frag_pos, normal, viewDir,
+                                           ambient, albedo, shadow)
+                                : PointLight(light, frag_pos, normal, viewDir,
+                                             ambient, albedo, shadow);
 }

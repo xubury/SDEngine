@@ -1,7 +1,4 @@
-layout (std140) uniform ShadowData
-{
-    mat4 u_light_matrix[16];
-};
+layout(std140) uniform ShadowData { mat4 u_light_matrix[16]; };
 
 uniform int u_num_of_cascades;
 uniform float u_cascade_planes[4];
@@ -10,7 +7,8 @@ uniform sampler2DArray u_cascade_map;
 const int half_kernel_width = 1;
 const float bias_mod = 0.5f;
 
-float shadowCalculation(vec3 light_dir, vec3 frag_pos, vec3 normal, mat4 view) {
+float ShadowCalculation(vec3 light_dir, vec3 frag_pos, vec3 normal, mat4 view)
+{
     vec4 frag_pos_view = view * vec4(frag_pos, 1.0f);
     float depthValue = abs(frag_pos_view.z);
 
@@ -36,11 +34,12 @@ float shadowCalculation(vec3 light_dir, vec3 frag_pos, vec3 normal, mat4 view) {
     bias *= 1 / (u_cascade_planes[layer] * bias_mod);
 
     float shadow = 0.0f;
-    //PCF
+    // PCF
     vec2 tex_size = 1.0f / vec2(textureSize(u_cascade_map, 0));
     for (int x = -half_kernel_width; x <= half_kernel_width; ++x) {
         for (int y = -half_kernel_width; y <= half_kernel_width; ++y) {
-            vec3 sample_pos = vec3(projCoords.xy + vec2(x, y) * tex_size, layer);
+            vec3 sample_pos =
+                vec3(projCoords.xy + vec2(x, y) * tex_size, layer);
             float pcfDepth = texture(u_cascade_map, sample_pos).r;
             shadow += (currentDepth - bias) > pcfDepth ? 1.0f : 0.0f;
         }
@@ -49,4 +48,3 @@ float shadowCalculation(vec3 light_dir, vec3 frag_pos, vec3 normal, mat4 view) {
 
     return shadow;
 }
-

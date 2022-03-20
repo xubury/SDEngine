@@ -7,8 +7,9 @@ layout(location = 0) in vec2 in_uv;
 layout(binding = 0) uniform sampler2DMS u_lighting;
 layout(binding = 1) uniform sampler2DMS u_emissive;
 
-void main() {
-    vec3 color = vec3(0); 
+void main()
+{
+    vec3 color = vec3(0);
 
     const int samples = textureSamples(u_lighting);
     const ivec2 uv = ivec2(in_uv * textureSize(u_lighting));

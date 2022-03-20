@@ -22,7 +22,8 @@ layout(location = 5) out uint g_entity_id;
 
 layout(location = 0) in VertexOutput in_vertex;
 
-void main() {
+void main()
+{
     g_position = in_vertex.position;
     g_normal = normalize(in_vertex.normal);
     vec3 halfColor = u_color * 0.5f;

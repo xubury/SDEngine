@@ -10,7 +10,8 @@ struct VertexOutput {
 layout(location = 0) in VertexOutput in_vertex;
 layout(location = 1) in flat uint in_entity_id;
 
-void main() {
+void main()
+{
     frag_color = in_vertex.color;
     entity_id = in_entity_id;
 }

@@ -10,10 +10,8 @@ void main()
 {
     vec2 tex_sizse = 1.0 / vec2(textureSize(u_ssao, 0));
     float result = 0.0;
-    for (int x = -2; x < 2; ++x)
-    {
-        for (int y = -2; y < 2; ++y)
-        {
+    for (int x = -2; x < 2; ++x) {
+        for (int y = -2; y < 2; ++y) {
             vec2 offset = vec2(float(x), float(y)) * tex_sizse;
             result += texture(u_ssao, in_uv + offset).r;
         }

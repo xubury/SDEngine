@@ -18,8 +18,9 @@ uniform float u_radius;
 uniform float u_bias;
 uniform uint u_power;
 
-float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
-                        vec3 random_vec) {
+float ComputeOcclusion(int level, const vec2 tex_size, const ivec2 uv,
+                       vec3 random_vec)
+{
     // get input for SSAO algorithm
     vec3 frag_pos = texelFetch(u_position, uv, level).xyz;
     vec3 normal = texelFetch(u_normal, uv, level).xyz;
@@ -35,28 +36,28 @@ float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
     mat3 TBN = mat3(tangent, bi_tangent, normal);
     // iterate over the sample kernel and calculate occlusion factor
     float occlusion = 0.0;
-    for(int i = 0; i < u_kernel_size; ++i) {
+    for (int i = 0; i < u_kernel_size; ++i) {
         // get sample position
         if (dot(u_samples[i], normal) < 0.15) {
             continue;
         }
-        vec3 sample_pos = TBN * u_samples[i]; // from tangent to view-space
+        vec3 sample_pos = TBN * u_samples[i];  // from tangent to view-space
         sample_pos = frag_pos + sample_pos * u_radius;
 
         // project sample position (to sample texture)
         // (to get position on screen/texture)
         vec4 offset = vec4(sample_pos, 1.0);
-        offset = u_projection * offset; // from view to clip-space
-        offset /= offset.w; // perspective divide
-        offset.xyz = offset.xyz * 0.5 + 0.5; // transform to range 0.0 - 1.0
+        offset = u_projection * offset;       // from view to clip-space
+        offset /= offset.w;                   // perspective divide
+        offset.xyz = offset.xyz * 0.5 + 0.5;  // transform to range 0.0 - 1.0
 
         if (offset.x < 0 || offset.y < 0 || offset.x > 1 || offset.y > 1) {
             continue;
         }
         // get sample depth
         const ivec2 uv = ivec2(offset.xy * tex_size);
-        float sample_depth = (u_view * 
-                vec4(texelFetch(u_position, uv, level).xyz, 1.0f)).z;
+        float sample_depth =
+            (u_view * vec4(texelFetch(u_position, uv, level).xyz, 1.0f)).z;
         if ((rot_view * texelFetch(u_normal, uv, level).xyz) == vec3(0)) {
             continue;
         }
@@ -64,12 +65,14 @@ float compute_occlusion(int level, const vec2 tex_size, const ivec2 uv,
         // range check & accumulate
         float factor = u_radius / abs(frag_pos.z - sample_depth);
         float range_check = smoothstep(0.0, 1.0, factor);
-        occlusion += (sample_depth >= sample_pos.z + u_bias ? 1.0 : 0.0) * range_check;
+        occlusion +=
+            (sample_depth >= sample_pos.z + u_bias ? 1.0 : 0.0) * range_check;
     }
     return 1 - occlusion / u_kernel_size;
 }
 
-void main() {
+void main()
+{
     const vec2 tex_size = textureSize(u_position);
     const ivec2 uv = ivec2(in_uv * tex_size);
 
@@ -80,7 +83,7 @@ void main() {
     const int num_msaa = 1;
     float occlusion = 0;
     for (int i = 0; i < num_msaa; ++i) {
-        occlusion += compute_occlusion(i, tex_size, uv, random_vec);
+        occlusion += ComputeOcclusion(i, tex_size, uv, random_vec);
     }
     occlusion /= num_msaa;
     frag_color = pow(occlusion, u_power);

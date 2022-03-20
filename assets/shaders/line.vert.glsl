@@ -13,9 +13,9 @@ struct VertexOutput {
 layout(location = 0) out VertexOutput out_vertex;
 layout(location = 1) out flat uint out_entity_id;
 
-void main() {
+void main()
+{
     gl_Position = u_projection * u_view * vec4(a_pos, 1.0f);
     out_vertex.color = a_color;
     out_entity_id = a_entity_id;
 }
-
