@@ -110,9 +110,7 @@ static void DrawModelCreation(const std::filesystem::path& directory,
             if (ImGui::Button("Confirm")) {
                 auto& storage = AssetStorage::Get();
                 auto asset = storage.CreateAsset<ModelAsset>(asset_name);
-                auto model = CreateRef<Model>();
-                ModelLoader::LoadModel(model_path, *model);
-                asset->Import(model);
+                asset->Import(model_path);
 
                 storage.SaveAsset(asset,
                                   (directory / asset_name).generic_string());

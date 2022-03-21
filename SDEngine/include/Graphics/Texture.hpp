@@ -42,8 +42,6 @@ class SD_GRAPHICS_API Texture : public Resource {
     TextureType GetType() const;
     DataFormat GetFormat() const;
 
-    void SetPath(const std::string &path) { m_path = path; }
-    const std::string &GetPath() const { return m_path; }
 
     TextureWrap GetWrap() const { return m_wrap; }
     TextureMinFilter GetMinFilter() const { return m_min_filter; }
@@ -68,8 +66,6 @@ class SD_GRAPHICS_API Texture : public Resource {
     MipmapMode m_mipmap_mode;
     TextureMinFilter m_min_filter;
     TextureMagFilter m_mag_filter;
-
-    std::string m_path;
 };
 
 }  // namespace SD

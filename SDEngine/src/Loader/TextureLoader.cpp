@@ -51,7 +51,6 @@ Ref<Texture> TextureLoader::LoadTextureCube(
                                 MipmapMode::Linear, TextureMagFilter::Linear);
         }
         texture->SetPixels(0, 0, face, width, height, 1, img);
-        texture->SetPath(pathes[face]);
         stbi_image_free(img);
     }
     return texture;
@@ -71,7 +70,6 @@ Ref<Texture> TextureLoader::LoadTexture2D(const std::string& path)
         Get8BitDataFormat(channels), TextureWrap::Edge,
         TextureMinFilter::Linear, MipmapMode::Linear, TextureMagFilter::Linear);
     texture->SetPixels(0, 0, 0, width, height, 1, img);
-    texture->SetPath(path);
     stbi_image_free(img);
     return texture;
 }

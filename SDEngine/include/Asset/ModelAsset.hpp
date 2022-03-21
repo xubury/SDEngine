@@ -22,14 +22,14 @@ class ModelAsset : public Asset {
         archive(*this);
         auto &storage = AssetStorage::Get();
 
-        ModelLoader::LoadModel(storage.GetAbsolutePath(m_model_path), *m_model);
+        m_model = ModelLoader::LoadModel(storage.GetAbsolutePath(m_model_path));
     }
 
-    void Import(const Ref<Model> &model)
+    void Import(const std::string &full_path)
     {
-        m_model = model;
+        m_model = ModelLoader::LoadModel(full_path);
         auto &storage = AssetStorage::Get();
-        m_model_path = storage.GetRelativePath(m_model->GetPath());
+        m_model_path = storage.GetRelativePath(full_path);
     }
 
     const std::string &GetModelPath() const { return m_model_path; }

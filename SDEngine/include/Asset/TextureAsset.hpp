@@ -32,10 +32,11 @@ class TextureAsset : public Asset {
         m_texture->SetMinFilter(m_min_filter);
         m_texture->SetMipmapMode(m_mipmap_mode);
     }
-    void Import(const Ref<Texture> &texture)
+
+    void Import(const Ref<Texture> &texture, const std::string &full_path)
     {
         auto &storage = AssetStorage::Get();
-        m_texture_path = storage.GetRelativePath(texture->GetPath());
+        m_texture_path = storage.GetRelativePath(full_path);
         m_texture = texture;
         m_wrap = m_texture->GetWrap();
         m_filter = m_texture->GetMagFilter();
@@ -43,7 +44,7 @@ class TextureAsset : public Asset {
         m_mipmap_mode = m_texture->GetMipmapMode();
     }
 
-    Ref<Texture> GetTexture() { return m_texture; }
+    Texture *GetTexture() { return m_texture.get(); }
 
     SERIALIZE(m_wrap, m_filter, m_min_filter, m_mipmap_mode, m_texture_path)
 

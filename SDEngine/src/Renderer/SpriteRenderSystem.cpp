@@ -53,8 +53,7 @@ void SpriteRenderSystem::OnRender()
         if (AssetStorage::Get().Exists<TextureAsset>(frame.texture_id)) {
             auto texture = AssetStorage::Get()
                                .GetAsset<TextureAsset>(frame.texture_id)
-                               ->GetTexture()
-                               .get();
+                               ->GetTexture();
             datas.push_back({texture, frame.uvs,
                              transform_comp.GetWorldPosition(),
                              transform_comp.GetWorldRotation(), frame.size, id,
@@ -75,8 +74,7 @@ void SpriteRenderSystem::OnRender()
                         frame.texture_id)) {
                     auto texture = AssetStorage::Get()
                                        .GetAsset<TextureAsset>(frame.texture_id)
-                                       ->GetTexture()
-                                       .get();
+                                       ->GetTexture();
                     datas.push_back({texture, frame.uvs,
                                      transform_comp.GetWorldPosition(),
                                      transform_comp.GetWorldRotation(),

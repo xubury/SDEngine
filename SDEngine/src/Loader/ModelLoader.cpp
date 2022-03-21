@@ -207,8 +207,9 @@ static void ProcessNode(const aiScene *scene, const aiNode *node, Model &model,
     }
 }
 
-void ModelLoader::LoadModel(const std::string &path, Model &model)
+Ref<Model> ModelLoader::LoadModel(const std::string &path)
 {
+    Ref<Model> model;
     SD_CORE_TRACE("Loading model form: {}...", path);
 
     Assimp::Importer importer;
@@ -219,23 +220,25 @@ void ModelLoader::LoadModel(const std::string &path, Model &model)
             fmt::format("Model loading failed: {}", importer.GetErrorString()));
     }
     else {
-        model.SetPath(path);
+        model = CreateRef<Model>();
+        model->SetPath(path);
         // Process materials
         std::filesystem::path directory =
             std::filesystem::path(path).parent_path();
         for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
-            model.AddMaterial(
-                ProcessAiMaterial(directory, scene->mMaterials[i], model));
+            model->AddMaterial(
+                ProcessAiMaterial(directory, scene->mMaterials[i], *model));
         }
 
         // Process meshes
         for (uint32_t i = 0; i < scene->mNumMeshes; ++i) {
-            model.AddMesh(ProcessAiMesh(scene->mMeshes[i]));
+            model->AddMesh(ProcessAiMesh(scene->mMeshes[i]));
         }
 
         // Process node
-        ProcessNode(scene, scene->mRootNode, model, glm::mat4(1.0f));
+        ProcessNode(scene, scene->mRootNode, *model, glm::mat4(1.0f));
     }
+    return model;
 }
 
 }  // namespace SD
