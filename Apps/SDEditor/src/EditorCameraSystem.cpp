@@ -10,7 +10,7 @@ const float SMOOTHNESS = 10;
 const float MAX_FAR_Z = 1000;
 
 EditorCameraSystem::EditorCameraSystem(int32_t width, int32_t height)
-    : System("EditorCameraSystem"),
+    : ECSSystem("EditorCameraSystem"),
       m_width(width),
       m_height(height),
       m_pitch(0),
@@ -22,7 +22,7 @@ EditorCameraSystem::EditorCameraSystem(int32_t width, int32_t height)
     m_camera.SetWorldPosition(glm::vec3(0, 0, 1));
 }
 
-void EditorCameraSystem::OnInit() { System::OnInit(); }
+void EditorCameraSystem::OnInit() { ECSSystem::OnInit(); }
 
 void EditorCameraSystem::OnPush()
 {

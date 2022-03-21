@@ -1,7 +1,7 @@
 #ifndef SD_ANMIATION_EDITOR_HPP
 #define SD_ANMIATION_EDITOR_HPP
 
-#include "Core/System.hpp"
+#include "Core/ECSSystem.hpp"
 #include "ImGui/FileDialog.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 
@@ -9,7 +9,7 @@
 
 namespace SD {
 
-class AnimationEditor : public System {
+class AnimationEditor : public ECSSystem {
    public:
     AnimationEditor();
 

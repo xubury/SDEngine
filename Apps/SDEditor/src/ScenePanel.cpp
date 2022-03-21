@@ -40,7 +40,7 @@ void SelectAsset(ResourceId *selected_id)
 }
 
 ScenePanel::ScenePanel()
-    : System("ScenePanel"),
+    : ECSSystem("ScenePanel"),
       m_gizmo_mode(ImGuizmo::WORLD),
       m_gizmo_op(ImGuizmo::TRANSLATE)
 {

@@ -3,7 +3,7 @@
 
 #include "Utility/Base.hpp"
 #include "Renderer/Event.hpp"
-#include "Core/System.hpp"
+#include "Core/ECSSystem.hpp"
 #include "ECS/Scene.hpp"
 #include "ECS/Entity.hpp"
 #include "ImGui/FileDialog.hpp"
@@ -12,7 +12,7 @@
 
 namespace SD {
 
-class ScenePanel : public System {
+class ScenePanel : public ECSSystem {
    public:
     ScenePanel();
 

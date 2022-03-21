@@ -3,7 +3,7 @@
 
 namespace SD {
 
-CameraSystem::CameraSystem() : System("CameraSystem") {}
+CameraSystem::CameraSystem() : ECSSystem("CameraSystem") {}
 
 void CameraSystem::OnRender()
 {

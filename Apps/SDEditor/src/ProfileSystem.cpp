@@ -9,7 +9,7 @@ namespace SD {
 const uint32_t FPS_CAPACITY = 50;
 
 ProfileSystem::ProfileSystem()
-    : System("ProfileSystem"),
+    : ECSSystem("ProfileSystem"),
       m_camera(CameraType::Orthographic, glm::radians(45.f), 100, 100, 0.f,
                1000.f),
       m_fps(FPS_CAPACITY),
@@ -19,7 +19,7 @@ ProfileSystem::ProfileSystem()
 
 void ProfileSystem::OnInit()
 {
-    System::OnInit();
+    ECSSystem::OnInit();
     m_font = FontLoader::LoadFont("assets/fonts/msyh.ttc", 20);
 }
 

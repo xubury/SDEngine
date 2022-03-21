@@ -1,18 +1,18 @@
 #ifndef SD_RENDER_SYSTEM_HPP
 #define SD_RENDER_SYSTEM_HPP
 
-#include "Core/System.hpp"
+#include "Core/ECSSystem.hpp"
 #include "Renderer/Event.hpp"
 
 namespace SD {
 
-class RenderSystem : public System {
+class RenderSystem : public ECSSystem {
    public:
-    RenderSystem(const std::string &name) : System(name), m_camera(nullptr) {}
+    RenderSystem(const std::string &name) : ECSSystem(name), m_camera(nullptr) {}
 
     void OnInit() override
     {
-        System::OnInit();
+        ECSSystem::OnInit();
         m_camera_handler = GetEventDispatcher().Register<CameraEvent>(
             [this](const CameraEvent &e) { m_camera = e.camera; });
     }
@@ -20,7 +20,7 @@ class RenderSystem : public System {
     void OnDestroy() override
     {
         GetEventDispatcher().RemoveHandler(m_camera_handler);
-        System::OnDestroy();
+        ECSSystem::OnDestroy();
     }
 
     Camera &GetCamera() { return *m_camera; }

@@ -1,7 +1,7 @@
 #ifndef SD_POST_PROCESS_SYSTEM_HPP
 #define SD_POST_PROCESS_SYSTEM_HPP
 
-#include "Core/System.hpp"
+#include "Core/ECSSystem.hpp"
 #include "Renderer/Export.hpp"
 #include "Renderer/Event.hpp"
 #include "Graphics/VertexArray.hpp"
@@ -9,7 +9,7 @@
 
 namespace SD {
 
-class SD_RENDERER_API PostProcessSystem : public System {
+class SD_RENDERER_API PostProcessSystem : public ECSSystem {
    public:
     PostProcessSystem(int32_t width, int32_t height);
 

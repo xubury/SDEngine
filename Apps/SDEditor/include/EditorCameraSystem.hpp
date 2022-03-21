@@ -1,12 +1,12 @@
 #ifndef SD_EDITOR_CAMERA_SYSTEM_HPP
 #define SD_EDITOR_CAMERA_SYSTEM_HPP
 
-#include "Core/System.hpp"
+#include "Core/ECSSystem.hpp"
 #include "ECS/Entity.hpp"
 
 namespace SD {
 
-class EditorCameraSystem : public System {
+class EditorCameraSystem : public ECSSystem {
    public:
     EditorCameraSystem(int32_t width, int32_t height);
 

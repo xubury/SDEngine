@@ -2,7 +2,7 @@
 #define SD_SPRITE_RENDER_SYSTEM_HPP
 
 #include "Renderer/Export.hpp"
-#include "Renderer/System.hpp"
+#include "Renderer/RenderSystem.hpp"
 
 namespace SD {
 

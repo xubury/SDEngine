@@ -5,7 +5,7 @@
 #include "Core/EventStack.hpp"
 #include "Core/EventDispatcher.hpp"
 #include "Core/Export.hpp"
-#include "Core/System.hpp"
+#include "Core/ECSSystem.hpp"
 
 namespace SD {
 
@@ -57,22 +57,22 @@ class SD_CORE_API Layer {
         return system;
     }
 
-    void DestorySystem(System *system) { delete system; }
+    void DestorySystem(ECSSystem *system) { delete system; }
 
-    void PushSystem(System *system)
+    void PushSystem(ECSSystem *system)
     {
         system->OnPush();
         m_systems.Push(system);
     }
 
-    void PopSystem(System *system)
+    void PopSystem(ECSSystem *system)
     {
         system->OnPop();
         m_systems.Pop(system);
     }
 
-    const EventStack<System *> &GetSystems() const { return m_systems; }
-    EventStack<System *> &GetSystems() { return m_systems; }
+    const EventStack<ECSSystem *> &GetSystems() const { return m_systems; }
+    EventStack<ECSSystem *> &GetSystems() { return m_systems; }
 
     const std::string &GetName() const { return m_name; }
 
@@ -87,7 +87,7 @@ class SD_CORE_API Layer {
     friend class Application;
 
     std::string m_name;
-    EventStack<System *> m_systems;
+    EventStack<ECSSystem *> m_systems;
     Ref<EventDispatcher> m_dispatcher;
 
     HandlerRegistration m_scene_handler;

@@ -1,7 +1,7 @@
 #ifndef SD_CONTENT_BROWSER_HPP
 #define SD_CONTENT_BROWSER_HPP
 
-#include "Core/System.hpp"
+#include "Core/ECSSystem.hpp"
 
 namespace SD {
 
@@ -9,7 +9,7 @@ constexpr const char* DROP_ASSET_ITEM = "DROP_ASSET_ITEM";
 
 class Asset;
 
-class ContentBrowser : public System {
+class ContentBrowser : public ECSSystem {
    public:
     ContentBrowser();
 

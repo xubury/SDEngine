@@ -1,5 +1,5 @@
-#ifndef SD_SYSTEM_HPP
-#define SD_SYSTEM_HPP
+#ifndef SD_ECS_SYSTEM_HPP
+#define SD_ECS_SYSTEM_HPP
 
 #include "Utility/Base.hpp"
 #include "Core/Export.hpp"
@@ -8,14 +8,14 @@
 
 namespace SD {
 
-class SD_CORE_API System {
+class SD_CORE_API ECSSystem {
    public:
-    System(const std::string &name) : m_name(name)
+    ECSSystem(const std::string &name) : m_name(name)
     {
         SD_CORE_TRACE("Initializing system: {}", name);
     }
 
-    virtual ~System() { SD_CORE_TRACE("Deleting system: {}", m_name); };
+    virtual ~ECSSystem() { SD_CORE_TRACE("Deleting system: {}", m_name); };
 
     virtual void OnInit()
     {
@@ -55,4 +55,4 @@ class SD_CORE_API System {
 
 }  // namespace SD
 
-#endif /* SD_SYSTEM_HPP */
+#endif /* SD_ECS_SYSTEM_HPP */

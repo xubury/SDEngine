@@ -1,14 +1,14 @@
 #ifndef SD_PROFILE_SYSTEM_HPP
 #define SD_PROFILE_SYSTEM_HPP
 
-#include "Core/System.hpp"
+#include "Core/ECSSystem.hpp"
 #include "Graphics/Font.hpp"
 #include "Graphics/Camera.hpp"
 #include "Utility/Timing.hpp"
 
 namespace SD {
 
-class ProfileSystem : public System {
+class ProfileSystem : public ECSSystem {
    public:
     ProfileSystem();
 

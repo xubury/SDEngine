@@ -30,11 +30,11 @@ void SelectAsset(ResourceId *selected_id)
     }
 }
 
-AnimationEditor::AnimationEditor() : System("Anmiation Editor"), m_anim_index(0)
+AnimationEditor::AnimationEditor() : ECSSystem("Anmiation Editor"), m_anim_index(0)
 {
 }
 
-void AnimationEditor::OnInit() { System::OnInit(); }
+void AnimationEditor::OnInit() { ECSSystem::OnInit(); }
 
 void AnimationEditor::OnPush()
 {

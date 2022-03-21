@@ -38,7 +38,7 @@ const int GRID_TEXTURE_SIZE = 100;
 const int LINE_WIDTH = 5;
 
 TileMapSystem::TileMapSystem()
-    : System("TileMapSystem"),
+    : ECSSystem("TileMapSystem"),
       m_framebuffer(nullptr),
       m_file_dialog_open(false),
       m_priority(0),

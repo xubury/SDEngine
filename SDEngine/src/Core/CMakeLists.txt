@@ -18,7 +18,7 @@ set(Core_Include
     ${Include_Root}/Event.hpp
     ${Include_Root}/EventDispatcher.hpp
     ${Include_Root}/Window.hpp
-    ${Include_Root}/System.hpp
+    ${Include_Root}/ECSSystem.hpp
     ${Include_Root}/Keyboard.hpp
     ${Include_Root}/Mouse.hpp
     ${Include_Root}/Layer.hpp
@@ -30,7 +30,6 @@ set(Core_Src
     ${OpenGL_Src}
     ${Src_Root}/Application.cpp
     ${Src_Root}/Window.cpp
-    ${Src_Root}/System.cpp
     ${Src_Root}/Keyboard.cpp
     ${Src_Root}/ImGuiLayer.cpp
     ${Src_Root}/Input.cpp)

@@ -9,7 +9,7 @@
 namespace SD {
 
 PostProcessSystem::PostProcessSystem(int32_t width, int32_t height)
-    : System("PostProcessSystem"),
+    : ECSSystem("PostProcessSystem"),
       m_width(width),
       m_height(height),
       m_blur_result(nullptr),
@@ -22,7 +22,7 @@ PostProcessSystem::PostProcessSystem(int32_t width, int32_t height)
 
 void PostProcessSystem::OnInit()
 {
-    System::OnInit();
+    ECSSystem::OnInit();
     m_blur_shader = ShaderLoader::LoadShader("assets/shaders/quad.vert.glsl",
                                              "assets/shaders/blur.frag.glsl");
     m_post_shader =

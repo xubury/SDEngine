@@ -4,6 +4,8 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Renderer)
 
 set(Renderer_Include
     ${Include_Root}/Export.hpp
+    ${Include_Root}/Event.hpp
+    ${Include_Root}/RenderSystem.hpp
     ${Include_Root}/CameraSystem.hpp
     ${Include_Root}/GraphicsLayer.hpp
     ${Include_Root}/LightingSystem.hpp

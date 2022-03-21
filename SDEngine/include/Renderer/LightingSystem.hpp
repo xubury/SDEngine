@@ -3,7 +3,7 @@
 
 #include "Renderer/Export.hpp"
 #include "Renderer/Event.hpp"
-#include "Renderer/System.hpp"
+#include "Renderer/RenderSystem.hpp"
 #include "ECS/Scene.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"

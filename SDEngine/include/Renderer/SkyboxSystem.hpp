@@ -2,7 +2,7 @@
 #define SD_SKYBOX_SYSTEM_HPP
 
 #include "Renderer/Export.hpp"
-#include "Renderer/System.hpp"
+#include "Renderer/RenderSystem.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"
 #include "ImGui/FileDialog.hpp"

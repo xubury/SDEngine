@@ -1,7 +1,7 @@
 #ifndef SD_TILE_MAP_SYSTEM_HPP
 #define SD_TILE_MAP_SYSTEM_HPP
 
-#include "Core/System.hpp"
+#include "Core/ECSSystem.hpp"
 #include "Graphics/Viewport.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGui/FileDialog.hpp"
@@ -12,7 +12,7 @@
 
 namespace SD {
 
-class TileMapSystem : public System {
+class TileMapSystem : public ECSSystem {
     enum class Operation { None, AddEntity, RemoveEntity };
 
    public:
