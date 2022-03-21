@@ -216,11 +216,11 @@ void TileMapSystem::OnRender()
         const glm::vec2 tex_size = tile_cnt * tile_size;
 
         const glm::vec3 cam_pos = m_camera->GetWorldPosition();
-        glm::vec2 uv_origin(cam_pos.x / tile_size.x, cam_pos.y / tile_size.y);
+        glm::vec2 uv_origin(cam_pos.x / tile_size.x, -cam_pos.y / tile_size.y);
         const glm::vec3 outline_pos(
             tex_size.x / 2.f + cam_pos.x - tile_size.x / 2.f -
                 tile_size.x * std::floor(tile_cnt.x / 2.f),
-            tex_size.y / 2.f + cam_pos.y - tile_size.y / 2.f -
+            -tex_size.y / 2.f + cam_pos.y + tile_size.y / 2.f +
                 tile_size.y * std::floor(tile_cnt.y / 2.f),
             0);
         Renderer2D::DrawTexture(

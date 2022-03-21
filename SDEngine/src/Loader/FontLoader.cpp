@@ -27,8 +27,7 @@ const char32_t UNICODE_RANGE[] = {
     0x4E00, 0x9FFF,  // CJK Ideograms
     0};
 
-Ref<Font> FontLoader::LoadFont(const std::string &path, int32_t pixel_height,
-                               bool flip_uv)
+Ref<Font> FontLoader::LoadFont(const std::string &path, int32_t pixel_height)
 {
     FT_Library ft;
     FT_Face face;
@@ -43,23 +42,22 @@ Ref<Font> FontLoader::LoadFont(const std::string &path, int32_t pixel_height,
     else {
         font = CreateRef<Font>(pixel_height);
         FT_Set_Pixel_Sizes(face, 0, pixel_height);
-        LoadGlyph(face, font.get(), flip_uv);
+        LoadGlyph(face, font.get());
     }
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
     return font;
 }
 
-void FontLoader::LoadGlyph(FT_Face face, Font *font, bool flip_uv)
+void FontLoader::LoadGlyph(FT_Face face, Font *font)
 {
     for (size_t i = 0; UNICODE_RANGE[i] != 0; i += 2) {
-        LoadRangedGlyph(face, font, UNICODE_RANGE[i], UNICODE_RANGE[i + 1] + 1,
-                        flip_uv);
+        LoadRangedGlyph(face, font, UNICODE_RANGE[i], UNICODE_RANGE[i + 1] + 1);
     }
 }
 
 void FontLoader::LoadRangedGlyph(FT_Face face, Font *font, char32_t start,
-                                 char32_t end, bool flip_uv)
+                                 char32_t end)
 {
     const int64_t NUM_GLYPHS = end - start;
     if (NUM_GLYPHS < 0) return;
@@ -105,7 +103,6 @@ void FontLoader::LoadRangedGlyph(FT_Face face, Font *font, char32_t start,
                             static_cast<float>(y) / tex_size);
         c.uv[1] = glm::vec2(static_cast<float>(x + ft_bmp->width) / tex_size,
                             static_cast<float>(y + ft_bmp->rows) / tex_size);
-        if (flip_uv) std::swap(c.uv[0].y, c.uv[1].y);
         c.glyph = glyph;
 
         font->SetCharacter(ch, std::move(c));

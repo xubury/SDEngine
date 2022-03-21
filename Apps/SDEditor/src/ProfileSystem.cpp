@@ -20,7 +20,7 @@ ProfileSystem::ProfileSystem()
 void ProfileSystem::OnInit()
 {
     System::OnInit();
-    m_font = FontLoader::LoadFont("assets/fonts/msyh.ttc", 20, true);
+    m_font = FontLoader::LoadFont("assets/fonts/msyh.ttc", 20);
 }
 
 void ProfileSystem::OnPush()

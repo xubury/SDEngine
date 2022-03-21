@@ -22,7 +22,7 @@ class FontAsset : public Asset {
         archive(*this);
         auto &storage = AssetStorage::Get();
         m_font = FontLoader::LoadFont(storage.GetAbsolutePath(m_font_path),
-                                      m_pixel_height, true);
+                                      m_pixel_height);
     }
 
     Font *GetFont() { return m_font.get(); }
