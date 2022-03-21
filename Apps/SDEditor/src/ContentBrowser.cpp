@@ -38,8 +38,7 @@ static void DrawTextureCreation(const std::filesystem::path& directory,
                              sizeof(asset_name));
             ImGui::NextColumn();
             ImGui::TextUnformatted(
-                storage.GetTypeData(GetTypeId<TextureAsset>())
-                    .file_extension.c_str());
+                storage.GetTypeData<TextureAsset>().file_extension.c_str());
 
             ImGui::NextColumn();
             ImGui::Text("Image File");
@@ -103,8 +102,8 @@ static void DrawSceneCreation(const std::filesystem::path& directory,
             ImGui::InputText("##SCENE_ASSET_NAME", asset_name,
                              sizeof(asset_name));
             ImGui::NextColumn();
-            ImGui::TextUnformatted(storage.GetTypeData(GetTypeId<SceneAsset>())
-                                       .file_extension.c_str());
+            ImGui::TextUnformatted(
+                storage.GetTypeData<SceneAsset>().file_extension.c_str());
 
             ImGui::EndChild();
             ImGui::Columns();
@@ -149,8 +148,8 @@ static void DrawModelCreation(const std::filesystem::path& directory,
             ImGui::InputText("##MODEL_ASSET_NAME", asset_name,
                              sizeof(asset_name));
             ImGui::NextColumn();
-            ImGui::TextUnformatted(storage.GetTypeData(GetTypeId<ModelAsset>())
-                                       .file_extension.c_str());
+            ImGui::TextUnformatted(
+                storage.GetTypeData<ModelAsset>().file_extension.c_str());
 
             ImGui::NextColumn();
             ImGui::Text("Model file");

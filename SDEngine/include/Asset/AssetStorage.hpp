@@ -62,6 +62,7 @@ class SD_ASSET_API AssetStorage {
 
     Asset* LoadAsset(const std::string& path)
     {
+        SD_CORE_TRACE("Loading asset from: {}", path);
         std::ifstream is(path, std::ios::binary);
         std::string id(ASSET_IDENTIFIER.size(), ' ');
         is.read(id.data(), id.size());
@@ -178,6 +179,17 @@ class SD_ASSET_API AssetStorage {
     {
         TypeId tid = GetTypeId<T>();
         m_asset_types[tid] = data;
+    }
+    template <typename T>
+    AssetTypeData& GetTypeData()
+    {
+        return m_asset_types[GetTypeId<T>()];
+    }
+
+    template <typename T>
+    const AssetTypeData& GetTypeData() const
+    {
+        return m_asset_types.at(GetTypeId<T>());
     }
 
     AssetTypeData& GetTypeData(TypeId tid) { return m_asset_types[tid]; }
