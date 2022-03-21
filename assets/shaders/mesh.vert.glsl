@@ -3,14 +3,14 @@
 #include camera.glsl
 
 layout(location = 0) in vec3 a_pos;
-layout(location = 1) in vec2 a_texCoord;
+layout(location = 1) in vec2 a_uv;
 layout(location = 2) in vec3 a_normal;
 layout(location = 3) in vec3 a_tangent;
-layout(location = 4) in vec3 a_biTangent;
+layout(location = 4) in vec3 a_bi_tangent;
 
 struct VertexOutput {
     vec3 position;
-    vec2 texCoord;
+    vec2 uv;
     vec3 normal;
 };
 
@@ -25,5 +25,5 @@ void main()
 
     out_vertex.position = fragPos;
     out_vertex.normal = transpose(inverse(mat3(u_model))) * a_normal;
-    out_vertex.texCoord = a_texCoord;
+    out_vertex.uv = a_uv;
 }

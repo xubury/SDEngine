@@ -4,7 +4,7 @@
 
 struct VertexOutput {
     vec3 position;
-    vec2 texCoord;
+    vec2 uv;
     vec3 normal;
 };
 
@@ -27,11 +27,10 @@ void main()
     g_position = in_vertex.position;
     g_normal = normalize(in_vertex.normal);
     vec3 halfColor = u_color * 0.5f;
-    g_albedo.rgb =
-        texture(u_material.diffuse, in_vertex.texCoord).rgb + halfColor;
-    g_albedo.a = texture(u_material.specular, in_vertex.texCoord).r;
-    g_ambient = texture(u_material.ambient, in_vertex.texCoord).rgb + halfColor;
-    g_emissive = texture(u_material.emissive, in_vertex.texCoord).rgb;
+    g_albedo.rgb = texture(u_material.diffuse, in_vertex.uv).rgb + halfColor;
+    g_albedo.a = texture(u_material.specular, in_vertex.uv).r;
+    g_ambient = texture(u_material.ambient, in_vertex.uv).rgb + halfColor;
+    g_emissive = texture(u_material.emissive, in_vertex.uv).rgb;
 
     g_entity_id = u_entity_id;
 }
