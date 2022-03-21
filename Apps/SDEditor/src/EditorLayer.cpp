@@ -157,8 +157,8 @@ void EditorLayer::OnImGui()
         }
         ImGui::SameLine();
         if (ImGui::Button("Quit")) {
-            Quit();
             ImGui::CloseCurrentPopup();
+            Quit();
         }
         ImGui::EndPopup();
     }
@@ -174,6 +174,11 @@ void EditorLayer::Quit() { m_quitting = true; }
 
 void EditorLayer::OnKeyEvent(const KeyEvent &e)
 {
+    // disable key event when pop up window show up (prevent bugs)
+    if (ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId |
+                                        ImGuiPopupFlags_AnyPopupLevel)) {
+        return;
+    }
     if (!e.state) return;
 
     switch (e.keycode) {

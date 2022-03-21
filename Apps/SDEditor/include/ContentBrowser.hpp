@@ -18,6 +18,11 @@ class ContentBrowser : public ECSSystem {
     void OnImGui() override;
 
    private:
+
+    void DrawModelCreation();
+    void DrawTextureCreation();
+    void DrawSceneCreation();
+    bool m_open_creation{false};
     Ref<Texture> m_file_icon;
     Ref<Texture> m_directory_icon;
 
