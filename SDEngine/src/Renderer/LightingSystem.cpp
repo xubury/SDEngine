@@ -235,13 +235,13 @@ void LightingSystem::RenderShadowMap(CascadeShadow &shadow,
         if (storage.Exists<ModelAsset>(modelComp.model_id)) {
             auto model =
                 storage.GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
-            for (const auto &[material, nodes] : model->GetNodes()) {
-                for (const auto &node : nodes) {
+            for (const auto &[material, meshes] : model->GetMaterialMap()) {
+                for (const auto &mesh : meshes) {
                     model_param->SetAsMat4(glm::value_ptr(
-                        model->GetTransform(node.transform_id) *
+                        model->GetTransform(mesh.transform_id) *
                         transformComp.GetWorldTransform().GetMatrix()));
                     Renderer3D::DrawMesh(*m_cascade_shader,
-                                         *model->GetMesh(node.mesh_id));
+                                         *model->GetMesh(mesh.mesh_id));
                 }
             }
         }
@@ -449,14 +449,14 @@ void LightingSystem::RenderGBuffer()
         if (storage.Exists<ModelAsset>(modelComp.model_id)) {
             auto model =
                 storage.GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
-            for (const auto &[material, nodes] : model->GetNodes()) {
+            for (const auto &[material, meshes] : model->GetMaterialMap()) {
                 Renderer3D::SetMaterial(*m_gbuffer_shader, *material);
-                for (const auto &node : nodes) {
+                for (const auto &mesh : meshes) {
                     model_param->SetAsMat4(glm::value_ptr(
-                        model->GetTransform(node.transform_id) *
+                        model->GetTransform(mesh.transform_id) *
                         transformComp.GetWorldTransform().GetMatrix()));
                     Renderer3D::DrawMesh(*m_gbuffer_shader,
-                                         *model->GetMesh(node.mesh_id));
+                                         *model->GetMesh(mesh.mesh_id));
                 }
             }
         }

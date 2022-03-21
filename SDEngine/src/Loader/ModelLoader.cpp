@@ -171,16 +171,13 @@ static Material ProcessAiMaterial(const std::filesystem::path &directory,
         }
         std::string full_path =
             (directory / texture_path.C_Str()).generic_string();
-        Ref<Texture> texture;
-        if (model.HasTexture(full_path)) {
-            texture = model.GetTexture(full_path);
-        }
-        else {
-            texture = TextureLoader::LoadTexture2D(full_path);
-            model.AddTexture(full_path, texture);
+        if (!model.HasTexture(full_path)) {
+            auto texture = TextureLoader::LoadTexture2D(full_path);
             texture->SetWrap(ConvertAssimpMapMode(ai_map_mode));
+            model.AddTexture(full_path, texture);
         }
-        material.SetTexture(ConvertAssimpTextureType(ai_type), texture.get());
+        Texture *texture = model.GetTexture(full_path);
+        material.SetTexture(ConvertAssimpTextureType(ai_type), texture);
     }
     return material;
 }
@@ -196,10 +193,10 @@ static void ProcessNode(const aiScene *scene, const aiNode *node, Model &model,
         model.AddTransform(trans);
         for (uint32_t j = 0; j < child->mNumMeshes; ++j) {
             uint32_t mesh_id = child->mMeshes[j];
-            ModelNode node;
+            MeshReference node;
             node.mesh_id = mesh_id;
             node.transform_id = i;
-            model.AddModelNode(
+            model.MapMaterial(
                 model.GetMaterial(scene->mMeshes[mesh_id]->mMaterialIndex),
                 std::move(node));
         }

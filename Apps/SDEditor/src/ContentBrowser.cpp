@@ -69,6 +69,7 @@ void ContentBrowser::DrawTextureCreation()
                 asset, (m_current_directory / asset_name).generic_string());
 
             ImGui::CloseCurrentPopup();
+            m_open_creation = false;
         }
 
         ImGui::EndPopup();
@@ -99,6 +100,7 @@ void ContentBrowser::DrawSceneCreation()
             storage.SaveAsset(
                 asset, (m_current_directory / asset_name).generic_string());
             ImGui::CloseCurrentPopup();
+            m_open_creation = false;
         }
 
         ImGui::EndPopup();
@@ -150,6 +152,7 @@ void ContentBrowser::DrawModelCreation()
             storage.SaveAsset(
                 asset, (m_current_directory / asset_name).generic_string());
             ImGui::CloseCurrentPopup();
+            m_open_creation = false;
         }
 
         ImGui::EndPopup();

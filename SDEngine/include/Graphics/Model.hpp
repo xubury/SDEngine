@@ -9,35 +9,37 @@
 
 namespace SD {
 
-using TextureList = std::map<std::string, Ref<Texture>>;
-using MeshList = std::vector<Mesh>;
-
-struct ModelNode {
+struct MeshReference {
     uint32_t mesh_id;
     uint32_t transform_id;
 };
 
-using ModelTree = std::unordered_map<const Material *, std::vector<ModelNode>>;
-
 class SD_GRAPHICS_API Model {
    public:
+    using MaterialMap =
+        std::unordered_map<const Material *, std::vector<MeshReference>>;
+    using TextureList = std::unordered_map<std::string, Ref<Texture>>;
+    using MeshList = std::vector<Mesh>;
+    using MaterialList = std::vector<Material>;
+    using TransformList = std::vector<glm::mat4>;
+
     Model() = default;
 
-    const std::vector<Material> &GetMaterials() const { return m_materials; };
+    const MaterialList &GetMaterials() const { return m_materials; };
     const Material *GetMaterials(uint32_t id) const
     {
         return &m_materials[id];
     };
 
-    const ModelTree &GetNodes() const { return m_nodes; }
+    const MaterialMap &GetMaterialMap() const { return m_refs; }
 
-    void AddModelNode(const Material *mat, const ModelNode &node)
+    void MapMaterial(const Material *mat, const MeshReference &node)
     {
-        m_nodes[mat].emplace_back(node);
+        m_refs[mat].emplace_back(node);
     }
-    void AddModelNode(const Material *mat, ModelNode &&node)
+    void MapMaterial(const Material *mat, MeshReference &&node)
     {
-        m_nodes[mat].emplace_back(node);
+        m_refs[mat].emplace_back(node);
     }
 
     void AddTransform(const glm::mat4 &transform)
@@ -48,7 +50,7 @@ class SD_GRAPHICS_API Model {
     {
         return m_transforms.at(id);
     }
-    const std::vector<Mesh> &GetMeshes() const { return m_meshes; }
+    const MeshList &GetMeshes() const { return m_meshes; }
 
     void AddMaterial(const Material &material);
     void AddMaterial(Material &&material);
@@ -65,9 +67,9 @@ class SD_GRAPHICS_API Model {
     {
         m_textures.emplace(path, texture);
     }
-    Ref<Texture> GetTexture(const std::string &path)
+    Texture *GetTexture(const std::string &path)
     {
-        return m_textures.at(path);
+        return m_textures.at(path).get();
     }
     bool HasTexture(const std::string &path)
     {
@@ -80,11 +82,11 @@ class SD_GRAPHICS_API Model {
    private:
     TextureList m_textures;
 
-    std::vector<Mesh> m_meshes;
-    std::vector<glm::mat4> m_transforms;
-    std::vector<Material> m_materials;
+    MeshList m_meshes;
+    TransformList m_transforms;
+    MaterialList m_materials;
 
-    ModelTree m_nodes;
+    MaterialMap m_refs;
 
     std::string m_path;
 };
