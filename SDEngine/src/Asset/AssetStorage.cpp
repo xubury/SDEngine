@@ -3,7 +3,6 @@
 namespace SD {
 
 const std::string AssetStorage::ASSET_IDENTIFIER = "SD_ASSET";
-const std::string AssetStorage::ASSET_POSFIX = ".sda";
 
 static AssetStorage *s_storage = nullptr;
 
@@ -28,16 +27,34 @@ AssetStorage::~AssetStorage()
     m_assets.clear();
 }
 
-void AssetStorage::ScanDirectory(const std::filesystem::path &dir)
+void AssetStorage::ScanDirectory(const std::filesystem::path &dir,
+                                 const std::string &ext)
 {
     for (auto &entry : std::filesystem::directory_iterator(dir)) {
         if (entry.is_directory()) {
-            ScanDirectory(entry);
+            ScanDirectory(entry, ext);
         }
-        else if (entry.is_regular_file() &&
-                 entry.path().extension() == ASSET_POSFIX) {
+        else if (entry.is_regular_file() && entry.path().extension() == ext) {
             LoadAsset(entry.path().generic_string());
         }
+    }
+}
+
+void AssetStorage::ScanDirectory(const std::filesystem::path &dir)
+{
+    // sort loading order
+    using ExtensionPriority = std::pair<int, std::string>;
+    std::vector<ExtensionPriority> priority;
+    for (const auto &[tid, type] : m_asset_types) {
+        priority.emplace_back(type.load_priority, type.file_extension);
+    }
+    std::sort(
+        priority.begin(), priority.end(),
+        [](const auto &lhs, const auto &rhs) { return lhs.first < rhs.first; });
+
+    // scan specify extension
+    for (const auto &[priorty, ext] : priority) {
+        ScanDirectory(dir, ext);
     }
 }
 

@@ -46,18 +46,18 @@ Application *Application::s_instance;
 
 static void RegisterAssets(AssetStorage *storage)
 {
-    storage->RegisterAsset<FontAsset>(
-        AssetTypeData{0, std::bind(Asset::Create<FontAsset>),
-                      std::bind(Asset::Destroy, std::placeholders::_1)});
-    storage->RegisterAsset<TextureAsset>(
-        AssetTypeData{0, std::bind(Asset::Create<TextureAsset>),
-                      std::bind(Asset::Destroy, std::placeholders::_1)});
-    storage->RegisterAsset<ModelAsset>(
-        AssetTypeData{1, std::bind(Asset::Create<ModelAsset>),
-                      std::bind(Asset::Destroy, std::placeholders::_1)});
-    storage->RegisterAsset<SceneAsset>(
-        AssetTypeData{2, std::bind(Asset::Create<SceneAsset>),
-                      std::bind(Asset::Destroy, std::placeholders::_1)});
+    storage->RegisterAsset<FontAsset>(AssetTypeData{
+        0, std::bind(Asset::Create<FontAsset>),
+        std::bind(Asset::Destroy, std::placeholders::_1), ".sdfont"});
+    storage->RegisterAsset<TextureAsset>(AssetTypeData{
+        0, std::bind(Asset::Create<TextureAsset>),
+        std::bind(Asset::Destroy, std::placeholders::_1), ".sdtexture"});
+    storage->RegisterAsset<ModelAsset>(AssetTypeData{
+        1, std::bind(Asset::Create<ModelAsset>),
+        std::bind(Asset::Destroy, std::placeholders::_1), ".sdmodel"});
+    storage->RegisterAsset<SceneAsset>(AssetTypeData{
+        2, std::bind(Asset::Create<SceneAsset>),
+        std::bind(Asset::Destroy, std::placeholders::_1), ".sdscene"});
 }
 
 Application::Application(const std::string &title, Device::API api)

@@ -16,6 +16,7 @@ struct AssetTypeData {
     int load_priority{0};
     AssetCreateFunc create_func;
     AssetDestroyFunc destroy_func;
+    std::string file_extension;
 };
 
 class SD_ASSET_API AssetStorage {
@@ -61,8 +62,7 @@ class SD_ASSET_API AssetStorage {
 
     Asset* LoadAsset(const std::string& path)
     {
-        std::string full_path = ResolvePath(path);
-        std::ifstream is(full_path, std::ios::binary);
+        std::ifstream is(path, std::ios::binary);
         std::string id(ASSET_IDENTIFIER.size(), ' ');
         is.read(id.data(), id.size());
         if (id != ASSET_IDENTIFIER) {
@@ -109,7 +109,7 @@ class SD_ASSET_API AssetStorage {
 
     void SaveAsset(Asset* obj, const std::string& path) const
     {
-        std::string full_path = ResolvePath(path);
+        std::string full_path = ResolvePath(obj->m_tid, path);
         if (std::filesystem::exists(full_path)) {
             std::filesystem::remove(full_path);
         }
@@ -182,6 +182,11 @@ class SD_ASSET_API AssetStorage {
 
     AssetTypeData& GetTypeData(TypeId tid) { return m_asset_types[tid]; }
 
+    const AssetTypeData& GetTypeData(TypeId tid) const
+    {
+        return m_asset_types.at(tid);
+    }
+
     template <typename T>
     const Cache& GetCache() const
     {
@@ -231,15 +236,15 @@ class SD_ASSET_API AssetStorage {
     void ScanDirectory(const std::filesystem::path& dir);
 
     const static std::string ASSET_IDENTIFIER;
-    const static std::string ASSET_POSFIX;
 
    private:
-    std::string ResolvePath(const std::string& path) const
+    void ScanDirectory(const std::filesystem::path& dir,
+                       const std::string& ext);
+
+    std::string ResolvePath(TypeId tid, const std::string& path) const
     {
         std::filesystem::path full_path = m_directory / path;
-        if (!full_path.has_extension()) {
-            full_path += ASSET_POSFIX;
-        }
+        full_path += GetTypeData(tid).file_extension;
         return full_path.generic_string();
     }
 

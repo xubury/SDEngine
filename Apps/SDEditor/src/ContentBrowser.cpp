@@ -24,19 +24,22 @@ static void DrawTextureCreation(const std::filesystem::path& directory,
                                 bool* open)
 {
     if (open) {
+        auto& storage = AssetStorage::Get();
         ImGui::OpenPopup("Texture Creation");
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4, 4});
 
         if (ImGui::BeginCenterPopupModal("Texture Creation")) {
             ImGui::BeginChild("##SHEET", ImVec2(300, 300));
-            ImGui::Columns(2, 0, false);
+            ImGui::Columns(3, 0, false);
             static char asset_name[255];
             ImGui::Text("Name");
             ImGui::NextColumn();
             ImGui::InputText("##TEXTURE_ASSET_NAME", asset_name,
                              sizeof(asset_name));
-            ImGui::SameLine();
-            ImGui::TextUnformatted(AssetStorage::ASSET_POSFIX.c_str());
+            ImGui::NextColumn();
+            ImGui::TextUnformatted(
+                storage.GetTypeData(GetTypeId<TextureAsset>())
+                    .file_extension.c_str());
 
             ImGui::NextColumn();
             ImGui::Text("Image File");
@@ -51,8 +54,7 @@ static void DrawTextureCreation(const std::filesystem::path& directory,
                 filedlg_info.title = "Open File";
                 // filedlg_info.regex_match = FONT_FILTER;
                 filedlg_info.file_name = "";
-                filedlg_info.directory_path =
-                    AssetStorage::Get().GetDirectory();
+                filedlg_info.directory_path = storage.GetDirectory();
             }
             if (ImGui::FileDialog(&filedlg_open, &filedlg_info)) {
                 texture_path = filedlg_info.result_path.generic_string();
@@ -63,7 +65,6 @@ static void DrawTextureCreation(const std::filesystem::path& directory,
 
             ImGui::Separator();
             if (ImGui::Button("Confirm")) {
-                auto& storage = AssetStorage::Get();
                 auto asset = storage.CreateAsset<TextureAsset>(asset_name);
                 asset->Import(texture_path);
                 storage.SaveAsset(asset,
@@ -92,23 +93,24 @@ static void DrawSceneCreation(const std::filesystem::path& directory,
         ImGui::OpenPopup("Scene Creation");
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4, 4});
 
+        auto& storage = AssetStorage::Get();
         if (ImGui::BeginCenterPopupModal("Scene Creation")) {
             ImGui::BeginChild("##SHEET", ImVec2(300, 300));
-            ImGui::Columns(2, 0, false);
+            ImGui::Columns(3, 0, false);
             static char asset_name[255];
             ImGui::Text("Name");
             ImGui::NextColumn();
             ImGui::InputText("##SCENE_ASSET_NAME", asset_name,
                              sizeof(asset_name));
-            ImGui::SameLine();
-            ImGui::TextUnformatted(AssetStorage::ASSET_POSFIX.c_str());
+            ImGui::NextColumn();
+            ImGui::TextUnformatted(storage.GetTypeData(GetTypeId<SceneAsset>())
+                                       .file_extension.c_str());
 
             ImGui::EndChild();
             ImGui::Columns();
 
             ImGui::Separator();
             if (ImGui::Button("Confirm")) {
-                auto& storage = AssetStorage::Get();
                 auto asset = storage.CreateAsset<SceneAsset>(asset_name);
 
                 storage.SaveAsset(asset,
@@ -136,17 +138,19 @@ static void DrawModelCreation(const std::filesystem::path& directory,
         ImGui::OpenPopup("Model Creation");
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4, 4});
 
+        auto& storage = AssetStorage::Get();
         if (ImGui::BeginCenterPopupModal("Model Creation")) {
             ImGui::BeginChild("##SHEET", ImVec2(300, 300));
             static char asset_name[255];
-            ImGui::Columns(2, 0, false);
+            ImGui::Columns(3, 0, false);
 
             ImGui::Text("Name");
             ImGui::NextColumn();
             ImGui::InputText("##MODEL_ASSET_NAME", asset_name,
                              sizeof(asset_name));
-            ImGui::SameLine();
-            ImGui::TextUnformatted(AssetStorage::ASSET_POSFIX.c_str());
+            ImGui::NextColumn();
+            ImGui::TextUnformatted(storage.GetTypeData(GetTypeId<ModelAsset>())
+                                       .file_extension.c_str());
 
             ImGui::NextColumn();
             ImGui::Text("Model file");
@@ -161,8 +165,7 @@ static void DrawModelCreation(const std::filesystem::path& directory,
                 filedlg_info.title = "Open File";
                 // filedlg_info.regex_match = FONT_FILTER;
                 filedlg_info.file_name = "";
-                filedlg_info.directory_path =
-                    AssetStorage::Get().GetDirectory();
+                filedlg_info.directory_path = storage.GetDirectory();
             }
             if (ImGui::FileDialog(&filedlg_open, &filedlg_info)) {
                 model_path = filedlg_info.result_path.generic_string();
@@ -173,7 +176,6 @@ static void DrawModelCreation(const std::filesystem::path& directory,
 
             ImGui::Separator();
             if (ImGui::Button("Confirm")) {
-                auto& storage = AssetStorage::Get();
                 auto asset = storage.CreateAsset<ModelAsset>(asset_name);
                 asset->Import(model_path);
 
@@ -240,9 +242,7 @@ void ContentBrowser::OnImGui()
          std::filesystem::directory_iterator(m_current_directory)) {
         const auto& path = entry.path();
         const bool is_directory = entry.is_directory();
-        const std::filesystem::path relative_path =
-            std::filesystem::relative(path, root_path);
-        const std::string filename = relative_path.filename().string();
+        const std::string filename = path.filename().string();
 
         Ref<Texture> icon = is_directory ? m_directory_icon : m_file_icon;
         ImGui::PushID(filename.c_str());
@@ -251,7 +251,7 @@ void ContentBrowser::OnImGui()
                            {thumbnail_size, thumbnail_size});
 
         if (!is_directory && ImGui::BeginDragDropSource()) {
-            const std::string item_path = relative_path.string();
+            const std::string item_path = path.generic_string();
             ImGui::SetDragDropPayload(DROP_ASSET_ITEM, item_path.c_str(),
                                       item_path.size() + 1);
             ImGui::TextUnformatted(item_path.c_str());
