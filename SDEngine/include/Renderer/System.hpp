@@ -5,6 +5,7 @@
 #include "Renderer/Event.hpp"
 
 namespace SD {
+
 class RenderSystem : public System {
    public:
     RenderSystem(const std::string &name) : System(name), m_camera(nullptr) {}

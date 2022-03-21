@@ -43,7 +43,7 @@ void Renderer3D::SetMaterial(Shader& shader, const Material& material)
         ->SetAsTexture(material.GetTexture(MaterialType::EMISSIVE));
 }
 
-void Renderer3D::SetShadowCaster(Shader& shader, CascadeShadow& shadow)
+void Renderer3D::SetShadowCaster(Shader& shader, const CascadeShadow& shadow)
 {
     auto& pv = shadow.GetLevelProjectionView();
     m_shadow_UBO->UpdateData(pv.data(), sizeof(glm::mat4) * pv.size());
