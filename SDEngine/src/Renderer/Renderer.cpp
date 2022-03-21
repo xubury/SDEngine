@@ -80,6 +80,12 @@ void Renderer::EndRenderPass()
     s_render_pass_stacks.pop();
     m_device->SetFramebuffer(nullptr);
     m_device->SetShader(nullptr);
+    // restore render pass state
+    if (!IsEmptyStack()) {
+        auto& render_pass = GetCurrentRenderPass();
+        SetRenderState(render_pass.framebuffer, render_pass.viewport_width,
+                       render_pass.viewport_height, render_pass.op);
+    }
 }
 
 const RenderPassInfo& Renderer::GetCurrentRenderPass()

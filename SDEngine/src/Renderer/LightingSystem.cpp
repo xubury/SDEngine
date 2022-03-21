@@ -381,16 +381,6 @@ void LightingSystem::RenderDeferred()
         CascadeShadow &shadow = lightComp.shadow;
         const Transform &transform = transformComp.GetWorldTransform();
 
-        if (light.IsCastShadow()) {
-            RenderShadowMap(shadow, transform);
-
-            cascade_map->SetAsTexture(shadow.GetCascadeMap()->GetTexture());
-            auto &planes = shadow.GetCascadePlanes();
-            num_of_cascades->SetAsInt(planes.size());
-            cascade_planes->SetAsVec(&planes[0], planes.size());
-            Renderer3D::SetShadowCaster(*m_deferred_shader, shadow);
-        }
-
         RenderPassInfo info{m_light_buffer[output_id].get(),
                             m_light_buffer[output_id]->GetWidth(),
                             m_light_buffer[output_id]->GetHeight(),
@@ -399,6 +389,7 @@ void LightingSystem::RenderDeferred()
                             {0, 0, 0, 0}};
 
         Renderer::BeginRenderPass(info);
+
         Renderer::SetCamera(*m_deferred_shader, GetCamera());
         lighting->SetAsTexture(m_light_buffer[input_id]->GetTexture());
         direction->SetAsVec3(&transform.GetFront()[0]);
@@ -414,6 +405,15 @@ void LightingSystem::RenderDeferred()
 
         is_directional->SetAsBool(light.IsDirectional());
         is_cast_shadow->SetAsBool(light.IsCastShadow());
+        if (light.IsCastShadow()) {
+            RenderShadowMap(shadow, transform);
+
+            cascade_map->SetAsTexture(shadow.GetCascadeMap()->GetTexture());
+            auto &planes = shadow.GetCascadePlanes();
+            num_of_cascades->SetAsInt(planes.size());
+            cascade_planes->SetAsVec(&planes[0], planes.size());
+            Renderer3D::SetShadowCaster(*m_deferred_shader, shadow);
+        }
         Renderer::DrawNDCQuad(*m_deferred_shader);
         std::swap(m_light_buffer[input_id], m_light_buffer[output_id]);
         Renderer::EndRenderPass();
