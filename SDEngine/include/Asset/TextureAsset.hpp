@@ -33,11 +33,11 @@ class TextureAsset : public Asset {
         m_texture->SetMipmapMode(m_mipmap_mode);
     }
 
-    void Import(const Ref<Texture> &texture, const std::string &full_path)
+    void Import(const std::string &full_path)
     {
         auto &storage = AssetStorage::Get();
         m_texture_path = storage.GetRelativePath(full_path);
-        m_texture = texture;
+        m_texture = TextureLoader::LoadTexture2D(full_path);
         m_wrap = m_texture->GetWrap();
         m_filter = m_texture->GetMagFilter();
         m_min_filter = m_texture->GetMinFilter();

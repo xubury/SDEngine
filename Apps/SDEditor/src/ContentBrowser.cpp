@@ -20,6 +20,71 @@ void ContentBrowser::OnInit()
     m_current_directory = AssetStorage::Get().GetDirectory();
 }
 
+static void DrawTextureCreation(const std::filesystem::path& directory,
+                                bool* open)
+{
+    if (open) {
+        ImGui::OpenPopup("Texture Creation");
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4, 4});
+
+        if (ImGui::BeginCenterPopupModal("Texture Creation")) {
+            ImGui::BeginChild("##SHEET", ImVec2(300, 300));
+            ImGui::Columns(2, 0, false);
+            static char asset_name[255];
+            ImGui::Text("Name");
+            ImGui::NextColumn();
+            ImGui::InputText("##TEXTURE_ASSET_NAME", asset_name,
+                             sizeof(asset_name));
+            ImGui::SameLine();
+            ImGui::TextUnformatted(AssetStorage::ASSET_POSFIX.c_str());
+
+            ImGui::NextColumn();
+            ImGui::Text("Image File");
+
+            ImGui::NextColumn();
+            static ImFileDialogInfo filedlg_info;
+            static bool filedlg_open = false;
+            static std::string texture_path = "None";
+            if (ImGui::Button(texture_path.c_str())) {
+                filedlg_open = true;
+                filedlg_info.type = ImGuiFileDialogType::OpenFile;
+                filedlg_info.title = "Open File";
+                // filedlg_info.regex_match = FONT_FILTER;
+                filedlg_info.file_name = "";
+                filedlg_info.directory_path =
+                    AssetStorage::Get().GetDirectory();
+            }
+            if (ImGui::FileDialog(&filedlg_open, &filedlg_info)) {
+                texture_path = filedlg_info.result_path.generic_string();
+            }
+
+            ImGui::EndChild();
+            ImGui::Columns();
+
+            ImGui::Separator();
+            if (ImGui::Button("Confirm")) {
+                auto& storage = AssetStorage::Get();
+                auto asset = storage.CreateAsset<TextureAsset>(asset_name);
+                asset->Import(texture_path);
+                storage.SaveAsset(asset,
+                                  (directory / asset_name).generic_string());
+
+                ImGui::CloseCurrentPopup();
+                *open = false;
+            }
+
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel")) {
+                ImGui::CloseCurrentPopup();
+                *open = false;
+            }
+        }
+    }
+
+    ImGui::PopStyleVar();
+    ImGui::EndPopup();
+}
+
 static void DrawSceneCreation(const std::filesystem::path& directory,
                               bool* open)
 {
@@ -33,7 +98,7 @@ static void DrawSceneCreation(const std::filesystem::path& directory,
             static char asset_name[255];
             ImGui::Text("Name");
             ImGui::NextColumn();
-            ImGui::InputText("##ASSET_FILE_NAME", asset_name,
+            ImGui::InputText("##SCENE_ASSET_NAME", asset_name,
                              sizeof(asset_name));
             ImGui::SameLine();
             ImGui::TextUnformatted(AssetStorage::ASSET_POSFIX.c_str());
@@ -78,7 +143,7 @@ static void DrawModelCreation(const std::filesystem::path& directory,
 
             ImGui::Text("Name");
             ImGui::NextColumn();
-            ImGui::InputText("##ASSET_FILE_NAME", asset_name,
+            ImGui::InputText("##MODEL_ASSET_NAME", asset_name,
                              sizeof(asset_name));
             ImGui::SameLine();
             ImGui::TextUnformatted(AssetStorage::ASSET_POSFIX.c_str());
@@ -150,6 +215,7 @@ void ContentBrowser::OnImGui()
             };
         menu_item("Create Model Asset", DrawModelCreation);
         menu_item("Create Scene Asset", DrawSceneCreation);
+        menu_item("Create Texture Asset", DrawTextureCreation);
         ImGui::EndPopup();
     }
 
