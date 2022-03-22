@@ -67,7 +67,7 @@ class SD_ASSET_API AssetStorage {
         std::string id(ASSET_IDENTIFIER.size(), ' ');
         is.read(id.data(), id.size());
         if (id != ASSET_IDENTIFIER) {
-            throw Exception("Invalid asset file!");
+            throw FileException(path, "Invalid asset file!");
         }
         cereal::PortableBinaryInputArchive iarchive(is);
         return DeserializeAsset(iarchive);

@@ -213,8 +213,8 @@ Ref<Model> ModelLoader::LoadModel(const std::string &path)
     uint32_t import_flags = aiProcess_Triangulate | aiProcess_FlipUVs;
     const aiScene *scene = importer.ReadFile(path, import_flags);
     if (scene == nullptr) {
-        throw Exception(
-            fmt::format("Model loading failed: {}", importer.GetErrorString()));
+        throw FileException(path, fmt::format("Model loading failed: {}",
+                                              importer.GetErrorString()));
     }
     else {
         model = CreateRef<Model>();
