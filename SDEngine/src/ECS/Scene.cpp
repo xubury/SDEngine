@@ -35,6 +35,7 @@ Entity Scene::CloneEntity(EntityId from)
             storage.emplace(to, storage.get(from));
         }
     }
+    get<IdComponent>(to).id = ResourceId();  // create a new ResourceId;
     get<TransformComponent>(to).children.clear();
     auto &children = get<TransformComponent>(from).children;
     Entity to_entity{to, this};
