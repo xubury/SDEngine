@@ -12,7 +12,7 @@
 
 namespace SD {
 
-GLWindow::GLWindow(const WindowCreateInfo &info)
+GLWindow::GLWindow(const WindowCreateInfo &info) : m_is_init_imgui(false)
 {
     SDL(SDL_Init(SDL_INIT_EVERYTHING));
     uint32_t sdl_flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
