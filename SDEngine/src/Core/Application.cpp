@@ -58,7 +58,8 @@ static void RegisterAssets(AssetStorage *storage)
 
 Application::Application(const std::string &title, Device::API api)
 {
-    std::string debug_path = (GetAppDirectory() / "Debug.txt").generic_string();
+    const std::string debug_path =
+        (GetAppDirectory() / "Debug.txt").generic_string();
     Log::Init(debug_path);
     SD_CORE_INFO("Debug info is output to: {}", debug_path);
 
@@ -161,8 +162,8 @@ void Application::LoadSettingsFile()
 void Application::Run()
 {
     Clock clock;
-    float min_fps = 30;
-    float ms_per_frame = 1000.f / min_fps;
+    const float min_fps = 30;
+    const float ms_per_frame = 1000.f / min_fps;
     uint32_t ms_elapsed = 0;
     while (!m_window->ShouldClose()) {
         m_window->PollEvents();
