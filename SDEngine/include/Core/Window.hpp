@@ -19,8 +19,6 @@ struct SD_CORE_API WindowCreateInfo {
     bool vsync;
 };
 
-class EventDispatcher;
-
 class SD_CORE_API Window {
    public:
     static Scope<Window> Create(const WindowCreateInfo &info);

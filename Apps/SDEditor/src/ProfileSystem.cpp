@@ -49,10 +49,9 @@ void ProfileSystem::OnRender()
 
     m_fps.Probe();
 
-    std::string fps_str;
-    fps_str.resize(255);
-    snprintf(fps_str.data(), fps_str.size(), "FPS: %.2f(%.2f ms)",
-             m_fps.GetFPS(), m_fps.GetFrameTime());
+    char fps_str[255];
+    snprintf(fps_str, sizeof(fps_str), "FPS: %.2f(%.2f ms)", m_fps.GetFPS(),
+             m_fps.GetFrameTime());
     // only draw colors
     const int index = 0;
     Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1});

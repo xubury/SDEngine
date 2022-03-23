@@ -22,22 +22,11 @@ class SD_GRAPHICS_API Viewport {
     glm::vec2 MapScreenToClip(const glm::ivec2 &screen) const;
     glm::ivec2 MapClipToScreen(const glm::vec2 &clip) const;
 
-    void SetHover(bool hover) { m_is_hover = hover; }
-
-    bool IsHover() const { return m_is_hover; }
-
-    void SetFocus(bool focus) { m_is_focus = focus; }
-
-    bool IsFocus() const { return m_is_focus; }
-
    private:
     int m_left;
     int m_top;
     int m_width;
     int m_height;
-
-    bool m_is_hover;
-    bool m_is_focus;
 };
 
 }  // namespace SD

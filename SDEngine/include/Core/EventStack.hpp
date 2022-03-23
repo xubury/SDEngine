@@ -7,7 +7,7 @@
 namespace SD {
 
 template <typename T>
-class SD_UTILITY_API EventStack {
+class EventStack {
     using iterator = typename std::vector<T>::iterator;
     using reverse_iterator = typename std::vector<T>::reverse_iterator;
 
