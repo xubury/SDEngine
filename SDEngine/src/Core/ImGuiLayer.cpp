@@ -96,47 +96,6 @@ void ImGuiLayer::OnInit()
     m_window->ImGuiInitBackend();
 }
 
-void ImGuiLayer::OnPush()
-{
-    ImGuiIO& io = ImGui::GetIO();
-    EventDispatcher& dispatcher = GetEventDispatcher();
-    m_handlers.push_back(
-        dispatcher.Register<WindowSizeEvent>([&](const WindowSizeEvent& e) {
-            io.DisplaySize.x = static_cast<float>(e.width);
-            io.DisplaySize.y = static_cast<float>(e.height);
-        }));
-    m_handlers.push_back(dispatcher.Register<TextInputEvent>(
-        [&](const TextInputEvent& e) { io.AddInputCharactersUTF8(e.text); }));
-    m_handlers.push_back(dispatcher.Register<KeyEvent>([&](const KeyEvent& e) {
-        io.KeysDown[static_cast<uint16_t>(GetScancodeFromKeycode(e.keycode))] =
-            e.state;
-        io.KeyShift = e.mod == Keymod::Shift;
-        io.KeyCtrl = e.mod == Keymod::Ctrl;
-        io.KeyAlt = e.mod == Keymod::Alt;
-        io.KeySuper = e.mod == Keymod::GUI;
-#if defined(SD_PLATFORM_WINDOWS)
-        io.KeySuper = false;
-#else
-        io.KeySuper = e.mod == Keymod::GUI;
-#endif
-    }));
-    m_handlers.push_back(
-        dispatcher.Register<MouseMotionEvent>([&](const MouseMotionEvent& e) {
-            io.MousePos.x = static_cast<float>(e.x);
-            io.MousePos.y = static_cast<float>(e.y);
-        }));
-    m_handlers.push_back(
-        dispatcher.Register<MouseButtonEvent>([&](const MouseButtonEvent& e) {
-            int button = static_cast<int>(e.button) -
-                         static_cast<int>(MouseButton::Left);
-            io.MouseDown[button] = e.state;
-        }));
-    m_handlers.push_back(dispatcher.Register<MouseWheelEvent>(
-        [&](const MouseWheelEvent& e) { io.MouseWheel += e.y; }));
-}
-
-void ImGuiLayer::OnPop() { m_handlers.clear(); }
-
 void ImGuiLayer::SetDarkThemeColor()
 {
     auto& colors = ImGui::GetStyle().Colors;

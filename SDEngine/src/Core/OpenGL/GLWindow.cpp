@@ -56,6 +56,9 @@ void GLWindow::PollEvents()
     SDL_Event sdl_event;
     EventDispatcher &dispatcher = GetDispatcher();
     while (SDL_PollEvent(&sdl_event) == 1) {
+        if (m_is_init_imgui) {
+            ImGui_ImplSDL2_ProcessEvent(&sdl_event);
+        }
         switch (sdl_event.type) {
             case SDL_MOUSEMOTION: {
                 MouseMotionEvent event;
@@ -119,12 +122,14 @@ void GLWindow::ImGuiInitBackend()
 {
     ImGui_ImplSDL2_InitForOpenGL(m_window, m_context);
     ImGui_ImplOpenGL3_Init("#version 450");
+    m_is_init_imgui = true;
 }
 
 void GLWindow::ImGuiShutdown()
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
+    m_is_init_imgui = false;
 }
 
 void GLWindow::ImGuiNewFrame()

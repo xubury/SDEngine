@@ -33,6 +33,7 @@ class SD_CORE_API GLWindow : public Window {
 
     void *m_context;
     SDL_Window *m_window;
+    bool m_is_init_imgui;
 };
 
 }  // namespace SD

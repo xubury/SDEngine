@@ -20,10 +20,6 @@ class SD_CORE_API ImGuiLayer : public Layer {
 
     void OnInit() override;
 
-    void OnPush() override;
-
-    void OnPop() override;
-
     ImGuiContext *GetContext() const { return m_context; }
 
    private:
