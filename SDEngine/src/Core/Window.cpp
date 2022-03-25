@@ -4,8 +4,7 @@
 
 namespace SD {
 
-Scope<Window> Window::Create(const WindowCreateInfo &info)
-{
+Scope<Window> Window::Create(const WindowCreateInfo &info) {
     SD_CORE_TRACE("Initializing Window...");
     Scope<Window> window;
     switch (Device::GetAPI()) {
@@ -18,6 +17,8 @@ Scope<Window> Window::Create(const WindowCreateInfo &info)
     }
     return window;
 }
+
+Window::Window() : m_should_close(false) {}
 
 bool Window::ShouldClose() { return m_should_close; }
 

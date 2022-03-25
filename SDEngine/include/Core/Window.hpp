@@ -23,7 +23,7 @@ class SD_CORE_API Window {
    public:
     static Scope<Window> Create(const WindowCreateInfo &info);
 
-    Window() = default;
+    Window();
     virtual ~Window() = default;
 
     Window(const Window &) = delete;
@@ -49,13 +49,10 @@ class SD_CORE_API Window {
     bool ShouldClose();
     void SetShouldClose(bool shouldClose);
 
-    void SetDispatcher(EventDispatcher *dispatcher)
-    {
+    void SetDispatcher(EventDispatcher *dispatcher) {
         m_dispatcher = dispatcher;
     }
-    EventDispatcher &GetDispatcher() {
-        return *m_dispatcher;
-    }
+    EventDispatcher &GetDispatcher() { return *m_dispatcher; }
 
    private:
     bool m_should_close;
