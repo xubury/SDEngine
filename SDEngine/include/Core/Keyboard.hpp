@@ -158,8 +158,8 @@ enum class Scancode : uint16_t {
     F11 = 68,
     F12 = 69,
 
-    Printscreen = 70,
-    Scrolllock = 71,
+    PrintScreen = 70,
+    ScrollLock = 71,
     Pause = 72,
     Insert = 73, /**< insert on PC, help on some Mac keyboards (but
                                    does send code 73, not 117) */
@@ -239,16 +239,16 @@ enum class Scancode : uint16_t {
     KPComma = 133,
     KPEqualsAs400 = 134,
 
-    InternationaL1 = 135, /**< used on Asian keyboards, see
+    International1 = 135, /**< used on Asian keyboards, see
                                             footnotes in USB doc */
-    InternationaL2 = 136,
-    InternationaL3 = 137, /**< Yen */
-    InternationaL4 = 138,
-    InternationaL5 = 139,
-    InternationaL6 = 140,
-    InternationaL7 = 141,
-    InternationaL8 = 142,
-    InternationaL9 = 143,
+    International2 = 136,
+    International3 = 137, /**< Yen */
+    International4 = 138,
+    International5 = 139,
+    International6 = 140,
+    International7 = 141,
+    International8 = 142,
+    International9 = 143,
     Lang1 = 144, /**< Hangul/English toggle */
     Lang2 = 145, /**< Hanja conversion */
     Lang3 = 146, /**< Katakana */
@@ -495,8 +495,8 @@ enum class Keycode : uint32_t {
     F11 = SCANCODE_TO_KEYCODE(Scancode::F11),
     F12 = SCANCODE_TO_KEYCODE(Scancode::F12),
 
-    PrintScreen = SCANCODE_TO_KEYCODE(Scancode::Printscreen),
-    ScrollLock = SCANCODE_TO_KEYCODE(Scancode::Scrolllock),
+    PrintScreen = SCANCODE_TO_KEYCODE(Scancode::PrintScreen),
+    ScrollLock = SCANCODE_TO_KEYCODE(Scancode::ScrollLock),
     Pause = SCANCODE_TO_KEYCODE(Scancode::Pause),
     Insert = SCANCODE_TO_KEYCODE(Scancode::Insert),
     Home = SCANCODE_TO_KEYCODE(Scancode::Home),
