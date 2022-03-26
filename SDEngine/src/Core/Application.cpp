@@ -8,6 +8,7 @@
 #include "Asset/FontAsset.hpp"
 #include "Asset/TextureAsset.hpp"
 #include "Asset/SceneAsset.hpp"
+#include "Asset/ScriptAsset.hpp"
 
 #if defined(SD_PLATFORM_LINUX)
 #include <unistd.h>
@@ -54,6 +55,9 @@ static void RegisterAssets(AssetStorage *storage)
     storage->RegisterAsset<SceneAsset>(AssetTypeData{
         2, std::bind(Asset::Create<SceneAsset>),
         std::bind(Asset::Destroy, std::placeholders::_1), ".sdscene"});
+    storage->RegisterAsset<ScriptAsset>(AssetTypeData{
+        0, std::bind(Asset::Create<ScriptAsset>),
+        std::bind(Asset::Destroy, std::placeholders::_1), ".sdscript"});
 }
 
 Application::Application(const std::string &title, Device::API api)

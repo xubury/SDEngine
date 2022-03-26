@@ -1,5 +1,4 @@
 find_package(SDL2 REQUIRED)
-find_package(Lua REQUIRED)
 
 set(Include_Root ${SD_ENGINE_SOURCE_DIR}/include/Core)
 set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Core)
@@ -53,9 +52,6 @@ target_link_libraries(sd-core
     sd-imgui
     sd-ecs
     sd-asset
-
-    ${LUA_LIBRARIES}
-    sol2
 
     PRIVATE
     SDL2::SDL2)
