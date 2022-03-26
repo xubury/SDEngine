@@ -5,17 +5,16 @@
 #include "Renderer/RenderSystem.hpp"
 #include "Graphics/Camera.hpp"
 
-#include <glm/glm.hpp>
 #include <vector>
 
 namespace SD {
 
 struct SD_RENDERER_API ParticleProp {
-    glm::vec3 position;
-    glm::vec3 velocity;
-    glm::vec3 velocityVariation;
-    glm::vec4 colorBegin;
-    glm::vec4 colorEnd;
+    Vector3f position;
+    Vector3f velocity;
+    Vector3f velocityVariation;
+    Vector4f colorBegin;
+    Vector4f colorEnd;
     float sizeBegin;
     float sizeEnd;
     float sizeVariation;
@@ -50,10 +49,10 @@ class SD_RENDERER_API ParticleSystem : public RenderSystem {
 
    private:
     struct Particle {
-        glm::vec3 position;
-        glm::vec3 velocity;
-        glm::vec4 colorBegin;
-        glm::vec4 colorEnd;
+        Vector3f position;
+        Vector3f velocity;
+        Vector4f colorBegin;
+        Vector4f colorEnd;
 
         float rotation;
 

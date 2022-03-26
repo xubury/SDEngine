@@ -27,17 +27,17 @@ void Viewport::SetPos(int x, int y)
     m_top = y;
 }
 
-glm::vec2 Viewport::MapScreenToClip(const glm::ivec2 &screen) const
+Vector2f Viewport::MapScreenToClip(const Vector2i &screen) const
 {
-    glm::vec2 clip(0);
+    Vector2f clip(0);
     clip.x = 2.f * (screen.x - GetLeft()) / GetWidth() - 1.f;
     clip.y = 1.f - 2.f * (screen.y - GetTop()) / GetHeight();
     return clip;
 }
 
-glm::ivec2 Viewport::MapClipToScreen(const glm::vec2 &clip) const
+Vector2i Viewport::MapClipToScreen(const Vector2f &clip) const
 {
-    glm::vec2 screen(0);
+    Vector2f screen(0);
     screen.x = (clip.x + 1.f) * GetWidth() / 2.f + GetLeft();
     screen.y = (1.f - clip.y) * GetHeight() / 2.f + GetTop();
     return screen;

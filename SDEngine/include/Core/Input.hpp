@@ -2,13 +2,13 @@
 #define SD_INPUT_ENGINE_HPP
 
 #include "Utility/Base.hpp"
+#include "Utility/Math.hpp"
 #include "Core/Keyboard.hpp"
 #include "Core/Mouse.hpp"
 #include "Core/Export.hpp"
 #include "Core/EventDispatcher.hpp"
 
 #include <unordered_map>
-#include <glm/glm.hpp>
 
 namespace SD {
 
@@ -24,7 +24,7 @@ class SD_CORE_API Input {
     static bool WasMouseDown(MouseButton mouse);
     static bool IsMousePressed(MouseButton mouse);
 
-    static glm::vec2 GetMouseCoord();
+    static Vector2f GetMouseCoord();
 
     static void Tick();
 
@@ -35,7 +35,7 @@ class SD_CORE_API Input {
     static std::unordered_map<MouseButton, bool> s_mouse_button;
     static std::unordered_map<MouseButton, bool> s_last_mouse_button;
 
-    static glm::vec2 s_mouse_coord;
+    static Vector2f s_mouse_coord;
 
     static std::vector<HandlerRegistration> s_handlers;
 

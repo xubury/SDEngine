@@ -27,10 +27,10 @@ void SpriteRenderSystem::OnTick(float dt)
 
 struct SpriteDrawData {
     Texture *texture;
-    std::array<glm::vec2, 2> uvs;
-    glm::vec3 pos;
-    glm::quat rot;
-    glm::vec2 size;
+    std::array<Vector2f, 2> uvs;
+    Vector3f pos;
+    Quaternion rot;
+    Vector2f size;
     uint32_t entity_id;
     int priority;
 };
@@ -101,7 +101,7 @@ void SpriteRenderSystem::OnRender()
     });
     for (const auto &data : datas) {
         Renderer2D::DrawTexture(*data.texture, data.uvs, data.pos, data.rot,
-                                data.size, glm::vec4(1.0f), data.entity_id);
+                                data.size, Vector4f(1.0f), data.entity_id);
     }
 
     auto textView = GetScene().view<TransformComponent, TextComponent>();

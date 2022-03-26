@@ -4,6 +4,7 @@
 #include "Graphics/Export.hpp"
 #include "Utility/Base.hpp"
 #include "Utility/Serialize.hpp"
+#include "Utility/Math.hpp"
 
 namespace SD {
 
@@ -17,14 +18,14 @@ class SD_GRAPHICS_API Light {
     void SetDirectional(bool directional);
     bool IsDirectional() const;
 
-    void SetAmbient(const glm::vec3 &ambient);
-    const glm::vec3 &GetAmbient() const;
+    void SetAmbient(const Vector3f &ambient);
+    const Vector3f &GetAmbient() const;
 
-    void SetDiffuse(const glm::vec3 &diffuse);
-    const glm::vec3 &GetDiffuse() const;
+    void SetDiffuse(const Vector3f &diffuse);
+    const Vector3f &GetDiffuse() const;
 
-    void SetSpecular(const glm::vec3 &specular);
-    const glm::vec3 &GetSpecular() const;
+    void SetSpecular(const Vector3f &specular);
+    const Vector3f &GetSpecular() const;
 
     void SetCutoff(float cutOff);
     float GetCutoff() const;
@@ -49,9 +50,9 @@ class SD_GRAPHICS_API Light {
     bool m_is_cast_shadow;
     bool m_is_directional;
 
-    glm::vec3 m_ambient;
-    glm::vec3 m_diffuse;
-    glm::vec3 m_specular;
+    Vector3f m_ambient;
+    Vector3f m_diffuse;
+    Vector3f m_specular;
 
     float m_cutoff;
     float m_outer_cutoff;

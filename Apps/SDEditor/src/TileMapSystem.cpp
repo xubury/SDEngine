@@ -31,8 +31,8 @@ void SelectAsset(ResourceId *selected_id)
     }
 }
 
-const glm::vec4 COLOR_RED(1, 0, 0, 0.5);
-const glm::vec4 COLOR_GREEN(0, 1, 0, 0.5);
+const Vector4f COLOR_RED(1, 0, 0, 0.5);
+const Vector4f COLOR_GREEN(0, 1, 0, 0.5);
 
 const int GRID_TEXTURE_SIZE = 100;
 const int LINE_WIDTH = 5;
@@ -73,12 +73,12 @@ void TileMapSystem::ManipulateScene(Framebuffer *framebuffer, Camera *camera)
     const auto &wsize = ImGui::GetContentRegionAvail();
     const auto &min_region = ImGui::GetWindowContentRegionMin();
     const auto &wpos = ImGui::GetWindowPos();
-    const glm::ivec2 viewport_pos = {min_region.x + wpos.x,
-                                     min_region.y + wpos.y};
+    const Vector2i viewport_pos = {min_region.x + wpos.x,
+                                   min_region.y + wpos.y};
     m_viewport.SetPos(viewport_pos.x, viewport_pos.y);
     m_viewport.SetSize(wsize.x, wsize.y);
     auto [mouse_x, mouse_y] = ImGui::GetMousePos();
-    glm::vec2 clip = m_viewport.MapScreenToClip(glm::ivec2(mouse_x, mouse_y));
+    Vector2f clip = m_viewport.MapScreenToClip(Vector2i(mouse_x, mouse_y));
     if (std::abs(clip.x) > 1 || std::abs(clip.y) > 1) {
         return;
     }
@@ -89,7 +89,7 @@ void TileMapSystem::ManipulateScene(Framebuffer *framebuffer, Camera *camera)
             default: {
             } break;
             case Operation::AddEntity: {
-                glm::vec3 world;
+                Vector3f world;
                 if (m_brush.GetSelectPos(world)) {
                     Entity child = GetScene().CreateEntity("Tile");
                     auto &comp = child.AddComponent<SpriteComponent>();
@@ -178,9 +178,9 @@ void TileMapSystem::OnRender()
     Renderer2D::Begin(*m_camera);
 
     // draw brush & outline
-    const glm::ivec2 &tile_size = m_brush.tile_size;
-    const glm::vec2 &brush_size = tile_size * m_brush.count;
-    glm::vec3 world;
+    const Vector2i &tile_size = m_brush.tile_size;
+    const Vector2f &brush_size = tile_size * m_brush.count;
+    Vector3f world;
     if (m_brush.GetSelectPos(world)) {
         if (m_operation == Operation::AddEntity) {
             if (AssetStorage::Get().Exists<TextureAsset>(m_texture_id)) {
@@ -188,11 +188,11 @@ void TileMapSystem::OnRender()
                     *AssetStorage::Get()
                          .GetAsset<TextureAsset>(m_texture_id)
                          ->GetTexture(),
-                    m_uvs, world, glm::quat(), brush_size);
+                    m_uvs, world, Quaternion(), brush_size);
             }
         }
         // Draw selection
-        glm::vec4 select_color(1.0);
+        Vector4f select_color(1.0);
         switch (m_operation) {
             case Operation::None:
             case Operation::AddEntity: {
@@ -203,29 +203,29 @@ void TileMapSystem::OnRender()
             } break;
         }
         if (m_operation != Operation::None) {
-            Renderer2D::DrawQuad(world, glm::quat(), brush_size, select_color);
+            Renderer2D::DrawQuad(world, Quaternion(), brush_size, select_color);
         }
     }
 
     if (m_draw_outline) {
         int render_width = m_framebuffer->GetWidth();
         int render_height = m_framebuffer->GetHeight();
-        const glm::ivec2 tile_cnt(
+        const Vector2i tile_cnt(
             std::ceil(static_cast<float>(render_width) / tile_size.x) + 1,
             std::ceil(static_cast<float>(render_height) / tile_size.y) + 1);
-        const glm::vec2 tex_size = tile_cnt * tile_size;
+        const Vector2f tex_size = tile_cnt * tile_size;
 
-        const glm::vec3 cam_pos = m_camera->GetWorldPosition();
-        glm::vec2 uv_origin(cam_pos.x / tile_size.x, -cam_pos.y / tile_size.y);
-        const glm::vec3 outline_pos(
+        const Vector3f cam_pos = m_camera->GetWorldPosition();
+        Vector2f uv_origin(cam_pos.x / tile_size.x, -cam_pos.y / tile_size.y);
+        const Vector3f outline_pos(
             tex_size.x / 2.f + cam_pos.x - tile_size.x / 2.f -
                 tile_size.x * std::floor(tile_cnt.x / 2.f),
             -tex_size.y / 2.f + cam_pos.y + tile_size.y / 2.f +
                 tile_size.y * std::floor(tile_cnt.y / 2.f),
             0);
         Renderer2D::DrawTexture(
-            *m_outline_texture, {uv_origin, glm::vec2(tile_cnt) + uv_origin},
-            outline_pos, glm::quat(), tex_size, glm::vec4(1, 1, 1, 0.7));
+            *m_outline_texture, {uv_origin, Vector2f(tile_cnt) + uv_origin},
+            outline_pos, Quaternion(), tex_size, Vector4f(1, 1, 1, 0.7));
     }
     Renderer2D::End();
     Renderer::EndRenderSubpass();

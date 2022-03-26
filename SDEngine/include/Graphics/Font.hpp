@@ -2,6 +2,7 @@
 #define SD_FONT_HPP
 
 #include "Utility/Base.hpp"
+#include "Utility/Math.hpp"
 #include "Graphics/Export.hpp"
 #include "Graphics/Texture.hpp"
 
@@ -10,9 +11,9 @@ namespace SD {
 struct SD_GRAPHICS_API Character {
     Character() = default;
     Ref<Texture> glyph;
-    std::array<glm::vec2, 2> uv;
-    glm::ivec2 size;
-    glm::ivec2 bearing;
+    std::array<Vector2f, 2> uv;
+    Vector2i size;
+    Vector2i bearing;
     uint32_t advance;
 };
 

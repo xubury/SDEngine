@@ -46,7 +46,7 @@ void Renderer3D::SetMaterial(Shader& shader, const Material& material)
 void Renderer3D::SetShadowCaster(Shader& shader, const CascadeShadow& shadow)
 {
     auto& pv = shadow.GetLevelProjectionView();
-    m_shadow_UBO->UpdateData(pv.data(), sizeof(glm::mat4) * pv.size());
+    m_shadow_UBO->UpdateData(pv.data(), sizeof(Matrix4f) * pv.size());
 
     shader.SetUniformBuffer("ShadowData", *m_shadow_UBO);
 }

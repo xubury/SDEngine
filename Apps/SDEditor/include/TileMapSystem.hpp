@@ -35,7 +35,7 @@ class TileMapSystem : public ECSSystem {
 
     // Selected sprite and its uvs
     ResourceId m_texture_id;
-    std::array<glm::vec2, 2> m_uvs{glm::vec2{0, 0}, glm::vec2{0, 0}};
+    std::array<Vector2f, 2> m_uvs{Vector2f{0, 0}, Vector2f{0, 0}};
     int m_priority;
 
     bool m_draw_outline;

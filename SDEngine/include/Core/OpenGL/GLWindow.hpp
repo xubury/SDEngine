@@ -14,7 +14,7 @@ class SD_CORE_API GLWindow : public Window {
     ~GLWindow();
     void PollEvents() override;
 
-    glm::ivec2 GetSize() const override;
+    Vector2i GetSize() const override;
     int GetWidth() const override;
     int GetHeight() const override;
     MultiSampleLevel GetMSAA() const override;

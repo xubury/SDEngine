@@ -6,7 +6,6 @@
 #include "Graphics/Shader.hpp"
 #include <GL/glew.h>
 #include <string>
-#include <glm/glm.hpp>
 #include <unordered_map>
 
 namespace SD {

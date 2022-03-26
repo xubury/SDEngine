@@ -6,8 +6,6 @@
 #include "Loader/ShaderLoader.hpp"
 #include "Loader/TextureLoader.hpp"
 
-#include <glm/gtc/type_ptr.hpp>
-
 namespace SD {
 
 SkyboxSystem::SkyboxSystem() : RenderSystem("SkyboxSystem") {}
@@ -37,11 +35,10 @@ void SkyboxSystem::OnRender()
     Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1, op});
 
     Camera &cam = GetCamera();
-    glm::vec3 pos = cam.GetWorldPosition();
-    glm::mat4 projection =
-        cam.GetViewPorjection() * glm::translate(glm::mat4(1.0f), pos);
-    m_skybox_shader->GetParam("u_projection")
-        ->SetAsMat4(glm::value_ptr(projection));
+    Vector3f pos = cam.GetWorldPosition();
+    Matrix4f projection =
+        cam.GetViewPorjection() * glm::translate(Matrix4f(1.0f), pos);
+    m_skybox_shader->GetParam("u_projection")->SetAsMat4(&projection[0][0]);
 
     if (m_skybox) {
         m_skybox_shader->GetParam("u_skybox")->SetAsTexture(m_skybox.get());

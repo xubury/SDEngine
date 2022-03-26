@@ -21,7 +21,7 @@ class SD_GRAPHICS_API Model {
     using TextureList = std::unordered_map<std::string, Ref<Texture>>;
     using MeshList = std::vector<Mesh>;
     using MaterialList = std::vector<Material>;
-    using TransformList = std::vector<glm::mat4>;
+    using TransformList = std::vector<Matrix4f>;
 
     Model() = default;
 
@@ -42,11 +42,11 @@ class SD_GRAPHICS_API Model {
         m_refs[mat].emplace_back(node);
     }
 
-    void AddTransform(const glm::mat4 &transform)
+    void AddTransform(const Matrix4f &transform)
     {
         m_transforms.emplace_back(transform);
     }
-    const glm::mat4 &GetTransform(uint32_t id) const
+    const Matrix4f &GetTransform(uint32_t id) const
     {
         return m_transforms.at(id);
     }

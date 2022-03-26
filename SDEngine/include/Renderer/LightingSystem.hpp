@@ -98,7 +98,7 @@ class SD_RENDERER_API LightingSystem : public RenderSystem {
     float m_ssao_bias;
     int m_ssao_power;
     Ref<Texture> m_ssao_noise;
-    std::vector<glm::vec3> m_ssao_kernel;
+    std::vector<Vector3f> m_ssao_kernel;
 
     HandlerRegistration m_size_handler;
 };

@@ -3,10 +3,6 @@
 #include "Utility/Random.hpp"
 #include "Utility/Math.hpp"
 
-#include <glm/gtc/constants.hpp>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/compatibility.hpp>
-
 namespace SD {
 
 ParticleSystem::ParticleSystem(int poolSize)
@@ -28,16 +24,16 @@ void ParticleSystem::OnRender()
         if (!particle.active) continue;
 
         float life = particle.lifeRemaining / particle.lifeTime;
-        glm::vec4 color =
-            glm::lerp(particle.colorEnd, particle.colorBegin, life);
+        Vector4f color =
+            Math::Lerp(particle.colorEnd, particle.colorBegin, life);
 
-        float size = glm::lerp(particle.sizeEnd, particle.sizeBegin, life);
+        float size = Math::Lerp(particle.sizeEnd, particle.sizeBegin, life);
 
-        glm::mat4 transform =
-            glm::translate(glm::mat4(1.0f), particle.position) *
-            glm::rotate(glm::mat4(1.0f), particle.rotation,
-                        glm::vec3(0.0f, 0.0f, 1.0f)) *
-            glm::scale(glm::mat4(1.0f), glm::vec3(size, size, 1.0f));
+        Matrix4f transform =
+            glm::translate(Matrix4f(1.0f), particle.position) *
+            glm::rotate(Matrix4f(1.0f), particle.rotation,
+                        Vector3f(0.0f, 0.0f, 1.0f)) *
+            glm::scale(Matrix4f(1.0f), Vector3f(size, size, 1.0f));
         Renderer2D::DrawQuad(transform, color);
     }
     Renderer::EndRenderSubpass();

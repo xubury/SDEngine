@@ -2,6 +2,7 @@
 #define SD_VIEWPORT_HPP
 
 #include "Utility/Base.hpp"
+#include "Utility/Math.hpp"
 #include "Graphics/Export.hpp"
 
 namespace SD {
@@ -19,8 +20,8 @@ class SD_GRAPHICS_API Viewport {
 
     void SetSize(int width, int height);
     void SetPos(int x, int y);
-    glm::vec2 MapScreenToClip(const glm::ivec2 &screen) const;
-    glm::ivec2 MapClipToScreen(const glm::vec2 &clip) const;
+    Vector2f MapScreenToClip(const Vector2i &screen) const;
+    Vector2i MapClipToScreen(const Vector2f &clip) const;
 
    private:
     int m_left;

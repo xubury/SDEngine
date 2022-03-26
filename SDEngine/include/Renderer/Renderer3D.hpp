@@ -9,7 +9,7 @@
 namespace SD {
 
 struct SD_RENDERER_API ShadowData {
-    glm::mat4 projection_view[16];
+    Matrix4f projection_view[16];
 };
 
 class SD_RENDERER_API Renderer3D : protected Renderer {

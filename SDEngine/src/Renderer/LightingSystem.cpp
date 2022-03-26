@@ -14,8 +14,6 @@
 
 #include "Core/Application.hpp"
 
-#include <glm/gtc/type_ptr.hpp>
-
 namespace SD {
 
 DataFormat GetTextureFormat(GeometryBufferType type)
@@ -114,8 +112,8 @@ void LightingSystem::InitSSAOKernel()
     uint32_t kernel_size = m_ssao_shader->GetUint("u_kernel_size");
     m_ssao_kernel.resize(kernel_size);
     for (uint32_t i = 0; i < kernel_size; ++i) {
-        glm::vec3 sample(Random::Rnd(-1.f, 1.f), Random::Rnd(-1.f, 1.f),
-                         Random::Rnd(0.f, 1.0f));
+        Vector3f sample(Random::Rnd(-1.f, 1.f), Random::Rnd(-1.f, 1.f),
+                        Random::Rnd(0.f, 1.0f));
         sample = glm::normalize(sample);
         sample *= Random::Rnd(0.f, 1.0f);
         float scale = static_cast<float>(i) / kernel_size;
@@ -126,10 +124,10 @@ void LightingSystem::InitSSAOKernel()
         m_ssao_kernel[i] = (sample);
     }
 
-    std::array<glm::vec3, 16> ssao_noise;
+    std::array<Vector3f, 16> ssao_noise;
     for (uint32_t i = 0; i < 16; i++) {
-        glm::vec3 noise(Random::Rnd(-1.f, 1.0f), Random::Rnd(-1.f, 1.0f),
-                        0.0f);  // rotate around z-axis (in tangent space)
+        Vector3f noise(Random::Rnd(-1.f, 1.0f), Random::Rnd(-1.f, 1.0f),
+                       0.0f);  // rotate around z-axis (in tangent space)
         ssao_noise[i] = glm::normalize(noise);
     }
     m_ssao_noise =
@@ -237,9 +235,10 @@ void LightingSystem::RenderShadowMap(CascadeShadow &shadow,
                 storage.GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
             for (const auto &[material, meshes] : model->GetMaterialMap()) {
                 for (const auto &mesh : meshes) {
-                    model_param->SetAsMat4(glm::value_ptr(
+                    Matrix4f mat =
                         model->GetTransform(mesh.transform_id) *
-                        transformComp.GetWorldTransform().GetMatrix()));
+                        transformComp.GetWorldTransform().GetMatrix();
+                    model_param->SetAsMat4(&mat[0][0]);
                     Renderer3D::DrawMesh(*m_cascade_shader,
                                          *model->GetMesh(mesh.mesh_id));
                 }
@@ -452,9 +451,10 @@ void LightingSystem::RenderGBuffer()
             for (const auto &[material, meshes] : model->GetMaterialMap()) {
                 Renderer3D::SetMaterial(*m_gbuffer_shader, *material);
                 for (const auto &mesh : meshes) {
-                    model_param->SetAsMat4(glm::value_ptr(
+                    Matrix4f mat =
                         model->GetTransform(mesh.transform_id) *
-                        transformComp.GetWorldTransform().GetMatrix()));
+                        transformComp.GetWorldTransform().GetMatrix();
+                    model_param->SetAsMat4(&mat[0][0]);
                     Renderer3D::DrawMesh(*m_gbuffer_shader,
                                          *model->GetMesh(mesh.mesh_id));
                 }

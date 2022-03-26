@@ -12,56 +12,56 @@ class SD_RENDERER_API Renderer2D : protected Renderer {
     static void End();
 
     static void SetTextOrigin(int x, int y);
-    static glm::ivec2 GetTextCursor();
+    static Vector2i GetTextCursor();
 
-    static void DrawLine(const glm::vec3 &start, const glm::vec3 &end,
-                         const glm::vec4 &color, uint32_t entity_id = -1);
+    static void DrawLine(const Vector3f &start, const Vector3f &end,
+                         const Vector4f &color, uint32_t entity_id = -1);
 
-    static void DrawQuad(const glm::vec3 &pos, const glm::quat &rot,
-                         const glm::vec2 &scale, const glm::vec4 &color,
+    static void DrawQuad(const Vector3f &pos, const Quaternion &rot,
+                         const Vector2f &scale, const Vector4f &color,
                          uint32_t entity_id = -1);
-    static void DrawQuad(const glm::mat4 &transform, const glm::vec4 &color,
+    static void DrawQuad(const Matrix4f &transform, const Vector4f &color,
                          uint32_t entity_id = -1);
 
     static void DrawTexture(const Texture &texture,
-                            const std::array<glm::vec2, 2> &uv,
-                            const glm::vec3 &pos, const glm::quat &rot,
-                            const glm::vec2 &scale,
-                            const glm::vec4 &color = glm::vec4(1.0f),
+                            const std::array<Vector2f, 2> &uv,
+                            const Vector3f &pos, const Quaternion &rot,
+                            const Vector2f &scale,
+                            const Vector4f &color = Vector4f(1.0f),
                             uint32_t entity_id = -1);
     static void DrawTexture(const Texture &texture,
-                            const std::array<glm::vec2, 2> &uv,
-                            const glm::mat4 &transform,
-                            const glm::vec4 &color = glm::vec4(1.0f),
+                            const std::array<Vector2f, 2> &uv,
+                            const Matrix4f &transform,
+                            const Vector4f &color = Vector4f(1.0f),
                             uint32_t entity_id = -1);
 
-    static void DrawTexture(const Texture &texture, const glm::vec3 &pos,
-                            const glm::quat &rot, const glm::vec2 &scale,
-                            const glm::vec4 &color = glm::vec4(1.0f),
+    static void DrawTexture(const Texture &texture, const Vector3f &pos,
+                            const Quaternion &rot, const Vector2f &scale,
+                            const Vector4f &color = Vector4f(1.0f),
                             uint32_t entity_id = -1);
-    static void DrawTexture(const Texture &texture, const glm::mat4 &transform,
-                            const glm::vec4 &color = glm::vec4(1.0f),
+    static void DrawTexture(const Texture &texture, const Matrix4f &transform,
+                            const Vector4f &color = Vector4f(1.0f),
                             uint32_t entity_id = -1);
 
     static void DrawBillboard(const Texture &texture,
-                              const std::array<glm::vec2, 2> &uv,
-                              const glm::vec3 &pos, const glm::vec2 &scale,
-                              const glm::vec4 &color = glm::vec4(1.0f),
+                              const std::array<Vector2f, 2> &uv,
+                              const Vector3f &pos, const Vector2f &scale,
+                              const Vector4f &color = Vector4f(1.0f),
                               uint32_t entity_id = -1);
-    static void DrawBillboard(const Texture &texture, const glm::vec3 &pos,
-                              const glm::vec2 &scale,
-                              const glm::vec4 &color = glm::vec4(1.0f),
+    static void DrawBillboard(const Texture &texture, const Vector3f &pos,
+                              const Vector2f &scale,
+                              const Vector4f &color = Vector4f(1.0f),
                               uint32_t entity_id = -1);
 
     static void DrawText(const Font &font, const std::string &text,
-                         const glm::mat4 &transform,
-                         const glm::vec4 &color = glm::vec4(1.0f),
+                         const Matrix4f &transform,
+                         const Vector4f &color = Vector4f(1.0f),
                          uint32_t entity_id = -1);
 
-    static void DrawCircle(const glm::vec3 &pos, const glm::vec2 &scale,
-                           const glm::vec4 &color, float thickness, float fade,
+    static void DrawCircle(const Vector3f &pos, const Vector2f &scale,
+                           const Vector4f &color, float thickness, float fade,
                            uint32_t entity_id = -1);
-    static void DrawCircle(const glm::mat4 &transform, const glm::vec4 &color,
+    static void DrawCircle(const Matrix4f &transform, const Vector4f &color,
                            float thickness, float fade,
                            uint32_t entity_id = -1);
 

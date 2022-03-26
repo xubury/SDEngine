@@ -5,30 +5,45 @@
 #include "Utility/Export.hpp"
 
 #include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 namespace SD {
 
+using Vector2f = glm::vec2;
+using Vector2i = glm::ivec2;
+
+using Vector3f = glm::vec3;
+using Vector3i = glm::ivec3;
+
+using Vector4f = glm::vec4;
+using Vector4i = glm::ivec4;
+
+using Matrix3f = glm::mat3;
+using Matrix4f = glm::mat4;
+
+using Quaternion = glm::quat;
+
 namespace Math {
 
-constexpr float PI = 3.14159265358979323846;
+inline constexpr float PI = 3.14159265358979323846;
 
 struct SD_UTILITY_API Ray {
     Ray() = default;
-    Ray(const glm::vec3 &origin, const glm::vec3 &direction)
+    Ray(const Vector3f &origin, const Vector3f &direction)
         : origin(origin), direction(direction)
     {
     }
-    glm::vec3 origin;
-    glm::vec3 direction;
+    Vector3f origin;
+    Vector3f direction;
 };
 
 struct SD_UTILITY_API Plane {
-    Plane(const glm::vec3 &normal, const glm::vec3 &point)
+    Plane(const Vector3f &normal, const Vector3f &point)
         : normal(normal), point(point)
     {
     }
-    glm::vec3 normal;
-    glm::vec3 point;
+    Vector3f normal;
+    Vector3f point;
 };
 
 template <typename T>
@@ -58,7 +73,7 @@ inline void BaryCentric(const glm::vec<L, T, Q> &a, const glm::vec<L, T, Q> &b,
 }
 
 inline bool IntersectRayPlane(const Ray &ray, const Plane &plane,
-                              glm::vec3 &world)
+                              Vector3f &world)
 {
     float numer = glm::dot(plane.normal, ray.origin) -
                   glm::dot(plane.normal, plane.point);
@@ -72,6 +87,9 @@ inline bool IntersectRayPlane(const Ray &ray, const Plane &plane,
     world = -numer / denom * ray.direction + ray.origin;
     return true;
 }
+
+bool SD_UTILITY_API Decompose(const Matrix4f &transform, Vector3f &translation,
+                              Quaternion &rotation, Vector3f &scale);
 
 }  // namespace Math
 

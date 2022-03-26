@@ -4,7 +4,7 @@
 
 namespace ImGui {
 
-bool DrawVec3Control(const std::string &label, glm::vec3 &values,
+bool DrawVec3Control(const std::string &label, SD::Vector3f &values,
                      float resetValue, float columnWidth)
 {
     bool ret = false;
@@ -99,9 +99,9 @@ void DrawTexture(const SD::Texture &texture, const ImVec2 &uv0,
     ImGui::Image((void *)(intptr_t)texture.GetId(), wsize, uv0, uv1);
 }
 
-void DrawTileTexture(const SD::Texture &texture, glm::ivec2 &tile_size,
-                     std::array<glm::vec2, 2> &uvs, glm::ivec2 *selected_cnt,
-                     glm::ivec2 *pivot)
+void DrawTileTexture(const SD::Texture &texture, SD::Vector2i &tile_size,
+                     std::array<SD::Vector2f, 2> &uvs,
+                     SD::Vector2i *selected_cnt, SD::Vector2i *pivot)
 {
     ImGui::TextUnformatted("Tile Size:");
     ImGui::InputInt2("##Size", &tile_size.x);
@@ -111,7 +111,7 @@ void DrawTileTexture(const SD::Texture &texture, glm::ivec2 &tile_size,
     ImVec2 wsize = ImGui::GetWindowSize();
     const float ASPECT = wsize.x / texture.GetWidth();
     wsize.y = texture.GetHeight() * ASPECT;
-    const glm::vec2 scaled_tile_size = glm::vec2(tile_size) * ASPECT;
+    const SD::Vector2f scaled_tile_size = SD::Vector2f(tile_size) * ASPECT;
 
     int cols = std::ceil(wsize.x / scaled_tile_size.x);
     int rows = std::ceil(wsize.y / scaled_tile_size.y);
@@ -135,14 +135,14 @@ void DrawTileTexture(const SD::Texture &texture, glm::ivec2 &tile_size,
     auto [left, top] = bb.GetTL();
     if (ImGui::IsWindowHovered()) {
         auto [mouse_x, mouse_y] = ImGui::GetMousePos();
-        auto image_pos = glm::vec2(mouse_x - left, mouse_y - top) / ASPECT;
-        static std::array<glm::vec2, 2> first_uvs;
+        auto image_pos = SD::Vector2f(mouse_x - left, mouse_y - top) / ASPECT;
+        static std::array<SD::Vector2f, 2> first_uvs;
         if (image_pos.x >= 0 && image_pos.y >= 0 &&
             image_pos.x < texture.GetWidth() &&
             image_pos.y < texture.GetHeight()) {
             if (ImGui::IsMouseClicked(0)) {
-                uvs[0] = glm::floor(image_pos / glm::vec2(tile_size));
-                uvs[1] = uvs[0] + glm::vec2(1.f);
+                uvs[0] = glm::floor(image_pos / SD::Vector2f(tile_size));
+                uvs[1] = uvs[0] + SD::Vector2f(1.f);
 
                 uvs[0].x = uvs[0].x * tile_size.x / texture.GetWidth();
                 uvs[0].y = uvs[0].y * tile_size.y / texture.GetHeight();
@@ -152,7 +152,7 @@ void DrawTileTexture(const SD::Texture &texture, glm::ivec2 &tile_size,
                 first_uvs = uvs;
 
                 if (pivot) {
-                    *pivot = glm::ivec2(0, 0);
+                    *pivot = SD::Vector2i(0, 0);
                 }
 
                 if (selected_cnt) {
@@ -162,7 +162,7 @@ void DrawTileTexture(const SD::Texture &texture, glm::ivec2 &tile_size,
             }
             else if (ImGui::IsMouseClicked(1)) {
                 if (pivot) {
-                    *pivot = glm::floor(image_pos / glm::vec2(tile_size));
+                    *pivot = glm::floor(image_pos / SD::Vector2f(tile_size));
                     pivot->x -=
                         std::floor(uvs[0].x * texture.GetWidth() / tile_size.x);
                     pivot->y -= std::floor(uvs[0].y * texture.GetHeight() /
@@ -170,8 +170,8 @@ void DrawTileTexture(const SD::Texture &texture, glm::ivec2 &tile_size,
                 }
             }
             if (ImGui::IsMouseDown(0)) {
-                uvs[0] = glm::floor(image_pos / glm::vec2(tile_size));
-                uvs[1] = uvs[0] + glm::vec2(1.f);
+                uvs[0] = glm::floor(image_pos / SD::Vector2f(tile_size));
+                uvs[1] = uvs[0] + SD::Vector2f(1.f);
 
                 uvs[0].x = uvs[0].x * tile_size.x / texture.GetWidth();
                 uvs[0].y = uvs[0].y * tile_size.y / texture.GetHeight();
@@ -192,8 +192,8 @@ void DrawTileTexture(const SD::Texture &texture, glm::ivec2 &tile_size,
                     uvs[1].y = first_uvs[1].y;
                 }
                 if (selected_cnt) {
-                    *selected_cnt =
-                        glm::round((uvs[1] - uvs[0]) * glm::vec2(cols, rows));
+                    *selected_cnt = glm::round((uvs[1] - uvs[0]) *
+                                               SD::Vector2f(cols, rows));
                 }
             }
         }

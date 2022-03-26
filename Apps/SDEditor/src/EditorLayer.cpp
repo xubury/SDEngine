@@ -6,8 +6,6 @@
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGuizmo.h"
 
-#include <glm/gtc/type_ptr.hpp>
-
 namespace SD {
 
 EditorLayer::EditorLayer(GraphicsLayer *graphics_layer, int width, int height)
@@ -312,9 +310,9 @@ void EditorLayer::DrawViewport()
         const auto &wsize = ImGui::GetContentRegionAvail();
         const auto &min_region = ImGui::GetWindowContentRegionMin();
         const auto &wpos = ImGui::GetWindowPos();
-        const glm::ivec2 viewport_size = {wsize.x, wsize.y};
-        const glm::ivec2 viewport_pos = {min_region.x + wpos.x,
-                                         min_region.y + wpos.y};
+        const Vector2i viewport_size = {wsize.x, wsize.y};
+        const Vector2i viewport_pos = {min_region.x + wpos.x,
+                                       min_region.y + wpos.y};
 
         if (m_viewport_size != viewport_size && viewport_size.x > 0 &&
             viewport_size.y > 0) {
@@ -347,16 +345,15 @@ void EditorLayer::DrawViewport()
                 Camera *cam = m_editor_camera_system->GetCamera();
                 ImGuizmo::SetOrthographic(cam->GetCameraType() ==
                                           CameraType::Orthographic);
-                const glm::mat4 &view = cam->GetView();
-                const glm::mat4 &projection = cam->GetProjection();
+                const Matrix4f &view = cam->GetView();
+                const Matrix4f &projection = cam->GetProjection();
 
                 auto &tc = m_selected_entity.GetComponent<TransformComponent>();
-                glm::mat4 transform = tc.GetWorldTransform().GetMatrix();
-                if (ImGuizmo::Manipulate(
-                        glm::value_ptr(view), glm::value_ptr(projection),
-                        m_scene_panel->GetGizmoOperation(),
-                        m_scene_panel->GetGizmoMode(),
-                        glm::value_ptr(transform), nullptr, nullptr)) {
+                Matrix4f transform = tc.GetWorldTransform().GetMatrix();
+                if (ImGuizmo::Manipulate(&view[0][0], &projection[0][0],
+                                         m_scene_panel->GetGizmoOperation(),
+                                         m_scene_panel->GetGizmoMode(),
+                                         &transform[0][0], nullptr, nullptr)) {
                     tc.SetWorldTransform(transform);
                 }
             }

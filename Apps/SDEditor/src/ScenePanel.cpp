@@ -340,18 +340,18 @@ void ScenePanel::DrawComponents(Entity &entity)
             ImGui::SameLine();
             ImGui::RadioButton("Scale", reinterpret_cast<int *>(&m_gizmo_op),
                                ImGuizmo::SCALE);
-            glm::vec3 position = component.GetWorldPosition();
+            Vector3f position = component.GetWorldPosition();
             if (ImGui::DrawVec3Control("Translation", position)) {
                 component.SetWorldPosition(position);
             }
 
-            glm::vec3 rotation =
+            Vector3f rotation =
                 glm::degrees(glm::eulerAngles(component.GetWorldRotation()));
             if (ImGui::DrawVec3Control("Rotation", rotation)) {
                 component.SetWorldRotation(glm::radians(rotation));
             }
 
-            glm::vec3 scale = component.GetWorldScale();
+            Vector3f scale = component.GetWorldScale();
             if (ImGui::DrawVec3Control("Scale", scale, 1.0f)) {
                 component.SetWorldScale(scale);
             }
@@ -374,15 +374,15 @@ void ScenePanel::DrawComponents(Entity &entity)
         "Light", entity, [&](LightComponent &lightComp) {
             Light &light = lightComp.light;
             CascadeShadow &shadow = lightComp.shadow;
-            glm::vec3 diffuse = light.GetDiffuse();
+            Vector3f diffuse = light.GetDiffuse();
             if (ImGui::ColorEdit3("Diffuse", &diffuse[0])) {
                 light.SetDiffuse(diffuse);
             }
-            glm::vec3 ambient = light.GetAmbient();
+            Vector3f ambient = light.GetAmbient();
             if (ImGui::ColorEdit3("Ambient", &ambient[0])) {
                 light.SetAmbient(ambient);
             }
-            glm::vec3 specular = light.GetSpecular();
+            Vector3f specular = light.GetSpecular();
             if (ImGui::ColorEdit3("Specular", &specular[0])) {
                 light.SetSpecular(specular);
             }

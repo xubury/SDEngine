@@ -19,7 +19,7 @@ EditorCameraSystem::EditorCameraSystem(int32_t width, int32_t height)
       m_camera(CameraType::Perspective, glm::radians(45.f), m_width, m_height,
                0.1f, MAX_FAR_Z)
 {
-    m_camera.SetWorldPosition(glm::vec3(0, 0, 1));
+    m_camera.SetWorldPosition(Vector3f(0, 0, 1));
 }
 
 void EditorCameraSystem::OnInit() { ECSSystem::OnInit(); }
@@ -119,7 +119,7 @@ void EditorCameraSystem::Rotate(float yaw, float pitch)
     yaw = glm::radians(yaw);
     pitch = glm::radians(pitch);
 
-    glm::quat rotation = m_camera.GetWorldRotation();
+    Quaternion rotation = m_camera.GetWorldRotation();
     m_pitch += pitch;
     if (std::abs(m_pitch) < glm::radians(89.f)) {
         rotation = glm::angleAxis(pitch, m_camera.GetWorldRight()) * rotation;
@@ -127,7 +127,7 @@ void EditorCameraSystem::Rotate(float yaw, float pitch)
     else {
         m_pitch -= pitch;
     }
-    rotation = glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotation;
+    rotation = glm::angleAxis(yaw, Vector3f(0, 1, 0)) * rotation;
     m_camera.SetWorldRotation(rotation);
 }
 

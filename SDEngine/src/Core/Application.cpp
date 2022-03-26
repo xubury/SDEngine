@@ -97,7 +97,7 @@ Application::~Application()
     AssetStorage::Shutdown();
     Input::Shutdown();
 
-    glm::ivec2 size = m_window->GetSize();
+    Vector2i size = m_window->GetSize();
     m_settings.SetInteger("window", "width", size.x);
     m_settings.SetInteger("window", "height", size.y);
     m_settings.SetInteger("window", "msaa",

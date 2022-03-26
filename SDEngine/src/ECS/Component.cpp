@@ -4,7 +4,7 @@ namespace SD {
 
 TransformComponent::TransformComponent() : parent(entt::null) {}
 
-void TransformComponent::SetLocalPosition(const glm::vec3 &position)
+void TransformComponent::SetLocalPosition(const Vector3f &position)
 {
     m_local_transform.SetPosition(position);
     UpdateGlobalPosition();
@@ -13,7 +13,7 @@ void TransformComponent::SetLocalPosition(const glm::vec3 &position)
     }
 }
 
-void TransformComponent::SetLocalRotation(const glm::quat &rotation)
+void TransformComponent::SetLocalRotation(const Quaternion &rotation)
 {
     m_local_transform.SetRotation(rotation);
     UpdateGlobalRotation();
@@ -24,7 +24,7 @@ void TransformComponent::SetLocalRotation(const glm::quat &rotation)
     }
 }
 
-void TransformComponent::SetLocalScale(const glm::vec3 &scale)
+void TransformComponent::SetLocalScale(const Vector3f &scale)
 {
     m_local_transform.SetScale(scale);
     UpdateGlobalScale();
@@ -35,7 +35,7 @@ void TransformComponent::SetLocalScale(const glm::vec3 &scale)
     }
 }
 
-void TransformComponent::SetLocalTransform(const glm::mat4 &trans)
+void TransformComponent::SetLocalTransform(const Matrix4f &trans)
 {
     m_local_transform.SetTransform(trans);
     UpdateGlobalScale();
@@ -48,17 +48,17 @@ void TransformComponent::SetLocalTransform(const glm::mat4 &trans)
     }
 }
 
-glm::vec3 TransformComponent::GetLocalPosition() const
+Vector3f TransformComponent::GetLocalPosition() const
 {
     return m_local_transform.GetPosition();
 }
 
-glm::quat TransformComponent::GetLocalRotation() const
+Quaternion TransformComponent::GetLocalRotation() const
 {
     return m_local_transform.GetRotation();
 }
 
-glm::vec3 TransformComponent::GetLocalScale() const
+Vector3f TransformComponent::GetLocalScale() const
 {
     return m_local_transform.GetScale();
 }
@@ -68,7 +68,7 @@ const Transform &TransformComponent::GetLocalTransform() const
     return m_local_transform;
 }
 
-void TransformComponent::SetWorldPosition(const glm::vec3 &position)
+void TransformComponent::SetWorldPosition(const Vector3f &position)
 {
     m_world_transform.SetPosition(position);
     UpdateLocalPosition();
@@ -77,7 +77,7 @@ void TransformComponent::SetWorldPosition(const glm::vec3 &position)
     }
 }
 
-void TransformComponent::SetWorldRotation(const glm::quat &rotation)
+void TransformComponent::SetWorldRotation(const Quaternion &rotation)
 {
     m_world_transform.SetRotation(rotation);
     UpdateLocalRotation();
@@ -88,7 +88,7 @@ void TransformComponent::SetWorldRotation(const glm::quat &rotation)
     }
 }
 
-void TransformComponent::SetWorldScale(const glm::vec3 &scale)
+void TransformComponent::SetWorldScale(const Vector3f &scale)
 {
     m_world_transform.SetScale(scale);
     UpdateLocalScale();
@@ -99,7 +99,7 @@ void TransformComponent::SetWorldScale(const glm::vec3 &scale)
     }
 }
 
-void TransformComponent::SetWorldTransform(const glm::mat4 &trans)
+void TransformComponent::SetWorldTransform(const Matrix4f &trans)
 {
     m_world_transform.SetTransform(trans);
     UpdateLocalPosition();
@@ -112,17 +112,17 @@ void TransformComponent::SetWorldTransform(const glm::mat4 &trans)
     }
 }
 
-glm::vec3 TransformComponent::GetWorldPosition() const
+Vector3f TransformComponent::GetWorldPosition() const
 {
     return m_world_transform.GetPosition();
 }
 
-glm::quat TransformComponent::GetWorldRotation() const
+Quaternion TransformComponent::GetWorldRotation() const
 {
     return m_world_transform.GetRotation();
 }
 
-glm::vec3 TransformComponent::GetWorldScale() const
+Vector3f TransformComponent::GetWorldScale() const
 {
     return m_world_transform.GetScale();
 }
@@ -132,34 +132,34 @@ const Transform &TransformComponent::GetWorldTransform() const
     return m_world_transform;
 }
 
-glm::vec3 TransformComponent::GetLocalRight() const
+Vector3f TransformComponent::GetLocalRight() const
 {
-    return m_local_transform.GetRotation() * glm::vec3(1.f, 0.f, 0.f);
+    return m_local_transform.GetRotation() * Vector3f(1.f, 0.f, 0.f);
 }
 
-glm::vec3 TransformComponent::GetLocalUp() const
+Vector3f TransformComponent::GetLocalUp() const
 {
-    return m_local_transform.GetRotation() * glm::vec3(0.f, 1.f, 0.f);
+    return m_local_transform.GetRotation() * Vector3f(0.f, 1.f, 0.f);
 }
 
-glm::vec3 TransformComponent::GetLocalFront() const
+Vector3f TransformComponent::GetLocalFront() const
 {
-    return m_local_transform.GetRotation() * glm::vec3(0.f, 0.f, 1.f);
+    return m_local_transform.GetRotation() * Vector3f(0.f, 0.f, 1.f);
 }
 
-glm::vec3 TransformComponent::GetWorldRight() const
+Vector3f TransformComponent::GetWorldRight() const
 {
-    return m_world_transform.GetRotation() * glm::vec3(1.f, 0.f, 0.f);
+    return m_world_transform.GetRotation() * Vector3f(1.f, 0.f, 0.f);
 }
 
-glm::vec3 TransformComponent::GetWorldUp() const
+Vector3f TransformComponent::GetWorldUp() const
 {
-    return m_world_transform.GetRotation() * glm::vec3(0.f, 1.f, 0.f);
+    return m_world_transform.GetRotation() * Vector3f(0.f, 1.f, 0.f);
 }
 
-glm::vec3 TransformComponent::GetWorldFront() const
+Vector3f TransformComponent::GetWorldFront() const
 {
-    return m_world_transform.GetRotation() * glm::vec3(0.f, 0.f, 1.f);
+    return m_world_transform.GetRotation() * Vector3f(0.f, 0.f, 1.f);
 }
 
 void TransformComponent::UpdateGlobalPosition()
@@ -167,7 +167,7 @@ void TransformComponent::UpdateGlobalPosition()
     if (parent == entt::null)
         m_world_transform.SetPosition(m_local_transform.GetPosition());
     else {
-        glm::mat4 global =
+        Matrix4f global =
             ecs->get<TransformComponent>(parent).m_world_transform.GetMatrix() *
             m_local_transform.GetMatrix();
         m_world_transform.SetPosition(global[3]);
@@ -183,10 +183,10 @@ void TransformComponent::UpdateGlobalRotation()
     if (parent == entt::null)
         m_world_transform.SetRotation(m_local_transform.GetRotation());
     else {
-        glm::mat4 global = glm::toMat4(ecs->get<TransformComponent>(parent)
-                                           .m_world_transform.GetRotation() *
-                                       m_local_transform.GetRotation());
-        m_world_transform.SetRotation(glm::quat(global));
+        Matrix4f global = glm::toMat4(ecs->get<TransformComponent>(parent)
+                                          .m_world_transform.GetRotation() *
+                                      m_local_transform.GetRotation());
+        m_world_transform.SetRotation(Quaternion(global));
     }
     for (auto child : children) {
         auto &t = ecs->get<TransformComponent>(child);
@@ -199,12 +199,12 @@ void TransformComponent::UpdateGlobalScale()
     if (parent == entt::null)
         m_world_transform.SetScale(m_local_transform.GetScale());
     else {
-        glm::mat4 global =
-            glm::scale(glm::mat4(1.0f), ecs->get<TransformComponent>(parent)
-                                            .m_world_transform.GetScale()) *
-            glm::scale(glm::mat4(1.0f), m_local_transform.GetScale());
+        Matrix4f global =
+            glm::scale(Matrix4f(1.0f), ecs->get<TransformComponent>(parent)
+                                           .m_world_transform.GetScale()) *
+            glm::scale(Matrix4f(1.0f), m_local_transform.GetScale());
         m_world_transform.SetScale(
-            glm::vec3(global[0][0], global[1][1], global[2][2]));
+            Vector3f(global[0][0], global[1][1], global[2][2]));
     }
     for (auto child : children) {
         auto &t = ecs->get<TransformComponent>(child);
@@ -217,9 +217,9 @@ void TransformComponent::UpdateLocalPosition()
     if (parent == entt::null)
         m_local_transform.SetPosition(m_world_transform.GetPosition());
     else {
-        glm::mat4 global = glm::inverse(ecs->get<TransformComponent>(parent)
-                                            .m_world_transform.GetMatrix()) *
-                           m_world_transform.GetMatrix();
+        Matrix4f global = glm::inverse(ecs->get<TransformComponent>(parent)
+                                           .m_world_transform.GetMatrix()) *
+                          m_world_transform.GetMatrix();
         m_local_transform.SetPosition(global[3]);
     }
 }
@@ -229,11 +229,11 @@ void TransformComponent::UpdateLocalRotation()
     if (parent == entt::null)
         m_local_transform.SetRotation(m_world_transform.GetRotation());
     else {
-        glm::mat4 global =
+        Matrix4f global =
             glm::inverse(glm::toMat4(ecs->get<TransformComponent>(parent)
                                          .m_world_transform.GetRotation())) *
             glm::toMat4(m_world_transform.GetRotation());
-        m_local_transform.SetRotation(glm::quat(global));
+        m_local_transform.SetRotation(Quaternion(global));
     }
 }
 
@@ -242,13 +242,13 @@ void TransformComponent::UpdateLocalScale()
     if (parent == entt::null)
         m_local_transform.SetScale(m_local_transform.GetScale());
     else {
-        glm::mat4 global =
-            glm::inverse(glm::scale(glm::mat4(1.0f),
-                                    ecs->get<TransformComponent>(parent)
-                                        .m_world_transform.GetScale())) *
-            glm::scale(glm::mat4(1.0f), m_world_transform.GetScale());
+        Matrix4f global =
+            glm::inverse(
+                glm::scale(Matrix4f(1.0f), ecs->get<TransformComponent>(parent)
+                                               .m_world_transform.GetScale())) *
+            glm::scale(Matrix4f(1.0f), m_world_transform.GetScale());
         m_local_transform.SetScale(
-            glm::vec3(global[0][0], global[1][1], global[2][2]));
+            Vector3f(global[0][0], global[1][1], global[2][2]));
     }
 }
 }  // namespace SD

@@ -40,33 +40,33 @@ struct SD_ECS_API TransformComponent {
 
     TransformComponent();
 
-    void SetLocalPosition(const glm::vec3& position);
-    void SetLocalRotation(const glm::quat& rotation);
-    void SetLocalScale(const glm::vec3& scale);
-    void SetLocalTransform(const glm::mat4& transform);
+    void SetLocalPosition(const Vector3f& position);
+    void SetLocalRotation(const Quaternion& rotation);
+    void SetLocalScale(const Vector3f& scale);
+    void SetLocalTransform(const Matrix4f& transform);
 
-    glm::vec3 GetLocalPosition() const;
-    glm::quat GetLocalRotation() const;
-    glm::vec3 GetLocalScale() const;
+    Vector3f GetLocalPosition() const;
+    Quaternion GetLocalRotation() const;
+    Vector3f GetLocalScale() const;
     const Transform& GetLocalTransform() const;
 
-    void SetWorldPosition(const glm::vec3& position);
-    void SetWorldRotation(const glm::quat& rotation);
-    void SetWorldScale(const glm::vec3& scale);
-    void SetWorldTransform(const glm::mat4& transform);
+    void SetWorldPosition(const Vector3f& position);
+    void SetWorldRotation(const Quaternion& rotation);
+    void SetWorldScale(const Vector3f& scale);
+    void SetWorldTransform(const Matrix4f& transform);
 
-    glm::vec3 GetWorldPosition() const;
-    glm::quat GetWorldRotation() const;
-    glm::vec3 GetWorldScale() const;
+    Vector3f GetWorldPosition() const;
+    Quaternion GetWorldRotation() const;
+    Vector3f GetWorldScale() const;
     const Transform& GetWorldTransform() const;
 
-    glm::vec3 GetLocalRight() const;
-    glm::vec3 GetLocalUp() const;
-    glm::vec3 GetLocalFront() const;
+    Vector3f GetLocalRight() const;
+    Vector3f GetLocalUp() const;
+    Vector3f GetLocalFront() const;
 
-    glm::vec3 GetWorldRight() const;
-    glm::vec3 GetWorldUp() const;
-    glm::vec3 GetWorldFront() const;
+    Vector3f GetWorldRight() const;
+    Vector3f GetWorldUp() const;
+    Vector3f GetWorldFront() const;
 
     void UpdateGlobalPosition();
     void UpdateGlobalRotation();
@@ -84,7 +84,7 @@ struct SD_ECS_API TransformComponent {
 
 struct SD_ECS_API ModelComponent {
     ResourceId model_id;
-    glm::vec3 color;
+    Vector3f color;
     ModelComponent() = default;
 
     SERIALIZE(model_id, color)
@@ -99,7 +99,7 @@ struct SD_ECS_API LightComponent {
 
 struct SD_ECS_API TextComponent {
     ResourceId font_id;
-    glm::vec4 color = glm::vec4(1);
+    Vector4f color = Vector4f(1);
     std::string text;
 
     SERIALIZE(font_id, color, text)
@@ -120,8 +120,8 @@ struct SD_ECS_API CameraComponent {
 
 struct SD_ECS_API SpriteFrame {
     ResourceId texture_id;
-    std::array<glm::vec2, 2> uvs{glm::vec2(0), glm::vec2(1)};
-    glm::vec2 size{10.0f};
+    std::array<Vector2f, 2> uvs{Vector2f(0), Vector2f(1)};
+    Vector2f size{10.0f};
     int priority;
 
     SERIALIZE(texture_id, uvs, size, priority)

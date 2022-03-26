@@ -112,10 +112,10 @@ void GraphicsLayer::OnRender()
         auto lightView = GetScene().view<LightComponent, TransformComponent>();
         lightView.each([this](const LightComponent &,
                               const TransformComponent &transComp) {
-            glm::vec3 pos = transComp.GetWorldPosition();
+            Vector3f pos = transComp.GetWorldPosition();
             float dist = glm::distance(pos, m_camera->GetWorldPosition());
             float scale = (dist - m_camera->GetNearZ()) / 20;
-            Renderer2D::DrawBillboard(*m_light_icon, pos, glm::vec2(scale));
+            Renderer2D::DrawBillboard(*m_light_icon, pos, Vector2f(scale));
         });
 
         Renderer2D::End();

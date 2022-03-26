@@ -60,9 +60,9 @@ class EditorLayer : public Layer {
     TileMapSystem* m_tile_map_system{nullptr};
     AnimationEditor* m_animation_editor;
 
-    glm::ivec2 m_viewport_pos;
+    Vector2i m_viewport_pos;
 
-    glm::ivec2 m_viewport_size;
+    Vector2i m_viewport_size;
 
     Ref<Framebuffer> m_viewport_buffer;
 

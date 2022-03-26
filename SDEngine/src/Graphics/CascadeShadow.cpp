@@ -32,15 +32,15 @@ void CascadeShadow::SetNumOfCascades(int32_t num_of_cascades)
     m_cascade_map->GetTexture()->SetBorderColor(&color);
 }
 
-static std::vector<glm::vec4> GetFrustumCorners(const glm::mat4 &project_view)
+static std::vector<Vector4f> GetFrustumCorners(const Matrix4f &project_view)
 {
     const auto &inv_pv = glm::inverse(project_view);
-    std::vector<glm::vec4> corners;
+    std::vector<Vector4f> corners;
     for (int x = 0; x <= 1; ++x) {
         for (int y = 0; y <= 1; ++y) {
             for (int z = 0; z <= 1; ++z) {
                 const auto pt =
-                    inv_pv * glm::vec4(2.0f * x - 1.0f, 2.0f * y - 1.0f,
+                    inv_pv * Vector4f(2.0f * x - 1.0f, 2.0f * y - 1.0f,
                                        2.0f * z - 1.0f, 1.0f);
                 corners.push_back(pt / pt.w);
             }
@@ -49,13 +49,13 @@ static std::vector<glm::vec4> GetFrustumCorners(const glm::mat4 &project_view)
     return corners;
 }
 
-static glm::mat4 GetLightSpaceMatrix(const Transform &transform,
-                                     const glm::mat4 &projection_view)
+static Matrix4f GetLightSpaceMatrix(const Transform &transform,
+                                     const Matrix4f &projection_view)
 {
-    glm::vec3 center(0);
+    Vector3f center(0);
     auto corners = GetFrustumCorners(projection_view);
     for (const auto &c : corners) {
-        center += glm::vec3(c);
+        center += Vector3f(c);
     }
     center /= corners.size();
 

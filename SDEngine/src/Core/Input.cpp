@@ -9,7 +9,7 @@ std::unordered_map<Keycode, bool> Input::s_last_key;
 std::unordered_map<MouseButton, bool> Input::s_mouse_button;
 std::unordered_map<MouseButton, bool> Input::s_last_mouse_button;
 
-glm::vec2 Input::s_mouse_coord;
+Vector2f Input::s_mouse_coord;
 
 std::vector<HandlerRegistration> Input::s_handlers;
 
@@ -82,7 +82,7 @@ bool Input::IsMousePressed(MouseButton button)
     return IsMouseDown(button) && !WasMouseDown(button);
 }
 
-glm::vec2 Input::GetMouseCoord() { return s_mouse_coord; }
+Vector2f Input::GetMouseCoord() { return s_mouse_coord; }
 
 void Input::Tick()
 {

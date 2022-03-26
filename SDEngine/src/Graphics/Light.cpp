@@ -24,17 +24,17 @@ void Light::SetDirectional(bool directional) { m_is_directional = directional; }
 
 bool Light::IsDirectional() const { return m_is_directional; }
 
-void Light::SetAmbient(const glm::vec3 &ambient) { m_ambient = ambient; }
+void Light::SetAmbient(const Vector3f &ambient) { m_ambient = ambient; }
 
-const glm::vec3 &Light::GetAmbient() const { return m_ambient; }
+const Vector3f &Light::GetAmbient() const { return m_ambient; }
 
-void Light::SetDiffuse(const glm::vec3 &diffuse) { m_diffuse = diffuse; }
+void Light::SetDiffuse(const Vector3f &diffuse) { m_diffuse = diffuse; }
 
-const glm::vec3 &Light::GetDiffuse() const { return m_diffuse; }
+const Vector3f &Light::GetDiffuse() const { return m_diffuse; }
 
-void Light::SetSpecular(const glm::vec3 &specular) { m_specular = specular; }
+void Light::SetSpecular(const Vector3f &specular) { m_specular = specular; }
 
-const glm::vec3 &Light::GetSpecular() const { return m_specular; }
+const Vector3f &Light::GetSpecular() const { return m_specular; }
 
 void Light::SetCutoff(float cutoff) { m_cutoff = cutoff; }
 

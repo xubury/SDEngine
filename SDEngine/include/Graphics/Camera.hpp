@@ -20,45 +20,45 @@ class SD_GRAPHICS_API Camera {
 
     void Resize(float width, float height);
 
-    void TranslateLocal(const glm::vec3 &t);
-    void TranslateWorld(const glm::vec3 &t);
-    void RotateLocal(const glm::quat &r);
-    void RotateWorld(const glm::quat &r);
+    void TranslateLocal(const Vector3f &t);
+    void TranslateWorld(const Vector3f &t);
+    void RotateLocal(const Quaternion &r);
+    void RotateWorld(const Quaternion &r);
 
-    glm::vec3 GetWorldRight() const;
-    glm::vec3 GetWorldUp() const;
-    glm::vec3 GetWorldFront() const;
+    Vector3f GetWorldRight() const;
+    Vector3f GetWorldUp() const;
+    Vector3f GetWorldFront() const;
 
-    void SetWorldPosition(const glm::vec3 &position);
-    void SetWorldRotation(const glm::quat &rotation);
+    void SetWorldPosition(const Vector3f &position);
+    void SetWorldRotation(const Quaternion &rotation);
 
-    glm::vec3 GetWorldPosition() const;
+    Vector3f GetWorldPosition() const;
 
-    glm::quat GetWorldRotation() const;
+    Quaternion GetWorldRotation() const;
 
-    glm::mat4 GetWorldTransform() const;
+    Matrix4f GetWorldTransform() const;
 
-    void SetWorldTransform(const glm::mat4 &transform);
+    void SetWorldTransform(const Matrix4f &transform);
 
     void UpdateProjection();
 
-    glm::mat4 GetView();
-    glm::mat4 GetView() const;
+    Matrix4f GetView();
+    Matrix4f GetView() const;
 
-    glm::mat4 GetProjection();
-    glm::mat4 GetProjection() const;
+    Matrix4f GetProjection();
+    Matrix4f GetProjection() const;
 
-    glm::mat4 GetViewPorjection();
-    glm::mat4 GetViewPorjection() const;
+    Matrix4f GetViewPorjection();
+    Matrix4f GetViewPorjection() const;
 
     bool ViewOutdated() const;
     bool ProjectionOutdated() const;
 
     void UpdateView();
 
-    glm::vec3 MapClipToWorld(const glm::vec2 &pos) const;
-    glm::vec3 MapWorldToClip(const glm::vec3 &pos) const;
-    Math::Ray ComputeCameraRay(const glm::vec2 &clip) const;
+    Vector3f MapClipToWorld(const Vector2f &pos) const;
+    Vector3f MapWorldToClip(const Vector3f &pos) const;
+    Math::Ray ComputeCameraRay(const Vector2f &clip) const;
 
     void SetFOV(float fov);
     float GetFOV() const;
@@ -84,12 +84,12 @@ class SD_GRAPHICS_API Camera {
     SERIALIZE(m_type, m_position, m_rotation, m_fov, m_near_width,
               m_near_height, m_near_z, m_far_z)
    private:
-    glm::mat4 m_view;
-    glm::mat4 m_projection;
+    Matrix4f m_view;
+    Matrix4f m_projection;
 
     CameraType m_type;
-    glm::vec3 m_position;
-    glm::quat m_rotation;
+    Vector3f m_position;
+    Quaternion m_rotation;
 
     float m_fov;
     float m_near_width;

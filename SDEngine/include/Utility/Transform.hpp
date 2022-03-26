@@ -3,47 +3,42 @@
 
 #include "Utility/Base.hpp"
 #include "Utility/Serialize.hpp"
+#include "Utility/Math.hpp"
 
-#include <glm/glm.hpp>
-#include <glm/gtx/quaternion.hpp>
 #include <set>
 
 namespace SD {
-
-bool SD_UTILITY_API Decompose(const glm::mat4& transform,
-                              glm::vec3& translation, glm::quat& rotation,
-                              glm::vec3& scale);
 
 class SD_UTILITY_API Transform {
    public:
     Transform();
     virtual ~Transform() = default;
 
-    void SetPosition(const glm::vec3& position);
-    void SetRotation(const glm::quat& rotation);
-    void SetScale(const glm::vec3& scale);
-    void SetTransform(const glm::mat4& transform);
+    void SetPosition(const Vector3f& position);
+    void SetRotation(const Quaternion& rotation);
+    void SetScale(const Vector3f& scale);
+    void SetTransform(const Matrix4f& transform);
 
-    glm::vec3 GetPosition() const;
-    glm::quat GetRotation() const;
-    glm::vec3 GetScale() const;
-    glm::mat4 GetMatrix() const;
+    Vector3f GetPosition() const;
+    Quaternion GetRotation() const;
+    Vector3f GetScale() const;
+    Matrix4f GetMatrix() const;
 
-    glm::vec3 GetRight() const;
-    glm::vec3 GetUp() const;
-    glm::vec3 GetFront() const;
+    Vector3f GetRight() const;
+    Vector3f GetUp() const;
+    Vector3f GetFront() const;
 
-    glm::vec3 WorldToLocal(const glm::vec3& world) const;
-    glm::vec3 LocalToWorld(const glm::vec3& local) const;
-    glm::vec3 WorldToLocalVector(const glm::vec3& world_vec) const;
-    glm::vec3 LocalToWorldVector(const glm::vec3& local_vec) const;
+    Vector3f WorldToLocal(const Vector3f& world) const;
+    Vector3f LocalToWorld(const Vector3f& local) const;
+    Vector3f WorldToLocalVector(const Vector3f& world_vec) const;
+    Vector3f LocalToWorldVector(const Vector3f& local_vec) const;
 
     SERIALIZE(m_position, m_rotation, m_scale)
 
    private:
-    glm::vec3 m_position;
-    glm::quat m_rotation;
-    glm::vec3 m_scale;
+    Vector3f m_position;
+    Quaternion m_rotation;
+    Vector3f m_scale;
 };
 
 }  // namespace SD

@@ -1,5 +1,6 @@
 #include "Loader/FontLoader.hpp"
 #include "Graphics/Bitmap.hpp"
+#include "Utility/Math.hpp"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -94,15 +95,14 @@ void FontLoader::LoadRangedGlyph(FT_Face face, Font *font, char32_t start,
         }
 
         Character c;
-        c.bearing =
-            glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
-        c.size = glm::ivec2(ft_bmp->width, ft_bmp->rows);
+        c.bearing = Vector2i(face->glyph->bitmap_left, face->glyph->bitmap_top);
+        c.size = Vector2i(ft_bmp->width, ft_bmp->rows);
         c.advance = face->glyph->advance.x >> 6;
 
-        c.uv[0] = glm::vec2(static_cast<float>(x) / tex_size,
-                            static_cast<float>(y) / tex_size);
-        c.uv[1] = glm::vec2(static_cast<float>(x + ft_bmp->width) / tex_size,
-                            static_cast<float>(y + ft_bmp->rows) / tex_size);
+        c.uv[0] = Vector2f(static_cast<float>(x) / tex_size,
+                           static_cast<float>(y) / tex_size);
+        c.uv[1] = Vector2f(static_cast<float>(x + ft_bmp->width) / tex_size,
+                           static_cast<float>(y + ft_bmp->rows) / tex_size);
         c.glyph = glyph;
 
         font->SetCharacter(ch, std::move(c));

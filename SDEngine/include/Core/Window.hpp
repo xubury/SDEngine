@@ -2,11 +2,11 @@
 #define SD_WINDOW_HPP
 
 #include "Utility/Base.hpp"
+#include "Utility/Math.hpp"
 #include "Core/Export.hpp"
 #include "Core/Event.hpp"
 #include "Core/EventDispatcher.hpp"
 
-#include <glm/glm.hpp>
 #include <string>
 
 namespace SD {
@@ -29,7 +29,7 @@ class SD_CORE_API Window {
     Window(const Window &) = delete;
     Window &operator=(const Window &) = delete;
 
-    virtual glm::ivec2 GetSize() const = 0;
+    virtual Vector2i GetSize() const = 0;
     virtual int GetWidth() const = 0;
     virtual int GetHeight() const = 0;
     virtual MultiSampleLevel GetMSAA() const = 0;

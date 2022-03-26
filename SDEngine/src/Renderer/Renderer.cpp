@@ -93,7 +93,7 @@ const RenderPassInfo& Renderer::GetCurrentRenderPass()
     return s_render_pass_stacks.top();
 }
 
-glm::vec2 Renderer::GetCurrentBufferSize()
+Vector2i Renderer::GetCurrentBufferSize()
 {
     auto& render_pass = GetCurrentRenderPass();
     return {render_pass.framebuffer->GetWidth(),

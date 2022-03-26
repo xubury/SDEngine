@@ -5,7 +5,6 @@
 #include "Graphics/Camera.hpp"
 #include "Utility/Transform.hpp"
 #include <vector>
-#include <glm/glm.hpp>
 
 namespace SD {
 
@@ -14,7 +13,7 @@ class SD_GRAPHICS_API CascadeShadow {
     CascadeShadow();
     void CreateShadowMap();
     void DestroyShadowMap();
-    const std::vector<glm::mat4> &GetLevelProjectionView() const
+    const std::vector<Matrix4f> &GetLevelProjectionView() const
     {
         return m_projection_views;
     }
@@ -38,7 +37,7 @@ class SD_GRAPHICS_API CascadeShadow {
     SERIALIZE(m_cascade_planes)
    private:
     Ref<Framebuffer> m_cascade_map;
-    std::vector<glm::mat4> m_projection_views;
+    std::vector<Matrix4f> m_projection_views;
     std::vector<float> m_cascade_planes;
 };
 }  // namespace SD

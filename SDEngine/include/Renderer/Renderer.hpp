@@ -15,8 +15,8 @@ namespace SD {
 class Scene;
 
 struct SD_RENDERER_API CameraData {
-    glm::mat4 projection;
-    glm::mat4 view;
+    Matrix4f projection;
+    Matrix4f view;
 };
 
 struct RenderOperation {
@@ -59,7 +59,7 @@ class SD_RENDERER_API Renderer {
 
     static void Init(Device *device);
 
-    static glm::vec2 GetCurrentBufferSize();
+    static Vector2i GetCurrentBufferSize();
     static Framebuffer *GetBufferStackTop();
     static const RenderPassInfo &GetCurrentRenderPass();
 

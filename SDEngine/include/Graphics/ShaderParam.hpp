@@ -6,7 +6,6 @@
 
 #include <string>
 #include <cstdint>
-#include <glm/glm.hpp>
 
 namespace SD {
 

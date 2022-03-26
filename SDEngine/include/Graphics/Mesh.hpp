@@ -3,18 +3,18 @@
 
 #include "Graphics/Export.hpp"
 #include "Graphics/VertexArray.hpp"
+#include "Utility/Math.hpp"
 
-#include <glm/glm.hpp>
 #include <vector>
 
 namespace SD {
 
 struct SD_GRAPHICS_API Vertex {
-    glm::vec3 position;
-    glm::vec2 uv;
-    glm::vec3 normal;
-    glm::vec3 tangent;
-    glm::vec3 bi_tangent;
+    Vector3f position;
+    Vector2f uv;
+    Vector3f normal;
+    Vector3f tangent;
+    Vector3f bi_tangent;
 };
 
 class SD_GRAPHICS_API Mesh {

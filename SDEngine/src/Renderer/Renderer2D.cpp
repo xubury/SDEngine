@@ -5,8 +5,8 @@
 namespace SD {
 
 struct SD_RENDERER_API LineVertex {
-    glm::vec3 pos;
-    glm::vec4 color;
+    Vector3f pos;
+    Vector4f color;
     uint32_t entity_id;
 };
 
@@ -15,9 +15,9 @@ struct SD_RENDERER_API Line {
 };
 
 struct SD_RENDERER_API QuadVertex {
-    glm::vec3 position;
-    glm::vec4 color;
-    glm::vec2 uv;
+    Vector3f position;
+    Vector4f color;
+    Vector2f uv;
     int tex_id;
     uint32_t entity_id;
     QuadVertex() : position(0.f), color(0.f), uv(0.f), tex_id(0.f) {}
@@ -25,18 +25,18 @@ struct SD_RENDERER_API QuadVertex {
 
 struct SD_RENDERER_API Quad {
     std::array<QuadVertex, 4> vertices;
-    glm::vec3 GetCenter() const
+    Vector3f GetCenter() const
     {
         return (vertices[0].position + vertices[1].position +
                 vertices[2].position + vertices[3].position) /
-               glm::vec3(4);
+               Vector3f(4);
     }
 };
 
 struct SD_RENDERER_API CircleVertex {
-    glm::vec3 world_pos;
-    glm::vec3 local_pos;
-    glm::vec4 color;
+    Vector3f world_pos;
+    Vector3f local_pos;
+    Vector4f color;
     float thickness;
     float fade;
     uint32_t entity_id;
@@ -77,16 +77,16 @@ struct SD_RENDERER_API Renderer2DData {
     std::array<Circle, MAX_QUADS> circle_buffer;
     Circle* circle_buffer_ptr = nullptr;
 
-    glm::ivec2 text_origin;
-    glm::ivec2 text_cursor;
+    Vector2i text_origin;
+    Vector2i text_cursor;
 };
 
-const static std::array<glm::vec4, 4> QUAD_VERTEX_POS = {
-    glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f), glm::vec4(0.5f, -0.5f, 0.0f, 1.0f),
-    glm::vec4(0.5f, 0.5f, 0.0f, 1.0f), glm::vec4(-0.5f, 0.5f, 0.0f, 1.0f)};
+const static std::array<Vector4f, 4> QUAD_VERTEX_POS = {
+    Vector4f(-0.5f, -0.5f, 0.0f, 1.0f), Vector4f(0.5f, -0.5f, 0.0f, 1.0f),
+    Vector4f(0.5f, 0.5f, 0.0f, 1.0f), Vector4f(-0.5f, 0.5f, 0.0f, 1.0f)};
 // OpenGL define uv coordinate origin's at bottom-left.
-const static std::array<glm::vec2, 4> QUAD_UV = {
-    glm::vec2(0, 1), glm::vec2(1, 1), glm::vec2(1, 0), glm::vec2(0, 0)};
+const static std::array<Vector2f, 4> QUAD_UV = {Vector2f(0, 1), Vector2f(1, 1),
+                                                Vector2f(1, 0), Vector2f(0, 0)};
 
 static Renderer2DData m_data;
 
@@ -238,7 +238,7 @@ void Renderer2D::SetTextOrigin(int x, int y)
     m_data.text_origin.y = y;
 }
 
-glm::ivec2 Renderer2D::GetTextCursor()
+Vector2i Renderer2D::GetTextCursor()
 {
     return m_data.text_cursor + m_data.text_origin;
 }
@@ -312,8 +312,8 @@ void Renderer2D::NextCircleBatch()
     StartCircleBatch();
 }
 
-void Renderer2D::DrawLine(const glm::vec3& start, const glm::vec3& end,
-                          const glm::vec4& color, uint32_t entity_id)
+void Renderer2D::DrawLine(const Vector3f& start, const Vector3f& end,
+                          const Vector4f& color, uint32_t entity_id)
 {
     if (m_data.line_vertex_cnt >= Renderer2DData::MAX_LINES_VERTICES) {
         NextLineBatch();
@@ -330,16 +330,16 @@ void Renderer2D::DrawLine(const glm::vec3& start, const glm::vec3& end,
     m_data.line_vertex_cnt += 2;
 }
 
-void Renderer2D::DrawQuad(const glm::vec3& pos, const glm::quat& rot,
-                          const glm::vec2& scale, const glm::vec4& color,
+void Renderer2D::DrawQuad(const Vector3f& pos, const Quaternion& rot,
+                          const Vector2f& scale, const Vector4f& color,
                           uint32_t entity_id)
 {
-    DrawQuad(glm::translate(glm::mat4(1.0f), pos) * glm::toMat4(rot) *
-                 glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
+    DrawQuad(glm::translate(Matrix4f(1.0f), pos) * glm::toMat4(rot) *
+                 glm::scale(Matrix4f(1.0f), Vector3f(scale.x, scale.y, 1.0f)),
              color, entity_id);
 }
 
-void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color,
+void Renderer2D::DrawQuad(const Matrix4f& transform, const Vector4f& color,
                           uint32_t entity_id)
 {
     if (m_data.quad_index_cnt >= Renderer2DData::MAX_INDICES) {
@@ -359,21 +359,21 @@ void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color,
 }
 
 void Renderer2D::DrawTexture(const Texture& texture,
-                             const std::array<glm::vec2, 2>& uv,
-                             const glm::vec3& pos, const glm::quat& rot,
-                             const glm::vec2& scale, const glm::vec4& color,
+                             const std::array<Vector2f, 2>& uv,
+                             const Vector3f& pos, const Quaternion& rot,
+                             const Vector2f& scale, const Vector4f& color,
                              uint32_t entity_id)
 {
     DrawTexture(
         texture, uv,
-        glm::translate(glm::mat4(1.0f), pos) * glm::toMat4(rot) *
-            glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
+        glm::translate(Matrix4f(1.0f), pos) * glm::toMat4(rot) *
+            glm::scale(Matrix4f(1.0f), Vector3f(scale.x, scale.y, 1.0f)),
         color, entity_id);
 }
 
 void Renderer2D::DrawTexture(const Texture& texture,
-                             const std::array<glm::vec2, 2>& uv,
-                             const glm::mat4& transform, const glm::vec4& color,
+                             const std::array<Vector2f, 2>& uv,
+                             const Matrix4f& transform, const Vector4f& color,
                              uint32_t entity_id)
 {
     if (m_data.quad_index_cnt >= Renderer2DData::MAX_INDICES) {
@@ -409,57 +409,57 @@ void Renderer2D::DrawTexture(const Texture& texture,
     m_data.quad_index_cnt += 6;
 }
 
-void Renderer2D::DrawTexture(const Texture& texture, const glm::vec3& pos,
-                             const glm::quat& rot, const glm::vec2& scale,
-                             const glm::vec4& color, uint32_t entity_id)
+void Renderer2D::DrawTexture(const Texture& texture, const Vector3f& pos,
+                             const Quaternion& rot, const Vector2f& scale,
+                             const Vector4f& color, uint32_t entity_id)
 {
     DrawTexture(
-        texture, {glm::vec2(0), glm::vec2(1)},
-        glm::translate(glm::mat4(1.0f), pos) * glm::toMat4(rot) *
-            glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
+        texture, {Vector2f(0), Vector2f(1)},
+        glm::translate(Matrix4f(1.0f), pos) * glm::toMat4(rot) *
+            glm::scale(Matrix4f(1.0f), Vector3f(scale.x, scale.y, 1.0f)),
         color, entity_id);
 }
 
-void Renderer2D::DrawTexture(const Texture& texture, const glm::mat4& transform,
-                             const glm::vec4& color, uint32_t entity_id)
+void Renderer2D::DrawTexture(const Texture& texture, const Matrix4f& transform,
+                             const Vector4f& color, uint32_t entity_id)
 {
-    DrawTexture(texture, {glm::vec2(0), glm::vec2(1)}, transform, color,
+    DrawTexture(texture, {Vector2f(0), Vector2f(1)}, transform, color,
                 entity_id);
 }
 
 void Renderer2D::DrawBillboard(const Texture& texture,
-                               const std::array<glm::vec2, 2>& uv,
-                               const glm::vec3& pos, const glm::vec2& scale,
-                               const glm::vec4& color, uint32_t entity_id)
+                               const std::array<Vector2f, 2>& uv,
+                               const Vector3f& pos, const Vector2f& scale,
+                               const Vector4f& color, uint32_t entity_id)
 {
     DrawTexture(
         texture, uv,
-        glm::translate(glm::mat4(1.0f), pos) *
-            glm::mat4(glm::transpose(glm::mat3(m_camera_data.view))) *
-            glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
+        glm::translate(Matrix4f(1.0f), pos) *
+            Matrix4f(glm::transpose(Matrix3f(m_camera_data.view))) *
+            glm::scale(Matrix4f(1.0f), Vector3f(scale.x, scale.y, 1.0f)),
         color, entity_id);
 }
 
-void Renderer2D::DrawBillboard(const Texture& texture, const glm::vec3& pos,
-                               const glm::vec2& scale, const glm::vec4& color,
+void Renderer2D::DrawBillboard(const Texture& texture, const Vector3f& pos,
+                               const Vector2f& scale, const Vector4f& color,
                                uint32_t entity_id)
 {
     DrawTexture(
         texture,
-        glm::translate(glm::mat4(1.0f), pos) *
-            glm::mat4(glm::transpose(glm::mat3(m_camera_data.view))) *
-            glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
+        glm::translate(Matrix4f(1.0f), pos) *
+            Matrix4f(glm::transpose(Matrix3f(m_camera_data.view))) *
+            glm::scale(Matrix4f(1.0f), Vector3f(scale.x, scale.y, 1.0f)),
         color, entity_id);
 }
 
 void Renderer2D::DrawText(const Font& font, const std::string& text,
-                          const glm::mat4& transform, const glm::vec4& color,
+                          const Matrix4f& transform, const Vector4f& color,
                           uint32_t entity_id)
 {
-    glm::mat4 t =
-        glm::translate(glm::mat4(1.0f), glm::vec3(m_data.text_origin.x,
-                                                  m_data.text_origin.y, 0)) *
-        transform;
+    Matrix4f t = glm::translate(
+                     Matrix4f(1.0f),
+                     Vector3f(m_data.text_origin.x, m_data.text_origin.y, 0)) *
+                 transform;
     std::u32string u32str = String::ConvertToUTF32(text);
     for (const auto c : u32str) {
         if (c == '\n') {
@@ -471,30 +471,28 @@ void Renderer2D::DrawText(const Font& font, const std::string& text,
             continue;
         }
         const Character& ch = font.GetCharacter(c);
-        glm::mat4 offset =
+        Matrix4f offset =
             glm::translate(
-                glm::mat4(1.0f),
-                glm::vec3(
-                    m_data.text_cursor.x + ch.bearing.x + ch.size.x * 0.5f,
-                    m_data.text_cursor.y + ch.bearing.y - ch.size.y * 0.5f,
-                    0)) *
-            glm::scale(glm::mat4(1.0f), glm::vec3(ch.size.x, ch.size.y, 1.0f));
+                Matrix4f(1.0f),
+                Vector3f(m_data.text_cursor.x + ch.bearing.x + ch.size.x * 0.5f,
+                         m_data.text_cursor.y + ch.bearing.y - ch.size.y * 0.5f,
+                         0)) *
+            glm::scale(Matrix4f(1.0f), Vector3f(ch.size.x, ch.size.y, 1.0f));
         DrawTexture(*ch.glyph, ch.uv, t * offset, color, entity_id);
         m_data.text_cursor.x += ch.advance;
     }
 }
 
-void Renderer2D::DrawCircle(const glm::vec3& pos, const glm::vec2& scale,
-                            const glm::vec4& color, float thickness, float fade,
+void Renderer2D::DrawCircle(const Vector3f& pos, const Vector2f& scale,
+                            const Vector4f& color, float thickness, float fade,
                             uint32_t entity_id)
 {
-    DrawCircle(
-        glm::translate(glm::mat4(1.0f), pos) *
-            glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
-        color, thickness, fade, entity_id);
+    DrawCircle(glm::translate(Matrix4f(1.0f), pos) *
+                   glm::scale(Matrix4f(1.0f), Vector3f(scale.x, scale.y, 1.0f)),
+               color, thickness, fade, entity_id);
 }
 
-void Renderer2D::DrawCircle(const glm::mat4& transform, const glm::vec4& color,
+void Renderer2D::DrawCircle(const Matrix4f& transform, const Vector4f& color,
                             float thickness, float fade, uint32_t entity_id)
 {
     if (m_data.circle_index_cnt >= Renderer2DData::MAX_INDICES) {

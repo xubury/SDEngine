@@ -36,8 +36,8 @@ class EditorCameraSystem : public ECSSystem {
 
     float m_pitch;
 
-    glm::vec2 m_mouse_smooth_movement;
-    glm::vec2 m_mouse_movement;
+    Vector2f m_mouse_smooth_movement;
+    Vector2f m_mouse_movement;
 
     Camera m_camera;
 

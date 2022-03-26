@@ -1,5 +1,6 @@
 #include "Loader/ModelLoader.hpp"
 #include "Loader/TextureLoader.hpp"
+#include "Utility/Math.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -7,9 +8,9 @@
 
 namespace SD {
 
-static inline glm::mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4 &from)
+static inline Matrix4f ConvertAssimpMatrix(const aiMatrix4x4 &from)
 {
-    glm::mat4 to;
+    Matrix4f to;
     // the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
     to[0][0] = from.a1;
     to[1][0] = from.a2;
@@ -183,13 +184,13 @@ static Material ProcessAiMaterial(const std::filesystem::path &directory,
 }
 
 static void ProcessNode(const aiScene *scene, const aiNode *node, Model &model,
-                        const glm::mat4 &parent_trans)
+                        const Matrix4f &parent_trans)
 {
     if (node == nullptr) return;
     for (uint32_t i = 0; i < node->mNumChildren; ++i) {
         const aiNode *child = node->mChildren[i];
-        glm::mat4 trans =
-            parent_trans * ConvertMatrixToGLMFormat(child->mTransformation);
+        Matrix4f trans =
+            parent_trans * ConvertAssimpMatrix(child->mTransformation);
         model.AddTransform(trans);
         for (uint32_t j = 0; j < child->mNumMeshes; ++j) {
             uint32_t mesh_id = child->mMeshes[j];
@@ -233,7 +234,7 @@ Ref<Model> ModelLoader::LoadModel(const std::string &path)
         }
 
         // Process node
-        ProcessNode(scene, scene->mRootNode, *model, glm::mat4(1.0f));
+        ProcessNode(scene, scene->mRootNode, *model, Matrix4f(1.0f));
     }
     return model;
 }

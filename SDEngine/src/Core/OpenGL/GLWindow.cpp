@@ -152,9 +152,9 @@ MultiSampleLevel GLWindow::GetMSAA() const
 
 bool GLWindow::GetIsVSync() const { return SDL_GL_GetSwapInterval() == 1; }
 
-glm::ivec2 GLWindow::GetSize() const
+Vector2i GLWindow::GetSize() const
 {
-    glm::ivec2 size;
+    Vector2i size;
     SDL_GetWindowSize(m_window, &size.x, &size.y);
     return size;
 }
