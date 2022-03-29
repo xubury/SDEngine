@@ -47,14 +47,10 @@ GLDevice::GLDevice()
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
                           GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 #endif
-    // Depth Test
-    Enable(Operation::DepthTest);
 
-    // Blend
-    Enable(Operation::Blend);
+    Enable(Operation::MSAA);
+
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    Enable(Operation::FaceCulling);
 }
 
 void GLDevice::DrawElements(MeshTopology topology, int count, size_t offset)

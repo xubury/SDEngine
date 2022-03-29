@@ -72,22 +72,22 @@ GLenum Translate(TextureType type, int dimension, MultiSampleLevel msaa)
                 case 1:
                     return GL_TEXTURE_1D;
                 case 2:
-                    return msaa == MultiSampleLevel::X1
+                    return msaa == MultiSampleLevel::None
                                ? GL_TEXTURE_2D
                                : GL_TEXTURE_2D_MULTISAMPLE;
                 case 3:
                     return GL_TEXTURE_3D;
             }
             return 0;
-            case TextureType::Array:
-                return msaa == MultiSampleLevel::X1
-                           ? GL_TEXTURE_2D_ARRAY
-                           : GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
-            case TextureType::Cube:
-                return GL_TEXTURE_CUBE_MAP;
-            case TextureType::CubeArray:
-                return GL_TEXTURE_CUBE_MAP_ARRAY;
         }
+        case TextureType::Array:
+            return msaa == MultiSampleLevel::None
+                       ? GL_TEXTURE_2D_ARRAY
+                       : GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
+        case TextureType::Cube:
+            return GL_TEXTURE_CUBE_MAP;
+        case TextureType::CubeArray:
+            return GL_TEXTURE_CUBE_MAP_ARRAY;
     }
     return 0;
 }

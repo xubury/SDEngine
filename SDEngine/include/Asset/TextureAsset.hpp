@@ -11,7 +11,7 @@ class TextureAsset : public Asset {
    public:
     TextureAsset()
     {
-        m_texture = Texture::Create(1, 1, 0, MultiSampleLevel::X1,
+        m_texture = Texture::Create(1, 1, 0, MultiSampleLevel::None,
                                     TextureType::Normal, DataFormat::RGB8);
     }
     ~TextureAsset() {}

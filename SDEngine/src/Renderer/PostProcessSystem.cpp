@@ -34,7 +34,7 @@ void PostProcessSystem::OnInit()
 void PostProcessSystem::InitBuffers()
 {
     AttachmentDescription attach_desc{
-        AttachmentType::Normal, DataFormat::RGBA16F, MultiSampleLevel::X1};
+        AttachmentType::Normal, DataFormat::RGBA16F, MultiSampleLevel::None};
     for (int i = 0; i < 2; ++i) {
         m_blur_buffer[i] =
             Framebuffer::Create({m_width, m_height, 0, {attach_desc}});

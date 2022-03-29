@@ -27,10 +27,10 @@ GLWindow::GLWindow(const WindowCreateInfo &info) : m_is_init_imgui(false)
                             SDL_GL_CONTEXT_PROFILE_CORE));
 
     // MultiSampling
-    int samples = static_cast<int>(info.msaa);
-    if (samples > 1) {
+    if (info.msaa != MultiSampleLevel::None) {
         SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1));
-        SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, samples));
+        SDL(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,
+                                static_cast<int>(info.msaa)));
     }
 
     m_window = SDL_CreateWindow(info.title.c_str(), SDL_WINDOWPOS_CENTERED,
@@ -145,7 +145,7 @@ void GLWindow::ImGuiRenderDrawData()
 
 MultiSampleLevel GLWindow::GetMSAA() const
 {
-    int value = 1;
+    int value = 0;
     SDL(SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &value));
     return static_cast<MultiSampleLevel>(value);
 }

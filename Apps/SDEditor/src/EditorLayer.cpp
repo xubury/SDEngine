@@ -54,9 +54,9 @@ void EditorLayer::InitBuffers()
     info.height = m_viewport_size.y;
     info.depth = 0;
     info.attachments.push_back(AttachmentDescription{
-        AttachmentType::Normal, DataFormat::RGB8, MultiSampleLevel::X1});
+        AttachmentType::Normal, DataFormat::RGB8, MultiSampleLevel::None});
     info.attachments.push_back(AttachmentDescription{
-        AttachmentType::Normal, DataFormat::R32UI, MultiSampleLevel::X1});
+        AttachmentType::Normal, DataFormat::R32UI, MultiSampleLevel::None});
 
     m_viewport_buffer = Framebuffer::Create(info);
 }

@@ -15,7 +15,7 @@ void CascadeShadow::CreateShadowMap()
          shadow_map_height,
          (int)m_cascade_planes.size(),
          {AttachmentDescription{AttachmentType::Array, DataFormat::Depth24,
-                                MultiSampleLevel::X1}}});
+                                MultiSampleLevel::None}}});
     m_cascade_map->GetTexture()->SetWrap(TextureWrap::Border);
     m_cascade_map->GetTexture()->SetBorderColor(&color);
 }
@@ -41,7 +41,7 @@ static std::vector<Vector4f> GetFrustumCorners(const Matrix4f &project_view)
             for (int z = 0; z <= 1; ++z) {
                 const auto pt =
                     inv_pv * Vector4f(2.0f * x - 1.0f, 2.0f * y - 1.0f,
-                                       2.0f * z - 1.0f, 1.0f);
+                                      2.0f * z - 1.0f, 1.0f);
                 corners.push_back(pt / pt.w);
             }
         }
@@ -50,7 +50,7 @@ static std::vector<Vector4f> GetFrustumCorners(const Matrix4f &project_view)
 }
 
 static Matrix4f GetLightSpaceMatrix(const Transform &transform,
-                                     const Matrix4f &projection_view)
+                                    const Matrix4f &projection_view)
 {
     Vector3f center(0);
     auto corners = GetFrustumCorners(projection_view);

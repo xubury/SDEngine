@@ -100,7 +100,7 @@ void LightingSystem::InitSSAO()
 {
     // ssao target
     AttachmentDescription attach_desc{AttachmentType::Normal, DataFormat::R16F,
-                                      MultiSampleLevel::X1};
+                                      MultiSampleLevel::None};
 
     m_ssao_buffer = Framebuffer::Create({m_width, m_height, 0, {attach_desc}});
     m_ssao_blur_buffer =
@@ -131,7 +131,7 @@ void LightingSystem::InitSSAOKernel()
         ssao_noise[i] = glm::normalize(noise);
     }
     m_ssao_noise =
-        Texture::Create(4, 4, 0, MultiSampleLevel::X1, TextureType::Normal,
+        Texture::Create(4, 4, 0, MultiSampleLevel::None, TextureType::Normal,
                         DataFormat::RGB16F, TextureWrap::Repeat);
     m_ssao_noise->SetPixels(0, 0, 0, 4, 4, 1, ssao_noise.data());
 
@@ -166,7 +166,7 @@ void LightingSystem::InitLighting()
          m_height,
          0,
          {AttachmentDescription{AttachmentType::Normal, DataFormat::RGB8,
-                                MultiSampleLevel::X1}}});
+                                MultiSampleLevel::None}}});
 }
 
 void LightingSystem::OnSizeEvent(const RenderSizeEvent &event)

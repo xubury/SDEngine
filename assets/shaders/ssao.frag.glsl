@@ -18,12 +18,11 @@ uniform float u_radius;
 uniform float u_bias;
 uniform uint u_power;
 
-float ComputeOcclusion(int level, const vec2 tex_size, const ivec2 uv,
-                       vec3 random_vec)
+float ComputeOcclusion(const vec2 tex_size, const ivec2 uv, vec3 random_vec)
 {
     // get input for SSAO algorithm
-    vec3 frag_pos = texelFetch(u_position, uv, level).xyz;
-    vec3 normal = texelFetch(u_normal, uv, level).xyz;
+    vec3 frag_pos = texelFetch(u_position, uv, 0).xyz;
+    vec3 normal = texelFetch(u_normal, uv, 0).xyz;
     if (normal == vec3(0)) return 1;
 
     frag_pos = (u_view * vec4(frag_pos, 1.0f)).xyz;
@@ -57,8 +56,8 @@ float ComputeOcclusion(int level, const vec2 tex_size, const ivec2 uv,
         // get sample depth
         const ivec2 uv = ivec2(offset.xy * tex_size);
         float sample_depth =
-            (u_view * vec4(texelFetch(u_position, uv, level).xyz, 1.0f)).z;
-        if ((rot_view * texelFetch(u_normal, uv, level).xyz) == vec3(0)) {
+            (u_view * vec4(texelFetch(u_position, uv, 0).xyz, 1.0f)).z;
+        if ((rot_view * texelFetch(u_normal, uv, 0).xyz) == vec3(0)) {
             continue;
         }
 
@@ -75,16 +74,8 @@ void main()
 {
     const vec2 tex_size = textureSize(u_position);
     const ivec2 uv = ivec2(in_uv * tex_size);
+    vec3 random_vec =  texture(u_noise, uv / 4.f).xyz;
 
-    vec3 random_vec = texture(u_noise, uv / 4.f).xyz;
-
-    // TODO: MSAA seems not working with SSAO
-    // const int num_msaa = textureSamples(u_position);
-    const int num_msaa = 1;
-    float occlusion = 0;
-    for (int i = 0; i < num_msaa; ++i) {
-        occlusion += ComputeOcclusion(i, tex_size, uv, random_vec);
-    }
-    occlusion /= num_msaa;
+    float occlusion = ComputeOcclusion(tex_size, uv, random_vec);
     frag_color = pow(occlusion, u_power);
 }

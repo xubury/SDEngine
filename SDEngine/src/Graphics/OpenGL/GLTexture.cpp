@@ -102,7 +102,7 @@ GLTexture::GLTexture(int width, int height, int depth, MultiSampleLevel samples,
 
     Allocate();
 
-    if (m_samples == MultiSampleLevel::X1) {
+    if (m_samples == MultiSampleLevel::None) {
         SetWrap(m_wrap);
         SetMinFilter(m_min_filter);
         SetMagFilter(m_mag_filter);

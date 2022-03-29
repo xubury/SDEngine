@@ -46,7 +46,7 @@ TileMapSystem::TileMapSystem()
       m_operation(Operation::None)
 {
     m_outline_texture = Texture::Create(
-        GRID_TEXTURE_SIZE, GRID_TEXTURE_SIZE, 0, MultiSampleLevel::X1,
+        GRID_TEXTURE_SIZE, GRID_TEXTURE_SIZE, 0, MultiSampleLevel::None,
         TextureType::Normal, DataFormat::RGBA8, TextureWrap::Repeat);
     size_t pixel_size =
         4 * m_outline_texture->GetWidth() * m_outline_texture->GetHeight();

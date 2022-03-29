@@ -6,6 +6,8 @@
 
 namespace SD {
 
+inline const Vector2f icon_size(20.f);
+
 GraphicsLayer::GraphicsLayer(Device *device, int32_t width, int32_t height,
                              MultiSampleLevel msaa)
     : Layer("Graphics Layer"),
@@ -46,7 +48,7 @@ void GraphicsLayer::OnInit()
              ++i) {
             info.attachments.push_back(AttachmentDescription{
                 AttachmentType::Normal, GetTextureFormat(GeometryBufferType(i)),
-                MultiSampleLevel::X1});
+                MultiSampleLevel::None});
         }
         m_debug_gbuffer = Framebuffer::Create(info);
     }
@@ -90,7 +92,8 @@ void GraphicsLayer::SetCamera(Camera *camera)
     GetEventDispatcher().PublishEvent(CameraEvent{m_camera});
 }
 
-void GraphicsLayer::SetRenderScene(Scene *scene) {
+void GraphicsLayer::SetRenderScene(Scene *scene)
+{
     GetEventDispatcher().PublishEvent(NewSceneEvent{scene});
 }
 
@@ -113,9 +116,7 @@ void GraphicsLayer::OnRender()
         lightView.each([this](const LightComponent &,
                               const TransformComponent &transComp) {
             Vector3f pos = transComp.GetWorldPosition();
-            float dist = glm::distance(pos, m_camera->GetWorldPosition());
-            float scale = (dist - m_camera->GetNearZ()) / 20;
-            Renderer2D::DrawBillboard(*m_light_icon, pos, Vector2f(scale));
+            Renderer2D::DrawBillboard(*m_light_icon, pos, icon_size);
         });
 
         Renderer2D::End();
