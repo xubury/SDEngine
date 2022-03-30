@@ -106,17 +106,18 @@ void GraphicsLayer::OnRender()
         system->OnRender();
     }
     if (m_debug) {
-        const int index = 0;
+        const int index[] = {0, 1};
         RenderOperation op;
         op.depth_test = false;
-        Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1, op});
+        Renderer::BeginRenderSubpass(RenderSubpassInfo{index, 2, op});
 
         Renderer2D::Begin(*m_camera);
         auto lightView = GetScene().view<LightComponent, TransformComponent>();
-        lightView.each([this](const LightComponent &,
+        lightView.each([this](EntityId id, const LightComponent &,
                               const TransformComponent &transComp) {
             Vector3f pos = transComp.GetWorldPosition();
-            Renderer2D::DrawBillboard(*m_light_icon, pos, icon_size);
+            Renderer2D::DrawBillboard(*m_light_icon, pos, icon_size,
+                                      glm::vec4(1.0f), static_cast<int>(id));
         });
 
         Renderer2D::End();
