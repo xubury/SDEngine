@@ -4,17 +4,17 @@
 #include "Utility/Base.hpp"
 #include "Utility/Serialize.hpp"
 #include "ECS/Export.hpp"
-#include "ECS/Component.hpp"
 
 #include "entt/entt.hpp"
-#define ENTT_USE_ATOMIC
-#include "entt/config/config.h"
-#include "entt/entity/snapshot.hpp"
-#include "entt/entity/registry.hpp"
-#include "entt/entity/entity.hpp"
+// #include "entt/config/config.h"
+// #include "entt/entity/snapshot.hpp"
+// #include "entt/entity/registry.hpp"
+// #include "entt/entity/entity.hpp"
 
 namespace SD {
 
+using EntityId = entt::entity;
+using EntityIdType = entt::id_type;
 class Entity;
 
 using ComponentSerializeFunction = entt::delegate<void(
@@ -22,6 +22,11 @@ using ComponentSerializeFunction = entt::delegate<void(
 
 using ComponentDeserializeFunction = entt::delegate<void(
     entt::snapshot_loader &, cereal::PortableBinaryInputArchive &)>;
+
+template <typename T>
+void OnComponentAdded(entt::registry &, entt::entity)
+{
+}
 
 class SD_ECS_API Scene : public entt::registry {
    public:

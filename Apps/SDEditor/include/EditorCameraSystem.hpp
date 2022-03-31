@@ -2,7 +2,7 @@
 #define SD_EDITOR_CAMERA_SYSTEM_HPP
 
 #include "Core/ECSSystem.hpp"
-#include "ECS/Entity.hpp"
+#include "Graphics/Camera.hpp"
 
 namespace SD {
 

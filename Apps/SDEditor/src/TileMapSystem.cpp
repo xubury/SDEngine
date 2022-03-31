@@ -1,6 +1,7 @@
 #include "TileMapSystem.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Asset/AssetStorage.hpp"
+#include "ECS/Component.hpp"
 
 namespace SD {
 

@@ -1,7 +1,7 @@
 #include "Renderer/SpriteRenderSystem.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Renderer/Event.hpp"
-#include "Graphics/Font.hpp"
+#include "ECS/Component.hpp"
 
 #include "Asset/AssetStorage.hpp"
 #include "Asset/TextureAsset.hpp"
@@ -36,6 +36,7 @@ struct SpriteDrawData {
 };
 void SpriteRenderSystem::OnRender()
 {
+    auto &storage = AssetStorage::Get();
     int index[] = {0, 1};
     RenderOperation op;
     op.depth_mask = false;
@@ -44,16 +45,15 @@ void SpriteRenderSystem::OnRender()
 
     std::vector<SpriteDrawData> datas;
     auto sprite_view = GetScene().view<SpriteComponent, TransformComponent>();
-    sprite_view.each([&datas](entt::entity entity_id,
+    sprite_view.each([&](entt::entity entity_id,
 
-                              const SpriteComponent &sprite_comp,
-                              const TransformComponent &transform_comp) {
+                         const SpriteComponent &sprite_comp,
+                         const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
         auto &frame = sprite_comp.frame;
-        if (AssetStorage::Get().Exists<TextureAsset>(frame.texture_id)) {
-            auto texture = AssetStorage::Get()
-                               .GetAsset<TextureAsset>(frame.texture_id)
-                               ->GetTexture();
+        if (storage.Exists<TextureAsset>(frame.texture_id)) {
+            auto texture =
+                storage.GetAsset<TextureAsset>(frame.texture_id)->GetTexture();
             datas.push_back({texture, frame.uvs,
                              transform_comp.GetWorldPosition(),
                              transform_comp.GetWorldRotation(), frame.size, id,
@@ -62,19 +62,18 @@ void SpriteRenderSystem::OnRender()
     });
     auto anim_view =
         GetScene().view<SpriteAnimationComponent, TransformComponent>();
-    anim_view.each([&datas](entt::entity entity_id,
-                            const SpriteAnimationComponent &anim_comp,
-                            const TransformComponent &transform_comp) {
+    anim_view.each([&](entt::entity entity_id,
+                       const SpriteAnimationComponent &anim_comp,
+                       const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
         auto anim = anim_comp.animator.GetAnimation();
         if (anim) {
             if (anim->GetFrameSize()) {
                 auto &frame = anim->GetFrame();
-                if (AssetStorage::Get().Exists<TextureAsset>(
-                        frame.texture_id)) {
-                    auto texture = AssetStorage::Get()
-                                       .GetAsset<TextureAsset>(frame.texture_id)
-                                       ->GetTexture();
+                if (storage.Exists<TextureAsset>(frame.texture_id)) {
+                    auto texture =
+                        storage.GetAsset<TextureAsset>(frame.texture_id)
+                            ->GetTexture();
                     datas.push_back({texture, frame.uvs,
                                      transform_comp.GetWorldPosition(),
                                      transform_comp.GetWorldRotation(),
@@ -106,14 +105,13 @@ void SpriteRenderSystem::OnRender()
 
     auto textView = GetScene().view<TransformComponent, TextComponent>();
 
-    textView.each([](entt::entity entity_id,
-                     const TransformComponent &transformComp,
-                     const TextComponent &textComp) {
+    textView.each([&](entt::entity entity_id,
+                      const TransformComponent &transformComp,
+                      const TextComponent &textComp) {
         Renderer2D::SetTextOrigin(0, 0);
-        if (AssetStorage::Get().Exists<FontAsset>(textComp.font_id)) {
-            auto font = AssetStorage::Get()
-                            .GetAsset<FontAsset>(textComp.font_id)
-                            ->GetFont();
+        if (storage.Exists<FontAsset>(textComp.font_id)) {
+            auto font =
+                storage.GetAsset<FontAsset>(textComp.font_id)->GetFont();
             Renderer2D::DrawText(*font, textComp.text,
                                  transformComp.GetWorldTransform().GetMatrix(),
                                  textComp.color,

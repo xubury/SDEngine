@@ -3,6 +3,7 @@
 
 #include "Utility/Base.hpp"
 #include "Utility/Math.hpp"
+#include "Graphics/Graphics.hpp"
 #include "Core/Export.hpp"
 #include "Core/Event.hpp"
 #include "Core/EventDispatcher.hpp"

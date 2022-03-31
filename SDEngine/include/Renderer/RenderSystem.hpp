@@ -2,13 +2,16 @@
 #define SD_RENDER_SYSTEM_HPP
 
 #include "Core/ECSSystem.hpp"
+#include "Renderer/Export.hpp"
 #include "Renderer/Event.hpp"
 
 namespace SD {
 
-class RenderSystem : public ECSSystem {
+class SD_RENDERER_API RenderSystem : public ECSSystem {
    public:
-    RenderSystem(const std::string &name) : ECSSystem(name), m_camera(nullptr) {}
+    RenderSystem(const std::string &name) : ECSSystem(name), m_camera(nullptr)
+    {
+    }
 
     void OnInit() override
     {

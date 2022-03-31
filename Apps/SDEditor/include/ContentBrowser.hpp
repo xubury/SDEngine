@@ -2,6 +2,7 @@
 #define SD_CONTENT_BROWSER_HPP
 
 #include "Core/ECSSystem.hpp"
+#include "Graphics/Texture.hpp"
 
 namespace SD {
 

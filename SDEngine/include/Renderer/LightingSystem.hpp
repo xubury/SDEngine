@@ -2,11 +2,11 @@
 #define SD_LIGHTING_SYSTEM_HPP
 
 #include "Renderer/Export.hpp"
-#include "Renderer/Event.hpp"
 #include "Renderer/RenderSystem.hpp"
-#include "ECS/Scene.hpp"
+#include "Graphics/Framebuffer.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"
+#include "Graphics/CascadeShadow.hpp"
 
 namespace SD {
 

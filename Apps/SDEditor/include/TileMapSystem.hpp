@@ -3,6 +3,8 @@
 
 #include "Core/ECSSystem.hpp"
 #include "Graphics/Viewport.hpp"
+#include "Graphics/Framebuffer.hpp"
+#include "Graphics/Camera.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGui/FileDialog.hpp"
 

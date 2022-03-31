@@ -14,12 +14,9 @@
 #include "Animation/Animation.hpp"
 #include "Animation/Animator.hpp"
 
-#include "entt/entt.hpp"
+#include "ECS/Scene.hpp"
 
 namespace SD {
-
-using EntityId = entt::entity;
-using EntityIdType = entt::id_type;
 
 struct SD_ECS_API IdComponent {
     ResourceId id;
@@ -139,11 +136,6 @@ struct SD_ECS_API SpriteAnimationComponent {
 
     SERIALIZE(animations)
 };
-
-template <typename T>
-void OnComponentAdded(entt::registry&, entt::entity)
-{
-}
 
 template <>
 inline void OnComponentAdded<TransformComponent>(entt::registry& reg,

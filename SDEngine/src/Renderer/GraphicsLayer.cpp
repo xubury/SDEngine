@@ -3,6 +3,7 @@
 #include "ImGui/ImGuiWidget.hpp"
 #include "Loader/TextureLoader.hpp"
 #include "Renderer/Renderer2D.hpp"
+#include "ECS/Component.hpp"
 
 namespace SD {
 

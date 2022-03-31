@@ -6,6 +6,7 @@
 #include "Renderer/Event.hpp"
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/Shader.hpp"
+#include "Graphics/Framebuffer.hpp"
 
 namespace SD {
 

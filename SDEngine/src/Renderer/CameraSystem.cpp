@@ -1,5 +1,5 @@
 #include "Renderer/CameraSystem.hpp"
-#include "ECS/Scene.hpp"
+#include "ECS/Component.hpp"
 
 namespace SD {
 

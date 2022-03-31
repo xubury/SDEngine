@@ -1,5 +1,6 @@
 #include "AnimationEditor.hpp"
 #include "Asset/AssetStorage.hpp"
+#include "ECS/Component.hpp"
 
 namespace SD {
 
