@@ -12,33 +12,6 @@
 
 namespace SD {
 
-template <typename T>
-void SelectAsset(ResourceId *selected_id)
-{
-    auto &storage = AssetStorage::Get();
-
-    if (!storage.Empty<T>()) {
-        const Cache &cache = storage.GetCache<T>();
-        std::string item = storage.Exists<T>(*selected_id)
-                               ? storage.GetAsset<T>(*selected_id)->GetName()
-                               : "NONE";
-        if (ImGui::BeginCombo("##Assets", item.c_str())) {
-            for (auto &[rid, asset] : cache) {
-                item = asset->GetName();
-                const bool is_selected = (*selected_id == asset->GetId());
-                if (ImGui::Selectable(item.c_str(), is_selected)) {
-                    *selected_id = asset->GetId();
-                }
-
-                // Set the initial focus when opening the combo (scrolling +
-                // keyboard navigation focus)
-                if (is_selected) ImGui::SetItemDefaultFocus();
-            }
-            ImGui::EndCombo();
-        }
-    }
-}
-
 ScenePanel::ScenePanel()
     : ECSSystem("ScenePanel"),
       m_gizmo_mode(ImGuizmo::WORLD),
@@ -252,6 +225,7 @@ static void DrawComponent(const std::string &name, Entity entity,
 
 void ScenePanel::DrawComponents(Entity &entity)
 {
+    auto &storage = AssetStorage::Get();
     if (entity.HasComponent<TagComponent>()) {
         auto &id = entity.GetComponent<IdComponent>().id;
         std::string idString = "Resource Id: " + std::to_string(id);
@@ -358,14 +332,12 @@ void ScenePanel::DrawComponents(Entity &entity)
         },
         false);
     DrawComponent<ModelComponent>("Model", entity, [&](ModelComponent &mc) {
-        SelectAsset<ModelAsset>(&mc.model_id);
+        ImGui::DrawModelAssetSelection(storage, &mc.model_id);
 
         ImGui::TextUnformatted("Base Color");
         ImGui::ColorEdit3("##Base Color", &mc.color[0]);
-        if (AssetStorage::Get().Exists<ModelAsset>(mc.model_id)) {
-            auto model = AssetStorage::Get()
-                             .GetAsset<ModelAsset>(mc.model_id)
-                             ->GetModel();
+        if (storage.Exists<ModelAsset>(mc.model_id)) {
+            auto model = storage.GetAsset<ModelAsset>(mc.model_id)->GetModel();
             DrawMaterialsList(model->GetMaterials(),
                               &m_selected_material_id_map[entity]);
         }
@@ -438,7 +410,8 @@ void ScenePanel::DrawComponents(Entity &entity)
             }
         });
     DrawComponent<TextComponent>("Text", entity, [&](TextComponent &textComp) {
-        SelectAsset<FontAsset>(&textComp.font_id);
+        ImGui::DrawFontAssetSelection(storage, &textComp.font_id);
+
         ImGui::Text("Text Content:");
         static char buffer[256];
         std::copy(textComp.text.begin(), textComp.text.end(), buffer);
@@ -483,14 +456,13 @@ void ScenePanel::DrawComponents(Entity &entity)
     DrawComponent<SpriteComponent>(
         "Sprite", entity, [&](SpriteComponent &sprite_comp) {
             auto &frame = sprite_comp.frame;
-            SelectAsset<TextureAsset>(&frame.texture_id);
+            ImGui::DrawTextureAssetSelection(storage, &frame.texture_id);
             ImGui::TextUnformatted("Size");
             ImGui::InputFloat2("##Size", &frame.size[0]);
             ImGui::TextUnformatted("Prioirty");
             ImGui::InputInt("##Priority", &frame.priority);
-            if (AssetStorage::Get().Exists<TextureAsset>(frame.texture_id)) {
-                auto texture = AssetStorage::Get()
-                                   .GetAsset<TextureAsset>(frame.texture_id)
+            if (storage.Exists<TextureAsset>(frame.texture_id)) {
+                auto texture = storage.GetAsset<TextureAsset>(frame.texture_id)
                                    ->GetTexture();
                 ImGui::DrawTexture(*texture,
                                    ImVec2(frame.uvs[0].x, frame.uvs[0].y),
@@ -515,11 +487,10 @@ void ScenePanel::DrawComponents(Entity &entity)
             }
             if (frame_index < static_cast<int>(anim.GetFrameSize())) {
                 const auto &frame = anim.GetFrame(frame_index);
-                if (AssetStorage::Get().Exists<TextureAsset>(
-                        frame.texture_id)) {
-                    auto texture = AssetStorage::Get()
-                                       .GetAsset<TextureAsset>(frame.texture_id)
-                                       ->GetTexture();
+                if (storage.Exists<TextureAsset>(frame.texture_id)) {
+                    auto texture =
+                        storage.GetAsset<TextureAsset>(frame.texture_id)
+                            ->GetTexture();
                     ImGui::DrawTexture(*texture,
                                        ImVec2(frame.uvs[0].x, frame.uvs[0].y),
                                        ImVec2(frame.uvs[1].x, frame.uvs[1].y));

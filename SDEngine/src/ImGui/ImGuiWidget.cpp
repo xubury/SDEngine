@@ -1,6 +1,7 @@
 #include "ImGui/ImGuiWidget.hpp"
-#include "imgui.h"
-#include "imgui_internal.h"
+#include "Asset/TextureAsset.hpp"
+#include "Asset/ModelAsset.hpp"
+#include "Asset/FontAsset.hpp"
 
 namespace ImGui {
 
@@ -103,15 +104,15 @@ void DrawTileTexture(const SD::Texture &texture, SD::Vector2i &tile_size,
                      std::array<SD::Vector2f, 2> &uvs,
                      SD::Vector2i *selected_cnt, SD::Vector2i *pivot)
 {
-    ImGui::TextUnformatted("Tile Size:");
-    ImGui::InputInt2("##Size", &tile_size.x);
+    ImGui::PushID(&texture);
+    ImGui::InputInt2("Tile Size", &tile_size.x);
     tile_size.x = std::clamp(tile_size.x, 1, texture.GetWidth());
     tile_size.y = std::clamp(tile_size.y, 1, texture.GetHeight());
 
     ImVec2 wsize = ImGui::GetWindowSize();
-    const float ASPECT = wsize.x / texture.GetWidth();
-    wsize.y = texture.GetHeight() * ASPECT;
-    const SD::Vector2f scaled_tile_size = SD::Vector2f(tile_size) * ASPECT;
+    const float aspect = wsize.x / texture.GetWidth();
+    wsize.y = texture.GetHeight() * aspect;
+    const SD::Vector2f scaled_tile_size = SD::Vector2f(tile_size) * aspect;
 
     int cols = std::ceil(wsize.x / scaled_tile_size.x);
     int rows = std::ceil(wsize.y / scaled_tile_size.y);
@@ -135,7 +136,7 @@ void DrawTileTexture(const SD::Texture &texture, SD::Vector2i &tile_size,
     auto [left, top] = bb.GetTL();
     if (ImGui::IsWindowHovered()) {
         auto [mouse_x, mouse_y] = ImGui::GetMousePos();
-        auto image_pos = SD::Vector2f(mouse_x - left, mouse_y - top) / ASPECT;
+        auto image_pos = SD::Vector2f(mouse_x - left, mouse_y - top) / aspect;
         static std::array<SD::Vector2f, 2> first_uvs;
         if (image_pos.x >= 0 && image_pos.y >= 0 &&
             image_pos.x < texture.GetWidth() &&
@@ -202,28 +203,29 @@ void DrawTileTexture(const SD::Texture &texture, SD::Vector2i &tile_size,
         ImVec2(left + uvs[0].x * wsize.x, top + uvs[0].y * wsize.y),
         ImVec2(left + uvs[1].x * wsize.x, top + uvs[1].y * wsize.y));
     if (bb.Contains(active_grid)) {
-        const ImU32 GRID_COLOR = 0xff00ff00;
-        const ImU32 PIVOT_COLOR = 0x770000ff;
-        const float THICKNESS = 2.f;
-        const float PIVOT_SIZE = 0.8f;
+        const ImU32 grid_color = 0xff00ff00;
+        const ImU32 pivot_color = 0x770000ff;
+        const float thickness = 2.f;
+        const float pivot_size = 0.8f;
         DrawList->AddQuad(active_grid.GetTL(), active_grid.GetTR(),
-                          active_grid.GetBR(), active_grid.GetBL(), GRID_COLOR,
-                          THICKNESS);
+                          active_grid.GetBR(), active_grid.GetBL(), grid_color,
+                          thickness);
         if (pivot) {
             const ImRect pivot_grid(
-                ImVec2((pivot->x + 1 - PIVOT_SIZE) * scaled_tile_size.x +
+                ImVec2((pivot->x + 1 - pivot_size) * scaled_tile_size.x +
                            active_grid.GetTL().x,
-                       (pivot->y + 1 - PIVOT_SIZE) * scaled_tile_size.y +
+                       (pivot->y + 1 - pivot_size) * scaled_tile_size.y +
                            active_grid.GetTL().y),
-                ImVec2((pivot->x + PIVOT_SIZE) * scaled_tile_size.x +
+                ImVec2((pivot->x + pivot_size) * scaled_tile_size.x +
                            active_grid.GetTL().x,
-                       (pivot->y + PIVOT_SIZE) * scaled_tile_size.y +
+                       (pivot->y + pivot_size) * scaled_tile_size.y +
                            active_grid.GetTL().y));
             DrawList->AddQuadFilled(pivot_grid.GetTL(), pivot_grid.GetTR(),
                                     pivot_grid.GetBR(), pivot_grid.GetBL(),
-                                    PIVOT_COLOR);
+                                    pivot_color);
         }
     }
+    ImGui::PopID();
 }
 
 bool BeginCenterPopupModal(const char *name, bool *p_open,
@@ -233,6 +235,145 @@ bool BeginCenterPopupModal(const char *name, bool *p_open,
                             ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
     return ImGui::BeginPopupModal(name, p_open,
                                   flags | ImGuiWindowFlags_AlwaysAutoResize);
+}
+
+bool DrawTextureAssetSelection(const SD::AssetStorage &storage,
+                               SD::ResourceId *id)
+{
+    bool ret = false;
+    SD::TypeId tid = SD::GetTypeId<SD::TextureAsset>();
+    if (!storage.Empty(tid)) {
+        ImGuiStyle &style = ImGui::GetStyle();
+        const SD::Cache &cache = storage.GetCache(tid);
+        ImVec2 combo_pos = ImGui::GetCursorScreenPos();
+        if (ImGui::BeginCombo("##TEXTURE_ASSETS_COMBO", "")) {
+            for (auto &[rid, asset] : cache) {
+                ImGui::PushID(rid);
+                auto texture =
+                    storage.GetAsset<SD::TextureAsset>(rid)->GetTexture();
+                const bool is_selected = (*id == rid);
+                if (ImGui::Selectable("", is_selected)) {
+                    *id = rid;
+                    ret = true;
+                }
+
+                ImGui::SameLine();
+                float h = ImGui::GetTextLineHeight();
+                ImGui::Image(
+                    (void *)(intptr_t)texture->GetId(),
+                    ImVec2(h * texture->GetWidth() / texture->GetHeight(), h));
+
+                ImGui::SameLine();
+                ImGui::TextUnformatted(asset->GetName().c_str());
+
+                ImGui::PopID();
+            }
+            ImGui::EndCombo();
+        }
+        ImVec2 old_pos = ImGui::GetCursorScreenPos();
+        ImGui::SetCursorScreenPos(ImVec2(combo_pos.x + style.FramePadding.x,
+                                         combo_pos.y + style.FramePadding.y));
+        if (storage.Exists(tid, *id)) {
+            float h = ImGui::GetTextLineHeight();
+            auto asset = storage.GetAsset<SD::TextureAsset>(*id);
+            auto texture = asset->GetTexture();
+            ImGui::Image(
+                (void *)(intptr_t)texture->GetId(),
+                ImVec2(h * texture->GetWidth() / texture->GetHeight(), h));
+            ImGui::SameLine();
+            ImGui::TextUnformatted(asset->GetName().c_str());
+        }
+        else {
+            ImGui::TextUnformatted("None");
+        }
+        ImGui::SetCursorScreenPos(old_pos);
+    }
+    return ret;
+}
+
+bool DrawModelAssetSelection(const SD::AssetStorage &storage,
+                             SD::ResourceId *id)
+{
+    bool ret = false;
+    SD::TypeId tid = SD::GetTypeId<SD::ModelAsset>();
+    if (!storage.Empty(tid)) {
+        const SD::Cache &cache = storage.GetCache(tid);
+        const std::string item =
+            storage.Exists(tid, *id) ? cache.at(*id)->GetName() : "None";
+        if (ImGui::BeginCombo("##MODEL_ASSETS_COMBO", item.c_str())) {
+            for (auto &[rid, asset] : cache) {
+                const bool is_selected = (*id == rid);
+                if (ImGui::Selectable(asset->GetName().c_str(), is_selected)) {
+                    *id = rid;
+                    ret = true;
+                }
+                if (is_selected) ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+    }
+    return ret;
+}
+
+bool DrawFontAssetSelection(const SD::AssetStorage &storage, SD::ResourceId *id)
+{
+    const char32_t preview_char = 65;
+    bool ret = false;
+    const SD::TypeId tid = SD::GetTypeId<SD::FontAsset>();
+    if (!storage.Empty(tid)) {
+        ImGuiStyle &style = ImGui::GetStyle();
+        const SD::Cache &cache = storage.GetCache(tid);
+        ImVec2 combo_pos = ImGui::GetCursorScreenPos();
+        if (ImGui::BeginCombo("##TEXTURE_ASSETS_COMBO", "")) {
+            for (auto &[rid, asset] : cache) {
+                ImGui::PushID(rid);
+                auto &character = storage.GetAsset<SD::FontAsset>(rid)
+                                      ->GetFont()
+                                      ->GetCharacter(preview_char);
+                auto &texture = character.glyph;
+                auto &uv = character.uv;
+                const bool is_selected = (*id == rid);
+                if (ImGui::Selectable("", is_selected)) {
+                    *id = rid;
+                    ret = true;
+                }
+
+                ImGui::SameLine();
+                float h = ImGui::GetTextLineHeight();
+                ImGui::Image(
+                    (void *)(intptr_t)texture->GetId(),
+                    ImVec2(h * texture->GetWidth() / texture->GetHeight(), h),
+                    ImVec2(uv[0].x, uv[0].y), ImVec2(uv[1].x, uv[1].y));
+
+                ImGui::SameLine();
+                ImGui::TextUnformatted(asset->GetName().c_str());
+
+                ImGui::PopID();
+            }
+            ImGui::EndCombo();
+        }
+        ImVec2 old_pos = ImGui::GetCursorScreenPos();
+        ImGui::SetCursorScreenPos(ImVec2(combo_pos.x + style.FramePadding.x,
+                                         combo_pos.y + style.FramePadding.y));
+        if (storage.Exists(tid, *id)) {
+            float h = ImGui::GetTextLineHeight();
+            auto font_asset = storage.GetAsset<SD::FontAsset>(*id);
+            auto &character = font_asset->GetFont()->GetCharacter(preview_char);
+            auto &texture = character.glyph;
+            auto &uv = character.uv;
+            ImGui::Image(
+                (void *)(intptr_t)texture->GetId(),
+                ImVec2(h * texture->GetWidth() / texture->GetHeight(), h),
+                ImVec2(uv[0].x, uv[0].y), ImVec2(uv[1].x, uv[1].y));
+            ImGui::SameLine();
+            ImGui::TextUnformatted(font_asset->GetName().c_str());
+        }
+        else {
+            ImGui::TextUnformatted("None");
+        }
+        ImGui::SetCursorScreenPos(old_pos);
+    }
+    return ret;
 }
 
 }  // namespace ImGui

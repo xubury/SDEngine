@@ -27,6 +27,14 @@ class FontAsset : public Asset {
 
     Font *GetFont() { return m_font.get(); }
 
+    void Import(const std::string &path, int32_t height)
+    {
+        auto &storage = AssetStorage::Get();
+        m_pixel_height = height;
+        m_font_path = storage.GetRelativePath(path);
+        m_font = FontLoader::LoadFont(path, m_pixel_height);
+    }
+
     SERIALIZE(m_pixel_height, m_font_path)
 
    private:

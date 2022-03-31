@@ -4,34 +4,8 @@
 
 namespace SD {
 
-template <typename T>
-void SelectAsset(ResourceId *selected_id)
-{
-    auto &storage = AssetStorage::Get();
-
-    if (!storage.Empty<T>()) {
-        const Cache &cache = storage.GetCache<T>();
-        std::string item = storage.Exists<T>(*selected_id)
-                               ? storage.GetAsset<T>(*selected_id)->GetName()
-                               : "NONE";
-        if (ImGui::BeginCombo("##Assets", item.c_str())) {
-            for (auto &[rid, asset] : cache) {
-                item = asset->GetName();
-                const bool is_selected = (*selected_id == asset->GetId());
-                if (ImGui::Selectable(item.c_str(), is_selected)) {
-                    *selected_id = asset->GetId();
-                }
-
-                // Set the initial focus when opening the combo (scrolling +
-                // keyboard navigation focus)
-                if (is_selected) ImGui::SetItemDefaultFocus();
-            }
-            ImGui::EndCombo();
-        }
-    }
-}
-
-AnimationEditor::AnimationEditor() : ECSSystem("Anmiation Editor"), m_anim_index(0)
+AnimationEditor::AnimationEditor()
+    : ECSSystem("Anmiation Editor"), m_anim_index(0)
 {
 }
 
@@ -56,8 +30,8 @@ void AnimationEditor::OnImGui()
 {
     ImGui::Begin("Anmiation Editor");
     {
-        SelectAsset<TextureAsset>(&m_texture_id);
         auto &storage = AssetStorage::Get();
+        ImGui::DrawTextureAssetSelection(storage, &m_texture_id);
         if (storage.Exists<TextureAsset>(m_texture_id)) {
             auto texture =
                 storage.GetAsset<TextureAsset>(m_texture_id)->GetTexture();

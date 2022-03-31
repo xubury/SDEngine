@@ -1,36 +1,10 @@
 #include "TileMapSystem.hpp"
+#include "ImGui/ImGuiWidget.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Asset/AssetStorage.hpp"
 #include "ECS/Component.hpp"
 
 namespace SD {
-
-template <typename T>
-void SelectAsset(ResourceId *selected_id)
-{
-    auto &storage = AssetStorage::Get();
-
-    if (!storage.Empty<T>()) {
-        const Cache &cache = storage.GetCache<T>();
-        std::string item = storage.Exists<T>(*selected_id)
-                               ? storage.GetAsset<T>(*selected_id)->GetName()
-                               : "NONE";
-        if (ImGui::BeginCombo("##Assets", item.c_str())) {
-            for (auto &[rid, asset] : cache) {
-                item = asset->GetName();
-                const bool is_selected = (*selected_id == asset->GetId());
-                if (ImGui::Selectable(item.c_str(), is_selected)) {
-                    *selected_id = asset->GetId();
-                }
-
-                // Set the initial focus when opening the combo (scrolling +
-                // keyboard navigation focus)
-                if (is_selected) ImGui::SetItemDefaultFocus();
-            }
-            ImGui::EndCombo();
-        }
-    }
-}
 
 const Vector4f COLOR_RED(1, 0, 0, 0.5);
 const Vector4f COLOR_GREEN(0, 1, 0, 0.5);
@@ -129,33 +103,8 @@ void TileMapSystem::OnImGui()
         ImGui::RadioButton("Clear Sprite",
                            reinterpret_cast<underlying *>(&m_operation),
                            static_cast<underlying>(Operation::RemoveEntity));
-        // ImGui::InputText("##Path", m_texture_path.data(),
-        // m_texture_path.size(),
-        //                  ImGuiInputTextFlags_ReadOnly);
-        ImGui::SameLine();
-        SelectAsset<TextureAsset>(&m_texture_id);
-        // if (ImGui::Button("Open")) {
-        //     m_file_dialog_open = true;
-        //     m_fileDialogInfo.type = ImGuiFileDialogType::OPEN_FILE;
-        //     m_fileDialogInfo.title = "Open File";
-        //     m_fileDialogInfo.file_name = "";
-        //     m_fileDialogInfo.directory_path =
-        //         AssetStorage::Get().GetDirectory();
-        //     m_fileDialogInfo.regex_match = IMG_FILTER;
-        // }
-        // if (ImGui::FileDialog(&m_file_dialog_open, &m_fileDialogInfo)) {
-        //     try {
-        //         // m_texture_asset =
-        //         AssetStorage::Get().LoadAsset<TextureAsset>(
-        //         //     m_fileDialogInfo.result_path.string());
-        //     } catch (const Exception &e) {
-        //         SD_CORE_ERROR("Error loading sprite: {}", e.what());
-        //     }
-        // }
-
-        ImGui::TextUnformatted("Brush Prioirty");
-        ImGui::SameLine();
-        ImGui::InputInt("##Priority", &m_priority);
+        ImGui::DrawTextureAssetSelection(AssetStorage::Get(), &m_texture_id);
+        ImGui::InputInt("Priority", &m_priority);
 
         if (AssetStorage::Get().Exists<TextureAsset>(m_texture_id)) {
             ImGui::DrawTileTexture(*AssetStorage::Get()

@@ -6,12 +6,14 @@
 #include "Asset/ModelAsset.hpp"
 #include "Asset/SceneAsset.hpp"
 #include "Asset/TextureAsset.hpp"
+#include "Asset/FontAsset.hpp"
 
 namespace SD {
 
 #define MODEL_CREATION "Model Creation"
 #define SCENE_CREATION "Scene Creation"
 #define TEXTURE_CREATION "Texture Creation"
+#define FONT_CREATION "Font Creation"
 
 ContentBrowser::ContentBrowser() : ECSSystem("Content Browser") {}
 
@@ -123,7 +125,7 @@ void ContentBrowser::DrawModelCreation()
             storage.GetTypeData<ModelAsset>().file_extension.c_str());
 
         ImGui::NextColumn();
-        ImGui::Text("Model file");
+        ImGui::Text("Model File");
 
         ImGui::NextColumn();
         static ImFileDialogInfo filedlg_info;
@@ -159,6 +161,65 @@ void ContentBrowser::DrawModelCreation()
     }
 }
 
+void ContentBrowser::DrawFontCreation()
+{
+    auto& storage = AssetStorage::Get();
+    if (ImGui::BeginCenterPopupModal(FONT_CREATION, &m_open_creation)) {
+        ImGui::BeginChild("##SHEET", ImVec2(300, 300));
+        ImGui::Columns(3, 0, false);
+        static char asset_name[255];
+        ImGui::TextUnformatted("Name");
+        ImGui::NextColumn();
+        ImGui::InputText("##FONT_ASSET_NAME", asset_name, sizeof(asset_name));
+        ImGui::NextColumn();
+        ImGui::TextUnformatted(
+            storage.GetTypeData<FontAsset>().file_extension.c_str());
+        ImGui::NextColumn();
+
+        static int32_t font_height = 20;
+        ImGui::TextUnformatted("Font Height");
+        ImGui::NextColumn();
+        ImGui::InputInt("##FONT_HEIGHT", &font_height);
+        ImGui::NextColumn();
+        ImGui::TextUnformatted("px");
+        ImGui::NextColumn();
+
+        ImGui::NextColumn();
+        ImGui::Text("Font File");
+
+        static ImFileDialogInfo filedlg_info;
+        static bool filedlg_open = false;
+        static std::string font_path = "None";
+        if (ImGui::Button(font_path.c_str())) {
+            filedlg_open = true;
+            filedlg_info.type = ImGuiFileDialogType::OpenFile;
+            filedlg_info.title = "Open File";
+            // filedlg_info.regex_match = FONT_FILTER;
+            filedlg_info.file_name = "";
+            filedlg_info.directory_path = storage.GetDirectory();
+        }
+        if (ImGui::FileDialog(&filedlg_open, &filedlg_info)) {
+            font_path = filedlg_info.result_path.generic_string();
+        }
+
+        ImGui::EndChild();
+        ImGui::Columns();
+
+        ImGui::Separator();
+        if (ImGui::Button("Confirm")) {
+            auto asset = storage.CreateAsset<FontAsset>(asset_name);
+            asset->Import(font_path, font_height);
+
+            storage.SaveAsset(
+                asset, (m_current_directory / asset_name).generic_string());
+            ImGui::CloseCurrentPopup();
+            m_open_creation = false;
+        }
+
+        ImGui::EndPopup();
+    }
+}
+
 void ContentBrowser::OnImGui()
 {
     auto& storage = AssetStorage::Get();
@@ -177,6 +238,11 @@ void ContentBrowser::OnImGui()
         if (ImGui::MenuItem("Create Scene Asset")) {
             m_open_creation = true;
             creation_str = SCENE_CREATION;
+        }
+
+        if (ImGui::MenuItem("Create Font Asset")) {
+            m_open_creation = true;
+            creation_str = FONT_CREATION;
         }
         ImGui::EndPopup();
     }
@@ -238,6 +304,7 @@ void ContentBrowser::OnImGui()
     DrawTextureCreation();
     DrawModelCreation();
     DrawSceneCreation();
+    DrawFontCreation();
 
     ImGui::SliderFloat("Thumbnail Size", &thumbnail_size, 16, 512);
     ImGui::SliderFloat("Padding", &padding, 0, 32);
