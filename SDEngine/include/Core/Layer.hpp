@@ -53,6 +53,7 @@ class SD_CORE_API Layer {
     {
         T *system = new T(std::forward<ARGS>(args)...);
         system->m_dispatcher = m_dispatcher;
+        system->m_scene = m_scene;
         system->OnInit();
         return system;
     }
