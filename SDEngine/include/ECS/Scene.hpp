@@ -43,23 +43,24 @@ class SD_ECS_API Scene : public entt::registry {
     {
         auto id = entt::type_hash<T>::value();
         m_serialize_functions[id]
-            .first.template connect<&Scene::SerializeComponent<T>>(this);
+            .first.template connect<&Scene::SerializeComponent<T>>();
         m_serialize_functions[id]
-            .second.template connect<&Scene::DeserializeComponent<T>>(this);
+            .second.template connect<&Scene::DeserializeComponent<T>>();
         on_construct<T>().template connect<&OnComponentAdded<T>>();
     }
 
    private:
     template <typename T>
-    void SerializeComponent(entt::snapshot &snapshot,
-                            cereal::PortableBinaryOutputArchive &archive)
+    static void SerializeComponent(entt::snapshot &snapshot,
+                                   cereal::PortableBinaryOutputArchive &archive)
     {
         snapshot.component<T>(archive);
     }
 
     template <typename T>
-    void DeserializeComponent(entt::snapshot_loader &loader,
-                              cereal::PortableBinaryInputArchive &archive)
+    static void DeserializeComponent(
+        entt::snapshot_loader &loader,
+        cereal::PortableBinaryInputArchive &archive)
     {
         loader.component<T>(archive);
     }
@@ -71,7 +72,6 @@ class SD_ECS_API Scene : public entt::registry {
         emplace<T>(to, component);
     }
 
-    EntityId m_selected_entity;
     std::unordered_map<EntityIdType, std::pair<ComponentSerializeFunction,
                                                ComponentDeserializeFunction>>
         m_serialize_functions;

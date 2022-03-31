@@ -5,7 +5,7 @@
 
 namespace SD {
 
-Scene::Scene() : m_selected_entity(entt::null)
+Scene::Scene()
 {
     RegisterComponent<IdComponent>();
     RegisterComponent<TagComponent>();
