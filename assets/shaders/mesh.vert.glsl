@@ -12,6 +12,7 @@ struct VertexOutput {
     vec3 position;
     vec2 uv;
     vec3 normal;
+    vec3 tangent;
 };
 
 layout(location = 0) out VertexOutput out_vertex;
@@ -23,7 +24,10 @@ void main()
     vec3 fragPos = (u_model * vec4(a_pos, 1.0f)).xyz;
     gl_Position = u_projection * u_view * vec4(fragPos, 1.0f);
 
+    mat3 normal_matrix = transpose(inverse(mat3(u_model)));
     out_vertex.position = fragPos;
-    out_vertex.normal = transpose(inverse(mat3(u_model))) * a_normal;
+    out_vertex.normal = normal_matrix * a_normal;
+    out_vertex.tangent = normal_matrix * a_tangent;
+
     out_vertex.uv = a_uv;
 }

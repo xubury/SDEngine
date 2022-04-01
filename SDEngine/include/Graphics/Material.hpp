@@ -10,14 +10,13 @@
 namespace SD {
 
 enum class MaterialType {
-    NONE,
-    DIFFUSE,
-    SPECULAR,
-    AMBIENT,
-    EMISSIVE,
-    HEIGHT,
-    NORMALS,
-    SHININESS
+    None,
+    Diffuse,
+    Specular,
+    Ambient,
+    Emissive,
+    Normal,
+    Shininess
 };
 
 const std::string SD_GRAPHICS_API GetMaterialName(MaterialType type);

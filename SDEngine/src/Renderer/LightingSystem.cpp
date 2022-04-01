@@ -21,6 +21,7 @@ DataFormat GetTextureFormat(GeometryBufferType type)
     switch (type) {
         case GeometryBufferType::Position:
         case GeometryBufferType::Normal:
+        case GeometryBufferType::Height:
             return DataFormat::RGB16F;
         case GeometryBufferType::Albedo:
         case GeometryBufferType::Ambient:
@@ -330,6 +331,9 @@ void LightingSystem::RenderDeferred()
     m_deferred_shader->GetParam("u_normal")
         ->SetAsTexture(m_gbuffer->GetTexture(
             static_cast<int>(GeometryBufferType::Normal)));
+    m_deferred_shader->GetParam("u_height")
+        ->SetAsTexture(m_gbuffer->GetTexture(
+            static_cast<int>(GeometryBufferType::Height)));
     m_deferred_shader->GetParam("u_albedo")
         ->SetAsTexture(m_gbuffer->GetTexture(
             static_cast<int>(GeometryBufferType::Albedo)));
@@ -347,8 +351,9 @@ void LightingSystem::RenderDeferred()
     ShaderParam *ambient = m_deferred_shader->GetParam("u_light.ambient");
     ShaderParam *diffuse = m_deferred_shader->GetParam("u_light.diffuse");
     ShaderParam *specular = m_deferred_shader->GetParam("u_light.specular");
-    ShaderParam *position = m_deferred_shader->GetParam("u_light.position");
-    ShaderParam *direction = m_deferred_shader->GetParam("u_light.direction");
+    ShaderParam *light_position =
+        m_deferred_shader->GetParam("u_light_position");
+    ShaderParam *light_front = m_deferred_shader->GetParam("u_light_front");
     ShaderParam *cutoff = m_deferred_shader->GetParam("u_light.cutoff");
     ShaderParam *outer_cutoff =
         m_deferred_shader->GetParam("u_light.outer_cutoff");
@@ -391,8 +396,8 @@ void LightingSystem::RenderDeferred()
 
         Renderer::SetCamera(*m_deferred_shader, GetCamera());
         lighting->SetAsTexture(m_light_buffer[input_id]->GetTexture());
-        direction->SetAsVec3(&transform.GetFront()[0]);
-        position->SetAsVec3(&transform.GetPosition()[0]);
+        light_front->SetAsVec3(&transform.GetFront()[0]);
+        light_position->SetAsVec3(&transform.GetPosition()[0]);
         ambient->SetAsVec3(&light.GetAmbient()[0]);
         diffuse->SetAsVec3(&light.GetDiffuse()[0]);
         specular->SetAsVec3(&light.GetSpecular()[0]);

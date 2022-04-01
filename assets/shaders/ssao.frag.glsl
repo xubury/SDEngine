@@ -74,7 +74,7 @@ void main()
 {
     const vec2 tex_size = textureSize(u_position);
     const ivec2 uv = ivec2(in_uv * tex_size);
-    vec3 random_vec =  texture(u_noise, uv / 4.f).xyz;
+    vec3 random_vec = texture(u_noise, uv / 4.f).xyz;
 
     float occlusion = ComputeOcclusion(tex_size, uv, random_vec);
     frag_color = pow(occlusion, u_power);

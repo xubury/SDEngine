@@ -126,22 +126,22 @@ static inline MaterialType ConvertAssimpTextureType(aiTextureType textureType)
 {
     switch (textureType) {
         case aiTextureType_DIFFUSE:
-            return MaterialType::DIFFUSE;
+            return MaterialType::Diffuse;
         case aiTextureType_AMBIENT:
-            return MaterialType::AMBIENT;
+            return MaterialType::Ambient;
         case aiTextureType_SPECULAR:
-            return MaterialType::SPECULAR;
+            return MaterialType::Specular;
         case aiTextureType_EMISSIVE:
-            return MaterialType::EMISSIVE;
+            return MaterialType::Emissive;
         case aiTextureType_HEIGHT:
-            return MaterialType::HEIGHT;
+            return MaterialType::Normal;
         case aiTextureType_NORMALS:
-            return MaterialType::NORMALS;
+            return MaterialType::None;
         case aiTextureType_SHININESS:
-            return MaterialType::SHININESS;
+            return MaterialType::Shininess;
         default:
             SD_CORE_WARN("[ConvertAssimpTextureType] invalid texture type!");
-            return MaterialType::NONE;
+            return MaterialType::None;
     }
 }
 
@@ -211,7 +211,8 @@ Ref<Model> ModelLoader::LoadModel(const std::string &path)
     SD_CORE_TRACE("Loading model form: {}...", path);
 
     Assimp::Importer importer;
-    uint32_t import_flags = aiProcess_Triangulate | aiProcess_FlipUVs;
+    uint32_t import_flags =
+        aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace;
     const aiScene *scene = importer.ReadFile(path, import_flags);
     if (scene == nullptr) {
         throw FileException(path, fmt::format("Model loading failed: {}",

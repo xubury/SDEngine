@@ -7,13 +7,12 @@ const std::string GetMaterialName(MaterialType type)
 {
     static const std::unordered_map<MaterialType, std::string>
         stringByMaterialType = {
-            {MaterialType::AMBIENT, "Ambient"},
-            {MaterialType::DIFFUSE, "Diffuse"},
-            {MaterialType::SPECULAR, "Specular"},
-            {MaterialType::EMISSIVE, "Emissive"},
-            {MaterialType::HEIGHT, "Height"},
-            {MaterialType::NORMALS, "Normals"},
-            {MaterialType::SHININESS, "Shininess"},
+            {MaterialType::Ambient, "Ambient"},
+            {MaterialType::Diffuse, "Diffuse"},
+            {MaterialType::Specular, "Specular"},
+            {MaterialType::Emissive, "Emissive"},
+            {MaterialType::Normal, "Normal"},
+            {MaterialType::Shininess, "Shininess"},
 
         };
     return stringByMaterialType.at(type);

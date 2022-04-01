@@ -14,6 +14,17 @@ uniform float u_gamma;
 layout(binding = 0) uniform sampler2D u_lighting;
 layout(binding = 1) uniform sampler2D u_blur;
 
+vec3 ACESToneMapping(vec3 color, float adapted_lum)
+{
+    const float A = 2.51f;
+    const float B = 0.03f;
+    const float C = 2.43f;
+    const float D = 0.59f;
+    const float E = 0.14f;
+    color *= adapted_lum;
+    return (color * (A * color + B)) / (color * (C * color + D) + E);
+}
+
 void main()
 {
     vec3 result = texture(u_lighting, in_tex_coord).rgb;
@@ -24,9 +35,7 @@ void main()
     }
 
     // hdr
-    if (u_exposure > 0) {
-        result = vec3(1.0) - exp(-result * u_exposure);
-    }
+    result = ACESToneMapping(result, u_exposure);
 
     result = pow(result, vec3(1.0 / u_gamma));
 
