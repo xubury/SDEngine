@@ -15,8 +15,6 @@ uniform vec3 u_light_front;
 uniform sampler2DMS u_lighting;
 uniform sampler2DMS u_position;
 uniform sampler2DMS u_normal;
-uniform sampler2DMS u_height;
-uniform sampler2DMS u_tangent;
 uniform sampler2DMS u_albedo;
 uniform sampler2DMS u_ambient;
 uniform sampler2DMS u_background;
@@ -37,41 +35,23 @@ void main()
             // Fragment is not a background,
             // calculate the lighting result
             const vec3 pos = texelFetch(u_position, uv, i).rgb;
-            vec3 tangent = texelFetch(u_tangent, uv, i).rgb;
-            tangent = normalize(tangent - dot(tangent, normal) * normal);
             const vec3 last = texelFetch(u_lighting, uv, i).rgb;
             const vec4 albedo = texelFetch(u_albedo, uv, i);
             const vec3 ambient =
                 texelFetch(u_ambient, uv, i).rgb * ambient_occlusion;
-            const vec3 height = texelFetch(u_height, uv, i).rgb;
             const vec3 view_dir = normalize(u_view[3].xyz - pos);
             const vec3 light_dir = u_light.is_directional
                                        ? normalize(-u_light_front)
                                        : normalize(u_light_position - pos);
 
-            if (height != vec3(0)) {
-                mat3 TBN =
-                    transpose(mat3(tangent, cross(normal, tangent), normal));
-                const float shadow =
-                    u_light.is_cast_shadow
-                        ? ShadowCalculation(TBN * light_dir, pos, height,
-                                            u_view)
-                        : 0;
-                color += last + CalculateLight(u_light, TBN * u_light_position,
-                                               TBN * u_light_front, TBN * pos,
-                                               height, TBN * view_dir, ambient,
-                                               albedo, shadow);
-            }
-            else {
-                const float shadow =
-                    u_light.is_cast_shadow
-                        ? ShadowCalculation(light_dir, pos, normal, u_view)
-                        : 0;
-                color +=
-                    last + CalculateLight(u_light, u_light_position,
-                                          u_light_front, pos, normal, view_dir,
-                                          ambient, albedo, shadow);
-            }
+            const float shadow =
+                u_light.is_cast_shadow
+                    ? ShadowCalculation(light_dir, pos, normal, u_view)
+                    : 0;
+            color +=
+                last + CalculateLight(u_light, u_light_position,
+                                      u_light_front, pos, normal, view_dir,
+                                      ambient, albedo, shadow);
         }
         else {
             // Fragment is background, don't calculate light,

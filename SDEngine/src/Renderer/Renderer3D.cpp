@@ -31,8 +31,6 @@ void Renderer3D::DrawMesh(const Shader& shader, const Mesh& mesh)
 
 void Renderer3D::SetMaterial(Shader& shader, const Material& material)
 {
-    m_device->SetShader(&shader);
-
     shader.GetParam("u_material.diffuse")
         ->SetAsTexture(material.GetTexture(MaterialType::Diffuse));
     shader.GetParam("u_material.specular")
@@ -43,8 +41,6 @@ void Renderer3D::SetMaterial(Shader& shader, const Material& material)
         ->SetAsTexture(material.GetTexture(MaterialType::Emissive));
     shader.GetParam("u_material.normal")
         ->SetAsTexture(material.GetTexture(MaterialType::Normal));
-    // shader.GetParam("u_material.tangent")
-    //     ->SetAsTexture(material.GetTexture(MaterialType::Tangent));
 }
 
 void Renderer3D::SetShadowCaster(Shader& shader, const CascadeShadow& shadow)

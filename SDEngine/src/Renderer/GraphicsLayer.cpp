@@ -7,7 +7,7 @@
 
 namespace SD {
 
-inline const Vector2f icon_size(20.f);
+inline const Vector2f icon_size(5.f);
 
 GraphicsLayer::GraphicsLayer(Device *device, int32_t width, int32_t height,
                              MultiSampleLevel msaa)

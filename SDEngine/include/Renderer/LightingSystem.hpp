@@ -13,7 +13,6 @@ namespace SD {
 enum class GeometryBufferType {
     Position = 0,
     Normal,
-    Height,
     Albedo,
     Ambient,
     Emissive,

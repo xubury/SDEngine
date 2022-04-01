@@ -21,7 +21,6 @@ DataFormat GetTextureFormat(GeometryBufferType type)
     switch (type) {
         case GeometryBufferType::Position:
         case GeometryBufferType::Normal:
-        case GeometryBufferType::Height:
             return DataFormat::RGB16F;
         case GeometryBufferType::Albedo:
         case GeometryBufferType::Ambient:
@@ -331,9 +330,12 @@ void LightingSystem::RenderDeferred()
     m_deferred_shader->GetParam("u_normal")
         ->SetAsTexture(m_gbuffer->GetTexture(
             static_cast<int>(GeometryBufferType::Normal)));
-    m_deferred_shader->GetParam("u_height")
-        ->SetAsTexture(m_gbuffer->GetTexture(
-            static_cast<int>(GeometryBufferType::Height)));
+    // m_deferred_shader->GetParam("u_height")
+    //     ->SetAsTexture(m_gbuffer->GetTexture(
+    //         static_cast<int>(GeometryBufferType::Height)));
+    // m_deferred_shader->GetParam("u_tangent")
+    //     ->SetAsTexture(m_gbuffer->GetTexture(
+    //         static_cast<int>(GeometryBufferType::Tangent)));
     m_deferred_shader->GetParam("u_albedo")
         ->SetAsTexture(m_gbuffer->GetTexture(
             static_cast<int>(GeometryBufferType::Albedo)));

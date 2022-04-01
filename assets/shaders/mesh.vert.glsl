@@ -13,6 +13,7 @@ struct VertexOutput {
     vec2 uv;
     vec3 normal;
     vec3 tangent;
+    vec3 bi_tangent;
 };
 
 layout(location = 0) out VertexOutput out_vertex;
@@ -28,6 +29,7 @@ void main()
     out_vertex.position = fragPos;
     out_vertex.normal = normal_matrix * a_normal;
     out_vertex.tangent = normal_matrix * a_tangent;
+    out_vertex.bi_tangent = normal_matrix * a_bi_tangent;
 
     out_vertex.uv = a_uv;
 }
