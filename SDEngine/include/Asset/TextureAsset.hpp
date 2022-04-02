@@ -26,11 +26,10 @@ class TextureAsset : public Asset {
         archive(*this);
         auto &storage = AssetStorage::Get();
         m_texture = TextureLoader::LoadTexture2D(
-            storage.GetAbsolutePath(m_texture_path));
+            storage.GetAbsolutePath(m_texture_path), m_mipmap_mode);
         m_texture->SetWrap(m_wrap);
         m_texture->SetMagFilter(m_filter);
         m_texture->SetMinFilter(m_min_filter);
-        m_texture->SetMipmapMode(m_mipmap_mode);
     }
 
     void Import(const std::string &full_path)

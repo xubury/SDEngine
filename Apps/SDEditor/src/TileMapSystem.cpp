@@ -158,8 +158,9 @@ void TileMapSystem::OnRender()
     }
 
     if (m_draw_outline) {
-        int render_width = m_framebuffer->GetWidth();
-        int render_height = m_framebuffer->GetHeight();
+        auto &render_pass = Renderer::GetCurrentRenderPass();
+        int render_width = render_pass.viewport_width;
+        int render_height = render_pass.viewport_height;
         const Vector2i tile_cnt(
             std::ceil(static_cast<float>(render_width) / tile_size.x) + 1,
             std::ceil(static_cast<float>(render_height) / tile_size.y) + 1);

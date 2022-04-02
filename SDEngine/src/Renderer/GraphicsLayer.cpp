@@ -20,39 +20,39 @@ GraphicsLayer::GraphicsLayer(Device *device, int32_t width, int32_t height,
     CreateDispatcher();
 }
 
+void GraphicsLayer::InitBuffers()
+{
+    {
+        m_main_target = Framebuffer::Create();
+        m_color_buffer =
+            Texture::Create(m_width, m_height, 0, m_msaa, TextureType::Normal,
+                            DataFormat::RGBA8);
+        m_entity_buffer =
+            Texture::Create(m_width, m_height, 0, m_msaa, TextureType::Normal,
+                            DataFormat::R32UI);
+        m_depth_buffer = Renderbuffer::Create(m_width, m_height, m_msaa,
+                                              DataFormat::Depth24);
+        m_main_target->Attach(*m_color_buffer, 0, 0);
+        m_main_target->Attach(*m_entity_buffer, 1, 0);
+        m_main_target->Attach(*m_depth_buffer, 0);
+    }
+
+    {
+        m_geometry_target = Framebuffer::Create();
+        for (size_t i = 0; i < m_geometry_buffers.size(); ++i) {
+            m_geometry_buffers[i] = Texture::Create(
+                m_width, m_height, 0, MultiSampleLevel::None,
+                TextureType::Normal, GetTextureFormat(GeometryBufferType(i)));
+            m_geometry_target->Attach(*m_geometry_buffers[i], i, 0);
+        }
+    }
+}
+
 void GraphicsLayer::OnInit()
 {
     Layer::OnInit();
     Renderer::Init(m_device);
-
-    {
-        FramebufferCreateInfo info;
-        info.width = m_width;
-        info.height = m_height;
-        info.depth = 0;
-        info.attachments.push_back(AttachmentDescription{
-            AttachmentType::Normal, DataFormat::RGBA8, m_msaa});
-        info.attachments.push_back(AttachmentDescription{
-            AttachmentType::Normal, DataFormat::R32UI, m_msaa});
-        info.attachments.push_back(AttachmentDescription{
-            AttachmentType::ReadOnly, DataFormat::Depth24, m_msaa});
-        m_main_framebuffer = Framebuffer::Create(info);
-    }
-
-    {
-        FramebufferCreateInfo info;
-        m_light_icon = TextureLoader::LoadTexture2D("assets/icons/light.png");
-        info.width = m_width;
-        info.height = m_height;
-        info.depth = 0;
-        for (int i = 0; i < static_cast<int>(GeometryBufferType::EntityId);
-             ++i) {
-            info.attachments.push_back(AttachmentDescription{
-                AttachmentType::Normal, GetTextureFormat(GeometryBufferType(i)),
-                MultiSampleLevel::None});
-        }
-        m_debug_gbuffer = Framebuffer::Create(info);
-    }
+    m_light_icon = TextureLoader::LoadTexture2D("assets/icons/light.png");
 
     // engine logic system
     m_camera_system = CreateSystem<CameraSystem>();
@@ -82,8 +82,7 @@ void GraphicsLayer::SetRenderSize(int32_t width, int32_t height)
 {
     m_width = width;
     m_height = height;
-    m_debug_gbuffer->Resize(m_width, m_height);
-    m_main_framebuffer->Resize(m_width, m_height);
+    InitBuffers();
     GetEventDispatcher().PublishEvent(RenderSizeEvent{m_width, m_height});
 }
 
@@ -100,9 +99,9 @@ void GraphicsLayer::SetRenderScene(Scene *scene)
 
 void GraphicsLayer::OnRender()
 {
-    Renderer::BeginRenderPass({m_main_framebuffer.get(), m_width, m_height});
+    Renderer::BeginRenderPass({m_main_target.get(), m_width, m_height});
     uint32_t id = static_cast<uint32_t>(entt::null);
-    m_main_framebuffer->ClearAttachment(1, &id);
+    m_main_target->ClearAttachment(1, &id);
     for (auto &system : GetSystems()) {
         system->OnRender();
     }
@@ -142,17 +141,10 @@ void GraphicsLayer::OnImGui()
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
         ImGui::Begin("GBuffer");
         {
-            for (int i = 0; i < static_cast<int>(GeometryBufferType::EntityId);
-                 ++i) {
-                ImGui::DrawTexture(*m_debug_gbuffer->GetTexture(i),
-                                   ImVec2(0, 1), ImVec2(1, 0));
+            for (size_t i = 0; i < m_geometry_buffers.size(); ++i) {
+                ImGui::DrawTexture(*m_geometry_buffers[i], ImVec2(0, 1),
+                                   ImVec2(1, 0));
             }
-        }
-        ImGui::End();
-        ImGui::Begin("SSAO");
-        {
-            ImGui::DrawTexture(*m_lighting_system->GetSSAO(), ImVec2(0, 1),
-                               ImVec2(1, 0));
         }
         ImGui::End();
         ImGui::PopStyleVar();
@@ -161,7 +153,7 @@ void GraphicsLayer::OnImGui()
 
 void GraphicsLayer::BlitGeometryBuffers()
 {
-    Renderer::BeginRenderPass({m_debug_gbuffer.get(), m_width, m_height});
+    Renderer::BeginRenderPass({m_geometry_target.get(), m_width, m_height});
     for (int i = 0; i < static_cast<int>(GeometryBufferType::EntityId); ++i) {
         Renderer::BlitFromBuffer(i, m_lighting_system->GetGBuffer(), i,
                                  BufferBitMask::ColorBufferBit);

@@ -7,18 +7,20 @@
 
 namespace SD {
 
-class GLTexture;
-
 class GLFramebuffer : public Framebuffer {
    public:
-    GLFramebuffer(const FramebufferCreateInfo &info);
+    GLFramebuffer();
     virtual ~GLFramebuffer();
 
     uint32_t GetId() const override { return m_id; }
 
-    void ReadPixels(uint32_t attachment_id, int level, int x, int y, int z,
-                    int w, int h, int d, size_t size,
-                    void *data) const override;
+    void Attach(Texture &texture, int attachment, int level) override;
+    void Attach(Renderbuffer &buffer, int attachment) override;
+    Texture *GetAttachment(int attachment) override
+    {
+        return m_textures.at(attachment);
+    }
+    void Prepare() override;
 
     void ClearDepth(const float depth) override;
 
@@ -27,14 +29,12 @@ class GLFramebuffer : public Framebuffer {
                          const uint32_t *value) override;
     void ClearAttachment(uint32_t attachment_id, const float *value) override;
 
-    Texture *GetTexture(uint32_t attachment_id) override;
-    const Texture *GetTexture(uint32_t attachment_id) const override;
-
    private:
-    void SetupAttachments() override;
-    void DestoryAttachments() override;
-    std::vector<Ref<void>> m_attachments;
+    int32_t m_width;
+    int32_t m_height;
     GLuint m_id;
+    std::unordered_map<int, Texture *> m_textures;
+    std::vector<GLenum> m_drawables;
 };
 
 }  // namespace SD

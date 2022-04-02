@@ -4,77 +4,57 @@
 
 namespace SD {
 
-GLFramebuffer::GLFramebuffer(const FramebufferCreateInfo &info)
-    : Framebuffer(info)
-{
-    glCreateFramebuffers(1, &m_id);
-    SetupAttachments();
-}
+GLFramebuffer::GLFramebuffer() { glCreateFramebuffers(1, &m_id); }
 
 GLFramebuffer::~GLFramebuffer() { glDeleteFramebuffers(1, &m_id); }
 
-void GLFramebuffer::DestoryAttachments() { m_attachments.clear(); }
-
-void GLFramebuffer::SetupAttachments()
+void GLFramebuffer::Attach(Texture &texture, int attachment, int level)
 {
-    std::vector<GLenum> drawables;
-    for (const auto &attachment : m_info.attachments) {
-        GLenum gl_attachment = 0;
-        switch (attachment.format) {
-            case DataFormat::Depth24:
-                gl_attachment = GL_DEPTH_ATTACHMENT;
-                break;
-            case DataFormat::Stencil8:
-                gl_attachment = GL_STENCIL_ATTACHMENT;
-                break;
-            case DataFormat::Depth24Stencil8:
-                gl_attachment = GL_DEPTH_STENCIL_ATTACHMENT;
-                break;
-            default:
-                gl_attachment = GL_COLOR_ATTACHMENT0 + drawables.size();
-                drawables.emplace_back(gl_attachment);
-                break;
-        }
-
-        switch (attachment.type) {
-            case AttachmentType::Normal: {
-                auto texture = Texture::Create(
-                    m_info.width, m_info.height, m_info.depth,
-                    attachment.samples, TextureType::Normal, attachment.format);
-                m_attachments.emplace_back(texture);
-                glNamedFramebufferTexture(m_id, gl_attachment, texture->GetId(),
-                                          0);
-            } break;
-            case AttachmentType::Array: {
-                auto texture = Texture::Create(
-                    m_info.width, m_info.height, m_info.depth,
-                    attachment.samples, TextureType::Array, attachment.format);
-                m_attachments.emplace_back(texture);
-                glNamedFramebufferTexture(m_id, gl_attachment, texture->GetId(),
-                                          0);
-            } break;
-            case AttachmentType::ReadOnly: {
-                auto renderbuffer =
-                    Renderbuffer::Create(m_info.width, m_info.height,
-                                         attachment.samples, attachment.format);
-                m_attachments.emplace_back(renderbuffer);
-                glNamedFramebufferRenderbuffer(m_id, gl_attachment,
-                                               GL_RENDERBUFFER,
-                                               renderbuffer->GetId());
-            } break;
-        }
+    GLenum gl_attachment;
+    switch (texture.GetFormat()) {
+        case DataFormat::Depth24:
+            gl_attachment = GL_DEPTH_ATTACHMENT;
+            break;
+        case DataFormat::Stencil8:
+            gl_attachment = GL_STENCIL_ATTACHMENT;
+            break;
+        case DataFormat::Depth24Stencil8:
+            gl_attachment = GL_DEPTH_STENCIL_ATTACHMENT;
+            break;
+        default:
+            gl_attachment = GL_COLOR_ATTACHMENT0 + attachment;
+            m_drawables.push_back(gl_attachment);
+            break;
     }
-    SD_CORE_ASSERT(glCheckNamedFramebufferStatus(m_id, GL_FRAMEBUFFER) ==
-                       GL_FRAMEBUFFER_COMPLETE,
-                   "Framebuffer is incomplete!");
-    glNamedFramebufferDrawBuffers(m_id, drawables.size(), drawables.data());
+    glNamedFramebufferTexture(m_id, gl_attachment, texture.GetId(), level);
+    m_textures[attachment] = &texture;
 }
 
-void GLFramebuffer::ReadPixels(uint32_t attachment_id, int level, int x, int y,
-                               int z, int w, int h, int d, size_t size,
-                               void *data) const
+void GLFramebuffer::Attach(Renderbuffer &buffer, int attachment)
 {
-    GetTexture(attachment_id)->ReadPixels(level, x, y, z, w, h, d, size, data);
+    GLenum gl_attachment;
+    switch (buffer.GetFormat()) {
+        case DataFormat::Depth24:
+            gl_attachment = GL_DEPTH_ATTACHMENT;
+            break;
+        case DataFormat::Stencil8:
+            gl_attachment = GL_STENCIL_ATTACHMENT;
+            break;
+        case DataFormat::Depth24Stencil8:
+            gl_attachment = GL_DEPTH_STENCIL_ATTACHMENT;
+            break;
+        default:
+            gl_attachment = GL_COLOR_ATTACHMENT0 + attachment;
+            m_drawables.push_back(gl_attachment);
+            break;
+    }
+    glNamedFramebufferRenderbuffer(m_id, gl_attachment, GL_RENDERBUFFER,
+                                   buffer.GetId());
+}
+
+void GLFramebuffer::Prepare()
+{
+    glNamedFramebufferDrawBuffers(m_id, m_drawables.size(), m_drawables.data());
 }
 
 void GLFramebuffer::ClearDepth(const float depth)
@@ -98,13 +78,4 @@ void GLFramebuffer::ClearAttachment(uint32_t attachment_id, const float *value)
     glClearNamedFramebufferfv(m_id, GL_COLOR, attachment_id, value);
 }
 
-Texture *GLFramebuffer::GetTexture(uint32_t attachment_id)
-{
-    return static_cast<Texture *>(m_attachments[attachment_id].get());
-}
-
-const Texture *GLFramebuffer::GetTexture(uint32_t attachment_id) const
-{
-    return static_cast<const Texture *>(m_attachments[attachment_id].get());
-}
 }  // namespace SD

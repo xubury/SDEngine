@@ -49,16 +49,15 @@ void EditorLayer::OnInit()
 
 void EditorLayer::InitBuffers()
 {
-    FramebufferCreateInfo info;
-    info.width = m_viewport_size.x;
-    info.height = m_viewport_size.y;
-    info.depth = 0;
-    info.attachments.push_back(AttachmentDescription{
-        AttachmentType::Normal, DataFormat::RGB8, MultiSampleLevel::None});
-    info.attachments.push_back(AttachmentDescription{
-        AttachmentType::Normal, DataFormat::R32UI, MultiSampleLevel::None});
-
-    m_viewport_buffer = Framebuffer::Create(info);
+    m_viewport_target = Framebuffer::Create();
+    m_scene_buffer = Texture::Create(m_viewport_size.x, m_viewport_size.y, 0,
+                                     MultiSampleLevel::None,
+                                     TextureType::Normal, DataFormat::RGB8);
+    m_entity_buffer = Texture::Create(m_viewport_size.x, m_viewport_size.y, 0,
+                                      MultiSampleLevel::None,
+                                      TextureType::Normal, DataFormat::R32UI);
+    m_viewport_target->Attach(*m_scene_buffer, 0, 0);
+    m_viewport_target->Attach(*m_entity_buffer, 1, 0);
 }
 
 void EditorLayer::OnPush()
@@ -83,18 +82,18 @@ void EditorLayer::OnRender()
     auto *framebuffer = m_graphics_layer->GetFramebuffer();
     RenderPassInfo info;
     info.framebuffer = framebuffer;
-    info.viewport_width = framebuffer->GetWidth();
-    info.viewport_height = framebuffer->GetHeight();
+    info.viewport_width = m_viewport_size.x;
+    info.viewport_height = m_viewport_size.y;
     info.clear_mask = BufferBitMask::None;
     Renderer::BeginRenderPass(info);
     for (auto &system : GetSystems()) {
         system->OnRender();
     }
     // blit the render color result
-    Renderer::BlitToBuffer(0, m_viewport_buffer.get(), 0,
+    Renderer::BlitToBuffer(0, m_viewport_target.get(), 0,
                            BufferBitMask::ColorBufferBit);
     // blit the entity id result
-    Renderer::BlitToBuffer(1, m_viewport_buffer.get(), 1,
+    Renderer::BlitToBuffer(1, m_viewport_target.get(), 1,
                            BufferBitMask::ColorBufferBit);
     Renderer::EndRenderPass();
 }
@@ -317,7 +316,7 @@ void EditorLayer::DrawViewport()
         if (m_viewport_size != viewport_size && viewport_size.x > 0 &&
             viewport_size.y > 0) {
             m_viewport_size = viewport_size;
-            m_viewport_buffer->Resize(m_viewport_size.x, m_viewport_size.y);
+            InitBuffers();
             m_graphics_layer->SetRenderSize(m_viewport_size.x,
                                             m_viewport_size.y);
             m_editor_camera_system->GetCamera()->Resize(m_viewport_size.x,
@@ -330,11 +329,10 @@ void EditorLayer::DrawViewport()
 
         if (!m_is_runtime && m_mode == EditorMode::TwoDimensional) {
             m_tile_map_system->ManipulateScene(
-                m_viewport_buffer.get(), m_editor_camera_system->GetCamera());
+                m_viewport_target.get(), m_editor_camera_system->GetCamera());
         }
 
-        ImGui::DrawTexture(*m_viewport_buffer->GetTexture(), ImVec2(0, 1),
-                           ImVec2(1, 0));
+        ImGui::DrawTexture(*m_scene_buffer, ImVec2(0, 1), ImVec2(1, 0));
 
         // disable ImGuizmo when in runtime
         if (!m_is_runtime) {
@@ -365,12 +363,12 @@ void EditorLayer::DrawViewport()
             const int tex_x = mouse_x - m_viewport_pos.x;
             const int tex_y = m_viewport_size.y - (mouse_y - m_viewport_pos.y);
             entt::entity entity_id = entt::null;
-            const Texture *entity_tex = m_viewport_buffer->GetTexture(1);
             // out of bound check
-            if (tex_x >= 0 && tex_y >= 0 && tex_x < entity_tex->GetWidth() &&
-                tex_y < entity_tex->GetHeight()) {
-                entity_tex->ReadPixels(0, tex_x, tex_y, 0, 1, 1, 1,
-                                       sizeof(entity_id), &entity_id);
+            if (tex_x >= 0 && tex_y >= 0 &&
+                tex_x < m_entity_buffer->GetWidth() &&
+                tex_y < m_entity_buffer->GetHeight()) {
+                m_entity_buffer->ReadPixels(0, tex_x, tex_y, 0, 1, 1, 1,
+                                            sizeof(entity_id), &entity_id);
             }
             if (entity_id != entt::null) {
                 dispatcher.PublishEvent(

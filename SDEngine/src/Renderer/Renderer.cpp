@@ -43,6 +43,7 @@ void Renderer::SetRenderState(Framebuffer* framebuffer, int32_t viewport_width,
 void Renderer::BeginRenderPass(const RenderPassInfo& info)
 {
     s_render_pass_stacks.push(info);
+    info.framebuffer->Prepare();
     SetRenderState(info.framebuffer, info.viewport_width, info.viewport_height,
                    info.op);
 
@@ -83,6 +84,7 @@ void Renderer::EndRenderPass()
     // restore render pass state
     if (!IsEmptyStack()) {
         auto& render_pass = GetCurrentRenderPass();
+        render_pass.framebuffer->Prepare();
         SetRenderState(render_pass.framebuffer, render_pass.viewport_width,
                        render_pass.viewport_height, render_pass.op);
     }
@@ -91,13 +93,6 @@ void Renderer::EndRenderPass()
 const RenderPassInfo& Renderer::GetCurrentRenderPass()
 {
     return s_render_pass_stacks.top();
-}
-
-Vector2i Renderer::GetCurrentBufferSize()
-{
-    auto& render_pass = GetCurrentRenderPass();
-    return {render_pass.framebuffer->GetWidth(),
-            render_pass.framebuffer->GetHeight()};
 }
 
 bool Renderer::IsEmptyStack() { return s_render_pass_stacks.empty(); }
@@ -201,25 +196,25 @@ void Renderer::DrawNDCBox(const Shader& shader)
 void Renderer::BlitToBuffer(int read_attachment, Framebuffer* draw_fb,
                             int draw_attachment, BufferBitMask mask)
 {
-    Framebuffer* framebuffer = GetCurrentRenderPass().framebuffer;
+    auto& render_pass = GetCurrentRenderPass();
+    Vector2i size(render_pass.viewport_width, render_pass.viewport_height);
+    Framebuffer* framebuffer = render_pass.framebuffer;
     m_device->DrawBuffer(draw_fb, draw_attachment);
     m_device->ReadBuffer(framebuffer, read_attachment);
-    m_device->BlitFramebuffer(framebuffer, 0, 0, framebuffer->GetWidth(),
-                              framebuffer->GetHeight(), draw_fb, 0, 0,
-                              framebuffer->GetWidth(), framebuffer->GetHeight(),
-                              mask, BlitFilter::Nearest);
+    m_device->BlitFramebuffer(framebuffer, 0, 0, size.x, size.y, draw_fb, 0, 0,
+                              size.x, size.y, mask, BlitFilter::Nearest);
 }
 
 void Renderer::BlitFromBuffer(int draw_attachment, Framebuffer* read_fb,
                               int read_attachment, BufferBitMask mask)
 {
-    Framebuffer* framebuffer = GetCurrentRenderPass().framebuffer;
+    auto& render_pass = GetCurrentRenderPass();
+    Framebuffer* framebuffer = render_pass.framebuffer;
+    Vector2i size(render_pass.viewport_width, render_pass.viewport_height);
     m_device->DrawBuffer(framebuffer, draw_attachment);
     m_device->ReadBuffer(read_fb, read_attachment);
-    m_device->BlitFramebuffer(read_fb, 0, 0, framebuffer->GetWidth(),
-                              framebuffer->GetHeight(), framebuffer, 0, 0,
-                              framebuffer->GetWidth(), framebuffer->GetHeight(),
-                              mask, BlitFilter::Nearest);
+    m_device->BlitFramebuffer(read_fb, 0, 0, size.x, size.y, framebuffer, 0, 0,
+                              size.x, size.y, mask, BlitFilter::Nearest);
 }
 
 }  // namespace SD

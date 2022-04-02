@@ -26,19 +26,25 @@ class SD_RENDERER_API GraphicsLayer : public Layer {
     void SetRenderScene(Scene* scene);
     void SetDebug(bool debug) { m_debug = debug; }
 
-    Framebuffer* GetFramebuffer() { return m_main_framebuffer.get(); }
+    Framebuffer* GetFramebuffer() { return m_main_target.get(); }
 
    private:
     void BlitGeometryBuffers();
+    void InitBuffers();
 
     Device* m_device;
     int32_t m_width;
     int32_t m_height;
     MultiSampleLevel m_msaa;
     bool m_debug;
-    Ref<Framebuffer> m_main_framebuffer;
+    Ref<Framebuffer> m_main_target;
+    Ref<Texture> m_color_buffer;
+    Ref<Texture> m_entity_buffer;
+    Ref<Renderbuffer> m_depth_buffer;
 
-    Ref<Framebuffer> m_debug_gbuffer;
+    Ref<Framebuffer> m_geometry_target;
+    std::array<Ref<Texture>, static_cast<int>(GeometryBufferType::EntityId)>
+        m_geometry_buffers;
     Ref<Texture> m_light_icon;
 
     Camera* m_camera;

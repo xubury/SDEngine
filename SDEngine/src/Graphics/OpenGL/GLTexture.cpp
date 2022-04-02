@@ -211,11 +211,14 @@ void GLTexture::SetMinFilter(TextureMinFilter min_filter)
     glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, gl_min_filter);
 }
 
-void GLTexture::SetMipmapMode(MipmapMode mode)
+void GLTexture::SetBaseLevel(int level)
 {
-    m_mipmap_mode = mode;
-    GLint gl_min_filter = Translate(m_min_filter, m_mipmap_mode);
-    glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, gl_min_filter);
+    glTextureParameteri(m_id, GL_TEXTURE_BASE_LEVEL, level);
+}
+
+void GLTexture::SetMaxLevel(int level)
+{
+    glTextureParameteri(m_id, GL_TEXTURE_MAX_LEVEL, level);
 }
 
 void GLTexture::ReadPixels(int level, int x, int y, int z, int w, int h, int d,
@@ -224,5 +227,7 @@ void GLTexture::ReadPixels(int level, int x, int y, int z, int w, int h, int d,
     glGetTextureSubImage(m_id, level, x, y, z, w, h, d, gl_format,
                          gl_format_type, size, data);
 }
+
+void GLTexture::GenerateMipmap() { glGenerateTextureMipmap(m_id); }
 
 }  // namespace SD

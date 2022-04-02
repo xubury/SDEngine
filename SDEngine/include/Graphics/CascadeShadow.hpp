@@ -32,11 +32,13 @@ class SD_GRAPHICS_API CascadeShadow {
     void ComputeCascadeLightMatrix(const Transform &transform,
                                    const Camera &camera);
 
-    Framebuffer *GetCascadeMap() const { return m_cascade_map.get(); }
+    Texture *GetCascadeMap() const { return m_cascade_map.get(); }
+    Framebuffer *GetCascadeFramebuffer() const { return m_cascade_fb.get(); }
 
     SERIALIZE(m_cascade_planes)
    private:
-    Ref<Framebuffer> m_cascade_map;
+    Ref<Framebuffer> m_cascade_fb;
+    Ref<Texture> m_cascade_map;
     std::vector<Matrix4f> m_projection_views;
     std::vector<float> m_cascade_planes;
 };

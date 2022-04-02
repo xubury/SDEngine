@@ -30,7 +30,7 @@ static DataFormat Get8BitDataFormat(int32_t channels)
 }
 
 Ref<Texture> TextureLoader::LoadTextureCube(
-    const std::vector<std::string>& pathes)
+    const std::vector<std::string>& pathes, MipmapMode mode)
 {
     Ref<Texture> texture;
     if (pathes.size() < 6) {
@@ -44,11 +44,10 @@ Ref<Texture> TextureLoader::LoadTextureCube(
         uint8_t* img =
             stbi_load(pathes[face].c_str(), &width, &height, &channels, 0);
         if (face == 0) {
-            texture =
-                Texture::Create(width, height, 0, MultiSampleLevel::None,
-                                TextureType::Cube, Get8BitDataFormat(channels),
-                                TextureWrap::Edge, TextureMinFilter::Linear,
-                                MipmapMode::Linear, TextureMagFilter::Linear);
+            texture = Texture::Create(
+                width, height, 0, MultiSampleLevel::None, TextureType::Cube,
+                Get8BitDataFormat(channels), TextureWrap::Edge,
+                TextureMinFilter::Linear, mode, TextureMagFilter::Linear);
         }
         texture->SetPixels(0, 0, face, width, height, 1, img);
         stbi_image_free(img);
@@ -58,7 +57,8 @@ Ref<Texture> TextureLoader::LoadTextureCube(
 
 // FIXME: 16bit should use this stbi_load_16();
 
-Ref<Texture> TextureLoader::LoadTexture2D(const std::string& path)
+Ref<Texture> TextureLoader::LoadTexture2D(const std::string& path,
+                                          MipmapMode mode)
 {
     SD_CORE_TRACE("Loading image from {}", path);
     int32_t width;
@@ -68,7 +68,7 @@ Ref<Texture> TextureLoader::LoadTexture2D(const std::string& path)
     Ref<Texture> texture = Texture::Create(
         width, height, 0, MultiSampleLevel::None, TextureType::Normal,
         Get8BitDataFormat(channels), TextureWrap::Edge,
-        TextureMinFilter::Linear, MipmapMode::Linear, TextureMagFilter::Linear);
+        TextureMinFilter::Linear, mode, TextureMagFilter::Linear);
     texture->SetPixels(0, 0, 0, width, height, 1, img);
     stbi_image_free(img);
     return texture;

@@ -27,10 +27,13 @@ class SD_GRAPHICS_API Texture : public Resource {
     virtual void SetWrap(TextureWrap wrap) = 0;
     virtual void SetMagFilter(TextureMagFilter filter) = 0;
     virtual void SetMinFilter(TextureMinFilter filter) = 0;
-    virtual void SetMipmapMode(MipmapMode mode) = 0;
+    virtual void SetBaseLevel(int level) = 0;
+    virtual void SetMaxLevel(int level) = 0;
 
     virtual void ReadPixels(int level, int x, int y, int z, int w, int h, int d,
                             size_t size, void *data) const = 0;
+
+    virtual void GenerateMipmap() = 0;
 
     bool operator==(const Texture &other) const;
     bool operator!=(const Texture &other) const;
@@ -42,11 +45,11 @@ class SD_GRAPHICS_API Texture : public Resource {
     TextureType GetType() const;
     DataFormat GetFormat() const;
 
-
     TextureWrap GetWrap() const { return m_wrap; }
     TextureMinFilter GetMinFilter() const { return m_min_filter; }
     TextureMagFilter GetMagFilter() const { return m_mag_filter; }
     MipmapMode GetMipmapMode() const { return m_mipmap_mode; }
+    int GetMipmapLevels() const { return m_mipmap_levels; }
 
    protected:
     Texture(int width, int height, int depth, MultiSampleLevel samples,

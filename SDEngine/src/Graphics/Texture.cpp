@@ -40,9 +40,14 @@ Texture::Texture(int width, int height, int depth, MultiSampleLevel samples,
       m_min_filter(min_filter),
       m_mag_filter(mag_filter)
 {
-    m_mipmap_levels = std::max(
-        static_cast<int>(std::floor(std::log2(std::max(m_width, m_height)))),
-        1);
+    if (m_mipmap_mode != MipmapMode::None) {
+        m_mipmap_levels = std::max(static_cast<int>(std::floor(
+                                       std::log2(std::max(m_width, m_height)))),
+                                   1);
+    }
+    else {
+        m_mipmap_levels = 1;
+    }
 }
 
 bool Texture::operator==(const Texture &other) const

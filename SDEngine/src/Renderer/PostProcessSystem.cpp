@@ -26,18 +26,34 @@ void PostProcessSystem::OnInit()
     m_post_shader =
         ShaderLoader::LoadShader("assets/shaders/quad.vert.glsl",
                                  "assets/shaders/post_process.frag.glsl");
+    m_test_shader = ShaderLoader::LoadShader("assets/shaders/quad.vert.glsl",
+                                             "assets/shaders/test.frag.glsl");
     InitBuffers();
 }
 
 void PostProcessSystem::InitBuffers()
 {
-    AttachmentDescription attach_desc{
-        AttachmentType::Normal, DataFormat::RGBA16F, MultiSampleLevel::None};
     for (int i = 0; i < 2; ++i) {
-        m_blur_buffer[i] =
-            Framebuffer::Create({m_width, m_height, 0, {attach_desc}});
+        m_blur_buffers[i] = Texture::Create(
+            m_width, m_height, 0, MultiSampleLevel::None, TextureType::Normal,
+            DataFormat::RGBA16F, TextureWrap::Edge, TextureMinFilter::Nearest,
+            MipmapMode::Linear, TextureMagFilter::Nearest);
+        m_blur_targets[i] = Framebuffer::Create();
+        m_blur_targets[i]->Attach(*m_blur_buffers[i], 0, 0);
     }
-    m_post_buffer = Framebuffer::Create({m_width, m_height, 0, {attach_desc}});
+    m_post_target = Framebuffer::Create();
+    m_post_buffer = Texture::Create(
+        m_width, m_height, 0, MultiSampleLevel::None, TextureType::Normal,
+        DataFormat::RGBA16F, TextureWrap::Edge, TextureMinFilter::Nearest,
+        MipmapMode::Linear, TextureMagFilter::Nearest);
+    m_post_target->Attach(*m_post_buffer, 0, 0);
+
+    m_test_buffer = Texture::Create(
+        m_width, m_height, 0, MultiSampleLevel::None, TextureType::Normal,
+        DataFormat::RGBA16F, TextureWrap::Edge, TextureMinFilter::Nearest,
+        MipmapMode::Linear, TextureMagFilter::Nearest);
+    m_test_target = Framebuffer::Create();
+    m_test_target->Attach(*m_test_buffer, 0, 0);
 }
 
 void PostProcessSystem::OnPush()
@@ -78,12 +94,25 @@ void PostProcessSystem::OnImGui()
         ImGui::SliderFloat("##Gamma Correction", &m_gamma_correction, 0.1, 3);
     }
     ImGui::End();
+
+    ImGui::Begin("PostProcess Debug");
+    {
+        // SD_CORE_TRACE("level:{}",
+        //               m_test_buffer->GetTexture()->GetMipmapLevels());
+        m_test_buffer->GenerateMipmap();
+        m_test_buffer->SetBaseLevel(5);
+        // m_test_buffer->GetTexture()->SetMaxLevel(10);
+        ImGui::DrawTexture(*m_test_buffer);
+    }
+    ImGui::End();
 }
 
 void PostProcessSystem::OnRender()
 {
-    Renderer::BlitToBuffer(0, m_post_buffer.get(), 0,
+    Renderer::BlitToBuffer(0, m_post_target.get(), 0,
                            BufferBitMask::ColorBufferBit);
+
+    RenderMipmapTest();
     if (m_is_bloom) {
         RenderBlur();
     }
@@ -94,10 +123,7 @@ void PostProcessSystem::OnSizeEvent(const RenderSizeEvent &event)
 {
     m_width = event.width;
     m_height = event.height;
-    for (auto &buffer : m_blur_buffer) {
-        buffer->Resize(event.width, event.height);
-    }
-    m_post_buffer->Resize(event.width, event.height);
+    InitBuffers();
 }
 
 void PostProcessSystem::RenderBlur()
@@ -109,13 +135,12 @@ void PostProcessSystem::RenderBlur()
     for (int i = 0; i < amount; ++i) {
         const int inputId = horizontal;
         const int outputId = !horizontal;
-        Renderer::BeginRenderPass(RenderPassInfo{
-            m_blur_buffer[outputId].get(), m_blur_buffer[outputId]->GetWidth(),
-            m_blur_buffer[outputId]->GetHeight()});
-        m_blur_result = m_blur_buffer[outputId]->GetTexture();
+        Renderer::BeginRenderPass(
+            RenderPassInfo{m_blur_targets[outputId].get(), m_width, m_height});
+        m_blur_result = m_blur_buffers[outputId].get();
         horizontal_param->SetAsBool(horizontal);
-        image->SetAsTexture(i == 0 ? m_post_buffer->GetTexture()
-                                   : m_blur_buffer[inputId]->GetTexture());
+        image->SetAsTexture(i == 0 ? m_post_buffer.get()
+                                   : m_blur_buffers[inputId].get());
         Renderer::DrawNDCQuad(*m_blur_shader);
         horizontal = !horizontal;
 
@@ -132,8 +157,7 @@ void PostProcessSystem::RenderPost()
     m_post_shader->GetParam("u_bloomFactor")->SetAsFloat(m_bloom_factor);
     m_post_shader->GetParam("u_blur")->SetAsTexture(m_blur_result);
 
-    m_post_shader->GetParam("u_lighting")
-        ->SetAsTexture(m_post_buffer->GetTexture());
+    m_post_shader->GetParam("u_lighting")->SetAsTexture(m_post_buffer.get());
     m_post_shader->GetParam("u_exposure")->SetAsFloat(m_exposure);
 
     m_post_shader->GetParam("u_gamma")->SetAsFloat(m_gamma_correction);
@@ -141,6 +165,15 @@ void PostProcessSystem::RenderPost()
     Renderer::DrawNDCQuad(*m_post_shader);
 
     Renderer::EndRenderSubpass();
+}
+
+void PostProcessSystem::RenderMipmapTest()
+{
+    Renderer::BeginRenderPass(
+        RenderPassInfo{m_test_target.get(), m_width, m_height});
+    m_test_shader->GetParam("u_screen")->SetAsTexture(m_post_buffer.get());
+    Renderer::DrawNDCQuad(*m_test_shader);
+    Renderer::EndRenderPass();
 }
 
 void PostProcessSystem::SetExposure(float exposure) { m_exposure = exposure; }

@@ -9,27 +9,22 @@ CascadeShadow::CascadeShadow() : m_cascade_planes{1, 100, 500, 1000} {}
 
 void CascadeShadow::CreateShadowMap()
 {
+    m_cascade_fb = Framebuffer::Create();
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    m_cascade_map = Framebuffer::Create(
-        {shadow_map_width,
-         shadow_map_height,
-         (int)m_cascade_planes.size(),
-         {AttachmentDescription{AttachmentType::Array, DataFormat::Depth24,
-                                MultiSampleLevel::None}}});
-    m_cascade_map->GetTexture()->SetWrap(TextureWrap::Border);
-    m_cascade_map->GetTexture()->SetBorderColor(&color);
+    m_cascade_map = Texture::Create(
+        shadow_map_width, shadow_map_height, m_cascade_planes.size(),
+        MultiSampleLevel::None, TextureType::Array, DataFormat::Depth24);
+    m_cascade_map->SetWrap(TextureWrap::Border);
+    m_cascade_map->SetBorderColor(&color);
+    m_cascade_fb->Attach(*m_cascade_map, 0, 0);
 }
 
 void CascadeShadow::DestroyShadowMap() { m_cascade_map.reset(); }
 
 void CascadeShadow::SetNumOfCascades(int32_t num_of_cascades)
 {
-    const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
     m_cascade_planes.resize(num_of_cascades);
-    m_cascade_map->Resize(shadow_map_width, shadow_map_height,
-                          m_cascade_planes.size());
-    m_cascade_map->GetTexture()->SetWrap(TextureWrap::Border);
-    m_cascade_map->GetTexture()->SetBorderColor(&color);
+    CreateShadowMap();
 }
 
 static std::vector<Vector4f> GetFrustumCorners(const Matrix4f &project_view)

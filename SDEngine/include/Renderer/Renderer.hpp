@@ -59,7 +59,6 @@ class SD_RENDERER_API Renderer {
 
     static void Init(Device *device);
 
-    static Vector2i GetCurrentBufferSize();
     static Framebuffer *GetBufferStackTop();
     static const RenderPassInfo &GetCurrentRenderPass();
 

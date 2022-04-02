@@ -23,7 +23,9 @@ class GLTexture : public Texture {
     void SetWrap(TextureWrap wrap) override;
     void SetMagFilter(TextureMagFilter filter) override;
     void SetMinFilter(TextureMinFilter min_filter) override;
-    void SetMipmapMode(MipmapMode mode) override;
+    void SetBaseLevel(int level) override;
+    void SetMaxLevel(int level) override;
+    void GenerateMipmap() override;
 
     void ReadPixels(int level, int x, int y, int z, int w, int h, int d,
                     size_t size, void *data) const override;

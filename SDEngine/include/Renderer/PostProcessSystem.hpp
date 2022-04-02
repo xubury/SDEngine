@@ -42,6 +42,8 @@ class SD_RENDERER_API PostProcessSystem : public ECSSystem {
     void RenderBlur();
     void RenderPost();
 
+    void RenderMipmapTest();
+
     void InitBuffers();
 
     int m_width;
@@ -49,11 +51,17 @@ class SD_RENDERER_API PostProcessSystem : public ECSSystem {
 
     Ref<Shader> m_post_shader;
     Ref<Shader> m_blur_shader;
+    Ref<Shader> m_test_shader;
 
-    Ref<Framebuffer> m_blur_buffer[2];
+    Ref<Framebuffer> m_blur_targets[2];
+    Ref<Texture> m_blur_buffers[2];
     Texture *m_blur_result;
 
-    Ref<Framebuffer> m_post_buffer;
+    Ref<Framebuffer> m_post_target;
+    Ref<Texture> m_post_buffer;
+
+    Ref<Framebuffer> m_test_target;
+    Ref<Texture> m_test_buffer;
 
     bool m_is_bloom;
     float m_bloom_factor;

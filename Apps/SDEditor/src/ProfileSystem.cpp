@@ -55,8 +55,6 @@ void ProfileSystem::OnRender()
     // only draw colors
     const int index = 0;
     Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1});
-    Vector2f size = Renderer::GetCurrentBufferSize();
-    m_camera.Resize(size.x, size.y);
     Renderer2D::Begin(m_camera);
     Renderer2D::SetTextOrigin(
         -m_camera.GetNearWidth() / 2,

@@ -10,38 +10,19 @@
 
 namespace SD {
 
-enum class AttachmentType { Normal, Array, ReadOnly };
-
-struct AttachmentDescription {
-    AttachmentType type;
-    DataFormat format;
-    MultiSampleLevel samples;
-};
-
-struct FramebufferCreateInfo {
-    int32_t width;
-    int32_t height;
-    int32_t depth{0};
-    std::vector<AttachmentDescription> attachments;
-};
-
 class SD_GRAPHICS_API Framebuffer : public Resource {
    public:
-    static Ref<Framebuffer> Create(const FramebufferCreateInfo &info);
-    Framebuffer(const FramebufferCreateInfo &info);
+    static Ref<Framebuffer> Create();
+    Framebuffer() = default;
     virtual ~Framebuffer() = default;
 
     Framebuffer(const Framebuffer &) = delete;
     Framebuffer &operator=(const Framebuffer &) = delete;
 
-    int GetWidth() const { return m_info.width; };
-    int GetHeight() const { return m_info.height; };
-
-    void Resize(int32_t width, int32_t height, int32_t depth = 0);
-
-    virtual void ReadPixels(uint32_t attachment_id, int level, int x, int y,
-                            int z, int w, int h, int d, size_t size,
-                            void *data) const = 0;
+    virtual void Attach(Texture &texture, int attachment, int level) = 0;
+    virtual void Attach(Renderbuffer &buffer, int attachment) = 0;
+    virtual Texture *GetAttachment(int attachment) = 0;
+    virtual void Prepare() = 0;
 
     virtual void ClearDepth(const float value = 1) = 0;
 
@@ -50,14 +31,6 @@ class SD_GRAPHICS_API Framebuffer : public Resource {
                                  const uint32_t *value) = 0;
     virtual void ClearAttachment(uint32_t attachment_id,
                                  const float *value) = 0;
-
-    virtual Texture *GetTexture(uint32_t attachment_id = 0) = 0;
-    virtual const Texture *GetTexture(uint32_t attachment_id = 0) const = 0;
-
-   protected:
-    virtual void SetupAttachments() = 0;
-    virtual void DestoryAttachments() = 0;
-    FramebufferCreateInfo m_info;
 };
 
 }  // namespace SD

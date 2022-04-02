@@ -64,7 +64,9 @@ class EditorLayer : public Layer {
 
     Vector2i m_viewport_size;
 
-    Ref<Framebuffer> m_viewport_buffer;
+    Ref<Framebuffer> m_viewport_target;
+    Ref<Texture> m_scene_buffer;
+    Ref<Texture> m_entity_buffer;
 
     bool m_is_runtime;
     bool m_quitting;
