@@ -97,12 +97,12 @@ void PostProcessSystem::OnImGui()
 
     ImGui::Begin("PostProcess Debug");
     {
-        // SD_CORE_TRACE("level:{}",
-        //               m_test_buffer->GetTexture()->GetMipmapLevels());
-        m_test_buffer->GenerateMipmap();
-        m_test_buffer->SetBaseLevel(5);
-        // m_test_buffer->GetTexture()->SetMaxLevel(10);
-        ImGui::DrawTexture(*m_test_buffer);
+        static int base_level = 0;
+        ImGui::SliderInt("Base level", &base_level, 0,
+                         m_test_buffer->GetMipmapLevels() - 1);
+        m_test_buffer->SetBaseLevel(base_level);
+        ImGui::Image((void *)(intptr_t)m_test_buffer->GetId(),
+                     ImVec2(m_width, m_height));
     }
     ImGui::End();
 }
@@ -169,11 +169,30 @@ void PostProcessSystem::RenderPost()
 
 void PostProcessSystem::RenderMipmapTest()
 {
-    Renderer::BeginRenderPass(
-        RenderPassInfo{m_test_target.get(), m_width, m_height});
-    m_test_shader->GetParam("u_screen")->SetAsTexture(m_post_buffer.get());
-    Renderer::DrawNDCQuad(*m_test_shader);
-    Renderer::EndRenderPass();
+    int width = m_width;
+    int height = m_height;
+    for (int base_level = 0; base_level < m_test_buffer->GetMipmapLevels();
+         ++base_level) {
+        m_test_target->Attach(*m_test_buffer, 0, base_level);
+
+        Renderer::BeginRenderPass(
+            RenderPassInfo{m_test_target.get(), width, height});
+        if (base_level > 0) {
+            m_test_buffer->SetBaseLevel(base_level - 1);
+            m_test_buffer->SetMaxLevel(base_level - 1);
+            m_test_shader->GetParam("u_screen")
+                ->SetAsTexture(m_test_buffer.get());
+        }
+        else {
+            m_test_shader->GetParam("u_screen")
+                ->SetAsTexture(m_post_buffer.get());
+        }
+        Renderer::DrawNDCQuad(*m_test_shader);
+        Renderer::EndRenderPass();
+        width /= 2;
+        height /= 2;
+    }
+    m_test_buffer->SetMaxLevel(m_test_buffer->GetMipmapLevels());
 }
 
 void PostProcessSystem::SetExposure(float exposure) { m_exposure = exposure; }

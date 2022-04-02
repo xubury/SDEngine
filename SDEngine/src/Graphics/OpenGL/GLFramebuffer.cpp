@@ -23,7 +23,12 @@ void GLFramebuffer::Attach(Texture &texture, int attachment, int level)
             break;
         default:
             gl_attachment = GL_COLOR_ATTACHMENT0 + attachment;
-            m_drawables.push_back(gl_attachment);
+            if (static_cast<int>(m_drawables.size()) <= attachment) {
+                m_drawables.push_back(gl_attachment);
+            }
+            else {
+                m_drawables[attachment] = gl_attachment;
+            }
             break;
     }
     glNamedFramebufferTexture(m_id, gl_attachment, texture.GetId(), level);
@@ -45,7 +50,12 @@ void GLFramebuffer::Attach(Renderbuffer &buffer, int attachment)
             break;
         default:
             gl_attachment = GL_COLOR_ATTACHMENT0 + attachment;
-            m_drawables.push_back(gl_attachment);
+            if (static_cast<int>(m_drawables.size()) <= attachment) {
+                m_drawables.push_back(gl_attachment);
+            }
+            else {
+                m_drawables[attachment] = gl_attachment;
+            }
             break;
     }
     glNamedFramebufferRenderbuffer(m_id, gl_attachment, GL_RENDERBUFFER,
