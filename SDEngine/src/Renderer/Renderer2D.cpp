@@ -163,9 +163,9 @@ void Renderer2D::Init()
     m_data.circle_vao->BindIndexBuffer(*m_data.quad_ibo);
 
     m_data.default_texture = Texture::Create(
-        1, 1, 0, MultiSampleLevel::None, TextureType::Normal, DataFormat::RGBA32F,
-        TextureWrap::Repeat, TextureMinFilter::Linear, MipmapMode::None,
-        TextureMagFilter::Linear);
+        1, 1, 0, MultiSampleLevel::None, TextureType::Normal,
+        DataFormat::RGBA32F, TextureWrap::Repeat, TextureMinFilter::Linear,
+        TextureMagFilter::Linear, MipmapMode::None);
     const float color[4] = {1, 1, 1, 1};
     m_data.default_texture->SetPixels(0, 0, 0, 1, 1, 1, color);
 

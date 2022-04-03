@@ -62,6 +62,14 @@ UniformType GetUniformType(GLenum gl_type)
         case GL_SAMPLER_2D_MULTISAMPLE:
         case GL_SAMPLER_3D:
             return UniformType::Sampler;
+
+        case GL_IMAGE_2D:
+        case GL_IMAGE_2D_ARRAY:
+        case GL_IMAGE_CUBE:
+        case GL_IMAGE_2D_MULTISAMPLE:
+        case GL_IMAGE_3D:
+            return UniformType::Image;
+
         default:
             return UniformType::Unknown;
     }
@@ -147,13 +155,18 @@ ShaderParam* GLShader::GetParam(int32_t index)
         return nullptr;
     }
     int32_t tex_binding_id = -1;
+    int32_t image_binding = -1;
 
     if (type == UniformType::Sampler) {
         tex_binding_id = m_texture_cnt;
         m_texture_cnt += size;
     }
-    ShaderParam* p =
-        new GLShaderParam(type, s, index, m_id, location, tex_binding_id);
+    else if (type == UniformType::Image) {
+        image_binding = m_image_cnt;
+        m_image_cnt += size;
+    }
+    ShaderParam* p = new GLShaderParam(type, s, index, m_id, location,
+                                       tex_binding_id, image_binding);
 
     return m_params.emplace(s, p).first->second;
 }

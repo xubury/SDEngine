@@ -8,15 +8,16 @@ namespace SD {
 Ref<Texture> Texture::Create(int width, int height, int depth,
                              MultiSampleLevel samples, TextureType type,
                              DataFormat format, TextureWrap wrap,
-                             TextureMinFilter min_filter, MipmapMode mode,
-                             TextureMagFilter mag_filter)
+                             TextureMinFilter min_filter,
+                             TextureMagFilter mag_filter, MipmapMode mode,
+                             int32_t mipmap_levels)
 {
     Ref<Texture> texture;
     switch (Device::GetAPI()) {
         case Device::API::OpenGL:
             texture = CreateRef<GLTexture>(width, height, depth, samples, type,
-                                           format, wrap, min_filter, mode,
-                                           mag_filter);
+                                           format, wrap, min_filter, mag_filter,
+                                           mode, mipmap_levels);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");
@@ -27,8 +28,8 @@ Ref<Texture> Texture::Create(int width, int height, int depth,
 
 Texture::Texture(int width, int height, int depth, MultiSampleLevel samples,
                  TextureType type, DataFormat format, TextureWrap wrap,
-                 TextureMinFilter min_filter, MipmapMode mode,
-                 TextureMagFilter mag_filter)
+                 TextureMinFilter min_filter, TextureMagFilter mag_filter,
+                 MipmapMode mode, int32_t mipmap_levels)
     : m_width(width),
       m_height(height),
       m_depth(depth),
@@ -41,9 +42,14 @@ Texture::Texture(int width, int height, int depth, MultiSampleLevel samples,
       m_mag_filter(mag_filter)
 {
     if (m_mipmap_mode != MipmapMode::None) {
-        m_mipmap_levels = std::max(static_cast<int>(std::floor(
-                                       std::log2(std::max(m_width, m_height)))),
-                                   1);
+        if (mipmap_levels == 0) {
+            m_mipmap_levels = std::max(static_cast<int>(std::floor(std::log2(
+                                           std::max(m_width, m_height)))),
+                                       1);
+        }
+        else {
+            m_mipmap_levels = mipmap_levels;
+        }
     }
     else {
         m_mipmap_levels = 1;

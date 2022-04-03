@@ -181,6 +181,14 @@ void Renderer::SetCamera(Shader& shader, Camera& camera)
     shader.SetUniformBuffer("Camera", *m_camera_UBO);
 }
 
+void Renderer::DispatchCompute(Shader& shader, int32_t num_group_x,
+                               int32_t num_group_y, int32_t num_group_z)
+{
+    m_device->SetShader(&shader);
+    m_device->DispatchCompute(num_group_x, num_group_y, num_group_z);
+    m_device->MemoryBarrier();
+}
+
 void Renderer::DrawNDCQuad(const Shader& shader)
 {
     m_device->SetShader(&shader);

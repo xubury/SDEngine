@@ -90,10 +90,10 @@ GLenum GetDataType(DataFormat format)
 
 GLTexture::GLTexture(int width, int height, int depth, MultiSampleLevel samples,
                      TextureType type, DataFormat format, TextureWrap wrap,
-                     TextureMinFilter min_filter, MipmapMode mode,
-                     TextureMagFilter mag_filter)
+                     TextureMinFilter min_filter, TextureMagFilter mag_filter,
+                     MipmapMode mode, int32_t mipmap_levels)
     : Texture(width, height, depth, samples, type, format, wrap, min_filter,
-              mode, mag_filter),
+              mag_filter, mode, mipmap_levels),
       gl_format(0),
       gl_format_type(0)
 {

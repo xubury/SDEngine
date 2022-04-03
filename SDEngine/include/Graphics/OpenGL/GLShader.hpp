@@ -48,6 +48,7 @@ class SD_GRAPHICS_API GLShader : public Shader {
 
     std::unordered_map<std::string, ShaderParam*> m_params;
     uint32_t m_texture_cnt;
+    uint32_t m_image_cnt;
 };
 
 }  // namespace SD

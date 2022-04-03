@@ -1,4 +1,5 @@
 #include "Graphics/OpenGL/GLShaderParam.hpp"
+#include "Graphics/OpenGL/GLTranslator.hpp"
 
 #include <GL/glew.h>
 
@@ -6,11 +7,13 @@ namespace SD {
 
 GLShaderParam::GLShaderParam(UniformType type, const std::string& name,
                              int32_t index, uint32_t program_id,
-                             int32_t location, int32_t tex_binding_id)
+                             int32_t location, int32_t tex_binding_id,
+                             int32_t image_binding)
     : ShaderParam(type, name, index),
       m_program(program_id),
       m_location(location),
-      m_tex_binding_id(tex_binding_id)
+      m_tex_binding_id(tex_binding_id),
+      m_image_binding(image_binding)
 {
 }
 
@@ -93,6 +96,14 @@ void GLShaderParam::SetAsTextures(const Texture** textures, int32_t count)
         }
     }
     SetAsVec(&bindings[0], count);
+}
+
+void GLShaderParam::SetAsImage(const Texture* texture, int32_t level,
+                               bool layered, int32_t layer, Access access)
+{
+    SetAsInt(m_image_binding);
+    glBindImageTexture(m_image_binding, texture->GetId(), level, layered, layer,
+                       Translate(access), Translate(texture->GetFormat()));
 }
 
 }  // namespace SD

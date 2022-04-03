@@ -132,6 +132,8 @@ enum class DepthFunc {
     NotEqual
 };
 
+enum class Access { ReadOnly, WriteOnly, ReadWrite };
+
 }  // namespace SD
 
 #endif /* SD_GRAPHICS_HPP */

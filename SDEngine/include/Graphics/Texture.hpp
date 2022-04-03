@@ -14,8 +14,8 @@ class SD_GRAPHICS_API Texture : public Resource {
         TextureType type, DataFormat format,
         TextureWrap wrap = TextureWrap::Edge,
         TextureMinFilter min_filter = TextureMinFilter::Nearest,
-        MipmapMode mode = MipmapMode::None,
-        TextureMagFilter mag_filter = TextureMagFilter::Nearest);
+        TextureMagFilter mag_filter = TextureMagFilter::Nearest,
+        MipmapMode mode = MipmapMode::None, int32_t mipmap_levels = 0);
 
     virtual ~Texture() = default;
 
@@ -54,8 +54,8 @@ class SD_GRAPHICS_API Texture : public Resource {
    protected:
     Texture(int width, int height, int depth, MultiSampleLevel samples,
             TextureType type, DataFormat format, TextureWrap wrap,
-            TextureMinFilter min_filter, MipmapMode mode,
-            TextureMagFilter mag_filter);
+            TextureMinFilter min_filter, TextureMagFilter mag_filter,
+            MipmapMode mode, int32_t mipmap_levels);
 
     int m_width;
     int m_height;

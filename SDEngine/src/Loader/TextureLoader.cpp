@@ -47,7 +47,7 @@ Ref<Texture> TextureLoader::LoadTextureCube(
             texture = Texture::Create(
                 width, height, 0, MultiSampleLevel::None, TextureType::Cube,
                 Get8BitDataFormat(channels), TextureWrap::Edge,
-                TextureMinFilter::Linear, mode, TextureMagFilter::Linear);
+                TextureMinFilter::Linear, TextureMagFilter::Linear, mode);
         }
         texture->SetPixels(0, 0, face, width, height, 1, img);
         stbi_image_free(img);
@@ -68,7 +68,7 @@ Ref<Texture> TextureLoader::LoadTexture2D(const std::string& path,
     Ref<Texture> texture = Texture::Create(
         width, height, 0, MultiSampleLevel::None, TextureType::Normal,
         Get8BitDataFormat(channels), TextureWrap::Edge,
-        TextureMinFilter::Linear, mode, TextureMagFilter::Linear);
+        TextureMinFilter::Linear, TextureMagFilter::Linear, mode);
     texture->SetPixels(0, 0, 0, width, height, 1, img);
     stbi_image_free(img);
     return texture;

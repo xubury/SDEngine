@@ -9,7 +9,16 @@
 
 namespace SD {
 
-enum class UniformType { Unknown = 0, Bool, Int, UInt, Float, Double, Sampler };
+enum class UniformType {
+    Unknown = 0,
+    Bool,
+    Int,
+    UInt,
+    Float,
+    Double,
+    Sampler,
+    Image
+};
 
 class SD_GRAPHICS_API ShaderParam {
    public:
@@ -47,6 +56,8 @@ class SD_GRAPHICS_API ShaderParam {
 
     virtual void SetAsTexture(const Texture* texture) = 0;
     virtual void SetAsTextures(const Texture** texture, int count) = 0;
+    virtual void SetAsImage(const Texture* texture, int32_t level, bool layered,
+                            int32_t layer, Access access) = 0;
 
    private:
     UniformType m_type;

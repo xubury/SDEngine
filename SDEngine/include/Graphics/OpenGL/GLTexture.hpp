@@ -10,8 +10,8 @@ class GLTexture : public Texture {
    public:
     GLTexture(int width, int height, int depth, MultiSampleLevel samples,
               TextureType type, DataFormat format, TextureWrap wrap,
-              TextureMinFilter min_filter, MipmapMode mode,
-              TextureMagFilter mag_filter);
+              TextureMinFilter min_filter, TextureMagFilter mag_filter,
+              MipmapMode mode, int32_t mipmap_levels);
 
     ~GLTexture();
 

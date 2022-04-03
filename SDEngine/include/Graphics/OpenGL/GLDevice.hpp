@@ -9,6 +9,11 @@ class GLDevice : public Device {
    public:
     GLDevice();
 
+    void DispatchCompute(int32_t num_group_x, int32_t num_group_y,
+                         int32_t num_group_z) override;
+
+    void MemoryBarrier() override;
+
     void DrawElements(MeshTopology topology, int count, size_t offset) override;
 
     void DrawElementsInstanced(MeshTopology topology, int count, size_t offset,

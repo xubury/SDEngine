@@ -36,6 +36,8 @@ GLint SD_GRAPHICS_API Translate(BufferBitMask bit);
 
 GLenum SD_GRAPHICS_API Translate(DepthFunc depth_func);
 
+GLenum SD_GRAPHICS_API Translate(Access access);
+
 }  // namespace SD
 
 #endif /* SD_GL_TRANSLATOR_HPP */

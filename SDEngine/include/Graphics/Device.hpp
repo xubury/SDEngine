@@ -26,6 +26,11 @@ class SD_GRAPHICS_API Device {
 
     Device &operator=(const Device &) = delete;
 
+    virtual void DispatchCompute(int32_t num_group_x, int32_t num_group_y,
+                                 int32_t num_group_z) = 0;
+    // TODO
+    virtual void MemoryBarrier() = 0;
+
     virtual void DrawElements(MeshTopology topology, int count,
                               size_t offset) = 0;
     virtual void DrawElementsInstanced(MeshTopology topology, int count,

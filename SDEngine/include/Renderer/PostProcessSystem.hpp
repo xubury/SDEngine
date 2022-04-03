@@ -39,10 +39,11 @@ class SD_RENDERER_API PostProcessSystem : public ECSSystem {
     void SetGammaCorrection(float gamma);
 
    private:
-    void RenderBlur();
     void RenderPost();
 
-    void RenderMipmapTest();
+    void RenderBloom();
+    void Downsample(Texture &src, Texture &dst);
+    void Upsample(Texture &src, Texture &dst);
 
     void InitBuffers();
 
@@ -51,7 +52,7 @@ class SD_RENDERER_API PostProcessSystem : public ECSSystem {
 
     Ref<Shader> m_post_shader;
     Ref<Shader> m_blur_shader;
-    Ref<Shader> m_test_shader;
+    Ref<Shader> m_bloom_shader;
 
     Ref<Framebuffer> m_blur_targets[2];
     Ref<Texture> m_blur_buffers[2];
@@ -60,8 +61,9 @@ class SD_RENDERER_API PostProcessSystem : public ECSSystem {
     Ref<Framebuffer> m_post_target;
     Ref<Texture> m_post_buffer;
 
-    Ref<Framebuffer> m_test_target;
-    Ref<Texture> m_test_buffer;
+    std::array<Ref<Texture>, 2> m_sample_buffer;
+    float m_bloom_threshold;
+    float m_bloom_soft_threshold;
 
     bool m_is_bloom;
     float m_bloom_factor;

@@ -11,8 +11,8 @@ uniform float u_exposure;
 
 uniform float u_gamma;
 
-layout(binding = 0) uniform sampler2D u_lighting;
-layout(binding = 1) uniform sampler2D u_blur;
+uniform sampler2D u_lighting;
+uniform sampler2D u_upsample_buffer;
 
 vec3 ACESToneMapping(vec3 color, float adapted_lum)
 {
@@ -31,7 +31,7 @@ void main()
 
     // bloom
     if (u_bloom) {
-        result += texture(u_blur, in_tex_coord).rgb * u_bloomFactor;
+        result += texture(u_upsample_buffer, in_tex_coord).rgb;
     }
 
     // hdr

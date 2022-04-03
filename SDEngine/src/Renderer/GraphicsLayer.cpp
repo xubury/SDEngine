@@ -138,16 +138,16 @@ void GraphicsLayer::OnImGui()
         for (auto &system : GetSystems()) {
             system->OnImGui();
         }
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
         ImGui::Begin("GBuffer");
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
         {
             for (size_t i = 0; i < m_geometry_buffers.size(); ++i) {
                 ImGui::DrawTexture(*m_geometry_buffers[i], ImVec2(0, 1),
                                    ImVec2(1, 0));
             }
         }
-        ImGui::End();
         ImGui::PopStyleVar();
+        ImGui::End();
     }
 }
 

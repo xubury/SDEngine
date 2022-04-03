@@ -282,4 +282,17 @@ GLenum Translate(DepthFunc depth_func)
     return 0;
 }
 
+GLenum Translate(Access access)
+{
+    switch (access) {
+        case Access::ReadOnly:
+            return GL_READ_ONLY;
+        case Access::WriteOnly:
+            return GL_WRITE_ONLY;
+        case Access::ReadWrite:
+            return GL_READ_WRITE;
+    }
+    return 0;
+}
+
 }  // namespace SD

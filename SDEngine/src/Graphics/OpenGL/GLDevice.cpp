@@ -53,6 +53,17 @@ GLDevice::GLDevice()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
+void GLDevice::DispatchCompute(int32_t num_group_x, int32_t num_group_y,
+                               int32_t num_group_z)
+{
+    glDispatchCompute(num_group_x, num_group_y, num_group_z);
+}
+
+void GLDevice::MemoryBarrier()
+{
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+}
+
 void GLDevice::DrawElements(MeshTopology topology, int count, size_t offset)
 {
     glDrawElements(Translate(topology), count, GL_UNSIGNED_INT,

@@ -11,6 +11,8 @@ PostProcessSystem::PostProcessSystem(int32_t width, int32_t height)
       m_width(width),
       m_height(height),
       m_blur_result(nullptr),
+      m_bloom_threshold(0.7),
+      m_bloom_soft_threshold(0.5),
       m_is_bloom(true),
       m_bloom_factor(1.0f),
       m_exposure(1.2),
@@ -26,8 +28,7 @@ void PostProcessSystem::OnInit()
     m_post_shader =
         ShaderLoader::LoadShader("assets/shaders/quad.vert.glsl",
                                  "assets/shaders/post_process.frag.glsl");
-    m_test_shader = ShaderLoader::LoadShader("assets/shaders/quad.vert.glsl",
-                                             "assets/shaders/test.frag.glsl");
+    m_bloom_shader = ShaderLoader::LoadShader("assets/shaders/bloom.comp.glsl");
     InitBuffers();
 }
 
@@ -37,7 +38,7 @@ void PostProcessSystem::InitBuffers()
         m_blur_buffers[i] = Texture::Create(
             m_width, m_height, 0, MultiSampleLevel::None, TextureType::Normal,
             DataFormat::RGBA16F, TextureWrap::Edge, TextureMinFilter::Nearest,
-            MipmapMode::Linear, TextureMagFilter::Nearest);
+            TextureMagFilter::Nearest, MipmapMode::Linear);
         m_blur_targets[i] = Framebuffer::Create();
         m_blur_targets[i]->Attach(*m_blur_buffers[i], 0, 0);
     }
@@ -45,15 +46,15 @@ void PostProcessSystem::InitBuffers()
     m_post_buffer = Texture::Create(
         m_width, m_height, 0, MultiSampleLevel::None, TextureType::Normal,
         DataFormat::RGBA16F, TextureWrap::Edge, TextureMinFilter::Nearest,
-        MipmapMode::Linear, TextureMagFilter::Nearest);
+        TextureMagFilter::Nearest, MipmapMode::Linear);
     m_post_target->Attach(*m_post_buffer, 0, 0);
 
-    m_test_buffer = Texture::Create(
-        m_width, m_height, 0, MultiSampleLevel::None, TextureType::Normal,
-        DataFormat::RGBA16F, TextureWrap::Edge, TextureMinFilter::Nearest,
-        MipmapMode::Linear, TextureMagFilter::Nearest);
-    m_test_target = Framebuffer::Create();
-    m_test_target->Attach(*m_test_buffer, 0, 0);
+    for (size_t i = 0; i < m_sample_buffer.size(); ++i) {
+        m_sample_buffer[i] = Texture::Create(
+            m_width, m_height, 0, MultiSampleLevel::None, TextureType::Normal,
+            DataFormat::RGBA16F, TextureWrap::Edge, TextureMinFilter::Linear,
+            TextureMagFilter::Linear, MipmapMode::Linear, 6);
+    }
 }
 
 void PostProcessSystem::OnPush()
@@ -95,14 +96,20 @@ void PostProcessSystem::OnImGui()
     }
     ImGui::End();
 
-    ImGui::Begin("PostProcess Debug");
+    ImGui::Begin("Bloom Debug");
     {
         static int base_level = 0;
+        static int buffer_index = 0;
+        ImGui::SliderFloat("Threshold", &m_bloom_threshold, 0, 1.0);
+        ImGui::SliderFloat("Soft Threshold", &m_bloom_soft_threshold, 0.01,
+                           1.0f);
+        ImGui::SliderInt("Buffer index", &buffer_index, 0,
+                         m_sample_buffer.size() - 1);
+        Texture *buffer = m_sample_buffer[buffer_index].get();
         ImGui::SliderInt("Base level", &base_level, 0,
-                         m_test_buffer->GetMipmapLevels() - 1);
-        m_test_buffer->SetBaseLevel(base_level);
-        ImGui::Image((void *)(intptr_t)m_test_buffer->GetId(),
-                     ImVec2(m_width, m_height));
+                         buffer->GetMipmapLevels() - 1);
+        buffer->SetBaseLevel(base_level);
+        ImGui::DrawTexture(*buffer);
     }
     ImGui::End();
 }
@@ -112,9 +119,8 @@ void PostProcessSystem::OnRender()
     Renderer::BlitToBuffer(0, m_post_target.get(), 0,
                            BufferBitMask::ColorBufferBit);
 
-    RenderMipmapTest();
     if (m_is_bloom) {
-        RenderBlur();
+        RenderBloom();
     }
     RenderPost();
 }
@@ -126,36 +132,14 @@ void PostProcessSystem::OnSizeEvent(const RenderSizeEvent &event)
     InitBuffers();
 }
 
-void PostProcessSystem::RenderBlur()
-{
-    const int amount = 10;
-    bool horizontal = true;
-    ShaderParam *horizontal_param = m_blur_shader->GetParam("u_horizontal");
-    ShaderParam *image = m_blur_shader->GetParam("u_image");
-    for (int i = 0; i < amount; ++i) {
-        const int inputId = horizontal;
-        const int outputId = !horizontal;
-        Renderer::BeginRenderPass(
-            RenderPassInfo{m_blur_targets[outputId].get(), m_width, m_height});
-        m_blur_result = m_blur_buffers[outputId].get();
-        horizontal_param->SetAsBool(horizontal);
-        image->SetAsTexture(i == 0 ? m_post_buffer.get()
-                                   : m_blur_buffers[inputId].get());
-        Renderer::DrawNDCQuad(*m_blur_shader);
-        horizontal = !horizontal;
-
-        Renderer::EndRenderPass();
-    }
-}
-
 void PostProcessSystem::RenderPost()
 {
     int index = 0;
     RenderSubpassInfo info{&index, 1};
     Renderer::BeginRenderSubpass(info);
     m_post_shader->GetParam("u_bloom")->SetAsBool(m_is_bloom);
-    m_post_shader->GetParam("u_bloomFactor")->SetAsFloat(m_bloom_factor);
-    m_post_shader->GetParam("u_blur")->SetAsTexture(m_blur_result);
+    m_post_shader->GetParam("u_upsample_buffer")
+        ->SetAsTexture(m_sample_buffer[1].get());
 
     m_post_shader->GetParam("u_lighting")->SetAsTexture(m_post_buffer.get());
     m_post_shader->GetParam("u_exposure")->SetAsFloat(m_exposure);
@@ -167,32 +151,70 @@ void PostProcessSystem::RenderPost()
     Renderer::EndRenderSubpass();
 }
 
-void PostProcessSystem::RenderMipmapTest()
+void PostProcessSystem::Downsample(Texture &src, Texture &dst)
 {
-    int width = m_width;
-    int height = m_height;
-    for (int base_level = 0; base_level < m_test_buffer->GetMipmapLevels();
-         ++base_level) {
-        m_test_target->Attach(*m_test_buffer, 0, base_level);
-
-        Renderer::BeginRenderPass(
-            RenderPassInfo{m_test_target.get(), width, height});
-        if (base_level > 0) {
-            m_test_buffer->SetBaseLevel(base_level - 1);
-            m_test_buffer->SetMaxLevel(base_level - 1);
-            m_test_shader->GetParam("u_screen")
-                ->SetAsTexture(m_test_buffer.get());
+    m_bloom_shader->GetParam("u_downsample")->SetAsBool(true);
+    m_bloom_shader->GetParam("u_threshold")->SetAsFloat(m_bloom_threshold);
+    const float knee = m_bloom_threshold * m_bloom_soft_threshold;
+    Vector3f filter;
+    filter.x = m_bloom_threshold - knee;
+    filter.y = 2.f * knee;
+    filter.z = 0.25f / (knee + 1e-4);
+    m_bloom_shader->GetParam("u_curve")->SetAsVec3(&filter[0]);
+    for (int base_level = 0; base_level < dst.GetMipmapLevels(); ++base_level) {
+        if (base_level == 0) {
+            m_bloom_shader->GetParam("u_input")->SetAsBool(true);
+            m_bloom_shader->GetParam("u_out_image")
+                ->SetAsImage(&dst, 0, false, 0, Access::WriteOnly);
+            m_bloom_shader->GetParam("u_in_image")
+                ->SetAsImage(&src, 0, false, 0, Access::ReadOnly);
         }
         else {
-            m_test_shader->GetParam("u_screen")
-                ->SetAsTexture(m_post_buffer.get());
+            m_bloom_shader->GetParam("u_input")->SetAsBool(false);
+            m_bloom_shader->GetParam("u_out_image")
+                ->SetAsImage(&dst, base_level, false, 0, Access::WriteOnly);
+            m_bloom_shader->GetParam("u_in_image")
+                ->SetAsImage(&dst, base_level - 1, false, 0, Access::ReadOnly);
         }
-        Renderer::DrawNDCQuad(*m_test_shader);
-        Renderer::EndRenderPass();
-        width /= 2;
-        height /= 2;
+        Renderer::DispatchCompute(*m_bloom_shader, m_width / 13, m_height / 13,
+                                  1);
     }
-    m_test_buffer->SetMaxLevel(m_test_buffer->GetMipmapLevels());
+}
+
+void PostProcessSystem::Upsample(Texture &src, Texture &dst)
+{
+    const int max_level = dst.GetMipmapLevels() - 1;
+    m_bloom_shader->GetParam("u_downsample")->SetAsBool(false);
+    for (int base_level = max_level; base_level >= 0; --base_level) {
+        if (base_level == max_level) {
+            m_bloom_shader->GetParam("u_input")->SetAsBool(true);
+            m_bloom_shader->GetParam("u_out_image")
+                ->SetAsImage(&dst, base_level, false, 0, Access::WriteOnly);
+            m_bloom_shader->GetParam("u_in_image")
+                ->SetAsImage(&src, base_level, false, 0, Access::ReadOnly);
+        }
+        else {
+            m_bloom_shader->GetParam("u_input")->SetAsBool(false);
+            m_bloom_shader->GetParam("u_out_image")
+                ->SetAsImage(&dst, base_level, false, 0, Access::WriteOnly);
+
+            m_bloom_shader->GetParam("u_blur_image")
+                ->SetAsImage(&src, base_level + 1, false, 0, Access::ReadOnly);
+            m_bloom_shader->GetParam("u_in_image")
+                ->SetAsImage(&dst, base_level + 1, false, 0, Access::ReadOnly);
+        }
+        Renderer::DispatchCompute(*m_bloom_shader, m_width / 13, m_height / 13,
+                                  1);
+    }
+}
+
+void PostProcessSystem::RenderBloom()
+{
+    // make sure base level is readable
+    m_sample_buffer[0]->SetBaseLevel(0);
+    m_sample_buffer[1]->SetBaseLevel(0);
+    Downsample(*m_post_buffer, *m_sample_buffer[0]);
+    Upsample(*m_sample_buffer[0], *m_sample_buffer[1]);
 }
 
 void PostProcessSystem::SetExposure(float exposure) { m_exposure = exposure; }
