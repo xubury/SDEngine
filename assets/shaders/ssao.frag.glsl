@@ -6,10 +6,10 @@ layout(location = 0) out float frag_color;
 
 layout(location = 0) in vec2 in_uv;
 
-layout(binding = 0) uniform sampler2DMS u_position;
-layout(binding = 1) uniform sampler2DMS u_normal;
+uniform sampler2D u_position;
+uniform sampler2D u_normal;
 
-const uint KERNEL_SIZE = 32;
+const uint KERNEL_SIZE = 64;
 uniform uint u_kernel_size = KERNEL_SIZE;
 
 uniform sampler2D u_noise;
@@ -18,11 +18,11 @@ uniform float u_radius;
 uniform float u_bias;
 uniform uint u_power;
 
-float ComputeOcclusion(const vec2 tex_size, const ivec2 uv, vec3 random_vec)
+float ComputeOcclusion( vec3 random_vec)
 {
     // get input for SSAO algorithm
-    vec3 frag_pos = texelFetch(u_position, uv, 0).xyz;
-    vec3 normal = texelFetch(u_normal, uv, 0).xyz;
+    vec3 frag_pos = texture(u_position, in_uv).xyz;
+    vec3 normal = texture(u_normal, in_uv).xyz;
     if (normal == vec3(0)) return 1;
 
     frag_pos = (u_view * vec4(frag_pos, 1.0f)).xyz;
@@ -54,10 +54,9 @@ float ComputeOcclusion(const vec2 tex_size, const ivec2 uv, vec3 random_vec)
             continue;
         }
         // get sample depth
-        const ivec2 uv = ivec2(offset.xy * tex_size);
         float sample_depth =
-            (u_view * vec4(texelFetch(u_position, uv, 0).xyz, 1.0f)).z;
-        if ((rot_view * texelFetch(u_normal, uv, 0).xyz) == vec3(0)) {
+            (u_view * vec4(texture(u_position, offset.xy).xyz, 1.0f)).z;
+        if ((rot_view * texture(u_normal, offset.xy).xyz) == vec3(0)) {
             continue;
         }
 
@@ -72,10 +71,9 @@ float ComputeOcclusion(const vec2 tex_size, const ivec2 uv, vec3 random_vec)
 
 void main()
 {
-    const vec2 tex_size = textureSize(u_position);
-    const ivec2 uv = ivec2(in_uv * tex_size);
-    vec3 random_vec = texture(u_noise, uv / 4.f).xyz;
+    vec2 tex_size = textureSize(u_position, 0);
+    vec3 random_vec = texture(u_noise, in_uv * tex_size / 4.f).xyz;
 
-    float occlusion = ComputeOcclusion(tex_size, uv, random_vec);
+    float occlusion = ComputeOcclusion(random_vec);
     frag_color = pow(occlusion, u_power);
 }

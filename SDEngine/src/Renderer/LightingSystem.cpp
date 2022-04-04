@@ -157,22 +157,22 @@ void LightingSystem::InitLighting()
         m_lighting_target[i]->Attach(*m_lighting_buffers[i], 0, 0);
     }
 
+    m_geometry_target_msaa = Framebuffer::Create();
     m_geometry_target = Framebuffer::Create();
-    m_geometry_debug_target = Framebuffer::Create();
-    for (size_t i = 0; i < m_geometry_buffer.size(); ++i) {
-        m_geometry_buffer[i] =
+    for (size_t i = 0; i < m_gbuffer_msaa.size(); ++i) {
+        m_gbuffer_msaa[i] =
             Texture::Create(m_width, m_height, 0, m_msaa, TextureType::Normal,
                             GetTextureFormat(GeometryBufferType(i)));
-        m_geometry_target->Attach(*m_geometry_buffer[i], i, 0);
+        m_geometry_target_msaa->Attach(*m_gbuffer_msaa[i], i, 0);
 
-        m_geometry_debug_buffer[i] = Texture::Create(
+        m_gbuffer[i] = Texture::Create(
             m_width, m_height, 0, MultiSampleLevel::None, TextureType::Normal,
             GetTextureFormat(GeometryBufferType(i)));
-        m_geometry_debug_target->Attach(*m_geometry_debug_buffer[i], i, 0);
+        m_geometry_target->Attach(*m_gbuffer[i], i, 0);
     }
     m_depth_buffer =
         Renderbuffer::Create(m_width, m_height, m_msaa, DataFormat::Depth24);
-    m_geometry_target->Attach(*m_depth_buffer, 0);
+    m_geometry_target_msaa->Attach(*m_depth_buffer, 0);
 
     m_cascade_debug_target = Framebuffer::Create();
     m_cascade_debug_buffer =
@@ -191,10 +191,9 @@ void LightingSystem::OnSizeEvent(const RenderSizeEvent &event)
 
 void LightingSystem::BlitGeometryBuffers()
 {
-    Renderer::BeginRenderPass(
-        {m_geometry_debug_target.get(), m_width, m_height});
-    for (size_t i = 0; i < m_geometry_debug_buffer.size(); ++i) {
-        Renderer::BlitFromBuffer(i, m_geometry_target.get(), i,
+    Renderer::BeginRenderPass({m_geometry_target.get(), m_width, m_height});
+    for (size_t i = 0; i < m_gbuffer.size(); ++i) {
+        Renderer::BlitFromBuffer(i, m_geometry_target_msaa.get(), i,
                                  BufferBitMask::ColorBufferBit);
     }
     Renderer::EndRenderPass();
@@ -202,12 +201,10 @@ void LightingSystem::BlitGeometryBuffers()
 
 void LightingSystem::OnImGui()
 {
-    BlitGeometryBuffers();
     ImGui::Begin("GBuffer");
     {
-        for (size_t i = 0; i < m_geometry_debug_buffer.size(); ++i) {
-            ImGui::DrawTexture(*m_geometry_debug_buffer[i], ImVec2(0, 1),
-                               ImVec2(1, 0));
+        for (size_t i = 0; i < m_gbuffer.size(); ++i) {
+            ImGui::DrawTexture(*m_gbuffer[i], ImVec2(0, 1), ImVec2(1, 0));
         }
     }
     ImGui::End();
@@ -235,6 +232,7 @@ void LightingSystem::OnImGui()
 void LightingSystem::OnRender()
 {
     RenderGBuffer();
+    BlitGeometryBuffers();
     if (m_ssao_state) {
         RenderSSAO();
     }
@@ -242,7 +240,7 @@ void LightingSystem::OnRender()
     RenderEmissive();
 
     Renderer::BlitFromBuffer(
-        1, m_geometry_target.get(),
+        1, m_geometry_target_msaa.get(),
         static_cast<int>(GeometryBufferType::EntityId),
         BufferBitMask::ColorBufferBit | BufferBitMask::DepthBufferBit);
 }
@@ -307,9 +305,9 @@ void LightingSystem::RenderSSAO()
     info.op.blend = false;
     info.clear_value = {1.0f, 1.0f, 1.0f, 1.f};
     Texture *position =
-        m_geometry_buffer[static_cast<int>(GeometryBufferType::Position)].get();
+        m_gbuffer[static_cast<int>(GeometryBufferType::Position)].get();
     Texture *normal =
-        m_geometry_buffer[static_cast<int>(GeometryBufferType::Normal)].get();
+        m_gbuffer[static_cast<int>(GeometryBufferType::Normal)].get();
     Renderer::BeginRenderPass(info);
     Renderer::SetCamera(*m_ssao_shader, GetCamera());
     m_ssao_shader->GetParam("u_radius")->SetAsFloat(m_ssao_radius);
@@ -345,9 +343,9 @@ void LightingSystem::RenderEmissive()
         m_emssive_shader->GetParam("u_lighting")
             ->SetAsTexture(m_lighting_result);
         m_emssive_shader->GetParam("u_emissive")
-            ->SetAsTexture(m_geometry_buffer[static_cast<int>(
-                                                 GeometryBufferType::Emissive)]
-                               .get());
+            ->SetAsTexture(
+                m_gbuffer_msaa[static_cast<int>(GeometryBufferType::Emissive)]
+                    .get());
         Renderer::DrawNDCQuad(*m_emssive_shader);
         Renderer::EndRenderSubpass();
     }
@@ -359,19 +357,17 @@ void LightingSystem::RenderDeferred()
 
     m_deferred_shader->GetParam("u_position")
         ->SetAsTexture(
-            m_geometry_buffer[static_cast<int>(GeometryBufferType::Position)]
+            m_gbuffer_msaa[static_cast<int>(GeometryBufferType::Position)]
                 .get());
     m_deferred_shader->GetParam("u_normal")
         ->SetAsTexture(
-            m_geometry_buffer[static_cast<int>(GeometryBufferType::Normal)]
-                .get());
+            m_gbuffer_msaa[static_cast<int>(GeometryBufferType::Normal)].get());
     m_deferred_shader->GetParam("u_albedo")
         ->SetAsTexture(
-            m_geometry_buffer[static_cast<int>(GeometryBufferType::Albedo)]
-                .get());
+            m_gbuffer_msaa[static_cast<int>(GeometryBufferType::Albedo)].get());
     m_deferred_shader->GetParam("u_ambient")
         ->SetAsTexture(
-            m_geometry_buffer[static_cast<int>(GeometryBufferType::Ambient)]
+            m_gbuffer_msaa[static_cast<int>(GeometryBufferType::Ambient)]
                 .get());
     m_deferred_shader->GetParam("u_background")
         ->SetAsTexture(
@@ -463,7 +459,7 @@ void LightingSystem::RenderGBuffer()
     auto modelView = GetScene().view<TransformComponent, ModelComponent>();
 
     RenderPassInfo info;
-    info.framebuffer = m_geometry_target.get();
+    info.framebuffer = m_geometry_target_msaa.get();
     info.viewport_width = m_width;
     info.viewport_height = m_height;
     info.clear_mask =
@@ -473,7 +469,7 @@ void LightingSystem::RenderGBuffer()
     Renderer::BeginRenderPass(info);
     Renderer::SetCamera(*m_gbuffer_shader, GetCamera());
     uint32_t id = static_cast<uint32_t>(entt::null);
-    m_geometry_target->ClearAttachment(
+    m_geometry_target_msaa->ClearAttachment(
         static_cast<int>(GeometryBufferType::EntityId), &id);
 
     auto &storage = AssetStorage::Get();

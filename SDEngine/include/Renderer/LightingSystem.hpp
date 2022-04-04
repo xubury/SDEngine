@@ -38,7 +38,7 @@ class SD_RENDERER_API LightingSystem : public RenderSystem {
 
     void OnSizeEvent(const RenderSizeEvent &event);
 
-    Framebuffer *GetGBuffer() { return m_geometry_target.get(); }
+    Framebuffer *GetGBuffer() { return m_geometry_target_msaa.get(); }
 
     void SetSSAOState(bool ssao_state) { m_ssao_state = ssao_state; }
     bool GetSSAOState() const { return m_ssao_state; }
@@ -85,12 +85,12 @@ class SD_RENDERER_API LightingSystem : public RenderSystem {
     Texture *m_lighting_result;
 
     Ref<Shader> m_gbuffer_shader;
+    Ref<Framebuffer> m_geometry_target_msaa;
+    std::array<Ref<Texture>, static_cast<int>(GeometryBufferType::GBufferCount)>
+        m_gbuffer_msaa;
     Ref<Framebuffer> m_geometry_target;
     std::array<Ref<Texture>, static_cast<int>(GeometryBufferType::GBufferCount)>
-        m_geometry_buffer;
-    Ref<Framebuffer> m_geometry_debug_target;
-    std::array<Ref<Texture>, static_cast<int>(GeometryBufferType::GBufferCount)>
-        m_geometry_debug_buffer;
+        m_gbuffer;
     Ref<Renderbuffer> m_depth_buffer;
 
     Ref<Shader> m_ssao_shader;
