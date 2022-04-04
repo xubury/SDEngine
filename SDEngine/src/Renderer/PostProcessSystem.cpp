@@ -166,15 +166,16 @@ void PostProcessSystem::Downsample(Texture &src, Texture &dst)
             m_bloom_shader->GetParam("u_input")->SetAsBool(true);
             m_bloom_shader->GetParam("u_out_image")
                 ->SetAsImage(&dst, 0, false, 0, Access::WriteOnly);
-            m_bloom_shader->GetParam("u_in_image")
-                ->SetAsImage(&src, 0, false, 0, Access::ReadOnly);
+
+            m_bloom_shader->GetParam("u_in_texture")->SetAsTexture(&src);
         }
         else {
             m_bloom_shader->GetParam("u_input")->SetAsBool(false);
             m_bloom_shader->GetParam("u_out_image")
                 ->SetAsImage(&dst, base_level, false, 0, Access::WriteOnly);
-            m_bloom_shader->GetParam("u_in_image")
-                ->SetAsImage(&dst, base_level - 1, false, 0, Access::ReadOnly);
+
+            m_bloom_shader->GetParam("u_level")->SetAsInt(base_level - 1);
+            m_bloom_shader->GetParam("u_in_texture")->SetAsTexture(&dst);
         }
         Renderer::DispatchCompute(*m_bloom_shader, std::ceil(m_width / 13.f),
                                   std::ceil(m_height / 13.f), 1);
@@ -186,21 +187,21 @@ void PostProcessSystem::Upsample(Texture &src, Texture &dst)
     const int max_level = dst.GetMipmapLevels() - 1;
     m_bloom_shader->GetParam("u_downsample")->SetAsBool(false);
     for (int base_level = max_level; base_level >= 0; --base_level) {
+        m_bloom_shader->GetParam("u_level")->SetAsInt(base_level + 1);
         if (base_level == max_level) {
+            m_bloom_shader->GetParam("u_input")->SetAsBool(true);
             m_bloom_shader->GetParam("u_out_image")
                 ->SetAsImage(&dst, base_level, false, 0, Access::WriteOnly);
 
-            m_bloom_shader->GetParam("u_in_image")
-                ->SetAsImage(&src, base_level + 1, false, 0, Access::ReadOnly);
+            m_bloom_shader->GetParam("u_in_texture")->SetAsTexture(&src);
         }
         else {
+            m_bloom_shader->GetParam("u_input")->SetAsBool(false);
             m_bloom_shader->GetParam("u_out_image")
                 ->SetAsImage(&dst, base_level, false, 0, Access::WriteOnly);
 
-            m_bloom_shader->GetParam("u_blur_image")
-                ->SetAsImage(&src, base_level + 1, false, 0, Access::ReadOnly);
-            m_bloom_shader->GetParam("u_in_image")
-                ->SetAsImage(&dst, base_level + 1, false, 0, Access::ReadOnly);
+            m_bloom_shader->GetParam("u_down_texture")->SetAsTexture(&src);
+            m_bloom_shader->GetParam("u_in_texture")->SetAsTexture(&dst);
         }
         Renderer::DispatchCompute(*m_bloom_shader, std::ceil(m_width / 13.f),
                                   std::ceil(m_height / 13.f), 1);

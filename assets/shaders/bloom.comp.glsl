@@ -1,11 +1,11 @@
 #version 450 core
 layout(local_size_x = 13, local_size_y = 13) in;
 
-#define ImageType layout(rgba16f) image2D
-
-layout(rgba16f) uniform image2D u_in_image;
 layout(rgba16f) uniform image2D u_out_image;
-layout(rgba16f) uniform image2D u_blur_image;
+
+uniform sampler2D u_in_texture;
+uniform sampler2D u_down_texture;
+uniform int u_level;
 
 uniform bool u_input = true;
 uniform bool u_downsample = true;
@@ -25,14 +25,6 @@ vec3 QuadraticThreshold(vec3 color, float threshold, vec3 curve)
     return color;
 }
 
-vec4 DownsampleBox4(ImageType src, ivec2 uv)
-{
-    return (imageLoad(src, uv + ivec2(1, 1))
-            + imageLoad(src, uv + ivec2(-1, 1))
-            + imageLoad(src, uv + ivec2(1, -1))
-            + imageLoad(src, uv + ivec2(-1, -1))) * 0.25;
-}
-
 // Better, temporally stable box filtering
 // [Jimenez14] http://goo.gl/eomGso
 // . . . . . . .
@@ -42,21 +34,22 @@ vec4 DownsampleBox4(ImageType src, ivec2 uv)
 // . . i . j . .
 // . k . l . m .
 // . . . . . . .
-vec4 DownsampleBox13(ImageType src, ivec2 uv)
+vec4 DownsampleBox13(sampler2D src, vec2 uv, int level)
 {
-    vec4 a = imageLoad(src, uv + ivec2(-2, 2));
-    vec4 b = imageLoad(src, uv + ivec2(0, 2));
-    vec4 c = imageLoad(src, uv + ivec2(2, 2));
-    vec4 d = imageLoad(src, uv + ivec2(1, 1));
-    vec4 e = imageLoad(src, uv + ivec2(1, -1));
-    vec4 f = imageLoad(src, uv + ivec2(-2, 0));
-    vec4 g = imageLoad(src, uv);
-    vec4 h = imageLoad(src, uv + ivec2(2, 0));
-    vec4 i = imageLoad(src, uv + ivec2(-1, -1));
-    vec4 j = imageLoad(src, uv + ivec2(1, -1));
-    vec4 k = imageLoad(src, uv + ivec2(-2, -2));
-    vec4 l = imageLoad(src, uv + ivec2(0, -2));
-    vec4 m = imageLoad(src, uv + ivec2(2, -2));
+    vec2 texel_size = 1 / vec2(textureSize(src, level));
+    vec4 a = textureLod(src, uv + texel_size * vec2(-2, 2), level);
+    vec4 b = textureLod(src, uv + texel_size * vec2(0, 2), level);
+    vec4 c = textureLod(src, uv + texel_size * vec2(2, 2), level);
+    vec4 d = textureLod(src, uv + texel_size * vec2(1, 1), level);
+    vec4 e = textureLod(src, uv + texel_size * vec2(1, -1), level);
+    vec4 f = textureLod(src, uv + texel_size * vec2(-2, 0), level);
+    vec4 g = textureLod(src, uv, level);
+    vec4 h = textureLod(src, uv + texel_size * vec2(2, 0), level);
+    vec4 i = textureLod(src, uv + texel_size * vec2(-1, -1), level);
+    vec4 j = textureLod(src, uv + texel_size * vec2(1, -1), level);
+    vec4 k = textureLod(src, uv + texel_size * vec2(-2, -2), level);
+    vec4 l = textureLod(src, uv + texel_size * vec2(0, -2), level);
+    vec4 m = textureLod(src, uv + texel_size * vec2(2, -2), level);
 
     vec2 div = 0.25 * vec2(0.5, 0.125);
     vec4 val = (d + e + i + j) * div.x;
@@ -67,52 +60,64 @@ vec4 DownsampleBox13(ImageType src, ivec2 uv)
     return val;
 }
 
-vec4 UpsampleTent(ImageType src, ivec2 uv)
+vec4 UpsampleTent(sampler2D src, vec2 uv, int level)
 {
-    vec4 value = imageLoad(src, uv) * 4
-                + imageLoad(src, uv + ivec2(1, 0)) * 2
-                + imageLoad(src, uv + ivec2(-1, 0)) * 2
-                + imageLoad(src, uv + ivec2(0, 1)) * 2
-                + imageLoad(src, uv + ivec2(0, -1)) * 2
-                + imageLoad(src, uv + ivec2(1, 1))
-                + imageLoad(src, uv + ivec2(-1, 1))
-                + imageLoad(src, uv + ivec2(1, -1))
-                + imageLoad(src, uv + ivec2(-1, -1));
+    vec2 texel_size = 1 / vec2(textureSize(src, level));
+    vec4 value = textureLod(src, uv, level) * 4
+                + textureLod(src, uv + texel_size * vec2(1, 0), level) * 2
+                + textureLod(src, uv + texel_size * vec2(-1, 0), level) * 2
+                + textureLod(src, uv + texel_size * vec2(0, 1), level) * 2
+                + textureLod(src, uv + texel_size * vec2(0, -1), level) * 2
+                + textureLod(src, uv + texel_size * vec2(1, 1), level)
+                + textureLod(src, uv + texel_size * vec2(-1, 1), level)
+                + textureLod(src, uv + texel_size * vec2(1, -1), level)
+                + textureLod(src, uv + texel_size * vec2(-1, -1), level);
     return value / 16.f;
 }
 
-vec4 CombineUnsample(ImageType src, ivec2 uv)
-{
-    return imageLoad(u_blur_image, uv) + UpsampleTent(src, uv);
-}
-
-void main()
+void Downsample()
 {
     ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
     ivec2 size = imageSize(u_out_image);
     if (pos.x >= size.x || pos.y >= size.y) {
         return;
     }
-    vec2 scale = vec2(imageSize(u_in_image)) / size;
-    ivec2 uv = ivec2(vec2(pos) * scale);
+    vec2 uv = (pos + vec2(0.5, 0.5)) / size;
     // check if it is the first input
     if (u_input) {
-        // In downsampling process, first input is the thresholded lighting
-        if (u_downsample) {
-            vec4 val = imageLoad(u_in_image, uv);
-            val.rgb = QuadraticThreshold(val.rgb, u_threshold, u_curve);
-            imageStore(u_out_image, pos, val);
-        }
-        else {
-            imageStore(u_out_image, pos, UpsampleTent(u_in_image, uv));
-        }
+        vec4 val = textureLod(u_in_texture, uv, 0);
+        val.rgb = QuadraticThreshold(val.rgb, u_threshold, u_curve);
+        imageStore(u_out_image, pos, val);
     }
     else {
-        if (u_downsample) {
-            imageStore(u_out_image, pos, DownsampleBox13(u_in_image, uv));
-        }
-        else {
-            imageStore(u_out_image, pos, CombineUnsample(u_in_image, uv));
-        }
+        imageStore(u_out_image, pos, DownsampleBox13(u_in_texture, uv, u_level));
+    }
+}
+
+void Upsample()
+{
+    ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(u_out_image);
+    if (pos.x >= size.x || pos.y >= size.y) {
+        return;
+    }
+    vec2 uv = (pos + vec2(0.5, 0.5)) / size;
+    // check if it is the first input
+    if (u_input) {
+        imageStore(u_out_image, pos, UpsampleTent(u_in_texture, uv, u_level));
+    }
+    else {
+        imageStore(u_out_image, pos, textureLod(u_down_texture, uv, u_level - 1) 
+                                        + UpsampleTent(u_in_texture, uv, u_level));
+    }
+}
+
+void main()
+{
+    if (u_downsample) {
+        Downsample();
+    }
+    else {
+        Upsample();
     }
 }
