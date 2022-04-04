@@ -334,8 +334,6 @@ void ScenePanel::DrawComponents(Entity &entity)
     DrawComponent<ModelComponent>("Model", entity, [&](ModelComponent &mc) {
         ImGui::DrawModelAssetSelection(storage, &mc.model_id);
 
-        ImGui::TextUnformatted("Base Color");
-        ImGui::ColorEdit3("##Base Color", &mc.color[0]);
         if (storage.Exists<ModelAsset>(mc.model_id)) {
             auto model = storage.GetAsset<ModelAsset>(mc.model_id)->GetModel();
             DrawMaterialsList(model->GetMaterials(),
@@ -513,9 +511,10 @@ void ScenePanel::DrawComponents(Entity &entity)
         });
 }
 
-void ScenePanel::DrawMaterialsList(const std::vector<Material> &materials,
+void ScenePanel::DrawMaterialsList(std::vector<Material> &materials,
                                    int *selected)
 {
+    ImGui::PushID(materials.data());
     int itemSize = materials.size();
     if (!itemSize) return;
 
@@ -535,12 +534,25 @@ void ScenePanel::DrawMaterialsList(const std::vector<Material> &materials,
     }
 
     float width = ImGui::GetWindowWidth();
-    const auto &material = materials[*selected];
+    auto &material = materials[*selected];
     for (const auto &[type, texture] : material.GetTextures()) {
         ImGui::TextUnformatted(GetMaterialName(type).c_str());
         ImGui::SameLine(width / 2);
         ImGui::DrawTexture(*texture);
     }
+    Vector3f diffuse_color = material.GetDiffuseColor();
+    Vector3f ambient_color = material.GetAmbientColor();
+    Vector3f emissive_color = material.GetEmissiveColor();
+    if (ImGui::ColorEdit3("Diffuse Color", &diffuse_color[0])) {
+        material.SetDiffuseColor(diffuse_color);
+    }
+    if (ImGui::ColorEdit3("Ambient Color", &ambient_color[0])) {
+        material.SetAmbientColor(ambient_color);
+    }
+    if (ImGui::ColorEdit3("Emssive Color", &emissive_color[0])) {
+        material.SetEmissiveColor(emissive_color);
+    }
+    ImGui::PopID();
 }
 
 void ScenePanel::DrawAnimList(

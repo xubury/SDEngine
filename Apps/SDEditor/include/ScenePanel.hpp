@@ -37,8 +37,7 @@ class ScenePanel : public ECSSystem {
 
     void DrawComponents(Entity &entity);
 
-    void DrawMaterialsList(const std::vector<Material> &materials,
-                           int *selected);
+    void DrawMaterialsList(std::vector<Material> &materials, int *selected);
     void DrawAnimList(const std::vector<FrameAnimation<SpriteFrame>> &anims,
                       int *selected);
 

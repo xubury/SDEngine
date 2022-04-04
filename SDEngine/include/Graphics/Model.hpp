@@ -25,6 +25,7 @@ class SD_GRAPHICS_API Model {
 
     Model() = default;
 
+    MaterialList &GetMaterials() { return m_materials; };
     const MaterialList &GetMaterials() const { return m_materials; };
     const Material *GetMaterials(uint32_t id) const
     {

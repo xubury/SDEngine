@@ -16,9 +16,7 @@ class SD_RENDERER_API PostProcessSystem : public ECSSystem {
 
     void OnInit() override;
 
-    void OnPush() override;
-
-    void OnPop() override;
+    void OnDestroy() override;
 
     void OnImGui() override;
 
@@ -61,12 +59,12 @@ class SD_RENDERER_API PostProcessSystem : public ECSSystem {
     Ref<Framebuffer> m_post_target;
     Ref<Texture> m_post_buffer;
 
-    std::array<Ref<Texture>, 2> m_sample_buffer;
+    Ref<Texture> m_upsample_buffer;
+    Ref<Texture> m_downsample_buffer;
     float m_bloom_threshold;
     float m_bloom_soft_threshold;
 
     bool m_is_bloom;
-    float m_bloom_factor;
     float m_exposure;
     float m_gamma_correction;
 

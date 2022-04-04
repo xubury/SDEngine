@@ -18,6 +18,10 @@ const std::string GetMaterialName(MaterialType type)
     return stringByMaterialType.at(type);
 }
 
+Material::Material() : m_diffuse_base(0), m_ambient_base(0), m_emissive_base(0)
+{
+}
+
 void Material::SetTexture(MaterialType type, const Texture *texture)
 {
     m_textures[type] = texture;

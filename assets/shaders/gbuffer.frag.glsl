@@ -11,8 +11,6 @@ struct VertexOutput {
 };
 
 uniform Material u_material;
-
-uniform vec3 u_color;
 uniform uint u_entity_id;
 
 layout(location = 0) out vec3 g_position;
@@ -38,11 +36,11 @@ void main()
         g_normal = tbn * height;
     }
 
-    vec3 halfColor = u_color * 0.5f;
-    g_albedo.rgb = texture(u_material.diffuse, in_vertex.uv).rgb + halfColor;
+    g_albedo.rgb = texture(u_material.diffuse, in_vertex.uv).rgb 
+                   + u_material.diffuse_color;
     g_albedo.a = texture(u_material.specular, in_vertex.uv).r;
-    g_ambient = texture(u_material.ambient, in_vertex.uv).rgb + halfColor;
-    g_emissive = texture(u_material.emissive, in_vertex.uv).rgb;
+    g_ambient = texture(u_material.ambient, in_vertex.uv).rgb + u_material.ambient_color;
+    g_emissive = texture(u_material.emissive, in_vertex.uv).rgb + u_material.emissive_color;
 
     g_entity_id = u_entity_id;
 }

@@ -41,6 +41,13 @@ void Renderer3D::SetMaterial(Shader& shader, const Material& material)
         ->SetAsTexture(material.GetTexture(MaterialType::Emissive));
     shader.GetParam("u_material.normal")
         ->SetAsTexture(material.GetTexture(MaterialType::Normal));
+    // base color
+    shader.GetParam("u_material.ambient_color")
+        ->SetAsVec3(&material.GetAmbientColor()[0]);
+    shader.GetParam("u_material.diffuse_color")
+        ->SetAsVec3(&material.GetDiffuseColor()[0]);
+    shader.GetParam("u_material.emissive_color")
+        ->SetAsVec3(&material.GetEmissiveColor()[0]);
 }
 
 void Renderer3D::SetShadowCaster(Shader& shader, const CascadeShadow& shadow)

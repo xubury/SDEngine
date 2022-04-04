@@ -81,10 +81,8 @@ struct SD_ECS_API TransformComponent {
 
 struct SD_ECS_API ModelComponent {
     ResourceId model_id;
-    Vector3f color;
-    ModelComponent() = default;
 
-    SERIALIZE(model_id, color)
+    SERIALIZE(model_id)
 };
 
 struct SD_ECS_API LightComponent {

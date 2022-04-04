@@ -448,13 +448,11 @@ void LightingSystem::RenderGBuffer()
 
     auto &storage = AssetStorage::Get();
     ShaderParam *entity_id = m_gbuffer_shader->GetParam("u_entity_id");
-    ShaderParam *base_color = m_gbuffer_shader->GetParam("u_color");
     ShaderParam *model_param = m_gbuffer_shader->GetParam("u_model");
     modelView.each([&](const entt::entity &entity,
                        const TransformComponent &transformComp,
                        const ModelComponent &modelComp) {
         entity_id->SetAsUint(static_cast<uint32_t>(entity));
-        base_color->SetAsVec3(&modelComp.color[0]);
         if (storage.Exists<ModelAsset>(modelComp.model_id)) {
             auto model =
                 storage.GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
