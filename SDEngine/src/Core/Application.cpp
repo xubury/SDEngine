@@ -92,20 +92,7 @@ Application::Application(const std::string &title, Device::API api)
     storage.ScanDirectory(storage.GetDirectory());
 }
 
-Application::~Application()
-{
-    AssetStorage::Shutdown();
-    Input::Shutdown();
-
-    Vector2i size = m_window->GetSize();
-    m_settings.SetInteger("window", "width", size.x);
-    m_settings.SetInteger("window", "height", size.y);
-    m_settings.SetInteger("window", "msaa",
-                          static_cast<int>(m_window->GetMSAA()));
-    m_settings.SetBoolean("window", "vsync", m_window->GetIsVSync());
-
-    m_settings.Save((GetAppDirectory() / SETTING_FILENAME).string());
-}
+Application::~Application() {}
 
 void Application::OnInit()
 {
@@ -124,6 +111,16 @@ void Application::OnDestroy()
         PopLayer(layer);
         DestroyLayer(layer);
     }
+    AssetStorage::Shutdown();
+    Input::Shutdown();
+    Vector2i size = m_window->GetSize();
+    m_settings.SetInteger("window", "width", size.x);
+    m_settings.SetInteger("window", "height", size.y);
+    m_settings.SetInteger("window", "msaa",
+                          static_cast<int>(m_window->GetMSAA()));
+    m_settings.SetBoolean("window", "vsync", m_window->GetIsVSync());
+
+    m_settings.Save((GetAppDirectory() / SETTING_FILENAME).string());
 }
 
 void Application::PushLayer(Layer *layer)

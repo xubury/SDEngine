@@ -58,7 +58,11 @@ class SD_CORE_API Layer {
         return system;
     }
 
-    void DestorySystem(ECSSystem *system) { delete system; }
+    void DestorySystem(ECSSystem *system)
+    {
+        system->OnDestroy();
+        delete system;
+    }
 
     void PushSystem(ECSSystem *system)
     {
