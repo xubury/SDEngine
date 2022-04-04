@@ -1,6 +1,7 @@
 #include "EditorCameraSystem.hpp"
 #include "Core/Input.hpp"
 #include "ImGui/ImGuiWidget.hpp"
+#include "Renderer/Event.hpp"
 
 namespace SD {
 
@@ -29,12 +30,17 @@ void EditorCameraSystem::OnPush()
     auto &dispatcher = GetEventDispatcher();
     m_key_handler =
         dispatcher.Register(this, &EditorCameraSystem::OnMouseMotion);
+    m_size_handler =
+        dispatcher.Register<RenderSizeEvent>([this](const RenderSizeEvent &e) {
+            m_camera.Resize(e.width, e.height);
+        });
 }
 
 void EditorCameraSystem::OnPop()
 {
     auto &dispatcher = GetEventDispatcher();
     dispatcher.RemoveHandler(m_key_handler);
+    dispatcher.RemoveHandler(m_size_handler);
 }
 
 void EditorCameraSystem::OnMouseMotion(const MouseMotionEvent &event)
@@ -47,7 +53,7 @@ void EditorCameraSystem::OnMouseMotion(const MouseMotionEvent &event)
 
 void EditorCameraSystem::OnImGui()
 {
-    ImGui::Begin("Editor Camera Sysetm");
+    ImGui::Begin("Editor Camera System");
     {
         using underlying = std::underlying_type<CameraType>::type;
         CameraType type = m_camera.GetCameraType();

@@ -9,7 +9,6 @@
 #include "EditorCameraSystem.hpp"
 #include "AnimationEditor.hpp"
 #include "TileMapSystem.hpp"
-#include "ProfileSystem.hpp"
 
 #include "Asset/SceneAsset.hpp"
 
@@ -38,7 +37,9 @@ class EditorLayer : public Layer {
     void OpenSaveSceneDialog();
 
    private:
-    void OnKeyEvent(const KeyEvent& e);
+    void On(const KeyEvent& e) override;
+    void On(const AppQuitEvent& e) override;
+    void On(const MouseMotionEvent &e) override;
 
     void InitBuffers();
 
@@ -78,7 +79,6 @@ class EditorLayer : public Layer {
     SceneAsset* m_scene_asset;
     Entity m_selected_entity;
 
-    HandlerRegistration m_key_handler;
     HandlerRegistration m_entity_select_handler;
 };
 

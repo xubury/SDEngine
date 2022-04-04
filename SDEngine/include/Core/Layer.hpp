@@ -44,6 +44,14 @@ class SD_CORE_API Layer {
 
     virtual void OnTick(float) {}
 
+    virtual void On(const WindowSizeEvent &) {}
+    virtual void On(const KeyEvent &) {}
+    virtual void On(const MouseMotionEvent &) {}
+    virtual void On(const MouseButtonEvent &) {}
+    virtual void On(const MouseWheelEvent &) {}
+    virtual void On(const TextInputEvent &) {}
+    virtual void On(const AppQuitEvent &) {}
+
     virtual void OnRender() {}
 
     virtual void OnImGui() {}
@@ -84,9 +92,6 @@ class SD_CORE_API Layer {
     EventDispatcher &GetEventDispatcher() { return *m_dispatcher; }
 
     Scene &GetScene() { return *m_scene; }
-
-   protected:
-    void CreateDispatcher() { m_dispatcher = CreateRef<EventDispatcher>(); }
 
    private:
     friend class Application;

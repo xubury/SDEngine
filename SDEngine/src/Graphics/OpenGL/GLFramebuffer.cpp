@@ -25,14 +25,15 @@ void GLFramebuffer::Attach(Texture &texture, int attachment, int level)
             gl_attachment = GL_COLOR_ATTACHMENT0 + attachment;
             if (static_cast<int>(m_drawables.size()) <= attachment) {
                 m_drawables.push_back(gl_attachment);
+                m_textures.push_back(&texture);
             }
             else {
                 m_drawables[attachment] = gl_attachment;
+                m_textures[attachment] = &texture;
             }
             break;
     }
     glNamedFramebufferTexture(m_id, gl_attachment, texture.GetId(), level);
-    m_textures[attachment] = &texture;
 }
 
 void GLFramebuffer::Attach(Renderbuffer &buffer, int attachment)

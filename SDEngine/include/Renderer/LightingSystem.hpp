@@ -58,13 +58,13 @@ class SD_RENDERER_API LightingSystem : public RenderSystem {
     void InitSSAOKernel();
     void InitLighting();
 
-    void RenderShadowMap(CascadeShadow &shadow, const Transform &transform);
     void RenderGBuffer();
+    void BlitGeometryBuffers();
 
     void RenderSSAO();
 
+    void RenderShadowMap(CascadeShadow &shadow, const Transform &transform);
     void RenderDeferred();
-
     void RenderEmissive();
 
     int32_t m_width;
@@ -88,6 +88,9 @@ class SD_RENDERER_API LightingSystem : public RenderSystem {
     Ref<Framebuffer> m_geometry_target;
     std::array<Ref<Texture>, static_cast<int>(GeometryBufferType::GBufferCount)>
         m_geometry_buffer;
+    Ref<Framebuffer> m_geometry_debug_target;
+    std::array<Ref<Texture>, static_cast<int>(GeometryBufferType::GBufferCount)>
+        m_geometry_debug_buffer;
     Ref<Renderbuffer> m_depth_buffer;
 
     Ref<Shader> m_ssao_shader;

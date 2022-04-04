@@ -30,6 +30,7 @@ class EditorCameraSystem : public ECSSystem {
 
    private:
     HandlerRegistration m_key_handler;
+    HandlerRegistration m_size_handler;
 
     uint32_t m_width;
     uint32_t m_height;

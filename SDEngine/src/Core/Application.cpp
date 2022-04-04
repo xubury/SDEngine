@@ -72,7 +72,6 @@ Application::Application(const std::string &title, Device::API api)
 
     LoadSettingsFile();
 
-    m_dispatcher = CreateRef<EventDispatcher>();
     WindowCreateInfo property{title,
                               m_settings.GetInteger("window", "width", 800),
                               m_settings.GetInteger("window", "height", 600),
@@ -80,10 +79,8 @@ Application::Application(const std::string &title, Device::API api)
                                   m_settings.GetInteger("window", "msaa", 4)),
                               m_settings.GetBoolean("window", "vsync", true)};
     m_window = Window::Create(property);
-    m_window->SetDispatcher(m_dispatcher.get());
     m_device = Device::Create();
 
-    Input::Init(m_dispatcher.get());
     AssetStorage::Init();
 
     auto &storage = AssetStorage::Get();
@@ -96,23 +93,18 @@ Application::~Application() {}
 
 void Application::OnInit()
 {
-    m_quit_handler = m_dispatcher->Register<AppQuitEvent>(
-        [this](const AppQuitEvent &) { Shutdown(); });
-
     m_imgui = CreateLayer<ImGuiLayer>(m_window.get());
     PushOverlay(m_imgui);
 }
 
 void Application::OnDestroy()
 {
-    m_dispatcher->RemoveHandler(m_quit_handler);
     while (m_layers.Size()) {
         auto layer = m_layers.Front();
         PopLayer(layer);
         DestroyLayer(layer);
     }
     AssetStorage::Shutdown();
-    Input::Shutdown();
     Vector2i size = m_window->GetSize();
     m_settings.SetInteger("window", "width", size.x);
     m_settings.SetInteger("window", "height", size.y);
@@ -167,7 +159,7 @@ void Application::Run()
     const float ms_per_frame = 1000.f / min_fps;
     uint32_t ms_elapsed = 0;
     while (!m_window->ShouldClose()) {
-        m_window->PollEvents();
+        m_window->PollEvents(m_layers);
 
         ms_elapsed = clock.Restart();
         while (ms_elapsed > ms_per_frame) {

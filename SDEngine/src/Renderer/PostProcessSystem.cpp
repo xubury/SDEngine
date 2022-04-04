@@ -96,11 +96,6 @@ void PostProcessSystem::OnImGui()
         ImGui::SliderFloat("Bloom Threshold", &m_bloom_threshold, 0, 1.0);
         ImGui::SliderFloat("Bloom Soft Threshold", &m_bloom_soft_threshold,
                            0.01, 1.0f);
-    }
-    ImGui::End();
-
-    ImGui::Begin("Bloom Debug");
-    {
         static int base_level = 0;
         static int buffer_index = 0;
         ImGui::SliderInt("Buffer index", &buffer_index, 0, 1);

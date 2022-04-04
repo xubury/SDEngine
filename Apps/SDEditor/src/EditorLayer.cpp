@@ -37,7 +37,6 @@ void EditorLayer::OnInit()
     PushSystem(CreateSystem<ContentBrowser>());
     PushSystem(m_scene_panel);
     PushSystem(m_editor_camera_system);
-    PushSystem(CreateSystem<ProfileSystem>());
     m_tile_map_system = CreateSystem<TileMapSystem>();
     m_animation_editor = CreateSystem<AnimationEditor>();
 
@@ -67,14 +66,12 @@ void EditorLayer::OnPush()
         [this](const EntitySelectEvent &e) {
             m_selected_entity = {e.entity_id, e.scene};
         });
-    m_key_handler = dispatcher.Register(this, &EditorLayer::OnKeyEvent);
 }
 
 void EditorLayer::OnPop()
 {
     auto &dispatcher = GetEventDispatcher();
     dispatcher.RemoveHandler(m_entity_select_handler);
-    dispatcher.RemoveHandler(m_key_handler);
 }
 
 void EditorLayer::OnRender()
@@ -169,7 +166,9 @@ void EditorLayer::OnImGui()
 
 void EditorLayer::Quit() { m_quitting = true; }
 
-void EditorLayer::OnKeyEvent(const KeyEvent &e)
+void EditorLayer::On(const AppQuitEvent &) { Application::GetApp().Shutdown(); }
+
+void EditorLayer::On(const KeyEvent &e)
 {
     // disable key event when pop up window show up (prevent bugs)
     if (ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId |
@@ -177,6 +176,7 @@ void EditorLayer::OnKeyEvent(const KeyEvent &e)
         return;
     }
     if (!e.state) return;
+    GetEventDispatcher().PublishEvent(e);
 
     switch (e.keycode) {
         default:
@@ -232,6 +232,11 @@ void EditorLayer::OnKeyEvent(const KeyEvent &e)
             }
         } break;
     }
+}
+
+void EditorLayer::On(const MouseMotionEvent &e)
+{
+    GetEventDispatcher().PublishEvent(e);
 }
 
 void EditorLayer::NewScene(SceneAsset *scene)
@@ -319,8 +324,8 @@ void EditorLayer::DrawViewport()
             InitBuffers();
             m_graphics_layer->SetRenderSize(m_viewport_size.x,
                                             m_viewport_size.y);
-            m_editor_camera_system->GetCamera()->Resize(m_viewport_size.x,
-                                                        m_viewport_size.y);
+            dispatcher.PublishEvent(
+                RenderSizeEvent{m_viewport_size.x, m_viewport_size.y});
         }
 
         if (m_viewport_pos != viewport_pos) {

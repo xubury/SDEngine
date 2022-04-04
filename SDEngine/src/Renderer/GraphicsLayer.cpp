@@ -17,7 +17,6 @@ GraphicsLayer::GraphicsLayer(Device *device, int32_t width, int32_t height,
       m_height(height),
       m_msaa(msaa)
 {
-    CreateDispatcher();
 }
 
 void GraphicsLayer::InitBuffers()
@@ -35,16 +34,6 @@ void GraphicsLayer::InitBuffers()
         m_main_target->Attach(*m_color_buffer, 0, 0);
         m_main_target->Attach(*m_entity_buffer, 1, 0);
         m_main_target->Attach(*m_depth_buffer, 0);
-    }
-
-    {
-        m_geometry_target = Framebuffer::Create();
-        for (size_t i = 0; i < m_geometry_buffers.size(); ++i) {
-            m_geometry_buffers[i] = Texture::Create(
-                m_width, m_height, 0, MultiSampleLevel::None,
-                TextureType::Normal, GetTextureFormat(GeometryBufferType(i)));
-            m_geometry_target->Attach(*m_geometry_buffers[i], i, 0);
-        }
     }
 }
 
@@ -125,9 +114,6 @@ void GraphicsLayer::OnRender()
     }
     Renderer::EndRenderPass();
 
-    if (m_debug) {
-        BlitGeometryBuffers();
-    }
     SD_CORE_ASSERT(Renderer::IsEmptyStack(),
                    "DEBUG: RenderPass Begin/End not pair!")
 }
@@ -138,27 +124,7 @@ void GraphicsLayer::OnImGui()
         for (auto &system : GetSystems()) {
             system->OnImGui();
         }
-        ImGui::Begin("GBuffer");
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
-        {
-            for (size_t i = 0; i < m_geometry_buffers.size(); ++i) {
-                ImGui::DrawTexture(*m_geometry_buffers[i], ImVec2(0, 1),
-                                   ImVec2(1, 0));
-            }
-        }
-        ImGui::PopStyleVar();
-        ImGui::End();
     }
-}
-
-void GraphicsLayer::BlitGeometryBuffers()
-{
-    Renderer::BeginRenderPass({m_geometry_target.get(), m_width, m_height});
-    for (int i = 0; i < static_cast<int>(GeometryBufferType::EntityId); ++i) {
-        Renderer::BlitFromBuffer(i, m_lighting_system->GetGBuffer(), i,
-                                 BufferBitMask::ColorBufferBit);
-    }
-    Renderer::EndRenderPass();
 }
 
 }  // namespace SD

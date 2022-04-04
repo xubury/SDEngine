@@ -13,7 +13,6 @@ add_executable(SDEditor
     src/ContentBrowser.cpp
     src/EditorCameraSystem.cpp
     src/AnimationEditor.cpp
-    src/ProfileSystem.cpp
     src/TileMapSystem.cpp
     src/TileBrush.cpp)
 

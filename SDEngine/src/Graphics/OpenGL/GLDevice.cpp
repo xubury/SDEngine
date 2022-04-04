@@ -9,7 +9,6 @@
 
 namespace SD {
 
-#ifdef DEBUG_BUILD
 static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
                                   int, const char *message, const void *)
 {
@@ -31,7 +30,6 @@ static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
             SD_CORE_ASSERT(false, "Unknown severity level!");
     }
 }
-#endif
 
 GLDevice::GLDevice()
 {
@@ -40,13 +38,11 @@ GLDevice::GLDevice()
     SD_CORE_INFO("---Graphics Card Info---");
     SD_CORE_INFO("Vendor: {}", glGetString(GL_VENDOR));
     SD_CORE_INFO("Renderer: {}", glGetString(GL_RENDERER));
-#ifdef DEBUG_BUILD
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback(OpenGLMessageCallback, nullptr);
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
                           GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
-#endif
 
     Enable(Operation::MSAA);
 

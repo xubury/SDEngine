@@ -11,23 +11,6 @@ std::unordered_map<MouseButton, bool> Input::s_last_mouse_button;
 
 Vector2f Input::s_mouse_coord;
 
-std::vector<HandlerRegistration> Input::s_handlers;
-
-void Input::Init(EventDispatcher* dispatcher)
-{
-    // TODO: mouse wheel event
-    s_handlers.push_back(dispatcher->Register<MouseMotionEvent>(
-        [&](const MouseMotionEvent& e) { SetMouseCoord(e.x, e.y); }));
-    s_handlers.push_back(
-        dispatcher->Register<MouseButtonEvent>([&](const MouseButtonEvent& e) {
-            SetMouseButtonState(e.button, e.state);
-        }));
-    s_handlers.push_back(dispatcher->Register<KeyEvent>(
-        [&](const KeyEvent& e) { SetKeyState(e.keycode, e.state); }));
-}
-
-void Input::Shutdown() { s_handlers.clear(); }
-
 bool Input::IsKeyDown(Keycode keycode)
 {
     auto it = s_key.find(keycode);

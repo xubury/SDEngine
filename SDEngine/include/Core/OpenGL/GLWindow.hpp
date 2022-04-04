@@ -12,7 +12,7 @@ class SD_CORE_API GLWindow : public Window {
    public:
     GLWindow(const WindowCreateInfo &info);
     ~GLWindow();
-    void PollEvents() override;
+    void PollEvents(EventStack<Layer *> &layers) override;
 
     Vector2i GetSize() const override;
     int GetWidth() const override;

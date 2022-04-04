@@ -14,8 +14,6 @@ namespace SD {
 
 class SD_CORE_API Input {
    public:
-    static void Init(EventDispatcher *dispatcher);
-    static void Shutdown();
     static bool IsKeyDown(Keycode keycode);
     static bool WasKeyDown(Keycode keycode);
     static bool IsKeyPressed(Keycode keycode);
@@ -28,6 +26,10 @@ class SD_CORE_API Input {
 
     static void Tick();
 
+    static void SetKeyState(Keycode keycode, bool state);
+    static void SetMouseButtonState(MouseButton mouse, bool state);
+    static void SetMouseCoord(float x, float y);
+
    private:
     static std::unordered_map<Keycode, bool> s_key;
     static std::unordered_map<Keycode, bool> s_last_key;
@@ -36,12 +38,6 @@ class SD_CORE_API Input {
     static std::unordered_map<MouseButton, bool> s_last_mouse_button;
 
     static Vector2f s_mouse_coord;
-
-    static std::vector<HandlerRegistration> s_handlers;
-
-    static void SetKeyState(Keycode keycode, bool state);
-    static void SetMouseButtonState(MouseButton mouse, bool state);
-    static void SetMouseCoord(float x, float y);
 };
 
 }  // namespace SD

@@ -158,11 +158,17 @@ void LightingSystem::InitLighting()
     }
 
     m_geometry_target = Framebuffer::Create();
+    m_geometry_debug_target = Framebuffer::Create();
     for (size_t i = 0; i < m_geometry_buffer.size(); ++i) {
         m_geometry_buffer[i] =
             Texture::Create(m_width, m_height, 0, m_msaa, TextureType::Normal,
                             GetTextureFormat(GeometryBufferType(i)));
         m_geometry_target->Attach(*m_geometry_buffer[i], i, 0);
+
+        m_geometry_debug_buffer[i] = Texture::Create(
+            m_width, m_height, 0, MultiSampleLevel::None, TextureType::Normal,
+            GetTextureFormat(GeometryBufferType(i)));
+        m_geometry_debug_target->Attach(*m_geometry_debug_buffer[i], i, 0);
     }
     m_depth_buffer =
         Renderbuffer::Create(m_width, m_height, m_msaa, DataFormat::Depth24);
@@ -183,8 +189,28 @@ void LightingSystem::OnSizeEvent(const RenderSizeEvent &event)
     InitLighting();
 }
 
+void LightingSystem::BlitGeometryBuffers()
+{
+    Renderer::BeginRenderPass(
+        {m_geometry_debug_target.get(), m_width, m_height});
+    for (size_t i = 0; i < m_geometry_debug_buffer.size(); ++i) {
+        Renderer::BlitFromBuffer(i, m_geometry_target.get(), i,
+                                 BufferBitMask::ColorBufferBit);
+    }
+    Renderer::EndRenderPass();
+}
+
 void LightingSystem::OnImGui()
 {
+    BlitGeometryBuffers();
+    ImGui::Begin("GBuffer");
+    {
+        for (size_t i = 0; i < m_geometry_debug_buffer.size(); ++i) {
+            ImGui::DrawTexture(*m_geometry_debug_buffer[i], ImVec2(0, 1),
+                               ImVec2(1, 0));
+        }
+    }
+    ImGui::End();
     ImGui::Begin("Lighting System");
     {
         ImGui::Checkbox("SSAO", &m_ssao_state);
@@ -195,9 +221,13 @@ void LightingSystem::OnImGui()
         ImGui::TextUnformatted("SSAO Bias");
         ImGui::SliderFloat("##SSAO Bias", &m_ssao_bias, 0.01, 2);
         ImGui::DrawTexture(*m_ssao_blur_buffer, ImVec2(0, 1), ImVec2(1, 0));
-        ImGui::TextUnformatted("Depth Map");
+    }
+    ImGui::End();
+
+    ImGui::Begin("Shadow Map");
+    {
         ImGui::InputInt("Layer", &m_debug_layer);
-        ImGui::DrawTexture(*m_cascade_debug_buffer);
+        ImGui::DrawTexture(*m_cascade_debug_buffer, ImVec2(0, 1), ImVec2(1, 0));
     }
     ImGui::End();
 }

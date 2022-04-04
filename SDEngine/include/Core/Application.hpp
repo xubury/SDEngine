@@ -55,7 +55,7 @@ class SD_CORE_API Application {
     T *CreateLayer(ARGS &&...args)
     {
         T *layer = new T(std::forward<ARGS>(args)...);
-        layer->m_dispatcher = m_dispatcher;
+        layer->m_dispatcher = CreateRef<EventDispatcher>();
         layer->OnInit();
         return layer;
     }
@@ -89,12 +89,10 @@ class SD_CORE_API Application {
     void Render();
 
     EventStack<Layer *> m_layers;
-    Ref<EventDispatcher> m_dispatcher;
     ImGuiLayer *m_imgui;
 
     Ini m_settings;
 
-    HandlerRegistration m_quit_handler;
     static Application *s_instance;
 
     std::filesystem::path GetAppDirectory();

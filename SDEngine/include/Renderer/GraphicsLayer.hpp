@@ -29,7 +29,6 @@ class SD_RENDERER_API GraphicsLayer : public Layer {
     Framebuffer* GetFramebuffer() { return m_main_target.get(); }
 
    private:
-    void BlitGeometryBuffers();
     void InitBuffers();
 
     Device* m_device;
@@ -42,9 +41,6 @@ class SD_RENDERER_API GraphicsLayer : public Layer {
     Ref<Texture> m_entity_buffer;
     Ref<Renderbuffer> m_depth_buffer;
 
-    Ref<Framebuffer> m_geometry_target;
-    std::array<Ref<Texture>, static_cast<int>(GeometryBufferType::EntityId)>
-        m_geometry_buffers;
     Ref<Texture> m_light_icon;
 
     Camera* m_camera;
@@ -53,8 +49,6 @@ class SD_RENDERER_API GraphicsLayer : public Layer {
     SkyboxSystem* m_skybox_system;
     SpriteRenderSystem* m_sprite_system;
     PostProcessSystem* m_post_process_system;
-
-    HandlerRegistration m_camera_handler;
 };
 
 }  // namespace SD

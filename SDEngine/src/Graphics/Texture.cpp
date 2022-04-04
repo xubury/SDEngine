@@ -42,13 +42,13 @@ Texture::Texture(int width, int height, int depth, MultiSampleLevel samples,
       m_mag_filter(mag_filter)
 {
     if (m_mipmap_mode != MipmapMode::None) {
+        int max_level = static_cast<int>(
+            std::floor(std::log2(std::max(m_width, m_height))));
         if (mipmap_levels == 0) {
-            m_mipmap_levels = std::max(static_cast<int>(std::floor(std::log2(
-                                           std::max(m_width, m_height)))),
-                                       1);
+            m_mipmap_levels = std::max(max_level, 1);
         }
         else {
-            m_mipmap_levels = mipmap_levels;
+            m_mipmap_levels = std::min(mipmap_levels, max_level);
         }
     }
     else {

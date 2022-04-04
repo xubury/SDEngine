@@ -33,7 +33,7 @@ class GLFramebuffer : public Framebuffer {
     int32_t m_width;
     int32_t m_height;
     GLuint m_id;
-    std::unordered_map<int, Texture *> m_textures;
+    std::vector<Texture *> m_textures;
     std::vector<GLenum> m_drawables;
 };
 
