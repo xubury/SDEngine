@@ -96,6 +96,10 @@ void LightingSystem::InitShaders()
     m_cascade_debug_shader =
         ShaderLoader::LoadShader("assets/shaders/quad.vert.glsl",
                                  "assets/shaders/debug_depth.frag.glsl");
+    m_point_shadow_shader =
+        ShaderLoader::LoadShader("assets/shaders/shadow.vert.glsl",
+                                 "assets/shaders/point_shadow.frag.glsl",
+                                 "assets/shaders/point_shadow.geo.glsl");
 }
 
 void LightingSystem::InitSSAO()
@@ -170,7 +174,7 @@ void LightingSystem::InitLighting()
     m_cascade_debug_target = Framebuffer::Create();
     m_cascade_debug_buffer =
         Texture::Create(m_width, m_height, 0, MultiSampleLevel::None,
-                        TextureType::Normal, DataFormat::RGB8);
+                        TextureType::Normal, DataFormat::RGB16F);
     m_cascade_debug_target->Attach(*m_cascade_debug_buffer, 0, 0);
 }
 
@@ -289,6 +293,48 @@ void LightingSystem::RenderShadowMap(CascadeShadow &shadow,
     }
 }
 
+void LightingSystem::RenderPointShadowMap(PointShadow &shadow,
+                                          const Transform &transform)
+{
+    Vector3f light_pos = transform.GetPosition();
+    std::array<Matrix4f, 6> shadow_trans =
+        shadow.GetProjectionMatrix(light_pos);
+
+    auto modelView = GetScene().view<TransformComponent, ModelComponent>();
+    RenderOperation op;
+    op.cull_face = Face::Front;
+    Texture *shadow_map = shadow.GetShadowMap();
+    Framebuffer *shadow_target = shadow.GetShadowTarget();
+    Renderer::BeginRenderPass(RenderPassInfo{
+        shadow_target, shadow_map->GetWidth(), shadow_map->GetHeight(), op});
+
+    auto &storage = AssetStorage::Get();
+    ShaderParam *model_param = m_point_shadow_shader->GetParam("u_model");
+    m_point_shadow_shader->GetParam("u_light_pos")
+        ->SetAsVec3(&transform.GetPosition()[0]);
+    m_point_shadow_shader->GetParam("u_far_z")->SetAsFloat(shadow.GetFarZ());
+    m_point_shadow_shader->GetParam("u_shadow_matrix[0]")
+        ->SetAsMat4(&shadow_trans[0][0][0], 6);
+    modelView.each([&](const TransformComponent &transformComp,
+                       const ModelComponent &modelComp) {
+        if (storage.Exists<ModelAsset>(modelComp.model_id)) {
+            auto model =
+                storage.GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
+            for (const auto &[material, meshes] : model->GetMaterialMap()) {
+                for (const auto &mesh : meshes) {
+                    Matrix4f mat =
+                        model->GetTransform(mesh.transform_id) *
+                        transformComp.GetWorldTransform().GetMatrix();
+                    model_param->SetAsMat4(&mat[0][0]);
+                    Renderer3D::DrawMesh(*m_point_shadow_shader,
+                                         *model->GetMesh(mesh.mesh_id));
+                }
+            }
+        }
+    });
+    Renderer::EndRenderPass();
+}
+
 void LightingSystem::RenderSSAO()
 {
     Texture *position =
@@ -317,10 +363,14 @@ void LightingSystem::RenderSSAO()
 
 void LightingSystem::RenderEmissive()
 {
-    auto lightView = GetScene().view<TransformComponent, LightComponent>();
+    auto dir_lights =
+        GetScene().view<TransformComponent, DirectionalLightComponent>();
+    auto point_lights =
+        GetScene().view<TransformComponent, PointLightComponent>();
     RenderOperation op;
     op.blend = false;
-    if (lightView.begin() != lightView.end()) {
+    if (dir_lights.begin() != dir_lights.end() ||
+        point_lights.begin() != point_lights.end()) {
         const int buffer = 0;
         Renderer::BeginRenderSubpass(RenderSubpassInfo{&buffer, 1, op});
         m_emssive_shader->GetParam("u_lighting")
@@ -336,8 +386,6 @@ void LightingSystem::RenderEmissive()
 
 void LightingSystem::RenderDeferred()
 {
-    auto lightView = GetScene().view<TransformComponent, LightComponent>();
-
     m_deferred_shader->GetParam("u_position")
         ->SetAsTexture(
             m_gbuffer_msaa[static_cast<int>(GeometryBufferType::Position)]
@@ -360,22 +408,15 @@ void LightingSystem::RenderDeferred()
     m_deferred_shader->GetParam("u_ssao_state")->SetAsBool(m_ssao_state);
 
     ShaderParam *lighting = m_deferred_shader->GetParam("u_lighting");
-    ShaderParam *ambient = m_deferred_shader->GetParam("u_light.ambient");
-    ShaderParam *diffuse = m_deferred_shader->GetParam("u_light.diffuse");
-    ShaderParam *specular = m_deferred_shader->GetParam("u_light.specular");
-    ShaderParam *light_position =
-        m_deferred_shader->GetParam("u_light_position");
+    ShaderParam *ambient = m_deferred_shader->GetParam("u_light_color.ambient");
+    ShaderParam *diffuse = m_deferred_shader->GetParam("u_light_color.diffuse");
+    ShaderParam *specular =
+        m_deferred_shader->GetParam("u_light_color.specular");
     ShaderParam *light_front = m_deferred_shader->GetParam("u_light_front");
-    ShaderParam *cutoff = m_deferred_shader->GetParam("u_light.cutoff");
-    ShaderParam *outer_cutoff =
-        m_deferred_shader->GetParam("u_light.outer_cutoff");
-    ShaderParam *constant = m_deferred_shader->GetParam("u_light.constant");
-    ShaderParam *linear = m_deferred_shader->GetParam("u_light.linear");
-    ShaderParam *quadratic = m_deferred_shader->GetParam("u_light.quadratic");
     ShaderParam *is_directional =
-        m_deferred_shader->GetParam("u_light.is_directional");
+        m_deferred_shader->GetParam("u_is_directional");
     ShaderParam *is_cast_shadow =
-        m_deferred_shader->GetParam("u_light.is_cast_shadow");
+        m_deferred_shader->GetParam("u_is_cast_shadow");
 
     ShaderParam *cascade_map = m_deferred_shader->GetParam("u_cascade_map");
     ShaderParam *num_of_cascades =
@@ -383,17 +424,21 @@ void LightingSystem::RenderDeferred()
     ShaderParam *cascade_planes =
         m_deferred_shader->GetParam("u_cascade_planes[0]");
 
+    Renderer::SetCamera(*m_deferred_shader, GetCamera());
+
     RenderOperation op;
     op.blend = false;
 
     uint8_t input_id = 0;
     uint8_t output_id = 1;
     // clear the last lighting pass' result
-    float value[]{0, 0, 0, 0};
+    const float value[]{0, 0, 0, 0};
     m_lighting_target[input_id]->ClearAttachment(0, value);
-    lightView.each([&](const TransformComponent &transformComp,
-                       LightComponent &lightComp) {
-        Light &light = lightComp.light;
+    auto dir_lights =
+        GetScene().view<TransformComponent, DirectionalLightComponent>();
+    dir_lights.each([&](const TransformComponent &transformComp,
+                        DirectionalLightComponent &lightComp) {
+        DirectionalLight &light = lightComp.light;
         CascadeShadow &shadow = lightComp.shadow;
         const Transform &transform = transformComp.GetWorldTransform();
 
@@ -407,22 +452,15 @@ void LightingSystem::RenderDeferred()
 
         Renderer::BeginRenderPass(info);
 
-        Renderer::SetCamera(*m_deferred_shader, GetCamera());
         lighting->SetAsTexture(m_lighting_buffers[input_id].get());
         light_front->SetAsVec3(&transform.GetFront()[0]);
-        light_position->SetAsVec3(&transform.GetPosition()[0]);
-        ambient->SetAsVec3(&light.GetAmbient()[0]);
-        diffuse->SetAsVec3(&light.GetDiffuse()[0]);
-        specular->SetAsVec3(&light.GetSpecular()[0]);
-        cutoff->SetAsFloat(glm::cos(light.GetCutoff()));
-        outer_cutoff->SetAsFloat(glm::cos(light.GetOuterCutoff()));
-        constant->SetAsFloat(light.GetConstant());
-        linear->SetAsFloat(light.GetLinear());
-        quadratic->SetAsFloat(light.GetQuadratic());
+        ambient->SetAsVec3(&light.ambient[0]);
+        diffuse->SetAsVec3(&light.diffuse[0]);
+        specular->SetAsVec3(&light.specular[0]);
 
-        is_directional->SetAsBool(light.IsDirectional());
-        is_cast_shadow->SetAsBool(light.IsCastShadow());
-        if (light.IsCastShadow()) {
+        is_directional->SetAsBool(true);
+        is_cast_shadow->SetAsBool(lightComp.is_cast_shadow);
+        if (lightComp.is_cast_shadow) {
             RenderShadowMap(shadow, transform);
 
             cascade_map->SetAsTexture(shadow.GetCascadeMap());
@@ -430,6 +468,63 @@ void LightingSystem::RenderDeferred()
             num_of_cascades->SetAsInt(planes.size());
             cascade_planes->SetAsVec(&planes[0], planes.size());
             Renderer3D::SetShadowCaster(*m_deferred_shader, shadow);
+        }
+        else {
+            cascade_map->SetAsTexture(nullptr);
+        }
+        Renderer::DrawNDCQuad(*m_deferred_shader);
+        std::swap(input_id, output_id);
+        Renderer::EndRenderPass();
+    });
+
+    ShaderParam *light_position =
+        m_deferred_shader->GetParam("u_point_light.pos");
+    ShaderParam *constant =
+        m_deferred_shader->GetParam("u_point_light.constant");
+    ShaderParam *linear = m_deferred_shader->GetParam("u_point_light.linear");
+    ShaderParam *quadratic =
+        m_deferred_shader->GetParam("u_point_light.quadratic");
+    ShaderParam *point_shadow_map =
+        m_deferred_shader->GetParam("u_point_shadow_map");
+    ShaderParam *point_shadow_far_z =
+        m_deferred_shader->GetParam("u_point_shadow_far_z");
+    auto point_lights =
+        GetScene().view<TransformComponent, PointLightComponent>();
+    point_lights.each([&](const TransformComponent &transformComp,
+                          PointLightComponent &lightComp) {
+        PointLight &light = lightComp.light;
+        PointShadow &point_shadow = lightComp.shadow;
+        const Transform &transform = transformComp.GetWorldTransform();
+
+        RenderPassInfo info{m_lighting_target[output_id].get(),
+                            m_lighting_buffers[output_id]->GetWidth(),
+                            m_lighting_buffers[output_id]->GetHeight(),
+                            op,
+                            BufferBitMask::ColorBufferBit,
+                            {0, 0, 0, 0}};
+        m_lighting_result = m_lighting_buffers[output_id].get();
+
+        Renderer::BeginRenderPass(info);
+
+        lighting->SetAsTexture(m_lighting_buffers[input_id].get());
+        light_front->SetAsVec3(&transform.GetFront()[0]);
+        light_position->SetAsVec3(&transform.GetPosition()[0]);
+        ambient->SetAsVec3(&light.ambient[0]);
+        diffuse->SetAsVec3(&light.diffuse[0]);
+        specular->SetAsVec3(&light.specular[0]);
+        constant->SetAsFloat(light.constant);
+        linear->SetAsFloat(light.linear);
+        quadratic->SetAsFloat(light.quadratic);
+
+        is_directional->SetAsBool(false);
+        is_cast_shadow->SetAsBool(lightComp.is_cast_shadow);
+        if (lightComp.is_cast_shadow) {
+            RenderPointShadowMap(point_shadow, transform);
+            point_shadow_map->SetAsTexture(point_shadow.GetShadowMap());
+            point_shadow_far_z->SetAsFloat(point_shadow.GetFarZ());
+        }
+        else {
+            point_shadow_map->SetAsTexture(nullptr);
         }
         Renderer::DrawNDCQuad(*m_deferred_shader);
         std::swap(input_id, output_id);

@@ -32,6 +32,7 @@ set(Graphics_Include
     ${Include_Root}/Resource.hpp
     ${Include_Root}/Bitmap.hpp
     ${Include_Root}/Camera.hpp
+    ${Include_Root}/PointShadow.hpp
     ${Include_Root}/CascadeShadow.hpp
     ${Include_Root}/Light.hpp
     ${Include_Root}/Font.hpp
@@ -55,6 +56,7 @@ set(Graphics_Src
     ${OpenGL_Src}
     ${Src_Root}/Bitmap.cpp
     ${Src_Root}/Camera.cpp
+    ${Src_Root}/PointShadow.cpp
     ${Src_Root}/CascadeShadow.cpp
     ${Src_Root}/Light.cpp
     ${Src_Root}/Font.cpp

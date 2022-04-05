@@ -7,6 +7,7 @@
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/CascadeShadow.hpp"
+#include "Graphics/PointShadow.hpp"
 
 namespace SD {
 
@@ -64,6 +65,7 @@ class SD_RENDERER_API LightingSystem : public RenderSystem {
     void RenderSSAO();
 
     void RenderShadowMap(CascadeShadow &shadow, const Transform &transform);
+    void RenderPointShadowMap(PointShadow &shadow, const Transform &transform);
     void RenderDeferred();
     void RenderEmissive();
 
@@ -76,6 +78,8 @@ class SD_RENDERER_API LightingSystem : public RenderSystem {
     Ref<Framebuffer> m_cascade_debug_target;
     Ref<Texture> m_cascade_debug_buffer;
     int m_debug_layer{0};
+
+    Ref<Shader> m_point_shadow_shader;
 
     Ref<Shader> m_emssive_shader;
 

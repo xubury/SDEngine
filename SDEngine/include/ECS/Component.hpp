@@ -1,6 +1,7 @@
 #ifndef SD_COMPONENT_HPP
 #define SD_COMPONENT_HPP
 
+#include "Graphics/PointShadow.hpp"
 #include "Utility/Base.hpp"
 #include "ECS/Export.hpp"
 #include "Utility/Serialize.hpp"
@@ -85,11 +86,20 @@ struct SD_ECS_API ModelComponent {
     SERIALIZE(model_id)
 };
 
-struct SD_ECS_API LightComponent {
-    Light light;
+struct SD_ECS_API DirectionalLightComponent {
+    DirectionalLight light;
+    bool is_cast_shadow{false};
     CascadeShadow shadow;
 
-    SERIALIZE(light, shadow)
+    SERIALIZE(light, is_cast_shadow, shadow)
+};
+
+struct SD_ECS_API PointLightComponent {
+    PointLight light;
+    bool is_cast_shadow{false};
+    PointShadow shadow;
+
+    SERIALIZE(light, is_cast_shadow, shadow)
 };
 
 struct SD_ECS_API TextComponent {
@@ -144,11 +154,21 @@ inline void OnComponentAdded<TransformComponent>(entt::registry& reg,
 }
 
 template <>
-inline void OnComponentAdded<LightComponent>(entt::registry& reg,
-                                             entt::entity ent)
+inline void OnComponentAdded<DirectionalLightComponent>(entt::registry& reg,
+                                                        entt::entity ent)
 {
-    auto& lightComp = reg.get<LightComponent>(ent);
-    if (lightComp.light.IsCastShadow()) {
+    auto& lightComp = reg.get<DirectionalLightComponent>(ent);
+    if (lightComp.is_cast_shadow) {
+        lightComp.shadow.CreateShadowMap();
+    }
+}
+
+template <>
+inline void OnComponentAdded<PointLightComponent>(entt::registry& reg,
+                                                  entt::entity ent)
+{
+    auto& lightComp = reg.get<PointLightComponent>(ent);
+    if (lightComp.is_cast_shadow) {
         lightComp.shadow.CreateShadowMap();
     }
 }

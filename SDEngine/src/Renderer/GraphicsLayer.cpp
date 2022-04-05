@@ -101,8 +101,9 @@ void GraphicsLayer::OnRender()
         Renderer::BeginRenderSubpass(RenderSubpassInfo{index, 2, op});
 
         Renderer2D::Begin(*m_camera);
-        auto lightView = GetScene().view<LightComponent, TransformComponent>();
-        lightView.each([this](EntityId id, const LightComponent &,
+        auto lightView =
+            GetScene().view<DirectionalLightComponent, TransformComponent>();
+        lightView.each([this](EntityId id, const DirectionalLightComponent &,
                               const TransformComponent &transComp) {
             Vector3f pos = transComp.GetWorldPosition();
             Renderer2D::DrawBillboard(*m_light_icon, pos, icon_size,

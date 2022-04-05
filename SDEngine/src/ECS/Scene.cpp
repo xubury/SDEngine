@@ -11,7 +11,8 @@ Scene::Scene()
     RegisterComponent<TagComponent>();
     RegisterComponent<TransformComponent>();
     RegisterComponent<ModelComponent>();
-    RegisterComponent<LightComponent>();
+    RegisterComponent<DirectionalLightComponent>();
+    RegisterComponent<PointLightComponent>();
     RegisterComponent<TextComponent>();
     RegisterComponent<CameraComponent>();
     RegisterComponent<SpriteComponent>();

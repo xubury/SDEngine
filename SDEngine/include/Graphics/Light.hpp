@@ -8,57 +8,21 @@
 
 namespace SD {
 
-class SD_GRAPHICS_API Light {
-   public:
-    Light();
+struct SD_GRAPHICS_API DirectionalLight {
+    Vector3f ambient;
+    Vector3f diffuse;
+    Vector3f specular;
+    SERIALIZE(ambient, diffuse, specular)
+};
 
-    void SetCastShadow(bool cast);
-    bool IsCastShadow() const;
-
-    void SetDirectional(bool directional);
-    bool IsDirectional() const;
-
-    void SetAmbient(const Vector3f &ambient);
-    const Vector3f &GetAmbient() const;
-
-    void SetDiffuse(const Vector3f &diffuse);
-    const Vector3f &GetDiffuse() const;
-
-    void SetSpecular(const Vector3f &specular);
-    const Vector3f &GetSpecular() const;
-
-    void SetCutoff(float cutOff);
-    float GetCutoff() const;
-
-    void SetOuterCutoff(float outer_cutoff);
-    float GetOuterCutoff() const;
-
-    void SetConstant(float constant);
-    float GetConstant() const;
-
-    void SetLinear(float linear);
-    float GetLinear() const;
-
-    void SetQuadratic(float quadratic);
-    float GetQuadratic() const;
-
-    SERIALIZE(m_ambient, m_diffuse, m_specular, m_cutoff, m_outer_cutoff,
-              m_constant, m_linear, m_quadratic, m_is_directional,
-              m_is_cast_shadow)
-
-   private:
-    bool m_is_cast_shadow;
-    bool m_is_directional;
-
-    Vector3f m_ambient;
-    Vector3f m_diffuse;
-    Vector3f m_specular;
-
-    float m_cutoff;
-    float m_outer_cutoff;
-    float m_constant;
-    float m_linear;
-    float m_quadratic;
+struct SD_GRAPHICS_API PointLight {
+    Vector3f ambient;
+    Vector3f diffuse;
+    Vector3f specular;
+    float constant{1.0};
+    float linear{0.1};
+    float quadratic{0.01};
+    SERIALIZE(ambient, diffuse, specular, constant, linear, quadratic)
 };
 
 }  // namespace SD

@@ -8,9 +8,12 @@ layout(location = 0) out vec3 frag_color;
 
 layout(location = 0) in vec2 in_uv;
 
-uniform Light u_light;
-uniform vec3 u_light_position;
+uniform LightColor u_light_color;
+uniform PointLight u_point_light;
+uniform bool u_is_directional;
 uniform vec3 u_light_front;
+
+uniform bool u_is_cast_shadow;
 
 uniform sampler2DMS u_lighting;
 uniform sampler2DMS u_position;
@@ -40,18 +43,30 @@ void main()
             const vec3 ambient =
                 texelFetch(u_ambient, uv, i).rgb * ambient_occlusion;
             const vec3 view_dir = normalize(u_view[3].xyz - pos);
-            const vec3 light_dir = u_light.is_directional
-                                       ? normalize(-u_light_front)
-                                       : normalize(u_light_position - pos);
+            vec3 result = vec3(0);
+            if (u_is_directional) {
+                // DirectionalLight
+                float shadow = 0.f;
+                const vec3 light_dir = normalize(-u_light_front);
+                if (u_is_cast_shadow)
+                {
+                    shadow = DirShadowCalculation(light_dir, pos, normal, u_view);
+                }
+                result = CalcDirLight(u_light_front, u_light_color, normal, 
+                                   view_dir, ambient, albedo, shadow);
+            }
+            else {
+                // PointLight
+                float shadow = 0.f;
+                if (u_is_cast_shadow)
+                {
+                    shadow = CubeShadowCalculation(pos, u_point_light.pos, u_view[3].xyz);
+                }
+                result = CalcPointLight(u_point_light, u_light_color, pos, normal, 
+                                        view_dir, ambient, albedo, shadow);
 
-            const float shadow =
-                u_light.is_cast_shadow
-                    ? ShadowCalculation(light_dir, pos, normal, u_view)
-                    : 0;
-            color +=
-                last + CalculateLight(u_light, u_light_position,
-                                      u_light_front, pos, normal, view_dir,
-                                      ambient, albedo, shadow);
+            }
+            color += last + result;
         }
         else {
             // Fragment is background, don't calculate light,

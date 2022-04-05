@@ -253,11 +253,19 @@ void ScenePanel::DrawComponents(Entity &entity)
                 SD_CORE_WARN("This entity already has the Model Component!");
             ImGui::CloseCurrentPopup();
         }
-        if (ImGui::MenuItem("Light")) {
-            if (!entity.HasComponent<LightComponent>())
-                entity.AddComponent<LightComponent>();
+        if (ImGui::MenuItem("Directional Light")) {
+            if (!entity.HasComponent<DirectionalLightComponent>())
+                entity.AddComponent<DirectionalLightComponent>();
             else
                 SD_CORE_WARN("This entity already has the Light Component!");
+            ImGui::CloseCurrentPopup();
+        }
+        if (ImGui::MenuItem("Point Light")) {
+            if (!entity.HasComponent<PointLightComponent>())
+                entity.AddComponent<PointLightComponent>();
+            else
+                SD_CORE_WARN(
+                    "This entity already has the Point Light Component!");
             ImGui::CloseCurrentPopup();
         }
         if (ImGui::MenuItem("Text")) {
@@ -340,38 +348,22 @@ void ScenePanel::DrawComponents(Entity &entity)
                               &m_selected_material_id_map[entity]);
         }
     });
-    DrawComponent<LightComponent>(
-        "Light", entity, [&](LightComponent &lightComp) {
-            Light &light = lightComp.light;
+    DrawComponent<DirectionalLightComponent>(
+        "Directional Light", entity, [&](DirectionalLightComponent &lightComp) {
+            DirectionalLight &light = lightComp.light;
             CascadeShadow &shadow = lightComp.shadow;
-            Vector3f diffuse = light.GetDiffuse();
-            if (ImGui::ColorEdit3("Diffuse", &diffuse[0])) {
-                light.SetDiffuse(diffuse);
-            }
-            Vector3f ambient = light.GetAmbient();
-            if (ImGui::ColorEdit3("Ambient", &ambient[0])) {
-                light.SetAmbient(ambient);
-            }
-            Vector3f specular = light.GetSpecular();
-            if (ImGui::ColorEdit3("Specular", &specular[0])) {
-                light.SetSpecular(specular);
-            }
-            bool isDirectional = light.IsDirectional();
-            if (ImGui::Checkbox("Directional", &isDirectional)) {
-                light.SetDirectional(isDirectional);
-            }
-            ImGui::SameLine();
-            bool is_cast_shadow = light.IsCastShadow();
-            if (ImGui::Checkbox("Cast Shadow", &is_cast_shadow)) {
-                light.SetCastShadow(is_cast_shadow);
-                if (is_cast_shadow) {
+            ImGui::ColorEdit3("Diffuse", &light.diffuse[0]);
+            ImGui::ColorEdit3("Ambient", &light.ambient[0]);
+            ImGui::ColorEdit3("Specular", &light.specular[0]);
+            if (ImGui::Checkbox("Cast Shadow", &lightComp.is_cast_shadow)) {
+                if (lightComp.is_cast_shadow) {
                     shadow.CreateShadowMap();
                 }
                 else {
                     shadow.DestroyShadowMap();
                 }
             }
-            if (is_cast_shadow) {
+            if (lightComp.is_cast_shadow) {
                 auto planes = shadow.GetCascadePlanes();
                 int num_of_cascades = planes.size();
                 if (ImGui::SliderInt("Num of Cascades", &num_of_cascades, 1,
@@ -382,30 +374,33 @@ void ScenePanel::DrawComponents(Entity &entity)
                     shadow.SetCascadePlanes(planes);
                 }
             }
-            if (!light.IsDirectional()) {
-                float constant = light.GetConstant();
-                if (ImGui::SliderFloat("Constant", &constant, 0.f, 1.0f)) {
-                    light.SetConstant(constant);
+        });
+    DrawComponent<PointLightComponent>(
+        "Point Light", entity, [&](PointLightComponent &lightComp) {
+            PointLight &light = lightComp.light;
+            PointShadow &shadow = lightComp.shadow;
+            if (ImGui::ColorEdit3("Diffuse", &light.diffuse[0])) {
+            }
+            if (ImGui::ColorEdit3("Ambient", &light.ambient[0])) {
+            }
+            if (ImGui::ColorEdit3("Specular", &light.specular[0])) {
+            }
+            if (ImGui::Checkbox("Cast Shadow", &lightComp.is_cast_shadow)) {
+                if (lightComp.is_cast_shadow) {
+                    shadow.CreateShadowMap();
                 }
-                float linear = light.GetLinear();
-                if (ImGui::SliderFloat("Linear", &linear, 0.f, 1.0f)) {
-                    light.SetLinear(linear);
-                }
-                float quadratic = light.GetQuadratic();
-                if (ImGui::SliderFloat("Quadratic", &quadratic, 0.0002f,
-                                       0.1f)) {
-                    light.SetQuadratic(quadratic);
-                }
-                float cutOff = glm::degrees(light.GetCutoff());
-                if (ImGui::SliderFloat("cutOff", &cutOff, 0.f, 89.f)) {
-                    light.SetCutoff(glm::radians(cutOff));
-                }
-                float outerCutOff = glm::degrees(light.GetOuterCutoff());
-                if (ImGui::SliderFloat("outerCutOff", &outerCutOff, 1.0f,
-                                       90.0f)) {
-                    light.SetOuterCutoff(glm::radians(outerCutOff));
+                else {
+                    shadow.DestroyShadowMap();
                 }
             }
+            float far_z = shadow.GetFarZ();
+            if (ImGui::SliderFloat("Shadow Far Z", &far_z, 1.0f, 500.f)) {
+                shadow.SetFarZ(far_z);
+            }
+            ImGui::SliderFloat("Constant", &light.constant, 0.f, 1.0f);
+            ImGui::SliderFloat("Linear", &light.linear, 0.f, 1.0f);
+            ImGui::SliderFloat("Quadratic", &light.quadratic, 0.0002f, 0.1f,
+                               "%.4f");
         });
     DrawComponent<TextComponent>("Text", entity, [&](TextComponent &textComp) {
         ImGui::DrawFontAssetSelection(storage, &textComp.font_id);
