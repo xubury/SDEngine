@@ -82,6 +82,7 @@ void Downsample()
     if (pos.x >= size.x || pos.y >= size.y) {
         return;
     }
+    // There will be pixel shift without half pixel offset
     vec2 uv = (pos + vec2(0.5, 0.5)) / size;
     // check if it is the first input
     if (u_input) {
@@ -101,6 +102,7 @@ void Upsample()
     if (pos.x >= size.x || pos.y >= size.y) {
         return;
     }
+    // There will be pixel shift without half pixel offset
     vec2 uv = (pos + vec2(0.5, 0.5)) / size;
     // check if it is the first input
     if (u_input) {
