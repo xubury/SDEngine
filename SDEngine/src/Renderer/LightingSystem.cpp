@@ -85,10 +85,10 @@ void LightingSystem::InitShaders()
         "assets/shaders/quad.vert.glsl", "assets/shaders/deferred.frag.glsl");
     m_gbuffer_shader = ShaderLoader::LoadShader(
         "assets/shaders/mesh.vert.glsl", "assets/shaders/gbuffer.frag.glsl");
-    m_ssao_shader = ShaderLoader::LoadShader("assets/shaders/quad.vert.glsl",
-                                             "assets/shaders/ssao.frag.glsl");
-    m_ssao_blur_shader = ShaderLoader::LoadShader(
-        "assets/shaders/quad.vert.glsl", "assets/shaders/ssao_blur.frag.glsl");
+
+    m_ssao_shader = ShaderLoader::LoadShader("assets/shaders/ssao.comp.glsl");
+    m_ssao_blur_shader =
+        ShaderLoader::LoadShader("assets/shaders/ssao_blur.comp.glsl");
 
     m_cascade_shader =
         ShaderLoader::LoadShader("assets/shaders/shadow.vert.glsl", "",
@@ -100,19 +100,12 @@ void LightingSystem::InitShaders()
 
 void LightingSystem::InitSSAO()
 {
-    // ssao target
-    m_ssao_target = Framebuffer::Create();
-    m_ssao_blur_target = Framebuffer::Create();
-
     m_ssao_buffer =
         Texture::Create(m_width, m_height, 0, MultiSampleLevel::None,
                         TextureType::Normal, DataFormat::R16F);
-    m_ssao_target->Attach(*m_ssao_buffer, 0, 0);
-
     m_ssao_blur_buffer =
         Texture::Create(m_width, m_height, 0, MultiSampleLevel::None,
                         TextureType::Normal, DataFormat::R16F);
-    m_ssao_blur_target->Attach(*m_ssao_blur_buffer, 0, 0);
 }
 
 void LightingSystem::InitSSAOKernel()
@@ -298,17 +291,10 @@ void LightingSystem::RenderShadowMap(CascadeShadow &shadow,
 
 void LightingSystem::RenderSSAO()
 {
-    RenderPassInfo info;
-    info.framebuffer = m_ssao_target.get();
-    info.viewport_width = m_ssao_buffer->GetWidth();
-    info.viewport_height = m_ssao_buffer->GetHeight();
-    info.op.blend = false;
-    info.clear_value = {1.0f, 1.0f, 1.0f, 1.f};
     Texture *position =
         m_gbuffer[static_cast<int>(GeometryBufferType::Position)].get();
     Texture *normal =
         m_gbuffer[static_cast<int>(GeometryBufferType::Normal)].get();
-    Renderer::BeginRenderPass(info);
     Renderer::SetCamera(*m_ssao_shader, GetCamera());
     m_ssao_shader->GetParam("u_radius")->SetAsFloat(m_ssao_radius);
     m_ssao_shader->GetParam("u_bias")->SetAsFloat(m_ssao_bias);
@@ -316,20 +302,17 @@ void LightingSystem::RenderSSAO()
     m_ssao_shader->GetParam("u_position")->SetAsTexture(position);
     m_ssao_shader->GetParam("u_normal")->SetAsTexture(normal);
     m_ssao_shader->GetParam("u_noise")->SetAsTexture(m_ssao_noise.get());
-    Renderer::DrawNDCQuad(*m_ssao_shader);
-
-    Renderer::EndRenderPass();
+    m_ssao_shader->GetParam("u_out_image")
+        ->SetAsImage(m_ssao_buffer.get(), 0, false, 0, Access::WriteOnly);
+    Renderer::DispatchCompute(*m_ssao_shader, std::ceil(m_width / 25.f),
+                              std::ceil(m_height / 25.f), 1);
 
     // blur
-    info.framebuffer = m_ssao_blur_target.get();
-    info.viewport_width = m_ssao_blur_buffer->GetWidth();
-    info.viewport_height = m_ssao_blur_buffer->GetHeight();
-    info.clear_value = {1.0f, 1.0f, 1.0f, 1.f};
-    info.op.blend = false;
-    Renderer::BeginRenderPass(info);
-    m_ssao_blur_shader->GetParam("u_ssao")->SetAsTexture(m_ssao_buffer.get());
-    Renderer::DrawNDCQuad(*m_ssao_blur_shader);
-    Renderer::EndRenderPass();
+    m_ssao_blur_shader->GetParam("u_input")->SetAsTexture(m_ssao_buffer.get());
+    m_ssao_blur_shader->GetParam("u_out_image")
+        ->SetAsImage(m_ssao_blur_buffer.get(), 0, false, 0, Access::WriteOnly);
+    Renderer::DispatchCompute(*m_ssao_blur_shader, std::ceil(m_width / 25.f),
+                              std::ceil(m_height / 25.f), 1);
 }
 
 void LightingSystem::RenderEmissive()

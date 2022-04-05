@@ -75,51 +75,39 @@ vec4 UpsampleTent(sampler2D src, vec2 uv, int level)
     return value / 16.f;
 }
 
-void Downsample()
+vec4 Downsample(vec2 uv)
 {
-    ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
-    ivec2 size = imageSize(u_out_image);
-    if (pos.x >= size.x || pos.y >= size.y) {
-        return;
-    }
-    // There will be pixel shift without half pixel offset
-    vec2 uv = (pos + vec2(0.5, 0.5)) / size;
     // check if it is the first input
     if (u_input) {
         vec4 val = textureLod(u_in_texture, uv, 0);
         val.rgb = QuadraticThreshold(val.rgb, u_threshold, u_curve);
-        imageStore(u_out_image, pos, val);
+        return val;
     }
     else {
-        imageStore(u_out_image, pos, DownsampleBox13(u_in_texture, uv, u_level));
+        return DownsampleBox13(u_in_texture, uv, u_level);
     }
 }
 
-void Upsample()
+vec4 Upsample(vec2 uv)
 {
-    ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
-    ivec2 size = imageSize(u_out_image);
-    if (pos.x >= size.x || pos.y >= size.y) {
-        return;
-    }
-    // There will be pixel shift without half pixel offset
-    vec2 uv = (pos + vec2(0.5, 0.5)) / size;
     // check if it is the first input
     if (u_input) {
-        imageStore(u_out_image, pos, UpsampleTent(u_in_texture, uv, u_level));
+        return UpsampleTent(u_in_texture, uv, u_level);
     }
     else {
-        imageStore(u_out_image, pos, textureLod(u_down_texture, uv, u_level - 1) 
-                                        + UpsampleTent(u_in_texture, uv, u_level));
+        return textureLod(u_down_texture, uv, u_level - 1) 
+               + UpsampleTent(u_in_texture, uv, u_level);
     }
 }
 
 void main()
 {
-    if (u_downsample) {
-        Downsample();
+    ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(u_out_image);
+    if (pos.x >= size.x || pos.y >= size.y) {
+        return;
     }
-    else {
-        Upsample();
-    }
+    // There will be pixel shift without half pixel offset
+    vec2 uv = (pos + vec2(0.5, 0.5)) / size;
+    imageStore(u_out_image, pos, u_downsample ? Downsample(uv) : Upsample(uv));
 }

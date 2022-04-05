@@ -48,13 +48,8 @@ class SD_RENDERER_API PostProcessSystem : public ECSSystem {
     int m_width;
     int m_height;
 
-    Ref<Shader> m_post_shader;
-    Ref<Shader> m_blur_shader;
+    Ref<Shader> m_hdr_shader;
     Ref<Shader> m_bloom_shader;
-
-    Ref<Framebuffer> m_blur_targets[2];
-    Ref<Texture> m_blur_buffers[2];
-    Texture *m_blur_result;
 
     Ref<Framebuffer> m_post_target;
     Ref<Texture> m_post_buffer;

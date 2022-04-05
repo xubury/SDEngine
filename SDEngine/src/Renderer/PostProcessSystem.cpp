@@ -10,7 +10,6 @@ PostProcessSystem::PostProcessSystem(int32_t width, int32_t height)
     : ECSSystem("PostProcessSystem"),
       m_width(width),
       m_height(height),
-      m_blur_result(nullptr),
       m_bloom_threshold(1.0),
       m_bloom_soft_threshold(0.8),
       m_is_bloom(true),
@@ -35,11 +34,8 @@ void PostProcessSystem::OnInit()
                                            m_gamma_correction);
     m_size_handler = dispatcher.Register(this, &PostProcessSystem::OnSizeEvent);
 
-    m_blur_shader = ShaderLoader::LoadShader("assets/shaders/quad.vert.glsl",
-                                             "assets/shaders/blur.frag.glsl");
-    m_post_shader =
-        ShaderLoader::LoadShader("assets/shaders/quad.vert.glsl",
-                                 "assets/shaders/post_process.frag.glsl");
+    m_hdr_shader = ShaderLoader::LoadShader("assets/shaders/quad.vert.glsl",
+                                            "assets/shaders/hdr.frag.glsl");
     m_bloom_shader = ShaderLoader::LoadShader("assets/shaders/bloom.comp.glsl");
     InitBuffers();
 }
@@ -60,14 +56,6 @@ void PostProcessSystem::OnDestroy()
 
 void PostProcessSystem::InitBuffers()
 {
-    for (int i = 0; i < 2; ++i) {
-        m_blur_buffers[i] = Texture::Create(
-            m_width, m_height, 0, MultiSampleLevel::None, TextureType::Normal,
-            DataFormat::RGBA16F, TextureWrap::Edge, TextureMinFilter::Nearest,
-            TextureMagFilter::Nearest, MipmapMode::Linear);
-        m_blur_targets[i] = Framebuffer::Create();
-        m_blur_targets[i]->Attach(*m_blur_buffers[i], 0, 0);
-    }
     m_post_target = Framebuffer::Create();
     m_post_buffer = Texture::Create(
         m_width, m_height, 0, MultiSampleLevel::None, TextureType::Normal,
@@ -132,16 +120,16 @@ void PostProcessSystem::RenderPost()
     int index = 0;
     RenderSubpassInfo info{&index, 1};
     Renderer::BeginRenderSubpass(info);
-    m_post_shader->GetParam("u_bloom")->SetAsBool(m_is_bloom);
-    m_post_shader->GetParam("u_upsample_buffer")
+    m_hdr_shader->GetParam("u_bloom")->SetAsBool(m_is_bloom);
+    m_hdr_shader->GetParam("u_upsample_buffer")
         ->SetAsTexture(m_upsample_buffer.get());
 
-    m_post_shader->GetParam("u_lighting")->SetAsTexture(m_post_buffer.get());
-    m_post_shader->GetParam("u_exposure")->SetAsFloat(m_exposure);
+    m_hdr_shader->GetParam("u_lighting")->SetAsTexture(m_post_buffer.get());
+    m_hdr_shader->GetParam("u_exposure")->SetAsFloat(m_exposure);
 
-    m_post_shader->GetParam("u_gamma")->SetAsFloat(m_gamma_correction);
+    m_hdr_shader->GetParam("u_gamma")->SetAsFloat(m_gamma_correction);
 
-    Renderer::DrawNDCQuad(*m_post_shader);
+    Renderer::DrawNDCQuad(*m_hdr_shader);
 
     Renderer::EndRenderSubpass();
 }

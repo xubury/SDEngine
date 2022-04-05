@@ -97,10 +97,13 @@ void EditorLayer::OnRender()
 
 void EditorLayer::OnTick(float dt)
 {
-    if (!m_is_runtime) {
-        for (auto &system : GetSystems()) {
-            system->OnTick(dt);
-        }
+    // disable key event when pop up window show up (prevent bugs)
+    if (ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId |
+                                        ImGuiPopupFlags_AnyPopupLevel)) {
+        return;
+    }
+    for (auto &system : GetSystems()) {
+        system->OnTick(dt);
     }
 }
 
@@ -176,7 +179,6 @@ void EditorLayer::On(const KeyEvent &e)
         return;
     }
     if (!e.state) return;
-    GetEventDispatcher().PublishEvent(e);
 
     switch (e.keycode) {
         default:
@@ -236,6 +238,11 @@ void EditorLayer::On(const KeyEvent &e)
 
 void EditorLayer::On(const MouseMotionEvent &e)
 {
+    // disable key event when pop up window show up (prevent bugs)
+    if (ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId |
+                                        ImGuiPopupFlags_AnyPopupLevel)) {
+        return;
+    }
     GetEventDispatcher().PublishEvent(e);
 }
 

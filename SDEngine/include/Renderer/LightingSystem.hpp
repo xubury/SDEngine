@@ -94,10 +94,8 @@ class SD_RENDERER_API LightingSystem : public RenderSystem {
     Ref<Renderbuffer> m_depth_buffer;
 
     Ref<Shader> m_ssao_shader;
-    Ref<Framebuffer> m_ssao_target;
     Ref<Texture> m_ssao_buffer;
     Ref<Shader> m_ssao_blur_shader;
-    Ref<Framebuffer> m_ssao_blur_target;
     Ref<Texture> m_ssao_blur_buffer;
 
     bool m_ssao_state;

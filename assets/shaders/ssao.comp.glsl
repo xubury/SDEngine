@@ -1,10 +1,8 @@
 #version 450 core
+layout(local_size_x = 25, local_size_y = 25) in;
+layout(r16f) uniform image2D u_out_image;
 
 #include camera.glsl
-
-layout(location = 0) out float frag_color;
-
-layout(location = 0) in vec2 in_uv;
 
 uniform sampler2D u_position;
 uniform sampler2D u_normal;
@@ -18,11 +16,11 @@ uniform float u_radius;
 uniform float u_bias;
 uniform uint u_power;
 
-float ComputeOcclusion( vec3 random_vec)
+float ComputeOcclusion(vec3 random_vec, vec2 uv)
 {
     // get input for SSAO algorithm
-    vec3 frag_pos = texture(u_position, in_uv).xyz;
-    vec3 normal = texture(u_normal, in_uv).xyz;
+    vec3 frag_pos = texture(u_position, uv).xyz;
+    vec3 normal = texture(u_normal, uv).xyz;
     if (normal == vec3(0)) return 1;
 
     frag_pos = (u_view * vec4(frag_pos, 1.0f)).xyz;
@@ -71,9 +69,14 @@ float ComputeOcclusion( vec3 random_vec)
 
 void main()
 {
+    ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(u_out_image);
+    if (pos.x >= size.x || pos.y >= size.y) {
+        return;
+    }
+    vec2 uv = vec2(pos) / size;
     vec2 tex_size = textureSize(u_position, 0);
-    vec3 random_vec = texture(u_noise, in_uv * tex_size / 4.f).xyz;
-
-    float occlusion = ComputeOcclusion(random_vec);
-    frag_color = pow(occlusion, u_power);
+    vec3 random_vec = texture(u_noise, uv * tex_size / 4.f).xyz;
+    float occlusion = ComputeOcclusion(random_vec, uv);
+    imageStore(u_out_image, pos, vec4(pow(occlusion, u_power)));
 }
