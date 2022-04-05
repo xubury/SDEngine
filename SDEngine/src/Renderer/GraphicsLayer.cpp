@@ -3,6 +3,7 @@
 #include "ImGui/ImGuiWidget.hpp"
 #include "Loader/TextureLoader.hpp"
 #include "Renderer/Renderer2D.hpp"
+#include "Renderer/Renderer3D.hpp"
 #include "ECS/Component.hpp"
 
 namespace SD {
@@ -15,7 +16,8 @@ GraphicsLayer::GraphicsLayer(Device *device, int32_t width, int32_t height,
       m_device(device),
       m_width(width),
       m_height(height),
-      m_msaa(msaa)
+      m_msaa(msaa),
+      m_fps(20)
 {
 }
 
@@ -115,6 +117,11 @@ void GraphicsLayer::OnRender()
     }
     Renderer::EndRenderPass();
 
+    m_renderer2d_debug_str = Renderer2D::GetDebugInfo();
+    m_renderer3d_debug_str = Renderer3D::GetDebugInfo();
+    m_fps.Probe();
+    Renderer2D::Reset();
+    Renderer3D::Reset();
     SD_CORE_ASSERT(Renderer::IsEmptyStack(),
                    "DEBUG: RenderPass Begin/End not pair!")
 }
@@ -125,6 +132,16 @@ void GraphicsLayer::OnImGui()
         for (auto &system : GetSystems()) {
             system->OnImGui();
         }
+        ImGui::Begin("Graphics Debug");
+        {
+            ImGui::TextUnformatted("Renderer2D Debug Info:");
+            ImGui::TextWrapped("%s", m_renderer2d_debug_str.c_str());
+            ImGui::TextUnformatted("Renderer3D Debug Info:");
+            ImGui::TextWrapped("%s", m_renderer3d_debug_str.c_str());
+            ImGui::TextUnformatted("FPS Info:");
+            ImGui::TextUnformatted(std::to_string(m_fps.GetFPS()).c_str());
+        }
+        ImGui::End();
     }
 }
 

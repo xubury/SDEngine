@@ -11,6 +11,9 @@ class SD_RENDERER_API Renderer2D : protected Renderer {
     static void Begin(Camera &camera);
     static void End();
 
+    static void Reset();
+    static std::string GetDebugInfo();
+
     static void SetTextOrigin(int x, int y);
     static Vector2i GetTextCursor();
 

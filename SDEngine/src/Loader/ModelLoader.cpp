@@ -75,7 +75,7 @@ static MeshTopology ConvertAssimpPrimitive(aiPrimitiveType type)
 static Mesh ProcessAiMesh(const aiMesh *assimpMesh)
 {
     const aiVector3D aiZeroVector(0.0f, 0.0f, 0.0f);
-    std::vector<Vertex> vertices;
+    std::vector<Vertex> vertices(assimpMesh->mNumVertices);
     std::vector<uint32_t> indices;
     for (uint32_t i = 0; i < assimpMesh->mNumVertices; ++i) {
         const aiVector3D pos = assimpMesh->mVertices[i];
@@ -90,8 +90,7 @@ static Mesh ProcessAiMesh(const aiMesh *assimpMesh)
         const aiVector3D bi_tangent = assimpMesh->HasTangentsAndBitangents()
                                           ? assimpMesh->mBitangents[i]
                                           : aiZeroVector;
-        vertices.push_back(
-            ConstructVertex(pos, uv, normal, tangent, bi_tangent));
+        vertices[i] = ConstructVertex(pos, uv, normal, tangent, bi_tangent);
     }
     for (uint32_t i = 0; i < assimpMesh->mNumFaces; ++i) {
         const aiFace &face = assimpMesh->mFaces[i];

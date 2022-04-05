@@ -8,6 +8,7 @@
 #include "Renderer/SkyboxSystem.hpp"
 #include "Renderer/PostProcessSystem.hpp"
 #include "Renderer/SpriteRenderSystem.hpp"
+#include "Utility/Timing.hpp"
 
 namespace SD {
 
@@ -49,6 +50,10 @@ class SD_RENDERER_API GraphicsLayer : public Layer {
     SkyboxSystem* m_skybox_system;
     SpriteRenderSystem* m_sprite_system;
     PostProcessSystem* m_post_process_system;
+
+    FPSCounter m_fps;
+    std::string m_renderer2d_debug_str;
+    std::string m_renderer3d_debug_str;
 };
 
 }  // namespace SD

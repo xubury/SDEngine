@@ -47,35 +47,41 @@ struct SD_RENDERER_API Circle {
 };
 
 struct SD_RENDERER_API Renderer2DData {
-    static const uint32_t MAX_QUADS = 20000;
-    static const uint32_t MAX_LINES = 20000;
-    static const uint32_t MAX_LINES_VERTICES = MAX_LINES * 2;
-    static const uint32_t MAX_INDICES = MAX_QUADS * 6;
-    static const uint32_t MAX_TEXTURE_SLOTS = 32;
+    static const uint32_t MAX_QUADS{20000};
+    static const uint32_t MAX_LINES{20000};
+    static const uint32_t MAX_LINES_VERTICES{MAX_LINES * 2};
+    static const uint32_t MAX_INDICES{MAX_QUADS * 6};
+    static const uint32_t MAX_TEXTURE_SLOTS{32};
 
     Ref<Texture> default_texture;
 
     Ref<VertexArray> line_vao;
-    size_t line_vertex_cnt = 0;
+    size_t line_vertex_cnt{0};
+    size_t line_draw_call{0};
+    size_t line_cnt{0};
     Ref<VertexBuffer> line_vbo;
     std::array<Line, MAX_LINES> line_buffer;
-    Line* line_buffer_ptr = nullptr;
+    Line* line_buffer_ptr{nullptr};
 
     Ref<VertexArray> quad_vao;
     Ref<VertexBuffer> quad_vbo;
     Ref<IndexBuffer> quad_ibo;
-    size_t quad_index_cnt = 0;
+    size_t quad_index_cnt{0};
+    size_t quad_cnt{0};
+    size_t quad_draw_call{0};
     std::array<Quad, MAX_QUADS> quad_buffer;
     Quad* quad_buffer_ptr = nullptr;
 
-    uint32_t texture_index = 1;
+    uint32_t texture_index{1};
     std::array<const Texture*, MAX_TEXTURE_SLOTS> texture_slots;
 
     Ref<VertexArray> circle_vao;
     Ref<VertexBuffer> circle_vbo;
-    size_t circle_index_cnt = 0;
+    size_t circle_index_cnt{0};
+    size_t circie_cnt{0};
+    size_t circle_draw_call{0};
     std::array<Circle, MAX_QUADS> circle_buffer;
-    Circle* circle_buffer_ptr = nullptr;
+    Circle* circle_buffer_ptr{nullptr};
 
     Vector2i text_origin;
     Vector2i text_cursor;
@@ -197,6 +203,28 @@ void Renderer2D::End()
     m_device->SetShader(nullptr);
 }
 
+void Renderer2D::Reset()
+{
+    m_data.line_cnt = 0;
+    m_data.line_draw_call = 0;
+
+    m_data.quad_cnt = 0;
+    m_data.quad_draw_call = 0;
+
+    m_data.circie_cnt = 0;
+    m_data.circle_draw_call = 0;
+}
+
+std::string Renderer2D::GetDebugInfo()
+{
+    return fmt::format(
+        "Line: total draw counts:{}, total draw calls:{}.\n"
+        "Quad: total draw counts:{}, total draw calls:{}.\n"
+        "Cirlce: total draw counts:{}, total draw calls:{}.\n",
+        m_data.line_cnt, m_data.line_draw_call, m_data.quad_cnt,
+        m_data.quad_draw_call, m_data.circie_cnt, m_data.circle_draw_call);
+}
+
 void Renderer2D::StartBatch()
 {
     // Reset text
@@ -259,6 +287,8 @@ void Renderer2D::FlushLines()
         m_device->SetShader(m_line_shader.get());
         Submit(*m_data.line_vao, MeshTopology::Lines, m_data.line_vertex_cnt, 0,
                false);
+        m_data.line_cnt += offset;
+        ++m_data.line_draw_call;
     }
 }
 
@@ -277,6 +307,8 @@ void Renderer2D::FlushQuads()
         m_device->SetShader(m_sprite_shader.get());
         Submit(*m_data.quad_vao, MeshTopology::Triangles, m_data.quad_index_cnt,
                0);
+        m_data.quad_cnt += offset;
+        ++m_data.quad_draw_call;
     }
 }
 
@@ -291,6 +323,8 @@ void Renderer2D::FlushCircles()
         m_device->SetShader(m_circle_shader.get());
         Submit(*m_data.circle_vao, MeshTopology::Triangles,
                m_data.circle_index_cnt, 0);
+        m_data.circie_cnt += offset;
+        ++m_data.circle_draw_call;
     }
 }
 
