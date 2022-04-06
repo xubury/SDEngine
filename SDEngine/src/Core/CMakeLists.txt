@@ -15,15 +15,16 @@ set(Core_Include
     ${Include_Root}/Application.hpp
     ${Include_Root}/Export.hpp
     ${Include_Root}/Event.hpp
-    ${Include_Root}/EventDispatcher.hpp
     ${Include_Root}/Window.hpp
-    ${Include_Root}/ECSSystem.hpp
+    ${Include_Root}/System.hpp
     ${Include_Root}/Keyboard.hpp
     ${Include_Root}/Mouse.hpp
     ${Include_Root}/Layer.hpp
     ${Include_Root}/ImGuiLayer.hpp
+    ${Include_Root}/GraphicsLayer.hpp
     ${Include_Root}/Event.hpp
-    ${Include_Root}/Input.hpp)
+    ${Include_Root}/Input.hpp
+    ${Include_Root}/InputLayer.hpp)
 
 set(Core_Src
     ${OpenGL_Src}
@@ -31,7 +32,9 @@ set(Core_Src
     ${Src_Root}/Window.cpp
     ${Src_Root}/Keyboard.cpp
     ${Src_Root}/ImGuiLayer.cpp
-    ${Src_Root}/Input.cpp)
+    ${Src_Root}/GraphicsLayer.cpp
+    ${Src_Root}/Input.cpp
+    ${Src_Root}/InputLayer.cpp)
 
 add_library(sd-core ${Core_Src})
 
@@ -50,8 +53,7 @@ target_link_libraries(sd-core
     PUBLIC
     sd-utility
     sd-imgui
-    sd-ecs
-    sd-asset
+    sd-renderer
 
     PRIVATE
     SDL2::SDL2)

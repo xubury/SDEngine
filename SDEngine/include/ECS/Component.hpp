@@ -89,17 +89,15 @@ struct SD_ECS_API ModelComponent {
 struct SD_ECS_API DirectionalLightComponent {
     DirectionalLight light;
     bool is_cast_shadow{false};
-    CascadeShadow shadow;
 
-    SERIALIZE(light, is_cast_shadow, shadow)
+    SERIALIZE(light, is_cast_shadow)
 };
 
 struct SD_ECS_API PointLightComponent {
     PointLight light;
     bool is_cast_shadow{false};
-    PointShadow shadow;
 
-    SERIALIZE(light, is_cast_shadow, shadow)
+    SERIALIZE(light, is_cast_shadow)
 };
 
 struct SD_ECS_API TextComponent {
@@ -127,7 +125,7 @@ struct SD_ECS_API SpriteFrame {
     ResourceId texture_id;
     std::array<Vector2f, 2> uvs{Vector2f(0), Vector2f(1)};
     Vector2f size{10.0f};
-    int priority;
+    int priority{0};
 
     SERIALIZE(texture_id, uvs, size, priority)
 };
@@ -151,26 +149,6 @@ inline void OnComponentAdded<TransformComponent>(entt::registry& reg,
 {
     auto& data = reg.get<TransformComponent>(ent);
     data.ecs = &reg;
-}
-
-template <>
-inline void OnComponentAdded<DirectionalLightComponent>(entt::registry& reg,
-                                                        entt::entity ent)
-{
-    auto& lightComp = reg.get<DirectionalLightComponent>(ent);
-    if (lightComp.is_cast_shadow) {
-        lightComp.shadow.CreateShadowMap();
-    }
-}
-
-template <>
-inline void OnComponentAdded<PointLightComponent>(entt::registry& reg,
-                                                  entt::entity ent)
-{
-    auto& lightComp = reg.get<PointLightComponent>(ent);
-    if (lightComp.is_cast_shadow) {
-        lightComp.shadow.CreateShadowMap();
-    }
 }
 
 template <>

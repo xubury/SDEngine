@@ -134,6 +134,8 @@ enum class DepthFunc {
 
 enum class Access { ReadOnly, WriteOnly, ReadWrite };
 
+enum class BarrierBit { ImageAccess };
+
 }  // namespace SD
 
 #endif /* SD_GRAPHICS_HPP */

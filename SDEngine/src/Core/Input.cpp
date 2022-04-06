@@ -1,5 +1,4 @@
 #include "Core/Input.hpp"
-#include "Core/Event.hpp"
 
 namespace SD {
 

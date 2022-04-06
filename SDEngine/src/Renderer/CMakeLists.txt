@@ -6,24 +6,18 @@ set(Renderer_Include
     ${Include_Root}/Export.hpp
     ${Include_Root}/Event.hpp
     ${Include_Root}/RenderSystem.hpp
-    ${Include_Root}/CameraSystem.hpp
-    ${Include_Root}/GraphicsLayer.hpp
-    ${Include_Root}/LightingSystem.hpp
-    ${Include_Root}/ParticleSystem.hpp
-    ${Include_Root}/PostProcessSystem.hpp
-    ${Include_Root}/SkyboxSystem.hpp
-    ${Include_Root}/SpriteRenderSystem.hpp
+    ${Include_Root}/DeferredRenderer.hpp
+    ${Include_Root}/PostProcessRenderer.hpp
+    ${Include_Root}/SkyboxRenderer.hpp
+    ${Include_Root}/SpriteRenderer.hpp
     ${Include_Root}/Renderer2D.hpp
     ${Include_Root}/Renderer3D.hpp)
 
 set(Renderer_Src
-    ${Src_Root}/CameraSystem.cpp
-    ${Src_Root}/GraphicsLayer.cpp
-    ${Src_Root}/LightingSystem.cpp
-    ${Src_Root}/ParticleSystem.cpp
-    ${Src_Root}/PostProcessSystem.cpp
-    ${Src_Root}/SkyboxSystem.cpp
-    ${Src_Root}/SpriteRenderSystem.cpp
+    ${Src_Root}/DeferredRenderer.cpp
+    ${Src_Root}/PostProcessRenderer.cpp
+    ${Src_Root}/SkyboxRenderer.cpp
+    ${Src_Root}/SpriteRenderer.cpp
     ${Src_Root}/Renderer.cpp
     ${Src_Root}/Renderer2D.cpp
     ${Src_Root}/Renderer3D.cpp)
@@ -43,11 +37,11 @@ endif()
 
 target_link_libraries(sd-renderer
     PUBLIC
-    sd-core
     sd-utility
     sd-graphics
-
-    PRIVATE
+    sd-imgui
+    sd-ecs
+    sd-asset
     sd-loader)
 
 target_include_directories(sd-renderer

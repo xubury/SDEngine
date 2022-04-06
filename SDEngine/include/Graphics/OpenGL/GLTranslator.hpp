@@ -38,6 +38,8 @@ GLenum SD_GRAPHICS_API Translate(DepthFunc depth_func);
 
 GLenum SD_GRAPHICS_API Translate(Access access);
 
+GLenum SD_GRAPHICS_API Translate(BarrierBit bit);
+
 }  // namespace SD
 
 #endif /* SD_GL_TRANSLATOR_HPP */

@@ -6,7 +6,6 @@
 #include "Core/Keyboard.hpp"
 #include "Core/Mouse.hpp"
 #include "Core/Export.hpp"
-#include "Core/EventDispatcher.hpp"
 
 #include <unordered_map>
 
@@ -24,13 +23,13 @@ class SD_CORE_API Input {
 
     static Vector2f GetMouseCoord();
 
+   private:
+    friend class InputLayer;
     static void Tick();
 
     static void SetKeyState(Keycode keycode, bool state);
     static void SetMouseButtonState(MouseButton mouse, bool state);
     static void SetMouseCoord(float x, float y);
-
-   private:
     static std::unordered_map<Keycode, bool> s_key;
     static std::unordered_map<Keycode, bool> s_last_key;
 

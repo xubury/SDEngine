@@ -1,4 +1,4 @@
-#include "Renderer/PostProcessSystem.hpp"
+#include "Renderer/PostProcessRenderer.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Loader/ShaderLoader.hpp"
 #include "ImGui/ImGuiWidget.hpp"
@@ -6,9 +6,8 @@
 
 namespace SD {
 
-PostProcessSystem::PostProcessSystem(int32_t width, int32_t height)
-    : ECSSystem("PostProcessSystem"),
-      m_width(width),
+PostProcessRenderer::PostProcessRenderer(int32_t width, int32_t height)
+    : m_width(width),
       m_height(height),
       m_bloom_threshold(1.0),
       m_bloom_soft_threshold(0.8),
@@ -16,13 +15,6 @@ PostProcessSystem::PostProcessSystem(int32_t width, int32_t height)
       m_exposure(1.2),
       m_gamma_correction(1.2)
 {
-}
-
-void PostProcessSystem::OnInit()
-{
-    ECSSystem::OnInit();
-
-    auto &dispatcher = GetEventDispatcher();
     auto &settings = Application::GetApp().GetSettings();
     m_is_bloom = settings.GetBoolean("post process", "bloom", m_is_bloom);
     m_bloom_threshold =
@@ -32,17 +24,14 @@ void PostProcessSystem::OnInit()
     m_exposure = settings.GetFloat("post process", "exposure", m_exposure);
     m_gamma_correction = settings.GetFloat("post process", "gamma correction",
                                            m_gamma_correction);
-    m_size_handler = dispatcher.Register(this, &PostProcessSystem::OnSizeEvent);
 
     m_hdr_shader = ShaderLoader::LoadShader("assets/shaders/quad.vert.glsl",
                                             "assets/shaders/hdr.frag.glsl");
     m_bloom_shader = ShaderLoader::LoadShader("assets/shaders/bloom.comp.glsl");
-    InitBuffers();
 }
 
-void PostProcessSystem::OnDestroy()
+PostProcessRenderer::~PostProcessRenderer()
 {
-    auto &dispatcher = GetEventDispatcher();
     auto &settings = Application::GetApp().GetSettings();
     settings.SetBoolean("post process", "bloom", m_is_bloom);
     settings.SetFloat("post process", "bloom threshold", m_bloom_threshold);
@@ -50,11 +39,16 @@ void PostProcessSystem::OnDestroy()
                       m_bloom_soft_threshold);
     settings.SetFloat("post process", "exposure", m_exposure);
     settings.SetFloat("post process", "gamma correction", m_gamma_correction);
-    dispatcher.RemoveHandler(m_size_handler);
-    ECSSystem::OnDestroy();
 }
 
-void PostProcessSystem::InitBuffers()
+void PostProcessRenderer::SetRenderSize(int32_t width, int32_t height)
+{
+    m_width = width;
+    m_height = height;
+    InitBuffers();
+}
+
+void PostProcessRenderer::InitBuffers()
 {
     m_post_target = Framebuffer::Create();
     m_post_buffer = Texture::Create(
@@ -74,30 +68,26 @@ void PostProcessSystem::InitBuffers()
         m_downsample_buffer->GetMipmapLevels() - 1);
 }
 
-void PostProcessSystem::OnImGui()
+void PostProcessRenderer::ImGui()
 {
-    ImGui::Begin("PostProcess System");
-    {
-        ImGui::SliderFloat("Exposure", &m_exposure, 0, 10);
-        ImGui::SliderFloat("Gamma Correction", &m_gamma_correction, 0.1, 3);
-        ImGui::Checkbox("Bloom", &m_is_bloom);
-        ImGui::SliderFloat("Bloom Threshold", &m_bloom_threshold, 0, 1.0);
-        ImGui::SliderFloat("Bloom Soft Threshold", &m_bloom_soft_threshold,
-                           0.01, 1.0f);
-        static int base_level = 0;
-        static int buffer_index = 0;
-        ImGui::SliderInt("Buffer index", &buffer_index, 0, 1);
-        Texture *buffer = buffer_index == 0 ? m_downsample_buffer.get()
-                                            : m_upsample_buffer.get();
-        ImGui::SliderInt("Base level", &base_level, 0,
-                         buffer->GetMipmapLevels() - 1);
-        buffer->SetBaseLevel(base_level);
-        ImGui::DrawTexture(*buffer, ImVec2(0, 1), ImVec2(1, 0));
-    }
-    ImGui::End();
+    ImGui::SliderFloat("Exposure", &m_exposure, 0, 10);
+    ImGui::SliderFloat("Gamma Correction", &m_gamma_correction, 0.1, 3);
+    ImGui::Checkbox("Bloom", &m_is_bloom);
+    ImGui::SliderFloat("Bloom Threshold", &m_bloom_threshold, 0, 1.0);
+    ImGui::SliderFloat("Bloom Soft Threshold", &m_bloom_soft_threshold, 0.01,
+                       1.0f);
+    static int base_level = 0;
+    static int buffer_index = 0;
+    ImGui::SliderInt("Buffer index", &buffer_index, 0, 1);
+    Texture *buffer =
+        buffer_index == 0 ? m_downsample_buffer.get() : m_upsample_buffer.get();
+    ImGui::SliderInt("Base level", &base_level, 0,
+                     buffer->GetMipmapLevels() - 1);
+    buffer->SetBaseLevel(base_level);
+    ImGui::DrawTexture(*buffer, ImVec2(0, 1), ImVec2(1, 0));
 }
 
-void PostProcessSystem::OnRender()
+void PostProcessRenderer::Render()
 {
     Renderer::BlitToBuffer(0, m_post_target.get(), 0,
                            BufferBitMask::ColorBufferBit);
@@ -108,14 +98,7 @@ void PostProcessSystem::OnRender()
     RenderPost();
 }
 
-void PostProcessSystem::OnSizeEvent(const RenderSizeEvent &event)
-{
-    m_width = event.width;
-    m_height = event.height;
-    InitBuffers();
-}
-
-void PostProcessSystem::RenderPost()
+void PostProcessRenderer::RenderPost()
 {
     int index = 0;
     RenderSubpassInfo info{&index, 1};
@@ -134,7 +117,7 @@ void PostProcessSystem::RenderPost()
     Renderer::EndRenderSubpass();
 }
 
-void PostProcessSystem::Downsample(Texture &src, Texture &dst)
+void PostProcessRenderer::Downsample(Texture &src, Texture &dst)
 {
     m_bloom_shader->GetParam("u_downsample")->SetAsBool(true);
     m_bloom_shader->GetParam("u_threshold")->SetAsFloat(m_bloom_threshold);
@@ -160,12 +143,12 @@ void PostProcessSystem::Downsample(Texture &src, Texture &dst)
             m_bloom_shader->GetParam("u_level")->SetAsInt(base_level - 1);
             m_bloom_shader->GetParam("u_in_texture")->SetAsTexture(&dst);
         }
-        Renderer::DispatchCompute(*m_bloom_shader, std::ceil(m_width / 13.f),
+        Renderer::ComputeImage(*m_bloom_shader, std::ceil(m_width / 13.f),
                                   std::ceil(m_height / 13.f), 1);
     }
 }
 
-void PostProcessSystem::Upsample(Texture &src, Texture &dst)
+void PostProcessRenderer::Upsample(Texture &src, Texture &dst)
 {
     const int max_level = dst.GetMipmapLevels() - 1;
     m_bloom_shader->GetParam("u_downsample")->SetAsBool(false);
@@ -186,12 +169,12 @@ void PostProcessSystem::Upsample(Texture &src, Texture &dst)
             m_bloom_shader->GetParam("u_down_texture")->SetAsTexture(&src);
             m_bloom_shader->GetParam("u_in_texture")->SetAsTexture(&dst);
         }
-        Renderer::DispatchCompute(*m_bloom_shader, std::ceil(m_width / 13.f),
+        Renderer::ComputeImage(*m_bloom_shader, std::ceil(m_width / 13.f),
                                   std::ceil(m_height / 13.f), 1);
     }
 }
 
-void PostProcessSystem::RenderBloom()
+void PostProcessRenderer::RenderBloom()
 {
     // make sure base level is readable
     m_downsample_buffer->SetBaseLevel(0);
@@ -199,20 +182,5 @@ void PostProcessSystem::RenderBloom()
     Downsample(*m_post_buffer, *m_downsample_buffer);
     Upsample(*m_downsample_buffer, *m_upsample_buffer);
 }
-
-void PostProcessSystem::SetExposure(float exposure) { m_exposure = exposure; }
-
-float PostProcessSystem::GetExposure() { return m_exposure; }
-
-void PostProcessSystem::SetBloom(bool isBloom) { m_is_bloom = isBloom; }
-
-bool PostProcessSystem::GetBloom() { return m_is_bloom; }
-
-void PostProcessSystem::SetGammaCorrection(float gamma)
-{
-    m_gamma_correction = gamma;
-}
-
-float PostProcessSystem::GetGammaCorrection() { return m_gamma_correction; }
 
 }  // namespace SD

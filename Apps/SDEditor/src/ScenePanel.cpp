@@ -1,4 +1,5 @@
 #include "ScenePanel.hpp"
+#include "EditorEvent.hpp"
 #include "Utility/Log.hpp"
 #include "Utility/String.hpp"
 #include "ImGui/ImGuiWidget.hpp"
@@ -12,34 +13,15 @@
 
 namespace SD {
 
-ScenePanel::ScenePanel()
-    : ECSSystem("ScenePanel"),
+ScenePanel::ScenePanel(EventDispatcher *dispatcher)
+    : m_dispatcher(dispatcher),
       m_gizmo_mode(ImGuizmo::WORLD),
       m_gizmo_op(ImGuizmo::TRANSLATE)
 {
-}
-
-void ScenePanel::OnPush()
-{
-    auto &dispatcher = GetEventDispatcher();
-    m_size_handler = dispatcher.Register(this, &ScenePanel::OnSizeEvent);
-    m_entity_select_handler = dispatcher.Register<EntitySelectEvent>(
+    m_entity_select_handler = dispatcher->Register<EntitySelectEvent>(
         [this](const EntitySelectEvent &e) {
             this->m_selected_entity = {e.entity_id, e.scene};
         });
-}
-
-void ScenePanel::OnPop()
-{
-    auto &dispatcher = GetEventDispatcher();
-    dispatcher.RemoveHandler(m_size_handler);
-    dispatcher.RemoveHandler(m_entity_select_handler);
-}
-
-void ScenePanel::OnSizeEvent(const RenderSizeEvent &event)
-{
-    m_width = event.width;
-    m_height = event.height;
 }
 
 void ScenePanel::Reset()
@@ -52,17 +34,15 @@ ImGuizmo::MODE ScenePanel::GetGizmoMode() const { return m_gizmo_mode; }
 
 ImGuizmo::OPERATION ScenePanel::GetGizmoOperation() const { return m_gizmo_op; }
 
-void ScenePanel::OnImGui()
+void ScenePanel::ImGui(Scene *scene)
 {
-    auto &dispatcher = GetEventDispatcher();
-    auto &scene = GetScene();
     ImGui::Begin("Scene Hierarchy");
 
-    GetScene().each([&](auto entityID) {
-        Entity entity{entityID, &scene};
+    scene->each([&](auto entityID) {
+        Entity entity{entityID, scene};
 
         TransformComponent &data = entity.GetComponent<TransformComponent>();
-        Entity parent(data.parent, &scene);
+        Entity parent(data.parent, scene);
         if (!parent) {
             DrawEntityNode(entity);
         }
@@ -70,18 +50,18 @@ void ScenePanel::OnImGui()
 
     if (m_entity_to_destroy) {
         if (m_selected_entity == m_entity_to_destroy)
-            dispatcher.PublishEvent(EntitySelectEvent());
+            m_dispatcher->PublishEvent(EntitySelectEvent());
         m_entity_to_destroy.Destroy();
         m_entity_to_destroy = {};
     }
 
     if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-        dispatcher.PublishEvent(EntitySelectEvent());
+        m_dispatcher->PublishEvent(EntitySelectEvent());
 
     // Right-click on blank space
     if (ImGui::BeginPopupContextWindow(0, 1, false)) {
         if (ImGui::MenuItem("Create Empty Entity"))
-            scene.CreateEntity("Empty Entity");
+            scene->CreateEntity("Empty Entity");
 
         ImGui::EndPopup();
     }
@@ -98,7 +78,7 @@ void ScenePanel::OnImGui()
             Entity entity = *(Entity *)payload->Data;
 
             Entity parent(entity.GetComponent<TransformComponent>().parent,
-                          &scene);
+                          scene);
             if (parent) {
                 parent.RemoveChild(entity);
             }
@@ -118,8 +98,6 @@ void ScenePanel::OnImGui()
 
 void ScenePanel::DrawEntityNode(Entity &entity)
 {
-    auto &dispatcher = GetEventDispatcher();
-    auto &scene = GetScene();
     auto &data = entity.GetComponent<TransformComponent>();
     auto &tag = entity.GetComponent<TagComponent>().tag;
 
@@ -135,7 +113,8 @@ void ScenePanel::DrawEntityNode(Entity &entity)
     bool opened = ImGui::TreeNodeEx((void *)(uint64_t)(entt::entity)entity,
                                     flags, "%s", tag.c_str());
     if (ImGui::IsItemClicked(0)) {
-        dispatcher.PublishEvent(EntitySelectEvent{entity, entity.GetScene()});
+        m_dispatcher->PublishEvent(
+            EntitySelectEvent{entity, entity.GetScene()});
     }
 
     if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
@@ -155,17 +134,17 @@ void ScenePanel::DrawEntityNode(Entity &entity)
     }
 
     if (ImGui::BeginPopupContextItem()) {
-        dispatcher.PublishEvent(
+        m_dispatcher->PublishEvent(
             EntitySelectEvent{m_selected_entity, m_selected_entity.GetScene()});
         if (ImGui::MenuItem("Delete Entity")) {
             m_entity_to_destroy = entity;
         }
         if (ImGui::MenuItem("Create Empty Entity")) {
-            Entity child = GetScene().CreateEntity("Empty Entity");
+            Entity child = entity.GetScene()->CreateEntity("Empty Entity");
             entity.AddChild(child);
         }
         if (ImGui::MenuItem("Clone Entity")) {
-            scene.CloneEntity(entity);
+            entity.GetScene()->CloneEntity(entity);
         }
 
         ImGui::EndPopup();
@@ -173,7 +152,7 @@ void ScenePanel::DrawEntityNode(Entity &entity)
 
     if (opened) {
         for (entt::entity childId : data.children) {
-            Entity child(childId, &scene);
+            Entity child(childId, entity.GetScene());
             DrawEntityNode(child);
         }
         ImGui::TreePop();
@@ -277,9 +256,9 @@ void ScenePanel::DrawComponents(Entity &entity)
         }
         if (ImGui::MenuItem("Camera")) {
             if (!entity.HasComponent<CameraComponent>())
-                entity.AddComponent<CameraComponent>(
-                    CameraType::Perspective, glm::radians(45.f), m_width,
-                    m_height, 0.1f, 1000.f);
+                entity.AddComponent<CameraComponent>(CameraType::Perspective,
+                                                     glm::radians(45.f), 400,
+                                                     400, 0.1f, 1000.f);
             else
                 SD_CORE_WARN("This entity already has the Camera Component!");
             ImGui::CloseCurrentPopup();
@@ -351,52 +330,21 @@ void ScenePanel::DrawComponents(Entity &entity)
     DrawComponent<DirectionalLightComponent>(
         "Directional Light", entity, [&](DirectionalLightComponent &lightComp) {
             DirectionalLight &light = lightComp.light;
-            CascadeShadow &shadow = lightComp.shadow;
             ImGui::ColorEdit3("Diffuse", &light.diffuse[0]);
             ImGui::ColorEdit3("Ambient", &light.ambient[0]);
             ImGui::ColorEdit3("Specular", &light.specular[0]);
-            if (ImGui::Checkbox("Cast Shadow", &lightComp.is_cast_shadow)) {
-                if (lightComp.is_cast_shadow) {
-                    shadow.CreateShadowMap();
-                }
-                else {
-                    shadow.DestroyShadowMap();
-                }
-            }
-            if (lightComp.is_cast_shadow) {
-                auto planes = shadow.GetCascadePlanes();
-                int num_of_cascades = planes.size();
-                if (ImGui::SliderInt("Num of Cascades", &num_of_cascades, 1,
-                                     4)) {
-                    shadow.SetNumOfCascades(num_of_cascades);
-                }
-                if (ImGui::InputFloat4("Cascades", planes.data())) {
-                    shadow.SetCascadePlanes(planes);
-                }
-            }
+            (ImGui::Checkbox("Cast Shadow", &lightComp.is_cast_shadow));
         });
     DrawComponent<PointLightComponent>(
         "Point Light", entity, [&](PointLightComponent &lightComp) {
             PointLight &light = lightComp.light;
-            PointShadow &shadow = lightComp.shadow;
-            if (ImGui::ColorEdit3("Diffuse", &light.diffuse[0])) {
-            }
-            if (ImGui::ColorEdit3("Ambient", &light.ambient[0])) {
-            }
-            if (ImGui::ColorEdit3("Specular", &light.specular[0])) {
-            }
-            if (ImGui::Checkbox("Cast Shadow", &lightComp.is_cast_shadow)) {
-                if (lightComp.is_cast_shadow) {
-                    shadow.CreateShadowMap();
-                }
-                else {
-                    shadow.DestroyShadowMap();
-                }
-            }
-            float far_z = shadow.GetFarZ();
-            if (ImGui::SliderFloat("Shadow Far Z", &far_z, 1.0f, 500.f)) {
-                shadow.SetFarZ(far_z);
-            }
+            ImGui::ColorEdit3("Diffuse", &light.diffuse[0]);
+
+            ImGui::ColorEdit3("Ambient", &light.ambient[0]);
+
+            ImGui::ColorEdit3("Specular", &light.specular[0]);
+
+            ImGui::Checkbox("Cast Shadow", &lightComp.is_cast_shadow);
             ImGui::SliderFloat("Constant", &light.constant, 0.f, 1.0f);
             ImGui::SliderFloat("Linear", &light.linear, 0.f, 1.0f);
             ImGui::SliderFloat("Quadratic", &light.quadratic, 0.0002f, 0.1f,

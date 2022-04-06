@@ -28,8 +28,7 @@ class SD_GRAPHICS_API Device {
 
     virtual void DispatchCompute(int32_t num_group_x, int32_t num_group_y,
                                  int32_t num_group_z) = 0;
-    // TODO
-    virtual void MemoryBarrier() = 0;
+    virtual void MemoryBarrier(BarrierBit bit) = 0;
 
     virtual void DrawElements(MeshTopology topology, int count,
                               size_t offset) = 0;

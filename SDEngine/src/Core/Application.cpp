@@ -1,5 +1,5 @@
 #include "Core/Application.hpp"
-#include "Core/Input.hpp"
+#include "Core/InputLayer.hpp"
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
 
@@ -94,7 +94,12 @@ Application::~Application() {}
 void Application::OnInit()
 {
     m_imgui = CreateLayer<ImGuiLayer>(m_window.get());
+    m_graphics_layer =
+        CreateLayer<GraphicsLayer>(m_device.get(), m_window->GetWidth(),
+                                   m_window->GetHeight(), m_window->GetMSAA());
     PushOverlay(m_imgui);
+    PushLayer(CreateLayer<InputLayer>());
+    PushLayer(m_graphics_layer);
 }
 
 void Application::OnDestroy()
@@ -117,12 +122,20 @@ void Application::OnDestroy()
 
 void Application::PushLayer(Layer *layer)
 {
+    if (m_layers.Has(layer)) {
+        SD_CORE_WARN("Trying to push layer that already in the stack!");
+        return;
+    }
     layer->OnPush();
     m_layers.Push(layer);
 }
 
 void Application::PushOverlay(Layer *layer)
 {
+    if (m_layers.Has(layer)) {
+        SD_CORE_WARN("Trying to push layer that already in the stack!");
+        return;
+    }
     layer->OnPush();
     m_layers.PushOverlay(layer);
 }
@@ -179,7 +192,6 @@ void Application::Tick(float dt)
     for (auto iter = m_layers.rbegin(); iter != m_layers.rend(); ++iter) {
         (*iter)->OnTick(dt);
     }
-    Input::Tick();
 }
 
 void Application::Render()

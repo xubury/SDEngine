@@ -1,7 +1,6 @@
 #include "Core/OpenGL/GLWindow.hpp"
 #include "Core/Event.hpp"
 #include "Core/Layer.hpp"
-#include "Core/Input.hpp"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl.h"
 
@@ -77,7 +76,6 @@ void GLWindow::PollEvents(EventStack<Layer *> &layers)
                 event.x_rel = sdl_event.motion.xrel;
                 event.y_rel = sdl_event.motion.yrel;
                 ProcessEvent(event, layers);
-                Input::SetMouseCoord(event.x, event.y);
             } break;
             case SDL_MOUSEBUTTONDOWN:
             case SDL_MOUSEBUTTONUP: {
@@ -89,8 +87,6 @@ void GLWindow::PollEvents(EventStack<Layer *> &layers)
                 event.clicks = sdl_event.button.clicks;
                 event.state = sdl_event.button.state;
                 ProcessEvent(event, layers);
-                Input::SetMouseCoord(event.x, event.y);
-                Input::SetMouseButtonState(event.button, event.state);
             } break;
             case SDL_MOUSEWHEEL: {
                 MouseWheelEvent event;
@@ -107,7 +103,6 @@ void GLWindow::PollEvents(EventStack<Layer *> &layers)
                 event.state = sdl_event.key.state;
                 ProcessEvent(event, layers);
 
-                Input::SetKeyState(event.keycode, event.state);
             } break;
             case SDL_WINDOWEVENT: {
                 switch (sdl_event.window.event) {

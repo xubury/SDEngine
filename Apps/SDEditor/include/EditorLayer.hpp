@@ -1,14 +1,15 @@
 #ifndef SD_EDITOR_LAYER_HPP
 #define SD_EDITOR_LAYER_HPP
 
-#include "Renderer/GraphicsLayer.hpp"
+#include "Core/GraphicsLayer.hpp"
 #include "Core/Layer.hpp"
 #include "Graphics/Camera.hpp"
 
 #include "ScenePanel.hpp"
-#include "EditorCameraSystem.hpp"
+#include "EditorCamera.hpp"
 #include "AnimationEditor.hpp"
-#include "TileMapSystem.hpp"
+#include "TileMapEditor.hpp"
+#include "ContentBrowser.hpp"
 
 #include "Asset/SceneAsset.hpp"
 
@@ -22,24 +23,20 @@ class EditorLayer : public Layer {
 
     void OnInit() override;
 
-    void OnPush() override;
-
-    void OnPop() override;
-
     void OnTick(float dt) override;
 
     void OnRender() override;
 
     void OnImGui() override;
 
-    void NewScene(SceneAsset* scene);
+    void SetCurrentScene(Scene* scene);
     void OpenLoadSceneDialog();
     void OpenSaveSceneDialog();
 
    private:
     void On(const KeyEvent& e) override;
     void On(const AppQuitEvent& e) override;
-    void On(const MouseMotionEvent &e) override;
+    void On(const MouseMotionEvent& e) override;
 
     void InitBuffers();
 
@@ -56,10 +53,12 @@ class EditorLayer : public Layer {
     EditorMode m_mode;
     GraphicsLayer* m_graphics_layer;
 
-    ScenePanel* m_scene_panel;
-    EditorCameraSystem* m_editor_camera_system;
-    TileMapSystem* m_tile_map_system{nullptr};
-    AnimationEditor* m_animation_editor;
+    EventDispatcher m_dispatcher;
+    ScenePanel m_scene_panel;
+    EditorCamera m_editor_camera;
+    TileMapEditor m_tile_map_editor;
+    AnimationEditor m_animation_editor;
+    ContentBrowser m_content_browser;
 
     Vector2i m_viewport_pos;
 
@@ -77,6 +76,7 @@ class EditorLayer : public Layer {
     ImFileDialogInfo m_file_dialog_info;
 
     SceneAsset* m_scene_asset;
+    Scene* m_current_scene;
     Entity m_selected_entity;
 
     HandlerRegistration m_entity_select_handler;

@@ -1,7 +1,6 @@
 #ifndef SD_CONTENT_BROWSER_HPP
 #define SD_CONTENT_BROWSER_HPP
 
-#include "Core/ECSSystem.hpp"
 #include "Graphics/Texture.hpp"
 
 namespace SD {
@@ -10,16 +9,13 @@ constexpr const char* DROP_ASSET_ITEM = "DROP_ASSET_ITEM";
 
 class Asset;
 
-class ContentBrowser : public ECSSystem {
+class ContentBrowser {
    public:
     ContentBrowser();
 
-    void OnInit() override;
-
-    void OnImGui() override;
+    void ImGui();
 
    private:
-
     void DrawModelCreation();
     void DrawTextureCreation();
     void DrawSceneCreation();

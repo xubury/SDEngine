@@ -1,32 +1,20 @@
 #include "AnimationEditor.hpp"
+#include "EditorEvent.hpp"
 #include "Asset/AssetStorage.hpp"
 #include "ECS/Component.hpp"
 
 namespace SD {
 
-AnimationEditor::AnimationEditor()
-    : ECSSystem("Anmiation Editor"), m_anim_index(0)
+AnimationEditor::AnimationEditor(EventDispatcher *dispatcher)
+    : m_dispatcher(dispatcher), m_anim_index(0)
 {
-}
-
-void AnimationEditor::OnInit() { ECSSystem::OnInit(); }
-
-void AnimationEditor::OnPush()
-{
-    auto &dispatcher = GetEventDispatcher();
-    m_entity_handler = dispatcher.Register<EntitySelectEvent>(
+    m_entity_handler = m_dispatcher->Register<EntitySelectEvent>(
         [this](const EntitySelectEvent &e) {
             this->m_selected_entity = {e.entity_id, e.scene};
         });
 }
 
-void AnimationEditor::OnPop()
-{
-    auto &dispatcher = GetEventDispatcher();
-    dispatcher.RemoveHandler(m_entity_handler);
-}
-
-void AnimationEditor::OnImGui()
+void AnimationEditor::ImGui()
 {
     ImGui::Begin("Anmiation Editor");
     {

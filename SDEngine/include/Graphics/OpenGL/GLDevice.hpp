@@ -12,7 +12,7 @@ class GLDevice : public Device {
     void DispatchCompute(int32_t num_group_x, int32_t num_group_y,
                          int32_t num_group_z) override;
 
-    void MemoryBarrier() override;
+    void MemoryBarrier(BarrierBit bit) override;
 
     void DrawElements(MeshTopology topology, int count, size_t offset) override;
 

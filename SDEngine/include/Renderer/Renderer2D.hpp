@@ -8,7 +8,7 @@ namespace SD {
 class SD_RENDERER_API Renderer2D : protected Renderer {
    public:
     static void Init();
-    static void Begin(Camera &camera);
+    static void Begin();
     static void End();
 
     static void Reset();

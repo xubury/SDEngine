@@ -2,8 +2,7 @@
 #define SD_SCENE_PANEL_HPP
 
 #include "Utility/Base.hpp"
-#include "Renderer/Event.hpp"
-#include "Core/ECSSystem.hpp"
+#include "Utility/EventDispatcher.hpp"
 #include "ECS/Scene.hpp"
 #include "ECS/Entity.hpp"
 #include "ImGui/FileDialog.hpp"
@@ -12,17 +11,11 @@
 
 namespace SD {
 
-class ScenePanel : public ECSSystem {
+class ScenePanel {
    public:
-    ScenePanel();
+    ScenePanel(EventDispatcher *dispatcher);
 
-    void OnPush() override;
-
-    void OnPop() override;
-
-    void OnImGui() override;
-
-    void OnSizeEvent(const RenderSizeEvent &event);
+    void ImGui(Scene *scene);
 
     void SetGizmoMode(ImGuizmo::MODE mode) { m_gizmo_mode = mode; }
     ImGuizmo::MODE GetGizmoMode() const;
@@ -41,6 +34,7 @@ class ScenePanel : public ECSSystem {
     void DrawAnimList(const std::vector<FrameAnimation<SpriteFrame>> &anims,
                       int *selected);
 
+    EventDispatcher *m_dispatcher;
     Entity m_selected_entity;
     Entity m_entity_to_destroy;
     std::unordered_map<entt::entity, int> m_selected_material_id_map;
@@ -49,10 +43,7 @@ class ScenePanel : public ECSSystem {
     ImGuizmo::MODE m_gizmo_mode;
     ImGuizmo::OPERATION m_gizmo_op;
 
-    uint32_t m_width;
-    uint32_t m_height;
-
-    HandlerRegistration m_size_handler;
+    HandlerRegistration m_scene_handler;
     HandlerRegistration m_entity_select_handler;
 };
 

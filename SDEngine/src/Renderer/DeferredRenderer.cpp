@@ -1,4 +1,4 @@
-#include "Renderer/LightingSystem.hpp"
+#include "Renderer/DeferredRenderer.hpp"
 #include "Core/Application.hpp"
 #include "Renderer/Renderer3D.hpp"
 #include "ECS/Component.hpp"
@@ -35,28 +35,21 @@ DataFormat GetTextureFormat(GeometryBufferType type)
     }
 }
 
-LightingSystem::LightingSystem(int width, int height, MultiSampleLevel msaa)
-    : RenderSystem("LightingSystem"),
+const int shadow_map_width = 4086;
+const int shadow_map_height = 4086;
+DeferredRenderer::DeferredRenderer(int width, int height, MultiSampleLevel msaa)
+    : m_scene(nullptr),
       m_width(width),
       m_height(height),
       m_msaa(msaa),
+      m_cascade_shadow(shadow_map_width, shadow_map_height),
+      m_point_shadow(shadow_map_width, shadow_map_height),
       m_lighting_result(nullptr)
 {
-}
-
-void LightingSystem::OnInit()
-{
-    RenderSystem::OnInit();
     InitShaders();
     InitSSAOKernel();
-    InitSSAO();
-    InitLighting();
-}
-
-void LightingSystem::OnPush()
-{
-    auto &dispatcher = GetEventDispatcher();
-    m_size_handler = dispatcher.Register(this, &LightingSystem::OnSizeEvent);
+    InitSSAOBuffers();
+    InitLightingBuffers();
 
     auto &settings = Application::GetApp().GetSettings();
     m_ssao_state = settings.GetBoolean("ssao", "state", true);
@@ -65,11 +58,8 @@ void LightingSystem::OnPush()
     m_ssao_power = settings.GetInteger("ssao", "power", 1);
 }
 
-void LightingSystem::OnPop()
+DeferredRenderer::~DeferredRenderer()
 {
-    auto &dispatcher = GetEventDispatcher();
-    dispatcher.RemoveHandler(m_size_handler);
-
     auto &settings = Application::GetApp().GetSettings();
     settings.SetBoolean("ssao", "state", m_ssao_state);
     settings.SetFloat("ssao", "radius", m_ssao_radius);
@@ -77,7 +67,7 @@ void LightingSystem::OnPop()
     settings.SetInteger("ssao", "power", m_ssao_power);
 }
 
-void LightingSystem::InitShaders()
+void DeferredRenderer::InitShaders()
 {
     m_emssive_shader = ShaderLoader::LoadShader(
         "assets/shaders/quad.vert.glsl", "assets/shaders/emissive.frag.glsl");
@@ -102,7 +92,7 @@ void LightingSystem::InitShaders()
                                  "assets/shaders/point_shadow.geo.glsl");
 }
 
-void LightingSystem::InitSSAO()
+void DeferredRenderer::InitSSAOBuffers()
 {
     m_ssao_buffer =
         Texture::Create(m_width, m_height, 0, MultiSampleLevel::None,
@@ -112,7 +102,7 @@ void LightingSystem::InitSSAO()
                         TextureType::Normal, DataFormat::R16F);
 }
 
-void LightingSystem::InitSSAOKernel()
+void DeferredRenderer::InitSSAOKernel()
 {
     uint32_t kernel_size = m_ssao_shader->GetUint("u_kernel_size");
     m_ssao_kernel.resize(kernel_size);
@@ -144,7 +134,7 @@ void LightingSystem::InitSSAOKernel()
         ->SetAsVec3(&m_ssao_kernel[0][0], kernel_size);
 }
 
-void LightingSystem::InitLighting()
+void DeferredRenderer::InitLightingBuffers()
 {
     for (int i = 0; i < 2; ++i) {
         m_lighting_target[i] = Framebuffer::Create();
@@ -178,15 +168,15 @@ void LightingSystem::InitLighting()
     m_cascade_debug_target->Attach(*m_cascade_debug_buffer, 0, 0);
 }
 
-void LightingSystem::OnSizeEvent(const RenderSizeEvent &event)
+void DeferredRenderer::SetRenderSize(int32_t width, int32_t height)
 {
-    m_width = event.width;
-    m_height = event.height;
-    InitSSAO();
-    InitLighting();
+    m_width = width;
+    m_height = height;
+    InitSSAOBuffers();
+    InitLightingBuffers();
 }
 
-void LightingSystem::BlitGeometryBuffers()
+void DeferredRenderer::BlitGeometryBuffers()
 {
     Renderer::BeginRenderPass({m_geometry_target.get(), m_width, m_height});
     for (size_t i = 0; i < m_gbuffer.size(); ++i) {
@@ -196,18 +186,16 @@ void LightingSystem::BlitGeometryBuffers()
     Renderer::EndRenderPass();
 }
 
-void LightingSystem::OnImGui()
+void DeferredRenderer::ImGui()
 {
-    ImGui::Begin("GBuffer");
-    {
+    if (ImGui::TreeNodeEx("Geometry Buffers")) {
         for (size_t i = 0; i < m_gbuffer.size(); ++i) {
             ImGui::DrawTexture(*m_gbuffer[i], ImVec2(0, 1), ImVec2(1, 0));
         }
+        ImGui::TreePop();
     }
-    ImGui::End();
-    ImGui::Begin("Lighting System");
-    {
-        ImGui::Checkbox("SSAO", &m_ssao_state);
+    if (ImGui::TreeNodeEx("SSAO")) {
+        ImGui::Checkbox("On", &m_ssao_state);
         ImGui::TextUnformatted("SSAO Power");
         ImGui::SliderInt("##SSAO Power", &m_ssao_power, 1, 32);
         ImGui::TextUnformatted("SSAO Radius");
@@ -215,19 +203,33 @@ void LightingSystem::OnImGui()
         ImGui::TextUnformatted("SSAO Bias");
         ImGui::SliderFloat("##SSAO Bias", &m_ssao_bias, 0.01, 2);
         ImGui::DrawTexture(*m_ssao_blur_buffer, ImVec2(0, 1), ImVec2(1, 0));
+        ImGui::TreePop();
     }
-    ImGui::End();
-
-    ImGui::Begin("Shadow Map");
-    {
+    if (ImGui::TreeNodeEx("Cascade Shadow")) {
+        auto planes = m_cascade_shadow.GetCascadePlanes();
+        int num_of_cascades = planes.size();
+        if (ImGui::SliderInt("Num of Cascades", &num_of_cascades, 1, 4)) {
+            m_cascade_shadow.SetNumOfCascades(num_of_cascades);
+        }
+        if (ImGui::InputFloat4("Cascades", planes.data())) {
+            m_cascade_shadow.SetCascadePlanes(planes);
+        }
         ImGui::InputInt("Layer", &m_debug_layer);
         ImGui::DrawTexture(*m_cascade_debug_buffer, ImVec2(0, 1), ImVec2(1, 0));
+        ImGui::TreePop();
     }
-    ImGui::End();
+    if (ImGui::TreeNodeEx("Point Shadow")) {
+        float far_z = m_point_shadow.GetFarZ();
+        if (ImGui::SliderFloat("Shadow Far Z", &far_z, 1.0f, 500.f)) {
+            m_point_shadow.SetFarZ(far_z);
+        }
+        ImGui::TreePop();
+    }
 }
 
-void LightingSystem::OnRender()
+void DeferredRenderer::RenderScene(Scene &scene)
 {
+    m_scene = &scene;
     RenderGBuffer();
     BlitGeometryBuffers();
     if (m_ssao_state) {
@@ -242,18 +244,18 @@ void LightingSystem::OnRender()
         BufferBitMask::ColorBufferBit | BufferBitMask::DepthBufferBit);
 }
 
-void LightingSystem::RenderShadowMap(CascadeShadow &shadow,
-                                     const Transform &transform)
+void DeferredRenderer::RenderShadowMap(const Transform &transform)
 {
-    auto modelView = GetScene().view<TransformComponent, ModelComponent>();
+    auto modelView = m_scene->view<TransformComponent, ModelComponent>();
     RenderOperation op;
     op.cull_face = Face::Front;
-    Texture *depth_map = shadow.GetCascadeMap();
-    Framebuffer *cascade_fb = shadow.GetCascadeFramebuffer();
-    Renderer::BeginRenderPass(RenderPassInfo{cascade_fb, depth_map->GetWidth(),
+    Texture *depth_map = m_cascade_shadow.GetShadowMap();
+    Framebuffer *target = m_cascade_shadow.GetShadowTarget();
+    Renderer::BeginRenderPass(RenderPassInfo{target, depth_map->GetWidth(),
                                              depth_map->GetHeight(), op});
-    shadow.ComputeCascadeLightMatrix(transform, GetCamera());
-    Renderer3D::SetShadowCaster(*m_cascade_shader, shadow);
+    m_cascade_shadow.ComputeCascadeLightMatrix(transform,
+                                               *Renderer::GetCamera());
+    Renderer3D::SetShadowCaster(*m_cascade_shader, m_cascade_shadow);
 
     auto &storage = AssetStorage::Get();
     ShaderParam *model_param = m_cascade_shader->GetParam("u_model");
@@ -278,33 +280,33 @@ void LightingSystem::RenderShadowMap(CascadeShadow &shadow,
 
     // debug
     {
+        Camera *cam = Renderer::GetCamera();
         Renderer::BeginRenderPass(RenderPassInfo{
             m_cascade_debug_target.get(), m_cascade_debug_buffer->GetWidth(),
             m_cascade_debug_buffer->GetHeight(), RenderOperation{}});
         m_cascade_debug_shader->GetParam("depthMap")->SetAsTexture(depth_map);
         m_cascade_debug_shader->GetParam("layer")->SetAsInt(m_debug_layer);
         m_cascade_debug_shader->GetParam("near_plane")
-            ->SetAsFloat(GetCamera().GetNearZ());
+            ->SetAsFloat(cam->GetNearZ());
         m_cascade_debug_shader->GetParam("far_plane")
-            ->SetAsFloat(GetCamera().GetFarZ());
+            ->SetAsFloat(cam->GetFarZ());
         Renderer::DrawNDCQuad(*m_cascade_debug_shader);
 
         Renderer::EndRenderPass();
     }
 }
 
-void LightingSystem::RenderPointShadowMap(PointShadow &shadow,
-                                          const Transform &transform)
+void DeferredRenderer::RenderPointShadowMap(const Transform &transform)
 {
     Vector3f light_pos = transform.GetPosition();
     std::array<Matrix4f, 6> shadow_trans =
-        shadow.GetProjectionMatrix(light_pos);
+        m_point_shadow.GetProjectionMatrix(light_pos);
 
-    auto modelView = GetScene().view<TransformComponent, ModelComponent>();
+    auto modelView = m_scene->view<TransformComponent, ModelComponent>();
     RenderOperation op;
     op.cull_face = Face::Front;
-    Texture *shadow_map = shadow.GetShadowMap();
-    Framebuffer *shadow_target = shadow.GetShadowTarget();
+    Texture *shadow_map = m_point_shadow.GetShadowMap();
+    Framebuffer *shadow_target = m_point_shadow.GetShadowTarget();
     Renderer::BeginRenderPass(RenderPassInfo{
         shadow_target, shadow_map->GetWidth(), shadow_map->GetHeight(), op});
 
@@ -312,7 +314,8 @@ void LightingSystem::RenderPointShadowMap(PointShadow &shadow,
     ShaderParam *model_param = m_point_shadow_shader->GetParam("u_model");
     m_point_shadow_shader->GetParam("u_light_pos")
         ->SetAsVec3(&transform.GetPosition()[0]);
-    m_point_shadow_shader->GetParam("u_far_z")->SetAsFloat(shadow.GetFarZ());
+    m_point_shadow_shader->GetParam("u_far_z")->SetAsFloat(
+        m_point_shadow.GetFarZ());
     m_point_shadow_shader->GetParam("u_shadow_matrix[0]")
         ->SetAsMat4(&shadow_trans[0][0][0], 6);
     modelView.each([&](const TransformComponent &transformComp,
@@ -335,13 +338,13 @@ void LightingSystem::RenderPointShadowMap(PointShadow &shadow,
     Renderer::EndRenderPass();
 }
 
-void LightingSystem::RenderSSAO()
+void DeferredRenderer::RenderSSAO()
 {
     Texture *position =
         m_gbuffer[static_cast<int>(GeometryBufferType::Position)].get();
     Texture *normal =
         m_gbuffer[static_cast<int>(GeometryBufferType::Normal)].get();
-    Renderer::SetCamera(*m_ssao_shader, GetCamera());
+    Renderer::BindCamera(*m_ssao_shader);
     m_ssao_shader->GetParam("u_radius")->SetAsFloat(m_ssao_radius);
     m_ssao_shader->GetParam("u_bias")->SetAsFloat(m_ssao_bias);
     m_ssao_shader->GetParam("u_power")->SetAsUint(m_ssao_power);
@@ -350,23 +353,23 @@ void LightingSystem::RenderSSAO()
     m_ssao_shader->GetParam("u_noise")->SetAsTexture(m_ssao_noise.get());
     m_ssao_shader->GetParam("u_out_image")
         ->SetAsImage(m_ssao_buffer.get(), 0, false, 0, Access::WriteOnly);
-    Renderer::DispatchCompute(*m_ssao_shader, std::ceil(m_width / 25.f),
+    Renderer::ComputeImage(*m_ssao_shader, std::ceil(m_width / 25.f),
                               std::ceil(m_height / 25.f), 1);
 
     // blur
     m_ssao_blur_shader->GetParam("u_input")->SetAsTexture(m_ssao_buffer.get());
     m_ssao_blur_shader->GetParam("u_out_image")
         ->SetAsImage(m_ssao_blur_buffer.get(), 0, false, 0, Access::WriteOnly);
-    Renderer::DispatchCompute(*m_ssao_blur_shader, std::ceil(m_width / 25.f),
+    Renderer::ComputeImage(*m_ssao_blur_shader, std::ceil(m_width / 25.f),
                               std::ceil(m_height / 25.f), 1);
 }
 
-void LightingSystem::RenderEmissive()
+void DeferredRenderer::RenderEmissive()
 {
     auto dir_lights =
-        GetScene().view<TransformComponent, DirectionalLightComponent>();
+        m_scene->view<TransformComponent, DirectionalLightComponent>();
     auto point_lights =
-        GetScene().view<TransformComponent, PointLightComponent>();
+        m_scene->view<TransformComponent, PointLightComponent>();
     RenderOperation op;
     op.blend = false;
     if (dir_lights.begin() != dir_lights.end() ||
@@ -384,7 +387,7 @@ void LightingSystem::RenderEmissive()
     }
 }
 
-void LightingSystem::RenderDeferred()
+void DeferredRenderer::RenderDeferred()
 {
     m_deferred_shader->GetParam("u_position")
         ->SetAsTexture(
@@ -424,7 +427,7 @@ void LightingSystem::RenderDeferred()
     ShaderParam *cascade_planes =
         m_deferred_shader->GetParam("u_cascade_planes[0]");
 
-    Renderer::SetCamera(*m_deferred_shader, GetCamera());
+    Renderer::BindCamera(*m_deferred_shader);
 
     RenderOperation op;
     op.blend = false;
@@ -435,11 +438,10 @@ void LightingSystem::RenderDeferred()
     const float value[]{0, 0, 0, 0};
     m_lighting_target[input_id]->ClearAttachment(0, value);
     auto dir_lights =
-        GetScene().view<TransformComponent, DirectionalLightComponent>();
+        m_scene->view<TransformComponent, DirectionalLightComponent>();
     dir_lights.each([&](const TransformComponent &transformComp,
                         DirectionalLightComponent &lightComp) {
         DirectionalLight &light = lightComp.light;
-        CascadeShadow &shadow = lightComp.shadow;
         const Transform &transform = transformComp.GetWorldTransform();
 
         RenderPassInfo info{m_lighting_target[output_id].get(),
@@ -461,13 +463,13 @@ void LightingSystem::RenderDeferred()
         is_directional->SetAsBool(true);
         is_cast_shadow->SetAsBool(lightComp.is_cast_shadow);
         if (lightComp.is_cast_shadow) {
-            RenderShadowMap(shadow, transform);
+            RenderShadowMap(transform);
 
-            cascade_map->SetAsTexture(shadow.GetCascadeMap());
-            auto &planes = shadow.GetCascadePlanes();
+            cascade_map->SetAsTexture(m_cascade_shadow.GetShadowMap());
+            auto &planes = m_cascade_shadow.GetCascadePlanes();
             num_of_cascades->SetAsInt(planes.size());
             cascade_planes->SetAsVec(&planes[0], planes.size());
-            Renderer3D::SetShadowCaster(*m_deferred_shader, shadow);
+            Renderer3D::SetShadowCaster(*m_deferred_shader, m_cascade_shadow);
         }
         else {
             cascade_map->SetAsTexture(nullptr);
@@ -489,11 +491,10 @@ void LightingSystem::RenderDeferred()
     ShaderParam *point_shadow_far_z =
         m_deferred_shader->GetParam("u_point_shadow_far_z");
     auto point_lights =
-        GetScene().view<TransformComponent, PointLightComponent>();
+        m_scene->view<TransformComponent, PointLightComponent>();
     point_lights.each([&](const TransformComponent &transformComp,
                           PointLightComponent &lightComp) {
         PointLight &light = lightComp.light;
-        PointShadow &point_shadow = lightComp.shadow;
         const Transform &transform = transformComp.GetWorldTransform();
 
         RenderPassInfo info{m_lighting_target[output_id].get(),
@@ -519,9 +520,9 @@ void LightingSystem::RenderDeferred()
         is_directional->SetAsBool(false);
         is_cast_shadow->SetAsBool(lightComp.is_cast_shadow);
         if (lightComp.is_cast_shadow) {
-            RenderPointShadowMap(point_shadow, transform);
-            point_shadow_map->SetAsTexture(point_shadow.GetShadowMap());
-            point_shadow_far_z->SetAsFloat(point_shadow.GetFarZ());
+            RenderPointShadowMap(transform);
+            point_shadow_map->SetAsTexture(m_point_shadow.GetShadowMap());
+            point_shadow_far_z->SetAsFloat(m_point_shadow.GetFarZ());
         }
         else {
             point_shadow_map->SetAsTexture(nullptr);
@@ -532,9 +533,9 @@ void LightingSystem::RenderDeferred()
     });
 }
 
-void LightingSystem::RenderGBuffer()
+void DeferredRenderer::RenderGBuffer()
 {
-    auto modelView = GetScene().view<TransformComponent, ModelComponent>();
+    auto modelView = m_scene->view<TransformComponent, ModelComponent>();
 
     RenderPassInfo info;
     info.framebuffer = m_geometry_target_msaa.get();
@@ -545,7 +546,7 @@ void LightingSystem::RenderGBuffer()
     info.clear_value = {0, 0, 0, 0};
     info.op.blend = false;
     Renderer::BeginRenderPass(info);
-    Renderer::SetCamera(*m_gbuffer_shader, GetCamera());
+    Renderer::BindCamera(*m_gbuffer_shader);
     uint32_t id = static_cast<uint32_t>(entt::null);
     m_geometry_target_msaa->ClearAttachment(
         static_cast<int>(GeometryBufferType::EntityId), &id);
@@ -575,9 +576,5 @@ void LightingSystem::RenderGBuffer()
     });
     Renderer::EndRenderPass();
 }
-
-void LightingSystem::SetSSAORadius(float radius) { m_ssao_radius = radius; }
-
-void LightingSystem::SetSSAOBias(float bias) { m_ssao_bias = bias; }
 
 }  // namespace SD

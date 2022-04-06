@@ -11,9 +11,9 @@ add_executable(SDEditor
     src/EditorLayer.cpp
     src/ScenePanel.cpp
     src/ContentBrowser.cpp
-    src/EditorCameraSystem.cpp
+    src/EditorCamera.cpp
     src/AnimationEditor.cpp
-    src/TileMapSystem.cpp
+    src/TileMapEditor.cpp
     src/TileBrush.cpp)
 
 target_include_directories(SDEditor PUBLIC include)

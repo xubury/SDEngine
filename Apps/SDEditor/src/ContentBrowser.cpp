@@ -15,11 +15,8 @@ namespace SD {
 #define TEXTURE_CREATION "Texture Creation"
 #define FONT_CREATION "Font Creation"
 
-ContentBrowser::ContentBrowser() : ECSSystem("Content Browser") {}
-
-void ContentBrowser::OnInit()
+ContentBrowser::ContentBrowser()
 {
-    ECSSystem::OnInit();
     m_file_icon = TextureLoader::LoadTexture2D("assets/icons/FileIcon.png");
     m_directory_icon =
         TextureLoader::LoadTexture2D("assets/icons/DirectoryIcon.png");
@@ -220,7 +217,7 @@ void ContentBrowser::DrawFontCreation()
     }
 }
 
-void ContentBrowser::OnImGui()
+void ContentBrowser::ImGui()
 {
     auto& storage = AssetStorage::Get();
     ImGui::Begin("Content Browser");

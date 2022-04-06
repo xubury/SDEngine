@@ -295,4 +295,13 @@ GLenum Translate(Access access)
     return 0;
 }
 
+GLenum Translate(BarrierBit bit)
+{
+    switch (bit) {
+        case BarrierBit::ImageAccess:
+            return GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
+    }
+    return 0;
+}
+
 }  // namespace SD

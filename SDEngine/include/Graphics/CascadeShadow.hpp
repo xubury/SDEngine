@@ -10,9 +10,8 @@ namespace SD {
 
 class SD_GRAPHICS_API CascadeShadow {
    public:
-    CascadeShadow();
+    CascadeShadow(int32_t width, int32_t height);
     void CreateShadowMap();
-    void DestroyShadowMap();
     const std::vector<Matrix4f> &GetLevelProjectionView() const
     {
         return m_projection_views;
@@ -32,11 +31,12 @@ class SD_GRAPHICS_API CascadeShadow {
     void ComputeCascadeLightMatrix(const Transform &transform,
                                    const Camera &camera);
 
-    Texture *GetCascadeMap() const { return m_cascade_map.get(); }
-    Framebuffer *GetCascadeFramebuffer() const { return m_cascade_fb.get(); }
+    Texture *GetShadowMap() const { return m_cascade_map.get(); }
+    Framebuffer *GetShadowTarget() const { return m_cascade_fb.get(); }
 
-    SERIALIZE(m_cascade_planes)
    private:
+    int32_t m_width;
+    int32_t m_height;
     Ref<Framebuffer> m_cascade_fb;
     Ref<Texture> m_cascade_map;
     std::vector<Matrix4f> m_projection_views;

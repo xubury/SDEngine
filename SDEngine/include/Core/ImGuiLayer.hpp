@@ -26,7 +26,6 @@ class SD_CORE_API ImGuiLayer : public Layer {
     void SetDarkThemeColor();
     ImGuiContext *m_context;
     Window *m_window;
-    std::vector<HandlerRegistration> m_handlers;
 };
 
 }  // namespace SD

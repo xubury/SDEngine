@@ -3,6 +3,7 @@
 
 #include "Core/Window.hpp"
 #include "Core/ImGuiLayer.hpp"
+#include "Core/GraphicsLayer.hpp"
 #include "Graphics/Device.hpp"
 #include "Utility/Ini.hpp"
 
@@ -55,7 +56,6 @@ class SD_CORE_API Application {
     T *CreateLayer(ARGS &&...args)
     {
         T *layer = new T(std::forward<ARGS>(args)...);
-        layer->m_dispatcher = CreateRef<EventDispatcher>();
         layer->OnInit();
         return layer;
     }
@@ -76,6 +76,8 @@ class SD_CORE_API Application {
 
     Scope<Window> m_window;
     Scope<Device> m_device;
+
+    GraphicsLayer *m_graphics_layer;
 
    private:
     friend int ::main(int argc, char **argv);

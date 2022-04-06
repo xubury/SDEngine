@@ -56,7 +56,7 @@ class SD_RENDERER_API Renderer {
     static void EndRenderPass();
     static void Submit(const VertexArray &vao, MeshTopology topology,
                        size_t count, size_t offset, bool index = true);
-    static void DispatchCompute(Shader &shader, int32_t num_group_x,
+    static void ComputeImage(Shader &shader, int32_t num_group_x,
                                 int32_t num_group_y, int32_t num_group_z);
 
     static void Init(Device *device);
@@ -66,7 +66,10 @@ class SD_RENDERER_API Renderer {
 
     static bool IsEmptyStack();
 
-    static void SetCamera(Shader &shader, Camera &camera);
+    static void SetCamera(Camera &camera);
+    static Camera *GetCamera();
+
+    static void BindCamera(Shader &shader);
 
     static void DrawNDCQuad(const Shader &shader);
     static void DrawNDCBox(const Shader &shader);
@@ -79,23 +82,24 @@ class SD_RENDERER_API Renderer {
                                int read_attachment, BufferBitMask mask);
 
    protected:
-    static Device *m_device;
+    static Device *s_device;
 
-    static Ref<UniformBuffer> m_camera_UBO;
-    static CameraData m_camera_data;
+    static Ref<UniformBuffer> s_camera_ubo;
+    static Camera *s_camera;
+    static CameraData s_camera_data;
 
    private:
     static void SetRenderState(Framebuffer *framebuffer, int32_t viewport_width,
                                int32_t viewport_height,
                                const RenderOperation &op);
 
-    static Ref<VertexArray> m_quad_vao;
-    static Ref<VertexBuffer> m_quad_vbo;
-    static Ref<IndexBuffer> m_quad_ibo;
+    static Ref<VertexArray> s_quad_vao;
+    static Ref<VertexBuffer> s_quad_vbo;
+    static Ref<IndexBuffer> s_quad_ibo;
 
-    static Ref<VertexArray> m_box_vao;
-    static Ref<VertexBuffer> m_box_vbo;
-    static Ref<IndexBuffer> m_box_ibo;
+    static Ref<VertexArray> s_box_vao;
+    static Ref<VertexBuffer> s_box_vbo;
+    static Ref<IndexBuffer> s_box_ibo;
 
     static bool s_is_subpass_begin;
 };

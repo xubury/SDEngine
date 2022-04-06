@@ -1,6 +1,5 @@
-#include "Renderer/SpriteRenderSystem.hpp"
+#include "Renderer/SpriteRenderer.hpp"
 #include "Renderer/Renderer2D.hpp"
-#include "Renderer/Event.hpp"
 #include "ECS/Component.hpp"
 
 #include "Asset/AssetStorage.hpp"
@@ -8,22 +7,6 @@
 #include "Asset/FontAsset.hpp"
 
 namespace SD {
-
-SpriteRenderSystem::SpriteRenderSystem() : RenderSystem("SpriteRenderSystem") {}
-
-void SpriteRenderSystem::OnPush() {}
-
-void SpriteRenderSystem::OnPop() {}
-
-void SpriteRenderSystem::OnTick(float dt)
-{
-    auto anim_view = GetScene().view<SpriteAnimationComponent>();
-    anim_view.each([&](SpriteAnimationComponent &anim_comp) {
-        if (!anim_comp.animations.empty()) {
-            anim_comp.animator.Tick(dt);
-        }
-    });
-}
 
 struct SpriteDrawData {
     Texture *texture;
@@ -34,19 +17,19 @@ struct SpriteDrawData {
     uint32_t entity_id;
     int priority;
 };
-void SpriteRenderSystem::OnRender()
+
+void SpriteRenderer::RenderScene(const Scene &scene)
 {
     auto &storage = AssetStorage::Get();
     int index[] = {0, 1};
     RenderOperation op;
     op.depth_mask = false;
     Renderer::BeginRenderSubpass(RenderSubpassInfo{index, 2, op});
-    Renderer2D::Begin(GetCamera());
+    Renderer2D::Begin();
 
     std::vector<SpriteDrawData> datas;
-    auto sprite_view = GetScene().view<SpriteComponent, TransformComponent>();
+    auto sprite_view = scene.view<SpriteComponent, TransformComponent>();
     sprite_view.each([&](entt::entity entity_id,
-
                          const SpriteComponent &sprite_comp,
                          const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
@@ -60,8 +43,7 @@ void SpriteRenderSystem::OnRender()
                              frame.priority});
         }
     });
-    auto anim_view =
-        GetScene().view<SpriteAnimationComponent, TransformComponent>();
+    auto anim_view = scene.view<SpriteAnimationComponent, TransformComponent>();
     anim_view.each([&](entt::entity entity_id,
                        const SpriteAnimationComponent &anim_comp,
                        const TransformComponent &transform_comp) {
@@ -103,7 +85,7 @@ void SpriteRenderSystem::OnRender()
                                 data.size, Vector4f(1.0f), data.entity_id);
     }
 
-    auto textView = GetScene().view<TransformComponent, TextComponent>();
+    auto textView = scene.view<TransformComponent, TextComponent>();
 
     textView.each([&](entt::entity entity_id,
                       const TransformComponent &transformComp,

@@ -2,24 +2,23 @@
 
 namespace SD {
 
-const int shadow_map_width = 4086;
-const int shadow_map_height = 4086;
-
-CascadeShadow::CascadeShadow() : m_cascade_planes{1, 100, 500, 1000} {}
+CascadeShadow::CascadeShadow(int32_t width, int32_t height)
+    : m_width(width), m_height(height), m_cascade_planes{1, 100, 500, 1000}
+{
+    CreateShadowMap();
+}
 
 void CascadeShadow::CreateShadowMap()
 {
     m_cascade_fb = Framebuffer::Create();
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    m_cascade_map = Texture::Create(
-        shadow_map_width, shadow_map_height, m_cascade_planes.size(),
-        MultiSampleLevel::None, TextureType::Array, DataFormat::Depth24);
+    m_cascade_map = Texture::Create(m_width, m_height, m_cascade_planes.size(),
+                                    MultiSampleLevel::None, TextureType::Array,
+                                    DataFormat::Depth24);
     m_cascade_map->SetWrap(TextureWrap::Border);
     m_cascade_map->SetBorderColor(&color);
     m_cascade_fb->Attach(*m_cascade_map, 0, 0);
 }
-
-void CascadeShadow::DestroyShadowMap() { m_cascade_map.reset(); }
 
 void CascadeShadow::SetNumOfCascades(int32_t num_of_cascades)
 {

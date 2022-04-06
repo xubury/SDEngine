@@ -47,15 +47,6 @@ struct TextInputEvent {
 struct AppQuitEvent {
 };
 
-struct EntitySelectEvent {
-    EntityId entity_id;
-    Scene *scene;
-};
-
-struct NewSceneEvent {
-    Scene *scene;
-};
-
 }  // namespace SD
 
 #endif /* SD_EVENT_HPP */

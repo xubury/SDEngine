@@ -1,4 +1,5 @@
 #include "EditorLayer.hpp"
+#include "EditorEvent.hpp"
 #include "Renderer/Renderer.hpp"
 #include "ContentBrowser.hpp"
 #include "Core/Input.hpp"
@@ -12,6 +13,9 @@ EditorLayer::EditorLayer(GraphicsLayer *graphics_layer, int width, int height)
     : Layer("EditorLayer"),
       m_mode(EditorMode::None),
       m_graphics_layer(graphics_layer),
+      m_scene_panel(&m_dispatcher),
+      m_editor_camera(width, height),
+      m_animation_editor(&m_dispatcher),
       m_viewport_pos(0, 0),
       m_viewport_size(width, height),
       m_is_runtime(false),
@@ -20,6 +24,10 @@ EditorLayer::EditorLayer(GraphicsLayer *graphics_layer, int width, int height)
       m_save_scene_open(false)
 {
     ImGuizmo::SetGizmoSizeClipSpace(0.2);
+    m_entity_select_handler = m_dispatcher.Register<EntitySelectEvent>(
+        [this](const EntitySelectEvent &e) {
+            m_selected_entity = {e.entity_id, e.scene};
+        });
 }
 
 EditorLayer::~EditorLayer() {}
@@ -29,21 +37,12 @@ void EditorLayer::OnInit()
     Layer::OnInit();
 
     InitBuffers();
-    // editor related system
-    m_scene_panel = CreateSystem<ScenePanel>();
-    m_editor_camera_system =
-        CreateSystem<EditorCameraSystem>(m_viewport_size.x, m_viewport_size.y);
-
-    PushSystem(CreateSystem<ContentBrowser>());
-    PushSystem(m_scene_panel);
-    PushSystem(m_editor_camera_system);
-    m_tile_map_system = CreateSystem<TileMapSystem>();
-    m_animation_editor = CreateSystem<AnimationEditor>();
 
     auto &storage = AssetStorage::Get();
-    NewScene(storage.CreateAsset<SceneAsset>("default scene"));
+    m_scene_asset = storage.CreateAsset<SceneAsset>("default scene");
+    SetCurrentScene(m_scene_asset->GetScene());
     m_graphics_layer->SetRenderSize(m_viewport_size.x, m_viewport_size.y);
-    m_graphics_layer->SetCamera(m_editor_camera_system->GetCamera());
+    m_graphics_layer->SetCamera(&m_editor_camera);
 }
 
 void EditorLayer::InitBuffers()
@@ -59,21 +58,6 @@ void EditorLayer::InitBuffers()
     m_viewport_target->Attach(*m_entity_buffer, 1, 0);
 }
 
-void EditorLayer::OnPush()
-{
-    auto &dispatcher = GetEventDispatcher();
-    m_entity_select_handler = dispatcher.Register<EntitySelectEvent>(
-        [this](const EntitySelectEvent &e) {
-            m_selected_entity = {e.entity_id, e.scene};
-        });
-}
-
-void EditorLayer::OnPop()
-{
-    auto &dispatcher = GetEventDispatcher();
-    dispatcher.RemoveHandler(m_entity_select_handler);
-}
-
 void EditorLayer::OnRender()
 {
     auto *framebuffer = m_graphics_layer->GetFramebuffer();
@@ -83,8 +67,8 @@ void EditorLayer::OnRender()
     info.viewport_height = m_viewport_size.y;
     info.clear_mask = BufferBitMask::None;
     Renderer::BeginRenderPass(info);
-    for (auto &system : GetSystems()) {
-        system->OnRender();
+    if (m_mode == EditorMode::TwoDimensional) {
+        m_tile_map_editor.Render(m_editor_camera);
     }
     // blit the render color result
     Renderer::BlitToBuffer(0, m_viewport_target.get(), 0,
@@ -102,9 +86,7 @@ void EditorLayer::OnTick(float dt)
                                         ImGuiPopupFlags_AnyPopupLevel)) {
         return;
     }
-    for (auto &system : GetSystems()) {
-        system->OnTick(dt);
-    }
+    m_editor_camera.Tick(dt);
 }
 
 void EditorLayer::OnImGui()
@@ -144,10 +126,7 @@ void EditorLayer::OnImGui()
         if (ImGui::Button("OK")) {
             m_mode = mode;
             if (mode == EditorMode::TwoDimensional) {
-                PushSystem(m_tile_map_system);
-                PushSystem(m_animation_editor);
-
-                m_editor_camera_system->AllowRotate(false);
+                m_editor_camera.AllowRotate(false);
             }
 
             ImGui::CloseCurrentPopup();
@@ -159,12 +138,17 @@ void EditorLayer::OnImGui()
         }
         ImGui::EndPopup();
     }
-    for (auto &system : GetSystems()) {
-        system->OnImGui();
-    }
     MenuBar();
     DrawViewport();
     ProcessDialog();
+
+    if (m_mode == EditorMode::TwoDimensional) {
+        m_tile_map_editor.ImGui();
+        m_animation_editor.ImGui();
+    }
+    m_scene_panel.ImGui(m_current_scene);
+    m_editor_camera.ImGui();
+    m_content_browser.ImGui();
 }
 
 void EditorLayer::Quit() { m_quitting = true; }
@@ -186,10 +170,10 @@ void EditorLayer::On(const KeyEvent &e)
         case Keycode::Z: {
             // TODO: change it to a button
             if (IsKeyModActive(e.mod, Keymod::LCtrl)) {
-                Camera *cam = m_editor_camera_system->GetCamera();
+                Camera *cam = &m_editor_camera;
                 m_is_runtime = !m_is_runtime;
                 if (m_is_runtime) {
-                    auto view = GetScene().view<CameraComponent>();
+                    auto view = m_current_scene->view<CameraComponent>();
                     view.each([&](CameraComponent &cam_comp) {
                         if (cam_comp.primary) {
                             cam = &cam_comp.camera;
@@ -206,13 +190,7 @@ void EditorLayer::On(const KeyEvent &e)
                 OpenSaveSceneDialog();
             }
             else if (IsKeyModActive(e.mod, Keymod::LShift)) {
-                m_scene_panel->SetGizmoOperation(ImGuizmo::SCALE);
-            }
-        } break;
-        case Keycode::N: {
-            if (IsKeyModActive(e.mod, Keymod::LCtrl)) {
-                NewScene(AssetStorage::Get().CreateAsset<SceneAsset>(
-                    "default scene"));
+                m_scene_panel.SetGizmoOperation(ImGuizmo::SCALE);
             }
         } break;
         case Keycode::L: {
@@ -225,12 +203,12 @@ void EditorLayer::On(const KeyEvent &e)
         } break;
         case Keycode::T: {
             if (IsKeyModActive(e.mod, Keymod::LShift)) {
-                m_scene_panel->SetGizmoOperation(ImGuizmo::TRANSLATE);
+                m_scene_panel.SetGizmoOperation(ImGuizmo::TRANSLATE);
             }
         } break;
         case Keycode::R: {
             if (IsKeyModActive(e.mod, Keymod::LShift)) {
-                m_scene_panel->SetGizmoOperation(ImGuizmo::ROTATE);
+                m_scene_panel.SetGizmoOperation(ImGuizmo::ROTATE);
             }
         } break;
     }
@@ -243,15 +221,13 @@ void EditorLayer::On(const MouseMotionEvent &e)
                                         ImGuiPopupFlags_AnyPopupLevel)) {
         return;
     }
-    GetEventDispatcher().PublishEvent(e);
+    m_editor_camera.Move(e.x_rel, e.y_rel);
 }
 
-void EditorLayer::NewScene(SceneAsset *scene)
+void EditorLayer::SetCurrentScene(Scene *scene)
 {
-    m_scene_asset = scene;
-    NewSceneEvent e{m_scene_asset->GetScene()};
-    GetEventDispatcher().PublishEvent(e);
-    m_graphics_layer->SetRenderScene(m_scene_asset->GetScene());
+    m_current_scene = scene;
+    m_graphics_layer->SetRenderScene(m_current_scene);
 }
 
 void EditorLayer::OpenLoadSceneDialog()
@@ -290,8 +266,9 @@ void EditorLayer::MenuBar()
     if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             if (ImGui::MenuItem("New Scene", "Ctrl+N")) {
-                NewScene(AssetStorage::Get().CreateAsset<SceneAsset>(
-                    "default scene"));
+                m_scene_asset = AssetStorage::Get().CreateAsset<SceneAsset>(
+                    "default scene");
+                SetCurrentScene(m_scene_asset->GetScene());
             }
 
             if (ImGui::MenuItem("Load Scene...", "Ctrl+L")) {
@@ -314,7 +291,6 @@ void EditorLayer::MenuBar()
 
 void EditorLayer::DrawViewport()
 {
-    auto &dispatcher = GetEventDispatcher();
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
     ImGui::Begin("Scene");
     {
@@ -329,10 +305,9 @@ void EditorLayer::DrawViewport()
             viewport_size.y > 0) {
             m_viewport_size = viewport_size;
             InitBuffers();
+            m_editor_camera.Resize(m_viewport_size.x, m_viewport_size.y);
             m_graphics_layer->SetRenderSize(m_viewport_size.x,
                                             m_viewport_size.y);
-            dispatcher.PublishEvent(
-                RenderSizeEvent{m_viewport_size.x, m_viewport_size.y});
         }
 
         if (m_viewport_pos != viewport_pos) {
@@ -340,8 +315,14 @@ void EditorLayer::DrawViewport()
         }
 
         if (!m_is_runtime && m_mode == EditorMode::TwoDimensional) {
-            m_tile_map_system->ManipulateScene(
-                m_viewport_target.get(), m_editor_camera_system->GetCamera());
+            Vector3f world;
+            if (m_tile_map_editor.ManipulateScene(m_editor_camera, world)) {
+                Entity child = m_current_scene->CreateEntity("Tile");
+                auto &comp = child.AddComponent<SpriteComponent>();
+                comp.frame = m_tile_map_editor.GetSpriteFrame();
+                child.GetComponent<TransformComponent>().SetWorldPosition(
+                    world);
+            }
         }
 
         ImGui::DrawTexture(*m_scene_buffer, ImVec2(0, 1), ImVec2(1, 0));
@@ -352,7 +333,7 @@ void EditorLayer::DrawViewport()
                               m_viewport_size.x, m_viewport_size.y);
             ImGuizmo::SetDrawlist();
             if (m_selected_entity) {
-                Camera *cam = m_editor_camera_system->GetCamera();
+                Camera *cam = &m_editor_camera;
                 ImGuizmo::SetOrthographic(cam->GetCameraType() ==
                                           CameraType::Orthographic);
                 const Matrix4f &view = cam->GetView();
@@ -361,8 +342,8 @@ void EditorLayer::DrawViewport()
                 auto &tc = m_selected_entity.GetComponent<TransformComponent>();
                 Matrix4f transform = tc.GetWorldTransform().GetMatrix();
                 if (ImGuizmo::Manipulate(&view[0][0], &projection[0][0],
-                                         m_scene_panel->GetGizmoOperation(),
-                                         m_scene_panel->GetGizmoMode(),
+                                         m_scene_panel.GetGizmoOperation(),
+                                         m_scene_panel.GetGizmoMode(),
                                          &transform[0][0], nullptr, nullptr)) {
                     tc.SetWorldTransform(transform);
                 }
@@ -383,8 +364,8 @@ void EditorLayer::DrawViewport()
                                             sizeof(entity_id), &entity_id);
             }
             if (entity_id != entt::null) {
-                dispatcher.PublishEvent(
-                    EntitySelectEvent{entity_id, &GetScene()});
+                m_dispatcher.PublishEvent(
+                    EntitySelectEvent{entity_id, m_current_scene});
             }
         }
         if (ImGui::BeginDragDropTarget()) {
@@ -394,7 +375,8 @@ void EditorLayer::DrawViewport()
                     std::string filename = static_cast<char *>(payload->Data);
                     Asset *asset = AssetStorage::Get().LoadAsset(filename);
                     if (asset->IsTypeOf<SceneAsset>()) {
-                        NewScene(dynamic_cast<SceneAsset *>(asset));
+                        m_scene_asset = dynamic_cast<SceneAsset *>(asset);
+                        SetCurrentScene(m_scene_asset->GetScene());
                         SD_TRACE("load scene asset");
                     }
                 }

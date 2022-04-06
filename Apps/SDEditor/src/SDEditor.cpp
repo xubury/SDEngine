@@ -20,12 +20,8 @@ void SDEditor::OnInit()
     ImGui::SetCurrentContext(GetImGuiLayer()->GetContext());
 #endif
 
-    m_graphics_layer = CreateLayer<GraphicsLayer>(
-        m_device.get(), viewport_width, viewport_height, m_window->GetMSAA());
     m_graphics_layer->SetDebug(true);
-    PushLayer(m_graphics_layer);
     PushLayer(CreateLayer<ScriptLayer>());
-
     m_editor_layer = CreateLayer<EditorLayer>(m_graphics_layer, viewport_width,
                                               viewport_height);
 

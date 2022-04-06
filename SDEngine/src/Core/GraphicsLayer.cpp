@@ -1,5 +1,4 @@
-#include "Renderer/GraphicsLayer.hpp"
-#include "Renderer/Event.hpp"
+#include "Core/GraphicsLayer.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "Loader/TextureLoader.hpp"
 #include "Renderer/Renderer2D.hpp"
@@ -17,6 +16,8 @@ GraphicsLayer::GraphicsLayer(Device *device, int32_t width, int32_t height,
       m_width(width),
       m_height(height),
       m_msaa(msaa),
+      m_deferred_renderer(width, height, m_msaa),
+      m_post_renderer(width, height),
       m_fps(20)
 {
 }
@@ -44,29 +45,17 @@ void GraphicsLayer::OnInit()
     Layer::OnInit();
     Renderer::Init(m_device);
     m_light_icon = TextureLoader::LoadTexture2D("assets/icons/light.png");
-
-    // engine logic system
-    m_camera_system = CreateSystem<CameraSystem>();
-    // normal render systems
-    m_lighting_system = CreateSystem<LightingSystem>(m_width, m_height, m_msaa);
-    m_skybox_system = CreateSystem<SkyboxSystem>();
-    m_sprite_system = CreateSystem<SpriteRenderSystem>();
-    m_post_process_system = CreateSystem<PostProcessSystem>(m_width, m_height);
-
-    PushSystem(m_camera_system);
-    PushSystem(m_skybox_system);
-    PushSystem(m_lighting_system);  // lighting is put behind skybox to do
-                                    // MSAA with skybox(the background)
-    PushSystem(m_sprite_system);    // also sprite is put behind skybox and
-                                    // deferred lighting to do blending
-    PushSystem(m_post_process_system);
 }
 
 void GraphicsLayer::OnTick(float dt)
 {
-    for (auto &system : GetSystems()) {
-        system->OnTick(dt);
-    }
+    // sprite animation
+    auto anim_view = m_scene->view<SpriteAnimationComponent>();
+    anim_view.each([&](SpriteAnimationComponent &anim_comp) {
+        if (!anim_comp.animations.empty()) {
+            anim_comp.animator.Tick(dt);
+        }
+    });
 }
 
 void GraphicsLayer::SetRenderSize(int32_t width, int32_t height)
@@ -74,37 +63,43 @@ void GraphicsLayer::SetRenderSize(int32_t width, int32_t height)
     m_width = width;
     m_height = height;
     InitBuffers();
-    GetEventDispatcher().PublishEvent(RenderSizeEvent{m_width, m_height});
+
+    m_deferred_renderer.SetRenderSize(width, height);
+    m_post_renderer.SetRenderSize(width, height);
 }
 
-void GraphicsLayer::SetCamera(Camera *camera)
-{
-    m_camera = camera;
-    GetEventDispatcher().PublishEvent(CameraEvent{m_camera});
-}
+void GraphicsLayer::SetCamera(Camera *camera) { m_camera = camera; }
 
-void GraphicsLayer::SetRenderScene(Scene *scene)
-{
-    GetEventDispatcher().PublishEvent(NewSceneEvent{scene});
-}
+void GraphicsLayer::SetRenderScene(Scene *scene) { m_scene = scene; }
 
 void GraphicsLayer::OnRender()
 {
+    // update camera transform
+    auto view = m_scene->view<CameraComponent, TransformComponent>();
+    view.each([](CameraComponent &camComp, TransformComponent &trans) {
+        camComp.camera.SetWorldTransform(trans.GetWorldTransform().GetMatrix());
+    });
+
     Renderer::BeginRenderPass({m_main_target.get(), m_width, m_height});
+    Renderer::SetCamera(*m_camera);
     uint32_t id = static_cast<uint32_t>(entt::null);
     m_main_target->ClearAttachment(1, &id);
-    for (auto &system : GetSystems()) {
-        system->OnRender();
-    }
+
+    // main render pipeline
+    m_skybox_renderer.Render();
+    m_deferred_renderer.RenderScene(*m_scene);
+    m_sprite_renderer.RenderScene(*m_scene);
+    m_post_renderer.Render();
+
     if (m_debug) {
         const int index[] = {0, 1};
         RenderOperation op;
         op.depth_test = false;
         Renderer::BeginRenderSubpass(RenderSubpassInfo{index, 2, op});
 
-        Renderer2D::Begin(*m_camera);
+        Renderer2D::Begin();
         auto lightView =
-            GetScene().view<DirectionalLightComponent, TransformComponent>();
+            m_scene->view<DirectionalLightComponent, TransformComponent>();
         lightView.each([this](EntityId id, const DirectionalLightComponent &,
                               const TransformComponent &transComp) {
             Vector3f pos = transComp.GetWorldPosition();
@@ -129,17 +124,30 @@ void GraphicsLayer::OnRender()
 void GraphicsLayer::OnImGui()
 {
     if (m_debug) {
-        for (auto &system : GetSystems()) {
-            system->OnImGui();
-        }
+        const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed |
+                                         ImGuiTreeNodeFlags_SpanAvailWidth |
+                                         ImGuiTreeNodeFlags_AllowItemOverlap |
+                                         ImGuiTreeNodeFlags_FramePadding;
         ImGui::Begin("Graphics Debug");
         {
-            ImGui::TextUnformatted("Renderer2D Debug Info:");
-            ImGui::TextWrapped("%s", m_renderer2d_debug_str.c_str());
-            ImGui::TextUnformatted("Renderer3D Debug Info:");
-            ImGui::TextWrapped("%s", m_renderer3d_debug_str.c_str());
-            ImGui::TextUnformatted("FPS Info:");
-            ImGui::TextUnformatted(std::to_string(m_fps.GetFPS()).c_str());
+            if (ImGui::TreeNodeEx("Profiles",
+                                  flags | ImGuiTreeNodeFlags_DefaultOpen)) {
+                ImGui::TextUnformatted("Renderer2D Debug Info:");
+                ImGui::TextWrapped("%s", m_renderer2d_debug_str.c_str());
+                ImGui::TextUnformatted("Renderer3D Debug Info:");
+                ImGui::TextWrapped("%s", m_renderer3d_debug_str.c_str());
+                ImGui::Text("FPS:%.2f(%.2f ms)", m_fps.GetFPS(),
+                            m_fps.GetFrameTime());
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNodeEx("Deferred Renderer", flags)) {
+                m_deferred_renderer.ImGui();
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNodeEx("Post Process Renderer", flags)) {
+                m_post_renderer.ImGui();
+                ImGui::TreePop();
+            }
         }
         ImGui::End();
     }

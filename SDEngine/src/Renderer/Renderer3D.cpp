@@ -40,8 +40,8 @@ std::string Renderer3D::GetDebugInfo()
 
 void Renderer3D::DrawMesh(const Shader& shader, const Mesh& mesh)
 {
-    m_device->SetPolygonMode(mesh.GetPolygonMode(), Face::Both);
-    m_device->SetShader(&shader);
+    s_device->SetPolygonMode(mesh.GetPolygonMode(), Face::Both);
+    s_device->SetShader(&shader);
     s_data.mesh_vao->BindVertexBuffer(*mesh.GetVertexBuffer(), 0);
     s_data.mesh_vao->BindIndexBuffer(*mesh.GetIndexBuffer());
     Submit(*s_data.mesh_vao, mesh.GetTopology(),

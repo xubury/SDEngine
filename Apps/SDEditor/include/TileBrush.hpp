@@ -24,7 +24,7 @@ class TileBrush {
                          const Transform *transform = nullptr) const;
     void SetRay(const Math::Ray &ray) { m_ray = ray; }
 
-    bool GetSelectPos(Vector3f &pos)
+    bool GetSelectTile(Vector3f &pos, Vector2f& size)
     {
         bool ret = false;
 
@@ -41,6 +41,7 @@ class TileBrush {
             const Vector2f OFFSET = tile_size * (count - 1) / 2;
             pos.x += OFFSET.x;
             pos.y -= OFFSET.y;
+            size = tile_size * count;
             ret = true;
         }
         return ret;

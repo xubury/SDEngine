@@ -55,9 +55,9 @@ void GLDevice::DispatchCompute(int32_t num_group_x, int32_t num_group_y,
     glDispatchCompute(num_group_x, num_group_y, num_group_z);
 }
 
-void GLDevice::MemoryBarrier()
+void GLDevice::MemoryBarrier(BarrierBit bit)
 {
-    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+    glMemoryBarrier(Translate(bit));
 }
 
 void GLDevice::DrawElements(MeshTopology topology, int count, size_t offset)

@@ -1,8 +1,8 @@
-#ifndef SD_LIGHTING_SYSTEM_HPP
-#define SD_LIGHTING_SYSTEM_HPP
+#ifndef SD_DEFERRED_RENDERER_HPP
+#define SD_DEFERRED_RENDERER_HPP
 
 #include "Renderer/Export.hpp"
-#include "Renderer/RenderSystem.hpp"
+#include "ECS/Scene.hpp"
 #include "Graphics/Framebuffer.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"
@@ -23,62 +23,47 @@ enum class GeometryBufferType {
 
 DataFormat SD_RENDERER_API GetTextureFormat(GeometryBufferType type);
 
-class SD_RENDERER_API LightingSystem : public RenderSystem {
+class SD_RENDERER_API DeferredRenderer {
    public:
-    LightingSystem(int width, int height, MultiSampleLevel msaa);
+    DeferredRenderer(int width, int height, MultiSampleLevel msaa);
+    ~DeferredRenderer();
 
-    void OnInit() override;
+    void RenderScene(Scene &scene);
 
-    void OnPush() override;
+    void ImGui();
 
-    void OnPop() override;
-
-    void OnImGui() override;
-
-    void OnRender() override;
-
-    void OnSizeEvent(const RenderSizeEvent &event);
-
-    Framebuffer *GetGBuffer() { return m_geometry_target_msaa.get(); }
-
-    void SetSSAOState(bool ssao_state) { m_ssao_state = ssao_state; }
-    bool GetSSAOState() const { return m_ssao_state; }
-
-    float GetSSAORadius() const { return m_ssao_radius; }
-    void SetSSAORadius(float radius);
-
-    float GetSSAOBias() const { return m_ssao_bias; }
-    void SetSSAOBias(float bias);
-
-    uint8_t GetSSAOPower() const { return m_ssao_power; }
-    void SetSSAOPower(uint8_t power) { m_ssao_power = power; }
+    void SetRenderSize(int32_t width, int32_t height);
 
    private:
     void InitShaders();
-    void InitSSAO();
+    void InitSSAOBuffers();
     void InitSSAOKernel();
-    void InitLighting();
+    void InitLightingBuffers();
 
     void RenderGBuffer();
     void BlitGeometryBuffers();
 
     void RenderSSAO();
 
-    void RenderShadowMap(CascadeShadow &shadow, const Transform &transform);
-    void RenderPointShadowMap(PointShadow &shadow, const Transform &transform);
+    void RenderShadowMap(const Transform &transform);
+    void RenderPointShadowMap(const Transform &transform);
     void RenderDeferred();
     void RenderEmissive();
+
+    Scene *m_scene;
 
     int32_t m_width;
     int32_t m_height;
     MultiSampleLevel m_msaa;
 
+    CascadeShadow m_cascade_shadow;
     Ref<Shader> m_cascade_shader;
     Ref<Shader> m_cascade_debug_shader;
     Ref<Framebuffer> m_cascade_debug_target;
     Ref<Texture> m_cascade_debug_buffer;
     int m_debug_layer{0};
 
+    PointShadow m_point_shadow;
     Ref<Shader> m_point_shadow_shader;
 
     Ref<Shader> m_emssive_shader;
@@ -108,8 +93,6 @@ class SD_RENDERER_API LightingSystem : public RenderSystem {
     int m_ssao_power;
     Ref<Texture> m_ssao_noise;
     std::vector<Vector3f> m_ssao_kernel;
-
-    HandlerRegistration m_size_handler;
 };
 
 }  // namespace SD

@@ -1,40 +1,23 @@
-#ifndef SD_POST_PROCESS_SYSTEM_HPP
-#define SD_POST_PROCESS_SYSTEM_HPP
+#ifndef SD_POST_PROCESS_RENDERER_HPP
+#define SD_POST_PROCESS_RENDERER_HPP
 
-#include "Core/ECSSystem.hpp"
 #include "Renderer/Export.hpp"
-#include "Renderer/Event.hpp"
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/Framebuffer.hpp"
 
 namespace SD {
 
-class SD_RENDERER_API PostProcessSystem : public ECSSystem {
+class SD_RENDERER_API PostProcessRenderer {
    public:
-    PostProcessSystem(int32_t width, int32_t height);
+    PostProcessRenderer(int32_t width, int32_t height);
+    ~PostProcessRenderer();
 
-    void OnInit() override;
+    void SetRenderSize(int32_t width, int32_t height);
 
-    void OnDestroy() override;
+    void ImGui();
 
-    void OnImGui() override;
-
-    void OnRender() override;
-
-    void OnSizeEvent(const RenderSizeEvent &event);
-
-    void SetExposure(float exposure);
-    float GetExposure();
-
-    void SetBloom(bool isBloom);
-    bool GetBloom();
-
-    void SetBloomFactor(float bloom);
-    float GetBloomFactor();
-
-    float GetGammaCorrection();
-    void SetGammaCorrection(float gamma);
+    void Render();
 
    private:
     void RenderPost();
@@ -62,8 +45,6 @@ class SD_RENDERER_API PostProcessSystem : public ECSSystem {
     bool m_is_bloom;
     float m_exposure;
     float m_gamma_correction;
-
-    HandlerRegistration m_size_handler;
 };
 
 }  // namespace SD

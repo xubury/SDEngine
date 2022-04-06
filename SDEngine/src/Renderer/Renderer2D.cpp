@@ -184,23 +184,17 @@ void Renderer2D::Init()
     m_circle_shader = ShaderLoader::LoadShader(
         "assets/shaders/circle.vert.glsl", "assets/shaders/circle.frag.glsl");
 
-    m_line_shader->SetUniformBuffer("Camera", *m_camera_UBO);
-    m_circle_shader->SetUniformBuffer("Camera", *m_camera_UBO);
-    m_sprite_shader->SetUniformBuffer("Camera", *m_camera_UBO);
+    Renderer::BindCamera(*m_line_shader);
+    Renderer::BindCamera(*m_circle_shader);
+    Renderer::BindCamera(*m_sprite_shader);
 }
 
-void Renderer2D::Begin(Camera& camera)
-{
-    m_camera_data.view = camera.GetView();
-    m_camera_data.projection = camera.GetProjection();
-    m_camera_UBO->UpdateData(&m_camera_data, sizeof(CameraData));
-}
+void Renderer2D::Begin() {}
 
 void Renderer2D::End()
 {
     Flush();
     StartBatch();
-    m_device->SetShader(nullptr);
 }
 
 void Renderer2D::Reset()
@@ -284,7 +278,7 @@ void Renderer2D::FlushLines()
         size_t offset = m_data.line_buffer_ptr - m_data.line_buffer.data();
         m_data.line_vbo->UpdateData(m_data.line_buffer.data(),
                                     sizeof(Line) * offset);
-        m_device->SetShader(m_line_shader.get());
+        s_device->SetShader(m_line_shader.get());
         Submit(*m_data.line_vao, MeshTopology::Lines, m_data.line_vertex_cnt, 0,
                false);
         m_data.line_cnt += offset;
@@ -304,7 +298,7 @@ void Renderer2D::FlushQuads()
         m_sprite_shader->GetParam("u_textures[0]")
             ->SetAsTextures(m_data.texture_slots.data(), m_data.texture_index);
 
-        m_device->SetShader(m_sprite_shader.get());
+        s_device->SetShader(m_sprite_shader.get());
         Submit(*m_data.quad_vao, MeshTopology::Triangles, m_data.quad_index_cnt,
                0);
         m_data.quad_cnt += offset;
@@ -320,7 +314,7 @@ void Renderer2D::FlushCircles()
         m_data.circle_vbo->UpdateData(m_data.circle_buffer.data(),
                                       offset * sizeof(Circle));
 
-        m_device->SetShader(m_circle_shader.get());
+        s_device->SetShader(m_circle_shader.get());
         Submit(*m_data.circle_vao, MeshTopology::Triangles,
                m_data.circle_index_cnt, 0);
         m_data.circie_cnt += offset;
@@ -469,7 +463,7 @@ void Renderer2D::DrawBillboard(const Texture& texture,
     DrawTexture(
         texture, uv,
         glm::translate(Matrix4f(1.0f), pos) *
-            Matrix4f(glm::transpose(Matrix3f(m_camera_data.view))) *
+            Matrix4f(glm::transpose(Matrix3f(s_camera_data.view))) *
             glm::scale(Matrix4f(1.0f), Vector3f(scale.x, scale.y, 1.0f)),
         color, entity_id);
 }
@@ -481,7 +475,7 @@ void Renderer2D::DrawBillboard(const Texture& texture, const Vector3f& pos,
     DrawTexture(
         texture,
         glm::translate(Matrix4f(1.0f), pos) *
-            Matrix4f(glm::transpose(Matrix3f(m_camera_data.view))) *
+            Matrix4f(glm::transpose(Matrix3f(s_camera_data.view))) *
             glm::scale(Matrix4f(1.0f), Vector3f(scale.x, scale.y, 1.0f)),
         color, entity_id);
 }

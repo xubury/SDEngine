@@ -3,11 +3,10 @@
 
 #include "Core/Layer.hpp"
 #include "Graphics/Device.hpp"
-#include "Renderer/CameraSystem.hpp"
-#include "Renderer/LightingSystem.hpp"
-#include "Renderer/SkyboxSystem.hpp"
-#include "Renderer/PostProcessSystem.hpp"
-#include "Renderer/SpriteRenderSystem.hpp"
+#include "Renderer/DeferredRenderer.hpp"
+#include "Renderer/SkyboxRenderer.hpp"
+#include "Renderer/PostProcessRenderer.hpp"
+#include "Renderer/SpriteRenderer.hpp"
 #include "Utility/Timing.hpp"
 
 namespace SD {
@@ -45,11 +44,11 @@ class SD_RENDERER_API GraphicsLayer : public Layer {
     Ref<Texture> m_light_icon;
 
     Camera* m_camera;
-    CameraSystem* m_camera_system;
-    LightingSystem* m_lighting_system;
-    SkyboxSystem* m_skybox_system;
-    SpriteRenderSystem* m_sprite_system;
-    PostProcessSystem* m_post_process_system;
+    Scene* m_scene;
+    DeferredRenderer m_deferred_renderer;
+    SkyboxRenderer m_skybox_renderer;
+    SpriteRenderer m_sprite_renderer;
+    PostProcessRenderer m_post_renderer;
 
     FPSCounter m_fps;
     std::string m_renderer2d_debug_str;
