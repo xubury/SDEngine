@@ -11,7 +11,7 @@ class SD_RENDERER_API SpriteRenderer {
    public:
     SpriteRenderer() = default;
 
-    void RenderScene(const Scene &scene);
+    void Render();
 };
 
 }  // namespace SD

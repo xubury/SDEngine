@@ -22,10 +22,8 @@ void SDEditor::OnInit()
 
     m_graphics_layer->SetDebug(true);
     PushLayer(CreateLayer<ScriptLayer>());
-    m_editor_layer = CreateLayer<EditorLayer>(m_graphics_layer, viewport_width,
-                                              viewport_height);
-
-    PushLayer(m_editor_layer);
+    PushLayer(CreateLayer<EditorLayer>(m_graphics_layer, viewport_width,
+                                       viewport_height));
 }
 
 void SDEditor::OnDestroy() { Application::OnDestroy(); }

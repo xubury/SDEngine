@@ -38,8 +38,7 @@ DataFormat GetTextureFormat(GeometryBufferType type)
 const int shadow_map_width = 4086;
 const int shadow_map_height = 4086;
 DeferredRenderer::DeferredRenderer(int width, int height, MultiSampleLevel msaa)
-    : m_scene(nullptr),
-      m_width(width),
+    : m_width(width),
       m_height(height),
       m_msaa(msaa),
       m_cascade_shadow(shadow_map_width, shadow_map_height),
@@ -227,9 +226,8 @@ void DeferredRenderer::ImGui()
     }
 }
 
-void DeferredRenderer::RenderScene(Scene &scene)
+void DeferredRenderer::Render()
 {
-    m_scene = &scene;
     RenderGBuffer();
     BlitGeometryBuffers();
     if (m_ssao_state) {
@@ -246,7 +244,8 @@ void DeferredRenderer::RenderScene(Scene &scene)
 
 void DeferredRenderer::RenderShadowMap(const Transform &transform)
 {
-    auto modelView = m_scene->view<TransformComponent, ModelComponent>();
+    auto scene = Renderer::GetScene();
+    auto modelView = scene->view<TransformComponent, ModelComponent>();
     RenderOperation op;
     op.cull_face = Face::Front;
     Texture *depth_map = m_cascade_shadow.GetShadowMap();
@@ -298,11 +297,12 @@ void DeferredRenderer::RenderShadowMap(const Transform &transform)
 
 void DeferredRenderer::RenderPointShadowMap(const Transform &transform)
 {
+    auto scene = Renderer::GetScene();
     Vector3f light_pos = transform.GetPosition();
     std::array<Matrix4f, 6> shadow_trans =
         m_point_shadow.GetProjectionMatrix(light_pos);
 
-    auto modelView = m_scene->view<TransformComponent, ModelComponent>();
+    auto modelView = scene->view<TransformComponent, ModelComponent>();
     RenderOperation op;
     op.cull_face = Face::Front;
     Texture *shadow_map = m_point_shadow.GetShadowMap();
@@ -364,10 +364,10 @@ void DeferredRenderer::RenderSSAO()
 
 void DeferredRenderer::RenderEmissive()
 {
+    auto scene = Renderer::GetScene();
     auto dir_lights =
-        m_scene->view<TransformComponent, DirectionalLightComponent>();
-    auto point_lights =
-        m_scene->view<TransformComponent, PointLightComponent>();
+        scene->view<TransformComponent, DirectionalLightComponent>();
+    auto point_lights = scene->view<TransformComponent, PointLightComponent>();
     RenderOperation op;
     op.blend = false;
     if (dir_lights.begin() != dir_lights.end() ||
@@ -387,6 +387,7 @@ void DeferredRenderer::RenderEmissive()
 
 void DeferredRenderer::RenderDeferred()
 {
+    auto scene = Renderer::GetScene();
     m_deferred_shader->GetParam("u_position")
         ->SetAsTexture(
             m_gbuffer_msaa[static_cast<int>(GeometryBufferType::Position)]
@@ -436,7 +437,7 @@ void DeferredRenderer::RenderDeferred()
     const float value[]{0, 0, 0, 0};
     m_lighting_target[input_id]->ClearAttachment(0, value);
     auto dir_lights =
-        m_scene->view<TransformComponent, DirectionalLightComponent>();
+        scene->view<TransformComponent, DirectionalLightComponent>();
     dir_lights.each([&](const TransformComponent &transformComp,
                         DirectionalLightComponent &lightComp) {
         DirectionalLight &light = lightComp.light;
@@ -488,8 +489,7 @@ void DeferredRenderer::RenderDeferred()
         m_deferred_shader->GetParam("u_point_shadow_map");
     ShaderParam *point_shadow_far_z =
         m_deferred_shader->GetParam("u_point_shadow_far_z");
-    auto point_lights =
-        m_scene->view<TransformComponent, PointLightComponent>();
+    auto point_lights = scene->view<TransformComponent, PointLightComponent>();
     point_lights.each([&](const TransformComponent &transformComp,
                           PointLightComponent &lightComp) {
         PointLight &light = lightComp.light;
@@ -533,7 +533,8 @@ void DeferredRenderer::RenderDeferred()
 
 void DeferredRenderer::RenderGBuffer()
 {
-    auto modelView = m_scene->view<TransformComponent, ModelComponent>();
+    auto scene = Renderer::GetScene();
+    auto modelView = scene->view<TransformComponent, ModelComponent>();
 
     RenderPassInfo info;
     info.framebuffer = m_geometry_target_msaa.get();

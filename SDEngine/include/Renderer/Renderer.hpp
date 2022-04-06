@@ -66,8 +66,11 @@ class SD_RENDERER_API Renderer {
 
     static bool IsEmptyStack();
 
-    static void SetCamera(Camera &camera);
+    static void SetCamera(Camera *camera);
     static Camera *GetCamera();
+
+    static void SetScene(Scene *Scene);
+    static Scene *GetScene();
 
     static void BindCamera(Shader &shader);
 
@@ -82,26 +85,10 @@ class SD_RENDERER_API Renderer {
                                int read_attachment, BufferBitMask mask);
 
    protected:
-    static Device *s_device;
-
-    static Ref<UniformBuffer> s_camera_ubo;
-    static Camera *s_camera;
-    static CameraData s_camera_data;
-
-   private:
     static void SetRenderState(Framebuffer *framebuffer, int32_t viewport_width,
                                int32_t viewport_height,
                                const RenderOperation &op);
-
-    static Ref<VertexArray> s_quad_vao;
-    static Ref<VertexBuffer> s_quad_vbo;
-    static Ref<IndexBuffer> s_quad_ibo;
-
-    static Ref<VertexArray> s_box_vao;
-    static Ref<VertexBuffer> s_box_vbo;
-    static Ref<IndexBuffer> s_box_ibo;
-
-    static bool s_is_subpass_begin;
+    static Device *s_device;
 };
 
 }  // namespace SD

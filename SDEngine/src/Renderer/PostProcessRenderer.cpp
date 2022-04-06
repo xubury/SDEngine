@@ -28,6 +28,7 @@ PostProcessRenderer::PostProcessRenderer(int32_t width, int32_t height)
     m_hdr_shader = ShaderLoader::LoadShader("assets/shaders/quad.vert.glsl",
                                             "assets/shaders/hdr.frag.glsl");
     m_bloom_shader = ShaderLoader::LoadShader("assets/shaders/bloom.comp.glsl");
+    InitBuffers();
 }
 
 PostProcessRenderer::~PostProcessRenderer()

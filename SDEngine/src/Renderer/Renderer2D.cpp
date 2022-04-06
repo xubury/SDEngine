@@ -463,7 +463,7 @@ void Renderer2D::DrawBillboard(const Texture& texture,
     DrawTexture(
         texture, uv,
         glm::translate(Matrix4f(1.0f), pos) *
-            Matrix4f(glm::transpose(Matrix3f(s_camera_data.view))) *
+            Matrix4f(glm::transpose(Matrix3f(GetCamera()->GetView()))) *
             glm::scale(Matrix4f(1.0f), Vector3f(scale.x, scale.y, 1.0f)),
         color, entity_id);
 }
@@ -475,7 +475,7 @@ void Renderer2D::DrawBillboard(const Texture& texture, const Vector3f& pos,
     DrawTexture(
         texture,
         glm::translate(Matrix4f(1.0f), pos) *
-            Matrix4f(glm::transpose(Matrix3f(s_camera_data.view))) *
+            Matrix4f(glm::transpose(Matrix3f(GetCamera()->GetView()))) *
             glm::scale(Matrix4f(1.0f), Vector3f(scale.x, scale.y, 1.0f)),
         color, entity_id);
 }

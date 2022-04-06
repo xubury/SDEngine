@@ -13,7 +13,6 @@ class SDEditor : public Application {
     void OnDestroy() override;
 
    private:
-    EditorLayer* m_editor_layer;
 };
 
 }  // namespace SD

@@ -36,18 +36,21 @@ void EditorLayer::OnInit()
 {
     Layer::OnInit();
 
-    InitBuffers();
-
     auto &storage = AssetStorage::Get();
     m_scene_asset = storage.CreateAsset<SceneAsset>("default scene");
     SetCurrentScene(m_scene_asset->GetScene());
     m_graphics_layer->SetRenderSize(m_viewport_size.x, m_viewport_size.y);
     m_graphics_layer->SetCamera(&m_editor_camera);
+
+    m_viewport_target = Framebuffer::Create();
+    m_graphics_layer->OutputColorBuffer(m_viewport_target.get(), 0);
+    m_graphics_layer->OutputEntityBuffer(m_viewport_target.get(), 1);
+
+    InitBuffers();
 }
 
 void EditorLayer::InitBuffers()
 {
-    m_viewport_target = Framebuffer::Create();
     m_scene_buffer = Texture::Create(m_viewport_size.x, m_viewport_size.y, 0,
                                      MultiSampleLevel::None,
                                      TextureType::Normal, DataFormat::RGB8);
@@ -60,22 +63,15 @@ void EditorLayer::InitBuffers()
 
 void EditorLayer::OnRender()
 {
-    auto *framebuffer = m_graphics_layer->GetFramebuffer();
     RenderPassInfo info;
-    info.framebuffer = framebuffer;
+    info.framebuffer = m_viewport_target.get();
     info.viewport_width = m_viewport_size.x;
     info.viewport_height = m_viewport_size.y;
     info.clear_mask = BufferBitMask::None;
     Renderer::BeginRenderPass(info);
     if (m_mode == EditorMode::TwoDimensional) {
-        m_tile_map_editor.Render(m_editor_camera);
+        m_tile_map_editor.Render();
     }
-    // blit the render color result
-    Renderer::BlitToBuffer(0, m_viewport_target.get(), 0,
-                           BufferBitMask::ColorBufferBit);
-    // blit the entity id result
-    Renderer::BlitToBuffer(1, m_viewport_target.get(), 1,
-                           BufferBitMask::ColorBufferBit);
     Renderer::EndRenderPass();
 }
 

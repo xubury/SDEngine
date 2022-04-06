@@ -18,7 +18,6 @@ EditorCamera::EditorCamera(int32_t width, int32_t height)
       m_mouse_smooth_movement(0),
       m_mouse_movement(0)
 {
-    SetWorldPosition(Vector3f(0, 0, 1));
 }
 
 void EditorCamera::Move(int32_t x, int32_t y)

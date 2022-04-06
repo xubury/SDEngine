@@ -15,12 +15,13 @@
 namespace SD {
 
 class TileMapEditor {
+   public:
     enum class Operation { None, AddEntity, RemoveEntity };
 
    public:
     TileMapEditor();
     void ImGui();
-    void Render(Camera &camera);
+    void Render();
 
     bool ManipulateScene(Camera &camera, Vector3f &world);
     const SpriteFrame &GetSpriteFrame() const { return m_frame; }

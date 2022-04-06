@@ -101,7 +101,7 @@ void TileMapEditor::ImGui()
     ImGui::End();
 }
 
-void TileMapEditor::Render(Camera &camera)
+void TileMapEditor::Render()
 {
     const int index = 0;
     RenderOperation op;
@@ -148,7 +148,7 @@ void TileMapEditor::Render(Camera &camera)
             std::ceil(static_cast<float>(render_height) / tile_size.y) + 1);
         const Vector2f tex_size = tile_cnt * tile_size;
 
-        const Vector3f cam_pos = camera.GetWorldPosition();
+        const Vector3f cam_pos = Renderer::GetCamera()->GetWorldPosition();
         Vector2f uv_origin(cam_pos.x / tile_size.x, -cam_pos.y / tile_size.y);
         const Vector3f outline_pos(
             tex_size.x / 2.f + cam_pos.x - tile_size.x / 2.f -

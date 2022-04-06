@@ -28,6 +28,9 @@ class SD_RENDERER_API GraphicsLayer : public Layer {
 
     Framebuffer* GetFramebuffer() { return m_main_target.get(); }
 
+    void OutputEntityBuffer(Framebuffer* framebuffer, int attachment);
+    void OutputColorBuffer(Framebuffer* framebuffer, int attachment);
+
    private:
     void InitBuffers();
 
@@ -36,9 +39,17 @@ class SD_RENDERER_API GraphicsLayer : public Layer {
     int32_t m_height;
     MultiSampleLevel m_msaa;
     bool m_debug;
+
     Ref<Framebuffer> m_main_target;
+
     Ref<Texture> m_color_buffer;
+    Framebuffer* m_color_output;
+    int32_t m_color_output_attachment;
+
     Ref<Texture> m_entity_buffer;
+    Framebuffer* m_entity_ouptut;
+    int32_t m_entity_output_attachment;
+
     Ref<Renderbuffer> m_depth_buffer;
 
     Ref<Texture> m_light_icon;

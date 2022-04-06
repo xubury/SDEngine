@@ -16,28 +16,29 @@ GraphicsLayer::GraphicsLayer(Device *device, int32_t width, int32_t height,
       m_width(width),
       m_height(height),
       m_msaa(msaa),
+      m_color_output(nullptr),
+      m_color_output_attachment(0),
+      m_entity_ouptut(nullptr),
+      m_entity_output_attachment(1),
       m_deferred_renderer(width, height, m_msaa),
       m_post_renderer(width, height),
       m_fps(20)
 {
+    m_main_target = Framebuffer::Create();
+    InitBuffers();
 }
 
 void GraphicsLayer::InitBuffers()
 {
-    {
-        m_main_target = Framebuffer::Create();
-        m_color_buffer =
-            Texture::Create(m_width, m_height, 0, m_msaa, TextureType::Normal,
-                            DataFormat::RGBA8);
-        m_entity_buffer =
-            Texture::Create(m_width, m_height, 0, m_msaa, TextureType::Normal,
-                            DataFormat::R32UI);
-        m_depth_buffer = Renderbuffer::Create(m_width, m_height, m_msaa,
-                                              DataFormat::Depth24);
-        m_main_target->Attach(*m_color_buffer, 0, 0);
-        m_main_target->Attach(*m_entity_buffer, 1, 0);
-        m_main_target->Attach(*m_depth_buffer, 0);
-    }
+    m_color_buffer = Texture::Create(m_width, m_height, 0, m_msaa,
+                                     TextureType::Normal, DataFormat::RGBA8);
+    m_entity_buffer = Texture::Create(m_width, m_height, 0, m_msaa,
+                                      TextureType::Normal, DataFormat::R32UI);
+    m_depth_buffer =
+        Renderbuffer::Create(m_width, m_height, m_msaa, DataFormat::Depth24);
+    m_main_target->Attach(*m_color_buffer, 0, 0);
+    m_main_target->Attach(*m_entity_buffer, 1, 0);
+    m_main_target->Attach(*m_depth_buffer, 0);
 }
 
 void GraphicsLayer::OnInit()
@@ -45,6 +46,18 @@ void GraphicsLayer::OnInit()
     Layer::OnInit();
     Renderer::Init(m_device);
     m_light_icon = TextureLoader::LoadTexture2D("assets/icons/light.png");
+}
+
+void GraphicsLayer::OutputColorBuffer(Framebuffer *framebuffer, int attachment)
+{
+    m_color_output = framebuffer;
+    m_color_output_attachment = attachment;
+}
+
+void GraphicsLayer::OutputEntityBuffer(Framebuffer *framebuffer, int attachment)
+{
+    m_entity_ouptut = framebuffer;
+    m_entity_output_attachment = attachment;
 }
 
 void GraphicsLayer::OnTick(float dt)
@@ -81,14 +94,15 @@ void GraphicsLayer::OnRender()
     });
 
     Renderer::BeginRenderPass({m_main_target.get(), m_width, m_height});
-    Renderer::SetCamera(*m_camera);
+    Renderer::SetCamera(m_camera);
+    Renderer::SetScene(m_scene);
     uint32_t id = static_cast<uint32_t>(entt::null);
     m_main_target->ClearAttachment(1, &id);
 
     // main render pipeline
     m_skybox_renderer.Render();
-    m_deferred_renderer.RenderScene(*m_scene);
-    m_sprite_renderer.RenderScene(*m_scene);
+    m_deferred_renderer.Render();
+    m_sprite_renderer.Render();
     m_post_renderer.Render();
 
     if (m_debug) {
@@ -119,6 +133,26 @@ void GraphicsLayer::OnRender()
     Renderer3D::Reset();
     SD_CORE_ASSERT(Renderer::IsEmptyStack(),
                    "DEBUG: RenderPass Begin/End not pair!")
+
+    // Blit output
+    m_device->ReadBuffer(m_main_target.get(), 0);
+    if (m_color_output ||
+        (m_color_output == nullptr && m_color_output_attachment == 0)) {
+        m_device->DrawBuffer(m_color_output, m_color_output_attachment);
+        m_device->BlitFramebuffer(m_main_target.get(), 0, 0, m_width, m_height,
+                                  m_color_output, 0, 0, m_width, m_height,
+                                  BufferBitMask::ColorBufferBit,
+                                  BlitFilter::Nearest);
+    }
+    if (m_entity_ouptut ||
+        (m_entity_ouptut == nullptr && m_entity_output_attachment == 0)) {
+        m_device->ReadBuffer(m_main_target.get(), 1);
+        m_device->DrawBuffer(m_entity_ouptut, m_entity_output_attachment);
+        m_device->BlitFramebuffer(m_main_target.get(), 0, 0, m_width, m_height,
+                                  m_entity_ouptut, 0, 0, m_width, m_height,
+                                  BufferBitMask::ColorBufferBit,
+                                  BlitFilter::Nearest);
+    }
 }
 
 void GraphicsLayer::OnImGui()

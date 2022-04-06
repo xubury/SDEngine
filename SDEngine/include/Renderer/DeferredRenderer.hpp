@@ -28,7 +28,7 @@ class SD_RENDERER_API DeferredRenderer {
     DeferredRenderer(int width, int height, MultiSampleLevel msaa);
     ~DeferredRenderer();
 
-    void RenderScene(Scene &scene);
+    void Render();
 
     void ImGui();
 
@@ -49,8 +49,6 @@ class SD_RENDERER_API DeferredRenderer {
     void RenderPointShadowMap(const Transform &transform);
     void RenderDeferred();
     void RenderEmissive();
-
-    Scene *m_scene;
 
     int32_t m_width;
     int32_t m_height;

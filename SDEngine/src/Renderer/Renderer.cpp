@@ -6,19 +6,25 @@ namespace SD {
 
 Device* Renderer::s_device;
 
-Camera* Renderer::s_camera;
-Ref<UniformBuffer> Renderer::s_camera_ubo;
-CameraData Renderer::s_camera_data;
+struct RendererData {
+    Ref<UniformBuffer> camera_ubo;
+    Camera* camera;
+    CameraData camera_data;
 
-Ref<VertexArray> Renderer::s_quad_vao;
-Ref<VertexBuffer> Renderer::s_quad_vbo;
-Ref<IndexBuffer> Renderer::s_quad_ibo;
+    Scene* scene;
 
-Ref<VertexArray> Renderer::s_box_vao;
-Ref<VertexBuffer> Renderer::s_box_vbo;
-Ref<IndexBuffer> Renderer::s_box_ibo;
+    Ref<VertexArray> quad_vao;
+    Ref<VertexBuffer> quad_vbo;
+    Ref<IndexBuffer> quad_ibo;
 
-bool Renderer::s_is_subpass_begin = false;
+    Ref<VertexArray> box_vao;
+    Ref<VertexBuffer> box_vbo;
+    Ref<IndexBuffer> box_ibo;
+
+    bool is_subpass_begin{false};
+};
+
+static RendererData s_data;
 
 static std::stack<RenderPassInfo> s_render_pass_stacks;
 
@@ -44,7 +50,9 @@ void Renderer::SetRenderState(Framebuffer* framebuffer, int32_t viewport_width,
 void Renderer::BeginRenderPass(const RenderPassInfo& info)
 {
     s_render_pass_stacks.push(info);
-    info.framebuffer->Prepare();
+    if (info.framebuffer) {
+        info.framebuffer->Prepare();
+    }
     SetRenderState(info.framebuffer, info.viewport_width, info.viewport_height,
                    info.op);
 
@@ -57,9 +65,9 @@ void Renderer::BeginRenderPass(const RenderPassInfo& info)
 
 void Renderer::BeginRenderSubpass(const RenderSubpassInfo& info)
 {
-    SD_CORE_ASSERT(s_is_subpass_begin == false,
+    SD_CORE_ASSERT(s_data.is_subpass_begin == false,
                    "Nested render subpass is not allowed!")
-    s_is_subpass_begin = true;
+    s_data.is_subpass_begin = true;
 
     // restore render pass state
     auto& render_pass = GetCurrentRenderPass();
@@ -74,7 +82,7 @@ void Renderer::EndRenderSubpass()
 {
     s_device->SetFramebuffer(nullptr);
     s_device->SetShader(nullptr);
-    s_is_subpass_begin = false;
+    s_data.is_subpass_begin = false;
 }
 
 void Renderer::EndRenderPass()
@@ -102,8 +110,8 @@ void Renderer::Init(Device* device)
 {
     s_device = device;
     SD_CORE_TRACE("Initializing Renderer");
-    s_camera_ubo = UniformBuffer::Create(nullptr, sizeof(CameraData),
-                                         BufferIOType::Dynamic);
+    s_data.camera_ubo = UniformBuffer::Create(nullptr, sizeof(CameraData),
+                                              BufferIOType::Dynamic);
 
     // NDC quad
     {
@@ -114,16 +122,16 @@ void Renderer::Init(Device* device)
             -1.0f, 1.0f,  0.f, 0.f,  1.0f,  // top left
         };
         const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
-        s_quad_vbo = VertexBuffer::Create(quad_vert, sizeof(quad_vert),
-                                          BufferIOType::Static);
-        s_quad_ibo = IndexBuffer::Create(indices, 6, BufferIOType::Static);
-        s_quad_vao = VertexArray::Create();
+        s_data.quad_vbo = VertexBuffer::Create(quad_vert, sizeof(quad_vert),
+                                               BufferIOType::Static);
+        s_data.quad_ibo = IndexBuffer::Create(indices, 6, BufferIOType::Static);
+        s_data.quad_vao = VertexArray::Create();
         VertexBufferLayout layout;
         layout.Push(BufferLayoutType::Float3);
         layout.Push(BufferLayoutType::Float2);
-        s_quad_vao->AddBufferLayout(layout);
-        s_quad_vao->BindVertexBuffer(*s_quad_vbo, 0);
-        s_quad_vao->BindIndexBuffer(*s_quad_ibo);
+        s_data.quad_vao->AddBufferLayout(layout);
+        s_data.quad_vao->BindVertexBuffer(*s_data.quad_vbo, 0);
+        s_data.quad_vao->BindIndexBuffer(*s_data.quad_ibo);
     }
 
     // NDC box
@@ -146,16 +154,17 @@ void Renderer::Init(Device* device)
                                         4, 5, 1, 1, 0, 4,
                                         // top
                                         3, 2, 6, 6, 7, 3};
-        s_box_vao = VertexArray::Create();
+        s_data.box_vao = VertexArray::Create();
 
         VertexBufferLayout layout;
         layout.Push(BufferLayoutType::Float3);
-        s_box_vbo = VertexBuffer::Create(box_vert, sizeof(box_vert),
-                                         BufferIOType::Static);
-        s_box_ibo = IndexBuffer::Create(box_indices, 36, BufferIOType::Static);
-        s_box_vao->AddBufferLayout(layout);
-        s_box_vao->BindVertexBuffer(*s_box_vbo, 0);
-        s_box_vao->BindIndexBuffer(*s_box_ibo);
+        s_data.box_vbo = VertexBuffer::Create(box_vert, sizeof(box_vert),
+                                              BufferIOType::Static);
+        s_data.box_ibo =
+            IndexBuffer::Create(box_indices, 36, BufferIOType::Static);
+        s_data.box_vao->AddBufferLayout(layout);
+        s_data.box_vao->BindVertexBuffer(*s_data.box_vbo, 0);
+        s_data.box_vao->BindIndexBuffer(*s_data.box_ibo);
     }
     Renderer2D::Init();
     Renderer3D::Init();
@@ -173,19 +182,23 @@ void Renderer::Submit(const VertexArray& vao, MeshTopology topology,
     }
 }
 
-void Renderer::SetCamera(Camera& camera)
+void Renderer::SetCamera(Camera* camera)
 {
-    s_camera = &camera;
-    s_camera_data.view = camera.GetView();
-    s_camera_data.projection = camera.GetProjection();
-    s_camera_ubo->UpdateData(&s_camera_data, sizeof(CameraData));
+    s_data.camera = camera;
+    s_data.camera_data.view = camera->GetView();
+    s_data.camera_data.projection = camera->GetProjection();
+    s_data.camera_ubo->UpdateData(&s_data.camera_data, sizeof(CameraData));
 }
 
-Camera* Renderer::GetCamera() { return s_camera; }
+Camera* Renderer::GetCamera() { return s_data.camera; }
+
+void Renderer::SetScene(Scene* scene) { s_data.scene = scene; }
+
+Scene* Renderer::GetScene() { return s_data.scene; }
 
 void Renderer::BindCamera(Shader& shader)
 {
-    shader.SetUniformBuffer("Camera", *s_camera_ubo);
+    shader.SetUniformBuffer("Camera", *s_data.camera_ubo);
 }
 
 void Renderer::ComputeImage(Shader& shader, int32_t width, int32_t height,
@@ -202,13 +215,15 @@ void Renderer::ComputeImage(Shader& shader, int32_t width, int32_t height,
 void Renderer::DrawNDCQuad(const Shader& shader)
 {
     s_device->SetShader(&shader);
-    Submit(*s_quad_vao, MeshTopology::Triangles, s_quad_ibo->GetCount(), 0);
+    Submit(*s_data.quad_vao, MeshTopology::Triangles,
+           s_data.quad_ibo->GetCount(), 0);
 }
 
 void Renderer::DrawNDCBox(const Shader& shader)
 {
     s_device->SetShader(&shader);
-    Submit(*s_box_vao, MeshTopology::Triangles, s_box_ibo->GetCount(), 0);
+    Submit(*s_data.box_vao, MeshTopology::Triangles, s_data.box_ibo->GetCount(),
+           0);
 }
 
 void Renderer::BlitToBuffer(int read_attachment, Framebuffer* draw_fb,

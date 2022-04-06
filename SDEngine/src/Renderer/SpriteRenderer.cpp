@@ -18,8 +18,9 @@ struct SpriteDrawData {
     int priority;
 };
 
-void SpriteRenderer::RenderScene(const Scene &scene)
+void SpriteRenderer::Render()
 {
+    auto scene = Renderer::GetScene();
     auto &storage = AssetStorage::Get();
     int index[] = {0, 1};
     RenderOperation op;
@@ -28,7 +29,7 @@ void SpriteRenderer::RenderScene(const Scene &scene)
     Renderer2D::Begin();
 
     std::vector<SpriteDrawData> datas;
-    auto sprite_view = scene.view<SpriteComponent, TransformComponent>();
+    auto sprite_view = scene->view<SpriteComponent, TransformComponent>();
     sprite_view.each([&](entt::entity entity_id,
                          const SpriteComponent &sprite_comp,
                          const TransformComponent &transform_comp) {
@@ -43,7 +44,8 @@ void SpriteRenderer::RenderScene(const Scene &scene)
                              frame.priority});
         }
     });
-    auto anim_view = scene.view<SpriteAnimationComponent, TransformComponent>();
+    auto anim_view =
+        scene->view<SpriteAnimationComponent, TransformComponent>();
     anim_view.each([&](entt::entity entity_id,
                        const SpriteAnimationComponent &anim_comp,
                        const TransformComponent &transform_comp) {
@@ -85,7 +87,7 @@ void SpriteRenderer::RenderScene(const Scene &scene)
                                 data.size, Vector4f(1.0f), data.entity_id);
     }
 
-    auto textView = scene.view<TransformComponent, TextComponent>();
+    auto textView = scene->view<TransformComponent, TextComponent>();
 
     textView.each([&](entt::entity entity_id,
                       const TransformComponent &transformComp,
