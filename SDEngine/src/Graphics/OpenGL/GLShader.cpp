@@ -290,4 +290,11 @@ uint32_t GLShader::GetUint(const std::string& name) const
     return value;
 }
 
+Vector3i GLShader::GetLocalGroupSize() const
+{
+    Vector3i group_size;
+    glGetProgramiv(m_id, GL_COMPUTE_WORK_GROUP_SIZE, &group_size[0]);
+    return group_size;
+}
+
 }  // namespace SD

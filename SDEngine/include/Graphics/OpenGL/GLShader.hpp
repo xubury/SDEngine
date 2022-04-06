@@ -32,6 +32,8 @@ class SD_GRAPHICS_API GLShader : public Shader {
 
     uint32_t GetUint(const std::string& name) const override;
 
+    Vector3i GetLocalGroupSize() const override;
+
    private:
     static void CheckCompileErrors(uint32_t shader, const std::string& type);
 

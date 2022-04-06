@@ -56,8 +56,8 @@ class SD_RENDERER_API Renderer {
     static void EndRenderPass();
     static void Submit(const VertexArray &vao, MeshTopology topology,
                        size_t count, size_t offset, bool index = true);
-    static void ComputeImage(Shader &shader, int32_t num_group_x,
-                                int32_t num_group_y, int32_t num_group_z);
+    static void ComputeImage(Shader &shader, int32_t width, int32_t height,
+                             int32_t depth);
 
     static void Init(Device *device);
 

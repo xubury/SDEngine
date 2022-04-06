@@ -143,8 +143,7 @@ void PostProcessRenderer::Downsample(Texture &src, Texture &dst)
             m_bloom_shader->GetParam("u_level")->SetAsInt(base_level - 1);
             m_bloom_shader->GetParam("u_in_texture")->SetAsTexture(&dst);
         }
-        Renderer::ComputeImage(*m_bloom_shader, std::ceil(m_width / 13.f),
-                                  std::ceil(m_height / 13.f), 1);
+        Renderer::ComputeImage(*m_bloom_shader, m_width, m_height, 1);
     }
 }
 
@@ -169,8 +168,7 @@ void PostProcessRenderer::Upsample(Texture &src, Texture &dst)
             m_bloom_shader->GetParam("u_down_texture")->SetAsTexture(&src);
             m_bloom_shader->GetParam("u_in_texture")->SetAsTexture(&dst);
         }
-        Renderer::ComputeImage(*m_bloom_shader, std::ceil(m_width / 13.f),
-                                  std::ceil(m_height / 13.f), 1);
+        Renderer::ComputeImage(*m_bloom_shader, m_width, m_height, 1);
     }
 }
 

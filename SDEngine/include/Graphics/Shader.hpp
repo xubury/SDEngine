@@ -5,6 +5,7 @@
 #include "Graphics/Export.hpp"
 #include "Graphics/Resource.hpp"
 #include "Graphics/ShaderParam.hpp"
+#include "Utility/Math.hpp"
 
 #include <string>
 #include <vector>
@@ -39,6 +40,8 @@ class SD_GRAPHICS_API Shader : public Resource {
                                   const UniformBuffer& buffer) = 0;
 
     virtual uint32_t GetUint(const std::string& name) const = 0;
+
+    virtual Vector3i GetLocalGroupSize() const = 0;
 
    protected:
     Shader() = default;

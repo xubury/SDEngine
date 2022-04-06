@@ -188,11 +188,14 @@ void Renderer::BindCamera(Shader& shader)
     shader.SetUniformBuffer("Camera", *s_camera_ubo);
 }
 
-void Renderer::ComputeImage(Shader& shader, int32_t num_group_x,
-                            int32_t num_group_y, int32_t num_group_z)
+void Renderer::ComputeImage(Shader& shader, int32_t width, int32_t height,
+                            int32_t depth)
 {
+    Vector3f local_group_size = shader.GetLocalGroupSize();
     s_device->SetShader(&shader);
-    s_device->DispatchCompute(num_group_x, num_group_y, num_group_z);
+    s_device->DispatchCompute(std::ceil(width / local_group_size.x),
+                              std::ceil(height / local_group_size.y),
+                              std::ceil(depth / local_group_size.z));
     s_device->MemoryBarrier(BarrierBit::ImageAccess);
 }
 

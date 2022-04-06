@@ -353,15 +353,13 @@ void DeferredRenderer::RenderSSAO()
     m_ssao_shader->GetParam("u_noise")->SetAsTexture(m_ssao_noise.get());
     m_ssao_shader->GetParam("u_out_image")
         ->SetAsImage(m_ssao_buffer.get(), 0, false, 0, Access::WriteOnly);
-    Renderer::ComputeImage(*m_ssao_shader, std::ceil(m_width / 25.f),
-                              std::ceil(m_height / 25.f), 1);
+    Renderer::ComputeImage(*m_ssao_shader, m_width, m_height, 1);
 
     // blur
     m_ssao_blur_shader->GetParam("u_input")->SetAsTexture(m_ssao_buffer.get());
     m_ssao_blur_shader->GetParam("u_out_image")
         ->SetAsImage(m_ssao_blur_buffer.get(), 0, false, 0, Access::WriteOnly);
-    Renderer::ComputeImage(*m_ssao_blur_shader, std::ceil(m_width / 25.f),
-                              std::ceil(m_height / 25.f), 1);
+    Renderer::ComputeImage(*m_ssao_blur_shader, m_width, m_height, 1);
 }
 
 void DeferredRenderer::RenderEmissive()
