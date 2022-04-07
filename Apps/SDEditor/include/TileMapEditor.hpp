@@ -21,9 +21,9 @@ class TileMapEditor {
    public:
     TileMapEditor();
     void ImGui();
-    void Render();
+    void Render(const Camera &camera);
 
-    bool ManipulateScene(Camera &camera, Vector3f &world);
+    bool ManipulateScene(const Camera &camera, Vector3f &world);
     const SpriteFrame &GetSpriteFrame() const { return m_frame; }
 
    private:

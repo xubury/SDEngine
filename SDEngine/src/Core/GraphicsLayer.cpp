@@ -20,8 +20,6 @@ GraphicsLayer::GraphicsLayer(Device *device, int32_t width, int32_t height,
       m_color_output_attachment(0),
       m_entity_ouptut(nullptr),
       m_entity_output_attachment(1),
-      m_deferred_renderer(width, height, m_msaa),
-      m_post_renderer(width, height),
       m_fps(20)
 {
     m_main_target = Framebuffer::Create();
@@ -43,9 +41,18 @@ void GraphicsLayer::InitBuffers()
 
 void GraphicsLayer::OnInit()
 {
-    Layer::OnInit();
     Renderer::Init(m_device);
+    Renderer2D::Init();
+    Renderer3D::Init();
+    SkyboxRenderer::Init();
+    PostProcessRenderer::Init(m_width, m_height);
+    DeferredRenderer::Init(m_width, m_height, m_msaa);
     m_light_icon = TextureLoader::LoadTexture2D("assets/icons/light.png");
+}
+void GraphicsLayer::OnDestroy()
+{
+    DeferredRenderer::Shutdown();
+    PostProcessRenderer::Shutdown();
 }
 
 void GraphicsLayer::OutputColorBuffer(Framebuffer *framebuffer, int attachment)
@@ -77,8 +84,8 @@ void GraphicsLayer::SetRenderSize(int32_t width, int32_t height)
     m_height = height;
     InitBuffers();
 
-    m_deferred_renderer.SetRenderSize(width, height);
-    m_post_renderer.SetRenderSize(width, height);
+    DeferredRenderer::SetRenderSize(width, height);
+    PostProcessRenderer::SetRenderSize(width, height);
 }
 
 void GraphicsLayer::SetCamera(Camera *camera) { m_camera = camera; }
@@ -94,16 +101,26 @@ void GraphicsLayer::OnRender()
     });
 
     Renderer::BeginRenderPass({m_main_target.get(), m_width, m_height});
-    Renderer::SetCamera(m_camera);
-    Renderer::SetScene(m_scene);
+    Renderer::SetCamera(*m_camera);
     uint32_t id = static_cast<uint32_t>(entt::null);
     m_main_target->ClearAttachment(1, &id);
 
     // main render pipeline
-    m_skybox_renderer.Render();
-    m_deferred_renderer.Render();
-    m_sprite_renderer.Render();
-    m_post_renderer.Render();
+    m_deferred_time = 0;
+    m_post_rendering_time = 0;
+    Clock clock;
+
+    SkyboxRenderer::Render(*m_camera);
+    clock.Restart();
+
+    DeferredRenderer::Render(*m_scene, *m_camera);
+    m_deferred_time += clock.Restart();
+
+    SpriteRenderer::Render(*m_scene);
+    clock.Restart();
+
+    PostProcessRenderer::Render();
+    m_post_rendering_time += clock.Restart();
 
     if (m_debug) {
         const int index[] = {0, 1};
@@ -126,11 +143,7 @@ void GraphicsLayer::OnRender()
     }
     Renderer::EndRenderPass();
 
-    m_renderer2d_debug_str = Renderer2D::GetDebugInfo();
-    m_renderer3d_debug_str = Renderer3D::GetDebugInfo();
     m_fps.Probe();
-    Renderer2D::Reset();
-    Renderer3D::Reset();
     SD_CORE_ASSERT(Renderer::IsEmptyStack(),
                    "DEBUG: RenderPass Begin/End not pair!")
 
@@ -167,23 +180,30 @@ void GraphicsLayer::OnImGui()
             if (ImGui::TreeNodeEx("Profiles",
                                   flags | ImGuiTreeNodeFlags_DefaultOpen)) {
                 ImGui::TextUnformatted("Renderer2D Debug Info:");
-                ImGui::TextWrapped("%s", m_renderer2d_debug_str.c_str());
+                ImGui::TextWrapped("%s", Renderer2D::GetDebugInfo().c_str());
                 ImGui::TextUnformatted("Renderer3D Debug Info:");
-                ImGui::TextWrapped("%s", m_renderer3d_debug_str.c_str());
+                ImGui::TextWrapped("%s", Renderer3D::GetDebugInfo().c_str());
                 ImGui::Text("FPS:%.2f(%.2f ms)", m_fps.GetFPS(),
                             m_fps.GetFrameTime());
                 ImGui::TreePop();
             }
             if (ImGui::TreeNodeEx("Deferred Renderer", flags)) {
-                m_deferred_renderer.ImGui();
+                ImGui::TextUnformatted("Deferred Rendering Time:");
+                ImGui::TextWrapped("%.2f ms", m_deferred_time);
+                DeferredRenderer::ImGui();
                 ImGui::TreePop();
             }
             if (ImGui::TreeNodeEx("Post Process Renderer", flags)) {
-                m_post_renderer.ImGui();
+                ImGui::TextUnformatted("Post Process Rendering Time:");
+                ImGui::TextWrapped("%.2f ms", m_post_rendering_time);
+                PostProcessRenderer::ImGui();
                 ImGui::TreePop();
             }
         }
         ImGui::End();
+        // Reset debug info
+        Renderer2D::Reset();
+        Renderer3D::Reset();
     }
 }
 

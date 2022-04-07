@@ -25,72 +25,32 @@ DataFormat SD_RENDERER_API GetTextureFormat(GeometryBufferType type);
 
 class SD_RENDERER_API DeferredRenderer {
    public:
-    DeferredRenderer(int width, int height, MultiSampleLevel msaa);
-    ~DeferredRenderer();
+    static void Init(int width, int height, MultiSampleLevel msaa);
+    static void Shutdown();
 
-    void Render();
+    static void Render(const Scene &scene, const Camera &camera);
 
-    void ImGui();
+    static void ImGui();
 
-    void SetRenderSize(int32_t width, int32_t height);
+    static void SetRenderSize(int32_t width, int32_t height);
 
    private:
-    void InitShaders();
-    void InitSSAOBuffers();
-    void InitSSAOKernel();
-    void InitLightingBuffers();
+    static void InitShaders();
+    static void InitSSAOBuffers();
+    static void InitSSAOKernel();
+    static void InitLightingBuffers();
 
-    void RenderGBuffer();
-    void BlitGeometryBuffers();
+    static void RenderGBuffer(const Scene &scene);
+    static void BlitGeometryBuffers();
 
-    void RenderSSAO();
+    static void RenderSSAO();
 
-    void RenderShadowMap(const Transform &transform);
-    void RenderPointShadowMap(const Transform &transform);
-    void RenderDeferred();
-    void RenderEmissive();
-
-    int32_t m_width;
-    int32_t m_height;
-    MultiSampleLevel m_msaa;
-
-    CascadeShadow m_cascade_shadow;
-    Ref<Shader> m_cascade_shader;
-    Ref<Shader> m_cascade_debug_shader;
-    Ref<Framebuffer> m_cascade_debug_target;
-    Ref<Texture> m_cascade_debug_buffer;
-    int m_debug_layer{0};
-
-    PointShadow m_point_shadow;
-    Ref<Shader> m_point_shadow_shader;
-
-    Ref<Shader> m_emssive_shader;
-
-    Ref<Shader> m_deferred_shader;
-    Ref<Framebuffer> m_lighting_target[2];
-    Ref<Texture> m_lighting_buffers[2];
-    Texture *m_lighting_result;
-
-    Ref<Shader> m_gbuffer_shader;
-    Ref<Framebuffer> m_geometry_target_msaa;
-    std::array<Ref<Texture>, static_cast<int>(GeometryBufferType::GBufferCount)>
-        m_gbuffer_msaa;
-    Ref<Framebuffer> m_geometry_target;
-    std::array<Ref<Texture>, static_cast<int>(GeometryBufferType::GBufferCount)>
-        m_gbuffer;
-    Ref<Renderbuffer> m_depth_buffer;
-
-    Ref<Shader> m_ssao_shader;
-    Ref<Texture> m_ssao_buffer;
-    Ref<Shader> m_ssao_blur_shader;
-    Ref<Texture> m_ssao_blur_buffer;
-
-    bool m_ssao_state;
-    float m_ssao_radius;
-    float m_ssao_bias;
-    int m_ssao_power;
-    Ref<Texture> m_ssao_noise;
-    std::vector<Vector3f> m_ssao_kernel;
+    static void RenderShadowMap(const Scene &scene, const Camera &camera,
+                                const Transform &transform);
+    static void RenderPointShadowMap(const Scene &scene,
+                                     const Transform &transform);
+    static void RenderDeferred(const Scene &scene, const Camera &camera);
+    static void RenderEmissive();
 };
 
 }  // namespace SD

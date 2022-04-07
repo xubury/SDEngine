@@ -5,26 +5,7 @@
 namespace SD {
 
 Device* Renderer::s_device;
-
-struct RendererData {
-    Ref<UniformBuffer> camera_ubo;
-    Camera* camera;
-    CameraData camera_data;
-
-    Scene* scene;
-
-    Ref<VertexArray> quad_vao;
-    Ref<VertexBuffer> quad_vbo;
-    Ref<IndexBuffer> quad_ibo;
-
-    Ref<VertexArray> box_vao;
-    Ref<VertexBuffer> box_vbo;
-    Ref<IndexBuffer> box_ibo;
-
-    bool is_subpass_begin{false};
-};
-
-static RendererData s_data;
+RendererData Renderer::s_data;
 
 static std::stack<RenderPassInfo> s_render_pass_stacks;
 
@@ -166,8 +147,6 @@ void Renderer::Init(Device* device)
         s_data.box_vao->BindVertexBuffer(*s_data.box_vbo, 0);
         s_data.box_vao->BindIndexBuffer(*s_data.box_ibo);
     }
-    Renderer2D::Init();
-    Renderer3D::Init();
 }
 
 void Renderer::Submit(const VertexArray& vao, MeshTopology topology,
@@ -182,19 +161,12 @@ void Renderer::Submit(const VertexArray& vao, MeshTopology topology,
     }
 }
 
-void Renderer::SetCamera(Camera* camera)
+void Renderer::SetCamera(Camera& camera)
 {
-    s_data.camera = camera;
-    s_data.camera_data.view = camera->GetView();
-    s_data.camera_data.projection = camera->GetProjection();
+    s_data.camera_data.view = camera.GetView();
+    s_data.camera_data.projection = camera.GetProjection();
     s_data.camera_ubo->UpdateData(&s_data.camera_data, sizeof(CameraData));
 }
-
-Camera* Renderer::GetCamera() { return s_data.camera; }
-
-void Renderer::SetScene(Scene* scene) { s_data.scene = scene; }
-
-Scene* Renderer::GetScene() { return s_data.scene; }
 
 void Renderer::BindCamera(Shader& shader)
 {

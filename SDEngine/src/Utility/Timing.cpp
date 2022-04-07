@@ -5,23 +5,17 @@ namespace SD {
 
 Clock::Clock() : m_lastTicks(ClockType::now()) {}
 
-uint64_t Clock::GetElapsedMS() const
+float Clock::GetElapsedMS() const
 {
-    return std::chrono::duration_cast<std::chrono::milliseconds>(
+    return std::chrono::duration_cast<std::chrono::microseconds>(
                ClockType::now() - m_lastTicks)
-        .count();
+               .count() /
+           1000.f;
 }
 
-uint64_t Clock::GetElapsedSec() const
+float Clock::Restart()
 {
-    return std::chrono::duration_cast<std::chrono::seconds>(ClockType::now() -
-                                                            m_lastTicks)
-        .count();
-}
-
-uint64_t Clock::Restart()
-{
-    uint32_t elapsed = GetElapsedMS();
+    float elapsed = GetElapsedMS();
     m_lastTicks = ClockType::now();
     return elapsed;
 }

@@ -33,7 +33,7 @@ TileMapEditor::TileMapEditor()
     free(data);
 }
 
-bool TileMapEditor::ManipulateScene(Camera &camera, Vector3f &world)
+bool TileMapEditor::ManipulateScene(const Camera &camera, Vector3f &world)
 {
     if (!ImGui::IsWindowHovered()) {
         return false;
@@ -101,7 +101,7 @@ void TileMapEditor::ImGui()
     ImGui::End();
 }
 
-void TileMapEditor::Render()
+void TileMapEditor::Render(const Camera &camera)
 {
     const int index = 0;
     RenderOperation op;
@@ -148,7 +148,7 @@ void TileMapEditor::Render()
             std::ceil(static_cast<float>(render_height) / tile_size.y) + 1);
         const Vector2f tex_size = tile_cnt * tile_size;
 
-        const Vector3f cam_pos = Renderer::GetCamera()->GetWorldPosition();
+        const Vector3f cam_pos = camera.GetWorldPosition();
         Vector2f uv_origin(cam_pos.x / tile_size.x, -cam_pos.y / tile_size.y);
         const Vector3f outline_pos(
             tex_size.x / 2.f + cam_pos.x - tile_size.x / 2.f -

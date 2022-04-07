@@ -15,12 +15,10 @@ class SD_UTILITY_API Clock {
    public:
     Clock();
 
-    uint64_t GetElapsedMS() const;
-
-    uint64_t GetElapsedSec() const;
+    float GetElapsedMS() const;
 
     // Restart the clock, and return elapsed millisecond.
-    uint64_t Restart();
+    float Restart();
 
    private:
     std::chrono::time_point<ClockType> m_lastTicks;

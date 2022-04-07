@@ -16,6 +16,7 @@ class SD_RENDERER_API GraphicsLayer : public Layer {
     GraphicsLayer(Device* device, int32_t width, int32_t height,
                   MultiSampleLevel msaa);
     void OnInit() override;
+    void OnDestroy() override;
 
     void OnImGui() override;
     void OnRender() override;
@@ -56,14 +57,10 @@ class SD_RENDERER_API GraphicsLayer : public Layer {
 
     Camera* m_camera;
     Scene* m_scene;
-    DeferredRenderer m_deferred_renderer;
-    SkyboxRenderer m_skybox_renderer;
-    SpriteRenderer m_sprite_renderer;
-    PostProcessRenderer m_post_renderer;
 
     FPSCounter m_fps;
-    std::string m_renderer2d_debug_str;
-    std::string m_renderer3d_debug_str;
+    float m_deferred_time;
+    float m_post_rendering_time;
 };
 
 }  // namespace SD

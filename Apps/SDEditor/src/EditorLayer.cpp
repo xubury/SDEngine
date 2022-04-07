@@ -70,7 +70,7 @@ void EditorLayer::OnRender()
     info.clear_mask = BufferBitMask::None;
     Renderer::BeginRenderPass(info);
     if (m_mode == EditorMode::TwoDimensional) {
-        m_tile_map_editor.Render();
+        m_tile_map_editor.Render(m_editor_camera);
     }
     Renderer::EndRenderPass();
 }

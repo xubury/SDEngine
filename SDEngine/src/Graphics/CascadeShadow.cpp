@@ -2,14 +2,12 @@
 
 namespace SD {
 
-CascadeShadow::CascadeShadow(int32_t width, int32_t height)
-    : m_width(width), m_height(height), m_cascade_planes{1, 100, 500, 1000}
-{
-    CreateShadowMap();
-}
+CascadeShadow::CascadeShadow() : m_cascade_planes{1, 100, 500, 1000} {}
 
-void CascadeShadow::CreateShadowMap()
+void CascadeShadow::CreateShadowMap(int32_t width, int32_t height)
 {
+    m_width = width;
+    m_height = height;
     m_cascade_fb = Framebuffer::Create();
     const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
     m_cascade_map = Texture::Create(m_width, m_height, m_cascade_planes.size(),
@@ -23,7 +21,7 @@ void CascadeShadow::CreateShadowMap()
 void CascadeShadow::SetNumOfCascades(int32_t num_of_cascades)
 {
     m_cascade_planes.resize(num_of_cascades);
-    CreateShadowMap();
+    CreateShadowMap(m_width, m_height);
 }
 
 static std::vector<Vector4f> GetFrustumCorners(const Matrix4f &project_view)

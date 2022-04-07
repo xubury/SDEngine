@@ -31,6 +31,23 @@ struct RenderOperation {
     Face cull_face{Face::Back};
 };
 
+struct RendererData {
+    Ref<UniformBuffer> camera_ubo;
+    CameraData camera_data;
+
+    Scene *scene;
+
+    Ref<VertexArray> quad_vao;
+    Ref<VertexBuffer> quad_vbo;
+    Ref<IndexBuffer> quad_ibo;
+
+    Ref<VertexArray> box_vao;
+    Ref<VertexBuffer> box_vbo;
+    Ref<IndexBuffer> box_ibo;
+
+    bool is_subpass_begin{false};
+};
+
 struct RenderPassInfo {
     Framebuffer *framebuffer;
     int32_t viewport_width;
@@ -66,11 +83,7 @@ class SD_RENDERER_API Renderer {
 
     static bool IsEmptyStack();
 
-    static void SetCamera(Camera *camera);
-    static Camera *GetCamera();
-
-    static void SetScene(Scene *Scene);
-    static Scene *GetScene();
+    static void SetCamera(Camera &camera);
 
     static void BindCamera(Shader &shader);
 
@@ -89,6 +102,7 @@ class SD_RENDERER_API Renderer {
                                int32_t viewport_height,
                                const RenderOperation &op);
     static Device *s_device;
+    static RendererData s_data;
 };
 
 }  // namespace SD

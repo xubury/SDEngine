@@ -10,41 +10,23 @@ namespace SD {
 
 class SD_RENDERER_API PostProcessRenderer {
    public:
-    PostProcessRenderer(int32_t width, int32_t height);
-    ~PostProcessRenderer();
+    static void Init(int32_t width, int32_t height);
+    static void Shutdown();
 
-    void SetRenderSize(int32_t width, int32_t height);
+    static void SetRenderSize(int32_t width, int32_t height);
 
-    void ImGui();
+    static void ImGui();
 
-    void Render();
+    static void Render();
 
    private:
-    void RenderPost();
+    static void RenderPost();
 
-    void RenderBloom();
-    void Downsample(Texture &src, Texture &dst);
-    void Upsample(Texture &src, Texture &dst);
+    static void RenderBloom();
+    static void Downsample(Texture &src, Texture &dst);
+    static void Upsample(Texture &src, Texture &dst);
 
-    void InitBuffers();
-
-    int m_width;
-    int m_height;
-
-    Ref<Shader> m_hdr_shader;
-    Ref<Shader> m_bloom_shader;
-
-    Ref<Framebuffer> m_post_target;
-    Ref<Texture> m_post_buffer;
-
-    Ref<Texture> m_upsample_buffer;
-    Ref<Texture> m_downsample_buffer;
-    float m_bloom_threshold;
-    float m_bloom_soft_threshold;
-
-    bool m_is_bloom;
-    float m_exposure;
-    float m_gamma_correction;
+    static void InitBuffers();
 };
 
 }  // namespace SD

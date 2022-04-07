@@ -9,9 +9,7 @@ namespace SD {
 
 class SD_RENDERER_API SpriteRenderer {
    public:
-    SpriteRenderer() = default;
-
-    void Render();
+    static void Render(const Scene &scene);
 };
 
 }  // namespace SD
