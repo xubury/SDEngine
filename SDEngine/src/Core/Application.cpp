@@ -62,6 +62,7 @@ static void RegisterAssets(AssetStorage *storage)
 }
 
 Application::Application(const std::string &title, Device::API api)
+    : m_imgui_layer(nullptr)
 {
     const std::string debug_path =
         (GetAppDirectory() / "Debug.txt").generic_string();
@@ -93,11 +94,9 @@ Application::~Application() {}
 
 void Application::OnInit()
 {
-    m_imgui = CreateLayer<ImGuiLayer>(m_window.get());
     m_graphics_layer =
         CreateLayer<GraphicsLayer>(m_device.get(), m_window->GetWidth(),
                                    m_window->GetHeight(), m_window->GetMSAA());
-    PushOverlay(m_imgui);
     PushLayer(m_graphics_layer);
     PushLayer(CreateLayer<ScriptLayer>());
     PushLayer(CreateLayer<InputLayer>());
@@ -153,6 +152,16 @@ void Application::DestroyLayer(Layer *layer)
     delete layer;
 }
 
+void Application::CreateImGuiLayer()
+{
+    m_imgui_layer = CreateLayer<ImGuiLayer>(m_window.get());
+    PushOverlay(m_imgui_layer);
+#ifdef SD_IMGUI_IMPORT
+    // for DLL context
+    ImGui::SetCurrentContext(m_imgui_layer->GetContext());
+#endif
+}
+
 void Application::LoadSettingsFile()
 {
     std::filesystem::path ini_path = GetAppDirectory() / SETTING_FILENAME;
@@ -201,11 +210,13 @@ void Application::Render()
         layer->OnRender();
     }
 
-    m_imgui->Begin();
-    for (auto &layer : m_layers) {
-        layer->OnImGui();
+    if (m_imgui_layer) {
+        m_imgui_layer->Begin();
+        for (auto &layer : m_layers) {
+            layer->OnImGui();
+        }
+        m_imgui_layer->End();
     }
-    m_imgui->End();
 
     m_window->SwapBuffer();
 }

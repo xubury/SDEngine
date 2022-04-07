@@ -32,8 +32,6 @@ class SD_CORE_API Application {
 
     void Shutdown();
 
-    ImGuiLayer *GetImGuiLayer() const { return m_imgui; }
-
     Ini &GetSettings() { return m_settings; };
 
    protected:
@@ -68,6 +66,8 @@ class SD_CORE_API Application {
 
     void DestroyLayer(Layer *layer);
 
+    void CreateImGuiLayer();
+
     Application(const std::string &title, Device::API api);
     virtual ~Application();
 
@@ -80,6 +80,8 @@ class SD_CORE_API Application {
     GraphicsLayer *m_graphics_layer;
 
    private:
+    ImGuiLayer *m_imgui_layer;
+
     friend int ::main(int argc, char **argv);
 
     void LoadSettingsFile();
@@ -91,7 +93,6 @@ class SD_CORE_API Application {
     void Render();
 
     EventStack<Layer *> m_layers;
-    ImGuiLayer *m_imgui;
 
     Ini m_settings;
 

@@ -14,11 +14,8 @@ void SDEditor::OnInit()
     auto &settings = GetSettings();
     int viewport_width = settings.GetInteger("editor", "viewport width", 800);
     int viewport_height = settings.GetInteger("editor", "viewport height", 600);
-#ifdef SD_IMGUI_IMPORT
-    // for DLL context
-    ImGui::SetCurrentContext(GetImGuiLayer()->GetContext());
-#endif
 
+    CreateImGuiLayer();
     m_graphics_layer->SetDebug(true);
     PushLayer(CreateLayer<EditorLayer>(m_graphics_layer, viewport_width,
                                        viewport_height));
