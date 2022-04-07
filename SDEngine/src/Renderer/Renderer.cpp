@@ -149,9 +149,11 @@ void Renderer::Init(Device* device)
     }
 }
 
-void Renderer::Submit(const VertexArray& vao, MeshTopology topology,
-                      size_t count, size_t offset, bool index)
+void Renderer::Submit(const Shader& shader, const VertexArray& vao,
+                      MeshTopology topology, size_t count, size_t offset,
+                      bool index)
 {
+    s_device->SetShader(&shader);
     s_device->SetVertexArray(&vao);
     if (index) {
         s_device->DrawElements(topology, count, offset);
@@ -173,7 +175,7 @@ void Renderer::BindCamera(Shader& shader)
     shader.SetUniformBuffer("Camera", *s_data.camera_ubo);
 }
 
-void Renderer::ComputeImage(Shader& shader, int32_t width, int32_t height,
+void Renderer::ComputeImage(const Shader& shader, int32_t width, int32_t height,
                             int32_t depth)
 {
     Vector3f local_group_size = shader.GetLocalGroupSize();
@@ -186,16 +188,14 @@ void Renderer::ComputeImage(Shader& shader, int32_t width, int32_t height,
 
 void Renderer::DrawNDCQuad(const Shader& shader)
 {
-    s_device->SetShader(&shader);
-    Submit(*s_data.quad_vao, MeshTopology::Triangles,
+    Submit(shader, *s_data.quad_vao, MeshTopology::Triangles,
            s_data.quad_ibo->GetCount(), 0);
 }
 
 void Renderer::DrawNDCBox(const Shader& shader)
 {
-    s_device->SetShader(&shader);
-    Submit(*s_data.box_vao, MeshTopology::Triangles, s_data.box_ibo->GetCount(),
-           0);
+    Submit(shader, *s_data.box_vao, MeshTopology::Triangles,
+           s_data.box_ibo->GetCount(), 0);
 }
 
 void Renderer::BlitToBuffer(int read_attachment, Framebuffer* draw_fb,

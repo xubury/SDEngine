@@ -71,10 +71,11 @@ class SD_RENDERER_API Renderer {
     static void BeginRenderSubpass(const RenderSubpassInfo &info);
     static void EndRenderSubpass();
     static void EndRenderPass();
-    static void Submit(const VertexArray &vao, MeshTopology topology,
-                       size_t count, size_t offset, bool index = true);
-    static void ComputeImage(Shader &shader, int32_t width, int32_t height,
-                             int32_t depth);
+    static void Submit(const Shader &shader, const VertexArray &vao,
+                       MeshTopology topology, size_t count, size_t offset,
+                       bool index = true);
+    static void ComputeImage(const Shader &shader, int32_t width,
+                             int32_t height, int32_t depth);
 
     static void Init(Device *device);
 

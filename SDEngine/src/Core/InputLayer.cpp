@@ -3,7 +3,7 @@
 
 namespace SD {
 
-InputLayer::InputLayer() : Layer("Input Layer") {}
+InputLayer::InputLayer() : Layer("InputLayer") {}
 
 void InputLayer::OnTick(float) { Input::Tick(); }
 

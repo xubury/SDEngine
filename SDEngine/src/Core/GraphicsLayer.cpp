@@ -11,7 +11,7 @@ inline const Vector2f icon_size(5.f);
 
 GraphicsLayer::GraphicsLayer(Device *device, int32_t width, int32_t height,
                              MultiSampleLevel msaa)
-    : Layer("Graphics Layer"),
+    : Layer("GraphicsLayer"),
       m_device(device),
       m_width(width),
       m_height(height),

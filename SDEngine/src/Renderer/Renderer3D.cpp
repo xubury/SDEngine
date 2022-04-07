@@ -42,10 +42,9 @@ std::string Renderer3D::GetDebugInfo()
 void Renderer3D::DrawMesh(const Shader& shader, const Mesh& mesh)
 {
     s_device->SetPolygonMode(mesh.GetPolygonMode(), Face::Both);
-    s_device->SetShader(&shader);
     s_mesh_data.mesh_vao->BindVertexBuffer(*mesh.GetVertexBuffer(), 0);
     s_mesh_data.mesh_vao->BindIndexBuffer(*mesh.GetIndexBuffer());
-    Submit(*s_mesh_data.mesh_vao, mesh.GetTopology(),
+    Submit(shader, *s_mesh_data.mesh_vao, mesh.GetTopology(),
            mesh.GetIndexBuffer()->GetCount(), 0);
 
     ++s_mesh_data.mesh_draw_calls;
@@ -73,11 +72,14 @@ void Renderer3D::SetMaterial(Shader& shader, const Material& material)
         ->SetAsVec3(&material.GetEmissiveColor()[0]);
 }
 
-void Renderer3D::SetShadowCaster(Shader& shader, const CascadeShadow& shadow)
+void Renderer3D::SetCascadeShadow(const CascadeShadow& shadow)
 {
     auto& pv = shadow.GetLevelProjectionView();
     s_mesh_data.shadow_UBO->UpdateData(pv.data(), sizeof(Matrix4f) * pv.size());
+}
 
+void Renderer3D::BindCascadeShadow(Shader& shader)
+{
     shader.SetUniformBuffer("ShadowData", *s_mesh_data.shadow_UBO);
 }
 

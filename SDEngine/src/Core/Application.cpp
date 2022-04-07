@@ -1,5 +1,6 @@
 #include "Core/Application.hpp"
 #include "Core/InputLayer.hpp"
+#include "Script/ScriptLayer.hpp"
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
 
@@ -82,7 +83,6 @@ Application::Application(const std::string &title, Device::API api)
     m_device = Device::Create();
 
     AssetStorage::Init();
-
     auto &storage = AssetStorage::Get();
     RegisterAssets(&storage);
     storage.SetDirectory("assets");
@@ -98,8 +98,9 @@ void Application::OnInit()
         CreateLayer<GraphicsLayer>(m_device.get(), m_window->GetWidth(),
                                    m_window->GetHeight(), m_window->GetMSAA());
     PushOverlay(m_imgui);
-    PushLayer(CreateLayer<InputLayer>());
     PushLayer(m_graphics_layer);
+    PushLayer(CreateLayer<ScriptLayer>());
+    PushLayer(CreateLayer<InputLayer>());
 }
 
 void Application::OnDestroy()

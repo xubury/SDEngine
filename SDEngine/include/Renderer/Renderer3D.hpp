@@ -17,7 +17,8 @@ class SD_RENDERER_API Renderer3D : protected Renderer {
     static void Init();
     static void Reset();
     static std::string GetDebugInfo();
-    static void SetShadowCaster(Shader &shader, const CascadeShadow &shadow);
+    static void SetCascadeShadow(const CascadeShadow &shadow);
+    static void BindCascadeShadow(Shader &shader);
 
     static void DrawMesh(const Shader &shader, const Mesh &mesh);
     static void SetMaterial(Shader &shader, const Material &material);

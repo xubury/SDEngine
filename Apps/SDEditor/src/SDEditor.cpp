@@ -1,5 +1,4 @@
 #include "SDEditor.hpp"
-#include "Script/ScriptLayer.hpp"
 
 #include "Asset/AssetStorage.hpp"
 
@@ -21,7 +20,6 @@ void SDEditor::OnInit()
 #endif
 
     m_graphics_layer->SetDebug(true);
-    PushLayer(CreateLayer<ScriptLayer>());
     PushLayer(CreateLayer<EditorLayer>(m_graphics_layer, viewport_width,
                                        viewport_height));
 }

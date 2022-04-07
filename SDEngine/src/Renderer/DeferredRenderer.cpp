@@ -309,7 +309,8 @@ void DeferredRenderer::RenderShadowMap(const Scene &scene, const Camera &camera,
     Renderer::BeginRenderPass(RenderPassInfo{target, depth_map->GetWidth(),
                                              depth_map->GetHeight(), op});
     s_data.cascade_shadow.ComputeCascadeLightMatrix(transform, camera);
-    Renderer3D::SetShadowCaster(*s_data.cascade_shader, s_data.cascade_shadow);
+    Renderer3D::BindCascadeShadow(*s_data.cascade_shader);
+    Renderer3D::SetCascadeShadow(s_data.cascade_shadow);
 
     auto &storage = AssetStorage::Get();
     ShaderParam *model_param = s_data.cascade_shader->GetParam("u_model");
@@ -487,6 +488,7 @@ void DeferredRenderer::RenderDeferred(const Scene &scene, const Camera &camera)
         s_data.deferred_shader->GetParam("u_cascade_planes[0]");
 
     Renderer::BindCamera(*s_data.deferred_shader);
+    Renderer3D::BindCascadeShadow(*s_data.deferred_shader);
 
     RenderOperation op;
     op.blend = false;
@@ -528,12 +530,8 @@ void DeferredRenderer::RenderDeferred(const Scene &scene, const Camera &camera)
             auto &planes = s_data.cascade_shadow.GetCascadePlanes();
             num_of_cascades->SetAsInt(planes.size());
             cascade_planes->SetAsVec(&planes[0], planes.size());
-            Renderer3D::SetShadowCaster(*s_data.deferred_shader,
-                                        s_data.cascade_shadow);
         }
-        else {
-            cascade_map->SetAsTexture(nullptr);
-        }
+
         Renderer::DrawNDCQuad(*s_data.deferred_shader);
         std::swap(input_id, output_id);
         Renderer::EndRenderPass();
@@ -585,9 +583,7 @@ void DeferredRenderer::RenderDeferred(const Scene &scene, const Camera &camera)
             point_shadow_map->SetAsTexture(s_data.point_shadow.GetShadowMap());
             point_shadow_far_z->SetAsFloat(s_data.point_shadow.GetFarZ());
         }
-        else {
-            point_shadow_map->SetAsTexture(nullptr);
-        }
+
         Renderer::DrawNDCQuad(*s_data.deferred_shader);
         std::swap(input_id, output_id);
         Renderer::EndRenderPass();

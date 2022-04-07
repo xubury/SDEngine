@@ -280,8 +280,7 @@ void Renderer2D::FlushLines()
             s_2d_data.line_buffer_ptr - s_2d_data.line_buffer.data();
         s_2d_data.line_vbo->UpdateData(s_2d_data.line_buffer.data(),
                                        sizeof(Line) * offset);
-        s_device->SetShader(s_line_shader.get());
-        Submit(*s_2d_data.line_vao, MeshTopology::Lines,
+        Submit(*s_line_shader, *s_2d_data.line_vao, MeshTopology::Lines,
                s_2d_data.line_vertex_cnt, 0, false);
         s_2d_data.line_cnt += offset;
         ++s_2d_data.line_draw_call;
@@ -302,8 +301,7 @@ void Renderer2D::FlushQuads()
             ->SetAsTextures(s_2d_data.texture_slots.data(),
                             s_2d_data.texture_index);
 
-        s_device->SetShader(s_texture_shader.get());
-        Submit(*s_2d_data.quad_vao, MeshTopology::Triangles,
+        Submit(*s_texture_shader, *s_2d_data.quad_vao, MeshTopology::Triangles,
                s_2d_data.quad_index_cnt, 0);
         s_2d_data.quad_cnt += offset;
         ++s_2d_data.quad_draw_call;
@@ -319,8 +317,7 @@ void Renderer2D::FlushCircles()
         s_2d_data.circle_vbo->UpdateData(s_2d_data.circle_buffer.data(),
                                          offset * sizeof(Circle));
 
-        s_device->SetShader(s_cirlce_shader.get());
-        Submit(*s_2d_data.circle_vao, MeshTopology::Triangles,
+        Submit(*s_cirlce_shader, *s_2d_data.circle_vao, MeshTopology::Triangles,
                s_2d_data.circle_index_cnt, 0);
         s_2d_data.circie_cnt += offset;
         ++s_2d_data.circle_draw_call;
