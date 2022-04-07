@@ -21,12 +21,21 @@ enum class GeometryBufferType {
     GBufferCount
 };
 
+struct DeferredRenderSettings {
+    int32_t width;
+    int32_t height;
+    MultiSampleLevel msaa;
+    bool ssao_state{true};
+    float ssao_radius{2.0f};
+    float ssao_bias{0.5};
+    int ssao_power{3};
+};
+
 DataFormat SD_RENDERER_API GetTextureFormat(GeometryBufferType type);
 
 class SD_RENDERER_API DeferredRenderer {
    public:
-    static void Init(int width, int height, MultiSampleLevel msaa);
-    static void Shutdown();
+    static void Init(const DeferredRenderSettings &settings);
 
     static void Render(const Scene &scene, const Camera &camera);
 

@@ -6,7 +6,7 @@
 
 namespace SD {
 
-class SD_SCRIPT_API ScriptLayer : public Layer {
+class SD_CORE_API ScriptLayer : public Layer {
    public:
     ScriptLayer();
 };

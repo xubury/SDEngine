@@ -21,6 +21,7 @@ set(Core_Include
     ${Include_Root}/Mouse.hpp
     ${Include_Root}/Layer.hpp
     ${Include_Root}/ImGuiLayer.hpp
+    ${Include_Root}/ScriptLayer.hpp
     ${Include_Root}/GraphicsLayer.hpp
     ${Include_Root}/Event.hpp
     ${Include_Root}/Input.hpp
@@ -32,6 +33,7 @@ set(Core_Src
     ${Src_Root}/Window.cpp
     ${Src_Root}/Keyboard.cpp
     ${Src_Root}/ImGuiLayer.cpp
+    ${Src_Root}/ScriptLayer.cpp
     ${Src_Root}/GraphicsLayer.cpp
     ${Src_Root}/Input.cpp
     ${Src_Root}/InputLayer.cpp)

@@ -6,10 +6,9 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Script)
 
 set(Script_Include
     ${Include_Root}/Export.hpp
-    ${Include_Root}/ScriptLayer.hpp)
+    )
 
-set(Script_Src
-    ${Src_Root}/ScriptLayer.cpp)
+set(Script_Src)
 
 add_library(sd-script ${Script_Src})
 
@@ -26,7 +25,6 @@ endif()
 
 target_link_libraries(sd-script
     PUBLIC
-    sd-core
     sd-utility
 
     PRIVATE

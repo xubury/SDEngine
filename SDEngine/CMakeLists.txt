@@ -15,7 +15,7 @@ add_subdirectory(src/Renderer)
 add_subdirectory(src/Asset)
 add_subdirectory(src/Loader)
 add_subdirectory(src/Animation)
-add_subdirectory(src/Script)
+# add_subdirectory(src/Script)
 
 add_subdirectory(libs/entt)
 add_subdirectory(libs/sol2)

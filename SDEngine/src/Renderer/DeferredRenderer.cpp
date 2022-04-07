@@ -17,10 +17,6 @@
 namespace SD {
 
 struct DeferredRenderData {
-    int32_t width;
-    int32_t height;
-    MultiSampleLevel msaa;
-
     CascadeShadow cascade_shadow;
     Ref<Shader> cascade_shader;
     Ref<Shader> cascade_debug_shader;
@@ -52,15 +48,12 @@ struct DeferredRenderData {
     Ref<Shader> ssao_blur_shader;
     Ref<Texture> ssao_blur_buffer;
 
-    bool ssao_state;
-    float ssao_radius;
-    float ssao_bias;
-    int ssao_power;
     Ref<Texture> ssao_noise;
     std::vector<Vector3f> ssao_kernel;
 };
 
 static DeferredRenderData s_data;
+static DeferredRenderSettings s_settings;
 
 DataFormat GetTextureFormat(GeometryBufferType type)
 {
@@ -81,11 +74,9 @@ DataFormat GetTextureFormat(GeometryBufferType type)
     }
 }
 
-void DeferredRenderer::Init(int width, int height, MultiSampleLevel msaa)
+void DeferredRenderer::Init(const DeferredRenderSettings &settings)
 {
-    s_data.width = width;
-    s_data.height = height;
-    s_data.msaa = msaa;
+    s_settings = settings;
     s_data.cascade_shadow.CreateShadowMap(4096, 4096);
     s_data.point_shadow.CreateShadowMap(4096, 4096);
     for (int i = 0; i < 2; ++i) {
@@ -98,21 +89,6 @@ void DeferredRenderer::Init(int width, int height, MultiSampleLevel msaa)
     InitSSAOKernel();
     InitSSAOBuffers();
     InitLightingBuffers();
-
-    auto &settings = Application::GetApp().GetSettings();
-    s_data.ssao_state = settings.GetBoolean("ssao", "state", true);
-    s_data.ssao_radius = settings.GetFloat("ssao", "radius", 0.5);
-    s_data.ssao_bias = settings.GetFloat("ssao", "bias", 0.25);
-    s_data.ssao_power = settings.GetInteger("ssao", "power", 1);
-}
-
-void DeferredRenderer::Shutdown()
-{
-    auto &settings = Application::GetApp().GetSettings();
-    settings.SetBoolean("ssao", "state", s_data.ssao_state);
-    settings.SetFloat("ssao", "radius", s_data.ssao_radius);
-    settings.SetFloat("ssao", "bias", s_data.ssao_bias);
-    settings.SetInteger("ssao", "power", s_data.ssao_power);
 }
 
 void DeferredRenderer::InitShaders()
@@ -143,12 +119,12 @@ void DeferredRenderer::InitShaders()
 
 void DeferredRenderer::InitSSAOBuffers()
 {
-    s_data.ssao_buffer =
-        Texture::Create(s_data.width, s_data.height, 0, MultiSampleLevel::None,
-                        TextureType::Normal, DataFormat::R16F);
-    s_data.ssao_blur_buffer =
-        Texture::Create(s_data.width, s_data.height, 0, MultiSampleLevel::None,
-                        TextureType::Normal, DataFormat::R16F);
+    s_data.ssao_buffer = Texture::Create(s_settings.width, s_settings.height, 0,
+                                         MultiSampleLevel::None,
+                                         TextureType::Normal, DataFormat::R16F);
+    s_data.ssao_blur_buffer = Texture::Create(
+        s_settings.width, s_settings.height, 0, MultiSampleLevel::None,
+        TextureType::Normal, DataFormat::R16F);
 }
 
 void DeferredRenderer::InitSSAOKernel()
@@ -186,37 +162,38 @@ void DeferredRenderer::InitSSAOKernel()
 void DeferredRenderer::InitLightingBuffers()
 {
     for (int i = 0; i < 2; ++i) {
-        s_data.lighting_buffers[i] =
-            Texture::Create(s_data.width, s_data.height, 0, s_data.msaa,
-                            TextureType::Normal, DataFormat::RGB16F);
+        s_data.lighting_buffers[i] = Texture::Create(
+            s_settings.width, s_settings.height, 0, s_settings.msaa,
+            TextureType::Normal, DataFormat::RGB16F);
         s_data.lighting_target[i]->Attach(*s_data.lighting_buffers[i], 0, 0);
     }
 
     for (size_t i = 0; i < s_data.gbuffer_msaa.size(); ++i) {
         s_data.gbuffer_msaa[i] = Texture::Create(
-            s_data.width, s_data.height, 0, s_data.msaa, TextureType::Normal,
-            GetTextureFormat(GeometryBufferType(i)));
+            s_settings.width, s_settings.height, 0, s_settings.msaa,
+            TextureType::Normal, GetTextureFormat(GeometryBufferType(i)));
         s_data.geometry_target_msaa->Attach(*s_data.gbuffer_msaa[i], i, 0);
 
         s_data.gbuffer[i] = Texture::Create(
-            s_data.width, s_data.height, 0, MultiSampleLevel::None,
+            s_settings.width, s_settings.height, 0, MultiSampleLevel::None,
             TextureType::Normal, GetTextureFormat(GeometryBufferType(i)));
         s_data.geometry_target->Attach(*s_data.gbuffer[i], i, 0);
     }
-    s_data.depth_buffer = Renderbuffer::Create(
-        s_data.width, s_data.height, s_data.msaa, DataFormat::Depth24);
+    s_data.depth_buffer =
+        Renderbuffer::Create(s_settings.width, s_settings.height,
+                             s_settings.msaa, DataFormat::Depth24);
     s_data.geometry_target_msaa->Attach(*s_data.depth_buffer, 0);
 
-    s_data.cascade_debug_buffer =
-        Texture::Create(s_data.width, s_data.height, 0, MultiSampleLevel::None,
-                        TextureType::Normal, DataFormat::RGB16F);
+    s_data.cascade_debug_buffer = Texture::Create(
+        s_settings.width, s_settings.height, 0, MultiSampleLevel::None,
+        TextureType::Normal, DataFormat::RGB16F);
     s_data.cascade_debug_target->Attach(*s_data.cascade_debug_buffer, 0, 0);
 }
 
 void DeferredRenderer::SetRenderSize(int32_t width, int32_t height)
 {
-    s_data.width = width;
-    s_data.height = height;
+    s_settings.width = width;
+    s_settings.height = height;
     InitSSAOBuffers();
     InitLightingBuffers();
 }
@@ -224,7 +201,7 @@ void DeferredRenderer::SetRenderSize(int32_t width, int32_t height)
 void DeferredRenderer::BlitGeometryBuffers()
 {
     Renderer::BeginRenderPass(
-        {s_data.geometry_target.get(), s_data.width, s_data.height});
+        {s_data.geometry_target.get(), s_settings.width, s_settings.height});
     for (size_t i = 0; i < s_data.gbuffer.size(); ++i) {
         Renderer::BlitFromBuffer(i, s_data.geometry_target_msaa.get(), i,
                                  BufferBitMask::ColorBufferBit);
@@ -241,13 +218,13 @@ void DeferredRenderer::ImGui()
         ImGui::TreePop();
     }
     if (ImGui::TreeNodeEx("SSAO")) {
-        ImGui::Checkbox("On", &s_data.ssao_state);
+        ImGui::Checkbox("On", &s_settings.ssao_state);
         ImGui::TextUnformatted("SSAO Power");
-        ImGui::SliderInt("##SSAO Power", &s_data.ssao_power, 1, 32);
+        ImGui::SliderInt("##SSAO Power", &s_settings.ssao_power, 1, 32);
         ImGui::TextUnformatted("SSAO Radius");
-        ImGui::SliderFloat("##SSAO Radius", &s_data.ssao_radius, 0.1, 30);
+        ImGui::SliderFloat("##SSAO Radius", &s_settings.ssao_radius, 0.1, 30);
         ImGui::TextUnformatted("SSAO Bias");
-        ImGui::SliderFloat("##SSAO Bias", &s_data.ssao_bias, 0.01, 2);
+        ImGui::SliderFloat("##SSAO Bias", &s_settings.ssao_bias, 0.01, 2);
         ImGui::DrawTexture(*s_data.ssao_blur_buffer, ImVec2(0, 1),
                            ImVec2(1, 0));
         ImGui::TreePop();
@@ -280,7 +257,7 @@ void DeferredRenderer::Render(const Scene &scene, const Camera &camera)
     RenderGBuffer(scene);
     BlitGeometryBuffers();
 
-    if (s_data.ssao_state) {
+    if (s_settings.ssao_state) {
         RenderSSAO();
     }
 
@@ -403,16 +380,18 @@ void DeferredRenderer::RenderSSAO()
     Texture *normal =
         s_data.gbuffer[static_cast<int>(GeometryBufferType::Normal)].get();
     Renderer::BindCamera(*s_data.ssao_shader);
-    s_data.ssao_shader->GetParam("u_radius")->SetAsFloat(s_data.ssao_radius);
-    s_data.ssao_shader->GetParam("u_bias")->SetAsFloat(s_data.ssao_bias);
-    s_data.ssao_shader->GetParam("u_power")->SetAsUint(s_data.ssao_power);
+    s_data.ssao_shader->GetParam("u_radius")
+        ->SetAsFloat(s_settings.ssao_radius);
+    s_data.ssao_shader->GetParam("u_bias")->SetAsFloat(s_settings.ssao_bias);
+    s_data.ssao_shader->GetParam("u_power")->SetAsUint(s_settings.ssao_power);
     s_data.ssao_shader->GetParam("u_position")->SetAsTexture(position);
     s_data.ssao_shader->GetParam("u_normal")->SetAsTexture(normal);
     s_data.ssao_shader->GetParam("u_noise")->SetAsTexture(
         s_data.ssao_noise.get());
     s_data.ssao_shader->GetParam("u_out_image")
         ->SetAsImage(s_data.ssao_buffer.get(), 0, false, 0, Access::WriteOnly);
-    Renderer::ComputeImage(*s_data.ssao_shader, s_data.width, s_data.height, 1);
+    Renderer::ComputeImage(*s_data.ssao_shader, s_settings.width,
+                           s_settings.height, 1);
 
     // blur
     s_data.ssao_blur_shader->GetParam("u_input")->SetAsTexture(
@@ -420,8 +399,8 @@ void DeferredRenderer::RenderSSAO()
     s_data.ssao_blur_shader->GetParam("u_out_image")
         ->SetAsImage(s_data.ssao_blur_buffer.get(), 0, false, 0,
                      Access::WriteOnly);
-    Renderer::ComputeImage(*s_data.ssao_blur_shader, s_data.width,
-                           s_data.height, 1);
+    Renderer::ComputeImage(*s_data.ssao_blur_shader, s_settings.width,
+                           s_settings.height, 1);
 }
 
 void DeferredRenderer::RenderEmissive()
@@ -464,7 +443,7 @@ void DeferredRenderer::RenderDeferred(const Scene &scene, const Camera &camera)
     s_data.deferred_shader->GetParam("u_ssao")->SetAsTexture(
         s_data.ssao_blur_buffer.get());
     s_data.deferred_shader->GetParam("u_ssao_state")
-        ->SetAsBool(s_data.ssao_state);
+        ->SetAsBool(s_settings.ssao_state);
 
     ShaderParam *lighting = s_data.deferred_shader->GetParam("u_lighting");
     ShaderParam *ambient =
@@ -596,8 +575,8 @@ void DeferredRenderer::RenderGBuffer(const Scene &scene)
 
     RenderPassInfo info;
     info.framebuffer = s_data.geometry_target_msaa.get();
-    info.viewport_width = s_data.width;
-    info.viewport_height = s_data.height;
+    info.viewport_width = s_settings.width;
+    info.viewport_height = s_settings.height;
     info.clear_mask =
         BufferBitMask::ColorBufferBit | BufferBitMask::DepthBufferBit;
     info.clear_value = {0, 0, 0, 0};

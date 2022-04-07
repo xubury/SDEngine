@@ -1,6 +1,6 @@
 #include "Core/Application.hpp"
 #include "Core/InputLayer.hpp"
-#include "Script/ScriptLayer.hpp"
+#include "Core/ScriptLayer.hpp"
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
 

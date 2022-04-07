@@ -1,4 +1,5 @@
 #include "Core/GraphicsLayer.hpp"
+#include "Core/Application.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "Loader/TextureLoader.hpp"
 #include "Renderer/Renderer2D.hpp"
@@ -45,15 +46,12 @@ void GraphicsLayer::OnInit()
     Renderer2D::Init();
     Renderer3D::Init();
     SkyboxRenderer::Init();
-    PostProcessRenderer::Init(m_width, m_height);
-    DeferredRenderer::Init(m_width, m_height, m_msaa);
+    PostProcessRenderer::Init(PostProcessSettings{m_width, m_height});
+    DeferredRenderer::Init(DeferredRenderSettings{m_width, m_height, m_msaa});
     m_light_icon = TextureLoader::LoadTexture2D("assets/icons/light.png");
 }
-void GraphicsLayer::OnDestroy()
-{
-    DeferredRenderer::Shutdown();
-    PostProcessRenderer::Shutdown();
-}
+
+void GraphicsLayer::OnDestroy() {}
 
 void GraphicsLayer::OutputColorBuffer(Framebuffer *framebuffer, int attachment)
 {

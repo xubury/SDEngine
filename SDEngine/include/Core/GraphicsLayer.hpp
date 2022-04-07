@@ -11,7 +11,7 @@
 
 namespace SD {
 
-class SD_RENDERER_API GraphicsLayer : public Layer {
+class SD_CORE_API GraphicsLayer : public Layer {
    public:
     GraphicsLayer(Device* device, int32_t width, int32_t height,
                   MultiSampleLevel msaa);
