@@ -6,6 +6,7 @@
 #include "Core/Application.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGuizmo.h"
+#include "GridRenderer.hpp"
 
 namespace SD {
 
@@ -35,6 +36,7 @@ EditorLayer::~EditorLayer() {}
 void EditorLayer::OnInit()
 {
     Layer::OnInit();
+    GridRenderer::Init();
 
     auto &storage = AssetStorage::Get();
     m_scene_asset = storage.CreateAsset<SceneAsset>("default scene");
@@ -70,7 +72,9 @@ void EditorLayer::OnRender()
     info.clear_mask = BufferBitMask::None;
     Renderer::BeginRenderPass(info);
     if (m_mode == EditorMode::TwoDimensional) {
-        m_tile_map_editor.Render(m_editor_camera);
+        GridRenderer::Render(m_editor_camera,
+                             m_tile_map_editor.GetSpriteFrame(),
+                             m_tile_map_editor.GetBrush());
     }
     Renderer::EndRenderPass();
 }
@@ -311,8 +315,8 @@ void EditorLayer::DrawViewport()
         }
 
         if (!m_is_runtime && m_mode == EditorMode::TwoDimensional) {
-            Vector3f world;
-            if (m_tile_map_editor.ManipulateScene(m_editor_camera, world)) {
+            if (m_tile_map_editor.ManipulateScene(m_editor_camera)) {
+                Vector3f world = m_tile_map_editor.GetBrush().GetSelectdPos();
                 Entity child = m_current_scene->CreateEntity("Tile");
                 auto &comp = child.AddComponent<SpriteComponent>();
                 comp.frame = m_tile_map_editor.GetSpriteFrame();

@@ -13,39 +13,43 @@ class TileBrush {
    private:
     Math::Ray m_ray;
 
-   public:
-    Vector2i count{0, 0};
-    Vector2i pivot{0, 0};
-    Vector2i tile_size{10, 10};
+    Vector3f m_world_pos;
 
-    Vector2i WorldToTile(const Vector3f &world,
+   public:
+    Vector2i count{1, 1};
+    Vector2i pivot{0, 0};
+    Vector4f color;
+    Vector2i tile_size{10, 10};
+    bool is_painting{false};
+
+    Vector2i WorldToTile(const Vector3f &world, const Vector2i &grid_size,
                          const Transform *transform = nullptr) const;
-    Vector3f TileToWorld(const Vector2i &tile,
+    Vector3f TileToWorld(const Vector2i &tile, const Vector2i &grid_size,
                          const Transform *transform = nullptr) const;
     void SetRay(const Math::Ray &ray) { m_ray = ray; }
 
-    bool GetSelectTile(Vector3f &pos, Vector2f& size)
+    bool CastRay()
     {
-        bool ret = false;
-
-        Vector3f world;
         Math::Plane plane(Vector3f(0, 0, 1), Vector3f(0));
-        if (Math::IntersectRayPlane(m_ray, plane, world)) {
-            pos = Vector3f(WorldToTile(world), 0);
-            pos.x -= pivot.x;
-            pos.y += pivot.y;
-            pos = TileToWorld(pos);
+        if (Math::IntersectRayPlane(m_ray, plane, m_world_pos)) {
+            m_world_pos = Vector3f(WorldToTile(m_world_pos, tile_size), 0);
+            m_world_pos.x -= pivot.x;
+            m_world_pos.y += pivot.y;
+            m_world_pos = TileToWorld(m_world_pos, tile_size);
             // Because quad's local coordinate is origin at center during
             // rendering , we need to at an offset to the pivot which
             // essentially moves the origin to the pivot.
             const Vector2f OFFSET = tile_size * (count - 1) / 2;
-            pos.x += OFFSET.x;
-            pos.y -= OFFSET.y;
-            size = tile_size * count;
-            ret = true;
+            m_world_pos.x += OFFSET.x;
+            m_world_pos.y -= OFFSET.y;
+            return true;
         }
-        return ret;
-    }
+        return false;
+    };
+
+    Vector3f GetSelectdPos() const { return m_world_pos; }
+
+    Vector2i GetTileSize() const { return tile_size * count; }
 };
 
 }  // namespace SD

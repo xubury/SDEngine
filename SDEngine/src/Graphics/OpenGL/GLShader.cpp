@@ -80,7 +80,8 @@ GLShader::GLShader()
       m_fragmentId(0),
       m_geometryId(0),
       m_computeId(0),
-      m_texture_cnt(0)
+      m_texture_cnt(0),
+      m_image_cnt(0)
 {
     m_id = glCreateProgram();
 }

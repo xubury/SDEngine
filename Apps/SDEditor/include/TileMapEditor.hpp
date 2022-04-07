@@ -21,21 +21,19 @@ class TileMapEditor {
    public:
     TileMapEditor();
     void ImGui();
-    void Render(const Camera &camera);
 
-    bool ManipulateScene(const Camera &camera, Vector3f &world);
+    bool ManipulateScene(const Camera &camera);
     const SpriteFrame &GetSpriteFrame() const { return m_frame; }
+
+    const TileBrush &GetBrush() const { return m_brush; }
 
    private:
     void SetViewport(float left, float top, float width, float height);
-    Ref<Texture> m_outline_texture;
 
     TileBrush m_brush;
 
     // Selected sprite and its uvs
     SpriteFrame m_frame;
-
-    bool m_draw_outline;
 
     Operation m_operation;
 
