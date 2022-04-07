@@ -149,7 +149,7 @@ void EditorLayer::OnImGui()
 
 void EditorLayer::Quit() { m_quitting = true; }
 
-void EditorLayer::On(const AppQuitEvent &) { Application::GetApp().Shutdown(); }
+void EditorLayer::On(const AppQuitEvent &) { Quit(); }
 
 void EditorLayer::On(const KeyEvent &e)
 {

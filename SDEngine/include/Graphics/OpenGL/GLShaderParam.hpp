@@ -42,7 +42,7 @@ class GLShaderParam : public ShaderParam {
    private:
     uint32_t m_program;
     int32_t m_location;
-    int32_t m_tex_binding_id;
+    int32_t m_texture_binding;
     int32_t m_image_binding;
 };
 

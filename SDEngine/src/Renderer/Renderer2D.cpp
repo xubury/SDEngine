@@ -295,8 +295,6 @@ void Renderer2D::FlushQuads()
         s_2d_data.quad_vbo->UpdateData(s_2d_data.quad_buffer.data(),
                                        offset * sizeof(Quad));
 
-        // int32_t texture_id_offset =
-        //     m_sprite_shader->GetParam("u_textures[0]")->GetIndex();
         s_texture_shader->GetParam("u_textures[0]")
             ->SetAsTextures(s_2d_data.texture_slots.data(),
                             s_2d_data.texture_index);
