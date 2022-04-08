@@ -18,7 +18,8 @@ const std::string GetMaterialName(MaterialType type)
     return stringByMaterialType.at(type);
 }
 
-Material::Material() : m_diffuse_base(0), m_ambient_base(0), m_emissive_base(0)
+Material::Material()
+    : m_diffuse_base(1.0), m_ambient_base(1.0), m_emissive_base(0)
 {
 }
 

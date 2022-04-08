@@ -37,6 +37,7 @@ set(Graphics_Include
     ${Include_Root}/Light.hpp
     ${Include_Root}/Font.hpp
     ${Include_Root}/Model.hpp
+    ${Include_Root}/ModelNode.hpp
     ${Include_Root}/Mateiral.hpp
     ${Include_Root}/Mesh.hpp
     ${Include_Root}/Buffer.hpp
@@ -63,6 +64,7 @@ set(Graphics_Src
     ${Src_Root}/Material.cpp
     ${Src_Root}/Mesh.cpp
     ${Src_Root}/Model.cpp
+    ${Src_Root}/ModelNode.cpp
     ${Src_Root}/Buffer.cpp
     ${Src_Root}/BufferLayout.cpp
     ${Src_Root}/Device.cpp

@@ -7,6 +7,7 @@
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGuizmo.h"
 #include "GridRenderer.hpp"
+#include "Asset/ModelAsset.hpp"
 
 namespace SD {
 
@@ -378,6 +379,14 @@ void EditorLayer::DrawViewport()
                         m_scene_asset = dynamic_cast<SceneAsset *>(asset);
                         SetCurrentScene(m_scene_asset->GetScene());
                         SD_TRACE("load scene asset");
+                    }
+                    else if (asset->IsTypeOf<ModelAsset>()) {
+                        // Model *model =
+                        //     dynamic_cast<ModelAsset *>(asset)->GetModel();
+                        Entity entity =
+                            m_current_scene->CreateEntity(asset->GetName());
+                        auto &mc = entity.AddComponent<ModelComponent>();
+                        mc.model_id = asset->GetId();
                     }
                 }
                 catch (const Exception &e) {

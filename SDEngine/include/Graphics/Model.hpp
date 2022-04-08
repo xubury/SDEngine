@@ -2,94 +2,51 @@
 #define SD_MODEL_HPP
 
 #include "Graphics/Export.hpp"
-#include "Graphics/Mesh.hpp"
 #include "Graphics/Material.hpp"
-
-#include <map>
+#include "Graphics/ModelNode.hpp"
 
 namespace SD {
 
-struct MeshReference {
-    uint32_t mesh_id;
-    uint32_t transform_id;
-};
-
 class SD_GRAPHICS_API Model {
    public:
-    using MaterialMap =
-        std::unordered_map<const Material *, std::vector<MeshReference>>;
-    using TextureList = std::unordered_map<std::string, Ref<Texture>>;
-    using MeshList = std::vector<Mesh>;
-    using MaterialList = std::vector<Material>;
-    using TransformList = std::vector<Matrix4f>;
-
     Model() = default;
+    virtual ~Model();
 
-    MaterialList &GetMaterials() { return m_materials; };
-    const MaterialList &GetMaterials() const { return m_materials; };
-    const Material *GetMaterials(uint32_t id) const
+    void SetRootNode(ModelNode *node) { m_root_node = node; }
+    ModelNode *GetRootNode() { return m_root_node; }
+
+    void AddNode(ModelNode *node) { m_nodes.push_back(node); }
+    std::vector<ModelNode *> &GetNodes() { return m_nodes; }
+
+    void AddMesh(Mesh &&mesh) { m_meshes.push_back(std::move(mesh)); }
+    Mesh *GetMesh(int32_t id) { return &m_meshes.at(id); }
+
+    void AddMaterial(Material &&material)
     {
-        return &m_materials[id];
-    };
-
-    const MaterialMap &GetMaterialMap() const { return m_refs; }
-
-    void MapMaterial(const Material *mat, const MeshReference &node)
-    {
-        m_refs[mat].emplace_back(node);
+        m_materials.push_back(std::move(material));
     }
-    void MapMaterial(const Material *mat, MeshReference &&node)
-    {
-        m_refs[mat].emplace_back(node);
-    }
-
-    void AddTransform(const Matrix4f &transform)
-    {
-        m_transforms.emplace_back(transform);
-    }
-    const Matrix4f &GetTransform(uint32_t id) const
-    {
-        return m_transforms.at(id);
-    }
-    const MeshList &GetMeshes() const { return m_meshes; }
-
-    void AddMaterial(const Material &material);
-    void AddMaterial(Material &&material);
-    const Material *GetMaterial(uint32_t id) const { return &m_materials[id]; }
-
-    void AddMesh(const Mesh &mesh);
-    void AddMesh(Mesh &&mesh);
-
-    const Mesh *GetMesh(size_t id) const { return &m_meshes.at(id); }
-
-    const TextureList &GetTextures() const { return m_textures; }
+    Material *GetMaterial(int32_t id) { return &m_materials.at(id); }
+    std::vector<Material> &GetMaterials() { return m_materials; }
 
     void AddTexture(const std::string &path, const Ref<Texture> &texture)
     {
-        m_textures.emplace(path, texture);
+        m_textures[path] = texture;
+    }
+    bool HasTexture(const std::string &path) const
+    {
+        return m_textures.count(path) != 0;
     }
     Texture *GetTexture(const std::string &path)
     {
         return m_textures.at(path).get();
     }
-    bool HasTexture(const std::string &path)
-    {
-        return m_textures.count(path) != 0;
-    }
-
-    void SetPath(const std::string &path) { m_path = path; }
-    const std::string &GetPath() const { return m_path; }
 
    private:
-    TextureList m_textures;
-
-    MeshList m_meshes;
-    TransformList m_transforms;
-    MaterialList m_materials;
-
-    MaterialMap m_refs;
-
-    std::string m_path;
+    ModelNode *m_root_node;
+    std::vector<ModelNode *> m_nodes;
+    std::vector<Mesh> m_meshes;
+    std::vector<Material> m_materials;
+    std::unordered_map<std::string, Ref<Texture>> m_textures;
 };
 
 }  // namespace SD

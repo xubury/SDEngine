@@ -296,14 +296,15 @@ void DeferredRenderer::RenderShadowMap(const Scene &scene, const Camera &camera,
         if (storage.Exists<ModelAsset>(modelComp.model_id)) {
             auto model =
                 storage.GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
-            for (const auto &[material, meshes] : model->GetMaterialMap()) {
-                for (const auto &mesh : meshes) {
-                    Matrix4f mat =
-                        model->GetTransform(mesh.transform_id) *
-                        transformComp.GetWorldTransform().GetMatrix();
-                    model_param->SetAsMat4(&mat[0][0]);
-                    Renderer3D::DrawMesh(*s_data.cascade_shader,
-                                         *model->GetMesh(mesh.mesh_id));
+            for (const auto &node : model->GetNodes()) {
+                for (const auto &[material, meshes] : node->GetMeshes()) {
+                    for (const auto &mesh : meshes) {
+                        Matrix4f mat =
+                            transformComp.GetWorldTransform().GetMatrix() *
+                            node->GetLocalTransform();
+                        model_param->SetAsMat4(&mat[0][0]);
+                        Renderer3D::DrawMesh(*s_data.cascade_shader, *mesh);
+                    }
                 }
             }
         }
@@ -358,14 +359,16 @@ void DeferredRenderer::RenderPointShadowMap(const Scene &scene,
         if (storage.Exists<ModelAsset>(modelComp.model_id)) {
             auto model =
                 storage.GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
-            for (const auto &[material, meshes] : model->GetMaterialMap()) {
-                for (const auto &mesh : meshes) {
-                    Matrix4f mat =
-                        model->GetTransform(mesh.transform_id) *
-                        transformComp.GetWorldTransform().GetMatrix();
-                    model_param->SetAsMat4(&mat[0][0]);
-                    Renderer3D::DrawMesh(*s_data.point_shadow_shader,
-                                         *model->GetMesh(mesh.mesh_id));
+            for (const auto &node : model->GetNodes()) {
+                for (const auto &[material, meshes] : node->GetMeshes()) {
+                    for (const auto &mesh : meshes) {
+                        Matrix4f mat =
+                            transformComp.GetWorldTransform().GetMatrix() *
+                            node->GetLocalTransform();
+                        model_param->SetAsMat4(&mat[0][0]);
+                        Renderer3D::DrawMesh(*s_data.point_shadow_shader,
+                                             *mesh);
+                    }
                 }
             }
         }
@@ -597,15 +600,16 @@ void DeferredRenderer::RenderGBuffer(const Scene &scene)
         if (storage.Exists<ModelAsset>(modelComp.model_id)) {
             auto model =
                 storage.GetAsset<ModelAsset>(modelComp.model_id)->GetModel();
-            for (const auto &[material, meshes] : model->GetMaterialMap()) {
-                Renderer3D::SetMaterial(*s_data.gbuffer_shader, *material);
-                for (const auto &mesh : meshes) {
-                    Matrix4f mat =
-                        model->GetTransform(mesh.transform_id) *
-                        transformComp.GetWorldTransform().GetMatrix();
-                    model_param->SetAsMat4(&mat[0][0]);
-                    Renderer3D::DrawMesh(*s_data.gbuffer_shader,
-                                         *model->GetMesh(mesh.mesh_id));
+            for (const auto &node : model->GetNodes()) {
+                for (const auto &[material, meshes] : node->GetMeshes()) {
+                    Renderer3D::SetMaterial(*s_data.gbuffer_shader, *material);
+                    for (const auto &mesh : meshes) {
+                        Matrix4f mat =
+                            transformComp.GetWorldTransform().GetMatrix() *
+                            node->GetLocalTransform();
+                        model_param->SetAsMat4(&mat[0][0]);
+                        Renderer3D::DrawMesh(*s_data.gbuffer_shader, *mesh);
+                    }
                 }
             }
         }

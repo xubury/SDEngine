@@ -319,7 +319,7 @@ void ScenePanel::DrawComponents(Entity &entity)
         },
         false);
     DrawComponent<ModelComponent>("Model", entity, [&](ModelComponent &mc) {
-        ImGui::DrawModelAssetSelection(storage, &mc.model_id);
+        // ImGui::DrawModelAssetSelection(storage, &mc.model_id);
 
         if (storage.Exists<ModelAsset>(mc.model_id)) {
             auto model = storage.GetAsset<ModelAsset>(mc.model_id)->GetModel();

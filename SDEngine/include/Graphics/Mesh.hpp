@@ -3,6 +3,7 @@
 
 #include "Graphics/Export.hpp"
 #include "Graphics/VertexArray.hpp"
+#include "Graphics/Material.hpp"
 #include "Utility/Math.hpp"
 
 #include <vector>
@@ -20,7 +21,7 @@ struct SD_GRAPHICS_API Vertex {
 class SD_GRAPHICS_API Mesh {
    public:
     Mesh(const std::vector<Vertex> &vertices,
-         const std::vector<uint32_t> &indices);
+         const std::vector<uint32_t> &indices, MeshTopology topology);
 
     void Update();
     void Clear();
@@ -44,9 +45,9 @@ class SD_GRAPHICS_API Mesh {
    private:
     std::vector<Vertex> m_vertices;
     std::vector<uint32_t> m_indices;
+    MeshTopology m_topology;
     Ref<VertexBuffer> m_vertexBuffer;
     Ref<IndexBuffer> m_indexBuffer;
-    MeshTopology m_topology;
     PolygonMode m_polygonMode;
 };
 

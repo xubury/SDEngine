@@ -72,7 +72,7 @@ static MeshTopology ConvertAssimpPrimitive(aiPrimitiveType type)
     };
 }
 
-static Mesh ProcessAiMesh(const aiMesh *assimpMesh)
+static void ProcessAiMesh(const aiMesh *assimpMesh, Model &model)
 {
     const aiVector3D aiZeroVector(0.0f, 0.0f, 0.0f);
     std::vector<Vertex> vertices(assimpMesh->mNumVertices);
@@ -98,10 +98,9 @@ static Mesh ProcessAiMesh(const aiMesh *assimpMesh)
             indices.push_back(face.mIndices[j]);
         }
     }
-    Mesh mesh(vertices, indices);
-    mesh.SetTopology(ConvertAssimpPrimitive(
-        static_cast<aiPrimitiveType>(assimpMesh->mPrimitiveTypes)));
-    return mesh;
+    model.AddMesh(Mesh(vertices, indices,
+                       ConvertAssimpPrimitive(static_cast<aiPrimitiveType>(
+                           assimpMesh->mPrimitiveTypes))));
 }
 
 static inline TextureWrap ConvertAssimpMapMode(aiTextureMapMode mode)
@@ -144,8 +143,8 @@ static inline MaterialType ConvertAssimpTextureType(aiTextureType textureType)
     }
 }
 
-static Material ProcessAiMaterial(const std::filesystem::path &directory,
-                                  const aiMaterial *ai_material, Model &model)
+static void ProcessAiMaterial(const std::filesystem::path &directory,
+                              const aiMaterial *ai_material, Model &model)
 {
     Material material;
     for (int type = aiTextureType_NONE + 1; type < aiTextureType_SHININESS;
@@ -179,28 +178,34 @@ static Material ProcessAiMaterial(const std::filesystem::path &directory,
         Texture *texture = model.GetTexture(full_path);
         material.SetTexture(ConvertAssimpTextureType(ai_type), texture);
     }
-    return material;
+    model.AddMaterial(std::move(material));
 }
 
-static void ProcessNode(const aiScene *scene, const aiNode *node, Model &model,
-                        const Matrix4f &parent_trans)
+static void ProcessNode(const aiScene *scene, const aiNode *ai_node,
+                        Model &model, const Matrix4f &parent_trans,
+                        ModelNode *parent)
 {
-    if (node == nullptr) return;
-    for (uint32_t i = 0; i < node->mNumChildren; ++i) {
-        const aiNode *child = node->mChildren[i];
-        Matrix4f trans =
-            parent_trans * ConvertAssimpMatrix(child->mTransformation);
-        model.AddTransform(trans);
-        for (uint32_t j = 0; j < child->mNumMeshes; ++j) {
-            uint32_t mesh_id = child->mMeshes[j];
-            MeshReference node;
-            node.mesh_id = mesh_id;
-            node.transform_id = i;
-            model.MapMaterial(
-                model.GetMaterial(scene->mMeshes[mesh_id]->mMaterialIndex),
-                std::move(node));
-        }
-        ProcessNode(scene, child, model, trans);
+    if (ai_node == nullptr) return;
+
+    Matrix4f trans =
+        parent_trans * ConvertAssimpMatrix(ai_node->mTransformation);
+    ModelNode *node = new ModelNode(trans);
+    model.AddNode(node);
+    for (uint32_t i = 0; i < ai_node->mNumMeshes; ++i) {
+        uint32_t mesh_id = ai_node->mMeshes[i];
+        uint32_t mat_id = scene->mMeshes[mesh_id]->mMaterialIndex;
+        node->AddMesh(model.GetMaterial(mat_id), model.GetMesh(mesh_id));
+    }
+
+    if (parent == nullptr) {
+        model.SetRootNode(node);
+    }
+    else {
+        parent->AddChild(node);
+    }
+    for (uint32_t i = 0; i < ai_node->mNumChildren; ++i) {
+        const aiNode *ai_child = ai_node->mChildren[i];
+        ProcessNode(scene, ai_child, model, trans, node);
     }
 }
 
@@ -219,22 +224,20 @@ Ref<Model> ModelLoader::LoadModel(const std::string &path)
     }
     else {
         model = CreateRef<Model>();
-        model->SetPath(path);
         // Process materials
         std::filesystem::path directory =
             std::filesystem::path(path).parent_path();
         for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
-            model->AddMaterial(
-                ProcessAiMaterial(directory, scene->mMaterials[i], *model));
+            ProcessAiMaterial(directory, scene->mMaterials[i], *model);
         }
 
         // Process meshes
         for (uint32_t i = 0; i < scene->mNumMeshes; ++i) {
-            model->AddMesh(ProcessAiMesh(scene->mMeshes[i]));
+            ProcessAiMesh(scene->mMeshes[i], *model);
         }
 
         // Process node
-        ProcessNode(scene, scene->mRootNode, *model, Matrix4f(1.0f));
+        ProcessNode(scene, scene->mRootNode, *model, Matrix4f(1.0f), nullptr);
     }
     return model;
 }
