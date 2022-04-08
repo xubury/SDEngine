@@ -70,10 +70,12 @@ void Renderer3D::SetMaterial(Shader& shader, const Material& material)
     const Texture* diffuse = material.GetTexture(MaterialType::Diffuse);
     const Texture* ambient = material.GetTexture(MaterialType::Ambient);
     const Texture* emissive = material.GetTexture(MaterialType::Emissive);
-    // const Texture* default_ambient = s_mesh_data.default_ambient.get();
-    // const Texture* default_diffuse = s_mesh_data.default_diffuse.get();
-    shader.GetParam("u_material.diffuse")->SetAsTexture(diffuse);
-    shader.GetParam("u_material.ambient")->SetAsTexture(ambient);
+    const Texture* default_ambient = s_mesh_data.default_ambient.get();
+    const Texture* default_diffuse = s_mesh_data.default_diffuse.get();
+    shader.GetParam("u_material.diffuse")
+        ->SetAsTexture(diffuse ? diffuse : default_diffuse);
+    shader.GetParam("u_material.ambient")
+        ->SetAsTexture(ambient ? ambient : default_ambient);
     shader.GetParam("u_material.specular")
         ->SetAsTexture(material.GetTexture(MaterialType::Specular));
     shader.GetParam("u_material.emissive")->SetAsTexture(emissive);

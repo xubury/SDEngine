@@ -4,8 +4,8 @@ layout(location = 0) out vec4 frag_color;
 
 layout(location = 0) in vec2 in_uv;
 
-layout(binding = 0) uniform sampler2DMS u_lighting;
-layout(binding = 1) uniform sampler2DMS u_emissive;
+uniform sampler2DMS u_lighting;
+uniform sampler2DMS u_emissive;
 
 void main()
 {

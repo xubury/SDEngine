@@ -15,6 +15,7 @@ static void OpenGLMessageCallback(GLenum, GLenum, unsigned, GLenum severity,
     switch (severity) {
         case GL_DEBUG_SEVERITY_HIGH:
             SD_CORE_ASSERT(false, message);
+            SD_CORE_ERROR(message);
             return;
         case GL_DEBUG_SEVERITY_MEDIUM:
             // SD_CORE_ASSERT(false, message);

@@ -478,7 +478,7 @@ void DeferredRenderer::RenderDeferred(const Scene &scene, const Camera &camera)
     uint8_t input_id = 0;
     uint8_t output_id = 1;
     // clear the last lighting pass' result
-    const float value[]{0, 0, 0, 0};
+    const float value[]{0, 0, 0};
     s_data.lighting_target[input_id]->ClearAttachment(0, value);
     auto dir_lights =
         scene.view<TransformComponent, DirectionalLightComponent>();

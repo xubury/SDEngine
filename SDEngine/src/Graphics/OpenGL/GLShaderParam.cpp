@@ -8,13 +8,25 @@ namespace SD {
 GLShaderParam::GLShaderParam(UniformType type, const std::string& name,
                              int32_t index, uint32_t program_id,
                              int32_t location, int32_t tex_binding_id,
-                             int32_t image_binding)
+                             int32_t image_binding, int32_t size)
     : ShaderParam(type, name, index),
       m_program(program_id),
       m_location(location),
       m_texture_binding(tex_binding_id),
       m_image_binding(image_binding)
 {
+    if (type == UniformType::Sampler) {
+        if (size == 1) {
+            SetAsInt(m_texture_binding);
+        }
+        else if (size > 1) {
+            std::vector<int> bindings(size);
+            for (int i = 0; i < size; ++i) {
+                bindings[i] = m_texture_binding + i;
+            }
+            SetAsVec(bindings.data(), size);
+        }
+    }
 }
 
 void GLShaderParam::SetAsBool(bool value)
@@ -74,18 +86,15 @@ void GLShaderParam::SetAsMat4(const float* value, int32_t count)
 
 void GLShaderParam::SetAsTexture(const Texture* texture)
 {
-    SetAsInt(m_texture_binding);
     glBindTextureUnit(m_texture_binding, texture ? texture->GetId() : 0);
 }
 
 void GLShaderParam::SetAsTextures(const Texture** textures, int32_t count)
 {
-    std::vector<int32_t> bindings(count);
     for (int32_t i = 0; i < count; ++i) {
-        bindings[i] = m_texture_binding + i;
-        glBindTextureUnit(bindings[i], textures[i] ? textures[i]->GetId() : 0);
+        glBindTextureUnit(m_texture_binding + i,
+                          textures[i] ? textures[i]->GetId() : 0);
     }
-    SetAsVec(&bindings[0], count);
 }
 
 void GLShaderParam::SetAsImage(const Texture* texture, int32_t level,

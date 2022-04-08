@@ -167,7 +167,7 @@ ShaderParam* GLShader::GetParam(int32_t index)
         m_image_cnt += size;
     }
     ShaderParam* p = new GLShaderParam(type, s, index, m_id, location,
-                                       tex_binding_id, image_binding);
+                                       tex_binding_id, image_binding, size);
 
     return m_params.emplace(s, p).first->second;
 }
