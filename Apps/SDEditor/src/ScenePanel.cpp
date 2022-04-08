@@ -225,13 +225,6 @@ void ScenePanel::DrawComponents(Entity &entity)
     if (ImGui::Button("Add Component")) ImGui::OpenPopup("AddComponent");
 
     if (ImGui::BeginPopup("AddComponent")) {
-        if (ImGui::MenuItem("Model")) {
-            if (!entity.HasComponent<ModelComponent>())
-                entity.AddComponent<ModelComponent>();
-            else
-                SD_CORE_WARN("This entity already has the Model Component!");
-            ImGui::CloseCurrentPopup();
-        }
         if (ImGui::MenuItem("Directional Light")) {
             if (!entity.HasComponent<DirectionalLightComponent>())
                 entity.AddComponent<DirectionalLightComponent>();
@@ -318,15 +311,9 @@ void ScenePanel::DrawComponents(Entity &entity)
             }
         },
         false);
-    DrawComponent<ModelComponent>("Model", entity, [&](ModelComponent &mc) {
-        // ImGui::DrawModelAssetSelection(storage, &mc.model_id);
-
-        if (storage.Exists<ModelAsset>(mc.model_id)) {
-            auto model = storage.GetAsset<ModelAsset>(mc.model_id)->GetModel();
-            DrawMaterialsList(model->GetMaterials(),
-                              &m_selected_material_id_map[entity]);
-        }
-    });
+    DrawComponent<MeshNodeComponent>(
+        "Mesh", entity,
+        [&](MeshNodeComponent &mc) { DrawMaterial(mc.mesh->GetMaterial()); });
     DrawComponent<DirectionalLightComponent>(
         "Directional Light", entity, [&](DirectionalLightComponent &lightComp) {
             DirectionalLight &light = lightComp.light;
@@ -454,48 +441,26 @@ void ScenePanel::DrawComponents(Entity &entity)
         });
 }
 
-void ScenePanel::DrawMaterialsList(std::vector<Material> &materials,
-                                   int *selected)
+void ScenePanel::DrawMaterial(const Material &material)
 {
-    ImGui::PushID(materials.data());
-    int itemSize = materials.size();
-    if (!itemSize) return;
-
-    std::string item;
-    item = "Material " + std::to_string(*selected);
-    if (ImGui::BeginCombo("##Materials", item.c_str())) {
-        for (int i = 0; i < itemSize; i++) {
-            item = "Material " + std::to_string(i);
-            const bool is_selected = (*selected == i);
-            if (ImGui::Selectable(item.c_str(), is_selected)) *selected = i;
-
-            // Set the initial focus when opening the combo (scrolling +
-            // keyboard navigation focus)
-            if (is_selected) ImGui::SetItemDefaultFocus();
-        }
-        ImGui::EndCombo();
-    }
-
     float width = ImGui::GetWindowWidth();
-    auto &material = materials[*selected];
     for (const auto &[type, texture] : material.GetTextures()) {
         ImGui::TextUnformatted(GetMaterialName(type).c_str());
         ImGui::SameLine(width / 2);
         ImGui::DrawTexture(*texture);
     }
-    Vector3f diffuse_color = material.GetDiffuseColor();
-    Vector3f ambient_color = material.GetAmbientColor();
-    Vector3f emissive_color = material.GetEmissiveColor();
-    if (ImGui::ColorEdit3("Diffuse Color", &diffuse_color[0])) {
-        material.SetDiffuseColor(diffuse_color);
-    }
-    if (ImGui::ColorEdit3("Ambient Color", &ambient_color[0])) {
-        material.SetAmbientColor(ambient_color);
-    }
-    if (ImGui::ColorEdit3("Emssive Color", &emissive_color[0])) {
-        material.SetEmissiveColor(emissive_color);
-    }
-    ImGui::PopID();
+    // Vector3f diffuse_color = material.GetDiffuseColor();
+    // Vector3f ambient_color = material.GetAmbientColor();
+    // Vector3f emissive_color = material.GetEmissiveColor();
+    // if (ImGui::ColorEdit3("Diffuse Color", &diffuse_color[0])) {
+    //     material.SetDiffuseColor(diffuse_color);
+    // }
+    // if (ImGui::ColorEdit3("Ambient Color", &ambient_color[0])) {
+    //     material.SetAmbientColor(ambient_color);
+    // }
+    // if (ImGui::ColorEdit3("Emssive Color", &emissive_color[0])) {
+    //     material.SetEmissiveColor(emissive_color);
+    // }
 }
 
 void ScenePanel::DrawAnimList(

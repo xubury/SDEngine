@@ -381,12 +381,27 @@ void EditorLayer::DrawViewport()
                         SD_TRACE("load scene asset");
                     }
                     else if (asset->IsTypeOf<ModelAsset>()) {
-                        // Model *model =
-                        //     dynamic_cast<ModelAsset *>(asset)->GetModel();
-                        Entity entity =
+                        Model *model =
+                            dynamic_cast<ModelAsset *>(asset)->GetModel();
+                        Entity root =
                             m_current_scene->CreateEntity(asset->GetName());
-                        auto &mc = entity.AddComponent<ModelComponent>();
-                        mc.model_id = asset->GetId();
+                        int child_id = 0;
+                        for (auto &node : model->GetNodes()) {
+                            auto &meshes = node.GetMeshNodes();
+                            for (auto &mesh : meshes) {
+                                Entity child = m_current_scene->CreateEntity(
+                                    asset->GetName() + "_" +
+                                    std::to_string(child_id));
+                                auto &mc =
+                                    child.AddComponent<MeshNodeComponent>();
+                                mc.mesh = &mesh;
+                                auto &tc =
+                                    child.GetComponent<TransformComponent>();
+                                tc.SetLocalTransform(node.GetTransform());
+                                root.AddChild(child);
+                                ++child_id;
+                            }
+                        }
                     }
                 }
                 catch (const Exception &e) {

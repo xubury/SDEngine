@@ -80,10 +80,15 @@ struct SD_ECS_API TransformComponent {
     Transform m_local_transform;
 };
 
-struct SD_ECS_API ModelComponent {
+struct SD_ECS_API ModelNodeComponent {
     ResourceId model_id;
+    uint32_t node_id;
 
-    SERIALIZE(model_id)
+    SERIALIZE(model_id, node_id)
+};
+
+struct SD_ECS_API MeshNodeComponent {
+    MeshNode* mesh;
 };
 
 struct SD_ECS_API DirectionalLightComponent {

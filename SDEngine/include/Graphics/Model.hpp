@@ -10,23 +10,19 @@ namespace SD {
 class SD_GRAPHICS_API Model {
    public:
     Model() = default;
-    virtual ~Model();
+    virtual ~Model() = default;
 
-    void SetRootNode(ModelNode *node) { m_root_node = node; }
-    ModelNode *GetRootNode() { return m_root_node; }
-
-    void AddNode(ModelNode *node) { m_nodes.push_back(node); }
-    std::vector<ModelNode *> &GetNodes() { return m_nodes; }
-
-    void AddMesh(Mesh &&mesh) { m_meshes.push_back(std::move(mesh)); }
-    Mesh *GetMesh(int32_t id) { return &m_meshes.at(id); }
+    void AddNode(const ModelNode &node) { m_nodes.push_back(node); }
+    std::vector<ModelNode> &GetNodes() { return m_nodes; }
 
     void AddMaterial(Material &&material)
     {
         m_materials.push_back(std::move(material));
     }
     Material *GetMaterial(int32_t id) { return &m_materials.at(id); }
-    std::vector<Material> &GetMaterials() { return m_materials; }
+
+    void AddMesh(Mesh &&mesh) { m_meshes.push_back(std::move(mesh)); }
+    Mesh *GetMesh(int32_t id) { return &m_meshes.at(id); }
 
     void AddTexture(const std::string &path, const Ref<Texture> &texture)
     {
@@ -42,8 +38,7 @@ class SD_GRAPHICS_API Model {
     }
 
    private:
-    ModelNode *m_root_node;
-    std::vector<ModelNode *> m_nodes;
+    std::vector<ModelNode> m_nodes;
     std::vector<Mesh> m_meshes;
     std::vector<Material> m_materials;
     std::unordered_map<std::string, Ref<Texture>> m_textures;

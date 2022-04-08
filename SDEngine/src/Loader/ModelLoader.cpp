@@ -182,30 +182,24 @@ static void ProcessAiMaterial(const std::filesystem::path &directory,
 }
 
 static void ProcessNode(const aiScene *scene, const aiNode *ai_node,
-                        Model &model, const Matrix4f &parent_trans,
-                        ModelNode *parent)
+                        Model &model, const Matrix4f &parent_trans)
 {
     if (ai_node == nullptr) return;
 
     Matrix4f trans =
         parent_trans * ConvertAssimpMatrix(ai_node->mTransformation);
-    ModelNode *node = new ModelNode(trans);
-    model.AddNode(node);
+    model.AddNode(ModelNode(trans));
+    auto &node = model.GetNodes().back();
     for (uint32_t i = 0; i < ai_node->mNumMeshes; ++i) {
         uint32_t mesh_id = ai_node->mMeshes[i];
         uint32_t mat_id = scene->mMeshes[mesh_id]->mMaterialIndex;
-        node->AddMesh(model.GetMaterial(mat_id), model.GetMesh(mesh_id));
+        node.AddNode(
+            MeshNode(model.GetMesh(mesh_id), model.GetMaterial(mat_id)));
     }
 
-    if (parent == nullptr) {
-        model.SetRootNode(node);
-    }
-    else {
-        parent->AddChild(node);
-    }
     for (uint32_t i = 0; i < ai_node->mNumChildren; ++i) {
         const aiNode *ai_child = ai_node->mChildren[i];
-        ProcessNode(scene, ai_child, model, trans, node);
+        ProcessNode(scene, ai_child, model, trans);
     }
 }
 
@@ -237,7 +231,7 @@ Ref<Model> ModelLoader::LoadModel(const std::string &path)
         }
 
         // Process node
-        ProcessNode(scene, scene->mRootNode, *model, Matrix4f(1.0f), nullptr);
+        ProcessNode(scene, scene->mRootNode, *model, Matrix4f(1.0f));
     }
     return model;
 }
