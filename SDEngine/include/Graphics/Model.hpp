@@ -10,10 +10,10 @@ namespace SD {
 class SD_GRAPHICS_API Model {
    public:
     Model() = default;
-    virtual ~Model() = default;
+    virtual ~Model() { delete m_root_node; };
 
-    void AddNode(const ModelNode &node) { m_nodes.push_back(node); }
-    std::vector<ModelNode> &GetNodes() { return m_nodes; }
+    void SetRootNode(ModelNode *node) { m_root_node = node; }
+    ModelNode *GetRootNode() const { return m_root_node; }
 
     void AddMaterial(Material &&material)
     {
@@ -38,7 +38,7 @@ class SD_GRAPHICS_API Model {
     }
 
    private:
-    std::vector<ModelNode> m_nodes;
+    ModelNode *m_root_node;
     std::vector<Mesh> m_meshes;
     std::vector<Material> m_materials;
     std::unordered_map<std::string, Ref<Texture>> m_textures;

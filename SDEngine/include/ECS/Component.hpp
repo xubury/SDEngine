@@ -87,8 +87,12 @@ struct SD_ECS_API ModelNodeComponent {
     SERIALIZE(model_id, node_id)
 };
 
+struct SD_ECS_API MaterialComponent {
+    Material material;
+};
+
 struct SD_ECS_API MeshNodeComponent {
-    MeshNode* mesh;
+    Mesh* mesh;
 };
 
 struct SD_ECS_API DirectionalLightComponent {

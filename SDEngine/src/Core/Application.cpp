@@ -87,7 +87,7 @@ Application::Application(const std::string &title, Device::API api)
     auto &storage = AssetStorage::Get();
     RegisterAssets(&storage);
     storage.SetDirectory("assets");
-    storage.ScanDirectory(storage.GetDirectory());
+    // storage.ScanDirectory(storage.GetDirectory());
 }
 
 Application::~Application() {}

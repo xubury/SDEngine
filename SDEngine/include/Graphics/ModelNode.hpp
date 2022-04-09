@@ -6,38 +6,39 @@
 
 namespace SD {
 
-class SD_GRAPHICS_API MeshNode {
-   public:
-    MeshNode(Mesh *mesh, Material *material)
-        : m_mesh(mesh), m_material(material)
-    {
-    }
-    ~MeshNode() = default;
-
-    const Mesh &GetMesh() const { return *m_mesh; }
-    const Material &GetMaterial() const { return *m_material; }
-
-    Mesh &GetMesh() { return *m_mesh; }
-    Material &GetMaterial() { return *m_material; }
-
-   private:
-    Mesh *m_mesh;
-    Material *m_material;
-};
-
 class SD_GRAPHICS_API ModelNode {
    public:
-    ModelNode(const Matrix4f &transform) : m_local_transform(transform) {}
+    ModelNode(const std::string &name, const Matrix4f &transform)
+        : m_name(name), m_local_transform(transform)
+    {
+    }
+    ~ModelNode()
+    {
+        for (auto &child : m_children) {
+            delete child;
+        }
+    }
 
-    void AddNode(MeshNode &&node) { m_nodes.push_back(std::move(node)); }
+    void AddMesh(Mesh *mesh) { m_meshes.push_back(mesh); }
+    void AddMaterial(Material *material) { m_materials.push_back(material); }
+    void AddChild(ModelNode *child) { m_children.push_back(child); }
 
+    const std::string &GetName() const { return m_name; }
     const Matrix4f &GetTransform() const { return m_local_transform; }
 
-    const std::vector<MeshNode> &GetMeshNodes() const { return m_nodes; }
-    std::vector<MeshNode> &GetMeshNodes() { return m_nodes; }
+    const std::vector<Mesh *> &GetMeshes() const { return m_meshes; }
+    std::vector<Mesh *> &GetMeshes() { return m_meshes; }
+
+    const std::vector<Material *> &GetMaterials() const { return m_materials; }
+    std::vector<Material *> &GetMaterials() { return m_materials; }
+
+    std::vector<ModelNode *> &GetChildren() { return m_children; }
 
    private:
-    std::vector<MeshNode> m_nodes;
+    std::string m_name;
+    std::vector<Mesh *> m_meshes;
+    std::vector<Material *> m_materials;
+    std::vector<ModelNode *> m_children;
     Matrix4f m_local_transform;
 };
 

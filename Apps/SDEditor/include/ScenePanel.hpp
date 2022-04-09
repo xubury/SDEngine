@@ -30,7 +30,7 @@ class ScenePanel {
 
     void DrawComponents(Entity &entity);
 
-    void DrawMaterial(const Material &material);
+    void DrawMaterial(Material &material);
     void DrawAnimList(const std::vector<FrameAnimation<SpriteFrame>> &anims,
                       int *selected);
 

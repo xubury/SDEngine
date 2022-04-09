@@ -290,6 +290,29 @@ void EditorLayer::MenuBar()
     }
 }
 
+static Entity ConstructModel(Scene *scene, ModelNode *node)
+{
+    std::string name = node->GetName();
+    Entity entity = scene->CreateEntity(name);
+    auto &meshes = node->GetMeshes();
+    auto &materials = node->GetMaterials();
+    for (size_t i = 0; i < meshes.size(); ++i) {
+        Entity child = scene->CreateEntity(name + "_" + std::to_string(i));
+        entity.AddChild(child);
+        auto &mesh = child.AddComponent<MeshNodeComponent>();
+        auto &material = child.AddComponent<MaterialComponent>();
+        mesh.mesh = meshes[i];
+        material.material = *materials[i];
+        auto &tc = child.GetComponent<TransformComponent>();
+        tc.SetLocalTransform(node->GetTransform());
+    }
+    for (auto &child : node->GetChildren()) {
+        Entity child_entity = ConstructModel(scene, child);
+        entity.AddChild(child_entity);
+    }
+    return entity;
+}
+
 void EditorLayer::DrawViewport()
 {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
@@ -383,25 +406,7 @@ void EditorLayer::DrawViewport()
                     else if (asset->IsTypeOf<ModelAsset>()) {
                         Model *model =
                             dynamic_cast<ModelAsset *>(asset)->GetModel();
-                        Entity root =
-                            m_current_scene->CreateEntity(asset->GetName());
-                        int child_id = 0;
-                        for (auto &node : model->GetNodes()) {
-                            auto &meshes = node.GetMeshNodes();
-                            for (auto &mesh : meshes) {
-                                Entity child = m_current_scene->CreateEntity(
-                                    asset->GetName() + "_" +
-                                    std::to_string(child_id));
-                                auto &mc =
-                                    child.AddComponent<MeshNodeComponent>();
-                                mc.mesh = &mesh;
-                                auto &tc =
-                                    child.GetComponent<TransformComponent>();
-                                tc.SetLocalTransform(node.GetTransform());
-                                root.AddChild(child);
-                                ++child_id;
-                            }
-                        }
+                        ConstructModel(m_current_scene, model->GetRootNode());
                     }
                 }
                 catch (const Exception &e) {

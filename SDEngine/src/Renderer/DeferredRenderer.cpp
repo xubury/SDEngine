@@ -294,7 +294,7 @@ void DeferredRenderer::RenderShadowMap(const Scene &scene, const Camera &camera,
         [&](const TransformComponent &tc, const MeshNodeComponent &mc) {
             Matrix4f mat = tc.GetWorldTransform().GetMatrix();
             model_param->SetAsMat4(&mat[0][0]);
-            Renderer3D::DrawMesh(*s_data.cascade_shader, mc.mesh->GetMesh());
+            Renderer3D::DrawMesh(*s_data.cascade_shader, *mc.mesh);
         });
     Renderer::EndRenderPass();
 
@@ -340,12 +340,12 @@ void DeferredRenderer::RenderPointShadowMap(const Scene &scene,
         s_data.point_shadow.GetFarZ());
     s_data.point_shadow_shader->GetParam("u_shadow_matrix[0]")
         ->SetAsMat4(&shadow_trans[0][0][0], 6);
-    modelView.each([&](const TransformComponent &tc,
-                       const MeshNodeComponent &mc) {
-        Matrix4f mat = tc.GetWorldTransform().GetMatrix();
-        model_param->SetAsMat4(&mat[0][0]);
-        Renderer3D::DrawMesh(*s_data.point_shadow_shader, mc.mesh->GetMesh());
-    });
+    modelView.each(
+        [&](const TransformComponent &tc, const MeshNodeComponent &mc) {
+            Matrix4f mat = tc.GetWorldTransform().GetMatrix();
+            model_param->SetAsMat4(&mat[0][0]);
+            Renderer3D::DrawMesh(*s_data.point_shadow_shader, *mc.mesh);
+        });
     Renderer::EndRenderPass();
 }
 
@@ -547,7 +547,8 @@ void DeferredRenderer::RenderDeferred(const Scene &scene, const Camera &camera)
 
 void DeferredRenderer::RenderGBuffer(const Scene &scene)
 {
-    auto modelView = scene.view<TransformComponent, MeshNodeComponent>();
+    auto meshes =
+        scene.view<TransformComponent, MeshNodeComponent, MaterialComponent>();
 
     RenderPassInfo info;
     info.framebuffer = s_data.geometry_target_msaa.get();
@@ -565,14 +566,15 @@ void DeferredRenderer::RenderGBuffer(const Scene &scene)
 
     ShaderParam *entity_id = s_data.gbuffer_shader->GetParam("u_entity_id");
     ShaderParam *model_param = s_data.gbuffer_shader->GetParam("u_model");
-    modelView.each([&](const entt::entity &entity, const TransformComponent &tc,
-                       const MeshNodeComponent &mc) {
-        entity_id->SetAsUint(static_cast<uint32_t>(entity));
-        Renderer3D::SetMaterial(*s_data.gbuffer_shader, mc.mesh->GetMaterial());
-        Matrix4f mat = tc.GetWorldTransform().GetMatrix();
-        model_param->SetAsMat4(&mat[0][0]);
-        Renderer3D::DrawMesh(*s_data.gbuffer_shader, mc.mesh->GetMesh());
-    });
+    meshes.each(
+        [&](const entt::entity &entity, const TransformComponent &transform,
+            const MeshNodeComponent &mesh, const MaterialComponent &material) {
+            entity_id->SetAsUint(static_cast<uint32_t>(entity));
+            Renderer3D::SetMaterial(*s_data.gbuffer_shader, material.material);
+            Matrix4f mat = transform.GetWorldTransform().GetMatrix();
+            model_param->SetAsMat4(&mat[0][0]);
+            Renderer3D::DrawMesh(*s_data.gbuffer_shader, *mesh.mesh);
+        });
     Renderer::EndRenderPass();
 }
 

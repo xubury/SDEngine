@@ -311,9 +311,11 @@ void ScenePanel::DrawComponents(Entity &entity)
             }
         },
         false);
-    DrawComponent<MeshNodeComponent>(
-        "Mesh", entity,
-        [&](MeshNodeComponent &mc) { DrawMaterial(mc.mesh->GetMaterial()); });
+    DrawComponent<MeshNodeComponent>("Mesh", entity,
+                                     [&](MeshNodeComponent &) {});
+    DrawComponent<MaterialComponent>(
+        "Material", entity,
+        [&](MaterialComponent &mc) { DrawMaterial(mc.material); });
     DrawComponent<DirectionalLightComponent>(
         "Directional Light", entity, [&](DirectionalLightComponent &lightComp) {
             DirectionalLight &light = lightComp.light;
@@ -441,7 +443,7 @@ void ScenePanel::DrawComponents(Entity &entity)
         });
 }
 
-void ScenePanel::DrawMaterial(const Material &material)
+void ScenePanel::DrawMaterial(Material &material)
 {
     float width = ImGui::GetWindowWidth();
     for (const auto &[type, texture] : material.GetTextures()) {
@@ -449,18 +451,18 @@ void ScenePanel::DrawMaterial(const Material &material)
         ImGui::SameLine(width / 2);
         ImGui::DrawTexture(*texture);
     }
-    // Vector3f diffuse_color = material.GetDiffuseColor();
-    // Vector3f ambient_color = material.GetAmbientColor();
-    // Vector3f emissive_color = material.GetEmissiveColor();
-    // if (ImGui::ColorEdit3("Diffuse Color", &diffuse_color[0])) {
-    //     material.SetDiffuseColor(diffuse_color);
-    // }
-    // if (ImGui::ColorEdit3("Ambient Color", &ambient_color[0])) {
-    //     material.SetAmbientColor(ambient_color);
-    // }
-    // if (ImGui::ColorEdit3("Emssive Color", &emissive_color[0])) {
-    //     material.SetEmissiveColor(emissive_color);
-    // }
+    Vector3f diffuse_color = material.GetDiffuseColor();
+    Vector3f ambient_color = material.GetAmbientColor();
+    Vector3f emissive_color = material.GetEmissiveColor();
+    if (ImGui::ColorEdit3("Diffuse Color", &diffuse_color[0])) {
+        material.SetDiffuseColor(diffuse_color);
+    }
+    if (ImGui::ColorEdit3("Ambient Color", &ambient_color[0])) {
+        material.SetAmbientColor(ambient_color);
+    }
+    if (ImGui::ColorEdit3("Emssive Color", &emissive_color[0])) {
+        material.SetEmissiveColor(emissive_color);
+    }
 }
 
 void ScenePanel::DrawAnimList(
