@@ -11,8 +11,6 @@
 #include "TileMapEditor.hpp"
 #include "ContentBrowser.hpp"
 
-#include "Asset/SceneAsset.hpp"
-
 namespace SD {
 
 enum class EditorMode { None, TwoDimensional, ThreeDimensional };
@@ -75,7 +73,6 @@ class EditorLayer : public Layer {
     bool m_save_scene_open;
     ImFileDialogInfo m_file_dialog_info;
 
-    SceneAsset* m_scene_asset;
     Scene* m_current_scene;
     Entity m_selected_entity;
 

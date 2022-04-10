@@ -1,6 +1,7 @@
 #ifndef SD_BITMAP_HPP
 #define SD_BITMAP_HPP
 
+#include "Graphics/Graphics.hpp"
 #include "Utility/Base.hpp"
 #include "Graphics/Export.hpp"
 
@@ -8,12 +9,14 @@ namespace SD {
 
 class SD_GRAPHICS_API Bitmap {
    public:
-    Bitmap(uint32_t width, uint32_t height, uint8_t channels);
-    Bitmap(uint32_t width, uint32_t height, uint8_t channels, uint8_t *data);
+    Bitmap(int32_t width, int32_t height, int8_t channels);
+    Bitmap(int32_t width, int32_t height, int8_t channels, uint8_t *data);
     ~Bitmap();
 
     Bitmap(const Bitmap &) = delete;
     Bitmap &operator=(const Bitmap &) = delete;
+
+    DataFormat GetDataFormat() const;
 
     const uint8_t *Data() const;
     uint8_t *Data();
@@ -26,12 +29,12 @@ class SD_GRAPHICS_API Bitmap {
 
     size_t GetPixelsSize() const;
 
-    uint8_t GetPixel(uint32_t x, uint32_t y, uint8_t channel) const;
-    void GetPixels(uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+    uint8_t GetPixel(int32_t x, int32_t y, int8_t channel) const;
+    void GetPixels(int32_t x, int32_t y, int32_t width, int32_t height,
                    uint8_t *value) const;
 
-    void SetPixel(uint32_t x, uint32_t y, uint8_t channel, uint8_t value);
-    void SetPixels(uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+    void SetPixel(int32_t x, int32_t y, int8_t channel, uint8_t value);
+    void SetPixels(int32_t x, int32_t y, int32_t width, int32_t height,
                    uint8_t *value);
 
    private:

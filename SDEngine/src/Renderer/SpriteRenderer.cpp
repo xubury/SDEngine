@@ -1,10 +1,7 @@
 #include "Renderer/SpriteRenderer.hpp"
 #include "Renderer/Renderer2D.hpp"
+#include "Resource/ResourceManager.hpp"
 #include "ECS/Component.hpp"
-
-#include "Asset/AssetStorage.hpp"
-#include "Asset/TextureAsset.hpp"
-#include "Asset/FontAsset.hpp"
 
 namespace SD {
 
@@ -20,7 +17,7 @@ struct SpriteDrawData {
 
 void SpriteRenderer::Render(const Scene &scene)
 {
-    auto &storage = AssetStorage::Get();
+    auto &resource = ResourceManager::Get();
     int index[] = {0, 1};
     RenderOperation op;
     op.depth_mask = false;
@@ -34,10 +31,9 @@ void SpriteRenderer::Render(const Scene &scene)
                          const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
         auto &frame = sprite_comp.frame;
-        if (storage.Exists<TextureAsset>(frame.texture_id)) {
-            auto texture =
-                storage.GetAsset<TextureAsset>(frame.texture_id)->GetTexture();
-            datas.push_back({texture, frame.uvs,
+        if (resource.Exist<Texture>(frame.texture_id)) {
+            auto texture = resource.GetResource<Texture>(frame.texture_id);
+            datas.push_back({texture.get(), frame.uvs,
                              transform_comp.GetWorldPosition(),
                              transform_comp.GetWorldRotation(), frame.size, id,
                              frame.priority});
@@ -52,11 +48,10 @@ void SpriteRenderer::Render(const Scene &scene)
         if (anim) {
             if (anim->GetFrameSize()) {
                 auto &frame = anim->GetFrame();
-                if (storage.Exists<TextureAsset>(frame.texture_id)) {
+                if (resource.Exist<Texture>(frame.texture_id)) {
                     auto texture =
-                        storage.GetAsset<TextureAsset>(frame.texture_id)
-                            ->GetTexture();
-                    datas.push_back({texture, frame.uvs,
+                        resource.GetResource<Texture>(frame.texture_id);
+                    datas.push_back({texture.get(), frame.uvs,
                                      transform_comp.GetWorldPosition(),
                                      transform_comp.GetWorldRotation(),
                                      frame.size, id, frame.priority});
@@ -91,9 +86,8 @@ void SpriteRenderer::Render(const Scene &scene)
                       const TransformComponent &transformComp,
                       const TextComponent &textComp) {
         Renderer2D::SetTextOrigin(0, 0);
-        if (storage.Exists<FontAsset>(textComp.font_id)) {
-            auto font =
-                storage.GetAsset<FontAsset>(textComp.font_id)->GetFont();
+        if (resource.Exist<Font>(textComp.font_id)) {
+            auto font = resource.GetResource<Font>(textComp.font_id);
             Renderer2D::DrawText(*font, textComp.text,
                                  transformComp.GetWorldTransform().GetMatrix(),
                                  textComp.color,

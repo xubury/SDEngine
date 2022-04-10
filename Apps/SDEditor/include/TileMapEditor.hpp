@@ -8,8 +8,6 @@
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGui/FileDialog.hpp"
 
-#include "Asset/TextureAsset.hpp"
-
 #include "TileBrush.hpp"
 
 namespace SD {

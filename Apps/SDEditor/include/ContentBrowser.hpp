@@ -7,8 +7,6 @@ namespace SD {
 
 constexpr const char* DROP_ASSET_ITEM = "DROP_ASSET_ITEM";
 
-class Asset;
-
 class ContentBrowser {
    public:
     ContentBrowser();
@@ -16,10 +14,10 @@ class ContentBrowser {
     void ImGui();
 
    private:
-    void DrawModelCreation();
-    void DrawTextureCreation();
-    void DrawSceneCreation();
-    void DrawFontCreation();
+    // void DrawModelCreation();
+    // void DrawTextureCreation();
+    // void DrawSceneCreation();
+    // void DrawFontCreation();
 
     bool m_open_creation{false};
     Ref<Texture> m_file_icon;

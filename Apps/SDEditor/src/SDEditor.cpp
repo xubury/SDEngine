@@ -1,7 +1,5 @@
 #include "SDEditor.hpp"
 
-#include "Asset/AssetStorage.hpp"
-
 IMPLEMENT_APP(SD::SDEditor);
 
 namespace SD {

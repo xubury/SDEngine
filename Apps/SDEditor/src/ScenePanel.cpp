@@ -3,11 +3,7 @@
 #include "Utility/Log.hpp"
 #include "Utility/String.hpp"
 #include "ImGui/ImGuiWidget.hpp"
-
-#include "Asset/AssetStorage.hpp"
-#include "Asset/TextureAsset.hpp"
-#include "Asset/FontAsset.hpp"
-#include "Asset/ModelAsset.hpp"
+#include "Resource/ResourceManager.hpp"
 
 #define ECS_MOVEENTITY "ECS MOVEENTITY"
 
@@ -204,7 +200,7 @@ static void DrawComponent(const std::string &name, Entity entity,
 
 void ScenePanel::DrawComponents(Entity &entity)
 {
-    auto &storage = AssetStorage::Get();
+    auto &resource = ResourceManager::Get();
     if (entity.HasComponent<TagComponent>()) {
         auto &id = entity.GetComponent<IdComponent>().id;
         std::string idString = "Resource Id: " + std::to_string(id);
@@ -311,8 +307,8 @@ void ScenePanel::DrawComponents(Entity &entity)
             }
         },
         false);
-    DrawComponent<MeshNodeComponent>("Mesh", entity,
-                                     [&](MeshNodeComponent &) {});
+    DrawComponent<MeshComponent>("Mesh", entity,
+                                     [&](MeshComponent &) {});
     DrawComponent<MaterialComponent>(
         "Material", entity,
         [&](MaterialComponent &mc) { DrawMaterial(mc.material); });
@@ -340,7 +336,7 @@ void ScenePanel::DrawComponents(Entity &entity)
                                "%.4f");
         });
     DrawComponent<TextComponent>("Text", entity, [&](TextComponent &textComp) {
-        ImGui::DrawFontAssetSelection(storage, &textComp.font_id);
+        ImGui::DrawFontAssetSelection(&textComp.font_id);
 
         ImGui::Text("Text Content:");
         static char buffer[256];
@@ -386,14 +382,13 @@ void ScenePanel::DrawComponents(Entity &entity)
     DrawComponent<SpriteComponent>(
         "Sprite", entity, [&](SpriteComponent &sprite_comp) {
             auto &frame = sprite_comp.frame;
-            ImGui::DrawTextureAssetSelection(storage, &frame.texture_id);
+            ImGui::DrawTextureAssetSelection(&frame.texture_id);
             ImGui::TextUnformatted("Size");
             ImGui::InputFloat2("##Size", &frame.size[0]);
             ImGui::TextUnformatted("Prioirty");
             ImGui::InputInt("##Priority", &frame.priority);
-            if (storage.Exists<TextureAsset>(frame.texture_id)) {
-                auto texture = storage.GetAsset<TextureAsset>(frame.texture_id)
-                                   ->GetTexture();
+            if (resource.Exist<Texture>(frame.texture_id)) {
+                auto texture = resource.GetResource<Texture>(frame.texture_id);
                 ImGui::DrawTexture(*texture,
                                    ImVec2(frame.uvs[0].x, frame.uvs[0].y),
                                    ImVec2(frame.uvs[1].x, frame.uvs[1].y));
@@ -417,10 +412,9 @@ void ScenePanel::DrawComponents(Entity &entity)
             }
             if (frame_index < static_cast<int>(anim.GetFrameSize())) {
                 const auto &frame = anim.GetFrame(frame_index);
-                if (storage.Exists<TextureAsset>(frame.texture_id)) {
+                if (resource.Exist<Texture>(frame.texture_id)) {
                     auto texture =
-                        storage.GetAsset<TextureAsset>(frame.texture_id)
-                            ->GetTexture();
+                        resource.GetResource<Texture>(frame.texture_id);
                     ImGui::DrawTexture(*texture,
                                        ImVec2(frame.uvs[0].x, frame.uvs[0].y),
                                        ImVec2(frame.uvs[1].x, frame.uvs[1].y));
@@ -446,11 +440,11 @@ void ScenePanel::DrawComponents(Entity &entity)
 void ScenePanel::DrawMaterial(Material &material)
 {
     float width = ImGui::GetWindowWidth();
-    for (const auto &[type, texture] : material.GetTextures()) {
-        ImGui::TextUnformatted(GetMaterialName(type).c_str());
-        ImGui::SameLine(width / 2);
-        ImGui::DrawTexture(*texture);
-    }
+    // for (const auto &[type, texture] : material.GetTextures()) {
+    //     ImGui::TextUnformatted(GetMaterialName(type).c_str());
+    //     ImGui::SameLine(width / 2);
+    //     ImGui::DrawTexture(*texture);
+    // }
     Vector3f diffuse_color = material.GetDiffuseColor();
     Vector3f ambient_color = material.GetAmbientColor();
     Vector3f emissive_color = material.GetEmissiveColor();

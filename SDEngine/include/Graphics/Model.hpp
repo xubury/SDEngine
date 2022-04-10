@@ -24,24 +24,10 @@ class SD_GRAPHICS_API Model {
     void AddMesh(Mesh &&mesh) { m_meshes.push_back(std::move(mesh)); }
     Mesh *GetMesh(int32_t id) { return &m_meshes.at(id); }
 
-    void AddTexture(const std::string &path, const Ref<Texture> &texture)
-    {
-        m_textures[path] = texture;
-    }
-    bool HasTexture(const std::string &path) const
-    {
-        return m_textures.count(path) != 0;
-    }
-    Texture *GetTexture(const std::string &path)
-    {
-        return m_textures.at(path).get();
-    }
-
    private:
     ModelNode *m_root_node;
     std::vector<Mesh> m_meshes;
     std::vector<Material> m_materials;
-    std::unordered_map<std::string, Ref<Texture>> m_textures;
 };
 
 }  // namespace SD

@@ -10,7 +10,7 @@
 
 namespace SD {
 
-class SD_GRAPHICS_API Framebuffer : public Resource {
+class SD_GRAPHICS_API Framebuffer {
    public:
     static Ref<Framebuffer> Create();
     Framebuffer() = default;
@@ -19,6 +19,7 @@ class SD_GRAPHICS_API Framebuffer : public Resource {
     Framebuffer(const Framebuffer &) = delete;
     Framebuffer &operator=(const Framebuffer &) = delete;
 
+    virtual uint32_t GetId() const = 0;
     virtual void Attach(Texture &texture, int attachment, int level) = 0;
     virtual void Attach(Renderbuffer &buffer, int attachment) = 0;
     virtual Texture *GetAttachment(int attachment) = 0;

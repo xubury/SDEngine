@@ -10,14 +10,16 @@ set(Loader_Include
     ${Include_Root}/FontLoader.hpp
     ${Include_Root}/ModelLoader.hpp
     ${Include_Root}/ShaderLoader.hpp
-    ${Include_Root}/SceneLoader.hpp)
+    ${Include_Root}/SceneLoader.hpp
+    ${Include_Root}/ImageLoader.hpp)
 
 set(Loader_Src
     ${Src_Root}/TextureLoader.cpp
     ${Src_Root}/FontLoader.cpp
     ${Src_Root}/ModelLoader.cpp
     ${Src_Root}/ShaderLoader.cpp
-    ${Src_Root}/SceneLoader.cpp)
+    ${Src_Root}/SceneLoader.cpp
+    ${Src_Root}/ImageLoader.cpp)
 
 add_library(sd-loader ${Loader_Src})
 
@@ -42,6 +44,7 @@ target_link_libraries(sd-loader
     PUBLIC
     sd-utility
     sd-graphics
+    sd-resource
     sd-ecs
 
     PRIVATE

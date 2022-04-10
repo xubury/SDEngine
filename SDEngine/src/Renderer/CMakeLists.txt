@@ -41,7 +41,6 @@ target_link_libraries(sd-renderer
     sd-graphics
     sd-imgui
     sd-ecs
-    sd-asset
     sd-loader)
 
 target_include_directories(sd-renderer

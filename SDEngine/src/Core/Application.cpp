@@ -4,12 +4,10 @@
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
 
-#include "Asset/AssetStorage.hpp"
-#include "Asset/ModelAsset.hpp"
-#include "Asset/FontAsset.hpp"
-#include "Asset/TextureAsset.hpp"
-#include "Asset/SceneAsset.hpp"
-#include "Asset/ScriptAsset.hpp"
+#include "Resource/ResourceManager.hpp"
+#include "Loader/ImageLoader.hpp"
+#include "Loader/TextureLoader.hpp"
+#include "Loader/ModelLoader.hpp"
 
 #if defined(SD_PLATFORM_LINUX)
 #include <unistd.h>
@@ -42,23 +40,18 @@ const std::string SETTING_FILENAME = "setting.ini";
 
 Application *Application::s_instance;
 
-static void RegisterAssets(AssetStorage *storage)
+static void RegisterResources()
 {
-    storage->RegisterAsset<FontAsset>(AssetTypeData{
-        0, std::bind(Asset::Create<FontAsset>),
-        std::bind(Asset::Destroy, std::placeholders::_1), ".sdfont"});
-    storage->RegisterAsset<TextureAsset>(AssetTypeData{
-        0, std::bind(Asset::Create<TextureAsset>),
-        std::bind(Asset::Destroy, std::placeholders::_1), ".sdtexture"});
-    storage->RegisterAsset<ModelAsset>(AssetTypeData{
-        1, std::bind(Asset::Create<ModelAsset>),
-        std::bind(Asset::Destroy, std::placeholders::_1), ".sdmodel"});
-    storage->RegisterAsset<SceneAsset>(AssetTypeData{
-        2, std::bind(Asset::Create<SceneAsset>),
-        std::bind(Asset::Destroy, std::placeholders::_1), ".sdscene"});
-    storage->RegisterAsset<ScriptAsset>(AssetTypeData{
-        0, std::bind(Asset::Create<ScriptAsset>),
-        std::bind(Asset::Destroy, std::placeholders::_1), ".sdscript"});
+    auto &resource = ResourceManager::Get();
+    resource.Register<Bitmap>(
+        std::bind(ImageLoader::Load, std::placeholders::_1), nullptr);
+    resource.Register<Texture>(
+        std::bind(TextureLoader::LoadTexture2D, std::placeholders::_1),
+        std::bind(TextureLoader::SaveTexture, std::placeholders::_1,
+                  std::placeholders::_2));
+    resource.Register<Model>(
+        std::bind(ModelLoader::LoadModel, std::placeholders::_1), nullptr);
+    // resource.Regeister<Texture>();
 }
 
 Application::Application(const std::string &title, Device::API api)
@@ -83,11 +76,8 @@ Application::Application(const std::string &title, Device::API api)
     m_window = Window::Create(property);
     m_device = Device::Create();
 
-    AssetStorage::Init();
-    auto &storage = AssetStorage::Get();
-    RegisterAssets(&storage);
-    storage.SetDirectory("assets");
     // storage.ScanDirectory(storage.GetDirectory());
+    RegisterResources();
 }
 
 Application::~Application() {}
@@ -109,7 +99,6 @@ void Application::OnDestroy()
         PopLayer(layer);
         DestroyLayer(layer);
     }
-    AssetStorage::Shutdown();
     Vector2i size = m_window->GetSize();
     m_settings.SetInteger("window", "width", size.x);
     m_settings.SetInteger("window", "height", size.y);

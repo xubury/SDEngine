@@ -2,7 +2,7 @@
 #include "Renderer/Renderer.hpp"
 
 #include "Loader/ShaderLoader.hpp"
-#include "Loader/TextureLoader.hpp"
+#include "Loader/ImageLoader.hpp"
 
 namespace SD {
 
@@ -13,10 +13,15 @@ void SkyboxRenderer::Init()
 {
     s_skybox_shader = ShaderLoader::LoadShader(
         "assets/shaders/skybox.vert.glsl", "assets/shaders/skybox.frag.glsl");
-    s_skybox = TextureLoader::LoadTextureCube(
-        {"assets/skybox/right.jpg", "assets/skybox/left.jpg",
-         "assets/skybox/top.jpg", "assets/skybox/bottom.jpg",
-         "assets/skybox/front.jpg", "assets/skybox/back.jpg"});
+    std::array<std::string, 6> pathes = {
+        "assets/skybox/right.jpg", "assets/skybox/left.jpg",
+        "assets/skybox/top.jpg",   "assets/skybox/bottom.jpg",
+        "assets/skybox/front.jpg", "assets/skybox/back.jpg"};
+    std::array<Ref<Bitmap>, 6> images;
+    for (size_t i = 0; i < pathes.size(); ++i) {
+        images[i] = ImageLoader::Load(pathes[i]);
+    }
+    s_skybox = Texture::CreateCube(images);
 }
 
 void SkyboxRenderer::Render(const Camera& camera)

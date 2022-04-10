@@ -1,4 +1,5 @@
 #include "Graphics/Material.hpp"
+#include "Resource/ResourceManager.hpp"
 #include <map>
 
 namespace SD {
@@ -23,31 +24,21 @@ Material::Material()
 {
 }
 
-void Material::SetTexture(MaterialType type, const Texture *texture)
+void Material::SetResource(MaterialType type, ResourceId rid)
 {
-    m_textures[type] = texture;
+    m_textures[type] = rid;
 }
 
-bool Material::HasTexture(MaterialType type) const
+const Texture* Material::GetTexture(MaterialType type) const
 {
-    return m_textures.count(type);
-}
-
-void Material::RemoveTexture(MaterialType type)
-{
-    auto iter = m_textures.find(type);
-    if (iter != m_textures.end()) {
-        m_textures.erase(iter);
+    auto& resource = ResourceManager::Get();
+    if (m_textures.count(type) == 0) {
+        return nullptr;
     }
-    else {
-        SD_CORE_WARN(
-            "[Material::removeTexture] Try to remove a non-existent texture!");
-    }
-}
-
-const Texture *Material::GetTexture(MaterialType type) const
-{
-    return HasTexture(type) ? m_textures.at(type) : nullptr;
+    auto rid = m_textures.at(type);
+    return resource.Exist<Texture>(rid)
+               ? resource.GetResource<Texture>(rid).get()
+               : nullptr;
 }
 
 }  // namespace SD

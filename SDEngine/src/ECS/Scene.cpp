@@ -10,7 +10,8 @@ Scene::Scene()
     RegisterComponent<IdComponent>();
     RegisterComponent<TagComponent>();
     RegisterComponent<TransformComponent>();
-    RegisterComponent<ModelNodeComponent>();
+    RegisterComponent<MeshComponent>();
+    RegisterComponent<MaterialComponent>();
     RegisterComponent<DirectionalLightComponent>();
     RegisterComponent<PointLightComponent>();
     RegisterComponent<TextComponent>();

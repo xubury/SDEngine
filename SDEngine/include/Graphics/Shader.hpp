@@ -3,7 +3,6 @@
 
 #include "Utility/Base.hpp"
 #include "Graphics/Export.hpp"
-#include "Graphics/Resource.hpp"
 #include "Graphics/ShaderParam.hpp"
 #include "Utility/Math.hpp"
 
@@ -19,12 +18,13 @@ class UniformBuffer;
 
 enum class ShaderType { Invalid, Vertex, Fragment, Geometry, Compute };
 
-class SD_GRAPHICS_API Shader : public Resource {
+class SD_GRAPHICS_API Shader {
    public:
     static Ref<Shader> Create();
 
     virtual ~Shader() = default;
 
+    virtual uint32_t GetId() const = 0;
     virtual ShaderParam* GetParam(int32_t index) = 0;
     virtual ShaderParam* GetParam(const std::string& name) = 0;
 

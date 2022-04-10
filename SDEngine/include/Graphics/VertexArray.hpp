@@ -7,7 +7,7 @@
 
 namespace SD {
 
-class SD_GRAPHICS_API VertexArray : public Resource {
+class SD_GRAPHICS_API VertexArray {
    public:
     static Ref<VertexArray> Create();
 
@@ -16,6 +16,8 @@ class SD_GRAPHICS_API VertexArray : public Resource {
     VertexArray(const VertexArray &) = delete;
 
     VertexArray &operator=(const VertexArray &) = delete;
+
+    virtual uint32_t GetId() const = 0;
 
     virtual void BindVertexBuffer(const VertexBuffer &buffer, int index) = 0;
     virtual void AddBufferLayout(const VertexBufferLayout &layout) = 0;

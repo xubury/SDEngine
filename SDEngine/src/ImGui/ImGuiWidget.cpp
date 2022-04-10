@@ -1,7 +1,7 @@
 #include "ImGui/ImGuiWidget.hpp"
-#include "Asset/TextureAsset.hpp"
-#include "Asset/ModelAsset.hpp"
-#include "Asset/FontAsset.hpp"
+#include "Resource/ResourceManager.hpp"
+#include "Graphics/Model.hpp"
+#include "Graphics/Font.hpp"
 
 namespace ImGui {
 
@@ -237,20 +237,18 @@ bool BeginCenterPopupModal(const char *name, bool *p_open,
                                   flags | ImGuiWindowFlags_AlwaysAutoResize);
 }
 
-bool DrawTextureAssetSelection(const SD::AssetStorage &storage,
-                               SD::ResourceId *id)
+bool DrawTextureAssetSelection(SD::ResourceId *id)
 {
     bool ret = false;
-    SD::TypeId tid = SD::GetTypeId<SD::TextureAsset>();
-    if (!storage.Empty(tid)) {
+    auto &resource = SD::ResourceManager::Get();
+    if (!resource.Empty<SD::Texture>()) {
         ImGuiStyle &style = ImGui::GetStyle();
-        const SD::Cache &cache = storage.GetCache(tid);
+        const auto &cache = resource.GetCache<SD::Texture>();
         ImVec2 combo_pos = ImGui::GetCursorScreenPos();
         if (ImGui::BeginCombo("##TEXTURE_ASSETS_COMBO", "")) {
             for (auto &[rid, asset] : cache) {
                 ImGui::PushID(rid);
-                auto texture =
-                    storage.GetAsset<SD::TextureAsset>(rid)->GetTexture();
+                auto texture = resource.GetResource<SD::Texture>(rid);
                 const bool is_selected = (*id == rid);
                 if (ImGui::Selectable("", is_selected)) {
                     *id = rid;
@@ -264,7 +262,7 @@ bool DrawTextureAssetSelection(const SD::AssetStorage &storage,
                     ImVec2(h * texture->GetWidth() / texture->GetHeight(), h));
 
                 ImGui::SameLine();
-                ImGui::TextUnformatted(asset->GetName().c_str());
+                ImGui::TextUnformatted("Texture Name");
 
                 ImGui::PopID();
             }
@@ -273,15 +271,14 @@ bool DrawTextureAssetSelection(const SD::AssetStorage &storage,
         ImVec2 old_pos = ImGui::GetCursorScreenPos();
         ImGui::SetCursorScreenPos(ImVec2(combo_pos.x + style.FramePadding.x,
                                          combo_pos.y + style.FramePadding.y));
-        if (storage.Exists(tid, *id)) {
+        if (resource.Exist<SD::Texture>(*id)) {
             float h = ImGui::GetTextLineHeight();
-            auto asset = storage.GetAsset<SD::TextureAsset>(*id);
-            auto texture = asset->GetTexture();
+            auto texture = resource.GetResource<SD::Texture>(*id);
             ImGui::Image(
                 (void *)(intptr_t)texture->GetId(),
                 ImVec2(h * texture->GetWidth() / texture->GetHeight(), h));
             ImGui::SameLine();
-            ImGui::TextUnformatted(asset->GetName().c_str());
+            ImGui::TextUnformatted("Texture Name");
         }
         else {
             ImGui::TextUnformatted("None");
@@ -291,19 +288,19 @@ bool DrawTextureAssetSelection(const SD::AssetStorage &storage,
     return ret;
 }
 
-bool DrawModelAssetSelection(const SD::AssetStorage &storage,
-                             SD::ResourceId *id)
+bool DrawModelAssetSelection(SD::ResourceId *id)
 {
     bool ret = false;
-    SD::TypeId tid = SD::GetTypeId<SD::ModelAsset>();
-    if (!storage.Empty(tid)) {
-        const SD::Cache &cache = storage.GetCache(tid);
+    auto &resource = SD::ResourceManager::Get();
+    if (!resource.Empty<SD::Model>()) {
+        const auto &cache = resource.GetCache<SD::Model>();
         const std::string item =
-            storage.Exists(tid, *id) ? cache.at(*id)->GetName() : "None";
+            resource.Exist<SD::Model>(*id) ? std::to_string(*id) : "None";
         if (ImGui::BeginCombo("##MODEL_ASSETS_COMBO", item.c_str())) {
             for (auto &[rid, asset] : cache) {
                 const bool is_selected = (*id == rid);
-                if (ImGui::Selectable(asset->GetName().c_str(), is_selected)) {
+                if (ImGui::Selectable(std::to_string(rid).c_str(),
+                                      is_selected)) {
                     *id = rid;
                     ret = true;
                 }
@@ -315,21 +312,20 @@ bool DrawModelAssetSelection(const SD::AssetStorage &storage,
     return ret;
 }
 
-bool DrawFontAssetSelection(const SD::AssetStorage &storage, SD::ResourceId *id)
+bool DrawFontAssetSelection(SD::ResourceId *id)
 {
     const char32_t preview_char = 65;
     bool ret = false;
-    const SD::TypeId tid = SD::GetTypeId<SD::FontAsset>();
-    if (!storage.Empty(tid)) {
+    auto &resource = SD::ResourceManager::Get();
+    if (!resource.Empty<SD::Font>()) {
         ImGuiStyle &style = ImGui::GetStyle();
-        const SD::Cache &cache = storage.GetCache(tid);
+        const auto &cache = resource.GetCache<SD::Font>();
         ImVec2 combo_pos = ImGui::GetCursorScreenPos();
         if (ImGui::BeginCombo("##TEXTURE_ASSETS_COMBO", "")) {
             for (auto &[rid, asset] : cache) {
                 ImGui::PushID(rid);
-                auto &character = storage.GetAsset<SD::FontAsset>(rid)
-                                      ->GetFont()
-                                      ->GetCharacter(preview_char);
+                auto &character =
+                    resource.GetResource<SD::Font>(rid)->GetCharacter(preview_char);
                 auto &texture = character.glyph;
                 auto &uv = character.uv;
                 const bool is_selected = (*id == rid);
@@ -346,7 +342,7 @@ bool DrawFontAssetSelection(const SD::AssetStorage &storage, SD::ResourceId *id)
                     ImVec2(uv[0].x, uv[0].y), ImVec2(uv[1].x, uv[1].y));
 
                 ImGui::SameLine();
-                ImGui::TextUnformatted(asset->GetName().c_str());
+                ImGui::TextUnformatted(std::to_string(rid).c_str());
 
                 ImGui::PopID();
             }
@@ -355,10 +351,10 @@ bool DrawFontAssetSelection(const SD::AssetStorage &storage, SD::ResourceId *id)
         ImVec2 old_pos = ImGui::GetCursorScreenPos();
         ImGui::SetCursorScreenPos(ImVec2(combo_pos.x + style.FramePadding.x,
                                          combo_pos.y + style.FramePadding.y));
-        if (storage.Exists(tid, *id)) {
+        if (resource.Exist<SD::Font>(*id)) {
             float h = ImGui::GetTextLineHeight();
-            auto font_asset = storage.GetAsset<SD::FontAsset>(*id);
-            auto &character = font_asset->GetFont()->GetCharacter(preview_char);
+            auto &character =
+                resource.GetResource<SD::Font>(*id)->GetCharacter(preview_char);
             auto &texture = character.glyph;
             auto &uv = character.uv;
             ImGui::Image(
@@ -366,7 +362,7 @@ bool DrawFontAssetSelection(const SD::AssetStorage &storage, SD::ResourceId *id)
                 ImVec2(h * texture->GetWidth() / texture->GetHeight(), h),
                 ImVec2(uv[0].x, uv[0].y), ImVec2(uv[1].x, uv[1].y));
             ImGui::SameLine();
-            ImGui::TextUnformatted(font_asset->GetName().c_str());
+            ImGui::TextUnformatted(std::to_string(*id).c_str());
         }
         else {
             ImGui::TextUnformatted("None");

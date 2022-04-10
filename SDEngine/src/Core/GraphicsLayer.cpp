@@ -1,10 +1,11 @@
 #include "Core/GraphicsLayer.hpp"
 #include "Core/Application.hpp"
 #include "ImGui/ImGuiWidget.hpp"
-#include "Loader/TextureLoader.hpp"
+#include "Loader/ImageLoader.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Renderer/Renderer3D.hpp"
 #include "ECS/Component.hpp"
+#include "Resource/ResourceManager.hpp"
 
 namespace SD {
 
@@ -48,7 +49,8 @@ void GraphicsLayer::OnInit()
     SkyboxRenderer::Init();
     PostProcessRenderer::Init(PostProcessSettings{m_width, m_height});
     DeferredRenderer::Init(DeferredRenderSettings{m_width, m_height, m_msaa});
-    m_light_icon = TextureLoader::LoadTexture2D("assets/icons/light.png");
+    m_light_icon =
+        Texture::CreateIcon(*ImageLoader::Load("assets/icons/light.png"));
 }
 
 void GraphicsLayer::OnDestroy() {}

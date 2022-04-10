@@ -1,14 +1,17 @@
 #ifndef SD_TEXTURE_HPP
 #define SD_TEXTURE_HPP
 
+#include "Graphics/Bitmap.hpp"
 #include "Utility/Base.hpp"
+#include "Utility/ResourceId.hpp"
 #include "Graphics/Graphics.hpp"
-#include "Graphics/Resource.hpp"
 
 namespace SD {
 
-class SD_GRAPHICS_API Texture : public Resource {
+class SD_GRAPHICS_API Texture {
    public:
+    static Ref<Texture> CreateCube(const std::array<Ref<Bitmap>, 6> &images);
+    static Ref<Texture> CreateIcon(const Bitmap &image);
     static Ref<Texture> Create(
         int width, int height, int depth, MultiSampleLevel samples,
         TextureType type, DataFormat format,
@@ -18,6 +21,10 @@ class SD_GRAPHICS_API Texture : public Resource {
         MipmapMode mode = MipmapMode::None, int32_t mipmap_levels = 0);
 
     virtual ~Texture() = default;
+    Texture(const Texture &) = delete;
+    Texture &operator=(const Texture &) = delete;
+
+    virtual uint32_t GetId() const = 0;
 
     // Set the base level pixel data (TODO: Does SetPixels for other levels
     // really needed?)

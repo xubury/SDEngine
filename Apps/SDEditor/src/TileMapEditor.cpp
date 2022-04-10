@@ -1,7 +1,7 @@
 #include "TileMapEditor.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "Renderer/Renderer2D.hpp"
-#include "Asset/AssetStorage.hpp"
+#include "Resource/ResourceManager.hpp"
 #include "ECS/Component.hpp"
 
 namespace SD {
@@ -32,7 +32,7 @@ bool TileMapEditor::ManipulateScene(const Camera &camera)
     m_frame.size = m_brush.GetTileSize();
     if (m_brush.CastRay()) {
         if (ImGui::IsMouseClicked(0) &&
-            AssetStorage::Get().Exists<TextureAsset>(m_frame.texture_id)) {
+            ResourceManager::Get().Exist<Texture>(m_frame.texture_id)) {
             return m_operation == Operation::AddEntity;
         }
         else if (ImGui::IsMouseClicked(1)) {
@@ -44,7 +44,7 @@ bool TileMapEditor::ManipulateScene(const Camera &camera)
 
 void TileMapEditor::ImGui()
 {
-    auto &storage = AssetStorage::Get();
+    auto &resource = ResourceManager::Get();
     ImGui::Begin("TileMap Editor");
     {
         using underlying = std::underlying_type<Operation>::type;
@@ -62,14 +62,13 @@ void TileMapEditor::ImGui()
                 static_cast<underlying>(Operation::RemoveEntity))) {
             m_brush.color = color_red;
         }
-        ImGui::DrawTextureAssetSelection(storage, &m_frame.texture_id);
+        ImGui::DrawTextureAssetSelection(&m_frame.texture_id);
         ImGui::InputInt("Priority", &m_frame.priority);
 
-        if (storage.Exists<TextureAsset>(m_frame.texture_id)) {
-            ImGui::DrawTileTexture(
-                *storage.GetAsset<TextureAsset>(m_frame.texture_id)
-                     ->GetTexture(),
-                m_brush.tile_size, m_frame.uvs, &m_brush.count, &m_brush.pivot);
+        if (resource.Exist<Texture>(m_frame.texture_id)) {
+            ImGui::DrawTileTexture(*resource.GetResource<Texture>(m_frame.texture_id),
+                                   m_brush.tile_size, m_frame.uvs,
+                                   &m_brush.count, &m_brush.pivot);
         }
     }
     ImGui::End();

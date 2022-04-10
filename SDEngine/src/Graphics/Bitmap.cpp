@@ -2,13 +2,13 @@
 
 namespace SD {
 
-Bitmap::Bitmap(uint32_t width, uint32_t height, uint8_t channels)
+Bitmap::Bitmap(int32_t width, int32_t height, int8_t channels)
     : m_width(width), m_height(height), m_channels(channels)
 {
     m_data = static_cast<uint8_t *>(calloc(GetPixelsSize(), 1));
 }
 
-Bitmap::Bitmap(uint32_t width, uint32_t height, uint8_t channels, uint8_t *data)
+Bitmap::Bitmap(int32_t width, int32_t height, int8_t channels, uint8_t *data)
     : m_width(width), m_height(height), m_channels(channels)
 {
     size_t pixel_size = GetPixelsSize();
@@ -17,6 +17,26 @@ Bitmap::Bitmap(uint32_t width, uint32_t height, uint8_t channels, uint8_t *data)
 }
 
 Bitmap::~Bitmap() { free(m_data); }
+
+DataFormat Bitmap::GetDataFormat() const
+{
+    DataFormat format = DataFormat::RGB8;
+    switch (m_channels) {
+        case 1:
+            format = DataFormat::R8;
+            break;
+        case 2:
+            format = DataFormat::RG8;
+            break;
+        case 3:
+            format = DataFormat::RGB8;
+            break;
+        case 4:
+            format = DataFormat::RGBA8;
+            break;
+    }
+    return format;
+}
 
 const uint8_t *Bitmap::Data() const { return m_data; }
 
@@ -32,12 +52,12 @@ size_t Bitmap::GetPixelsSize() const { return m_width * m_height * m_channels; }
 
 bool Bitmap::HasAlpha() const { return m_channels == 4; }
 
-uint8_t Bitmap::GetPixel(uint32_t x, uint32_t y, uint8_t channel) const
+uint8_t Bitmap::GetPixel(int32_t x, int32_t y, int8_t channel) const
 {
     return m_data[(x + y * m_width) * m_channels + channel];
 }
 
-void Bitmap::GetPixels(uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+void Bitmap::GetPixels(int32_t x, int32_t y, int32_t width, int32_t height,
                        uint8_t *value) const
 {
     const size_t pitch = width * m_channels;
@@ -49,12 +69,12 @@ void Bitmap::GetPixels(uint32_t x, uint32_t y, uint32_t width, uint32_t height,
     }
 }
 
-void Bitmap::SetPixel(uint32_t x, uint32_t y, uint8_t channel, uint8_t value)
+void Bitmap::SetPixel(int32_t x, int32_t y, int8_t channel, uint8_t value)
 {
     m_data[(x + y * m_width) * m_channels + channel] = value;
 }
 
-void Bitmap::SetPixels(uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+void Bitmap::SetPixels(int32_t x, int32_t y, int32_t width, int32_t height,
                        uint8_t *value)
 {
     const size_t pitch = width * m_channels;

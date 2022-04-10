@@ -1,7 +1,7 @@
 #include "AnimationEditor.hpp"
 #include "EditorEvent.hpp"
-#include "Asset/AssetStorage.hpp"
 #include "ECS/Component.hpp"
+#include "Resource/ResourceManager.hpp"
 
 namespace SD {
 
@@ -18,11 +18,10 @@ void AnimationEditor::ImGui()
 {
     ImGui::Begin("Anmiation Editor");
     {
-        auto &storage = AssetStorage::Get();
-        ImGui::DrawTextureAssetSelection(storage, &m_texture_id);
-        if (storage.Exists<TextureAsset>(m_texture_id)) {
-            auto texture =
-                storage.GetAsset<TextureAsset>(m_texture_id)->GetTexture();
+        auto &resource = ResourceManager::Get();
+        ImGui::DrawTextureAssetSelection(&m_texture_id);
+        if (resource.Exist<Texture>(m_texture_id)) {
+            auto texture = resource.GetResource<Texture>(m_texture_id);
             ImGui::DrawTileTexture(*texture, m_tile_size, m_uvs, &m_count);
             if (m_selected_entity &&
                 m_selected_entity.HasComponent<SpriteAnimationComponent>()) {

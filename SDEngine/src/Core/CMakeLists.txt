@@ -56,6 +56,7 @@ target_link_libraries(sd-core
     sd-utility
     sd-imgui
     sd-renderer
+    sd-resource
 
     PRIVATE
     SDL2::SDL2)

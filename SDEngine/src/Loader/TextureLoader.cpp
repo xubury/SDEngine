@@ -1,77 +1,46 @@
 #include "Loader/TextureLoader.hpp"
+#include "Resource/ResourceManager.hpp"
 #include "Graphics/Texture.hpp"
+#include "Graphics/Bitmap.hpp"
 #include "Utility/String.hpp"
 
 #include <fstream>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 namespace SD {
 
-static DataFormat Get8BitDataFormat(int32_t channels)
+Ref<Texture> TextureLoader::LoadTexture2D(const std::string& path)
 {
-    DataFormat format = DataFormat::RGB8;
-    switch (channels) {
-        case 1:
-            format = DataFormat::R8;
-            break;
-        case 2:
-            format = DataFormat::RG8;
-            break;
-        case 3:
-            format = DataFormat::RGB8;
-            break;
-        case 4:
-            format = DataFormat::RGBA8;
-            break;
-    }
-    return format;
-}
+    std::ifstream is(path, std::ios::binary);
 
-Ref<Texture> TextureLoader::LoadTextureCube(
-    const std::vector<std::string>& pathes, MipmapMode mode)
-{
-    Ref<Texture> texture;
-    if (pathes.size() < 6) {
-        throw Exception("Not enough images to load a texture cube!");
-    }
-    for (int face = 0; face < 6; ++face) {
-        int32_t width;
-        int32_t height;
-        int32_t channels;
-        SD_CORE_TRACE("Loading image from {}", pathes[face]);
-        uint8_t* img =
-            stbi_load(pathes[face].c_str(), &width, &height, &channels, 0);
-        if (face == 0) {
-            texture = Texture::Create(
-                width, height, 0, MultiSampleLevel::None, TextureType::Cube,
-                Get8BitDataFormat(channels), TextureWrap::Edge,
-                TextureMinFilter::Linear, TextureMagFilter::Linear, mode);
-        }
-        texture->SetPixels(0, 0, face, width, height, 1, img);
-        stbi_image_free(img);
-    }
-    return texture;
-}
+    cereal::PortableBinaryInputArchive archive(is);
+    ResourceId id;
+    TextureWrap wrap;
+    TextureMinFilter min_filter;
+    TextureMagFilter mag_filter;
+    MipmapMode mipmap_mode;
+    archive(id, wrap, min_filter, mag_filter, mipmap_mode);
 
-// FIXME: 16bit should use this stbi_load_16();
-
-Ref<Texture> TextureLoader::LoadTexture2D(const std::string& path,
-                                          MipmapMode mode)
-{
-    SD_CORE_TRACE("Loading image from {}", path);
-    int32_t width;
-    int32_t height;
-    int32_t channels;
-    uint8_t* img = stbi_load(path.c_str(), &width, &height, &channels, 0);
+    auto& resource = ResourceManager::Get();
+    auto bmp = resource.GetResource<Bitmap>(id);
+    int32_t width = bmp->Width();
+    int32_t height = bmp->Height();
     Ref<Texture> texture = Texture::Create(
         width, height, 0, MultiSampleLevel::None, TextureType::Normal,
-        Get8BitDataFormat(channels), TextureWrap::Edge,
-        TextureMinFilter::Linear, TextureMagFilter::Linear, mode);
-    texture->SetPixels(0, 0, 0, width, height, 1, img);
-    stbi_image_free(img);
+        bmp->GetDataFormat(), wrap, min_filter, mag_filter, mipmap_mode);
+    texture->SetPixels(0, 0, 0, width, height, 1, bmp->Data());
     return texture;
+}
+
+void TextureLoader::SaveTexture(const Texture& texture, const std::string& path)
+{
+    std::ofstream os(path, std::ios::binary);
+    cereal::PortableBinaryOutputArchive archive(os);
+    ResourceId id(path);
+    TextureWrap wrap = texture.GetWrap();
+    TextureMinFilter min_filter = texture.GetMinFilter();
+    TextureMagFilter mag_filter = texture.GetMagFilter();
+    MipmapMode mipmap_mode = texture.GetMipmapMode();
+    archive(id, wrap, min_filter, mag_filter, mipmap_mode);
 }
 
 }  // namespace SD

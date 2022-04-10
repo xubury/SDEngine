@@ -9,10 +9,8 @@ namespace SD {
 
 class SD_LOADER_API TextureLoader {
    public:
-    static Ref<Texture> LoadTexture2D(const std::string &path,
-                                      MipmapMode mode = MipmapMode::Linear);
-    static Ref<Texture> LoadTextureCube(const std::vector<std::string> &path,
-                                        MipmapMode mode = MipmapMode::Linear);
+    static Ref<Texture> LoadTexture2D(const std::string &path);
+    static void SaveTexture(const Texture &texture, const std::string &path);
 };
 
 }  // namespace SD

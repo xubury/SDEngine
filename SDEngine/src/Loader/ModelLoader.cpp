@@ -1,5 +1,6 @@
 #include "Loader/ModelLoader.hpp"
-#include "Loader/TextureLoader.hpp"
+#include "Resource/ResourceManager.hpp"
+#include "Graphics/Bitmap.hpp"
 #include "Utility/Math.hpp"
 
 #include <assimp/Importer.hpp>
@@ -133,8 +134,6 @@ static inline MaterialType ConvertAssimpTextureType(aiTextureType textureType)
             return MaterialType::Emissive;
         case aiTextureType_HEIGHT:
             return MaterialType::Normal;
-        case aiTextureType_NORMALS:
-            return MaterialType::None;
         case aiTextureType_SHININESS:
             return MaterialType::Shininess;
         default:
@@ -147,6 +146,7 @@ static void ProcessAiMaterial(const std::filesystem::path &directory,
                               const aiMaterial *ai_material, Model &model)
 {
     Material material;
+    auto &resource = ResourceManager::Get();
     for (int type = aiTextureType_NONE + 1; type < aiTextureType_SHININESS;
          ++type) {
         aiTextureType ai_type = aiTextureType(type);
@@ -162,21 +162,24 @@ static void ProcessAiMaterial(const std::filesystem::path &directory,
 
         aiString texture_path;
         aiTextureMapMode ai_map_mode = aiTextureMapMode::aiTextureMapMode_Wrap;
-        // TODO:load texture prop
         if (ai_material->GetTexture(ai_type, 0, &texture_path, nullptr, nullptr,
                                     nullptr, nullptr,
                                     &ai_map_mode) != AI_SUCCESS) {
-            throw Exception("[processAiMaterial] Assimp GetTexture error!");
+            throw Exception("[ProcessAiMaterial] Assimp GetTexture error!");
         }
         std::string full_path =
             (directory / texture_path.C_Str()).generic_string();
-        if (!model.HasTexture(full_path)) {
-            auto texture = TextureLoader::LoadTexture2D(full_path);
-            texture->SetWrap(ConvertAssimpMapMode(ai_map_mode));
-            model.AddTexture(full_path, texture);
-        }
-        Texture *texture = model.GetTexture(full_path);
-        material.SetTexture(ConvertAssimpTextureType(ai_type), texture);
+        auto image = resource.LoadResource<Bitmap>(full_path);
+        auto texture = Texture::Create(
+            image->Width(), image->Height(), 0, MultiSampleLevel::None,
+            TextureType::Normal, image->GetDataFormat(),
+            ConvertAssimpMapMode(ai_map_mode), TextureMinFilter::Linear,
+            TextureMagFilter::Linear, MipmapMode::Linear);
+        texture->SetPixels(0, 0, 0, image->Width(), image->Height(), 1,
+                           image->Data());
+
+        ResourceId rid = resource.CreateResource(texture);
+        material.SetResource(ConvertAssimpTextureType(ai_type), rid);
     }
     model.AddMaterial(std::move(material));
 }

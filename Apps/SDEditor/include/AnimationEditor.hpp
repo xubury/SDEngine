@@ -6,7 +6,6 @@
 
 #include "ECS/Entity.hpp"
 #include "Utility/EventDispatcher.hpp"
-#include "Asset/TextureAsset.hpp"
 
 namespace SD {
 

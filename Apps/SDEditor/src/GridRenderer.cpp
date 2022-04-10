@@ -3,9 +3,7 @@
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Graphics/Texture.hpp"
-#include "Asset/AssetStorage.hpp"
-#include "Asset/TextureAsset.hpp"
-
+#include "Resource/ResourceManager.hpp"
 #include "TileBrush.hpp"
 
 namespace SD {
@@ -49,11 +47,11 @@ void GridRenderer::Render(const Camera &camera, const SpriteFrame &frame,
 
     if (brush.is_painting) {
         Vector3f world = brush.GetSelectdPos();
-        auto &storage = AssetStorage::Get();
-        if (storage.Exists<TextureAsset>(frame.texture_id)) {
+        auto &resource = ResourceManager::Get();
+        if (resource.Exist<Texture>(frame.texture_id)) {
             Renderer2D::DrawTexture(
-                *storage.GetAsset<TextureAsset>(frame.texture_id)->GetTexture(),
-                frame.uvs, world, Quaternion(), frame.size);
+                *resource.GetResource<Texture>(frame.texture_id), frame.uvs,
+                world, Quaternion(), frame.size);
         }
         // draw overlay
         Renderer2D::DrawQuad(world, Quaternion(), frame.size, brush.color);

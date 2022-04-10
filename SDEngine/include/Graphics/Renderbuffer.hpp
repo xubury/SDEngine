@@ -6,12 +6,13 @@
 
 namespace SD {
 
-class SD_GRAPHICS_API Renderbuffer : public Resource {
+class SD_GRAPHICS_API Renderbuffer {
    public:
     static Ref<Renderbuffer> Create(int32_t width, int32_t height,
                                     MultiSampleLevel samples,
                                     DataFormat format);
 
+    virtual uint32_t GetId() const = 0;
     int32_t GetWidth() const { return m_width; }
     int32_t GetHeight() const { return m_height; }
     MultiSampleLevel GetSamples() const { return m_samples; }

@@ -7,7 +7,7 @@
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGuizmo.h"
 #include "GridRenderer.hpp"
-#include "Asset/ModelAsset.hpp"
+#include "Resource/ResourceManager.hpp"
 
 namespace SD {
 
@@ -34,14 +34,14 @@ EditorLayer::EditorLayer(GraphicsLayer *graphics_layer, int width, int height)
 
 EditorLayer::~EditorLayer() {}
 
+Ref<Scene> scene;
 void EditorLayer::OnInit()
 {
     Layer::OnInit();
     GridRenderer::Init();
+    scene = CreateRef<Scene>();
 
-    auto &storage = AssetStorage::Get();
-    m_scene_asset = storage.CreateAsset<SceneAsset>("default scene");
-    SetCurrentScene(m_scene_asset->GetScene());
+    SetCurrentScene(scene.get());
     m_graphics_layer->SetRenderSize(m_viewport_size.x, m_viewport_size.y);
     m_graphics_layer->SetCamera(&m_editor_camera);
 
@@ -238,7 +238,7 @@ void EditorLayer::OpenLoadSceneDialog()
     m_file_dialog_info.title = "Load Scene";
     m_file_dialog_info.file_name = "";
     m_file_dialog_info.regex_match = SCENE_FILTER;
-    m_file_dialog_info.directory_path = AssetStorage::Get().GetDirectory();
+    m_file_dialog_info.directory_path = "asssts";
 }
 
 void EditorLayer::OpenSaveSceneDialog()
@@ -246,19 +246,16 @@ void EditorLayer::OpenSaveSceneDialog()
     m_save_scene_open = true;
     m_file_dialog_info.type = ImGuiFileDialogType::SaveFile;
     m_file_dialog_info.title = "Save Scene";
-    m_file_dialog_info.file_name = m_scene_asset->GetName();
+    m_file_dialog_info.file_name = "";
     m_file_dialog_info.regex_match = SCENE_FILTER;
-    m_file_dialog_info.directory_path = AssetStorage::Get().GetDirectory();
+    m_file_dialog_info.directory_path = "asssts";
 }
 
 void EditorLayer::ProcessDialog()
 {
     if (ImGui::FileDialog(&m_load_scene_open, &m_file_dialog_info)) {
-        // AssetStorage::Get().LoadAsset(m_file_dialog_info.result_path.string());
     }
     if (ImGui::FileDialog(&m_save_scene_open, &m_file_dialog_info)) {
-        AssetStorage::Get().SaveAsset(m_scene_asset,
-                                      m_file_dialog_info.result_path.string());
     }
 }
 
@@ -267,9 +264,8 @@ void EditorLayer::MenuBar()
     if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             if (ImGui::MenuItem("New Scene", "Ctrl+N")) {
-                m_scene_asset = AssetStorage::Get().CreateAsset<SceneAsset>(
-                    "default scene");
-                SetCurrentScene(m_scene_asset->GetScene());
+                scene = CreateRef<Scene>();
+                SetCurrentScene(scene.get());
             }
 
             if (ImGui::MenuItem("Load Scene...", "Ctrl+L")) {
@@ -299,7 +295,7 @@ static Entity ConstructModel(Scene *scene, ModelNode *node)
     for (size_t i = 0; i < meshes.size(); ++i) {
         Entity child = scene->CreateEntity(name + "_" + std::to_string(i));
         entity.AddChild(child);
-        auto &mesh = child.AddComponent<MeshNodeComponent>();
+        auto &mesh = child.AddComponent<MeshComponent>();
         auto &material = child.AddComponent<MaterialComponent>();
         mesh.mesh = meshes[i];
         material.material = *materials[i];
@@ -396,16 +392,17 @@ void EditorLayer::DrawViewport()
             if (const ImGuiPayload *payload =
                     ImGui::AcceptDragDropPayload(DROP_ASSET_ITEM)) {
                 try {
-                    std::string filename = static_cast<char *>(payload->Data);
-                    Asset *asset = AssetStorage::Get().LoadAsset(filename);
-                    if (asset->IsTypeOf<SceneAsset>()) {
-                        m_scene_asset = dynamic_cast<SceneAsset *>(asset);
-                        SetCurrentScene(m_scene_asset->GetScene());
+                    auto &resource = ResourceManager::Get();
+                    std::filesystem::path filename =
+                        static_cast<char *>(payload->Data);
+                    if (filename.extension() == ".sdscene") {
+                        SetCurrentScene(
+                            resource.LoadResource<Scene>(filename.string())
+                                .get());
                         SD_TRACE("load scene asset");
                     }
-                    else if (asset->IsTypeOf<ModelAsset>()) {
-                        Model *model =
-                            dynamic_cast<ModelAsset *>(asset)->GetModel();
+                    else if (filename.extension() == ".obj") {
+                        auto model = resource.LoadResource<Model>(filename);
                         ConstructModel(m_current_scene, model->GetRootNode());
                     }
                 }
