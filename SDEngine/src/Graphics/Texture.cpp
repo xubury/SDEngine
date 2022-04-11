@@ -5,7 +5,7 @@
 
 namespace SD {
 
-Ref<Texture> Texture::CreateCube(const std::array<Ref<Bitmap>, 6> &images)
+Ref<Texture> Texture::CreateCube(const std::array<Ref<ByteImage>, 6> &images)
 {
     Ref<Texture> texture;
     for (size_t face = 0; face < images.size(); ++face) {
@@ -24,7 +24,7 @@ Ref<Texture> Texture::CreateCube(const std::array<Ref<Bitmap>, 6> &images)
     return texture;
 }
 
-Ref<Texture> Texture::CreateIcon(const Bitmap &image)
+Ref<Texture> Texture::CreateIcon(const ByteImage &image)
 {
     auto texture = Texture::Create(
         image.Width(), image.Height(), 0, MultiSampleLevel::None,
@@ -87,7 +87,7 @@ Texture::Texture(int width, int height, int depth, MultiSampleLevel samples,
 
 bool Texture::operator==(const Texture &other) const
 {
-    return GetId() == other.GetId();
+    return Handle() == other.Handle();
 }
 
 bool Texture::operator!=(const Texture &other) const

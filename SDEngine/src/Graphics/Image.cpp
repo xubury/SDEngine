@@ -1,14 +1,15 @@
-#include "Graphics/Bitmap.hpp"
+#include "Graphics/Image.hpp"
 
 namespace SD {
 
-Bitmap::Bitmap(int32_t width, int32_t height, int8_t channels)
+ByteImage::ByteImage(int32_t width, int32_t height, int8_t channels)
     : m_width(width), m_height(height), m_channels(channels)
 {
     m_data = static_cast<uint8_t *>(calloc(GetPixelsSize(), 1));
 }
 
-Bitmap::Bitmap(int32_t width, int32_t height, int8_t channels, uint8_t *data)
+ByteImage::ByteImage(int32_t width, int32_t height, int8_t channels,
+                     uint8_t *data)
     : m_width(width), m_height(height), m_channels(channels)
 {
     size_t pixel_size = GetPixelsSize();
@@ -16,9 +17,9 @@ Bitmap::Bitmap(int32_t width, int32_t height, int8_t channels, uint8_t *data)
     memcpy(m_data, data, pixel_size);
 }
 
-Bitmap::~Bitmap() { free(m_data); }
+ByteImage::~ByteImage() { free(m_data); }
 
-DataFormat Bitmap::GetDataFormat() const
+DataFormat ByteImage::GetDataFormat() const
 {
     DataFormat format = DataFormat::RGB8;
     switch (m_channels) {
@@ -38,27 +39,30 @@ DataFormat Bitmap::GetDataFormat() const
     return format;
 }
 
-const uint8_t *Bitmap::Data() const { return m_data; }
+const uint8_t *ByteImage::Data() const { return m_data; }
 
-uint8_t *Bitmap::Data() { return m_data; }
+uint8_t *ByteImage::Data() { return m_data; }
 
-uint32_t Bitmap::Width() const { return m_width; }
+uint32_t ByteImage::Width() const { return m_width; }
 
-uint32_t Bitmap::Height() const { return m_height; }
+uint32_t ByteImage::Height() const { return m_height; }
 
-uint8_t Bitmap::Channels() const { return m_channels; }
+uint8_t ByteImage::Channels() const { return m_channels; }
 
-size_t Bitmap::GetPixelsSize() const { return m_width * m_height * m_channels; }
+size_t ByteImage::GetPixelsSize() const
+{
+    return m_width * m_height * m_channels;
+}
 
-bool Bitmap::HasAlpha() const { return m_channels == 4; }
+bool ByteImage::HasAlpha() const { return m_channels == 4; }
 
-uint8_t Bitmap::GetPixel(int32_t x, int32_t y, int8_t channel) const
+uint8_t ByteImage::GetPixel(int32_t x, int32_t y, int8_t channel) const
 {
     return m_data[(x + y * m_width) * m_channels + channel];
 }
 
-void Bitmap::GetPixels(int32_t x, int32_t y, int32_t width, int32_t height,
-                       uint8_t *value) const
+void ByteImage::GetPixels(int32_t x, int32_t y, int32_t width, int32_t height,
+                          uint8_t *value) const
 {
     const size_t pitch = width * m_channels;
     for (; height > 0; --height) {
@@ -69,13 +73,13 @@ void Bitmap::GetPixels(int32_t x, int32_t y, int32_t width, int32_t height,
     }
 }
 
-void Bitmap::SetPixel(int32_t x, int32_t y, int8_t channel, uint8_t value)
+void ByteImage::SetPixel(int32_t x, int32_t y, int8_t channel, uint8_t value)
 {
     m_data[(x + y * m_width) * m_channels + channel] = value;
 }
 
-void Bitmap::SetPixels(int32_t x, int32_t y, int32_t width, int32_t height,
-                       uint8_t *value)
+void ByteImage::SetPixels(int32_t x, int32_t y, int32_t width, int32_t height,
+                          uint8_t *value)
 {
     const size_t pitch = width * m_channels;
     for (; height > 0; --height) {

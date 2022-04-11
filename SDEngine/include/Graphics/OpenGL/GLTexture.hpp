@@ -15,7 +15,7 @@ class GLTexture : public Texture {
 
     ~GLTexture();
 
-    uint32_t GetId() const override { return m_id; }
+    uint32_t Handle() const override { return m_id; }
 
     void SetPixels(int x, int y, int z, int width, int height, int depth,
                    const void *data) override;

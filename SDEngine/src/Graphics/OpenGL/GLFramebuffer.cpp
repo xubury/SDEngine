@@ -33,7 +33,7 @@ void GLFramebuffer::Attach(Texture &texture, int attachment, int level)
             }
             break;
     }
-    glNamedFramebufferTexture(m_id, gl_attachment, texture.GetId(), level);
+    glNamedFramebufferTexture(m_id, gl_attachment, texture.Handle(), level);
 }
 
 void GLFramebuffer::Attach(Renderbuffer &buffer, int attachment)
@@ -60,7 +60,7 @@ void GLFramebuffer::Attach(Renderbuffer &buffer, int attachment)
             break;
     }
     glNamedFramebufferRenderbuffer(m_id, gl_attachment, GL_RENDERBUFFER,
-                                   buffer.GetId());
+                                   buffer.Handle());
 }
 
 void GLFramebuffer::Prepare()

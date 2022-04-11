@@ -44,7 +44,7 @@ class SD_ECS_API Entity {
 
     Scene *GetScene() const { return m_scene; }
 
-    EntityId GetId() const { return m_handle; }
+    EntityId Handle() const { return m_handle; }
 
    private:
     EntityId m_handle;

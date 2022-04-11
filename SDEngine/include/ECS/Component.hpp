@@ -7,7 +7,6 @@
 #include "Utility/Serialize.hpp"
 #include "Utility/Transform.hpp"
 #include "Utility/Math.hpp"
-#include "Utility/ResourceId.hpp"
 #include "Graphics/Model.hpp"
 #include "Graphics/Font.hpp"
 #include "Graphics/Light.hpp"
@@ -33,7 +32,7 @@ struct SD_ECS_API TagComponent {
 
 struct SD_ECS_API TransformComponent {
     std::set<EntityId> children;
-    entt::entity parent;
+    EntityId parent;
     entt::registry* ecs{nullptr};
 
     TransformComponent();
@@ -80,18 +79,12 @@ struct SD_ECS_API TransformComponent {
     Transform m_local_transform;
 };
 
-struct SD_ECS_API MaterialComponent {
-    Material material;
-    ResourceId id;
-
-    SERIALIZE(id)
-};
-
 struct SD_ECS_API MeshComponent {
-    Mesh* mesh;
-    ResourceId id;
+    ResourceId model_id;
+    uint32_t mesh_index;
+    Material material;
 
-    SERIALIZE(id)
+    SERIALIZE(model_id, mesh_index)
 };
 
 struct SD_ECS_API DirectionalLightComponent {

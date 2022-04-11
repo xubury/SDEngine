@@ -4,7 +4,7 @@
 #include "Utility/Base.hpp"
 #include "Utility/Serialize.hpp"
 #include "ECS/Export.hpp"
-
+#include "Resource/Resource.hpp"
 #include "entt/entt.hpp"
 // #include "entt/config/config.h"
 // #include "entt/entity/snapshot.hpp"
@@ -28,7 +28,7 @@ void OnComponentAdded(entt::registry &, entt::entity)
 {
 }
 
-class SD_ECS_API Scene : public entt::registry {
+class SD_ECS_API Scene : public entt::registry, public Resource {
    public:
     Scene();
     ~Scene() = default;

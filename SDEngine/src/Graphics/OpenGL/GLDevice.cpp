@@ -97,7 +97,7 @@ void GLDevice::Clear(BufferBitMask bit)
 void GLDevice::SetVertexArray(const VertexArray *vertexArray)
 {
     if (vertexArray) {
-        glBindVertexArray(vertexArray->GetId());
+        glBindVertexArray(vertexArray->Handle());
     }
     else {
         glBindVertexArray(0);
@@ -107,7 +107,7 @@ void GLDevice::SetVertexArray(const VertexArray *vertexArray)
 void GLDevice::SetShader(const Shader *shader)
 {
     if (shader) {
-        glUseProgram(shader->GetId());
+        glUseProgram(shader->Handle());
     }
     else {
         glUseProgram(0);
@@ -123,7 +123,7 @@ void GLDevice::SetViewport(int x, int y, int width, int height)
 void GLDevice::SetFramebuffer(const Framebuffer *framebuffer)
 {
     if (framebuffer) {
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->GetId());
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->Handle());
     }
     else {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -151,7 +151,7 @@ void GLDevice::SetDepthfunc(DepthFunc depth_func)
 void GLDevice::DrawBuffer(Framebuffer *fb, int buf)
 {
     if (fb) {
-        glNamedFramebufferDrawBuffer(fb->GetId(), GL_COLOR_ATTACHMENT0 + buf);
+        glNamedFramebufferDrawBuffer(fb->Handle(), GL_COLOR_ATTACHMENT0 + buf);
     }
     else {
         glNamedFramebufferDrawBuffer(0, GL_FRONT_LEFT + buf);
@@ -165,7 +165,7 @@ void GLDevice::DrawBuffers(Framebuffer *fb, int n, const int *buf)
         std::generate(glbuf.begin(), glbuf.end(), [i = 0, buf]() mutable {
             return buf[i++] + GL_COLOR_ATTACHMENT0;
         });
-        glNamedFramebufferDrawBuffers(fb->GetId(), n, glbuf.data());
+        glNamedFramebufferDrawBuffers(fb->Handle(), n, glbuf.data());
     }
     else {
         std::generate(glbuf.begin(), glbuf.end(), [i = 0, buf]() mutable {
@@ -178,7 +178,7 @@ void GLDevice::DrawBuffers(Framebuffer *fb, int n, const int *buf)
 void GLDevice::ReadBuffer(const Framebuffer *fb, int buf)
 {
     if (fb) {
-        glNamedFramebufferReadBuffer(fb->GetId(), GL_COLOR_ATTACHMENT0 + buf);
+        glNamedFramebufferReadBuffer(fb->Handle(), GL_COLOR_ATTACHMENT0 + buf);
     }
     else {
         glNamedFramebufferReadBuffer(0, GL_FRONT_LEFT + buf);
@@ -191,8 +191,8 @@ void GLDevice::BlitFramebuffer(const Framebuffer *src, int src_x, int src_y,
                                int dst_height, BufferBitMask mask,
                                BlitFilter filter)
 {
-    uint32_t src_id = src ? src->GetId() : 0;
-    uint32_t dst_id = dst ? dst->GetId() : 0;
+    uint32_t src_id = src ? src->Handle() : 0;
+    uint32_t dst_id = dst ? dst->Handle() : 0;
     GLint gl_mask = Translate(mask & BufferBitMask::ColorBufferBit) |
                     Translate(mask & BufferBitMask::DepthBufferBit) |
                     Translate(mask & BufferBitMask::StencilBufferBit);

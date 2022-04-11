@@ -13,29 +13,44 @@ Entity::Entity(entt::entity handle, Scene *scene)
 void Entity::Destroy(bool is_root)
 {
     auto &data = GetComponent<TransformComponent>();
-    for (entt::entity entity_id : data.children) {
+    if (is_root) {
+        Entity parent(data.parent, m_scene);
+        if (parent) {
+            parent.RemoveChild(*this);
+        }
+    }
+    // Apprently destroy entity mess with component data
+    // copy the data for destroy instead.
+    auto children = data.children;
+    for (entt::entity entity_id : children) {
         Entity child(entity_id, m_scene);
         child.Destroy(false);
-    }
-    Entity parent(data.parent, m_scene);
-    if (is_root && parent) {
-        parent.RemoveChild(*this);
     }
     m_scene->destroy(*this);
 }
 
 void Entity::AddChild(Entity &child)
 {
-    if (*this == child) return;
-    auto &parent_data = GetComponent<TransformComponent>();
+    if (*this == child) {
+        SD_CORE_WARN("Cannot add self as child!");
+        return;
+    };
+    auto &data = GetComponent<TransformComponent>();
     auto &child_data = child.GetComponent<TransformComponent>();
-    if (parent_data.parent == child || child_data.parent == *this) return;
+    if (data.parent == child) {
+        SD_CORE_WARN("Cannot add parent as child!");
+        return;
+    }
+    if (child_data.parent == *this) {
+        SD_CORE_WARN("This entity already has this child!");
+        return;
+    }
 
     Entity old_parent(child_data.parent, child.m_scene);
     if (old_parent) {
         old_parent.RemoveChild(child);
     }
-    parent_data.children.emplace(child);
+    data.children.emplace(child);
     child_data.parent = *this;
     child_data.UpdateLocalPosition();
     child_data.UpdateLocalRotation();
@@ -48,6 +63,9 @@ void Entity::RemoveChild(Entity &child)
     auto iter = children.find(child);
     if (iter != children.end()) {
         children.erase(iter);
+    }
+    else {
+        SD_CORE_WARN("Entity cannot find specified child!");
     }
     auto &child_data = child.GetComponent<TransformComponent>();
     child_data.parent = Entity();

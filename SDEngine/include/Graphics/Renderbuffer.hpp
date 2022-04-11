@@ -12,7 +12,7 @@ class SD_GRAPHICS_API Renderbuffer {
                                     MultiSampleLevel samples,
                                     DataFormat format);
 
-    virtual uint32_t GetId() const = 0;
+    virtual uint32_t Handle() const = 0;
     int32_t GetWidth() const { return m_width; }
     int32_t GetHeight() const { return m_height; }
     MultiSampleLevel GetSamples() const { return m_samples; }

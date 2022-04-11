@@ -43,12 +43,8 @@ Application *Application::s_instance;
 static void RegisterResources()
 {
     auto &resource = ResourceManager::Get();
-    resource.Register<Bitmap>(
-        std::bind(ImageLoader::Load, std::placeholders::_1), nullptr);
     resource.Register<Texture>(
-        std::bind(TextureLoader::LoadTexture2D, std::placeholders::_1),
-        std::bind(TextureLoader::SaveTexture, std::placeholders::_1,
-                  std::placeholders::_2));
+        std::bind(TextureLoader::LoadFromFile, std::placeholders::_1), nullptr);
     resource.Register<Model>(
         std::bind(ModelLoader::LoadModel, std::placeholders::_1), nullptr);
     // resource.Regeister<Texture>();
@@ -77,10 +73,13 @@ Application::Application(const std::string &title, Device::API api)
     m_device = Device::Create();
 
     // storage.ScanDirectory(storage.GetDirectory());
+    auto &resource = ResourceManager::Get();
+    resource.Init(std::filesystem::current_path() / "assets");
     RegisterResources();
+    resource.FillDataWithPriority<Texture, Model>();
 }
 
-Application::~Application() {}
+Application::~Application() { ResourceManager::Get().ShutDown(); }
 
 void Application::OnInit()
 {

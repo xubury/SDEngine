@@ -97,7 +97,7 @@ void DrawTexture(const SD::Texture &texture, const ImVec2 &uv0,
     const float ASPECT = height / width;
     wsize.y = wsize.x * ASPECT;
 
-    ImGui::Image((void *)(intptr_t)texture.GetId(), wsize, uv0, uv1);
+    ImGui::Image((void *)(intptr_t)texture.Handle(), wsize, uv0, uv1);
 }
 
 void DrawTileTexture(const SD::Texture &texture, SD::Vector2i &tile_size,
@@ -243,7 +243,7 @@ bool DrawTextureAssetSelection(SD::ResourceId *id)
     auto &resource = SD::ResourceManager::Get();
     if (!resource.Empty<SD::Texture>()) {
         ImGuiStyle &style = ImGui::GetStyle();
-        const auto &cache = resource.GetCache<SD::Texture>();
+        const auto &cache = resource.GetCaches<SD::Texture>();
         ImVec2 combo_pos = ImGui::GetCursorScreenPos();
         if (ImGui::BeginCombo("##TEXTURE_ASSETS_COMBO", "")) {
             for (auto &[rid, asset] : cache) {
@@ -258,7 +258,7 @@ bool DrawTextureAssetSelection(SD::ResourceId *id)
                 ImGui::SameLine();
                 float h = ImGui::GetTextLineHeight();
                 ImGui::Image(
-                    (void *)(intptr_t)texture->GetId(),
+                    (void *)(intptr_t)texture->Handle(),
                     ImVec2(h * texture->GetWidth() / texture->GetHeight(), h));
 
                 ImGui::SameLine();
@@ -275,7 +275,7 @@ bool DrawTextureAssetSelection(SD::ResourceId *id)
             float h = ImGui::GetTextLineHeight();
             auto texture = resource.GetResource<SD::Texture>(*id);
             ImGui::Image(
-                (void *)(intptr_t)texture->GetId(),
+                (void *)(intptr_t)texture->Handle(),
                 ImVec2(h * texture->GetWidth() / texture->GetHeight(), h));
             ImGui::SameLine();
             ImGui::TextUnformatted("Texture Name");
@@ -293,7 +293,7 @@ bool DrawModelAssetSelection(SD::ResourceId *id)
     bool ret = false;
     auto &resource = SD::ResourceManager::Get();
     if (!resource.Empty<SD::Model>()) {
-        const auto &cache = resource.GetCache<SD::Model>();
+        const auto &cache = resource.GetCaches<SD::Model>();
         const std::string item =
             resource.Exist<SD::Model>(*id) ? std::to_string(*id) : "None";
         if (ImGui::BeginCombo("##MODEL_ASSETS_COMBO", item.c_str())) {
@@ -319,13 +319,14 @@ bool DrawFontAssetSelection(SD::ResourceId *id)
     auto &resource = SD::ResourceManager::Get();
     if (!resource.Empty<SD::Font>()) {
         ImGuiStyle &style = ImGui::GetStyle();
-        const auto &cache = resource.GetCache<SD::Font>();
+        const auto &cache = resource.GetCaches<SD::Font>();
         ImVec2 combo_pos = ImGui::GetCursorScreenPos();
         if (ImGui::BeginCombo("##TEXTURE_ASSETS_COMBO", "")) {
             for (auto &[rid, asset] : cache) {
                 ImGui::PushID(rid);
                 auto &character =
-                    resource.GetResource<SD::Font>(rid)->GetCharacter(preview_char);
+                    resource.GetResource<SD::Font>(rid)->GetCharacter(
+                        preview_char);
                 auto &texture = character.glyph;
                 auto &uv = character.uv;
                 const bool is_selected = (*id == rid);
@@ -337,7 +338,7 @@ bool DrawFontAssetSelection(SD::ResourceId *id)
                 ImGui::SameLine();
                 float h = ImGui::GetTextLineHeight();
                 ImGui::Image(
-                    (void *)(intptr_t)texture->GetId(),
+                    (void *)(intptr_t)texture->Handle(),
                     ImVec2(h * texture->GetWidth() / texture->GetHeight(), h),
                     ImVec2(uv[0].x, uv[0].y), ImVec2(uv[1].x, uv[1].y));
 
@@ -358,7 +359,7 @@ bool DrawFontAssetSelection(SD::ResourceId *id)
             auto &texture = character.glyph;
             auto &uv = character.uv;
             ImGui::Image(
-                (void *)(intptr_t)texture->GetId(),
+                (void *)(intptr_t)texture->Handle(),
                 ImVec2(h * texture->GetWidth() / texture->GetHeight(), h),
                 ImVec2(uv[0].x, uv[0].y), ImVec2(uv[1].x, uv[1].y));
             ImGui::SameLine();

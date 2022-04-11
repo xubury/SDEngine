@@ -99,7 +99,7 @@ void ScenePanel::DrawEntityNode(Entity &entity)
 
     static ImGuiTreeNodeFlags base_flags =
         ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |
-        ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen;
+        ImGuiTreeNodeFlags_SpanAvailWidth;
     static ImGuiTreeNodeFlags leaf_flags =
         ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_SpanAvailWidth;
 
@@ -307,11 +307,8 @@ void ScenePanel::DrawComponents(Entity &entity)
             }
         },
         false);
-    DrawComponent<MeshComponent>("Mesh", entity,
-                                     [&](MeshComponent &) {});
-    DrawComponent<MaterialComponent>(
-        "Material", entity,
-        [&](MaterialComponent &mc) { DrawMaterial(mc.material); });
+    DrawComponent<MeshComponent>(
+        "Mesh", entity, [&](MeshComponent &mc) { DrawMaterial(mc.material); });
     DrawComponent<DirectionalLightComponent>(
         "Directional Light", entity, [&](DirectionalLightComponent &lightComp) {
             DirectionalLight &light = lightComp.light;
@@ -440,11 +437,12 @@ void ScenePanel::DrawComponents(Entity &entity)
 void ScenePanel::DrawMaterial(Material &material)
 {
     float width = ImGui::GetWindowWidth();
-    // for (const auto &[type, texture] : material.GetTextures()) {
-    //     ImGui::TextUnformatted(GetMaterialName(type).c_str());
-    //     ImGui::SameLine(width / 2);
-    //     ImGui::DrawTexture(*texture);
-    // }
+    for (const auto &[type, texture] : material.GetTextures()) {
+        ImGui::TextUnformatted(GetMaterialName(type).c_str());
+        // ImGui::DrawTextureAssetSelection(&texture->Id());
+        ImGui::SameLine(width / 2);
+        ImGui::DrawTexture(*texture);
+    }
     Vector3f diffuse_color = material.GetDiffuseColor();
     Vector3f ambient_color = material.GetAmbientColor();
     Vector3f emissive_color = material.GetEmissiveColor();

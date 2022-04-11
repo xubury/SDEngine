@@ -15,7 +15,7 @@ GLVertexArray::~GLVertexArray() { glDeleteVertexArrays(1, &m_id); }
 
 void GLVertexArray::BindVertexBuffer(const VertexBuffer &buffer, int32_t index)
 {
-    glVertexArrayVertexBuffer(m_id, index, buffer.GetId(), 0,
+    glVertexArrayVertexBuffer(m_id, index, buffer.Handle(), 0,
                               m_layouts[index].GetStride());
 }
 
@@ -67,7 +67,7 @@ void GLVertexArray::AddBufferLayout(const VertexBufferLayout &layout)
 
 void GLVertexArray::BindIndexBuffer(const IndexBuffer &buffer)
 {
-    glVertexArrayElementBuffer(m_id, buffer.GetId());
+    glVertexArrayElementBuffer(m_id, buffer.Handle());
 }
 
 }  // namespace SD

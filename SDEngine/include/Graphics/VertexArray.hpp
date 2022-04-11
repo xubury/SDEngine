@@ -17,7 +17,7 @@ class SD_GRAPHICS_API VertexArray {
 
     VertexArray &operator=(const VertexArray &) = delete;
 
-    virtual uint32_t GetId() const = 0;
+    virtual uint32_t Handle() const = 0;
 
     virtual void BindVertexBuffer(const VertexBuffer &buffer, int index) = 0;
     virtual void AddBufferLayout(const VertexBufferLayout &layout) = 0;

@@ -3,10 +3,13 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Resource)
 
 set(Resource_Include
     ${Include_Root}/Export.hpp
+    ${Include_Root}/Resource.hpp
+    ${Include_Root}/ResourceId.hpp
     ${Include_Root}/ResourceManager.hpp)
 
 set(Resource_Src
-    ${Src_Root}/ResourceManager.cpp)
+    ${Src_Root}/ResourceManager.cpp
+    ${Src_Root}/ResourceId.cpp)
 
 add_library(sd-resource ${Resource_Src})
 

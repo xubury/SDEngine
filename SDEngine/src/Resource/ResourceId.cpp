@@ -1,4 +1,4 @@
-#include "Utility/ResourceId.hpp"
+#include "Resource/ResourceId.hpp"
 #include <random>
 #include <unordered_map>
 

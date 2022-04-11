@@ -12,7 +12,7 @@ class SD_GRAPHICS_API GLBuffer : virtual public Buffer {
    public:
     void UpdateData(const void *data, size_t size, size_t offset) override;
 
-    uint32_t GetId() const override { return m_id; }
+    uint32_t Handle() const override { return m_id; }
 
    protected:
     GLBuffer(GLenum type, GLenum io, const void *data, size_t size);

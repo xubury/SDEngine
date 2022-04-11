@@ -1,17 +1,17 @@
 #ifndef SD_TEXTURE_HPP
 #define SD_TEXTURE_HPP
 
-#include "Graphics/Bitmap.hpp"
+#include "Graphics/Image.hpp"
 #include "Utility/Base.hpp"
-#include "Utility/ResourceId.hpp"
+#include "Resource/Resource.hpp"
 #include "Graphics/Graphics.hpp"
 
 namespace SD {
 
-class SD_GRAPHICS_API Texture {
+class SD_GRAPHICS_API Texture : public Resource {
    public:
-    static Ref<Texture> CreateCube(const std::array<Ref<Bitmap>, 6> &images);
-    static Ref<Texture> CreateIcon(const Bitmap &image);
+    static Ref<Texture> CreateCube(const std::array<Ref<ByteImage>, 6> &images);
+    static Ref<Texture> CreateIcon(const ByteImage &image);
     static Ref<Texture> Create(
         int width, int height, int depth, MultiSampleLevel samples,
         TextureType type, DataFormat format,
@@ -24,7 +24,7 @@ class SD_GRAPHICS_API Texture {
     Texture(const Texture &) = delete;
     Texture &operator=(const Texture &) = delete;
 
-    virtual uint32_t GetId() const = 0;
+    virtual uint32_t Handle() const = 0;
 
     // Set the base level pixel data (TODO: Does SetPixels for other levels
     // really needed?)

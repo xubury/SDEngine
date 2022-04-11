@@ -18,7 +18,7 @@ class SD_GRAPHICS_API GLShader : public Shader {
 
     ~GLShader();
 
-    uint32_t GetId() const override { return m_id; }
+    uint32_t Handle() const override { return m_id; }
 
     ShaderParam* GetParam(int32_t index) override;
     ShaderParam* GetParam(const std::string& name) override;

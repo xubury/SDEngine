@@ -2,14 +2,10 @@
 #include "Core/Application.hpp"
 #include "Renderer/Renderer3D.hpp"
 #include "ECS/Component.hpp"
-
 #include "Utility/Random.hpp"
-
 #include "ImGui/ImGuiWidget.hpp"
-
 #include "Loader/ShaderLoader.hpp"
-
-#include "Core/Application.hpp"
+#include "Resource/ResourceManager.hpp"
 
 namespace SD {
 
@@ -287,12 +283,14 @@ void DeferredRenderer::RenderShadowMap(const Scene &scene, const Camera &camera,
     Renderer3D::SetCascadeShadow(s_data.cascade_shadow);
 
     ShaderParam *model_param = s_data.cascade_shader->GetParam("u_model");
-    modelView.each(
-        [&](const TransformComponent &tc, const MeshComponent &mc) {
-            Matrix4f mat = tc.GetWorldTransform().GetMatrix();
-            model_param->SetAsMat4(&mat[0][0]);
-            Renderer3D::DrawMesh(*s_data.cascade_shader, *mc.mesh);
-        });
+    auto &resource = ResourceManager::Get();
+    modelView.each([&](const TransformComponent &tc, const MeshComponent &mc) {
+        Matrix4f mat = tc.GetWorldTransform().GetMatrix();
+        model_param->SetAsMat4(&mat[0][0]);
+        auto model = resource.GetResource<Model>(mc.model_id);
+        auto &mesh = model->GetMesh(mc.mesh_index);
+        Renderer3D::DrawMesh(*s_data.cascade_shader, mesh);
+    });
     Renderer::EndRenderPass();
 
     // debug
@@ -337,12 +335,15 @@ void DeferredRenderer::RenderPointShadowMap(const Scene &scene,
         s_data.point_shadow.GetFarZ());
     s_data.point_shadow_shader->GetParam("u_shadow_matrix[0]")
         ->SetAsMat4(&shadow_trans[0][0][0], 6);
-    modelView.each(
-        [&](const TransformComponent &tc, const MeshComponent &mc) {
-            Matrix4f mat = tc.GetWorldTransform().GetMatrix();
-            model_param->SetAsMat4(&mat[0][0]);
-            Renderer3D::DrawMesh(*s_data.point_shadow_shader, *mc.mesh);
-        });
+
+    auto &resource = ResourceManager::Get();
+    modelView.each([&](const TransformComponent &tc, const MeshComponent &mc) {
+        Matrix4f mat = tc.GetWorldTransform().GetMatrix();
+        model_param->SetAsMat4(&mat[0][0]);
+        auto model = resource.GetResource<Model>(mc.model_id);
+        auto &mesh = model->GetMesh(mc.mesh_index);
+        Renderer3D::DrawMesh(*s_data.point_shadow_shader, mesh);
+    });
     Renderer::EndRenderPass();
 }
 
@@ -544,8 +545,7 @@ void DeferredRenderer::RenderDeferred(const Scene &scene, const Camera &camera)
 
 void DeferredRenderer::RenderGBuffer(const Scene &scene)
 {
-    auto meshes =
-        scene.view<TransformComponent, MeshComponent, MaterialComponent>();
+    auto meshes = scene.view<TransformComponent, MeshComponent>();
 
     RenderPassInfo info;
     info.framebuffer = s_data.geometry_target_msaa.get();
@@ -563,15 +563,19 @@ void DeferredRenderer::RenderGBuffer(const Scene &scene)
 
     ShaderParam *entity_id = s_data.gbuffer_shader->GetParam("u_entity_id");
     ShaderParam *model_param = s_data.gbuffer_shader->GetParam("u_model");
-    meshes.each(
-        [&](const entt::entity &entity, const TransformComponent &transform,
-            const MeshComponent &mesh, const MaterialComponent &material) {
-            entity_id->SetAsUint(static_cast<uint32_t>(entity));
-            Renderer3D::SetMaterial(*s_data.gbuffer_shader, material.material);
-            Matrix4f mat = transform.GetWorldTransform().GetMatrix();
-            model_param->SetAsMat4(&mat[0][0]);
-            Renderer3D::DrawMesh(*s_data.gbuffer_shader, *mesh.mesh);
-        });
+    auto &resource = ResourceManager::Get();
+    meshes.each([&](const entt::entity &entity,
+                    const TransformComponent &transform,
+                    const MeshComponent &mc) {
+        entity_id->SetAsUint(static_cast<uint32_t>(entity));
+        Matrix4f mat = transform.GetWorldTransform().GetMatrix();
+        model_param->SetAsMat4(&mat[0][0]);
+
+        auto model = resource.GetResource<Model>(mc.model_id);
+        auto &mesh = model->GetMesh(mc.mesh_index);
+        Renderer3D::SetMaterial(*s_data.gbuffer_shader, mc.material);
+        Renderer3D::DrawMesh(*s_data.gbuffer_shader, mesh);
+    });
     Renderer::EndRenderPass();
 }
 

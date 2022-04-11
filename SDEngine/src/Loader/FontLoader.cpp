@@ -1,5 +1,5 @@
 #include "Loader/FontLoader.hpp"
-#include "Graphics/Bitmap.hpp"
+#include "Graphics/Image.hpp"
 #include "Utility/Math.hpp"
 
 #include <ft2build.h>
@@ -68,7 +68,7 @@ void FontLoader::LoadRangedGlyph(FT_Face face, Font *font, char32_t start,
     uint32_t tex_size = 1;
     while (tex_size < MAX_DIM) tex_size <<= 1;
 
-    Bitmap bmp(tex_size, tex_size, 1);
+    ByteImage bmp(tex_size, tex_size, 1);
     uint32_t x = 0;
     uint32_t y = 0;
     auto glyph = Texture::Create(tex_size, tex_size, 0, MultiSampleLevel::None,

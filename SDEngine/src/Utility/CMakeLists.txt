@@ -22,7 +22,6 @@ set(Utility_Include
     ${Include_Root}/PlatformDetection.hpp
     ${Include_Root}/QuadTree.hpp
     ${Include_Root}/Random.hpp
-    ${Include_Root}/ResourceID.hpp
     ${Include_Root}/Serialize.hpp
     ${Include_Root}/String.hpp
     ${Include_Root}/Timing.hpp
@@ -37,7 +36,6 @@ set(Utility_Src
     ${Src_Root}/Math.cpp
     ${Src_Root}/QuadTree.cpp
     ${Src_Root}/Random.cpp
-    ${Src_Root}/ResourceId.cpp
     ${Src_Root}/Timing.cpp
     ${Src_Root}/Transform.cpp
     ${Src_Root}/ThreadPool.cpp)

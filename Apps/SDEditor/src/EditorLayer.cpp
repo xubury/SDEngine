@@ -286,7 +286,8 @@ void EditorLayer::MenuBar()
     }
 }
 
-static Entity ConstructModel(Scene *scene, ModelNode *node)
+static Entity ConstructModel(Scene *scene, const Model &model,
+                             const ModelNode *node)
 {
     std::string name = node->GetName();
     Entity entity = scene->CreateEntity(name);
@@ -295,15 +296,15 @@ static Entity ConstructModel(Scene *scene, ModelNode *node)
     for (size_t i = 0; i < meshes.size(); ++i) {
         Entity child = scene->CreateEntity(name + "_" + std::to_string(i));
         entity.AddChild(child);
-        auto &mesh = child.AddComponent<MeshComponent>();
-        auto &material = child.AddComponent<MaterialComponent>();
-        mesh.mesh = meshes[i];
-        material.material = *materials[i];
+        auto &mc = child.AddComponent<MeshComponent>();
+        mc.model_id = model.Id();
+        mc.mesh_index = meshes[i];
+        mc.material = model.GetMaterial(materials[i]);
         auto &tc = child.GetComponent<TransformComponent>();
         tc.SetLocalTransform(node->GetTransform());
     }
     for (auto &child : node->GetChildren()) {
-        Entity child_entity = ConstructModel(scene, child);
+        Entity child_entity = ConstructModel(scene, model, child);
         entity.AddChild(child_entity);
     }
     return entity;
@@ -403,7 +404,8 @@ void EditorLayer::DrawViewport()
                     }
                     else if (filename.extension() == ".obj") {
                         auto model = resource.LoadResource<Model>(filename);
-                        ConstructModel(m_current_scene, model->GetRootNode());
+                        ConstructModel(m_current_scene, *model,
+                                       model->GetRootNode());
                     }
                 }
                 catch (const Exception &e) {

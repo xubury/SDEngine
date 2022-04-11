@@ -17,7 +17,7 @@ class SD_GRAPHICS_API Buffer {
     virtual void UpdateData(const void *data, size_t size,
                             size_t offset = 0) = 0;
 
-    virtual uint32_t GetId() const = 0;
+    virtual uint32_t Handle() const = 0;
 
    protected:
     Buffer() = default;

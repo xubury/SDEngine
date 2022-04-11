@@ -1,6 +1,6 @@
 #include "Loader/ModelLoader.hpp"
 #include "Resource/ResourceManager.hpp"
-#include "Graphics/Bitmap.hpp"
+#include "Graphics/Image.hpp"
 #include "Utility/Math.hpp"
 
 #include <assimp/Importer.hpp>
@@ -169,17 +169,9 @@ static void ProcessAiMaterial(const std::filesystem::path &directory,
         }
         std::string full_path =
             (directory / texture_path.C_Str()).generic_string();
-        auto image = resource.LoadResource<Bitmap>(full_path);
-        auto texture = Texture::Create(
-            image->Width(), image->Height(), 0, MultiSampleLevel::None,
-            TextureType::Normal, image->GetDataFormat(),
-            ConvertAssimpMapMode(ai_map_mode), TextureMinFilter::Linear,
-            TextureMagFilter::Linear, MipmapMode::Linear);
-        texture->SetPixels(0, 0, 0, image->Width(), image->Height(), 1,
-                           image->Data());
-
-        ResourceId rid = resource.CreateResource(texture);
-        material.SetResource(ConvertAssimpTextureType(ai_type), rid);
+        auto texture = resource.LoadResource<Texture>(full_path);
+        texture->SetWrap(ConvertAssimpMapMode(ai_map_mode));
+        material.SetTexture(ConvertAssimpTextureType(ai_type), texture.get());
     }
     model.AddMaterial(std::move(material));
 }
@@ -200,8 +192,8 @@ static void ProcessNode(const aiScene *scene, const aiNode *ai_node,
     for (uint32_t i = 0; i < ai_node->mNumMeshes; ++i) {
         uint32_t mesh_id = ai_node->mMeshes[i];
         uint32_t mat_id = scene->mMeshes[mesh_id]->mMaterialIndex;
-        node->AddMesh(model.GetMesh(mesh_id));
-        node->AddMaterial(model.GetMaterial(mat_id));
+        node->AddMesh(mesh_id);
+        node->AddMaterial(mat_id);
     }
 
     for (uint32_t i = 0; i < ai_node->mNumChildren; ++i) {

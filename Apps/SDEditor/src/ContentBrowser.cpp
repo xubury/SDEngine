@@ -11,15 +11,14 @@ namespace SD {
 #define TEXTURE_CREATION "Texture Creation"
 #define FONT_CREATION "Font Creation"
 
-const std::string root_directory = "assets";
-
 ContentBrowser::ContentBrowser()
 {
-    m_file_icon =
-        Texture::CreateIcon(*ImageLoader::Load("assets/icons/FileIcon.png"));
+    auto& resource = ResourceManager::Get();
+    m_file_icon = Texture::CreateIcon(
+        *ImageLoader::LoadFromFile("assets/icons/FileIcon.png"));
     m_directory_icon = Texture::CreateIcon(
-        *ImageLoader::Load("assets/icons/DirectoryIcon.png"));
-    m_current_directory = root_directory;
+        *ImageLoader::LoadFromFile("assets/icons/DirectoryIcon.png"));
+    m_current_directory = resource.GetDirectory();
 }
 
 void ContentBrowser::ImGui()
@@ -48,7 +47,8 @@ void ContentBrowser::ImGui()
         ImGui::EndPopup();
     }
 
-    const std::filesystem::path root_path = root_directory;
+    auto& resource = ResourceManager::Get();
+    const std::filesystem::path root_path = resource.GetDirectory();
     if (m_current_directory != std::filesystem::path(root_path)) {
         if (ImGui::Button("<-")) {
             m_current_directory = m_current_directory.parent_path();
@@ -74,7 +74,7 @@ void ContentBrowser::ImGui()
         Ref<Texture> icon = is_directory ? m_directory_icon : m_file_icon;
         ImGui::PushID(filename.c_str());
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-        ImGui::ImageButton((ImTextureID)(intptr_t)icon->GetId(),
+        ImGui::ImageButton((ImTextureID)(intptr_t)icon->Handle(),
                            {thumbnail_size, thumbnail_size});
 
         if (!is_directory && ImGui::BeginDragDropSource()) {

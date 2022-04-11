@@ -1,5 +1,5 @@
-#ifndef SD_BITMAP_HPP
-#define SD_BITMAP_HPP
+#ifndef SD_IMAGE_HPP
+#define SD_IMAGE_HPP
 
 #include "Graphics/Graphics.hpp"
 #include "Utility/Base.hpp"
@@ -7,14 +7,14 @@
 
 namespace SD {
 
-class SD_GRAPHICS_API Bitmap {
+class SD_GRAPHICS_API ByteImage {
    public:
-    Bitmap(int32_t width, int32_t height, int8_t channels);
-    Bitmap(int32_t width, int32_t height, int8_t channels, uint8_t *data);
-    ~Bitmap();
+    ByteImage(int32_t width, int32_t height, int8_t channels);
+    ByteImage(int32_t width, int32_t height, int8_t channels, uint8_t *data);
+    ~ByteImage();
 
-    Bitmap(const Bitmap &) = delete;
-    Bitmap &operator=(const Bitmap &) = delete;
+    ByteImage(const ByteImage &) = delete;
+    ByteImage &operator=(const ByteImage &) = delete;
 
     DataFormat GetDataFormat() const;
 

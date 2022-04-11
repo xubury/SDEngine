@@ -24,7 +24,7 @@ class SD_GRAPHICS_API Shader {
 
     virtual ~Shader() = default;
 
-    virtual uint32_t GetId() const = 0;
+    virtual uint32_t Handle() const = 0;
     virtual ShaderParam* GetParam(int32_t index) = 0;
     virtual ShaderParam* GetParam(const std::string& name) = 0;
 

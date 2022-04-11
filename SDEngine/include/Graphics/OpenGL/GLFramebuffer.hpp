@@ -12,7 +12,7 @@ class GLFramebuffer : public Framebuffer {
     GLFramebuffer();
     virtual ~GLFramebuffer();
 
-    uint32_t GetId() const override { return m_id; }
+    uint32_t Handle() const override { return m_id; }
 
     void Attach(Texture &texture, int attachment, int level) override;
     void Attach(Renderbuffer &buffer, int attachment) override;

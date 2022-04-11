@@ -17,9 +17,9 @@ void SkyboxRenderer::Init()
         "assets/skybox/right.jpg", "assets/skybox/left.jpg",
         "assets/skybox/top.jpg",   "assets/skybox/bottom.jpg",
         "assets/skybox/front.jpg", "assets/skybox/back.jpg"};
-    std::array<Ref<Bitmap>, 6> images;
+    std::array<Ref<ByteImage>, 6> images;
     for (size_t i = 0; i < pathes.size(); ++i) {
-        images[i] = ImageLoader::Load(pathes[i]);
+        images[i] = ImageLoader::LoadFromFile(pathes[i]);
     }
     s_skybox = Texture::CreateCube(images);
 }

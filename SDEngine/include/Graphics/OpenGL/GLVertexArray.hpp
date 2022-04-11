@@ -19,7 +19,7 @@ class SD_GRAPHICS_API GLVertexArray : public VertexArray {
 
     void BindIndexBuffer(const IndexBuffer &buffer) override;
 
-    uint32_t GetId() const override { return m_id; }
+    uint32_t Handle() const override { return m_id; }
 
    private:
     std::vector<VertexBufferLayout> m_layouts;

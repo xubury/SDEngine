@@ -24,21 +24,19 @@ Material::Material()
 {
 }
 
-void Material::SetResource(MaterialType type, ResourceId rid)
+void Material::SetTexture(MaterialType type, const Texture* texture)
 {
-    m_textures[type] = rid;
+    m_textures[type] = texture;
 }
 
 const Texture* Material::GetTexture(MaterialType type) const
 {
-    auto& resource = ResourceManager::Get();
     if (m_textures.count(type) == 0) {
         return nullptr;
     }
-    auto rid = m_textures.at(type);
-    return resource.Exist<Texture>(rid)
-               ? resource.GetResource<Texture>(rid).get()
-               : nullptr;
+    else {
+        return m_textures.at(type);
+    };
 }
 
 }  // namespace SD

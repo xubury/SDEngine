@@ -86,14 +86,14 @@ void GLShaderParam::SetAsMat4(const float* value, int32_t count)
 
 void GLShaderParam::SetAsTexture(const Texture* texture)
 {
-    glBindTextureUnit(m_texture_binding, texture ? texture->GetId() : 0);
+    glBindTextureUnit(m_texture_binding, texture ? texture->Handle() : 0);
 }
 
 void GLShaderParam::SetAsTextures(const Texture** textures, int32_t count)
 {
     for (int32_t i = 0; i < count; ++i) {
         glBindTextureUnit(m_texture_binding + i,
-                          textures[i] ? textures[i]->GetId() : 0);
+                          textures[i] ? textures[i]->Handle() : 0);
     }
 }
 
@@ -101,7 +101,7 @@ void GLShaderParam::SetAsImage(const Texture* texture, int32_t level,
                                bool layered, int32_t layer, Access access)
 {
     SetAsInt(m_image_binding);
-    glBindImageTexture(m_image_binding, texture ? texture->GetId() : 0, level,
+    glBindImageTexture(m_image_binding, texture ? texture->Handle() : 0, level,
                        layered, layer, Translate(access),
                        Translate(texture->GetFormat()));
 }

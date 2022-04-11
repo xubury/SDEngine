@@ -5,7 +5,6 @@
 #include "Utility/Math.hpp"
 #include "ImGui/Export.hpp"
 #include "Graphics/Texture.hpp"
-#include "Utility/ResourceId.hpp"
 
 #include "imgui.h"
 #include "imgui_internal.h"
