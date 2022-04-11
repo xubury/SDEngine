@@ -85,7 +85,9 @@ class SD_RESOURCE_API ResourceManager {
     {
         auto obj = GetResource<T>(rid);
         auto path = GetPath<T>(rid);
-        // Deserializer<T>::function(*obj, path);
+        auto& path_id = m_path_ids[GetTypeId<T>()];
+        path_id[path] = rid;
+        Deserializer<T>::function(*obj, path);
     }
 
     template <typename T>

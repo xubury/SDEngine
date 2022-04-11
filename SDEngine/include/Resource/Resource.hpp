@@ -6,7 +6,7 @@
 
 namespace SD {
 
-class Resource {
+class SD_RESOURCE_API Resource {
    public:
     const std::string &Name() const { return m_name; }
     const ResourceId Id() const { return m_id; }

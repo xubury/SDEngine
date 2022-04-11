@@ -93,7 +93,7 @@ if(UNIX)
     target_link_libraries(sd-graphics PUBLIC X11 Xrandr Xi)
 endif()
 
-target_link_libraries(sd-graphics PUBLIC sd-utility GLEW::GLEW OpenGL::GL)
+target_link_libraries(sd-graphics PUBLIC sd-utility sd-resource GLEW::GLEW OpenGL::GL)
 
 target_include_directories(sd-graphics
     PUBLIC
