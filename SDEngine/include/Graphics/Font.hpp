@@ -17,7 +17,7 @@ struct SD_GRAPHICS_API Character {
     uint32_t advance;
 };
 
-class SD_GRAPHICS_API Font {
+class SD_GRAPHICS_API Font : public Resource {
    public:
     Font(uint32_t pixel_height);
     ~Font() = default;

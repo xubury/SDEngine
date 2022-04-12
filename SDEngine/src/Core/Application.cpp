@@ -8,6 +8,7 @@
 #include "Loader/ImageLoader.hpp"
 #include "Loader/TextureLoader.hpp"
 #include "Loader/ModelLoader.hpp"
+#include "Loader/FontLoader.hpp"
 
 #if defined(SD_PLATFORM_LINUX)
 #include <unistd.h>
@@ -44,11 +45,14 @@ Application *Application::s_instance;
 static void RegisterResources()
 {
     auto &resource = ResourceManager::Get();
+    resource.Register<ByteImage>(
+        std::bind(ImageLoader::LoadFromFile, std::placeholders::_1), nullptr);
     resource.Register<Texture>(
         std::bind(TextureLoader::LoadFromFile, std::placeholders::_1), nullptr);
     resource.Register<Model>(
-        std::bind(ModelLoader::LoadModel, std::placeholders::_1), nullptr);
-    // resource.Regeister<Texture>();
+        std::bind(ModelLoader::LoadFromFile, std::placeholders::_1), nullptr);
+    resource.Register<Font>(
+        std::bind(FontLoader::LoadFont, std::placeholders::_1, 12), nullptr);
 }
 
 Application::Application(const std::string &title, Device::API api)
@@ -76,7 +80,7 @@ Application::Application(const std::string &title, Device::API api)
     auto &resource = ResourceManager::Get();
     resource.Init(std::filesystem::current_path() / "assets");
     RegisterResources();
-    resource.FillDataWithPriority<Texture, Model>();
+    resource.FillDataWithPriority<ByteImage, Texture, Model>();
 }
 
 Application::~Application() { ResourceManager::Get().ShutDown(); }

@@ -15,9 +15,9 @@ ContentBrowser::ContentBrowser()
 {
     auto& resource = ResourceManager::Get();
     m_file_icon = Texture::CreateIcon(
-        *ImageLoader::LoadFromFile("assets/icons/FileIcon.png"));
+        *resource.LoadResource<ByteImage>("icons/FileIcon.png"));
     m_directory_icon = Texture::CreateIcon(
-        *ImageLoader::LoadFromFile("assets/icons/DirectoryIcon.png"));
+        *resource.LoadResource<ByteImage>("icons/DirectoryIcon.png"));
     m_current_directory = resource.GetDirectory();
 }
 

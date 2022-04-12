@@ -169,9 +169,15 @@ static void ProcessAiMaterial(const std::filesystem::path &directory,
         }
         std::string full_path =
             (directory / texture_path.C_Str()).generic_string();
-        auto texture = resource.LoadResource<Texture>(full_path);
-        texture->SetWrap(ConvertAssimpMapMode(ai_map_mode));
-        material.SetTexture(ConvertAssimpTextureType(ai_type), texture.get());
+        auto image = resource.LoadResource<ByteImage>(full_path);
+        auto texture = Texture::Create(
+            image->Width(), image->Height(), 0, MultiSampleLevel::None,
+            TextureType::Normal, image->GetDataFormat(),
+            ConvertAssimpMapMode(ai_map_mode), TextureMinFilter::Linear,
+            TextureMagFilter::Linear, MipmapMode::Linear);
+        texture->SetPixels(0, 0, 0, image->Width(), image->Height(), 1,
+                           image->Data());
+        material.SetTexture(ConvertAssimpTextureType(ai_type), texture);
     }
     model.AddMaterial(std::move(material));
 }
@@ -202,7 +208,7 @@ static void ProcessNode(const aiScene *scene, const aiNode *ai_node,
     }
 }
 
-Ref<Model> ModelLoader::LoadModel(const std::string &path)
+Ref<Model> ModelLoader::LoadFromFile(const std::string &path)
 {
     Ref<Model> model;
     SD_CORE_TRACE("Loading model form: {}...", path);

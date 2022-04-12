@@ -437,12 +437,17 @@ void ScenePanel::DrawComponents(Entity &entity)
 void ScenePanel::DrawMaterial(Material &material)
 {
     float width = ImGui::GetWindowWidth();
-    for (const auto &[type, texture] : material.GetTextures()) {
-        ImGui::TextUnformatted(GetMaterialName(type).c_str());
-        // ImGui::DrawTextureAssetSelection(&texture->Id());
-        ImGui::SameLine(width / 2);
-        ImGui::DrawTexture(*texture);
+    for (int i = static_cast<int>(MaterialType::None) + 1;
+         i < static_cast<int>(MaterialType::Shininess) + 1; ++i) {
+        MaterialType type = static_cast<MaterialType>(i);
+        const Texture *texture = material.GetTexture(type);
+        if (texture) {
+            ImGui::TextUnformatted(GetMaterialName(type).c_str());
+            ImGui::SameLine(width / 2);
+            ImGui::DrawTexture(*texture);
+        }
     }
+
     Vector3f diffuse_color = material.GetDiffuseColor();
     Vector3f ambient_color = material.GetAmbientColor();
     Vector3f emissive_color = material.GetEmissiveColor();

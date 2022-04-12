@@ -3,14 +3,14 @@
 
 #include "Utility/Base.hpp"
 #include "Resource/Export.hpp"
-#include "Resource/ResourceId.hpp"
+#include "Resource/Resource.hpp"
 
 #include <functional>
 
 namespace SD {
 
 struct Cache {
-    Ref<void> data;
+    Ref<Resource> data;
     std::string path;
 
     SERIALIZE(path)
@@ -36,16 +36,23 @@ class SD_RESOURCE_API ResourceManager {
         return typeid(T).hash_code();
     }
 
+    class ArchiveBase {
+       public:
+        virtual ~ArchiveBase() = default;
+    };
+
     template <typename T>
-    struct Serializer {
+    class Serializer : public ArchiveBase {
+       public:
         using Signature = std::function<Ref<T>(const std::string& path)>;
-        static Signature function;
+        Signature function;
     };
     template <typename T>
-    struct Deserializer {
+    class Deserializer : public ArchiveBase {
+       public:
         using Signature =
             std::function<void(const T& obj, const std::string& path)>;
-        static Signature function;
+        Signature function;
     };
 
    public:
@@ -56,11 +63,20 @@ class SD_RESOURCE_API ResourceManager {
     const std::filesystem::path& GetDirectory() const { return m_directory; }
 
     template <typename T>
-    void Register(typename Serializer<T>::Signature&& serializer,
-                  typename Deserializer<T>::Signature&& deserializer)
+    void Register(typename Serializer<T>::Signature&& serialze_func,
+                  typename Deserializer<T>::Signature&& deserialze_func)
     {
-        Serializer<T>::function = std::move(serializer);
-        Deserializer<T>::function = std::move(deserializer);
+        TypeId tid = GetTypeId<T>();
+        if (serialze_func) {
+            auto serializer = CreateScope<Serializer<T>>();
+            serializer->function = std::move(serialze_func);
+            m_serializer[tid] = std::move(serializer);
+        }
+        if (deserialze_func) {
+            auto deserializer = CreateScope<Deserializer<T>>();
+            deserializer->function = std::move(deserialze_func);
+            m_deserializer[tid] = std::move(deserializer);
+        }
     }
 
     template <typename... Args>
@@ -72,9 +88,12 @@ class SD_RESOURCE_API ResourceManager {
     template <typename T>
     void FillData()
     {
-        auto& caches = GetCaches<T>();
+        TypeId tid = GetTypeId<T>();
+        auto& caches = m_caches[tid];
+        Serializer<T>* serializer =
+            dynamic_cast<Serializer<T>*>(m_serializer.at(tid).get());
         for (auto& [rid, cache] : caches) {
-            Ref<T> ptr = Serializer<T>::function(
+            Ref<T> ptr = serializer->function(
                 (m_directory / cache.path).generic_string());
             cache.data = ptr;
             ptr->m_id = rid;
@@ -82,48 +101,68 @@ class SD_RESOURCE_API ResourceManager {
     }
 
     template <typename T>
-    void SaveResource(const ResourceId rid)
+    bool SaveResource(const ResourceId rid)
     {
-        auto obj = GetResource<T>(rid);
-        auto path = GetPath<T>(rid);
-        auto& path_id = m_path_ids[GetTypeId<T>()];
-        path_id[path] = rid;
-        Deserializer<T>::function(*obj, path);
-        m_is_modified = true;
+        TypeId tid = GetTypeId<T>();
+        if (m_deserializer.count(tid) != 0) {
+            auto obj = GetResource<T>(rid);
+            auto path = GetPath<T>(rid);
+            auto& path_id = m_path_ids[tid];
+            path_id[path] = rid;
+            m_is_modified = true;
+            return true;
+        }
+        else {
+            SD_CORE_ERROR("Unregistered deserializer, saving failed!");
+            return false;
+        }
     }
 
     template <typename T>
     Ref<T> LoadResource(const std::string& path)
     {
-        SD_CORE_TRACE("Load Resource:{}", m_directory / path);
-        auto& ids = m_path_ids[GetTypeId<T>()];
-        std::string relative_path = GetRelativePath(path);
+        static_assert(std::is_base_of<Resource, T>::value,
+                      "Resource must be derived from resource.");
+        const std::string& full_path = (m_directory / path).generic_string();
+        SD_CORE_TRACE("Load Resource:{}", full_path);
+
+        TypeId tid = GetTypeId<T>();
+        auto& ids = m_path_ids[tid];
+        std::string relative_path = GetRelativePath(full_path);
         ResourceId rid = ids[relative_path];
-        if (Exist<T>(rid)) {
+        if (Exist(tid, rid)) {
             return GetResource<T>(rid);
         }
         else {
-            m_is_modified = true;
-            Ref<T> ptr = Serializer<T>::function(path);
-            auto& caches = GetCaches<T>();
-            ptr->m_id = rid;
-            caches[rid].data = ptr;
-            caches[rid].path = relative_path;
-            return ptr;
+            if (m_serializer.count(tid) != 0) {
+                m_is_modified = true;
+                auto serializer =
+                    dynamic_cast<Serializer<T>*>(m_serializer.at(tid).get());
+                Ref<T> ptr = serializer->function(full_path);
+                auto& caches = m_caches[tid];
+                ptr->m_id = rid;
+                caches[rid].data = ptr;
+                caches[rid].path = relative_path;
+                return ptr;
+            }
+            else {
+                SD_CORE_ERROR("Unregistered serializer, loading failed!");
+                return nullptr;
+            }
         }
     }
 
     template <typename T>
     Ref<T> GetResource(const ResourceId rid)
     {
-        auto& caches = GetCaches<T>();
+        auto& caches = m_caches[GetTypeId<T>()];
         return std::static_pointer_cast<T>(caches[rid].data);
     }
 
     template <typename T>
     std::string GetPath(const ResourceId rid)
     {
-        auto& caches = GetCaches<T>();
+        auto& caches = m_caches[GetTypeId<T>()];
         return caches[rid].path;
     }
 
@@ -139,47 +178,42 @@ class SD_RESOURCE_API ResourceManager {
     template <typename T>
     bool Exist(const ResourceId rid) const
     {
-        TypeId tid = GetTypeId<T>();
-        return m_caches.count(tid) != 0 && m_caches.at(tid).count(rid) != 0;
+        return Exist(GetTypeId<T>(), rid);
     }
 
     template <typename T>
     bool Empty()
     {
-        return m_caches.count(GetTypeId<T>()) == 0;
+        return Empty(GetTypeId<T>());
     }
 
     template <typename T>
-    const ResourceTypeData& GetTypeData() const
+    const CacheMap& GetCaches()
     {
-        return m_resource_types.at(GetTypeId<T>());
-    }
-
-    template <typename T>
-    CacheMap& GetCaches()
-    {
-        return m_caches[GetTypeId<T>()];
+        return m_caches.at(GetTypeId<T>());
     }
 
    private:
+    bool Empty(const TypeId tid) { return m_caches.count(tid) == 0; }
+
+    bool Exist(const TypeId tid, const ResourceId rid) const
+    {
+        return m_caches.count(tid) != 0 && m_caches.at(tid).count(rid) != 0;
+    }
+
     std::string GetRelativePath(const std::string& path)
     {
         return std::filesystem::relative(path, m_directory).generic_string();
     }
+
     std::unordered_map<TypeId, CacheMap> m_caches;
     std::unordered_map<TypeId, PathMap> m_path_ids;
     std::unordered_map<TypeId, ResourceTypeData> m_resource_types;
+    std::unordered_map<TypeId, Scope<ArchiveBase>> m_serializer;
+    std::unordered_map<TypeId, Scope<ArchiveBase>> m_deserializer;
     std::filesystem::path m_directory;
     bool m_is_modified;
 };
-
-template <typename T>
-typename ResourceManager::Serializer<T>::Signature
-    ResourceManager::Serializer<T>::function;
-
-template <typename T>
-typename ResourceManager::Deserializer<T>::Signature
-    ResourceManager::Deserializer<T>::function;
 
 }  // namespace SD
 

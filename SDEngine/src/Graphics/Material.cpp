@@ -24,7 +24,7 @@ Material::Material()
 {
 }
 
-void Material::SetTexture(MaterialType type, const Texture* texture)
+void Material::SetTexture(MaterialType type, Ref<Texture> texture)
 {
     m_textures[type] = texture;
 }
@@ -35,7 +35,7 @@ const Texture* Material::GetTexture(MaterialType type) const
         return nullptr;
     }
     else {
-        return m_textures.at(type);
+        return m_textures.at(type).get();
     };
 }
 

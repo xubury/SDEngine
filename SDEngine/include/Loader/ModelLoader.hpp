@@ -11,7 +11,7 @@ namespace SD {
 
 class SD_LOADER_API ModelLoader {
    public:
-    static Ref<Model> LoadModel(const std::string &path);
+    static Ref<Model> LoadFromFile(const std::string &path);
 };
 
 }  // namespace SD
