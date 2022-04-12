@@ -8,6 +8,7 @@
 #include "ImGuizmo.h"
 #include "GridRenderer.hpp"
 #include "Resource/ResourceManager.hpp"
+#include "Utility/String.hpp"
 
 namespace SD {
 
@@ -394,15 +395,14 @@ void EditorLayer::DrawViewport()
                     ImGui::AcceptDragDropPayload(DROP_ASSET_ITEM)) {
                 try {
                     auto &resource = ResourceManager::Get();
-                    std::filesystem::path filename =
-                        static_cast<char *>(payload->Data);
-                    if (filename.extension() == ".sdscene") {
+                    std::string filename = static_cast<char *>(payload->Data);
+                    std::string ext = String::GetExtension(filename);
+                    if (ext == ".sdscene") {
                         SetCurrentScene(
-                            resource.LoadResource<Scene>(filename.string())
-                                .get());
+                            resource.LoadResource<Scene>(filename).get());
                         SD_TRACE("load scene asset");
                     }
-                    else if (filename.extension() == ".obj") {
+                    else if (ext == ".obj") {
                         auto model = resource.LoadResource<Model>(filename);
                         ConstructModel(m_current_scene, *model,
                                        model->GetRootNode());

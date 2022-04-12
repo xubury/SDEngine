@@ -36,7 +36,8 @@ std::filesystem::path Application::GetAppDirectory()
     return path.parent_path();
 }
 
-const std::string SETTING_FILENAME = "setting.ini";
+const std::string setting_filename = "Setting.ini";
+const std::string debug_filename = "Debug.txt";
 
 Application *Application::s_instance;
 
@@ -54,7 +55,7 @@ Application::Application(const std::string &title, Device::API api)
     : m_imgui_layer(nullptr)
 {
     const std::string debug_path =
-        (GetAppDirectory() / "Debug.txt").generic_string();
+        (GetAppDirectory() / debug_filename).generic_string();
     Log::Init(debug_path);
     SD_CORE_INFO("Debug info is output to: {}", debug_path);
 
@@ -72,7 +73,6 @@ Application::Application(const std::string &title, Device::API api)
     m_window = Window::Create(property);
     m_device = Device::Create();
 
-    // storage.ScanDirectory(storage.GetDirectory());
     auto &resource = ResourceManager::Get();
     resource.Init(std::filesystem::current_path() / "assets");
     RegisterResources();
@@ -105,7 +105,7 @@ void Application::OnDestroy()
                           static_cast<int>(m_window->GetMSAA()));
     m_settings.SetBoolean("window", "vsync", m_window->GetIsVSync());
 
-    m_settings.Save((GetAppDirectory() / SETTING_FILENAME).string());
+    m_settings.Save((GetAppDirectory() / setting_filename).string());
 }
 
 void Application::PushLayer(Layer *layer)
@@ -152,7 +152,7 @@ void Application::CreateImGuiLayer()
 
 void Application::LoadSettingsFile()
 {
-    std::filesystem::path ini_path = GetAppDirectory() / SETTING_FILENAME;
+    std::filesystem::path ini_path = GetAppDirectory() / setting_filename;
     if (std::filesystem::exists(ini_path)) {
         m_settings.Load(ini_path.string());
     }

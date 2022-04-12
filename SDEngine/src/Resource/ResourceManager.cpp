@@ -11,33 +11,29 @@ ResourceManager &ResourceManager::Get()
     return s_instance;
 }
 
-void ResourceManager::Init(const std::string &path)
+void ResourceManager::Init(const std::filesystem::path &path)
 {
     m_directory = path;
-    const std::string filename = std::filesystem::path(path) / meta_name;
+    const std::filesystem::path filename = m_directory / meta_name;
     if (std::filesystem::exists(filename)) {
         std::ifstream is(filename, std::ios::binary);
         cereal::XMLInputArchive archive(is);
-        archive(m_resources, m_path_ids);
+        archive(m_caches, m_path_ids);
     }
     m_is_modified = false;
-    // for (auto &[tid, caches] : m_resources) {
-    //     auto &loader = m_serializer[tid];
-    //     for (auto &[rid, cache] : caches) {
-    //         cache.data = loader(m_directory / cache.path);
-    //     }
-    // }
 }
 
 void ResourceManager::ShutDown()
 {
     if (m_is_modified) {
-        const std::string filename =
-            std::filesystem::path(m_directory) / meta_name;
+        const std::filesystem::path filename = m_directory / meta_name;
         std::ofstream os(filename, std::ios::binary);
         cereal::XMLOutputArchive archive(os);
-        archive(m_resources, m_path_ids);
+        archive(m_caches, m_path_ids);
     }
+    m_caches.clear();
+    m_path_ids.clear();
+    m_resource_types.clear();
 }
 
 }  // namespace SD

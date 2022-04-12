@@ -50,7 +50,7 @@ class SD_RESOURCE_API ResourceManager {
 
    public:
     static ResourceManager& Get();
-    void Init(const std::string& path);
+    void Init(const std::filesystem::path& path);
     void ShutDown();
 
     const std::filesystem::path& GetDirectory() const { return m_directory; }
@@ -74,7 +74,8 @@ class SD_RESOURCE_API ResourceManager {
     {
         auto& caches = GetCaches<T>();
         for (auto& [rid, cache] : caches) {
-            Ref<T> ptr = Serializer<T>::function(m_directory / cache.path);
+            Ref<T> ptr = Serializer<T>::function(
+                (m_directory / cache.path).generic_string());
             cache.data = ptr;
             ptr->m_id = rid;
         }
@@ -88,6 +89,7 @@ class SD_RESOURCE_API ResourceManager {
         auto& path_id = m_path_ids[GetTypeId<T>()];
         path_id[path] = rid;
         Deserializer<T>::function(*obj, path);
+        m_is_modified = true;
     }
 
     template <typename T>
@@ -95,7 +97,7 @@ class SD_RESOURCE_API ResourceManager {
     {
         SD_CORE_TRACE("Load Resource:{}", m_directory / path);
         auto& ids = m_path_ids[GetTypeId<T>()];
-        std::string relative_path = ResovlePath(path);
+        std::string relative_path = GetRelativePath(path);
         ResourceId rid = ids[relative_path];
         if (Exist<T>(rid)) {
             return GetResource<T>(rid);
@@ -129,7 +131,7 @@ class SD_RESOURCE_API ResourceManager {
     void Unload(const ResourceId rid)
     {
         const TypeId tid = GetTypeId<T>();
-        auto& cache = m_resources[tid];
+        auto& cache = m_caches[tid];
         cache.erase(rid);
         m_is_modified = true;
     }
@@ -138,14 +140,13 @@ class SD_RESOURCE_API ResourceManager {
     bool Exist(const ResourceId rid) const
     {
         TypeId tid = GetTypeId<T>();
-        return m_resources.count(tid) != 0 &&
-               m_resources.at(tid).count(rid) != 0;
+        return m_caches.count(tid) != 0 && m_caches.at(tid).count(rid) != 0;
     }
 
     template <typename T>
     bool Empty()
     {
-        return m_resources.count(GetTypeId<T>()) == 0;
+        return m_caches.count(GetTypeId<T>()) == 0;
     }
 
     template <typename T>
@@ -157,15 +158,15 @@ class SD_RESOURCE_API ResourceManager {
     template <typename T>
     CacheMap& GetCaches()
     {
-        return m_resources[GetTypeId<T>()];
+        return m_caches[GetTypeId<T>()];
     }
 
    private:
-    std::string ResovlePath(const std::string& path)
+    std::string GetRelativePath(const std::string& path)
     {
-        return std::filesystem::relative(path, m_directory);
+        return std::filesystem::relative(path, m_directory).generic_string();
     }
-    std::unordered_map<TypeId, CacheMap> m_resources;
+    std::unordered_map<TypeId, CacheMap> m_caches;
     std::unordered_map<TypeId, PathMap> m_path_ids;
     std::unordered_map<TypeId, ResourceTypeData> m_resource_types;
     std::filesystem::path m_directory;
