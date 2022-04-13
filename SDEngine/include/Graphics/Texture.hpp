@@ -58,6 +58,7 @@ class SD_GRAPHICS_API Texture : public Resource {
     MipmapMode GetMipmapMode() const { return m_mipmap_mode; }
     int GetMipmapLevels() const { return m_mipmap_levels; }
 
+    size_t GetDataSize() const;
    protected:
     Texture(int width, int height, int depth, MultiSampleLevel samples,
             TextureType type, DataFormat format, TextureWrap wrap,

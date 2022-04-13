@@ -3,6 +3,7 @@
 #include "ImGui/FileDialog.hpp"
 #include "Resource/ResourceManager.hpp"
 #include "Loader/ImageLoader.hpp"
+#include "Loader/TextureLoader.hpp"
 
 namespace SD {
 

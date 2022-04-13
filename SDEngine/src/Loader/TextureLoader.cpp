@@ -10,17 +10,40 @@ namespace SD {
 
 Ref<Texture> TextureLoader::LoadFromFile(const std::string& path)
 {
-    auto bmp = ImageLoader::LoadFromFile(path);
-    int32_t width = bmp->Width();
-    int32_t height = bmp->Height();
+    std::ifstream is;
+    is.open(path, std::ios::binary);
+    cereal::PortableBinaryInputArchive archive(is);
+    int32_t width;
+    int32_t height;
+    DataFormat format;
+    TextureWrap wrap;
+    TextureMinFilter min_filter;
+    TextureMagFilter mag_filter;
+    MipmapMode mipmap;
+    int mipmap_levels;
+    std::vector<char> data;
+    archive(width, height, format, wrap, min_filter, mag_filter, mipmap,
+            mipmap_levels, data);
+
     Ref<Texture> texture = Texture::Create(
-        width, height, 0, MultiSampleLevel::None, TextureType::Normal,
-        bmp->GetDataFormat(), TextureWrap::Edge, TextureMinFilter::Linear,
-        TextureMagFilter::Linear, MipmapMode::Linear);
-    texture->SetPixels(0, 0, 0, width, height, 1, bmp->Data());
+        width, height, 0, MultiSampleLevel::None, TextureType::Normal, format,
+        wrap, min_filter, mag_filter, mipmap, mipmap_levels);
+    texture->SetPixels(0, 0, 0, width, height, 1, data.data());
     return texture;
 }
 
-void TextureLoader::SaveTexture(const Texture&, const std::string&) {}
+void TextureLoader::SaveTexture(const Texture& texture, const std::string& path)
+{
+    std::ofstream os;
+    os.open(path, std::ios::binary);
+    cereal::PortableBinaryOutputArchive archive(os);
+
+    std::vector<char> data(texture.GetDataSize());
+    texture.ReadPixels(0, 0, 0, 0, texture.GetWidth(), texture.GetHeight(), 1,
+                       data.size(), data.data());
+    archive(texture.GetWidth(), texture.GetHeight(), texture.GetFormat(),
+            texture.GetWrap(), texture.GetMinFilter(), texture.GetMagFilter(),
+            texture.GetMipmapMode(), texture.GetMipmapLevels(), data);
+}
 
 }  // namespace SD
