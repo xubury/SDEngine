@@ -290,20 +290,27 @@ void ScenePanel::DrawComponents(Entity &entity)
             ImGui::SameLine();
             ImGui::RadioButton("Scale", reinterpret_cast<int *>(&m_gizmo_op),
                                ImGuizmo::SCALE);
-            Vector3f position = component.GetWorldPosition();
+            bool in_world = m_gizmo_mode == ImGuizmo::WORLD;
+            Vector3f position = in_world ? component.GetWorldPosition()
+                                         : component.GetLocalPosition();
             if (ImGui::DrawVec3Control("Translation", position)) {
-                component.SetWorldPosition(position);
+                in_world ? component.SetWorldPosition(position)
+                         : component.SetLocalPosition(position);
             }
 
-            Vector3f rotation =
-                glm::degrees(glm::eulerAngles(component.GetWorldRotation()));
+            Vector3f rotation = glm::degrees(
+                glm::eulerAngles(in_world ? component.GetWorldRotation()
+                                          : component.GetLocalRotation()));
             if (ImGui::DrawVec3Control("Rotation", rotation)) {
-                component.SetWorldRotation(glm::radians(rotation));
+                in_world ? component.SetWorldRotation(glm::radians(rotation))
+                         : component.SetLocalRotation(glm::radians(rotation));
             }
 
-            Vector3f scale = component.GetWorldScale();
+            Vector3f scale = in_world ? component.GetWorldScale()
+                                      : component.GetLocalScale();
             if (ImGui::DrawVec3Control("Scale", scale, 1.0f)) {
-                component.SetWorldScale(scale);
+                in_world ? component.SetWorldScale(scale)
+                         : component.SetLocalScale(scale);
             }
         },
         false);

@@ -71,7 +71,7 @@ Entity Scene::CloneEntity(EntityId from)
     return to_entity;
 }
 
-void Scene::Serialize(cereal::PortableBinaryOutputArchive &archive)
+void Scene::Serialize(cereal::PortableBinaryOutputArchive &archive) const
 {
     entt::snapshot loader{*this};
     loader.entities(archive);

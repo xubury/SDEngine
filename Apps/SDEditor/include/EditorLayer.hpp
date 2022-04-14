@@ -32,6 +32,8 @@ class EditorLayer : public Layer {
     void OpenSaveSceneDialog();
 
    private:
+    void NewScene();
+
     void On(const KeyEvent& e) override;
     void On(const AppQuitEvent& e) override;
     void On(const MouseMotionEvent& e) override;

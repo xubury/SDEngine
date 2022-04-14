@@ -35,14 +35,12 @@ EditorLayer::EditorLayer(GraphicsLayer *graphics_layer, int width, int height)
 
 EditorLayer::~EditorLayer() {}
 
-Ref<Scene> scene;
 void EditorLayer::OnInit()
 {
     Layer::OnInit();
     GridRenderer::Init();
-    scene = CreateRef<Scene>();
+    NewScene();
 
-    SetCurrentScene(scene.get());
     m_graphics_layer->SetRenderSize(m_viewport_size.x, m_viewport_size.y);
     m_graphics_layer->SetCamera(&m_editor_camera);
 
@@ -51,6 +49,18 @@ void EditorLayer::OnInit()
     m_graphics_layer->OutputEntityBuffer(m_viewport_target.get(), 1);
 
     InitBuffers();
+}
+
+void EditorLayer::NewScene()
+{
+    auto &resource = ResourceManager::Get();
+    auto scene = resource.LoadResource<Scene>("defualt scene.sdscene");
+    if (scene == nullptr) {
+        scene = CreateRef<Scene>();
+        resource.AddResource(scene);
+        resource.WriteResource<Scene>(scene->Id(), "defualt scene.sdscene");
+    }
+    SetCurrentScene(scene.get());
 }
 
 void EditorLayer::InitBuffers()
@@ -239,7 +249,7 @@ void EditorLayer::OpenLoadSceneDialog()
     m_file_dialog_info.title = "Load Scene";
     m_file_dialog_info.file_name = "";
     m_file_dialog_info.regex_match = SCENE_FILTER;
-    m_file_dialog_info.directory_path = "asssts";
+    m_file_dialog_info.directory_path = ResourceManager::Get().GetDirectory();
 }
 
 void EditorLayer::OpenSaveSceneDialog()
@@ -249,14 +259,18 @@ void EditorLayer::OpenSaveSceneDialog()
     m_file_dialog_info.title = "Save Scene";
     m_file_dialog_info.file_name = "";
     m_file_dialog_info.regex_match = SCENE_FILTER;
-    m_file_dialog_info.directory_path = "asssts";
+    m_file_dialog_info.directory_path = ResourceManager::Get().GetDirectory();
 }
 
 void EditorLayer::ProcessDialog()
 {
+    auto &resource = ResourceManager::Get();
     if (ImGui::FileDialog(&m_load_scene_open, &m_file_dialog_info)) {
     }
     if (ImGui::FileDialog(&m_save_scene_open, &m_file_dialog_info)) {
+        resource.WriteResource<Scene>(
+            m_current_scene->Id(),
+            m_file_dialog_info.result_path.generic_string());
     }
 }
 
@@ -265,8 +279,7 @@ void EditorLayer::MenuBar()
     if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             if (ImGui::MenuItem("New Scene", "Ctrl+N")) {
-                scene = CreateRef<Scene>();
-                SetCurrentScene(scene.get());
+                NewScene();
             }
 
             if (ImGui::MenuItem("Load Scene...", "Ctrl+L")) {

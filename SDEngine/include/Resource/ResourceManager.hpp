@@ -96,23 +96,36 @@ class SD_RESOURCE_API ResourceManager {
         Serializer<T>* serializer =
             dynamic_cast<Serializer<T>*>(m_serializer.at(tid).get());
         for (auto& [rid, cache] : caches) {
-            Ref<T> ptr = serializer->function(
-                (m_directory / cache.path).generic_string());
+            const std::string full_path =
+                (m_directory / cache.path).generic_string();
+            if (!std::filesystem::exists(full_path)) {
+                continue;
+            }
+            Ref<T> ptr = serializer->function(full_path);
             cache.data = ptr;
             ptr->m_id = rid;
         }
     }
 
     template <typename T>
-    bool SaveResource(const ResourceId rid)
+    bool WriteResource(const ResourceId rid, const std::string& path)
     {
         TypeId tid = GetTypeId<T>();
         if (m_deserializer.count(tid) != 0) {
-            auto obj = GetResource<T>(rid);
-            auto path = GetPath<T>(rid);
-            auto& path_id = m_path_ids[tid];
-            path_id[path] = rid;
-            m_is_modified = true;
+            auto& caches = m_caches.at(tid);
+            auto& obj = caches[rid];
+            obj.path = path;
+
+            auto& ids = m_path_ids[tid];
+            ids[obj.path] = rid;
+
+            Deserializer<T>* deserializer =
+                dynamic_cast<Deserializer<T>*>(m_deserializer.at(tid).get());
+            T* cast_obj = dynamic_cast<T*>(obj.data.get());
+
+            SD_CORE_ASSERT(cast_obj != nullptr, "Invalid resource!");
+            deserializer->function(*cast_obj,
+                                   (m_directory / obj.path).generic_string());
             return true;
         }
         else {
@@ -126,22 +139,25 @@ class SD_RESOURCE_API ResourceManager {
     {
         static_assert(std::is_base_of<Resource, T>::value,
                       "Resource must be derived from resource.");
-        const std::string& full_path = (m_directory / path).generic_string();
+        const std::filesystem::path& full_path = m_directory / path;
         SD_CORE_TRACE("Load Resource:{}", full_path);
 
         TypeId tid = GetTypeId<T>();
         auto& ids = m_path_ids[tid];
-        std::string relative_path = GetRelativePath(full_path);
+        std::string relative_path = GetRelativePath(full_path.generic_string());
         ResourceId rid = ids[relative_path];
         if (Exist(tid, rid)) {
             return GetResource<T>(rid);
+        }
+        else if (!std::filesystem::exists(full_path)) {
+            return nullptr;
         }
         else {
             if (m_serializer.count(tid) != 0) {
                 m_is_modified = true;
                 auto serializer =
                     dynamic_cast<Serializer<T>*>(m_serializer.at(tid).get());
-                Ref<T> ptr = serializer->function(full_path);
+                Ref<T> ptr = serializer->function(full_path.generic_string());
                 auto& caches = m_caches[tid];
                 ptr->m_id = rid;
                 caches[rid].data = ptr;
@@ -163,10 +179,13 @@ class SD_RESOURCE_API ResourceManager {
     }
 
     template <typename T>
-    std::string GetPath(const ResourceId rid)
+    void AddResource(const Ref<T>& obj)
     {
-        auto& caches = m_caches[GetTypeId<T>()];
-        return caches[rid].path;
+        TypeId tid = GetTypeId<T>();
+        ResourceId rid;
+        auto& caches = m_caches[tid];
+        obj->m_id = rid;
+        caches[rid].data = obj;
     }
 
     template <typename T>

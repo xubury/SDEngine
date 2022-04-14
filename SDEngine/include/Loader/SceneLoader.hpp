@@ -8,7 +8,8 @@ namespace SD {
 
 class SD_LOADER_API SceneLoader {
    public:
-    static Ref<Scene> LoadScene(const std::string &path);
+    static Ref<Scene> LoadFromFile(const std::string &path);
+    static void WriteToFile(const Scene &scene, const std::string &path);
 };
 
 }  // namespace SD

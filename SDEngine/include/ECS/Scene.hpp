@@ -38,7 +38,7 @@ class SD_ECS_API Scene : public entt::registry, public Resource {
     Entity CreateEntity(const std::string &name);
     Entity CreateModelEntity(const Model &model, const ModelNode *node);
 
-    void Serialize(cereal::PortableBinaryOutputArchive &archive);
+    void Serialize(cereal::PortableBinaryOutputArchive &archive) const;
 
     void Deserialize(cereal::PortableBinaryInputArchive &archive);
 

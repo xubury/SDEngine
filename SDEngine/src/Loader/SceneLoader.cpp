@@ -2,7 +2,7 @@
 
 namespace SD {
 
-Ref<Scene> SceneLoader::LoadScene(const std::string &path)
+Ref<Scene> SceneLoader::LoadFromFile(const std::string &path)
 {
     Ref<Scene> scene = CreateRef<Scene>();
     std::ifstream is(path, std::ios::binary);
@@ -11,17 +11,11 @@ Ref<Scene> SceneLoader::LoadScene(const std::string &path)
     return scene;
 }
 
-// bool SceneLoader::SaveAsset(const Ref<void> &asset, const std::string &path)
-// {
-//     std::ofstream os(path, std::ios::binary);
-//     cereal::PortableBinaryOutputArchive archive(os);
-//     Ref<Scene> scene = std::static_pointer_cast<Scene>(asset);
-//     if (scene) {
-//         scene->Serialize(archive);
-//         return true;
-//     } else {
-//         return false;
-//     }
-// }
+void SceneLoader::WriteToFile(const Scene &scene, const std::string &path)
+{
+    std::ofstream os(path, std::ios::binary);
+    cereal::PortableBinaryOutputArchive archive(os);
+    scene.Serialize(archive);
+}
 
 }  // namespace SD

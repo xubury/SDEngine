@@ -62,7 +62,9 @@ static void RegisterResources()
         std::bind(FontLoader::LoadFont, std::placeholders::_1, 12), nullptr);
     resource.Register<Scene>(
         {{".sdscene"}},
-        std::bind(SceneLoader::LoadScene, std::placeholders::_1), nullptr);
+        std::bind(SceneLoader::LoadFromFile, std::placeholders::_1),
+        std::bind(SceneLoader::WriteToFile, std::placeholders::_1,
+                  std::placeholders::_2));
 }
 
 Application::Application(const std::string &title, Device::API api)

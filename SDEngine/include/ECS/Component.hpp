@@ -84,7 +84,7 @@ struct SD_ECS_API MeshComponent {
     uint32_t mesh_index;
     Material material;
 
-    SERIALIZE(model_id, mesh_index)
+    SERIALIZE(model_id, mesh_index, material)
 };
 
 struct SD_ECS_API DirectionalLightComponent {
