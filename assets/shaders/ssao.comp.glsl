@@ -24,8 +24,8 @@ float ComputeOcclusion(vec3 random_vec, vec2 uv)
     if (normal == vec3(0)) return 1;
 
     frag_pos = (u_view * vec4(frag_pos, 1.0f)).xyz;
-    mat3 rot_view = transpose(inverse(mat3(u_view)));
-    normal = rot_view * normal;
+    mat3 normal_matrix = transpose(inverse(mat3(u_view)));
+    normal = normalize(normal_matrix * normal);
 
     // create TBN change-of-basis matrix: from tangent-space to view-space
     vec3 tangent = normalize(random_vec - normal * dot(random_vec, normal));
@@ -34,10 +34,10 @@ float ComputeOcclusion(vec3 random_vec, vec2 uv)
     // iterate over the sample kernel and calculate occlusion factor
     float occlusion = 0.0;
     for (int i = 0; i < u_kernel_size; ++i) {
-        // get sample position
-        if (dot(u_samples[i], normal) < 0.15) {
+        if (dot(u_samples[i], normal) < 0.15)  {
             continue;
         }
+        // get sample position
         vec3 sample_pos = TBN * u_samples[i];  // from tangent to view-space
         sample_pos = frag_pos + sample_pos * u_radius;
 
@@ -54,7 +54,7 @@ float ComputeOcclusion(vec3 random_vec, vec2 uv)
         // get sample depth
         float sample_depth =
             (u_view * vec4(texture(u_position, offset.xy).xyz, 1.0f)).z;
-        if ((rot_view * texture(u_normal, offset.xy).xyz) == vec3(0)) {
+        if ((normal_matrix * texture(u_normal, offset.xy).xyz) == vec3(0)) {
             continue;
         }
 
