@@ -9,6 +9,7 @@
 #include "Loader/TextureLoader.hpp"
 #include "Loader/ModelLoader.hpp"
 #include "Loader/FontLoader.hpp"
+#include "Loader/SceneLoader.hpp"
 
 #if defined(SD_PLATFORM_LINUX)
 #include <unistd.h>
@@ -46,13 +47,22 @@ static void RegisterResources()
 {
     auto &resource = ResourceManager::Get();
     resource.Register<ByteImage>(
+        {{".png", ".jpg", ".tga", ".bmp"}},
         std::bind(ImageLoader::LoadFromFile, std::placeholders::_1), nullptr);
     resource.Register<Texture>(
-        std::bind(TextureLoader::LoadFromFile, std::placeholders::_1), nullptr);
+        {{".sdtexture"}},
+        std::bind(TextureLoader::LoadFromFile, std::placeholders::_1),
+        std::bind(TextureLoader::WriteToFile, std::placeholders::_1,
+                  std::placeholders::_2));
     resource.Register<Model>(
-        std::bind(ModelLoader::LoadFromFile, std::placeholders::_1), nullptr);
+        {{".obj"}}, std::bind(ModelLoader::LoadFromFile, std::placeholders::_1),
+        nullptr);
     resource.Register<Font>(
+        {{".ttf", ".ttc"}},
         std::bind(FontLoader::LoadFont, std::placeholders::_1, 12), nullptr);
+    resource.Register<Scene>(
+        {{".sdscene"}},
+        std::bind(SceneLoader::LoadScene, std::placeholders::_1), nullptr);
 }
 
 Application::Application(const std::string &title, Device::API api)
@@ -80,7 +90,7 @@ Application::Application(const std::string &title, Device::API api)
     auto &resource = ResourceManager::Get();
     resource.Init(std::filesystem::current_path() / "assets");
     RegisterResources();
-    resource.FillDataWithPriority<ByteImage, Texture, Model>();
+    resource.FillDataWithPriority<ByteImage, Texture, Model, Font, Scene>();
 }
 
 Application::~Application() { ResourceManager::Get().ShutDown(); }

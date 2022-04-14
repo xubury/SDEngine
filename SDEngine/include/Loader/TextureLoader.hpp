@@ -10,7 +10,7 @@ namespace SD {
 class SD_LOADER_API TextureLoader {
    public:
     static Ref<Texture> LoadFromFile(const std::string &path);
-    static void SaveTexture(const Texture &texture, const std::string &path);
+    static void WriteToFile(const Texture &texture, const std::string &path);
 };
 
 }  // namespace SD

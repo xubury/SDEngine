@@ -5,6 +5,8 @@
 #include "Utility/Serialize.hpp"
 #include "ECS/Export.hpp"
 #include "Resource/Resource.hpp"
+#include "Graphics/Model.hpp"
+
 #include "entt/entt.hpp"
 // #include "entt/config/config.h"
 // #include "entt/entity/snapshot.hpp"
@@ -34,6 +36,7 @@ class SD_ECS_API Scene : public entt::registry, public Resource {
     ~Scene() = default;
 
     Entity CreateEntity(const std::string &name);
+    Entity CreateModelEntity(const Model &model, const ModelNode *node);
 
     void Serialize(cereal::PortableBinaryOutputArchive &archive);
 

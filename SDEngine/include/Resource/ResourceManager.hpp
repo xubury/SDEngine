@@ -19,6 +19,7 @@ using CacheMap = std::unordered_map<ResourceId, Cache>;
 using PathMap = std::unordered_map<std::string, ResourceId>;
 
 struct ResourceTypeData {
+    std::vector<std::string> extensions;
 };
 
 using TypeId = size_t;
@@ -63,10 +64,12 @@ class SD_RESOURCE_API ResourceManager {
     const std::filesystem::path& GetDirectory() const { return m_directory; }
 
     template <typename T>
-    void Register(typename Serializer<T>::Signature&& serialze_func,
+    void Register(const ResourceTypeData& type_data,
+                  typename Serializer<T>::Signature&& serialze_func,
                   typename Deserializer<T>::Signature&& deserialze_func)
     {
         TypeId tid = GetTypeId<T>();
+        m_resource_types[tid] = type_data;
         if (serialze_func) {
             auto serializer = CreateScope<Serializer<T>>();
             serializer->function = std::move(serialze_func);
@@ -191,6 +194,15 @@ class SD_RESOURCE_API ResourceManager {
     const CacheMap& GetCaches()
     {
         return m_caches.at(GetTypeId<T>());
+    }
+
+    template <typename T>
+    bool MatchExtension(const std::string& ext)
+    {
+        auto& type_data = m_resource_types.at(GetTypeId<T>());
+        auto begin = type_data.extensions.begin();
+        auto end = type_data.extensions.end();
+        return std::find(begin, end, ext) != end;
     }
 
    private:

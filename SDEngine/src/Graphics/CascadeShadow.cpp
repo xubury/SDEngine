@@ -18,6 +18,12 @@ void CascadeShadow::CreateShadowMap(int32_t width, int32_t height)
     m_cascade_fb->Attach(*m_cascade_map, 0, 0);
 }
 
+void CascadeShadow::DestroyShadowMap()
+{
+    m_cascade_fb.reset();
+    m_cascade_map.reset();
+}
+
 void CascadeShadow::SetNumOfCascades(int32_t num_of_cascades)
 {
     m_cascade_planes.resize(num_of_cascades);

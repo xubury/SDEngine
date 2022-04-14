@@ -32,7 +32,7 @@ Ref<Texture> TextureLoader::LoadFromFile(const std::string& path)
     return texture;
 }
 
-void TextureLoader::SaveTexture(const Texture& texture, const std::string& path)
+void TextureLoader::WriteToFile(const Texture& texture, const std::string& path)
 {
     std::ofstream os;
     os.open(path, std::ios::binary);

@@ -11,7 +11,8 @@ namespace SD {
 class SD_GRAPHICS_API PointShadow {
    public:
     PointShadow();
-    void CreateShadowMap(int32_t width, int32_t height);
+    void CreateShadowMap(int32_t width = 4096, int32_t height = 4096);
+    void DestroyShadowMap();
 
     Texture *GetShadowMap() { return m_shadow_map.get(); }
     Framebuffer *GetShadowTarget() { return m_framebuffer.get(); }

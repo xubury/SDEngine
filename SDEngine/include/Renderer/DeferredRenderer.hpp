@@ -37,7 +37,7 @@ class SD_RENDERER_API DeferredRenderer {
    public:
     static void Init(const DeferredRenderSettings &settings);
 
-    static void Render(const Scene &scene, const Camera &camera);
+    static void Render(Scene &scene, const Camera &camera);
 
     static void ImGui();
 
@@ -54,11 +54,12 @@ class SD_RENDERER_API DeferredRenderer {
 
     static void RenderSSAO();
 
-    static void RenderShadowMap(const Scene &scene, const Camera &camera,
+    static void RenderShadowMap(const Scene &scene, CascadeShadow &shadow,
+                                const Camera &camera,
                                 const Transform &transform);
-    static void RenderPointShadowMap(const Scene &scene,
+    static void RenderPointShadowMap(const Scene &scene, PointShadow &shadow,
                                      const Transform &transform);
-    static void RenderDeferred(const Scene &scene, const Camera &camera);
+    static void RenderDeferred(Scene &scene, const Camera &camera);
     static void RenderEmissive();
 };
 

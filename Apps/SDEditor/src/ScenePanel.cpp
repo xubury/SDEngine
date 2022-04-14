@@ -312,10 +312,26 @@ void ScenePanel::DrawComponents(Entity &entity)
     DrawComponent<DirectionalLightComponent>(
         "Directional Light", entity, [&](DirectionalLightComponent &lightComp) {
             DirectionalLight &light = lightComp.light;
+            CascadeShadow &shadow = lightComp.shadow;
             ImGui::ColorEdit3("Diffuse", &light.diffuse[0]);
             ImGui::ColorEdit3("Ambient", &light.ambient[0]);
             ImGui::ColorEdit3("Specular", &light.specular[0]);
-            (ImGui::Checkbox("Cast Shadow", &lightComp.is_cast_shadow));
+            if (ImGui::Checkbox("Cast Shadow", &lightComp.is_cast_shadow)) {
+                if (lightComp.is_cast_shadow) {
+                    lightComp.shadow.CreateShadowMap();
+                }
+                else {
+                    lightComp.shadow.DestroyShadowMap();
+                }
+            }
+            auto planes = shadow.GetCascadePlanes();
+            int num_of_cascades = planes.size();
+            if (ImGui::SliderInt("Num of Cascades", &num_of_cascades, 1, 4)) {
+                shadow.SetNumOfCascades(num_of_cascades);
+            }
+            if (ImGui::InputFloat4("Cascades", planes.data())) {
+                shadow.SetCascadePlanes(planes);
+            }
         });
     DrawComponent<PointLightComponent>(
         "Point Light", entity, [&](PointLightComponent &lightComp) {
@@ -326,11 +342,23 @@ void ScenePanel::DrawComponents(Entity &entity)
 
             ImGui::ColorEdit3("Specular", &light.specular[0]);
 
-            ImGui::Checkbox("Cast Shadow", &lightComp.is_cast_shadow);
             ImGui::SliderFloat("Constant", &light.constant, 0.f, 1.0f);
             ImGui::SliderFloat("Linear", &light.linear, 0.f, 1.0f);
             ImGui::SliderFloat("Quadratic", &light.quadratic, 0.0002f, 0.1f,
                                "%.4f");
+
+            if (ImGui::Checkbox("Cast Shadow", &lightComp.is_cast_shadow)) {
+                if (lightComp.is_cast_shadow) {
+                    lightComp.shadow.CreateShadowMap();
+                }
+                else {
+                    lightComp.shadow.DestroyShadowMap();
+                }
+            }
+            float far_z = lightComp.shadow.GetFarZ();
+            if (ImGui::SliderFloat("Shadow Far Z", &far_z, 1.0f, 500.f)) {
+                lightComp.shadow.SetFarZ(far_z);
+            }
         });
     DrawComponent<TextComponent>("Text", entity, [&](TextComponent &textComp) {
         ImGui::DrawFontAssetSelection(&textComp.font_id);

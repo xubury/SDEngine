@@ -10,14 +10,12 @@
 namespace SD {
 
 struct DeferredRenderData {
-    CascadeShadow cascade_shadow;
     Ref<Shader> cascade_shader;
     Ref<Shader> cascade_debug_shader;
     Ref<Framebuffer> cascade_debug_target;
     Ref<Texture> cascade_debug_buffer;
     int debug_layer{0};
 
-    PointShadow point_shadow;
     Ref<Shader> point_shadow_shader;
 
     Ref<Shader> emssive_shader;
@@ -70,8 +68,6 @@ DataFormat GetTextureFormat(GeometryBufferType type)
 void DeferredRenderer::Init(const DeferredRenderSettings &settings)
 {
     s_settings = settings;
-    s_data.cascade_shadow.CreateShadowMap(4096, 4096);
-    s_data.point_shadow.CreateShadowMap(4096, 4096);
     for (int i = 0; i < 2; ++i) {
         s_data.lighting_target[i] = Framebuffer::Create();
     }
@@ -223,29 +219,17 @@ void DeferredRenderer::ImGui()
         ImGui::TreePop();
     }
     if (ImGui::TreeNodeEx("Cascade Shadow")) {
-        auto planes = s_data.cascade_shadow.GetCascadePlanes();
-        int num_of_cascades = planes.size();
-        if (ImGui::SliderInt("Num of Cascades", &num_of_cascades, 1, 4)) {
-            s_data.cascade_shadow.SetNumOfCascades(num_of_cascades);
-        }
-        if (ImGui::InputFloat4("Cascades", planes.data())) {
-            s_data.cascade_shadow.SetCascadePlanes(planes);
-        }
         ImGui::InputInt("Layer", &s_data.debug_layer);
         ImGui::DrawTexture(*s_data.cascade_debug_buffer, ImVec2(0, 1),
                            ImVec2(1, 0));
         ImGui::TreePop();
     }
     if (ImGui::TreeNodeEx("Point Shadow")) {
-        float far_z = s_data.point_shadow.GetFarZ();
-        if (ImGui::SliderFloat("Shadow Far Z", &far_z, 1.0f, 500.f)) {
-            s_data.point_shadow.SetFarZ(far_z);
-        }
         ImGui::TreePop();
     }
 }
 
-void DeferredRenderer::Render(const Scene &scene, const Camera &camera)
+void DeferredRenderer::Render(Scene &scene, const Camera &camera)
 {
     RenderGBuffer(scene);
     BlitGeometryBuffers();
@@ -268,19 +252,21 @@ void DeferredRenderer::Render(const Scene &scene, const Camera &camera)
         BufferBitMask::ColorBufferBit | BufferBitMask::DepthBufferBit);
 }
 
-void DeferredRenderer::RenderShadowMap(const Scene &scene, const Camera &camera,
+void DeferredRenderer::RenderShadowMap(const Scene &scene,
+                                       CascadeShadow &shadow,
+                                       const Camera &camera,
                                        const Transform &transform)
 {
     auto modelView = scene.view<TransformComponent, MeshComponent>();
     RenderOperation op;
     op.cull_face = Face::Front;
-    Texture *depth_map = s_data.cascade_shadow.GetShadowMap();
-    Framebuffer *target = s_data.cascade_shadow.GetShadowTarget();
+    Texture *depth_map = shadow.GetShadowMap();
+    Framebuffer *target = shadow.GetShadowTarget();
     Renderer::BeginRenderPass(RenderPassInfo{target, depth_map->GetWidth(),
                                              depth_map->GetHeight(), op});
-    s_data.cascade_shadow.ComputeCascadeLightMatrix(transform, camera);
+    shadow.ComputeCascadeLightMatrix(transform, camera);
     Renderer3D::BindCascadeShadow(*s_data.cascade_shader);
-    Renderer3D::SetCascadeShadow(s_data.cascade_shadow);
+    Renderer3D::SetCascadeShadow(shadow);
 
     ShaderParam *model_param = s_data.cascade_shader->GetParam("u_model");
     auto &resource = ResourceManager::Get();
@@ -314,17 +300,18 @@ void DeferredRenderer::RenderShadowMap(const Scene &scene, const Camera &camera,
 }
 
 void DeferredRenderer::RenderPointShadowMap(const Scene &scene,
+                                            PointShadow &shadow,
                                             const Transform &transform)
 {
     Vector3f light_pos = transform.GetPosition();
     std::array<Matrix4f, 6> shadow_trans =
-        s_data.point_shadow.GetProjectionMatrix(light_pos);
+        shadow.GetProjectionMatrix(light_pos);
 
     auto modelView = scene.view<TransformComponent, MeshComponent>();
     RenderOperation op;
     op.cull_face = Face::Front;
-    Texture *shadow_map = s_data.point_shadow.GetShadowMap();
-    Framebuffer *shadow_target = s_data.point_shadow.GetShadowTarget();
+    Texture *shadow_map = shadow.GetShadowMap();
+    Framebuffer *shadow_target = shadow.GetShadowTarget();
     Renderer::BeginRenderPass(RenderPassInfo{
         shadow_target, shadow_map->GetWidth(), shadow_map->GetHeight(), op});
 
@@ -332,7 +319,7 @@ void DeferredRenderer::RenderPointShadowMap(const Scene &scene,
     s_data.point_shadow_shader->GetParam("u_light_pos")
         ->SetAsVec3(&transform.GetPosition()[0]);
     s_data.point_shadow_shader->GetParam("u_far_z")->SetAsFloat(
-        s_data.point_shadow.GetFarZ());
+        shadow.GetFarZ());
     s_data.point_shadow_shader->GetParam("u_shadow_matrix[0]")
         ->SetAsMat4(&shadow_trans[0][0][0], 6);
 
@@ -393,7 +380,7 @@ void DeferredRenderer::RenderEmissive()
     Renderer::EndRenderSubpass();
 }
 
-void DeferredRenderer::RenderDeferred(const Scene &scene, const Camera &camera)
+void DeferredRenderer::RenderDeferred(Scene &scene, const Camera &camera)
 {
     s_data.deferred_shader->GetParam("u_position")
         ->SetAsTexture(
@@ -454,7 +441,7 @@ void DeferredRenderer::RenderDeferred(const Scene &scene, const Camera &camera)
     auto dir_lights =
         scene.view<TransformComponent, DirectionalLightComponent>();
     dir_lights.each([&](const TransformComponent &transformComp,
-                        const DirectionalLightComponent &lightComp) {
+                        DirectionalLightComponent &lightComp) {
         const DirectionalLight &light = lightComp.light;
         const Transform &transform = transformComp.GetWorldTransform();
 
@@ -477,10 +464,10 @@ void DeferredRenderer::RenderDeferred(const Scene &scene, const Camera &camera)
         is_directional->SetAsBool(true);
         is_cast_shadow->SetAsBool(lightComp.is_cast_shadow);
         if (lightComp.is_cast_shadow) {
-            RenderShadowMap(scene, camera, transform);
+            RenderShadowMap(scene, lightComp.shadow, camera, transform);
 
-            cascade_map->SetAsTexture(s_data.cascade_shadow.GetShadowMap());
-            auto &planes = s_data.cascade_shadow.GetCascadePlanes();
+            cascade_map->SetAsTexture(lightComp.shadow.GetShadowMap());
+            auto &planes = lightComp.shadow.GetCascadePlanes();
             num_of_cascades->SetAsInt(planes.size());
             cascade_planes->SetAsVec(&planes[0], planes.size());
         }
@@ -504,7 +491,7 @@ void DeferredRenderer::RenderDeferred(const Scene &scene, const Camera &camera)
         s_data.deferred_shader->GetParam("u_point_shadow_far_z");
     auto point_lights = scene.view<TransformComponent, PointLightComponent>();
     point_lights.each([&](const TransformComponent &transformComp,
-                          const PointLightComponent &lightComp) {
+                          PointLightComponent &lightComp) {
         const PointLight &light = lightComp.light;
         const Transform &transform = transformComp.GetWorldTransform();
 
@@ -531,10 +518,10 @@ void DeferredRenderer::RenderDeferred(const Scene &scene, const Camera &camera)
         is_directional->SetAsBool(false);
         is_cast_shadow->SetAsBool(lightComp.is_cast_shadow);
         if (lightComp.is_cast_shadow) {
-            RenderPointShadowMap(scene, transform);
+            RenderPointShadowMap(scene, lightComp.shadow, transform);
 
-            point_shadow_map->SetAsTexture(s_data.point_shadow.GetShadowMap());
-            point_shadow_far_z->SetAsFloat(s_data.point_shadow.GetFarZ());
+            point_shadow_map->SetAsTexture(lightComp.shadow.GetShadowMap());
+            point_shadow_far_z->SetAsFloat(lightComp.shadow.GetFarZ());
         }
 
         Renderer::DrawNDCQuad(*s_data.deferred_shader);

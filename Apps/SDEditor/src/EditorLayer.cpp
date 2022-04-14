@@ -287,30 +287,6 @@ void EditorLayer::MenuBar()
     }
 }
 
-static Entity ConstructModel(Scene *scene, const Model &model,
-                             const ModelNode *node)
-{
-    std::string name = node->GetName();
-    Entity entity = scene->CreateEntity(name);
-    auto &meshes = node->GetMeshes();
-    auto &materials = node->GetMaterials();
-    for (size_t i = 0; i < meshes.size(); ++i) {
-        Entity child = scene->CreateEntity(name + "_" + std::to_string(i));
-        entity.AddChild(child);
-        auto &mc = child.AddComponent<MeshComponent>();
-        mc.model_id = model.Id();
-        mc.mesh_index = meshes[i];
-        mc.material = model.GetMaterial(materials[i]);
-        auto &tc = child.GetComponent<TransformComponent>();
-        tc.SetLocalTransform(node->GetTransform());
-    }
-    for (auto &child : node->GetChildren()) {
-        Entity child_entity = ConstructModel(scene, model, child);
-        entity.AddChild(child_entity);
-    }
-    return entity;
-}
-
 void EditorLayer::DrawViewport()
 {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
@@ -397,15 +373,15 @@ void EditorLayer::DrawViewport()
                     auto &resource = ResourceManager::Get();
                     std::string filename = static_cast<char *>(payload->Data);
                     std::string ext = String::GetExtension(filename);
-                    if (ext == ".sdscene") {
+                    if (resource.MatchExtension<Scene>(ext)) {
                         SetCurrentScene(
                             resource.LoadResource<Scene>(filename).get());
                         SD_TRACE("load scene asset");
                     }
-                    else if (ext == ".obj") {
+                    else if (resource.MatchExtension<Model>(ext)) {
                         auto model = resource.LoadResource<Model>(filename);
-                        ConstructModel(m_current_scene, *model,
-                                       model->GetRootNode());
+                        m_current_scene->CreateModelEntity(
+                            *model, model->GetRootNode());
                     }
                 }
                 catch (const Exception &e) {

@@ -12,236 +12,272 @@
 						<value0>models/Sponza/sponza.obj</value0>
 					</value>
 				</value0>
+				<value1>
+					<key>
+						<value0>699294973169966232</value0>
+					</key>
+					<value>
+						<value0>models/cube.obj</value0>
+					</value>
+				</value1>
 			</value>
 		</value0>
 		<value1>
 			<key>5940447095950589305</key>
-			<value size="dynamic"/>
+			<value size="dynamic">
+				<value0>
+					<key>
+						<value0>2845214834270730631</value0>
+					</key>
+					<value>
+						<value0>icons/DirectoryIcon.sdtexture</value0>
+					</value>
+				</value0>
+			</value>
 		</value1>
 		<value2>
 			<key>17284271392935798643</key>
 			<value size="dynamic">
 				<value0>
 					<key>
-						<value0>5120728171960283871</value0>
+						<value0>5387036286824531097</value0>
 					</key>
 					<value>
-						<value0>models/Sponza/textures/sponza_flagpole_diff.tga</value0>
+						<value0>models/Sponza/textures/vase_plant.tga</value0>
 					</value>
 				</value0>
 				<value1>
-					<key>
-						<value0>1588823965642287669</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/sponza_curtain_green_diff.tga</value0>
-					</value>
-				</value1>
-				<value2>
-					<key>
-						<value0>16245773460546925272</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/sponza_fabric_green_diff.tga</value0>
-					</value>
-				</value2>
-				<value3>
-					<key>
-						<value0>14289880193645581978</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/vase_dif.tga</value0>
-					</value>
-				</value3>
-				<value4>
-					<key>
-						<value0>10021203315691925499</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/sponza_thorn_diff.tga</value0>
-					</value>
-				</value4>
-				<value5>
-					<key>
-						<value0>18334708931485781027</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/sponza_fabric_blue_diff.tga</value0>
-					</value>
-				</value5>
-				<value6>
-					<key>
-						<value0>10906392113191717091</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/sponza_fabric_diff.tga</value0>
-					</value>
-				</value6>
-				<value7>
-					<key>
-						<value0>2041499155566994523</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/vase_hanging.tga</value0>
-					</value>
-				</value7>
-				<value8>
-					<key>
-						<value0>259839655913573746</value0>
-					</key>
-					<value>
-						<value0>icons/FileIcon.png</value0>
-					</value>
-				</value8>
-				<value9>
-					<key>
-						<value0>12754969443721673672</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/sponza_column_b_diff.tga</value0>
-					</value>
-				</value9>
-				<value10>
-					<key>
-						<value0>6571871653212689010</value0>
-					</key>
-					<value>
-						<value0>icons/DirectoryIcon.png</value0>
-					</value>
-				</value10>
-				<value11>
 					<key>
 						<value0>3209115032388800852</value0>
 					</key>
 					<value>
 						<value0>models/Sponza/textures/sponza_curtain_diff.tga</value0>
 					</value>
+				</value1>
+				<value2>
+					<key>
+						<value0>6571871653212689010</value0>
+					</key>
+					<value>
+						<value0>icons/DirectoryIcon.png</value0>
+					</value>
+				</value2>
+				<value3>
+					<key>
+						<value0>12754969443721673672</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/sponza_column_b_diff.tga</value0>
+					</value>
+				</value3>
+				<value4>
+					<key>
+						<value0>259839655913573746</value0>
+					</key>
+					<value>
+						<value0>icons/FileIcon.png</value0>
+					</value>
+				</value4>
+				<value5>
+					<key>
+						<value0>2041499155566994523</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/vase_hanging.tga</value0>
+					</value>
+				</value5>
+				<value6>
+					<key>
+						<value0>10021203315691925499</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/sponza_thorn_diff.tga</value0>
+					</value>
+				</value6>
+				<value7>
+					<key>
+						<value0>18334708931485781027</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/sponza_fabric_blue_diff.tga</value0>
+					</value>
+				</value7>
+				<value8>
+					<key>
+						<value0>14289880193645581978</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/vase_dif.tga</value0>
+					</value>
+				</value8>
+				<value9>
+					<key>
+						<value0>10906392113191717091</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/sponza_fabric_diff.tga</value0>
+					</value>
+				</value9>
+				<value10>
+					<key>
+						<value0>16245773460546925272</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/sponza_fabric_green_diff.tga</value0>
+					</value>
+				</value10>
+				<value11>
+					<key>
+						<value0>1588823965642287669</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/sponza_curtain_green_diff.tga</value0>
+					</value>
 				</value11>
 				<value12>
 					<key>
-						<value0>5387036286824531097</value0>
+						<value0>5120728171960283871</value0>
 					</key>
 					<value>
-						<value0>models/Sponza/textures/vase_plant.tga</value0>
+						<value0>models/Sponza/textures/sponza_flagpole_diff.tga</value0>
 					</value>
 				</value12>
 				<value13>
-					<key>
-						<value0>10697959290297008892</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/sponza_floor_a_diff.tga</value0>
-					</value>
-				</value13>
-				<value14>
-					<key>
-						<value0>3854284680174587329</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/lion.tga</value0>
-					</value>
-				</value14>
-				<value15>
-					<key>
-						<value0>16171901598083265556</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/sponza_roof_diff.tga</value0>
-					</value>
-				</value15>
-				<value16>
-					<key>
-						<value0>954004971306034591</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/background.tga</value0>
-					</value>
-				</value16>
-				<value17>
-					<key>
-						<value0>6215166139866204474</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/sponza_roof_ddn.tga</value0>
-					</value>
-				</value17>
-				<value18>
-					<key>
-						<value0>6003110726652554142</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/sponza_arch_diff.tga</value0>
-					</value>
-				</value18>
-				<value19>
-					<key>
-						<value0>6681374857342043833</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/spnza_bricks_a_diff.tga</value0>
-					</value>
-				</value19>
-				<value20>
-					<key>
-						<value0>9950460936313337869</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/sponza_column_c_diff.tga</value0>
-					</value>
-				</value20>
-				<value21>
-					<key>
-						<value0>3501065496484194636</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/sponza_curtain_blue_diff.tga</value0>
-					</value>
-				</value21>
-				<value22>
-					<key>
-						<value0>2189668062358513743</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/sponza_ceiling_a_diff.tga</value0>
-					</value>
-				</value22>
-				<value23>
-					<key>
-						<value0>2126947422227219156</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/chain_texture.tga</value0>
-					</value>
-				</value23>
-				<value24>
-					<key>
-						<value0>4073150711115648545</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/vase_round.tga</value0>
-					</value>
-				</value24>
-				<value25>
-					<key>
-						<value0>17858823450103197810</value0>
-					</key>
-					<value>
-						<value0>models/Sponza/textures/sponza_column_a_diff.tga</value0>
-					</value>
-				</value25>
-				<value26>
 					<key>
 						<value0>10110609098834713953</value0>
 					</key>
 					<value>
 						<value0>models/Sponza/textures/sponza_details_diff.tga</value0>
 					</value>
+				</value13>
+				<value14>
+					<key>
+						<value0>17858823450103197810</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/sponza_column_a_diff.tga</value0>
+					</value>
+				</value14>
+				<value15>
+					<key>
+						<value0>4073150711115648545</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/vase_round.tga</value0>
+					</value>
+				</value15>
+				<value16>
+					<key>
+						<value0>2126947422227219156</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/chain_texture.tga</value0>
+					</value>
+				</value16>
+				<value17>
+					<key>
+						<value0>2189668062358513743</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/sponza_ceiling_a_diff.tga</value0>
+					</value>
+				</value17>
+				<value18>
+					<key>
+						<value0>3501065496484194636</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/sponza_curtain_blue_diff.tga</value0>
+					</value>
+				</value18>
+				<value19>
+					<key>
+						<value0>9950460936313337869</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/sponza_column_c_diff.tga</value0>
+					</value>
+				</value19>
+				<value20>
+					<key>
+						<value0>6681374857342043833</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/spnza_bricks_a_diff.tga</value0>
+					</value>
+				</value20>
+				<value21>
+					<key>
+						<value0>6003110726652554142</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/sponza_arch_diff.tga</value0>
+					</value>
+				</value21>
+				<value22>
+					<key>
+						<value0>6215166139866204474</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/sponza_roof_ddn.tga</value0>
+					</value>
+				</value22>
+				<value23>
+					<key>
+						<value0>10697959290297008892</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/sponza_floor_a_diff.tga</value0>
+					</value>
+				</value23>
+				<value24>
+					<key>
+						<value0>3854284680174587329</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/lion.tga</value0>
+					</value>
+				</value24>
+				<value25>
+					<key>
+						<value0>954004971306034591</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/background.tga</value0>
+					</value>
+				</value25>
+				<value26>
+					<key>
+						<value0>16171901598083265556</value0>
+					</key>
+					<value>
+						<value0>models/Sponza/textures/sponza_roof_diff.tga</value0>
+					</value>
 				</value26>
 			</value>
 		</value2>
+		<value3>
+			<key>365344376608531612</key>
+			<value size="dynamic"/>
+		</value3>
+		<value4>
+			<key>1322524139161459547</key>
+			<value size="dynamic"/>
+		</value4>
 	</value0>
 	<value1 size="dynamic">
 		<value0>
+			<key>5940447095950589305</key>
+			<value size="dynamic">
+				<value0>
+					<key>icons/DirectoryIcon.sdtexture</key>
+					<value>
+						<value0>2845214834270730631</value0>
+					</value>
+				</value0>
+			</value>
+		</value0>
+		<value1>
 			<key>18381318876296645759</key>
 			<value size="dynamic">
 				<value0>
@@ -250,51 +286,57 @@
 						<value0>1120442096081756351</value0>
 					</value>
 				</value0>
+				<value1>
+					<key>models/cube.obj</key>
+					<value>
+						<value0>699294973169966232</value0>
+					</value>
+				</value1>
 			</value>
-		</value0>
-		<value1>
+		</value1>
+		<value2>
 			<key>17284271392935798643</key>
 			<value size="dynamic">
 				<value0>
-					<key>models/Sponza/textures/vase_dif.tga</key>
+					<key>models/Sponza/textures/sponza_fabric_green_diff.tga</key>
 					<value>
-						<value0>14289880193645581978</value0>
+						<value0>16245773460546925272</value0>
 					</value>
 				</value0>
 				<value1>
-					<key>models/Sponza/textures/sponza_roof_diff.tga</key>
+					<key>icons/DirectoryIcon.png</key>
 					<value>
-						<value0>16171901598083265556</value0>
+						<value0>6571871653212689010</value0>
 					</value>
 				</value1>
 				<value2>
-					<key>models/Sponza/textures/sponza_thorn_diff.tga</key>
+					<key>models/Sponza/textures/spnza_bricks_a_diff.tga</key>
 					<value>
-						<value0>10021203315691925499</value0>
+						<value0>6681374857342043833</value0>
 					</value>
 				</value2>
 				<value3>
-					<key>models/Sponza/textures/sponza_curtain_blue_diff.tga</key>
+					<key>models/Sponza/textures/sponza_fabric_diff.tga</key>
 					<value>
-						<value0>3501065496484194636</value0>
+						<value0>10906392113191717091</value0>
 					</value>
 				</value3>
 				<value4>
-					<key>models/Sponza/textures/sponza_fabric_blue_diff.tga</key>
+					<key>models/Sponza/textures/sponza_flagpole_diff.tga</key>
 					<value>
-						<value0>18334708931485781027</value0>
+						<value0>5120728171960283871</value0>
 					</value>
 				</value4>
 				<value5>
-					<key>models/Sponza/textures/vase_round.tga</key>
-					<value>
-						<value0>4073150711115648545</value0>
-					</value>
-				</value5>
-				<value6>
 					<key>models/Sponza/textures/sponza_roof_ddn.tga</key>
 					<value>
 						<value0>6215166139866204474</value0>
+					</value>
+				</value5>
+				<value6>
+					<key>models/Sponza/textures/vase_round.tga</key>
+					<value>
+						<value0>4073150711115648545</value0>
 					</value>
 				</value6>
 				<value7>
@@ -304,121 +346,121 @@
 					</value>
 				</value7>
 				<value8>
-					<key>models/Sponza/textures/sponza_flagpole_diff.tga</key>
+					<key>models/Sponza/textures/sponza_fabric_blue_diff.tga</key>
 					<value>
-						<value0>5120728171960283871</value0>
+						<value0>18334708931485781027</value0>
 					</value>
 				</value8>
 				<value9>
-					<key>models/Sponza/textures/sponza_fabric_diff.tga</key>
+					<key>models/Sponza/textures/sponza_curtain_blue_diff.tga</key>
 					<value>
-						<value0>10906392113191717091</value0>
+						<value0>3501065496484194636</value0>
 					</value>
 				</value9>
 				<value10>
-					<key>models/Sponza/textures/sponza_fabric_green_diff.tga</key>
+					<key>models/Sponza/textures/sponza_thorn_diff.tga</key>
 					<value>
-						<value0>16245773460546925272</value0>
+						<value0>10021203315691925499</value0>
 					</value>
 				</value10>
 				<value11>
-					<key>icons/DirectoryIcon.png</key>
+					<key>models/Sponza/textures/sponza_roof_diff.tga</key>
 					<value>
-						<value0>6571871653212689010</value0>
+						<value0>16171901598083265556</value0>
 					</value>
 				</value11>
 				<value12>
-					<key>models/Sponza/textures/spnza_bricks_a_diff.tga</key>
+					<key>models/Sponza/textures/vase_dif.tga</key>
 					<value>
-						<value0>6681374857342043833</value0>
+						<value0>14289880193645581978</value0>
 					</value>
 				</value12>
 				<value13>
-					<key>models/Sponza/textures/vase_hanging.tga</key>
-					<value>
-						<value0>2041499155566994523</value0>
-					</value>
-				</value13>
-				<value14>
-					<key>icons/FileIcon.png</key>
-					<value>
-						<value0>259839655913573746</value0>
-					</value>
-				</value14>
-				<value15>
-					<key>models/Sponza/textures/background.tga</key>
-					<value>
-						<value0>954004971306034591</value0>
-					</value>
-				</value15>
-				<value16>
-					<key>models/Sponza/textures/vase_plant.tga</key>
-					<value>
-						<value0>5387036286824531097</value0>
-					</value>
-				</value16>
-				<value17>
-					<key>models/Sponza/textures/sponza_ceiling_a_diff.tga</key>
-					<value>
-						<value0>2189668062358513743</value0>
-					</value>
-				</value17>
-				<value18>
-					<key>models/Sponza/textures/chain_texture.tga</key>
-					<value>
-						<value0>2126947422227219156</value0>
-					</value>
-				</value18>
-				<value19>
-					<key>models/Sponza/textures/sponza_column_a_diff.tga</key>
-					<value>
-						<value0>17858823450103197810</value0>
-					</value>
-				</value19>
-				<value20>
-					<key>models/Sponza/textures/sponza_floor_a_diff.tga</key>
-					<value>
-						<value0>10697959290297008892</value0>
-					</value>
-				</value20>
-				<value21>
-					<key>models/Sponza/textures/sponza_column_b_diff.tga</key>
-					<value>
-						<value0>12754969443721673672</value0>
-					</value>
-				</value21>
-				<value22>
-					<key>models/Sponza/textures/lion.tga</key>
-					<value>
-						<value0>3854284680174587329</value0>
-					</value>
-				</value22>
-				<value23>
-					<key>models/Sponza/textures/sponza_arch_diff.tga</key>
-					<value>
-						<value0>6003110726652554142</value0>
-					</value>
-				</value23>
-				<value24>
-					<key>models/Sponza/textures/sponza_column_c_diff.tga</key>
-					<value>
-						<value0>9950460936313337869</value0>
-					</value>
-				</value24>
-				<value25>
-					<key>models/Sponza/textures/sponza_curtain_green_diff.tga</key>
-					<value>
-						<value0>1588823965642287669</value0>
-					</value>
-				</value25>
-				<value26>
 					<key>models/Sponza/textures/sponza_details_diff.tga</key>
 					<value>
 						<value0>10110609098834713953</value0>
 					</value>
+				</value13>
+				<value14>
+					<key>models/Sponza/textures/sponza_curtain_green_diff.tga</key>
+					<value>
+						<value0>1588823965642287669</value0>
+					</value>
+				</value14>
+				<value15>
+					<key>models/Sponza/textures/vase_plant.tga</key>
+					<value>
+						<value0>5387036286824531097</value0>
+					</value>
+				</value15>
+				<value16>
+					<key>models/Sponza/textures/sponza_column_c_diff.tga</key>
+					<value>
+						<value0>9950460936313337869</value0>
+					</value>
+				</value16>
+				<value17>
+					<key>models/Sponza/textures/sponza_arch_diff.tga</key>
+					<value>
+						<value0>6003110726652554142</value0>
+					</value>
+				</value17>
+				<value18>
+					<key>models/Sponza/textures/lion.tga</key>
+					<value>
+						<value0>3854284680174587329</value0>
+					</value>
+				</value18>
+				<value19>
+					<key>models/Sponza/textures/sponza_floor_a_diff.tga</key>
+					<value>
+						<value0>10697959290297008892</value0>
+					</value>
+				</value19>
+				<value20>
+					<key>models/Sponza/textures/sponza_column_b_diff.tga</key>
+					<value>
+						<value0>12754969443721673672</value0>
+					</value>
+				</value20>
+				<value21>
+					<key>models/Sponza/textures/sponza_column_a_diff.tga</key>
+					<value>
+						<value0>17858823450103197810</value0>
+					</value>
+				</value21>
+				<value22>
+					<key>models/Sponza/textures/chain_texture.tga</key>
+					<value>
+						<value0>2126947422227219156</value0>
+					</value>
+				</value22>
+				<value23>
+					<key>models/Sponza/textures/sponza_ceiling_a_diff.tga</key>
+					<value>
+						<value0>2189668062358513743</value0>
+					</value>
+				</value23>
+				<value24>
+					<key>models/Sponza/textures/vase_hanging.tga</key>
+					<value>
+						<value0>2041499155566994523</value0>
+					</value>
+				</value24>
+				<value25>
+					<key>icons/FileIcon.png</key>
+					<value>
+						<value0>259839655913573746</value0>
+					</value>
+				</value25>
+				<value26>
+					<key>models/Sponza/textures/background.tga</key>
+					<value>
+						<value0>954004971306034591</value0>
+					</value>
 				</value26>
 			</value>
-		</value1>
+		</value2>
 	</value1>
 </cereal>
 

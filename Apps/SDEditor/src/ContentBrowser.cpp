@@ -4,6 +4,7 @@
 #include "Resource/ResourceManager.hpp"
 #include "Loader/ImageLoader.hpp"
 #include "Loader/TextureLoader.hpp"
+#include "Utility/String.hpp"
 
 namespace SD {
 

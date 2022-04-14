@@ -89,6 +89,7 @@ struct SD_ECS_API MeshComponent {
 
 struct SD_ECS_API DirectionalLightComponent {
     DirectionalLight light;
+    CascadeShadow shadow;
     bool is_cast_shadow{false};
 
     SERIALIZE(light, is_cast_shadow)
@@ -96,6 +97,7 @@ struct SD_ECS_API DirectionalLightComponent {
 
 struct SD_ECS_API PointLightComponent {
     PointLight light;
+    PointShadow shadow;
     bool is_cast_shadow{false};
 
     SERIALIZE(light, is_cast_shadow)
@@ -158,6 +160,26 @@ inline void OnComponentAdded<SpriteAnimationComponent>(entt::registry& reg,
 {
     auto& anim = reg.get<SpriteAnimationComponent>(ent);
     anim.animations.push_back(FrameAnimation<SpriteFrame>());
+}
+
+template <>
+inline void OnComponentAdded<DirectionalLightComponent>(entt::registry& reg,
+                                                        entt::entity ent)
+{
+    auto& light = reg.get<DirectionalLightComponent>(ent);
+    if (light.is_cast_shadow) {
+        light.shadow.CreateShadowMap();
+    }
+}
+
+template<>
+inline void OnComponentAdded<PointLightComponent>(entt::registry &reg, entt::entity ent)
+{
+
+    auto& light = reg.get<PointLightComponent>(ent);
+    if (light.is_cast_shadow) {
+        light.shadow.CreateShadowMap();
+    }
 }
 
 }  // namespace SD
