@@ -1,12 +1,11 @@
 #include "Renderer/SpriteRenderer.hpp"
 #include "Renderer/Renderer2D.hpp"
-#include "Resource/ResourceManager.hpp"
 #include "ECS/Component.hpp"
 
 namespace SD {
 
 struct SpriteDrawData {
-    Texture *texture;
+    const Texture *texture;
     std::array<Vector2f, 2> uvs;
     Vector3f pos;
     Quaternion rot;
@@ -17,7 +16,7 @@ struct SpriteDrawData {
 
 void SpriteRenderer::Render(const Scene &scene)
 {
-    auto &resource = ResourceManager::Get();
+    auto &resource = scene.GetTextureResource();
     int index[] = {0, 1};
     RenderOperation op;
     op.depth_mask = false;
@@ -31,9 +30,9 @@ void SpriteRenderer::Render(const Scene &scene)
                          const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
         auto &frame = sprite_comp.frame;
-        if (resource.Exist<Texture>(frame.texture_id)) {
-            auto texture = resource.GetResource<Texture>(frame.texture_id);
-            datas.push_back({texture.get(), frame.uvs,
+        if (resource.Contains(frame.texture_id)) {
+            auto texture = &resource.Handle(frame.texture_id).Get();
+            datas.push_back({texture, frame.uvs,
                              transform_comp.GetWorldPosition(),
                              transform_comp.GetWorldRotation(), frame.size, id,
                              frame.priority});
@@ -48,10 +47,9 @@ void SpriteRenderer::Render(const Scene &scene)
         if (anim) {
             if (anim->GetFrameSize()) {
                 auto &frame = anim->GetFrame();
-                if (resource.Exist<Texture>(frame.texture_id)) {
-                    auto texture =
-                        resource.GetResource<Texture>(frame.texture_id);
-                    datas.push_back({texture.get(), frame.uvs,
+                if (resource.Contains(frame.texture_id)) {
+                    auto texture = &resource.Handle(frame.texture_id).Get();
+                    datas.push_back({texture, frame.uvs,
                                      transform_comp.GetWorldPosition(),
                                      transform_comp.GetWorldRotation(),
                                      frame.size, id, frame.priority});
@@ -80,20 +78,20 @@ void SpriteRenderer::Render(const Scene &scene)
                                 data.size, Vector4f(1.0f), data.entity_id);
     }
 
-    auto textView = scene.view<TransformComponent, TextComponent>();
+    // auto textView = scene.view<TransformComponent, TextComponent>();
 
-    textView.each([&](entt::entity entity_id,
-                      const TransformComponent &transformComp,
-                      const TextComponent &textComp) {
-        Renderer2D::SetTextOrigin(0, 0);
-        if (resource.Exist<Font>(textComp.font_id)) {
-            auto font = resource.GetResource<Font>(textComp.font_id);
-            Renderer2D::DrawText(*font, textComp.text,
-                                 transformComp.GetWorldTransform().GetMatrix(),
-                                 textComp.color,
-                                 static_cast<uint32_t>(entity_id));
-        }
-    });
+    // textView.each([&](entt::entity entity_id,
+    //                   const TransformComponent &transformComp,
+    //                   const TextComponent &textComp) {
+    // Renderer2D::SetTextOrigin(0, 0);
+    // if (resource.Exist<Font>(textComp.font_id)) {
+    //     auto font = resource.GetResource<Font>(textComp.font_id);
+    //     Renderer2D::DrawText(*font, textComp.text,
+    //                          transformComp.GetWorldTransform().GetMatrix(),
+    //                          textComp.color,
+    //                          static_cast<uint32_t>(entity_id));
+    // }
+    // });
     Renderer2D::End();
 
     Renderer::EndRenderSubpass();

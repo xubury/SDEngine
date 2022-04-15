@@ -1,5 +1,5 @@
 #include "Loader/ModelLoader.hpp"
-#include "Resource/ResourceManager.hpp"
+#include "Loader/TextureLoader.hpp"
 #include "Graphics/Image.hpp"
 #include "Utility/Math.hpp"
 
@@ -143,13 +143,13 @@ static inline MaterialType ConvertAssimpTextureType(aiTextureType textureType)
 }
 
 static void ProcessAiMaterial(const std::filesystem::path &directory,
-                              const aiMaterial *ai_material, Model &model)
+                              const aiMaterial *ai_material, Model &model,
+                              ResourceCache<Texture> &cache)
 {
     Material material;
-    auto &resource = ResourceManager::Get();
-    for (int type = aiTextureType_NONE + 1; type < aiTextureType_SHININESS;
-         ++type) {
-        aiTextureType ai_type = aiTextureType(type);
+    const std::string name = ai_material->GetName().C_Str();
+    for (int i = aiTextureType_NONE + 1; i < aiTextureType_SHININESS; ++i) {
+        aiTextureType ai_type = aiTextureType(i);
         uint32_t count = ai_material->GetTextureCount(ai_type);
         if (count < 1) {
             continue;
@@ -167,17 +167,13 @@ static void ProcessAiMaterial(const std::filesystem::path &directory,
                                     &ai_map_mode) != AI_SUCCESS) {
             throw Exception("[ProcessAiMaterial] Assimp GetTexture error!");
         }
+        MaterialType type = ConvertAssimpTextureType(ai_type);
         std::string full_path =
             (directory / texture_path.C_Str()).generic_string();
-        auto image = resource.LoadResource<ByteImage>(full_path);
-        auto texture = Texture::Create(
-            image->Width(), image->Height(), 0, MultiSampleLevel::None,
-            TextureType::Normal, image->GetDataFormat(),
-            ConvertAssimpMapMode(ai_map_mode), TextureMinFilter::Linear,
-            TextureMagFilter::Linear, MipmapMode::Linear);
-        texture->SetPixels(0, 0, 0, image->Width(), image->Height(), 1,
-                           image->Data());
-        material.SetTexture(ConvertAssimpTextureType(ai_type), texture);
+        auto handle = cache.Load<TextureLoader>(
+            ResourceId(name + "_" + GetMaterialName(type)), full_path);
+        handle->SetWrap(ConvertAssimpMapMode(ai_map_mode));
+        material.SetTexture(ConvertAssimpTextureType(ai_type), &handle.Get());
     }
     model.AddMaterial(std::move(material));
 }
@@ -208,7 +204,8 @@ static void ProcessNode(const aiScene *scene, const aiNode *ai_node,
     }
 }
 
-Ref<Model> ModelLoader::LoadFromFile(const std::string &path)
+Ref<Model> ModelLoader::Load(const std::string &path,
+                             ResourceCache<Texture> &cache) const
 {
     Ref<Model> model;
     SD_CORE_TRACE("Loading model form: {}...", path);
@@ -227,7 +224,7 @@ Ref<Model> ModelLoader::LoadFromFile(const std::string &path)
         std::filesystem::path directory =
             std::filesystem::path(path).parent_path();
         for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
-            ProcessAiMaterial(directory, scene->mMaterials[i], *model);
+            ProcessAiMaterial(directory, scene->mMaterials[i], *model, cache);
         }
 
         // Process meshes

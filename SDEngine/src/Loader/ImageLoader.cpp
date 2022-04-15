@@ -1,5 +1,4 @@
 #include "Loader/ImageLoader.hpp"
-#include "Resource/ResourceManager.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"

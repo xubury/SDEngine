@@ -5,7 +5,6 @@
 #include "Utility/Random.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "Loader/ShaderLoader.hpp"
-#include "Resource/ResourceManager.hpp"
 
 namespace SD {
 
@@ -269,11 +268,11 @@ void DeferredRenderer::RenderShadowMap(const Scene &scene,
     Renderer3D::SetCascadeShadow(shadow);
 
     ShaderParam *model_param = s_data.cascade_shader->GetParam("u_model");
-    auto &resource = ResourceManager::Get();
+    auto &cache = scene.GetModelResource();
     modelView.each([&](const TransformComponent &tc, const MeshComponent &mc) {
         Matrix4f mat = tc.GetWorldTransform().GetMatrix();
         model_param->SetAsMat4(&mat[0][0]);
-        auto model = resource.GetResource<Model>(mc.model_id);
+        auto model = cache.Handle(mc.model_id);
         auto &mesh = model->GetMesh(mc.mesh_index);
         Renderer3D::DrawMesh(*s_data.cascade_shader, mesh);
     });
@@ -323,11 +322,11 @@ void DeferredRenderer::RenderPointShadowMap(const Scene &scene,
     s_data.point_shadow_shader->GetParam("u_shadow_matrix[0]")
         ->SetAsMat4(&shadow_trans[0][0][0], 6);
 
-    auto &resource = ResourceManager::Get();
+    auto &cache = scene.GetModelResource();
     modelView.each([&](const TransformComponent &tc, const MeshComponent &mc) {
         Matrix4f mat = tc.GetWorldTransform().GetMatrix();
         model_param->SetAsMat4(&mat[0][0]);
-        auto model = resource.GetResource<Model>(mc.model_id);
+        auto model = cache.Handle(mc.model_id);
         auto &mesh = model->GetMesh(mc.mesh_index);
         Renderer3D::DrawMesh(*s_data.point_shadow_shader, mesh);
     });
@@ -550,7 +549,7 @@ void DeferredRenderer::RenderGBuffer(const Scene &scene)
 
     ShaderParam *entity_id = s_data.gbuffer_shader->GetParam("u_entity_id");
     ShaderParam *model_param = s_data.gbuffer_shader->GetParam("u_model");
-    auto &resource = ResourceManager::Get();
+    auto &cache = scene.GetModelResource();
     meshes.each([&](const entt::entity &entity,
                     const TransformComponent &transform,
                     const MeshComponent &mc) {
@@ -558,7 +557,7 @@ void DeferredRenderer::RenderGBuffer(const Scene &scene)
         Matrix4f mat = transform.GetWorldTransform().GetMatrix();
         model_param->SetAsMat4(&mat[0][0]);
 
-        auto model = resource.GetResource<Model>(mc.model_id);
+        auto model = cache.Handle(mc.model_id);
         auto &mesh = model->GetMesh(mc.mesh_index);
         Renderer3D::SetMaterial(*s_data.gbuffer_shader, mc.material);
         Renderer3D::DrawMesh(*s_data.gbuffer_shader, mesh);

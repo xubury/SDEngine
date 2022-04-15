@@ -4,11 +4,10 @@
 #include "Graphics/Graphics.hpp"
 #include "Utility/Base.hpp"
 #include "Graphics/Export.hpp"
-#include "Resource/Resource.hpp"
 
 namespace SD {
 
-class SD_GRAPHICS_API ByteImage : public Resource {
+class SD_GRAPHICS_API ByteImage {
    public:
     ByteImage(int32_t width, int32_t height, int8_t channels);
     ByteImage(int32_t width, int32_t height, int8_t channels, uint8_t *data);

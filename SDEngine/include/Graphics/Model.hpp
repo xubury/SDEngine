@@ -7,7 +7,7 @@
 
 namespace SD {
 
-class SD_GRAPHICS_API Model : public Resource {
+class SD_GRAPHICS_API Model {
    public:
     Model() = default;
     virtual ~Model() { delete m_root_node; };
@@ -22,7 +22,7 @@ class SD_GRAPHICS_API Model : public Resource {
     const Material &GetMaterial(int32_t id) const { return m_materials.at(id); }
 
     void AddMesh(Mesh &&mesh) { m_meshes.push_back(std::move(mesh)); }
-    const Mesh &GetMesh(int32_t id)const { return m_meshes.at(id); }
+    const Mesh &GetMesh(int32_t id) const { return m_meshes.at(id); }
 
    private:
     ModelNode *m_root_node;

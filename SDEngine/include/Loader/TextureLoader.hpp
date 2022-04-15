@@ -5,12 +5,15 @@
 #include "Utility/Base.hpp"
 #include "Loader/Export.hpp"
 
+#include "Resource/ResourceLoader.hpp"
+
 namespace SD {
 
-class SD_LOADER_API TextureLoader {
+class SD_LOADER_API TextureLoader
+    : public ResourceLoader<TextureLoader, Texture> {
    public:
-    static Ref<Texture> LoadFromFile(const std::string &path);
-    static void WriteToFile(const Texture &texture, const std::string &path);
+    Ref<Texture> Load(const std::string &path) const;
+    // static void WriteToFile(const Texture &texture, const std::string &path);
 };
 
 }  // namespace SD

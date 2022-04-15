@@ -28,25 +28,25 @@ Entity Scene::CreateEntity(const std::string &name)
     return entity;
 }
 
-Entity Scene::CreateModelEntity(const Model &model, const ModelNode *node)
-
+Entity Scene::CreateModelEntity(const ResourceId rid, const ModelNode *node)
 {
     std::string name = node->GetName();
     Entity entity = CreateEntity(name);
     auto &meshes = node->GetMeshes();
     auto &materials = node->GetMaterials();
+    auto handle = m_models.Handle(rid);
     for (size_t i = 0; i < meshes.size(); ++i) {
         Entity child = CreateEntity(name + "_" + std::to_string(i));
         entity.AddChild(child);
         auto &mc = child.AddComponent<MeshComponent>();
-        mc.model_id = model.Id();
+        mc.model_id = rid;
         mc.mesh_index = meshes[i];
-        mc.material = model.GetMaterial(materials[i]);
+        mc.material = handle->GetMaterial(materials[i]);
         auto &tc = child.GetComponent<TransformComponent>();
         tc.SetLocalTransform(node->GetTransform());
     }
     for (auto &child : node->GetChildren()) {
-        Entity child_entity = CreateModelEntity(model, child);
+        Entity child_entity = CreateModelEntity(rid, child);
         entity.AddChild(child_entity);
     }
     return entity;

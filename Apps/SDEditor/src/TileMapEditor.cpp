@@ -1,7 +1,6 @@
 #include "TileMapEditor.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "Renderer/Renderer2D.hpp"
-#include "Resource/ResourceManager.hpp"
 #include "ECS/Component.hpp"
 
 namespace SD {
@@ -11,7 +10,7 @@ const Vector4f color_green(0, 1, 0, 0.5);
 
 TileMapEditor::TileMapEditor() : m_operation(Operation::None) {}
 
-bool TileMapEditor::ManipulateScene(const Camera &camera)
+bool TileMapEditor::ManipulateScene(Scene &scene, const Camera &camera)
 {
     if (!ImGui::IsWindowHovered()) {
         return false;
@@ -30,9 +29,10 @@ bool TileMapEditor::ManipulateScene(const Camera &camera)
     }
     m_brush.SetRay(camera.ComputeCameraRay(clip));
     m_frame.size = m_brush.GetTileSize();
+    m_scene = &scene;
     if (m_brush.CastRay()) {
         if (ImGui::IsMouseClicked(0) &&
-            ResourceManager::Get().Exist<Texture>(m_frame.texture_id)) {
+            scene.GetTextureResource().Contains(m_frame.texture_id)) {
             return m_operation == Operation::AddEntity;
         }
         else if (ImGui::IsMouseClicked(1)) {
@@ -44,7 +44,6 @@ bool TileMapEditor::ManipulateScene(const Camera &camera)
 
 void TileMapEditor::ImGui()
 {
-    auto &resource = ResourceManager::Get();
     ImGui::Begin("TileMap Editor");
     {
         using underlying = std::underlying_type<Operation>::type;
@@ -62,13 +61,16 @@ void TileMapEditor::ImGui()
                 static_cast<underlying>(Operation::RemoveEntity))) {
             m_brush.color = color_red;
         }
-        ImGui::DrawTextureAssetSelection(&m_frame.texture_id);
-        ImGui::InputInt("Priority", &m_frame.priority);
+        if (m_scene) {
+            auto &cache = m_scene->GetTextureResource();
+            ImGui::DrawTextureAssetSelection(cache, &m_frame.texture_id);
+            ImGui::InputInt("Priority", &m_frame.priority);
 
-        if (resource.Exist<Texture>(m_frame.texture_id)) {
-            ImGui::DrawTileTexture(*resource.GetResource<Texture>(m_frame.texture_id),
-                                   m_brush.tile_size, m_frame.uvs,
-                                   &m_brush.count, &m_brush.pivot);
+            if (cache.Contains(m_frame.texture_id)) {
+                ImGui::DrawTileTexture(*cache.Handle(m_frame.texture_id),
+                                       m_brush.tile_size, m_frame.uvs,
+                                       &m_brush.count, &m_brush.pivot);
+            }
         }
     }
     ImGui::End();

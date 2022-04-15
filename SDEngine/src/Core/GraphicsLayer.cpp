@@ -5,7 +5,6 @@
 #include "Renderer/Renderer2D.hpp"
 #include "Renderer/Renderer3D.hpp"
 #include "ECS/Component.hpp"
-#include "Resource/ResourceManager.hpp"
 
 namespace SD {
 

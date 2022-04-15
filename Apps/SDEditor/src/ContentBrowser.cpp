@@ -1,7 +1,6 @@
 #include "ContentBrowser.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGui/FileDialog.hpp"
-#include "Resource/ResourceManager.hpp"
 #include "Loader/ImageLoader.hpp"
 #include "Loader/TextureLoader.hpp"
 #include "Utility/String.hpp"
@@ -15,12 +14,11 @@ namespace SD {
 
 ContentBrowser::ContentBrowser()
 {
-    auto& resource = ResourceManager::Get();
     m_file_icon = Texture::CreateIcon(
-        *resource.LoadResource<ByteImage>("icons/FileIcon.png"));
+        *ImageLoader::LoadFromFile("assets/icons/FileIcon.png"));
     m_directory_icon = Texture::CreateIcon(
-        *resource.LoadResource<ByteImage>("icons/DirectoryIcon.png"));
-    m_current_directory = resource.GetDirectory();
+        *ImageLoader::LoadFromFile("assets/icons/DirectoryIcon.png"));
+    m_current_directory = "assets";
 }
 
 void ContentBrowser::ImGui()
@@ -49,8 +47,7 @@ void ContentBrowser::ImGui()
         ImGui::EndPopup();
     }
 
-    auto& resource = ResourceManager::Get();
-    const std::filesystem::path root_path = resource.GetDirectory();
+    const std::filesystem::path root_path = "assets";
     if (m_current_directory != std::filesystem::path(root_path)) {
         if (ImGui::Button("<-")) {
             m_current_directory = m_current_directory.parent_path();

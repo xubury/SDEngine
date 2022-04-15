@@ -1,5 +1,4 @@
 #include "Graphics/Material.hpp"
-#include "Resource/ResourceManager.hpp"
 #include <map>
 
 namespace SD {
@@ -24,7 +23,7 @@ Material::Material()
 {
 }
 
-void Material::SetTexture(MaterialType type, Ref<Texture> texture)
+void Material::SetTexture(MaterialType type, Texture* texture)
 {
     m_textures[type] = texture;
 }
@@ -35,7 +34,7 @@ const Texture* Material::GetTexture(MaterialType type) const
         return nullptr;
     }
     else {
-        return m_textures.at(type).get();
+        return m_textures.at(type);
     };
 }
 

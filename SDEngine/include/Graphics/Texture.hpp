@@ -3,12 +3,11 @@
 
 #include "Graphics/Image.hpp"
 #include "Utility/Base.hpp"
-#include "Resource/Resource.hpp"
 #include "Graphics/Graphics.hpp"
 
 namespace SD {
 
-class SD_GRAPHICS_API Texture : public Resource {
+class SD_GRAPHICS_API Texture  {
    public:
     static Ref<Texture> CreateCube(const std::array<Ref<ByteImage>, 6> &images);
     static Ref<Texture> CreateIcon(const ByteImage &image);

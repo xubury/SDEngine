@@ -7,8 +7,9 @@
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGuizmo.h"
 #include "GridRenderer.hpp"
-#include "Resource/ResourceManager.hpp"
 #include "Utility/String.hpp"
+
+#include "Loader/ModelLoader.hpp"
 
 namespace SD {
 
@@ -51,17 +52,7 @@ void EditorLayer::OnInit()
     InitBuffers();
 }
 
-void EditorLayer::NewScene()
-{
-    auto &resource = ResourceManager::Get();
-    auto scene = resource.LoadResource<Scene>("defualt scene.sdscene");
-    if (scene == nullptr) {
-        scene = CreateRef<Scene>();
-        resource.AddResource(scene);
-        resource.WriteResource<Scene>(scene->Id(), "defualt scene.sdscene");
-    }
-    SetCurrentScene(scene.get());
-}
+void EditorLayer::NewScene() { SetCurrentScene(CreateRef<Scene>()); }
 
 void EditorLayer::InitBuffers()
 {
@@ -84,7 +75,7 @@ void EditorLayer::OnRender()
     info.clear_mask = BufferBitMask::None;
     Renderer::BeginRenderPass(info);
     if (m_mode == EditorMode::TwoDimensional) {
-        GridRenderer::Render(m_editor_camera,
+        GridRenderer::Render(*m_current_scene, m_editor_camera,
                              m_tile_map_editor.GetSpriteFrame(),
                              m_tile_map_editor.GetBrush());
     }
@@ -158,7 +149,7 @@ void EditorLayer::OnImGui()
         m_tile_map_editor.ImGui();
         m_animation_editor.ImGui();
     }
-    m_scene_panel.ImGui(m_current_scene);
+    m_scene_panel.ImGui(m_current_scene.get());
     m_editor_camera.ImGui();
     m_content_browser.ImGui();
 }
@@ -236,10 +227,10 @@ void EditorLayer::On(const MouseMotionEvent &e)
     m_editor_camera.Move(e.x_rel, e.y_rel);
 }
 
-void EditorLayer::SetCurrentScene(Scene *scene)
+void EditorLayer::SetCurrentScene(const Ref<Scene> &scene)
 {
     m_current_scene = scene;
-    m_graphics_layer->SetRenderScene(m_current_scene);
+    m_graphics_layer->SetRenderScene(m_current_scene.get());
 }
 
 void EditorLayer::OpenLoadSceneDialog()
@@ -249,7 +240,7 @@ void EditorLayer::OpenLoadSceneDialog()
     m_file_dialog_info.title = "Load Scene";
     m_file_dialog_info.file_name = "";
     m_file_dialog_info.regex_match = SCENE_FILTER;
-    m_file_dialog_info.directory_path = ResourceManager::Get().GetDirectory();
+    m_file_dialog_info.directory_path = "assets";
 }
 
 void EditorLayer::OpenSaveSceneDialog()
@@ -259,18 +250,14 @@ void EditorLayer::OpenSaveSceneDialog()
     m_file_dialog_info.title = "Save Scene";
     m_file_dialog_info.file_name = "";
     m_file_dialog_info.regex_match = SCENE_FILTER;
-    m_file_dialog_info.directory_path = ResourceManager::Get().GetDirectory();
+    m_file_dialog_info.directory_path = "assets";
 }
 
 void EditorLayer::ProcessDialog()
 {
-    auto &resource = ResourceManager::Get();
     if (ImGui::FileDialog(&m_load_scene_open, &m_file_dialog_info)) {
     }
     if (ImGui::FileDialog(&m_save_scene_open, &m_file_dialog_info)) {
-        resource.WriteResource<Scene>(
-            m_current_scene->Id(),
-            m_file_dialog_info.result_path.generic_string());
     }
 }
 
@@ -326,7 +313,8 @@ void EditorLayer::DrawViewport()
         }
 
         if (!m_is_runtime && m_mode == EditorMode::TwoDimensional) {
-            if (m_tile_map_editor.ManipulateScene(m_editor_camera)) {
+            if (m_tile_map_editor.ManipulateScene(*m_current_scene,
+                                                  m_editor_camera)) {
                 Vector3f world = m_tile_map_editor.GetBrush().GetSelectdPos();
                 Entity child = m_current_scene->CreateEntity("Tile");
                 auto &comp = child.AddComponent<SpriteComponent>();
@@ -376,25 +364,29 @@ void EditorLayer::DrawViewport()
             }
             if (entity_id != entt::null) {
                 m_dispatcher.PublishEvent(
-                    EntitySelectEvent{entity_id, m_current_scene});
+                    EntitySelectEvent{entity_id, m_current_scene.get()});
             }
         }
         if (ImGui::BeginDragDropTarget()) {
             if (const ImGuiPayload *payload =
                     ImGui::AcceptDragDropPayload(DROP_ASSET_ITEM)) {
                 try {
-                    auto &resource = ResourceManager::Get();
                     std::string filename = static_cast<char *>(payload->Data);
                     std::string ext = String::GetExtension(filename);
-                    if (resource.MatchExtension<Scene>(ext)) {
-                        SetCurrentScene(
-                            resource.LoadResource<Scene>(filename).get());
-                        SD_TRACE("load scene asset");
+                    if (ext == ".sdscene") {
+                        // SetCurrentScene(
+                        //     resource.LoadResource<Scene>(filename).get());
+                        // SD_TRACE("load scene asset");
                     }
-                    else if (resource.MatchExtension<Model>(ext)) {
-                        auto model = resource.LoadResource<Model>(filename);
+                    else if (ext == ".obj") {
+                        ResourceId rid;
+                        auto model =
+                            m_current_scene->GetModelResource()
+                                .Load<ModelLoader>(
+                                    rid, filename,
+                                    m_current_scene->GetTextureResource());
                         m_current_scene->CreateModelEntity(
-                            *model, model->GetRootNode());
+                            rid, model->GetRootNode());
                     }
                 }
                 catch (const Exception &e) {

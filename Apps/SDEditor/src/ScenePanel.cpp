@@ -3,7 +3,6 @@
 #include "Utility/Log.hpp"
 #include "Utility/String.hpp"
 #include "ImGui/ImGuiWidget.hpp"
-#include "Resource/ResourceManager.hpp"
 
 #define ECS_MOVEENTITY "ECS MOVEENTITY"
 
@@ -200,7 +199,6 @@ static void DrawComponent(const std::string &name, Entity entity,
 
 void ScenePanel::DrawComponents(Entity &entity)
 {
-    auto &resource = ResourceManager::Get();
     if (entity.HasComponent<TagComponent>()) {
         auto &id = entity.GetComponent<IdComponent>().id;
         std::string idString = "Resource Id: " + std::to_string(id);
@@ -368,8 +366,6 @@ void ScenePanel::DrawComponents(Entity &entity)
             }
         });
     DrawComponent<TextComponent>("Text", entity, [&](TextComponent &textComp) {
-        ImGui::DrawFontAssetSelection(&textComp.font_id);
-
         ImGui::Text("Text Content:");
         static char buffer[256];
         std::copy(textComp.text.begin(), textComp.text.end(), buffer);
@@ -414,13 +410,14 @@ void ScenePanel::DrawComponents(Entity &entity)
     DrawComponent<SpriteComponent>(
         "Sprite", entity, [&](SpriteComponent &sprite_comp) {
             auto &frame = sprite_comp.frame;
-            ImGui::DrawTextureAssetSelection(&frame.texture_id);
+            auto &cache = entity.GetScene()->GetTextureResource();
+            ImGui::DrawTextureAssetSelection(cache, &frame.texture_id);
             ImGui::TextUnformatted("Size");
             ImGui::InputFloat2("##Size", &frame.size[0]);
             ImGui::TextUnformatted("Prioirty");
             ImGui::InputInt("##Priority", &frame.priority);
-            if (resource.Exist<Texture>(frame.texture_id)) {
-                auto texture = resource.GetResource<Texture>(frame.texture_id);
+            if (cache.Contains(frame.texture_id)) {
+                auto texture = cache.Handle(frame.texture_id);
                 ImGui::DrawTexture(*texture,
                                    ImVec2(frame.uvs[0].x, frame.uvs[0].y),
                                    ImVec2(frame.uvs[1].x, frame.uvs[1].y));
@@ -429,6 +426,7 @@ void ScenePanel::DrawComponents(Entity &entity)
     DrawComponent<SpriteAnimationComponent>(
         "Sprite Animation", entity, [&](SpriteAnimationComponent &anim_comp) {
             DrawAnimList(anim_comp.animations, &m_selected_anim_id_map[entity]);
+            auto &cache = entity.GetScene()->GetTextureResource();
             auto &anim =
                 anim_comp.animations.at(m_selected_anim_id_map[entity]);
             static int frame_index = 0;
@@ -444,9 +442,8 @@ void ScenePanel::DrawComponents(Entity &entity)
             }
             if (frame_index < static_cast<int>(anim.GetFrameSize())) {
                 const auto &frame = anim.GetFrame(frame_index);
-                if (resource.Exist<Texture>(frame.texture_id)) {
-                    auto texture =
-                        resource.GetResource<Texture>(frame.texture_id);
+                if (cache.Contains(frame.texture_id)) {
+                    auto texture = cache.Handle(frame.texture_id);
                     ImGui::DrawTexture(*texture,
                                        ImVec2(frame.uvs[0].x, frame.uvs[0].y),
                                        ImVec2(frame.uvs[1].x, frame.uvs[1].y));

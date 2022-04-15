@@ -1,0 +1,29 @@
+#ifndef SD_RESOURCE_HANDLE_HPP
+#define SD_RESOURCE_HANDLE_HPP
+
+#include "Utility/Base.hpp"
+
+namespace SD {
+template <typename Resource>
+class ResourceHandle {
+   public:
+    ResourceHandle() = default;
+
+    ResourceHandle(Ref<Resource> res) : m_ptr{std::move(res)} {}
+
+    Resource &Get() const { return *m_ptr; }
+
+    operator Resource &() const { return Get(); }
+
+    Resource &operator*() const { return Get(); }
+
+    Resource *operator->() const { return m_ptr.get(); }
+
+    operator bool() const { return static_cast<bool>(m_ptr); }
+
+   private:
+    Ref<Resource> m_ptr;
+};
+}  // namespace SD
+
+#endif

@@ -27,7 +27,7 @@ class EditorLayer : public Layer {
 
     void OnImGui() override;
 
-    void SetCurrentScene(Scene* scene);
+    void SetCurrentScene(const Ref<Scene>& scene);
     void OpenLoadSceneDialog();
     void OpenSaveSceneDialog();
 
@@ -75,7 +75,7 @@ class EditorLayer : public Layer {
     bool m_save_scene_open;
     ImFileDialogInfo m_file_dialog_info;
 
-    Scene* m_current_scene;
+    Ref<Scene> m_current_scene;
     Entity m_selected_entity;
 
     HandlerRegistration m_entity_select_handler;

@@ -1,5 +1,4 @@
 #include "ImGui/ImGuiWidget.hpp"
-#include "Resource/ResourceManager.hpp"
 #include "Graphics/Model.hpp"
 #include "Graphics/Font.hpp"
 
@@ -237,140 +236,143 @@ bool BeginCenterPopupModal(const char *name, bool *p_open,
                                   flags | ImGuiWindowFlags_AlwaysAutoResize);
 }
 
-bool DrawTextureAssetSelection(SD::ResourceId *id)
+bool DrawTextureAssetSelection(const SD::ResourceCache<SD::Texture> &,
+                               SD::ResourceId *)
 {
     bool ret = false;
-    auto &resource = SD::ResourceManager::Get();
-    if (!resource.Empty<SD::Texture>()) {
-        ImGuiStyle &style = ImGui::GetStyle();
-        const auto &cache = resource.GetCaches<SD::Texture>();
-        ImVec2 combo_pos = ImGui::GetCursorScreenPos();
-        if (ImGui::BeginCombo("##TEXTURE_ASSETS_COMBO", "")) {
-            for (auto &[rid, asset] : cache) {
-                ImGui::PushID(rid);
-                auto texture = resource.GetResource<SD::Texture>(rid);
-                const bool is_selected = (*id == rid);
-                if (ImGui::Selectable("", is_selected)) {
-                    *id = rid;
-                    ret = true;
-                }
+    // if (!resource.Empty<SD::Texture>()) {
+    //     ImGuiStyle &style = ImGui::GetStyle();
+    //     const auto &cache = resource.GetCaches<SD::Texture>();
+    //     ImVec2 combo_pos = ImGui::GetCursorScreenPos();
+    //     if (ImGui::BeginCombo("##TEXTURE_ASSETS_COMBO", "")) {
+    //         for (auto &[rid, asset] : cache) {
+    //             ImGui::PushID(rid);
+    //             auto texture = resource.GetResource<SD::Texture>(rid);
+    //             const bool is_selected = (*id == rid);
+    //             if (ImGui::Selectable("", is_selected)) {
+    //                 *id = rid;
+    //                 ret = true;
+    //             }
 
-                ImGui::SameLine();
-                float h = ImGui::GetTextLineHeight();
-                ImGui::Image(
-                    (void *)(intptr_t)texture->Handle(),
-                    ImVec2(h * texture->GetWidth() / texture->GetHeight(), h));
+    //             ImGui::SameLine();
+    //             float h = ImGui::GetTextLineHeight();
+    //             ImGui::Image(
+    //                 (void *)(intptr_t)texture->Handle(),
+    //                 ImVec2(h * texture->GetWidth() / texture->GetHeight(),
+    //                 h));
 
-                ImGui::SameLine();
-                ImGui::TextUnformatted("Texture Name");
+    //             ImGui::SameLine();
+    //             ImGui::TextUnformatted("Texture Name");
 
-                ImGui::PopID();
-            }
-            ImGui::EndCombo();
-        }
-        ImVec2 old_pos = ImGui::GetCursorScreenPos();
-        ImGui::SetCursorScreenPos(ImVec2(combo_pos.x + style.FramePadding.x,
-                                         combo_pos.y + style.FramePadding.y));
-        if (resource.Exist<SD::Texture>(*id)) {
-            float h = ImGui::GetTextLineHeight();
-            auto texture = resource.GetResource<SD::Texture>(*id);
-            ImGui::Image(
-                (void *)(intptr_t)texture->Handle(),
-                ImVec2(h * texture->GetWidth() / texture->GetHeight(), h));
-            ImGui::SameLine();
-            ImGui::TextUnformatted("Texture Name");
-        }
-        else {
-            ImGui::TextUnformatted("None");
-        }
-        ImGui::SetCursorScreenPos(old_pos);
-    }
+    //             ImGui::PopID();
+    //         }
+    //         ImGui::EndCombo();
+    //     }
+    //     ImVec2 old_pos = ImGui::GetCursorScreenPos();
+    //     ImGui::SetCursorScreenPos(ImVec2(combo_pos.x + style.FramePadding.x,
+    //                                      combo_pos.y +
+    //                                      style.FramePadding.y));
+    //     if (resource.Exist<SD::Texture>(*id)) {
+    //         float h = ImGui::GetTextLineHeight();
+    //         auto texture = resource.GetResource<SD::Texture>(*id);
+    //         ImGui::Image(
+    //             (void *)(intptr_t)texture->Handle(),
+    //             ImVec2(h * texture->GetWidth() / texture->GetHeight(), h));
+    //         ImGui::SameLine();
+    //         ImGui::TextUnformatted("Texture Name");
+    //     }
+    //     else {
+    //         ImGui::TextUnformatted("None");
+    //     }
+    //     ImGui::SetCursorScreenPos(old_pos);
+    // }
     return ret;
 }
 
-bool DrawModelAssetSelection(SD::ResourceId *id)
-{
-    bool ret = false;
-    auto &resource = SD::ResourceManager::Get();
-    if (!resource.Empty<SD::Model>()) {
-        const auto &cache = resource.GetCaches<SD::Model>();
-        const std::string item =
-            resource.Exist<SD::Model>(*id) ? std::to_string(*id) : "None";
-        if (ImGui::BeginCombo("##MODEL_ASSETS_COMBO", item.c_str())) {
-            for (auto &[rid, asset] : cache) {
-                const bool is_selected = (*id == rid);
-                if (ImGui::Selectable(std::to_string(rid).c_str(),
-                                      is_selected)) {
-                    *id = rid;
-                    ret = true;
-                }
-                if (is_selected) ImGui::SetItemDefaultFocus();
-            }
-            ImGui::EndCombo();
-        }
-    }
-    return ret;
-}
+// bool DrawModelAssetSelection(SD::ResourceId *id)
+// {
+//     bool ret = false;
+//     auto &resource = SD::ResourceManager::Get();
+//     if (!resource.Empty<SD::Model>()) {
+//         const auto &cache = resource.GetCaches<SD::Model>();
+//         const std::string item =
+//             resource.Exist<SD::Model>(*id) ? std::to_string(*id) : "None";
+//         if (ImGui::BeginCombo("##MODEL_ASSETS_COMBO", item.c_str())) {
+//             for (auto &[rid, asset] : cache) {
+//                 const bool is_selected = (*id == rid);
+//                 if (ImGui::Selectable(std::to_string(rid).c_str(),
+//                                       is_selected)) {
+//                     *id = rid;
+//                     ret = true;
+//                 }
+//                 if (is_selected) ImGui::SetItemDefaultFocus();
+//             }
+//             ImGui::EndCombo();
+//         }
+//     }
+//     return ret;
+// }
 
-bool DrawFontAssetSelection(SD::ResourceId *id)
-{
-    const char32_t preview_char = 65;
-    bool ret = false;
-    auto &resource = SD::ResourceManager::Get();
-    if (!resource.Empty<SD::Font>()) {
-        ImGuiStyle &style = ImGui::GetStyle();
-        const auto &cache = resource.GetCaches<SD::Font>();
-        ImVec2 combo_pos = ImGui::GetCursorScreenPos();
-        if (ImGui::BeginCombo("##TEXTURE_ASSETS_COMBO", "")) {
-            for (auto &[rid, asset] : cache) {
-                ImGui::PushID(rid);
-                auto &character =
-                    resource.GetResource<SD::Font>(rid)->GetCharacter(
-                        preview_char);
-                auto &texture = character.glyph;
-                auto &uv = character.uv;
-                const bool is_selected = (*id == rid);
-                if (ImGui::Selectable("", is_selected)) {
-                    *id = rid;
-                    ret = true;
-                }
+// bool DrawFontAssetSelection(SD::ResourceId *id)
+// {
+//     const char32_t preview_char = 65;
+//     bool ret = false;
+//     auto &resource = SD::ResourceManager::Get();
+//     if (!resource.Empty<SD::Font>()) {
+//         ImGuiStyle &style = ImGui::GetStyle();
+//         const auto &cache = resource.GetCaches<SD::Font>();
+//         ImVec2 combo_pos = ImGui::GetCursorScreenPos();
+//         if (ImGui::BeginCombo("##TEXTURE_ASSETS_COMBO", "")) {
+//             for (auto &[rid, asset] : cache) {
+//                 ImGui::PushID(rid);
+//                 auto &character =
+//                     resource.GetResource<SD::Font>(rid)->GetCharacter(
+//                         preview_char);
+//                 auto &texture = character.glyph;
+//                 auto &uv = character.uv;
+//                 const bool is_selected = (*id == rid);
+//                 if (ImGui::Selectable("", is_selected)) {
+//                     *id = rid;
+//                     ret = true;
+//                 }
 
-                ImGui::SameLine();
-                float h = ImGui::GetTextLineHeight();
-                ImGui::Image(
-                    (void *)(intptr_t)texture->Handle(),
-                    ImVec2(h * texture->GetWidth() / texture->GetHeight(), h),
-                    ImVec2(uv[0].x, uv[0].y), ImVec2(uv[1].x, uv[1].y));
+//                 ImGui::SameLine();
+//                 float h = ImGui::GetTextLineHeight();
+//                 ImGui::Image(
+//                     (void *)(intptr_t)texture->Handle(),
+//                     ImVec2(h * texture->GetWidth() / texture->GetHeight(),
+//                     h), ImVec2(uv[0].x, uv[0].y), ImVec2(uv[1].x, uv[1].y));
 
-                ImGui::SameLine();
-                ImGui::TextUnformatted(std::to_string(rid).c_str());
+//                 ImGui::SameLine();
+//                 ImGui::TextUnformatted(std::to_string(rid).c_str());
 
-                ImGui::PopID();
-            }
-            ImGui::EndCombo();
-        }
-        ImVec2 old_pos = ImGui::GetCursorScreenPos();
-        ImGui::SetCursorScreenPos(ImVec2(combo_pos.x + style.FramePadding.x,
-                                         combo_pos.y + style.FramePadding.y));
-        if (resource.Exist<SD::Font>(*id)) {
-            float h = ImGui::GetTextLineHeight();
-            auto &character =
-                resource.GetResource<SD::Font>(*id)->GetCharacter(preview_char);
-            auto &texture = character.glyph;
-            auto &uv = character.uv;
-            ImGui::Image(
-                (void *)(intptr_t)texture->Handle(),
-                ImVec2(h * texture->GetWidth() / texture->GetHeight(), h),
-                ImVec2(uv[0].x, uv[0].y), ImVec2(uv[1].x, uv[1].y));
-            ImGui::SameLine();
-            ImGui::TextUnformatted(std::to_string(*id).c_str());
-        }
-        else {
-            ImGui::TextUnformatted("None");
-        }
-        ImGui::SetCursorScreenPos(old_pos);
-    }
-    return ret;
-}
+//                 ImGui::PopID();
+//             }
+//             ImGui::EndCombo();
+//         }
+//         ImVec2 old_pos = ImGui::GetCursorScreenPos();
+//         ImGui::SetCursorScreenPos(ImVec2(combo_pos.x + style.FramePadding.x,
+//                                          combo_pos.y +
+//                                          style.FramePadding.y));
+//         if (resource.Exist<SD::Font>(*id)) {
+//             float h = ImGui::GetTextLineHeight();
+//             auto &character =
+//                 resource.GetResource<SD::Font>(*id)->GetCharacter(preview_char);
+//             auto &texture = character.glyph;
+//             auto &uv = character.uv;
+//             ImGui::Image(
+//                 (void *)(intptr_t)texture->Handle(),
+//                 ImVec2(h * texture->GetWidth() / texture->GetHeight(), h),
+//                 ImVec2(uv[0].x, uv[0].y), ImVec2(uv[1].x, uv[1].y));
+//             ImGui::SameLine();
+//             ImGui::TextUnformatted(std::to_string(*id).c_str());
+//         }
+//         else {
+//             ImGui::TextUnformatted("None");
+//         }
+//         ImGui::SetCursorScreenPos(old_pos);
+//     }
+//     return ret;
+// }
 
 }  // namespace ImGui

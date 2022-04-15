@@ -20,13 +20,14 @@ class TileMapEditor {
     TileMapEditor();
     void ImGui();
 
-    bool ManipulateScene(const Camera &camera);
+    bool ManipulateScene(Scene &scene, const Camera &camera);
     const SpriteFrame &GetSpriteFrame() const { return m_frame; }
 
     const TileBrush &GetBrush() const { return m_brush; }
 
    private:
     void SetViewport(float left, float top, float width, float height);
+    Scene *m_scene;
 
     TileBrush m_brush;
 

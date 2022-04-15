@@ -4,8 +4,8 @@
 #include "Utility/Base.hpp"
 #include "Utility/Serialize.hpp"
 #include "ECS/Export.hpp"
-#include "Resource/Resource.hpp"
 #include "Graphics/Model.hpp"
+#include "Resource/ResourceCache.hpp"
 
 #include "entt/entt.hpp"
 // #include "entt/config/config.h"
@@ -30,13 +30,13 @@ void OnComponentAdded(entt::registry &, entt::entity)
 {
 }
 
-class SD_ECS_API Scene : public entt::registry, public Resource {
+class SD_ECS_API Scene : public entt::registry {
    public:
     Scene();
     ~Scene() = default;
 
     Entity CreateEntity(const std::string &name);
-    Entity CreateModelEntity(const Model &model, const ModelNode *node);
+    Entity CreateModelEntity(const ResourceId rid, const ModelNode *node);
 
     void Serialize(cereal::PortableBinaryOutputArchive &archive) const;
 
@@ -56,6 +56,17 @@ class SD_ECS_API Scene : public entt::registry, public Resource {
             .second.template connect<&Scene::DeserializeComponent<T>>();
         on_construct<T>().template connect<&OnComponentAdded<T>>();
     }
+
+    ResourceCache<Texture> &GetTextureResource() { return m_textures; }
+
+    ResourceCache<Model> &GetModelResource() { return m_models; }
+
+    const ResourceCache<Texture> &GetTextureResource() const
+    {
+        return m_textures;
+    }
+
+    const ResourceCache<Model> &GetModelResource() const { return m_models; }
 
    private:
     template <typename T>
@@ -83,6 +94,9 @@ class SD_ECS_API Scene : public entt::registry, public Resource {
     std::unordered_map<EntityIdType, std::pair<ComponentSerializeFunction,
                                                ComponentDeserializeFunction>>
         m_serialize_functions;
+
+    ResourceCache<Texture> m_textures;
+    ResourceCache<Model> m_models;
 };
 
 }  // namespace SD

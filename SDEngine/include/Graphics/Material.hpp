@@ -2,6 +2,7 @@
 #define SD_MATERIAL_HPP
 
 #include "Utility/Base.hpp"
+#include "Utility/Serialize.hpp"
 #include "Graphics/Export.hpp"
 #include "Graphics/Texture.hpp"
 #include "Utility/Math.hpp"
@@ -25,7 +26,7 @@ const std::string SD_GRAPHICS_API GetMaterialName(MaterialType type);
 class SD_GRAPHICS_API Material {
    public:
     Material();
-    void SetTexture(MaterialType type, Ref<Texture> texture);
+    void SetTexture(MaterialType type, Texture *texture);
     const Texture *GetTexture(MaterialType type) const;
 
     void SetAmbientColor(const Vector3f &color) { m_ambient_base = color; }
@@ -35,9 +36,9 @@ class SD_GRAPHICS_API Material {
     const Vector3f &GetDiffuseColor() const { return m_diffuse_base; }
     const Vector3f &GetEmissiveColor() const { return m_emissive_base; }
 
-    SERIALIZE(m_textures, m_diffuse_base, m_ambient_base, m_emissive_base)
+    SERIALIZE(m_diffuse_base, m_ambient_base, m_emissive_base)
    private:
-    std::unordered_map<MaterialType, Ref<Texture> > m_textures;
+    std::unordered_map<MaterialType, Texture *> m_textures;
     Vector3f m_diffuse_base;
     Vector3f m_ambient_base;
     Vector3f m_emissive_base;
