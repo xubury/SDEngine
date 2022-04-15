@@ -1,6 +1,7 @@
 #ifndef SD_TILE_MAP_SYSTEM_HPP
 #define SD_TILE_MAP_SYSTEM_HPP
 
+#include "ECS/ResourceRegistry.hpp"
 #include "ECS/Component.hpp"
 #include "Graphics/Viewport.hpp"
 #include "Graphics/Framebuffer.hpp"
@@ -20,14 +21,14 @@ class TileMapEditor {
     TileMapEditor();
     void ImGui();
 
-    bool ManipulateScene(Scene &scene, const Camera &camera);
+    bool ManipulateScene(const Scene &scene, const Camera &camera);
     const SpriteFrame &GetSpriteFrame() const { return m_frame; }
 
     const TileBrush &GetBrush() const { return m_brush; }
 
    private:
     void SetViewport(float left, float top, float width, float height);
-    Scene *m_scene;
+    const ResourceRegistry::TextureCache *m_cache;
 
     TileBrush m_brush;
 

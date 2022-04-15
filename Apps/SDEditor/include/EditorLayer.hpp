@@ -51,6 +51,7 @@ class EditorLayer : public Layer {
     void Quit();
 
     EditorMode m_mode;
+
     GraphicsLayer* m_graphics_layer;
 
     EventDispatcher m_dispatcher;

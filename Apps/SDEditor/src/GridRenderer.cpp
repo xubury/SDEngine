@@ -46,7 +46,7 @@ void GridRenderer::Render(const Scene &scene, const Camera &camera,
 
     if (brush.is_painting) {
         Vector3f world = brush.GetSelectdPos();
-        auto &resource = scene.GetTextureResource();
+        auto &resource = scene.GetResourceRegistry().GetTextureCache();
         if (resource.Contains(frame.texture_id)) {
             Renderer2D::DrawTexture(*resource.Handle(frame.texture_id),
                                     frame.uvs, world, Quaternion(), frame.size);

@@ -1,5 +1,5 @@
-#ifndef SD_UUID_HPP
-#define SD_UUID_HPP
+#ifndef SD_RESOURCE_ID_HPP
+#define SD_RESOURCE_ID_HPP
 
 #include "Resource/Export.hpp"
 #include "Utility/Serialize.hpp"

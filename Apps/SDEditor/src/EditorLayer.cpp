@@ -176,13 +176,14 @@ void EditorLayer::On(const KeyEvent &e)
                 Camera *cam = &m_editor_camera;
                 m_is_runtime = !m_is_runtime;
                 if (m_is_runtime) {
-                    auto view = m_current_scene->view<CameraComponent>();
-                    view.each([&](CameraComponent &cam_comp) {
-                        if (cam_comp.primary) {
-                            cam = &cam_comp.camera;
-                            return;
-                        }
-                    });
+                    auto &entities = m_current_scene->GetEntityRegistry();
+                    entities.view<CameraComponent>().each(
+                        [&](CameraComponent &cam_comp) {
+                            if (cam_comp.primary) {
+                                cam = &cam_comp.camera;
+                                return;
+                            }
+                        });
                 }
                 // change to scene's camera or editor camera
                 m_graphics_layer->SetCamera(cam);
@@ -380,13 +381,10 @@ void EditorLayer::DrawViewport()
                     }
                     else if (ext == ".obj") {
                         ResourceId rid;
-                        auto model =
-                            m_current_scene->GetModelResource()
-                                .Load<ModelLoader>(
-                                    rid, filename,
-                                    m_current_scene->GetTextureResource());
+                        auto &reg = m_current_scene->GetResourceRegistry();
+                        auto handle = reg.LoadModel(rid, filename);
                         m_current_scene->CreateModelEntity(
-                            rid, model->GetRootNode());
+                            handle, handle->GetRootNode());
                     }
                 }
                 catch (const Exception &e) {

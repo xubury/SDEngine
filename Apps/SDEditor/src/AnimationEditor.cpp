@@ -18,10 +18,10 @@ void AnimationEditor::ImGui()
     ImGui::Begin("Anmiation Editor");
     {
         auto scene = m_selected_entity.GetScene();
-        ImGui::DrawTextureAssetSelection(scene->GetTextureResource(),
-                                         &m_texture_id);
-        if (scene->GetTextureResource().Contains(m_texture_id)) {
-            auto texture = scene->GetTextureResource().Handle(m_texture_id);
+        auto &cache = scene->GetResourceRegistry().GetTextureCache();
+        ImGui::DrawTextureAssetSelection(cache, &m_texture_id);
+        if (cache.Contains(m_texture_id)) {
+            auto texture = cache.Handle(m_texture_id);
             ImGui::DrawTileTexture(*texture, m_tile_size, m_uvs, &m_count);
             if (m_selected_entity &&
                 m_selected_entity.HasComponent<SpriteAnimationComponent>()) {

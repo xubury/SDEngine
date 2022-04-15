@@ -33,7 +33,8 @@ void ScenePanel::ImGui(Scene *scene)
 {
     ImGui::Begin("Scene Hierarchy");
 
-    scene->each([&](auto entityID) {
+    auto &entities = scene->GetEntityRegistry();
+    entities.each([&](auto entityID) {
         Entity entity{entityID, scene};
 
         TransformComponent &data = entity.GetComponent<TransformComponent>();
@@ -410,7 +411,8 @@ void ScenePanel::DrawComponents(Entity &entity)
     DrawComponent<SpriteComponent>(
         "Sprite", entity, [&](SpriteComponent &sprite_comp) {
             auto &frame = sprite_comp.frame;
-            auto &cache = entity.GetScene()->GetTextureResource();
+            auto &cache =
+                entity.GetScene()->GetResourceRegistry().GetTextureCache();
             ImGui::DrawTextureAssetSelection(cache, &frame.texture_id);
             ImGui::TextUnformatted("Size");
             ImGui::InputFloat2("##Size", &frame.size[0]);
@@ -426,7 +428,8 @@ void ScenePanel::DrawComponents(Entity &entity)
     DrawComponent<SpriteAnimationComponent>(
         "Sprite Animation", entity, [&](SpriteAnimationComponent &anim_comp) {
             DrawAnimList(anim_comp.animations, &m_selected_anim_id_map[entity]);
-            auto &cache = entity.GetScene()->GetTextureResource();
+            auto &cache =
+                entity.GetScene()->GetResourceRegistry().GetTextureCache();
             auto &anim =
                 anim_comp.animations.at(m_selected_anim_id_map[entity]);
             static int frame_index = 0;

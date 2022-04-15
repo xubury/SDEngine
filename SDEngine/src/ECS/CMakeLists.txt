@@ -5,12 +5,14 @@ set(ECS_Include
     ${Include_Root}/Component.hpp
     ${Include_Root}/Export.hpp
     ${Include_Root}/Entity.hpp
-    ${Include_Root}/Scene.hpp)
+    ${Include_Root}/Scene.hpp
+    ${Include_Root}/ResourceRegistry.hpp)
 
 set(ECS_Src
     ${Src_Root}/Component.cpp
     ${Src_Root}/Entity.cpp
-    ${Src_Root}/Scene.cpp)
+    ${Src_Root}/Scene.cpp
+    ${Src_Root}/ResourceRegistry.cpp)
 
 add_library(sd-ecs ${ECS_Src})
 

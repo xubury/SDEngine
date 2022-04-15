@@ -7,13 +7,16 @@
 
 namespace SD {
 
-Ref<Texture> TextureLoader::Load(const std::string& path) const
+Ref<Texture> TextureLoader::Load(const std::string &path, TextureWrap wrap,
+                                 TextureMinFilter min_filter,
+                                 TextureMagFilter mag_filter,
+                                 MipmapMode mode) const
 {
     auto img = ImageLoader::LoadFromFile(path);
-    Ref<Texture> texture = Texture::Create(
-        img->Width(), img->Height(), 0, MultiSampleLevel::None,
-        TextureType::Normal, img->GetDataFormat(), TextureWrap::Repeat,
-        TextureMinFilter::Linear, TextureMagFilter::Linear, MipmapMode::Linear);
+    Ref<Texture> texture =
+        Texture::Create(img->Width(), img->Height(), 0, MultiSampleLevel::None,
+                        TextureType::Normal, img->GetDataFormat(), wrap,
+                        min_filter, mag_filter, mode);
     texture->SetPixels(0, 0, 0, img->Width(), img->Height(), 1, img->Data());
     return texture;
 }

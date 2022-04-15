@@ -2,6 +2,7 @@
 #define SD_RESOURCE_HANDLE_HPP
 
 #include "Utility/Base.hpp"
+#include "Resource/ResourceId.hpp"
 
 namespace SD {
 template <typename Resource>
@@ -21,7 +22,12 @@ class ResourceHandle {
 
     operator bool() const { return static_cast<bool>(m_ptr); }
 
+    void SetIdentifier(const ResourceId rid) { m_rid = rid; }
+
+    ResourceId GetIdentifier() const { return m_rid; }
+
    private:
+    ResourceId m_rid;
     Ref<Resource> m_ptr;
 };
 }  // namespace SD

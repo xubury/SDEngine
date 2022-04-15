@@ -48,8 +48,8 @@ void GraphicsLayer::OnInit()
     SkyboxRenderer::Init();
     PostProcessRenderer::Init(PostProcessSettings{m_width, m_height});
     DeferredRenderer::Init(DeferredRenderSettings{m_width, m_height, m_msaa});
-    m_light_icon =
-        Texture::CreateIcon(*ImageLoader::LoadFromFile("assets/icons/light.png"));
+    m_light_icon = Texture::CreateIcon(
+        *ImageLoader::LoadFromFile("assets/icons/light.png"));
 }
 
 void GraphicsLayer::OnDestroy() {}
@@ -69,7 +69,9 @@ void GraphicsLayer::OutputEntityBuffer(Framebuffer *framebuffer, int attachment)
 void GraphicsLayer::OnTick(float dt)
 {
     // sprite animation
-    auto anim_view = m_scene->view<SpriteAnimationComponent>();
+    //
+    auto &entities = m_scene->GetEntityRegistry();
+    auto anim_view = entities.view<SpriteAnimationComponent>();
     anim_view.each([&](SpriteAnimationComponent &anim_comp) {
         if (!anim_comp.animations.empty()) {
             anim_comp.animator.Tick(dt);
@@ -94,7 +96,8 @@ void GraphicsLayer::SetRenderScene(Scene *scene) { m_scene = scene; }
 void GraphicsLayer::OnRender()
 {
     // update camera transform
-    auto view = m_scene->view<CameraComponent, TransformComponent>();
+    auto &entities = m_scene->GetEntityRegistry();
+    auto view = entities.view<CameraComponent, TransformComponent>();
     view.each([](CameraComponent &camComp, TransformComponent &trans) {
         camComp.camera.SetWorldTransform(trans.GetWorldTransform().GetMatrix());
     });
@@ -129,7 +132,7 @@ void GraphicsLayer::OnRender()
 
         Renderer2D::Begin();
         auto lightView =
-            m_scene->view<DirectionalLightComponent, TransformComponent>();
+            entities.view<DirectionalLightComponent, TransformComponent>();
         lightView.each([this](EntityId id, const DirectionalLightComponent &,
                               const TransformComponent &transComp) {
             Vector3f pos = transComp.GetWorldPosition();

@@ -16,7 +16,9 @@ struct SpriteDrawData {
 
 void SpriteRenderer::Render(const Scene &scene)
 {
-    auto &resource = scene.GetTextureResource();
+    auto &resource = scene.GetResourceRegistry();
+    auto &entities = scene.GetEntityRegistry();
+    auto &cache = resource.GetTextureCache();
     int index[] = {0, 1};
     RenderOperation op;
     op.depth_mask = false;
@@ -24,21 +26,22 @@ void SpriteRenderer::Render(const Scene &scene)
     Renderer2D::Begin();
 
     std::vector<SpriteDrawData> datas;
-    auto sprite_view = scene.view<SpriteComponent, TransformComponent>();
+    auto sprite_view = entities.view<SpriteComponent, TransformComponent>();
     sprite_view.each([&](entt::entity entity_id,
                          const SpriteComponent &sprite_comp,
                          const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
         auto &frame = sprite_comp.frame;
-        if (resource.Contains(frame.texture_id)) {
-            auto texture = &resource.Handle(frame.texture_id).Get();
+        if (cache.Contains(frame.texture_id)) {
+            auto texture = &cache.Handle(frame.texture_id).Get();
             datas.push_back({texture, frame.uvs,
                              transform_comp.GetWorldPosition(),
                              transform_comp.GetWorldRotation(), frame.size, id,
                              frame.priority});
         }
     });
-    auto anim_view = scene.view<SpriteAnimationComponent, TransformComponent>();
+    auto anim_view =
+        entities.view<SpriteAnimationComponent, TransformComponent>();
     anim_view.each([&](entt::entity entity_id,
                        const SpriteAnimationComponent &anim_comp,
                        const TransformComponent &transform_comp) {
@@ -47,8 +50,8 @@ void SpriteRenderer::Render(const Scene &scene)
         if (anim) {
             if (anim->GetFrameSize()) {
                 auto &frame = anim->GetFrame();
-                if (resource.Contains(frame.texture_id)) {
-                    auto texture = &resource.Handle(frame.texture_id).Get();
+                if (cache.Contains(frame.texture_id)) {
+                    auto texture = &cache.Handle(frame.texture_id).Get();
                     datas.push_back({texture, frame.uvs,
                                      transform_comp.GetWorldPosition(),
                                      transform_comp.GetWorldRotation(),
@@ -78,7 +81,7 @@ void SpriteRenderer::Render(const Scene &scene)
                                 data.size, Vector4f(1.0f), data.entity_id);
     }
 
-    // auto textView = scene.view<TransformComponent, TextComponent>();
+    // auto textView = entities.view<TransformComponent, TextComponent>();
 
     // textView.each([&](entt::entity entity_id,
     //                   const TransformComponent &transformComp,

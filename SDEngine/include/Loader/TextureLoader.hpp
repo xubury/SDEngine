@@ -12,7 +12,9 @@ namespace SD {
 class SD_LOADER_API TextureLoader
     : public ResourceLoader<TextureLoader, Texture> {
    public:
-    Ref<Texture> Load(const std::string &path) const;
+    Ref<Texture> Load(const std::string &path, TextureWrap wrap,
+                      TextureMinFilter min_filter, TextureMagFilter mag_filter,
+                      MipmapMode mode) const;
     // static void WriteToFile(const Texture &texture, const std::string &path);
 };
 

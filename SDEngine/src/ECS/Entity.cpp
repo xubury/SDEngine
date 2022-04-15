@@ -26,7 +26,7 @@ void Entity::Destroy(bool is_root)
         Entity child(entity_id, m_scene);
         child.Destroy(false);
     }
-    m_scene->destroy(*this);
+    m_scene->m_entity_reg.destroy(*this);
 }
 
 void Entity::AddChild(Entity &child)

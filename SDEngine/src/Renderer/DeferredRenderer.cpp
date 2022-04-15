@@ -238,9 +238,11 @@ void DeferredRenderer::Render(Scene &scene, const Camera &camera)
     }
 
     RenderDeferred(scene, camera);
+    auto &entities = scene.GetEntityRegistry();
     auto dir_lights =
-        scene.view<TransformComponent, DirectionalLightComponent>();
-    auto point_lights = scene.view<TransformComponent, PointLightComponent>();
+        entities.view<TransformComponent, DirectionalLightComponent>();
+    auto point_lights =
+        entities.view<TransformComponent, PointLightComponent>();
     if (dir_lights.begin() != dir_lights.end() ||
         point_lights.begin() != point_lights.end()) {
         RenderEmissive();
@@ -256,7 +258,8 @@ void DeferredRenderer::RenderShadowMap(const Scene &scene,
                                        const Camera &camera,
                                        const Transform &transform)
 {
-    auto modelView = scene.view<TransformComponent, MeshComponent>();
+    auto &entities = scene.GetEntityRegistry();
+    auto modelView = entities.view<TransformComponent, MeshComponent>();
     RenderOperation op;
     op.cull_face = Face::Front;
     Texture *depth_map = shadow.GetShadowMap();
@@ -268,7 +271,7 @@ void DeferredRenderer::RenderShadowMap(const Scene &scene,
     Renderer3D::SetCascadeShadow(shadow);
 
     ShaderParam *model_param = s_data.cascade_shader->GetParam("u_model");
-    auto &cache = scene.GetModelResource();
+    auto &cache = scene.GetResourceRegistry().GetModelCache();
     modelView.each([&](const TransformComponent &tc, const MeshComponent &mc) {
         Matrix4f mat = tc.GetWorldTransform().GetMatrix();
         model_param->SetAsMat4(&mat[0][0]);
@@ -302,11 +305,12 @@ void DeferredRenderer::RenderPointShadowMap(const Scene &scene,
                                             PointShadow &shadow,
                                             const Transform &transform)
 {
+    auto &entities = scene.GetEntityRegistry();
     Vector3f light_pos = transform.GetPosition();
     std::array<Matrix4f, 6> shadow_trans =
         shadow.GetProjectionMatrix(light_pos);
 
-    auto modelView = scene.view<TransformComponent, MeshComponent>();
+    auto modelView = entities.view<TransformComponent, MeshComponent>();
     RenderOperation op;
     op.cull_face = Face::Front;
     Texture *shadow_map = shadow.GetShadowMap();
@@ -322,7 +326,7 @@ void DeferredRenderer::RenderPointShadowMap(const Scene &scene,
     s_data.point_shadow_shader->GetParam("u_shadow_matrix[0]")
         ->SetAsMat4(&shadow_trans[0][0][0], 6);
 
-    auto &cache = scene.GetModelResource();
+    auto &cache = scene.GetResourceRegistry().GetModelCache();
     modelView.each([&](const TransformComponent &tc, const MeshComponent &mc) {
         Matrix4f mat = tc.GetWorldTransform().GetMatrix();
         model_param->SetAsMat4(&mat[0][0]);
@@ -381,6 +385,7 @@ void DeferredRenderer::RenderEmissive()
 
 void DeferredRenderer::RenderDeferred(Scene &scene, const Camera &camera)
 {
+    auto &entities = scene.GetEntityRegistry();
     s_data.deferred_shader->GetParam("u_position")
         ->SetAsTexture(
             s_data.gbuffer_msaa[static_cast<int>(GeometryBufferType::Position)]
@@ -438,7 +443,7 @@ void DeferredRenderer::RenderDeferred(Scene &scene, const Camera &camera)
     const float value[]{0, 0, 0};
     s_data.lighting_target[input_id]->ClearAttachment(0, value);
     auto dir_lights =
-        scene.view<TransformComponent, DirectionalLightComponent>();
+        entities.view<TransformComponent, DirectionalLightComponent>();
     dir_lights.each([&](const TransformComponent &transformComp,
                         DirectionalLightComponent &lightComp) {
         const DirectionalLight &light = lightComp.light;
@@ -488,7 +493,8 @@ void DeferredRenderer::RenderDeferred(Scene &scene, const Camera &camera)
         s_data.deferred_shader->GetParam("u_point_shadow_map");
     ShaderParam *point_shadow_far_z =
         s_data.deferred_shader->GetParam("u_point_shadow_far_z");
-    auto point_lights = scene.view<TransformComponent, PointLightComponent>();
+    auto point_lights =
+        entities.view<TransformComponent, PointLightComponent>();
     point_lights.each([&](const TransformComponent &transformComp,
                           PointLightComponent &lightComp) {
         const PointLight &light = lightComp.light;
@@ -531,7 +537,8 @@ void DeferredRenderer::RenderDeferred(Scene &scene, const Camera &camera)
 
 void DeferredRenderer::RenderGBuffer(const Scene &scene)
 {
-    auto meshes = scene.view<TransformComponent, MeshComponent>();
+    auto &entities = scene.GetEntityRegistry();
+    auto meshes = entities.view<TransformComponent, MeshComponent>();
 
     RenderPassInfo info;
     info.framebuffer = s_data.geometry_target_msaa.get();
@@ -549,7 +556,7 @@ void DeferredRenderer::RenderGBuffer(const Scene &scene)
 
     ShaderParam *entity_id = s_data.gbuffer_shader->GetParam("u_entity_id");
     ShaderParam *model_param = s_data.gbuffer_shader->GetParam("u_model");
-    auto &cache = scene.GetModelResource();
+    auto &cache = scene.GetResourceRegistry().GetModelCache();
     meshes.each([&](const entt::entity &entity,
                     const TransformComponent &transform,
                     const MeshComponent &mc) {

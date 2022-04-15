@@ -4,14 +4,11 @@
 #include "Utility/Base.hpp"
 #include "Utility/Serialize.hpp"
 #include "ECS/Export.hpp"
+#include "ECS/ResourceRegistry.hpp"
 #include "Graphics/Model.hpp"
 #include "Resource/ResourceCache.hpp"
 
 #include "entt/entt.hpp"
-// #include "entt/config/config.h"
-// #include "entt/entity/snapshot.hpp"
-// #include "entt/entity/registry.hpp"
-// #include "entt/entity/entity.hpp"
 
 namespace SD {
 
@@ -30,13 +27,14 @@ void OnComponentAdded(entt::registry &, entt::entity)
 {
 }
 
-class SD_ECS_API Scene : public entt::registry {
+class SD_ECS_API Scene {
    public:
     Scene();
     ~Scene() = default;
 
     Entity CreateEntity(const std::string &name);
-    Entity CreateModelEntity(const ResourceId rid, const ModelNode *node);
+    Entity CreateModelEntity(const ResourceRegistry::ModelHandle &model,
+                             const ModelNode *node);
 
     void Serialize(cereal::PortableBinaryOutputArchive &archive) const;
 
@@ -54,19 +52,16 @@ class SD_ECS_API Scene : public entt::registry {
             .first.template connect<&Scene::SerializeComponent<T>>();
         m_serialize_functions[id]
             .second.template connect<&Scene::DeserializeComponent<T>>();
-        on_construct<T>().template connect<&OnComponentAdded<T>>();
+        m_entity_reg.on_construct<T>().template connect<&OnComponentAdded<T>>();
     }
+    entt::registry &GetEntityRegistry() { return m_entity_reg; }
+    const entt::registry &GetEntityRegistry() const { return m_entity_reg; }
 
-    ResourceCache<Texture> &GetTextureResource() { return m_textures; }
-
-    ResourceCache<Model> &GetModelResource() { return m_models; }
-
-    const ResourceCache<Texture> &GetTextureResource() const
+    ResourceRegistry &GetResourceRegistry() { return m_resource_reg; }
+    const ResourceRegistry &GetResourceRegistry() const
     {
-        return m_textures;
+        return m_resource_reg;
     }
-
-    const ResourceCache<Model> &GetModelResource() const { return m_models; }
 
    private:
     template <typename T>
@@ -87,16 +82,18 @@ class SD_ECS_API Scene : public entt::registry {
     template <typename T>
     void CloneComponent(EntityId from, EntityId to)
     {
-        T component = get<T>(from);
-        emplace<T>(to, component);
+        T component = m_entity_reg.get<T>(from);
+        m_entity_reg.emplace<T>(to, component);
     }
 
     std::unordered_map<EntityIdType, std::pair<ComponentSerializeFunction,
                                                ComponentDeserializeFunction>>
         m_serialize_functions;
 
-    ResourceCache<Texture> m_textures;
-    ResourceCache<Model> m_models;
+    ResourceRegistry m_resource_reg;
+    entt::registry m_entity_reg;
+
+    friend class Entity;
 };
 
 }  // namespace SD

@@ -11,6 +11,10 @@ namespace SD {
 template <typename Resource>
 class ResourceCache {
    public:
+    size_t Size() const { return m_resources.size(); }
+
+    bool Empty() const { return m_resources.empty(); }
+
     template <typename Loader, typename... Args>
     [[nodiscard]] ResourceHandle<Resource> Load(const ResourceId rid,
                                                 Args &&...args)
@@ -18,6 +22,7 @@ class ResourceCache {
         if (auto it = m_resources.find(rid); it == m_resources.cend()) {
             if (auto handle = Temp<Loader>(std::forward<Args>(args)...);
                 handle) {
+                handle.SetIdentifier(rid);
                 return m_resources[rid] = std::move(handle);
             }
         }
