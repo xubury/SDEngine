@@ -8,20 +8,19 @@
 
 namespace SD {
 
-template <typename Resource>
+template <typename Resource, typename Loader>
 class ResourceCache {
    public:
     size_t Size() const { return m_resources.size(); }
 
     bool Empty() const { return m_resources.empty(); }
 
-    template <typename Loader, typename... Args>
+    template <typename... Args>
     [[nodiscard]] ResourceHandle<Resource> Load(const ResourceId rid,
                                                 Args &&...args)
     {
         if (auto it = m_resources.find(rid); it == m_resources.cend()) {
-            if (auto handle = Temp<Loader>(std::forward<Args>(args)...);
-                handle) {
+            if (auto handle = Temp(std::forward<Args>(args)...); handle) {
                 handle.SetIdentifier(rid);
                 return m_resources[rid] = std::move(handle);
             }
@@ -33,10 +32,10 @@ class ResourceCache {
         return {};
     }
 
-    template <typename Loader, typename... Args>
+    template <typename... Args>
     [[nodiscard]] ResourceHandle<Resource> Temp(Args &&...args)
     {
-        return Loader{}.Get(std::forward<Args>(args)...);
+        return m_loader(std::forward<Args>(args)...);
     }
 
     void Discard(const ResourceId rid)
@@ -46,11 +45,11 @@ class ResourceCache {
         }
     }
 
-    template <typename Loader, typename... Args>
+    template <typename... Args>
     [[nodiscard]] ResourceHandle<Resource> Reload(const ResourceId rid,
                                                   Args &&...args)
     {
-        return (Discard(rid), Load<Loader>(rid, std::forward<Args>(args)...));
+        return (Discard(rid), Load(rid, std::forward<Args>(args)...));
     }
 
     [[nodiscard]] ResourceHandle<Resource> Handle(const ResourceId rid)
@@ -79,6 +78,7 @@ class ResourceCache {
     }
 
    private:
+    Loader m_loader;
     std::unordered_map<ResourceId, ResourceHandle<Resource>> m_resources;
 };
 

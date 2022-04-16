@@ -5,6 +5,7 @@
 #include "Resource/ResourceId.hpp"
 
 namespace SD {
+
 template <typename Resource>
 class ResourceHandle {
    public:
@@ -30,6 +31,7 @@ class ResourceHandle {
     ResourceId m_rid;
     Ref<Resource> m_ptr;
 };
+
 }  // namespace SD
 
 #endif

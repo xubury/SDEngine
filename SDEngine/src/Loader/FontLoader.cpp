@@ -28,16 +28,21 @@ const char32_t UNICODE_RANGE[] = {
     0x4E00, 0x9FFF,  // CJK Ideograms
     0};
 
-Ref<Font> FontLoader::LoadFont(const std::string &path, int32_t pixel_height)
+FontLoader::FontLoader()
 {
-    FT_Library ft;
-    FT_Face face;
-    if (FT_Init_FreeType(&ft)) {
+    if (FT_Init_FreeType(&m_library)) {
         SD_CORE_ERROR("Could not init Freetype library!");
     }
+}
+
+FontLoader::~FontLoader() { FT_Done_FreeType(m_library); }
+
+Ref<Font> FontLoader::Load(const std::string &path, int32_t pixel_height)
+{
+    FT_Face face;
     Ref<Font> font;
     SD_CORE_TRACE("Loading font form: {}...", path);
-    if (FT_New_Face(ft, path.c_str(), 0, &face)) {
+    if (FT_New_Face(m_library, path.c_str(), 0, &face)) {
         SD_CORE_ERROR("Failed to load font {}!", path);
     }
     else {
@@ -46,7 +51,6 @@ Ref<Font> FontLoader::LoadFont(const std::string &path, int32_t pixel_height)
         LoadGlyph(face, font.get());
     }
     FT_Done_Face(face);
-    FT_Done_FreeType(ft);
     return font;
 }
 

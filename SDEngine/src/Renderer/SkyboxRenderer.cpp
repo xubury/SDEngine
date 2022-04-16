@@ -11,15 +11,16 @@ Ref<Texture> SkyboxRenderer::s_skybox;
 
 void SkyboxRenderer::Init()
 {
-    s_skybox_shader = ShaderLoader::LoadShader(
-        "assets/shaders/skybox.vert.glsl", "assets/shaders/skybox.frag.glsl");
+    s_skybox_shader = ShaderLoader{}.Load("assets/shaders/skybox.vert.glsl",
+                                          "assets/shaders/skybox.frag.glsl");
     std::array<std::string, 6> pathes = {
         "assets/skybox/right.jpg", "assets/skybox/left.jpg",
         "assets/skybox/top.jpg",   "assets/skybox/bottom.jpg",
         "assets/skybox/front.jpg", "assets/skybox/back.jpg"};
     std::array<Ref<ByteImage>, 6> images;
+    ImageLoader loader;
     for (size_t i = 0; i < pathes.size(); ++i) {
-        images[i] = ImageLoader::LoadFromFile(pathes[i]);
+        images[i] = loader.Load(pathes[i]);
     }
     s_skybox = Texture::CreateCube(images);
 }

@@ -37,7 +37,7 @@ static void ParseShaderCode(const std::string& path, std::string& code)
     }
 }
 
-Ref<Shader> ShaderLoader::LoadShader(const std::string& comp_path)
+Ref<Shader> ShaderLoader::Load(const std::string& comp_path)
 {
     Ref<Shader> shader = Shader::Create();
     std::string comp_code;
@@ -49,8 +49,8 @@ Ref<Shader> ShaderLoader::LoadShader(const std::string& comp_path)
     return shader;
 }
 
-Ref<Shader> ShaderLoader::LoadShader(const std::string& vert_path,
-                                     const std::string& frag_path)
+Ref<Shader> ShaderLoader::Load(const std::string& vert_path,
+                               const std::string& frag_path)
 {
     Ref<Shader> shader = Shader::Create();
     std::string vert_code;
@@ -66,9 +66,9 @@ Ref<Shader> ShaderLoader::LoadShader(const std::string& vert_path,
     shader->LinkShaders();
     return shader;
 }
-Ref<Shader> ShaderLoader::LoadShader(const std::string& vert_path,
-                                     const std::string& frag_path,
-                                     const std::string& geo_path)
+Ref<Shader> ShaderLoader::Load(const std::string& vert_path,
+                               const std::string& frag_path,
+                               const std::string& geo_path)
 {
     Ref<Shader> shader = Shader::Create();
     std::string vert_code;

@@ -5,14 +5,12 @@ set(ECS_Include
     ${Include_Root}/Component.hpp
     ${Include_Root}/Export.hpp
     ${Include_Root}/Entity.hpp
-    ${Include_Root}/Scene.hpp
-    ${Include_Root}/ResourceRegistry.hpp)
+    ${Include_Root}/Scene.hpp)
 
 set(ECS_Src
     ${Src_Root}/Component.cpp
     ${Src_Root}/Entity.cpp
-    ${Src_Root}/Scene.cpp
-    ${Src_Root}/ResourceRegistry.cpp)
+    ${Src_Root}/Scene.cpp)
 
 add_library(sd-ecs ${ECS_Src})
 
@@ -33,7 +31,7 @@ target_include_directories(sd-ecs
     PRIVATE
     ${SD_ENGINE_SOURCE_DIR}/libs/entt)
 
-target_link_libraries(sd-ecs PUBLIC sd-utility EnTT::EnTT sd-graphics  sd-animation)
+target_link_libraries(sd-ecs PUBLIC sd-utility EnTT::EnTT sd-graphics sd-resource sd-animation)
 
 install(TARGETS sd-ecs LIBRARY DESTINATION lib)
 

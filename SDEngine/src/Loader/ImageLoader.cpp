@@ -6,9 +6,9 @@
 namespace SD {
 
 // FIXME: 16bit should use this stbi_load_16();
-Ref<ByteImage> ImageLoader::LoadFromFile(const std::string& path)
+Ref<ByteImage> ImageLoader::Load(const std::string& path)
 {
-    SD_CORE_TRACE("Loading image from {}", path);
+    SD_CORE_TRACE("Loading image from: {}", path);
     int32_t width;
     int32_t height;
     int32_t channels;
@@ -18,7 +18,7 @@ Ref<ByteImage> ImageLoader::LoadFromFile(const std::string& path)
     return bmp;
 }
 
-Ref<ByteImage> ImageLoader::LoadFromMemory(const uint8_t* data, int32_t size)
+Ref<ByteImage> ImageLoader::Load(const uint8_t* data, int32_t size)
 {
     int32_t width;
     int32_t height;

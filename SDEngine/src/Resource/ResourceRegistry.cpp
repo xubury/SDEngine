@@ -1,4 +1,4 @@
-#include "ECS/ResourceRegistry.hpp"
+#include "Resource/ResourceRegistry.hpp"
 
 namespace SD {
 

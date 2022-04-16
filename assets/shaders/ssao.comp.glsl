@@ -46,7 +46,7 @@ float ComputeOcclusion(vec3 random_vec, vec2 uv)
         vec4 offset = vec4(sample_pos, 1.0);
         offset = u_projection * offset;       // from view to clip-space
         offset /= offset.w;                   // perspective divide
-        offset.xyz = offset.xyz * 0.5 + 0.5;  // transform to range 0.0 - 1.0
+        offset.xyz = offset.xyz * 0.5 + vec3(0.5);  // transform to range 0.0 - 1.0
 
         if (offset.x < 0 || offset.y < 0 || offset.x > 1 || offset.y > 1) {
             continue;

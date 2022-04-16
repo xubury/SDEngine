@@ -1,5 +1,5 @@
 #version 450
-layout(local_size_x = 25, local_size_y = 25) in;
+layout(local_size_x = 5, local_size_y = 5) in;
 
 layout(r16f) uniform image2D u_out_image;
 
@@ -21,5 +21,6 @@ void main()
             result += texture(u_input, uv + offset).r;
         }
     }
-    imageStore(u_out_image, pos, vec4(result / (5.0 * 5.0)));
+    result *= 1 / (5.f * 5.f);
+    imageStore(u_out_image, pos, vec4(result));
 }

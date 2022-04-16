@@ -4,8 +4,8 @@
 #include "Utility/Base.hpp"
 #include "Utility/Serialize.hpp"
 #include "ECS/Export.hpp"
-#include "ECS/ResourceRegistry.hpp"
 #include "Graphics/Model.hpp"
+#include "Resource/ResourceRegistry.hpp"
 #include "Resource/ResourceCache.hpp"
 
 #include "entt/entt.hpp"

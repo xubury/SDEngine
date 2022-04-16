@@ -1,5 +1,6 @@
 #include "Loader/ModelLoader.hpp"
 #include "Loader/TextureLoader.hpp"
+#include "Resource/ResourceRegistry.hpp"
 #include "Graphics/Image.hpp"
 #include "Utility/Math.hpp"
 
@@ -144,7 +145,7 @@ static inline MaterialType ConvertAssimpTextureType(aiTextureType textureType)
 
 static void ProcessAiMaterial(const std::filesystem::path &directory,
                               const aiMaterial *ai_material, Model &model,
-                              ResourceCache<Texture> &cache)
+                              ResourceRegistry &registry)
 {
     Material material;
     const std::string name = ai_material->GetName().C_Str();
@@ -171,7 +172,7 @@ static void ProcessAiMaterial(const std::filesystem::path &directory,
         std::string full_path =
             (directory / texture_path.C_Str()).generic_string();
         const std::string identifier = name + "_" + GetMaterialName(type);
-        auto handle = cache.Load<TextureLoader>(
+        auto handle = registry.LoadTexture(
             ResourceId(identifier), full_path,
             ConvertAssimpMapMode(ai_map_mode), TextureMinFilter::Linear,
             TextureMagFilter::Linear, MipmapMode::Linear);
@@ -207,7 +208,7 @@ static void ProcessNode(const aiScene *scene, const aiNode *ai_node,
 }
 
 Ref<Model> ModelLoader::Load(const std::string &path,
-                             ResourceCache<Texture> &cache) const
+                             ResourceRegistry &registry)
 {
     Ref<Model> model;
     SD_CORE_TRACE("Loading model form: {}...", path);
@@ -226,7 +227,8 @@ Ref<Model> ModelLoader::Load(const std::string &path,
         std::filesystem::path directory =
             std::filesystem::path(path).parent_path();
         for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
-            ProcessAiMaterial(directory, scene->mMaterials[i], *model, cache);
+            ProcessAiMaterial(directory, scene->mMaterials[i], *model,
+                              registry);
         }
 
         // Process meshes

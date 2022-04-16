@@ -236,7 +236,7 @@ bool BeginCenterPopupModal(const char *name, bool *p_open,
                                   flags | ImGuiWindowFlags_AlwaysAutoResize);
 }
 
-bool DrawTextureAssetSelection(const SD::ResourceCache<SD::Texture> &,
+bool DrawTextureAssetSelection(const SD::ResourceRegistry::TextureCache &,
                                SD::ResourceId *)
 {
     bool ret = false;

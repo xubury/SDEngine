@@ -2,6 +2,7 @@
 #include "Loader/ImageLoader.hpp"
 #include "Graphics/Texture.hpp"
 #include "Utility/String.hpp"
+#include "Resource/ResourceRegistry.hpp"
 
 #include <fstream>
 
@@ -9,10 +10,10 @@ namespace SD {
 
 Ref<Texture> TextureLoader::Load(const std::string &path, TextureWrap wrap,
                                  TextureMinFilter min_filter,
-                                 TextureMagFilter mag_filter,
-                                 MipmapMode mode) const
+                                 TextureMagFilter mag_filter, MipmapMode mode,
+                                 ResourceRegistry &registry)
 {
-    auto img = ImageLoader::LoadFromFile(path);
+    auto img = registry.LoadImage(ResourceId(path), path);
     Ref<Texture> texture =
         Texture::Create(img->Width(), img->Height(), 0, MultiSampleLevel::None,
                         TextureType::Normal, img->GetDataFormat(), wrap,

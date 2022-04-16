@@ -14,10 +14,11 @@ namespace SD {
 
 ContentBrowser::ContentBrowser()
 {
-    m_file_icon = Texture::CreateIcon(
-        *ImageLoader::LoadFromFile("assets/icons/FileIcon.png"));
+    ImageLoader loader;
+    m_file_icon =
+        Texture::CreateIcon(*loader.Load("assets/icons/FileIcon.png"));
     m_directory_icon = Texture::CreateIcon(
-        *ImageLoader::LoadFromFile("assets/icons/DirectoryIcon.png"));
+        *loader.Load("assets/icons/DirectoryIcon.png"));
     m_current_directory = "assets";
 }
 

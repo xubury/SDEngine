@@ -23,10 +23,10 @@ void PostProcessRenderer::Init(const PostProcessSettings &settings)
 {
     s_settings = settings;
 
-    s_data.hdr_shader = ShaderLoader::LoadShader(
-        "assets/shaders/quad.vert.glsl", "assets/shaders/hdr.frag.glsl");
-    s_data.bloom_shader =
-        ShaderLoader::LoadShader("assets/shaders/bloom.comp.glsl");
+    ShaderLoader loader;
+    s_data.hdr_shader = loader.Load("assets/shaders/quad.vert.glsl",
+                                    "assets/shaders/hdr.frag.glsl");
+    s_data.bloom_shader = loader.Load("assets/shaders/bloom.comp.glsl");
     s_data.post_target = Framebuffer::Create();
     InitBuffers();
 }

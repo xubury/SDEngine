@@ -48,8 +48,9 @@ void GraphicsLayer::OnInit()
     SkyboxRenderer::Init();
     PostProcessRenderer::Init(PostProcessSettings{m_width, m_height});
     DeferredRenderer::Init(DeferredRenderSettings{m_width, m_height, m_msaa});
-    m_light_icon = Texture::CreateIcon(
-        *ImageLoader::LoadFromFile("assets/icons/light.png"));
+    ImageLoader loader;
+    m_light_icon =
+        Texture::CreateIcon(*loader.Load("assets/icons/light.png"));
 }
 
 void GraphicsLayer::OnDestroy() {}

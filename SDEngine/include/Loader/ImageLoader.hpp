@@ -8,8 +8,8 @@ namespace SD {
 
 class SD_LOADER_API ImageLoader {
    public:
-    static Ref<ByteImage> LoadFromFile(const std::string &path);
-    static Ref<ByteImage> LoadFromMemory(const uint8_t *data, int32_t size);
+    Ref<ByteImage> Load(const std::string &path);
+    Ref<ByteImage> Load(const uint8_t *data, int32_t size);
 };
 
 }  // namespace SD

@@ -81,28 +81,26 @@ void DeferredRenderer::Init(const DeferredRenderSettings &settings)
 
 void DeferredRenderer::InitShaders()
 {
-    s_data.emssive_shader = ShaderLoader::LoadShader(
-        "assets/shaders/quad.vert.glsl", "assets/shaders/emissive.frag.glsl");
-    s_data.deferred_shader = ShaderLoader::LoadShader(
-        "assets/shaders/quad.vert.glsl", "assets/shaders/deferred.frag.glsl");
-    s_data.gbuffer_shader = ShaderLoader::LoadShader(
-        "assets/shaders/mesh.vert.glsl", "assets/shaders/gbuffer.frag.glsl");
+    ShaderLoader loader;
+    s_data.emssive_shader = loader.Load("assets/shaders/quad.vert.glsl",
+                                        "assets/shaders/emissive.frag.glsl");
+    s_data.deferred_shader = loader.Load("assets/shaders/quad.vert.glsl",
+                                         "assets/shaders/deferred.frag.glsl");
+    s_data.gbuffer_shader = loader.Load("assets/shaders/mesh.vert.glsl",
+                                        "assets/shaders/gbuffer.frag.glsl");
 
-    s_data.ssao_shader =
-        ShaderLoader::LoadShader("assets/shaders/ssao.comp.glsl");
-    s_data.ssao_blur_shader =
-        ShaderLoader::LoadShader("assets/shaders/ssao_blur.comp.glsl");
+    s_data.ssao_shader = loader.Load("assets/shaders/ssao.comp.glsl");
+    s_data.ssao_blur_shader = loader.Load("assets/shaders/ssao_blur.comp.glsl");
 
-    s_data.cascade_shader =
-        ShaderLoader::LoadShader("assets/shaders/shadow.vert.glsl", "",
-                                 "assets/shaders/shadow.geo.glsl");
+    s_data.cascade_shader = loader.Load("assets/shaders/shadow.vert.glsl", "",
+                                        "assets/shaders/shadow.geo.glsl");
     s_data.cascade_debug_shader =
-        ShaderLoader::LoadShader("assets/shaders/quad.vert.glsl",
-                                 "assets/shaders/debug_depth.frag.glsl");
+        loader.Load("assets/shaders/quad.vert.glsl",
+                    "assets/shaders/debug_depth.frag.glsl");
     s_data.point_shadow_shader =
-        ShaderLoader::LoadShader("assets/shaders/shadow.vert.glsl",
-                                 "assets/shaders/point_shadow.frag.glsl",
-                                 "assets/shaders/point_shadow.geo.glsl");
+        loader.Load("assets/shaders/shadow.vert.glsl",
+                    "assets/shaders/point_shadow.frag.glsl",
+                    "assets/shaders/point_shadow.geo.glsl");
 }
 
 void DeferredRenderer::InitSSAOBuffers()
@@ -129,7 +127,7 @@ void DeferredRenderer::InitSSAOKernel()
         // scale samples s.t. they're more aligned to center of kernel
         scale = Math::Lerp(0.1f, 1.0f, scale * scale);
         sample *= scale;
-        s_data.ssao_kernel[i] = (sample);
+        s_data.ssao_kernel[i] = sample;
     }
 
     std::array<Vector3f, 16> ssao_noise;
@@ -140,7 +138,7 @@ void DeferredRenderer::InitSSAOKernel()
     }
     s_data.ssao_noise =
         Texture::Create(4, 4, 0, MultiSampleLevel::None, TextureType::Normal,
-                        DataFormat::RGB16F, TextureWrap::Repeat);
+                        DataFormat::RGB32F, TextureWrap::Repeat);
     s_data.ssao_noise->SetPixels(0, 0, 0, 4, 4, 1, ssao_noise.data());
 
     s_data.ssao_shader->GetParam("u_samples[0]")

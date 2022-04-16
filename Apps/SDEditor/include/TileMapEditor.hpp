@@ -1,7 +1,6 @@
 #ifndef SD_TILE_MAP_SYSTEM_HPP
 #define SD_TILE_MAP_SYSTEM_HPP
 
-#include "ECS/ResourceRegistry.hpp"
 #include "ECS/Component.hpp"
 #include "Graphics/Viewport.hpp"
 #include "Graphics/Framebuffer.hpp"

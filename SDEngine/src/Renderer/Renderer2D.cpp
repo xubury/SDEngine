@@ -177,12 +177,13 @@ void Renderer2D::Init()
 
     s_2d_data.texture_slots[0] = s_2d_data.default_texture.get();
 
-    s_line_shader = ShaderLoader::LoadShader("assets/shaders/line.vert.glsl",
-                                             "assets/shaders/line.frag.glsl");
-    s_texture_shader = ShaderLoader::LoadShader(
-        "assets/shaders/texture.vert.glsl", "assets/shaders/texture.frag.glsl");
-    s_cirlce_shader = ShaderLoader::LoadShader(
-        "assets/shaders/circle.vert.glsl", "assets/shaders/circle.frag.glsl");
+    ShaderLoader loader;
+    s_line_shader = loader.Load("assets/shaders/line.vert.glsl",
+                                "assets/shaders/line.frag.glsl");
+    s_texture_shader = loader.Load("assets/shaders/texture.vert.glsl",
+                                   "assets/shaders/texture.frag.glsl");
+    s_cirlce_shader = loader.Load("assets/shaders/circle.vert.glsl",
+                                  "assets/shaders/circle.frag.glsl");
 
     Renderer::BindCamera(*s_line_shader);
     Renderer::BindCamera(*s_cirlce_shader);
