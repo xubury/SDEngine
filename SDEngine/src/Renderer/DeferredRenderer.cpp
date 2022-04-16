@@ -105,12 +105,12 @@ void DeferredRenderer::InitShaders()
 
 void DeferredRenderer::InitSSAOBuffers()
 {
-    s_data.ssao_buffer = Texture::Create(s_settings.width, s_settings.height, 0,
-                                         MultiSampleLevel::None,
-                                         TextureType::Normal, DataFormat::R16F);
+    s_data.ssao_buffer = Texture::Create(
+        s_settings.width, s_settings.height, 1, MultiSampleLevel::None,
+        TextureType::Normal2D, DataFormat::R16F);
     s_data.ssao_blur_buffer = Texture::Create(
-        s_settings.width, s_settings.height, 0, MultiSampleLevel::None,
-        TextureType::Normal, DataFormat::R16F);
+        s_settings.width, s_settings.height, 1, MultiSampleLevel::None,
+        TextureType::Normal2D, DataFormat::R16F);
 }
 
 void DeferredRenderer::InitSSAOKernel()
@@ -137,8 +137,8 @@ void DeferredRenderer::InitSSAOKernel()
         ssao_noise[i] = glm::normalize(noise);
     }
     s_data.ssao_noise =
-        Texture::Create(4, 4, 0, MultiSampleLevel::None, TextureType::Normal,
-                        DataFormat::RGB32F, TextureWrap::Repeat);
+        Texture::Create(4, 4, 1, MultiSampleLevel::None, TextureType::Normal2D,
+                        DataFormat::RGB32F, {TextureWrap::Repeat});
     s_data.ssao_noise->SetPixels(0, 0, 0, 4, 4, 1, ssao_noise.data());
 
     s_data.ssao_shader->GetParam("u_samples[0]")
@@ -149,20 +149,20 @@ void DeferredRenderer::InitLightingBuffers()
 {
     for (int i = 0; i < 2; ++i) {
         s_data.lighting_buffers[i] = Texture::Create(
-            s_settings.width, s_settings.height, 0, s_settings.msaa,
-            TextureType::Normal, DataFormat::RGB16F);
+            s_settings.width, s_settings.height, 1, s_settings.msaa,
+            TextureType::Normal2D, DataFormat::RGB16F);
         s_data.lighting_target[i]->Attach(*s_data.lighting_buffers[i], 0, 0);
     }
 
     for (size_t i = 0; i < s_data.gbuffer_msaa.size(); ++i) {
         s_data.gbuffer_msaa[i] = Texture::Create(
-            s_settings.width, s_settings.height, 0, s_settings.msaa,
-            TextureType::Normal, GetTextureFormat(GeometryBufferType(i)));
+            s_settings.width, s_settings.height, 1, s_settings.msaa,
+            TextureType::Normal2D, GetTextureFormat(GeometryBufferType(i)));
         s_data.geometry_target_msaa->Attach(*s_data.gbuffer_msaa[i], i, 0);
 
         s_data.gbuffer[i] = Texture::Create(
-            s_settings.width, s_settings.height, 0, MultiSampleLevel::None,
-            TextureType::Normal, GetTextureFormat(GeometryBufferType(i)));
+            s_settings.width, s_settings.height, 1, MultiSampleLevel::None,
+            TextureType::Normal2D, GetTextureFormat(GeometryBufferType(i)));
         s_data.geometry_target->Attach(*s_data.gbuffer[i], i, 0);
     }
     s_data.depth_buffer =
@@ -171,8 +171,8 @@ void DeferredRenderer::InitLightingBuffers()
     s_data.geometry_target_msaa->Attach(*s_data.depth_buffer, 0);
 
     s_data.cascade_debug_buffer = Texture::Create(
-        s_settings.width, s_settings.height, 0, MultiSampleLevel::None,
-        TextureType::Normal, DataFormat::RGB16F);
+        s_settings.width, s_settings.height, 1, MultiSampleLevel::None,
+        TextureType::Normal2D, DataFormat::RGB16F);
     s_data.cascade_debug_target->Attach(*s_data.cascade_debug_buffer, 0, 0);
 }
 

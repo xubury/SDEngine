@@ -18,8 +18,8 @@ const int line_width = 5;
 void GridRenderer::Init()
 {
     s_data.grid_texture = Texture::Create(
-        grid_texture_size, grid_texture_size, 0, MultiSampleLevel::None,
-        TextureType::Normal, DataFormat::RGBA8, TextureWrap::Repeat);
+        grid_texture_size, grid_texture_size, 1, MultiSampleLevel::None,
+        TextureType::Normal2D, DataFormat::RGBA8, {TextureWrap::Repeat});
     size_t pixel_size =
         4 * s_data.grid_texture->GetWidth() * s_data.grid_texture->GetHeight();
     void *data = malloc(pixel_size);

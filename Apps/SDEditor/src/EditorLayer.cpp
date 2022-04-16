@@ -56,12 +56,12 @@ void EditorLayer::NewScene() { SetCurrentScene(CreateRef<Scene>()); }
 
 void EditorLayer::InitBuffers()
 {
-    m_scene_buffer = Texture::Create(m_viewport_size.x, m_viewport_size.y, 0,
+    m_scene_buffer = Texture::Create(m_viewport_size.x, m_viewport_size.y, 1,
                                      MultiSampleLevel::None,
-                                     TextureType::Normal, DataFormat::RGB8);
-    m_entity_buffer = Texture::Create(m_viewport_size.x, m_viewport_size.y, 0,
+                                     TextureType::Normal2D, DataFormat::RGB8);
+    m_entity_buffer = Texture::Create(m_viewport_size.x, m_viewport_size.y, 1,
                                       MultiSampleLevel::None,
-                                      TextureType::Normal, DataFormat::R32UI);
+                                      TextureType::Normal2D, DataFormat::R32UI);
     m_viewport_target->Attach(*m_scene_buffer, 0, 0);
     m_viewport_target->Attach(*m_entity_buffer, 1, 0);
 }

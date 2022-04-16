@@ -75,10 +75,11 @@ void FontLoader::LoadRangedGlyph(FT_Face face, Font *font, char32_t start,
     ByteImage bmp(tex_size, tex_size, 1);
     uint32_t x = 0;
     uint32_t y = 0;
-    auto glyph = Texture::Create(tex_size, tex_size, 0, MultiSampleLevel::None,
-                                 TextureType::Normal, DataFormat::Alpha8,
-                                 TextureWrap::Edge, TextureMinFilter::Linear,
-                                 TextureMagFilter::Linear, MipmapMode::Linear);
+    auto glyph =
+        Texture::Create(tex_size, tex_size, 1, MultiSampleLevel::None,
+                        TextureType::Normal2D, DataFormat::Alpha8,
+                        {TextureWrap::Edge, TextureMinFilter::Linear,
+                         TextureMagFilter::Linear, MipmapMode::Linear});
     for (char32_t ch = start; ch < end; ++ch) {
         if (FT_Load_Char(face, ch,
                          FT_LOAD_RENDER | FT_LOAD_FORCE_AUTOHINT |

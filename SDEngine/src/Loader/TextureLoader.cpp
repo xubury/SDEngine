@@ -8,16 +8,14 @@
 
 namespace SD {
 
-Ref<Texture> TextureLoader::Load(const std::string &path, TextureWrap wrap,
-                                 TextureMinFilter min_filter,
-                                 TextureMagFilter mag_filter, MipmapMode mode,
+Ref<Texture> TextureLoader::Load(const std::string &path,
+                                 const TextureParameter &param,
                                  ResourceRegistry &registry)
 {
     auto img = registry.LoadImage(ResourceId(path), path);
     Ref<Texture> texture =
-        Texture::Create(img->Width(), img->Height(), 0, MultiSampleLevel::None,
-                        TextureType::Normal, img->GetDataFormat(), wrap,
-                        min_filter, mag_filter, mode);
+        Texture::Create(img->Width(), img->Height(), 1, MultiSampleLevel::None,
+                        TextureType::Normal2D, img->GetDataFormat(), param);
     texture->SetPixels(0, 0, 0, img->Width(), img->Height(), 1, img->Data());
     return texture;
 }

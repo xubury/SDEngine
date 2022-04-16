@@ -174,8 +174,8 @@ static void ProcessAiMaterial(const std::filesystem::path &directory,
         const std::string identifier = name + "_" + GetMaterialName(type);
         auto handle = registry.LoadTexture(
             ResourceId(identifier), full_path,
-            ConvertAssimpMapMode(ai_map_mode), TextureMinFilter::Linear,
-            TextureMagFilter::Linear, MipmapMode::Linear);
+            {ConvertAssimpMapMode(ai_map_mode), TextureMinFilter::Linear,
+             TextureMagFilter::Linear, MipmapMode::Linear});
         material.SetTexture(ConvertAssimpTextureType(ai_type), &handle.Get());
     }
     model.AddMaterial(std::move(material));

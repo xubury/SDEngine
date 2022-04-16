@@ -41,21 +41,23 @@ void PostProcessRenderer::SetRenderSize(int32_t width, int32_t height)
 void PostProcessRenderer::InitBuffers()
 {
     s_data.post_buffer = Texture::Create(
-        s_settings.width, s_settings.height, 0, MultiSampleLevel::None,
-        TextureType::Normal, DataFormat::RGBA16F, TextureWrap::Edge,
-        TextureMinFilter::Nearest, TextureMagFilter::Nearest,
-        MipmapMode::Linear);
+        s_settings.width, s_settings.height, 1, MultiSampleLevel::None,
+        TextureType::Normal2D, DataFormat::RGBA16F,
+        {TextureWrap::Edge, TextureMinFilter::Nearest,
+         TextureMagFilter::Nearest, MipmapMode::Linear});
     s_data.post_target->Attach(*s_data.post_buffer, 0, 0);
 
     s_data.downsample_buffer = Texture::Create(
-        s_settings.width, s_settings.height, 0, MultiSampleLevel::None,
-        TextureType::Normal, DataFormat::RGBA16F, TextureWrap::Edge,
-        TextureMinFilter::Linear, TextureMagFilter::Linear, MipmapMode::Linear,
+        s_settings.width, s_settings.height, 1, MultiSampleLevel::None,
+        TextureType::Normal2D, DataFormat::RGBA16F,
+        {TextureWrap::Edge, TextureMinFilter::Linear, TextureMagFilter::Linear,
+         MipmapMode::Linear},
         7);
     s_data.upsample_buffer = Texture::Create(
-        s_settings.width, s_settings.height, 0, MultiSampleLevel::None,
-        TextureType::Normal, DataFormat::RGBA16F, TextureWrap::Edge,
-        TextureMinFilter::Linear, TextureMagFilter::Linear, MipmapMode::Linear,
+        s_settings.width, s_settings.height, 1, MultiSampleLevel::None,
+        TextureType::Normal2D, DataFormat::RGBA16F,
+        {TextureWrap::Edge, TextureMinFilter::Linear, TextureMagFilter::Linear,
+         MipmapMode::Linear},
         s_data.downsample_buffer->GetMipmapLevels() - 1);
 }
 

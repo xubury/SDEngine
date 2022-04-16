@@ -29,10 +29,10 @@ GraphicsLayer::GraphicsLayer(Device *device, int32_t width, int32_t height,
 
 void GraphicsLayer::InitBuffers()
 {
-    m_color_buffer = Texture::Create(m_width, m_height, 0, m_msaa,
-                                     TextureType::Normal, DataFormat::RGBA8);
-    m_entity_buffer = Texture::Create(m_width, m_height, 0, m_msaa,
-                                      TextureType::Normal, DataFormat::R32UI);
+    m_color_buffer = Texture::Create(m_width, m_height, 1, m_msaa,
+                                     TextureType::Normal2D, DataFormat::RGBA8);
+    m_entity_buffer = Texture::Create(m_width, m_height, 1, m_msaa,
+                                      TextureType::Normal2D, DataFormat::R32UI);
     m_depth_buffer =
         Renderbuffer::Create(m_width, m_height, m_msaa, DataFormat::Depth24);
     m_main_target->Attach(*m_color_buffer, 0, 0);
@@ -49,8 +49,7 @@ void GraphicsLayer::OnInit()
     PostProcessRenderer::Init(PostProcessSettings{m_width, m_height});
     DeferredRenderer::Init(DeferredRenderSettings{m_width, m_height, m_msaa});
     ImageLoader loader;
-    m_light_icon =
-        Texture::CreateIcon(*loader.Load("assets/icons/light.png"));
+    m_light_icon = Texture::CreateIcon(*loader.Load("assets/icons/light.png"));
 }
 
 void GraphicsLayer::OnDestroy() {}

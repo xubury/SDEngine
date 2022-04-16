@@ -17,8 +17,7 @@ GLint SD_GRAPHICS_API Translate(BufferIOType io_type);
 
 GLenum SD_GRAPHICS_API Translate(DataFormat format);
 
-GLenum SD_GRAPHICS_API Translate(TextureType type, int dimension,
-                                 MultiSampleLevel msaa);
+GLenum SD_GRAPHICS_API Translate(TextureType type, MultiSampleLevel msaa);
 
 GLint SD_GRAPHICS_API Translate(TextureWrap wrap);
 

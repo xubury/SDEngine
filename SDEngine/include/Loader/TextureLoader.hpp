@@ -11,9 +11,8 @@ class ResourceRegistry;
 
 class SD_LOADER_API TextureLoader {
    public:
-    Ref<Texture> Load(const std::string &path, TextureWrap wrap,
-                      TextureMinFilter min_filter, TextureMagFilter mag_filter,
-                      MipmapMode mode, ResourceRegistry &registry);
+    Ref<Texture> Load(const std::string &path, const TextureParameter &param,
+                      ResourceRegistry &registry);
     // static void WriteToFile(const Texture &texture, const std::string &path);
 };
 

@@ -113,8 +113,7 @@ GLTexture::~GLTexture() { glDeleteTextures(1, &m_id); }
 
 void GLTexture::Allocate()
 {
-    int32_t dimension = (m_width != 0) + (m_height != 0) + (m_depth != 0);
-    gl_type = Translate(m_type, dimension, m_samples);
+    gl_type = Translate(m_type, m_samples);
     GLenum gl_sized_format = Translate(m_format);
     glCreateTextures(gl_type, 1, &m_id);
 

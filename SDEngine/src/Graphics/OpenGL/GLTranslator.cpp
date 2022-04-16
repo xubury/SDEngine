@@ -64,21 +64,18 @@ GLint Translate(BufferIOType io_type)
     return 0;
 }
 
-GLenum Translate(TextureType type, int dimension, MultiSampleLevel msaa)
+GLenum Translate(TextureType type, MultiSampleLevel msaa)
 {
     switch (type) {
-        case TextureType::Normal: {
-            switch (dimension) {
-                case 1:
-                    return GL_TEXTURE_1D;
-                case 2:
-                    return msaa == MultiSampleLevel::None
-                               ? GL_TEXTURE_2D
-                               : GL_TEXTURE_2D_MULTISAMPLE;
-                case 3:
-                    return GL_TEXTURE_3D;
-            }
-            return 0;
+        case TextureType::Normal1D: {
+            return GL_TEXTURE_1D;
+        }
+        case TextureType::Normal2D: {
+            return msaa == MultiSampleLevel::None ? GL_TEXTURE_2D
+                                                  : GL_TEXTURE_2D_MULTISAMPLE;
+        }
+        case TextureType::Normal3D: {
+            return GL_TEXTURE_3D;
         }
         case TextureType::Array:
             return msaa == MultiSampleLevel::None

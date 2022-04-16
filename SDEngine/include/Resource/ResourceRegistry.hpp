@@ -39,11 +39,9 @@ class ResourceRegistry {
     }
 
     TextureHandle LoadTexture(const ResourceId rid, const std::string &path,
-                              TextureWrap wrap, TextureMinFilter min_filter,
-                              TextureMagFilter mag_filter, MipmapMode mode)
+                              const TextureParameter &param)
     {
-        return m_texture_cache.Load(rid, path, wrap, min_filter, mag_filter,
-                                    mode, *this);
+        return m_texture_cache.Load(rid, path, param, *this);
     }
 
     ModelHandle LoadModel(const ResourceId rid, const std::string &path)

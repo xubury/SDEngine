@@ -16,8 +16,8 @@ Ref<Texture> Texture::CreateCube(const std::array<Ref<ByteImage>, 6> &images)
             texture =
                 Texture::Create(width, height, 0, MultiSampleLevel::None,
                                 TextureType::Cube, image->GetDataFormat(),
-                                TextureWrap::Edge, TextureMinFilter::Linear,
-                                TextureMagFilter::Linear, MipmapMode::None);
+                                {TextureWrap::Edge, TextureMinFilter::Linear,
+                                 TextureMagFilter::Linear, MipmapMode::None});
         }
         texture->SetPixels(0, 0, face, width, height, 1, image->Data());
     }
@@ -27,26 +27,26 @@ Ref<Texture> Texture::CreateCube(const std::array<Ref<ByteImage>, 6> &images)
 Ref<Texture> Texture::CreateIcon(const ByteImage &image)
 {
     auto texture = Texture::Create(
-        image.Width(), image.Height(), 0, MultiSampleLevel::None,
-        TextureType::Normal, image.GetDataFormat(), TextureWrap::Edge,
-        TextureMinFilter::Linear, TextureMagFilter::Linear, MipmapMode::None);
+        image.Width(), image.Height(), 1, MultiSampleLevel::None,
+        TextureType::Normal2D, image.GetDataFormat(),
+        {TextureWrap::Edge, TextureMinFilter::Linear, TextureMagFilter::Linear,
+         MipmapMode::None});
     texture->SetPixels(0, 0, 0, image.Width(), image.Height(), 1, image.Data());
     return texture;
 }
 
 Ref<Texture> Texture::Create(int width, int height, int depth,
                              MultiSampleLevel samples, TextureType type,
-                             DataFormat format, TextureWrap wrap,
-                             TextureMinFilter min_filter,
-                             TextureMagFilter mag_filter, MipmapMode mode,
+                             DataFormat format, const TextureParameter &params,
                              int32_t mipmap_levels)
 {
     Ref<Texture> texture;
     switch (Device::GetAPI()) {
         case Device::API::OpenGL:
             texture = CreateRef<GLTexture>(width, height, depth, samples, type,
-                                           format, wrap, min_filter, mag_filter,
-                                           mode, mipmap_levels);
+                                           format, params.wrap,
+                                           params.min_filter, params.mag_filter,
+                                           params.mipmap, mipmap_levels);
             break;
         default:
             SD_CORE_ERROR("Unsupported API!");

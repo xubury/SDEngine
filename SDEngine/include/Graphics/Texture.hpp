@@ -7,17 +7,22 @@
 
 namespace SD {
 
-class SD_GRAPHICS_API Texture  {
+struct TextureParameter {
+    TextureWrap wrap{TextureWrap::Edge};
+    TextureMinFilter min_filter{TextureMinFilter::Nearest};
+    TextureMagFilter mag_filter{TextureMagFilter::Nearest};
+    MipmapMode mipmap{MipmapMode::None};
+};
+
+class SD_GRAPHICS_API Texture {
    public:
     static Ref<Texture> CreateCube(const std::array<Ref<ByteImage>, 6> &images);
     static Ref<Texture> CreateIcon(const ByteImage &image);
-    static Ref<Texture> Create(
-        int width, int height, int depth, MultiSampleLevel samples,
-        TextureType type, DataFormat format,
-        TextureWrap wrap = TextureWrap::Edge,
-        TextureMinFilter min_filter = TextureMinFilter::Nearest,
-        TextureMagFilter mag_filter = TextureMagFilter::Nearest,
-        MipmapMode mode = MipmapMode::None, int32_t mipmap_levels = 0);
+    static Ref<Texture> Create(int width, int height, int depth,
+                               MultiSampleLevel samples, TextureType type,
+                               DataFormat format,
+                               const TextureParameter &params = {},
+                               int32_t mipmap_levels = 0);
 
     virtual ~Texture() = default;
     Texture(const Texture &) = delete;
@@ -58,6 +63,7 @@ class SD_GRAPHICS_API Texture  {
     int GetMipmapLevels() const { return m_mipmap_levels; }
 
     size_t GetDataSize() const;
+
    protected:
     Texture(int width, int height, int depth, MultiSampleLevel samples,
             TextureType type, DataFormat format, TextureWrap wrap,
