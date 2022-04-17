@@ -15,13 +15,17 @@ ResourceId::ResourceId()
 
 ResourceId::ResourceId(uint64_t resource_id) : m_resource_id(resource_id) {}
 
-ResourceId::ResourceId(const std::string &str)
-    : m_resource_id(std::hash<std::string>{}(str))
+ResourceId::ResourceId(const char *c_str)
+    : m_resource_id(std::hash<std::string_view>{}(c_str))
+{
+}
+ResourceId::ResourceId(const std::string_view &str)
+    : m_resource_id(std::hash<std::string_view>{}(str))
 {
 }
 
-ResourceId::ResourceId(const std::string_view &str)
-    : m_resource_id(std::hash<std::string_view>{}(str))
+ResourceId::ResourceId(const std::string &str)
+    : m_resource_id(std::hash<std::string>{}(str))
 {
 }
 

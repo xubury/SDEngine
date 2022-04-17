@@ -3,7 +3,8 @@
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "TileBrush.hpp"
-#include "Resource/ResourceManager.hpp"
+#include "Resource/Resource.hpp"
+#include "Locator/Locator.hpp"
 
 namespace SD {
 
@@ -44,7 +45,7 @@ void GridRenderer::Render(const Camera &camera, const SpriteFrame &frame,
     Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1, op});
     Renderer2D::Begin();
 
-    auto &cache = ResourceManager::Get().GetTextureCache();
+    auto &cache = Locator<TextureCache>::Value();
     if (brush.is_painting) {
         Vector3f world = brush.GetSelectdPos();
         if (cache.Contains(frame.texture_id)) {

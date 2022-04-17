@@ -233,17 +233,9 @@ void GLShader::LinkShaders()
     DestroyShaders();
 
     int32_t uniform_cnt = GetUniformCount();
-    int32_t ubuffer_cnt = GetUniformBufferCount();
-    SD_CORE_TRACE(
-        "Shader program #{} linked successfully, uniform count: {}, uniform "
-        "buffer count:{}",
-        m_id, uniform_cnt, ubuffer_cnt);
+    // Getting all uniform parameter
     for (int32_t i = 0; i < uniform_cnt; ++i) {
-        GLShaderParam* param = dynamic_cast<GLShaderParam*>(GetParam(i));
-        if (param) {
-            SD_CORE_TRACE("Uniform name: {}, location: {}, index:{}",
-                          param->GetName(), param->GetLocation(), i);
-        }
+        GetParam(i);
     }
 }
 

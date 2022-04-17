@@ -1,5 +1,6 @@
 #include "Resource/ModelLoader.hpp"
-#include "Resource/ResourceManager.hpp"
+#include "Resource/Resource.hpp"
+#include "Locator/Locator.hpp"
 #include "Utility/Math.hpp"
 
 #include <assimp/Importer.hpp>
@@ -168,12 +169,14 @@ static void ProcessAiMaterial(const std::filesystem::path &directory,
         MaterialType type = ConvertAssimpTextureType(ai_type);
         std::string full_path =
             (directory / texture_path.C_Str()).generic_string();
-        const std::string identifier = name + "_" + GetMaterialName(type);
-        auto &resource = ResourceManager::Get();
-        auto handle = resource.LoadTexture(
-            ResourceId(identifier), full_path,
-            {ConvertAssimpMapMode(ai_map_mode), TextureMinFilter::Linear,
-             TextureMagFilter::Linear, MipmapMode::Linear});
+        const std::string identifier =
+            "texture/" + name + "/" + GetMaterialName(type);
+        auto &cache = Locator<TextureCache>::Value();
+        auto handle = cache.Load(
+            identifier, full_path,
+            TextureParameter{ConvertAssimpMapMode(ai_map_mode),
+                             TextureMinFilter::Linear, TextureMagFilter::Linear,
+                             MipmapMode::Linear});
         material.SetTexture(ConvertAssimpTextureType(ai_type), &handle.Get());
     }
     model.AddMaterial(std::move(material));

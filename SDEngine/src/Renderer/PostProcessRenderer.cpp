@@ -1,6 +1,7 @@
 #include "Renderer/PostProcessRenderer.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Resource/ShaderManager.hpp"
+#include "Resource/Resource.hpp"
+#include "Locator/Locator.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 
 namespace SD {
@@ -23,10 +24,13 @@ void PostProcessRenderer::Init(const PostProcessSettings &settings)
 {
     s_settings = settings;
 
-    auto &shaders = ShaderManager::Get();
+    auto &shaders = Locator<ShaderCache>::Value();
     s_data.hdr_shader =
-        shaders.LoadShader("hdr", "quad.vert.glsl", "hdr.frag.glsl");
-    s_data.bloom_shader = shaders.LoadComputeShader("bloom", "bloom.comp.glsl");
+        shaders.Load("shader/hdr", "assets/shaders/quad.vert.glsl",
+                     "assets/shaders/hdr.frag.glsl");
+    s_data.bloom_shader =
+        shaders.Load("shader/bloom", "assets/shaders/bloom.comp.glsl");
+
     s_data.post_target = Framebuffer::Create();
     InitBuffers();
 }

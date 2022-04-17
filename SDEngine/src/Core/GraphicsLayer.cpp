@@ -4,7 +4,8 @@
 #include "Renderer/Renderer2D.hpp"
 #include "Renderer/Renderer3D.hpp"
 #include "ECS/Component.hpp"
-#include "Resource/ResourceManager.hpp"
+#include "Resource/Resource.hpp"
+#include "Locator/Locator.hpp"
 
 namespace SD {
 
@@ -48,8 +49,9 @@ void GraphicsLayer::OnInit()
     SkyboxRenderer::Init();
     PostProcessRenderer::Init(PostProcessSettings{m_width, m_height});
     DeferredRenderer::Init(DeferredRenderSettings{m_width, m_height, m_msaa});
-    auto &resource = ResourceManager::Get();
-    m_light_icon = Texture::CreateIcon(*resource.LoadImage("icons/light.png"));
+    auto &cache = Locator<ImageCache>::Value();
+    m_light_icon = Texture::CreateIcon(
+        *cache.Load("icons/light", "assets/icons/light.png"));
 }
 
 void GraphicsLayer::OnDestroy() {}

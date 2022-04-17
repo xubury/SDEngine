@@ -1,7 +1,8 @@
 #include "AnimationEditor.hpp"
 #include "EditorEvent.hpp"
 #include "ECS/Component.hpp"
-#include "Resource/ResourceManager.hpp"
+#include "Resource/Resource.hpp"
+#include "Locator/Locator.hpp"
 
 namespace SD {
 
@@ -18,7 +19,7 @@ void AnimationEditor::ImGui()
 {
     ImGui::Begin("Anmiation Editor");
     {
-        auto &cache = ResourceManager::Get().GetTextureCache();
+        auto &cache = Locator<TextureCache>::Value();
         // ImGui::DrawTextureAssetSelection(cache, &m_texture_id);
         if (cache.Contains(m_texture_id)) {
             auto texture = cache.Handle(m_texture_id);

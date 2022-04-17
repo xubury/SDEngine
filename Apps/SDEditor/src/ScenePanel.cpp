@@ -3,7 +3,8 @@
 #include "Utility/Log.hpp"
 #include "Utility/String.hpp"
 #include "ImGui/ImGuiWidget.hpp"
-#include "Resource/ResourceManager.hpp"
+#include "Resource/Resource.hpp"
+#include "Locator/Locator.hpp"
 
 #define ECS_MOVEENTITY "ECS MOVEENTITY"
 
@@ -272,6 +273,7 @@ void ScenePanel::DrawComponents(Entity &entity)
     }
     ImGui::PopItemWidth();
 
+    auto &texture_cache = Locator<TextureCache>::Value();
     DrawComponent<TransformComponent>(
         "Transform", entity,
         [&](TransformComponent &component) {
@@ -412,14 +414,14 @@ void ScenePanel::DrawComponents(Entity &entity)
     DrawComponent<SpriteComponent>(
         "Sprite", entity, [&](SpriteComponent &sprite_comp) {
             auto &frame = sprite_comp.frame;
-            auto &cache = ResourceManager::Get().GetTextureCache();
-            // ImGui::DrawTextureAssetSelection(cache, &frame.texture_id);
+            // ImGui::DrawTextureAssetSelection(texture_cache,
+            // &frame.texture_id);
             ImGui::TextUnformatted("Size");
             ImGui::InputFloat2("##Size", &frame.size[0]);
             ImGui::TextUnformatted("Prioirty");
             ImGui::InputInt("##Priority", &frame.priority);
-            if (cache.Contains(frame.texture_id)) {
-                auto texture = cache.Handle(frame.texture_id);
+            if (texture_cache.Contains(frame.texture_id)) {
+                auto texture = texture_cache.Handle(frame.texture_id);
                 ImGui::DrawTexture(*texture,
                                    ImVec2(frame.uvs[0].x, frame.uvs[0].y),
                                    ImVec2(frame.uvs[1].x, frame.uvs[1].y));
@@ -428,7 +430,6 @@ void ScenePanel::DrawComponents(Entity &entity)
     DrawComponent<SpriteAnimationComponent>(
         "Sprite Animation", entity, [&](SpriteAnimationComponent &anim_comp) {
             DrawAnimList(anim_comp.animations, &m_selected_anim_id_map[entity]);
-            auto &cache = ResourceManager::Get().GetTextureCache();
             auto &anim =
                 anim_comp.animations.at(m_selected_anim_id_map[entity]);
             static int frame_index = 0;
@@ -444,8 +445,8 @@ void ScenePanel::DrawComponents(Entity &entity)
             }
             if (frame_index < static_cast<int>(anim.GetFrameSize())) {
                 const auto &frame = anim.GetFrame(frame_index);
-                if (cache.Contains(frame.texture_id)) {
-                    auto texture = cache.Handle(frame.texture_id);
+                if (texture_cache.Contains(frame.texture_id)) {
+                    auto texture = texture_cache.Handle(frame.texture_id);
                     ImGui::DrawTexture(*texture,
                                        ImVec2(frame.uvs[0].x, frame.uvs[0].y),
                                        ImVec2(frame.uvs[1].x, frame.uvs[1].y));

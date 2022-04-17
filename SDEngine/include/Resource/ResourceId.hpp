@@ -13,8 +13,9 @@ class SD_RESOURCE_API ResourceId {
    public:
     ResourceId();
     ResourceId(uint64_t resource_id);
-    explicit ResourceId(const std::string &str);
-    explicit ResourceId(const std::string_view &str);
+    ResourceId(const char *c_str);
+    ResourceId(const std::string_view &str);
+    ResourceId(const std::string &str);
     ResourceId(const ResourceId &) = default;
     ~ResourceId() = default;
 

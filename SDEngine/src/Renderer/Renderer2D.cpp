@@ -1,5 +1,6 @@
 #include "Renderer/Renderer2D.hpp"
-#include "Resource/ShaderManager.hpp"
+#include "Resource/Resource.hpp"
+#include "Locator/Locator.hpp"
 #include "Utility/String.hpp"
 
 namespace SD {
@@ -178,13 +179,15 @@ void Renderer2D::Init()
 
     s_2d_data.texture_slots[0] = s_2d_data.default_texture.get();
 
-    auto& shaders = ShaderManager::Get();
-    s_line_shader =
-        shaders.LoadShader("line", "line.vert.glsl", "line.frag.glsl");
-    s_texture_shader = shaders.LoadShader("texture quad", "texture.vert.glsl",
-                                          "texture.frag.glsl");
+    auto& shaders = Locator<ShaderCache>::Value();
+    s_line_shader = shaders.Load("shader/line", "assets/shaders/line.vert.glsl",
+                                 "assets/shaders/line.frag.glsl");
+    s_texture_shader =
+        shaders.Load("shader/texture_quad", "assets/shaders/texture.vert.glsl",
+                     "assets/shaders/texture.frag.glsl");
     s_cirlce_shader =
-        shaders.LoadShader("circle", "circle.vert.glsl", "circle.frag.glsl");
+        shaders.Load("shader/circle", "assets/shaders/circle.vert.glsl",
+                     "assets/shaders/circle.frag.glsl");
 
     Renderer::BindCamera(*s_line_shader);
     Renderer::BindCamera(*s_cirlce_shader);

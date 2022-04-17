@@ -3,8 +3,8 @@
 #include "ECS/Component.hpp"
 #include "Utility/Random.hpp"
 #include "ImGui/ImGuiWidget.hpp"
-#include "Resource/ResourceManager.hpp"
-#include "Resource/ShaderManager.hpp"
+#include "Resource/Resource.hpp"
+#include "Locator/Locator.hpp"
 
 namespace SD {
 
@@ -82,25 +82,32 @@ void DeferredRenderer::Init(const DeferredRenderSettings &settings)
 
 void DeferredRenderer::InitShaders()
 {
-    auto &shaders = ShaderManager::Get();
+    auto &shaders = Locator<ShaderCache>::Value();
     s_data.emssive_shader =
-        shaders.LoadShader("emissive", "quad.vert.glsl", "emissive.frag.glsl");
+        shaders.Load("shader/emissive", "assets/shaders/quad.vert.glsl",
+                     "assets/shaders/emissive.frag.glsl");
     s_data.deferred_shader =
-        shaders.LoadShader("deferred", "quad.vert.glsl", "deferred.frag.glsl");
+        shaders.Load("shader/deferred", "assets/shaders/quad.vert.glsl",
+                     "assets/shaders/deferred.frag.glsl");
     s_data.gbuffer_shader =
-        shaders.LoadShader("gbuffer", "mesh.vert.glsl", "gbuffer.frag.glsl");
+        shaders.Load("shader/gbuffer", "assets/shaders/mesh.vert.glsl",
+                     "assets/shaders/gbuffer.frag.glsl");
 
-    s_data.ssao_shader = shaders.LoadComputeShader("ssao", "ssao.comp.glsl");
+    s_data.ssao_shader =
+        shaders.Load("shader/ssao", "assets/shaders/ssao.comp.glsl");
     s_data.ssao_blur_shader =
-        shaders.LoadComputeShader("ssao blur", "ssao_blur.comp.glsl");
+        shaders.Load("shader/ssao_blur", "assets/shaders/ssao_blur.comp.glsl");
 
-    s_data.cascade_shader = shaders.LoadShader(
-        "cascade shadow", "shadow.vert.glsl", "", "shadow.geo.glsl");
-    s_data.cascade_debug_shader = shaders.LoadShader(
-        "cascade shadow debug", "quad.vert.glsl", "debug_depth.frag.glsl");
+    s_data.cascade_shader =
+        shaders.Load("shader/cascade_shadow", "assets/shaders/shadow.vert.glsl",
+                     "", "assets/shaders/shadow.geo.glsl");
+    s_data.cascade_debug_shader = shaders.Load(
+        "shader/cascade_shadow_debug", "assets/shaders/quad.vert.glsl",
+        "assets/shaders/debug_depth.frag.glsl");
     s_data.point_shadow_shader =
-        shaders.LoadShader("point shadow", "shadow.vert.glsl",
-                           "point_shadow.frag.glsl", "point_shadow.geo.glsl");
+        shaders.Load("shader/point_shadow", "assets/shaders/shadow.vert.glsl",
+                     "assets/shaders/point_shadow.frag.glsl",
+                     "assets/shaders/point_shadow.geo.glsl");
 }
 
 void DeferredRenderer::InitSSAOBuffers()
@@ -269,7 +276,7 @@ void DeferredRenderer::RenderShadowMap(const Scene &scene,
     Renderer3D::SetCascadeShadow(shadow);
 
     ShaderParam *model_param = s_data.cascade_shader->GetParam("u_model");
-    auto &cache = ResourceManager::Get().GetModelCache();
+    auto &cache = Locator<ModelCache>::Value();
     modelView.each([&](const TransformComponent &tc, const MeshComponent &mc) {
         Matrix4f mat = tc.GetWorldTransform().GetMatrix();
         model_param->SetAsMat4(&mat[0][0]);
@@ -324,7 +331,7 @@ void DeferredRenderer::RenderPointShadowMap(const Scene &scene,
     s_data.point_shadow_shader->GetParam("u_shadow_matrix[0]")
         ->SetAsMat4(&shadow_trans[0][0][0], 6);
 
-    auto &cache = ResourceManager::Get().GetModelCache();
+    auto &cache = Locator<ModelCache>::Value();
     modelView.each([&](const TransformComponent &tc, const MeshComponent &mc) {
         Matrix4f mat = tc.GetWorldTransform().GetMatrix();
         model_param->SetAsMat4(&mat[0][0]);
@@ -554,7 +561,7 @@ void DeferredRenderer::RenderGBuffer(const Scene &scene)
 
     ShaderParam *entity_id = s_data.gbuffer_shader->GetParam("u_entity_id");
     ShaderParam *model_param = s_data.gbuffer_shader->GetParam("u_model");
-    auto &cache = ResourceManager::Get().GetModelCache();
+    auto &cache = Locator<ModelCache>::Value();
     meshes.each([&](const entt::entity &entity,
                     const TransformComponent &transform,
                     const MeshComponent &mc) {

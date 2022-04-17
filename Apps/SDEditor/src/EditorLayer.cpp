@@ -8,7 +8,8 @@
 #include "ImGuizmo.h"
 #include "GridRenderer.hpp"
 #include "Utility/String.hpp"
-#include "Resource/ResourceManager.hpp"
+#include "Resource/Resource.hpp"
+#include "Locator/Locator.hpp"
 
 namespace SD {
 
@@ -404,7 +405,7 @@ void EditorLayer::DrawViewport()
                         ResourceId rid;
                         SD_CORE_TRACE("filename:{}", filename);
                         auto handle =
-                            ResourceManager::Get().LoadModel(rid, filename);
+                            Locator<ModelCache>::Value().Load(rid, filename);
                         CreateModelEntity(*m_current_scene, rid, *handle,
                                           handle->GetRootNode());
                     }

@@ -2,7 +2,8 @@
 #include "ImGui/ImGuiWidget.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "ECS/Component.hpp"
-#include "Resource/ResourceManager.hpp"
+#include "Resource/Resource.hpp"
+#include "Locator/Locator.hpp"
 
 namespace SD {
 
@@ -30,7 +31,7 @@ bool TileMapEditor::ManipulateScene(const Camera &camera)
     }
     m_brush.SetRay(camera.ComputeCameraRay(clip));
     m_frame.size = m_brush.GetTileSize();
-    auto &cache = ResourceManager::Get().GetTextureCache();
+    auto &cache = Locator<TextureCache>::Value();
     if (m_brush.CastRay()) {
         if (ImGui::IsMouseClicked(0) && cache.Contains(m_frame.texture_id)) {
             return m_operation == Operation::AddEntity;
@@ -64,7 +65,7 @@ void TileMapEditor::ImGui()
         // ImGui::DrawTextureAssetSelection(*m_cache, &m_frame.texture_id);
         ImGui::InputInt("Priority", &m_frame.priority);
 
-        auto &cache = ResourceManager::Get().GetTextureCache();
+        auto &cache = Locator<TextureCache>::Value();
         if (cache.Contains(m_frame.texture_id)) {
             ImGui::DrawTileTexture(*cache.Handle(m_frame.texture_id),
                                    m_brush.tile_size, m_frame.uvs,

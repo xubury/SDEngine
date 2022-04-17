@@ -3,8 +3,8 @@
 #include "Core/ScriptLayer.hpp"
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
-#include "Resource/ResourceManager.hpp"
-#include "Resource/ShaderManager.hpp"
+#include "Resource/Resource.hpp"
+#include "Locator/Locator.hpp"
 
 #if defined(SD_PLATFORM_LINUX)
 #include <unistd.h>
@@ -38,6 +38,22 @@ const std::string debug_filename = "Debug.txt";
 
 Application *Application::s_instance;
 
+static void InitializeService()
+{
+    Locator<ImageCache>::Emplace();
+    Locator<TextureCache>::Emplace();
+    Locator<ModelCache>::Emplace();
+    Locator<ShaderCache>::Emplace();
+}
+
+static void ReleaseService()
+{
+    Locator<ImageCache>::Reset();
+    Locator<TextureCache>::Reset();
+    Locator<ModelCache>::Reset();
+    Locator<ShaderCache>::Reset();
+}
+
 Application::Application(const std::string &title, Device::API api)
     : m_imgui_layer(nullptr)
 {
@@ -60,15 +76,10 @@ Application::Application(const std::string &title, Device::API api)
     m_window = Window::Create(property);
     m_device = Device::Create();
 
-    ShaderManager::Get().Init(std::filesystem::current_path() /
-                              "assets/shaders");
-    ResourceManager::Get().Init(std::filesystem::current_path() / "assets");
+    InitializeService();
 }
 
-Application::~Application()
-{
-    // ResourceManager::Get().ShutDown();
-}
+Application::~Application() { ReleaseService(); }
 
 void Application::OnInit()
 {

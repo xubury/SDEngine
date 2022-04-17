@@ -1,6 +1,7 @@
 #include "Resource/TextureLoader.hpp"
+#include "Resource/Resource.hpp"
 #include "Graphics/Texture.hpp"
-#include "Resource/ResourceManager.hpp"
+#include "Locator/Locator.hpp"
 
 #include <fstream>
 
@@ -9,8 +10,8 @@ namespace SD {
 Ref<Texture> TextureLoader::Load(const std::string &path,
                                  const TextureParameter &param)
 {
-    auto &resource = ResourceManager::Get();
-    auto img = resource.LoadImage(path);
+    auto &image_cache = Locator<ImageCache>::Value();
+    auto img = image_cache.Load(path, path);
     Ref<Texture> texture =
         Texture::Create(img->Width(), img->Height(), 1, MultiSampleLevel::None,
                         TextureType::Normal2D, img->GetDataFormat(), param);

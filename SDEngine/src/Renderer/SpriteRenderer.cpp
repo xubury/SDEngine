@@ -1,7 +1,8 @@
 #include "Renderer/SpriteRenderer.hpp"
-#include "Resource/ResourceManager.hpp"
+#include "Resource/Resource.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "ECS/Component.hpp"
+#include "Locator/Locator.hpp"
 
 namespace SD {
 
@@ -18,7 +19,7 @@ struct SpriteDrawData {
 void SpriteRenderer::Render(const Scene &scene)
 {
     auto &entities = scene.GetEntityRegistry();
-    auto &cache = ResourceManager::Get().GetTextureCache();
+    auto &cache = Locator<TextureCache>::Value();
     int index[] = {0, 1};
     RenderOperation op;
     op.depth_mask = false;
