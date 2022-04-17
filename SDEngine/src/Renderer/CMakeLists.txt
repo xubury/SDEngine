@@ -41,7 +41,7 @@ target_link_libraries(sd-renderer
     sd-graphics
     sd-imgui
     sd-ecs
-    sd-loader)
+    sd-resource)
 
 target_include_directories(sd-renderer
     PUBLIC

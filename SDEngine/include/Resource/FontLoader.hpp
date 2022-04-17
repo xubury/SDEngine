@@ -1,7 +1,7 @@
 #ifndef SD_FONT_LOADER_HPP
 #define SD_FONT_LOADER_HPP
 
-#include "Loader/Export.hpp"
+#include "Resource/Export.hpp"
 #include "Graphics/Font.hpp"
 
 typedef struct FT_LibraryRec_ *FT_Library;
@@ -9,7 +9,7 @@ typedef struct FT_FaceRec_ *FT_Face;
 
 namespace SD {
 
-class SD_LOADER_API FontLoader {
+class SD_RESOURCE_API FontLoader {
    public:
     FontLoader();
     ~FontLoader();

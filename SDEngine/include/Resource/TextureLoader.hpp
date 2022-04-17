@@ -3,16 +3,13 @@
 
 #include "Graphics/Texture.hpp"
 #include "Utility/Base.hpp"
-#include "Loader/Export.hpp"
+#include "Resource/Export.hpp"
 
 namespace SD {
 
-class ResourceRegistry;
-
-class SD_LOADER_API TextureLoader {
+class SD_RESOURCE_API TextureLoader {
    public:
-    Ref<Texture> Load(const std::string &path, const TextureParameter &param,
-                      ResourceRegistry &registry);
+    Ref<Texture> Load(const std::string &path, const TextureParameter &param);
     // static void WriteToFile(const Texture &texture, const std::string &path);
 };
 

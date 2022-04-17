@@ -1,12 +1,9 @@
 #ifndef SD_SCENE_HPP
 #define SD_SCENE_HPP
 
+#include "ECS/Export.hpp"
 #include "Utility/Base.hpp"
 #include "Utility/Serialize.hpp"
-#include "ECS/Export.hpp"
-#include "Graphics/Model.hpp"
-#include "Resource/ResourceRegistry.hpp"
-#include "Resource/ResourceCache.hpp"
 
 #include "entt/entt.hpp"
 
@@ -33,8 +30,6 @@ class SD_ECS_API Scene {
     ~Scene() = default;
 
     Entity CreateEntity(const std::string &name);
-    Entity CreateModelEntity(const ResourceRegistry::ModelHandle &model,
-                             const ModelNode *node);
 
     void Serialize(cereal::PortableBinaryOutputArchive &archive) const;
 
@@ -56,12 +51,6 @@ class SD_ECS_API Scene {
     }
     entt::registry &GetEntityRegistry() { return m_entity_reg; }
     const entt::registry &GetEntityRegistry() const { return m_entity_reg; }
-
-    ResourceRegistry &GetResourceRegistry() { return m_resource_reg; }
-    const ResourceRegistry &GetResourceRegistry() const
-    {
-        return m_resource_reg;
-    }
 
    private:
     template <typename T>
@@ -90,7 +79,6 @@ class SD_ECS_API Scene {
                                                ComponentDeserializeFunction>>
         m_serialize_functions;
 
-    ResourceRegistry m_resource_reg;
     entt::registry m_entity_reg;
 
     friend class Entity;

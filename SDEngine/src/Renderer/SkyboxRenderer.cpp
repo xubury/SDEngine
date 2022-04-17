@@ -1,26 +1,25 @@
 #include "Renderer/SkyboxRenderer.hpp"
 #include "Renderer/Renderer.hpp"
-
-#include "Loader/ShaderLoader.hpp"
-#include "Loader/ImageLoader.hpp"
+#include "Resource/ResourceManager.hpp"
+#include "Resource/ShaderManager.hpp"
 
 namespace SD {
 
-Ref<Shader> SkyboxRenderer::s_skybox_shader;
-Ref<Texture> SkyboxRenderer::s_skybox;
+static ShaderHandle s_skybox_shader;
+static Ref<Texture> s_skybox;
 
 void SkyboxRenderer::Init()
 {
-    s_skybox_shader = ShaderLoader{}.Load("assets/shaders/skybox.vert.glsl",
-                                          "assets/shaders/skybox.frag.glsl");
+    auto& shaders = ShaderManager::Get();
+    s_skybox_shader =
+        shaders.LoadShader("skybox", "skybox.vert.glsl", "skybox.frag.glsl");
     std::array<std::string, 6> pathes = {
-        "assets/skybox/right.jpg", "assets/skybox/left.jpg",
-        "assets/skybox/top.jpg",   "assets/skybox/bottom.jpg",
-        "assets/skybox/front.jpg", "assets/skybox/back.jpg"};
-    std::array<Ref<ByteImage>, 6> images;
-    ImageLoader loader;
+        "skybox/right.jpg",  "skybox/left.jpg",  "skybox/top.jpg",
+        "skybox/bottom.jpg", "skybox/front.jpg", "skybox/back.jpg"};
+    std::array<ByteImage*, 6> images;
+    auto& resource = ResourceManager::Get();
     for (size_t i = 0; i < pathes.size(); ++i) {
-        images[i] = loader.Load(pathes[i]);
+        images[i] = &resource.LoadImage(pathes[i]).Get();
     }
     s_skybox = Texture::CreateCube(images);
 }

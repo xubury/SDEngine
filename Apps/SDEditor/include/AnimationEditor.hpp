@@ -5,6 +5,7 @@
 #include "ImGui/ImGuiWidget.hpp"
 
 #include "ECS/Entity.hpp"
+#include "Resource/ResourceId.hpp"
 #include "Utility/EventDispatcher.hpp"
 
 namespace SD {

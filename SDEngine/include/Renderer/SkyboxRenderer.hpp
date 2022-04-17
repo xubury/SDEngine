@@ -11,12 +11,7 @@ namespace SD {
 class SD_RENDERER_API SkyboxRenderer {
    public:
     static void Init();
-
     static void Render(const Camera& camera);
-
-   private:
-    static Ref<Shader> s_skybox_shader;
-    static Ref<Texture> s_skybox;
 };
 
 }  // namespace SD

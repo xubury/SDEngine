@@ -1,13 +1,13 @@
 #include "Renderer/PostProcessRenderer.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Loader/ShaderLoader.hpp"
+#include "Resource/ShaderManager.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 
 namespace SD {
 
 struct PostProcessData {
-    Ref<Shader> hdr_shader;
-    Ref<Shader> bloom_shader;
+    ShaderHandle hdr_shader;
+    ShaderHandle bloom_shader;
 
     Ref<Framebuffer> post_target;
     Ref<Texture> post_buffer;
@@ -23,10 +23,10 @@ void PostProcessRenderer::Init(const PostProcessSettings &settings)
 {
     s_settings = settings;
 
-    ShaderLoader loader;
-    s_data.hdr_shader = loader.Load("assets/shaders/quad.vert.glsl",
-                                    "assets/shaders/hdr.frag.glsl");
-    s_data.bloom_shader = loader.Load("assets/shaders/bloom.comp.glsl");
+    auto &shaders = ShaderManager::Get();
+    s_data.hdr_shader =
+        shaders.LoadShader("hdr", "quad.vert.glsl", "hdr.frag.glsl");
+    s_data.bloom_shader = shaders.LoadComputeShader("bloom", "bloom.comp.glsl");
     s_data.post_target = Framebuffer::Create();
     InitBuffers();
 }

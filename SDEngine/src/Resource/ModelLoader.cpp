@@ -1,7 +1,5 @@
-#include "Loader/ModelLoader.hpp"
-#include "Loader/TextureLoader.hpp"
-#include "Resource/ResourceRegistry.hpp"
-#include "Graphics/Image.hpp"
+#include "Resource/ModelLoader.hpp"
+#include "Resource/ResourceManager.hpp"
 #include "Utility/Math.hpp"
 
 #include <assimp/Importer.hpp>
@@ -144,8 +142,7 @@ static inline MaterialType ConvertAssimpTextureType(aiTextureType textureType)
 }
 
 static void ProcessAiMaterial(const std::filesystem::path &directory,
-                              const aiMaterial *ai_material, Model &model,
-                              ResourceRegistry &registry)
+                              const aiMaterial *ai_material, Model &model)
 {
     Material material;
     const std::string name = ai_material->GetName().C_Str();
@@ -172,7 +169,8 @@ static void ProcessAiMaterial(const std::filesystem::path &directory,
         std::string full_path =
             (directory / texture_path.C_Str()).generic_string();
         const std::string identifier = name + "_" + GetMaterialName(type);
-        auto handle = registry.LoadTexture(
+        auto &resource = ResourceManager::Get();
+        auto handle = resource.LoadTexture(
             ResourceId(identifier), full_path,
             {ConvertAssimpMapMode(ai_map_mode), TextureMinFilter::Linear,
              TextureMagFilter::Linear, MipmapMode::Linear});
@@ -207,8 +205,7 @@ static void ProcessNode(const aiScene *scene, const aiNode *ai_node,
     }
 }
 
-Ref<Model> ModelLoader::Load(const std::string &path,
-                             ResourceRegistry &registry)
+Ref<Model> ModelLoader::Load(const std::string &path)
 {
     Ref<Model> model;
     SD_CORE_TRACE("Loading model form: {}...", path);
@@ -227,8 +224,7 @@ Ref<Model> ModelLoader::Load(const std::string &path,
         std::filesystem::path directory =
             std::filesystem::path(path).parent_path();
         for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
-            ProcessAiMaterial(directory, scene->mMaterials[i], *model,
-                              registry);
+            ProcessAiMaterial(directory, scene->mMaterials[i], *model);
         }
 
         // Process meshes

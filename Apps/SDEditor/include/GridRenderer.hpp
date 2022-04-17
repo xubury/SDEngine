@@ -13,8 +13,8 @@ class TileBrush;
 class GridRenderer {
    public:
     static void Init();
-    static void Render(const Scene &scene, const Camera &camera,
-                       const SpriteFrame &frame, const TileBrush &brush);
+    static void Render(const Camera &camera, const SpriteFrame &frame,
+                       const TileBrush &brush);
 
    private:
 };

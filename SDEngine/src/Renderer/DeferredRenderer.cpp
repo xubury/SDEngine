@@ -1,30 +1,31 @@
 #include "Renderer/DeferredRenderer.hpp"
-#include "Core/Application.hpp"
 #include "Renderer/Renderer3D.hpp"
 #include "ECS/Component.hpp"
 #include "Utility/Random.hpp"
 #include "ImGui/ImGuiWidget.hpp"
-#include "Loader/ShaderLoader.hpp"
+#include "Resource/ResourceManager.hpp"
+#include "Resource/ShaderManager.hpp"
 
 namespace SD {
 
 struct DeferredRenderData {
-    Ref<Shader> cascade_shader;
-    Ref<Shader> cascade_debug_shader;
+    ShaderHandle cascade_shader;
+    ShaderHandle cascade_debug_shader;
+
     Ref<Framebuffer> cascade_debug_target;
     Ref<Texture> cascade_debug_buffer;
     int debug_layer{0};
 
-    Ref<Shader> point_shadow_shader;
+    ShaderHandle point_shadow_shader;
+    ShaderHandle emssive_shader;
 
-    Ref<Shader> emssive_shader;
+    ShaderHandle deferred_shader;
 
-    Ref<Shader> deferred_shader;
     Ref<Framebuffer> lighting_target[2];
     Ref<Texture> lighting_buffers[2];
     Texture *lighting_result;
 
-    Ref<Shader> gbuffer_shader;
+    ShaderHandle gbuffer_shader;
     Ref<Framebuffer> geometry_target_msaa;
     std::array<Ref<Texture>, static_cast<int>(GeometryBufferType::GBufferCount)>
         gbuffer_msaa;
@@ -33,9 +34,9 @@ struct DeferredRenderData {
         gbuffer;
     Ref<Renderbuffer> depth_buffer;
 
-    Ref<Shader> ssao_shader;
+    ShaderHandle ssao_shader;
     Ref<Texture> ssao_buffer;
-    Ref<Shader> ssao_blur_shader;
+    ShaderHandle ssao_blur_shader;
     Ref<Texture> ssao_blur_buffer;
 
     Ref<Texture> ssao_noise;
@@ -81,26 +82,25 @@ void DeferredRenderer::Init(const DeferredRenderSettings &settings)
 
 void DeferredRenderer::InitShaders()
 {
-    ShaderLoader loader;
-    s_data.emssive_shader = loader.Load("assets/shaders/quad.vert.glsl",
-                                        "assets/shaders/emissive.frag.glsl");
-    s_data.deferred_shader = loader.Load("assets/shaders/quad.vert.glsl",
-                                         "assets/shaders/deferred.frag.glsl");
-    s_data.gbuffer_shader = loader.Load("assets/shaders/mesh.vert.glsl",
-                                        "assets/shaders/gbuffer.frag.glsl");
+    auto &shaders = ShaderManager::Get();
+    s_data.emssive_shader =
+        shaders.LoadShader("emissive", "quad.vert.glsl", "emissive.frag.glsl");
+    s_data.deferred_shader =
+        shaders.LoadShader("deferred", "quad.vert.glsl", "deferred.frag.glsl");
+    s_data.gbuffer_shader =
+        shaders.LoadShader("gbuffer", "mesh.vert.glsl", "gbuffer.frag.glsl");
 
-    s_data.ssao_shader = loader.Load("assets/shaders/ssao.comp.glsl");
-    s_data.ssao_blur_shader = loader.Load("assets/shaders/ssao_blur.comp.glsl");
+    s_data.ssao_shader = shaders.LoadComputeShader("ssao", "ssao.comp.glsl");
+    s_data.ssao_blur_shader =
+        shaders.LoadComputeShader("ssao blur", "ssao_blur.comp.glsl");
 
-    s_data.cascade_shader = loader.Load("assets/shaders/shadow.vert.glsl", "",
-                                        "assets/shaders/shadow.geo.glsl");
-    s_data.cascade_debug_shader =
-        loader.Load("assets/shaders/quad.vert.glsl",
-                    "assets/shaders/debug_depth.frag.glsl");
+    s_data.cascade_shader = shaders.LoadShader(
+        "cascade shadow", "shadow.vert.glsl", "", "shadow.geo.glsl");
+    s_data.cascade_debug_shader = shaders.LoadShader(
+        "cascade shadow debug", "quad.vert.glsl", "debug_depth.frag.glsl");
     s_data.point_shadow_shader =
-        loader.Load("assets/shaders/shadow.vert.glsl",
-                    "assets/shaders/point_shadow.frag.glsl",
-                    "assets/shaders/point_shadow.geo.glsl");
+        shaders.LoadShader("point shadow", "shadow.vert.glsl",
+                           "point_shadow.frag.glsl", "point_shadow.geo.glsl");
 }
 
 void DeferredRenderer::InitSSAOBuffers()
@@ -269,7 +269,7 @@ void DeferredRenderer::RenderShadowMap(const Scene &scene,
     Renderer3D::SetCascadeShadow(shadow);
 
     ShaderParam *model_param = s_data.cascade_shader->GetParam("u_model");
-    auto &cache = scene.GetResourceRegistry().GetModelCache();
+    auto &cache = ResourceManager::Get().GetModelCache();
     modelView.each([&](const TransformComponent &tc, const MeshComponent &mc) {
         Matrix4f mat = tc.GetWorldTransform().GetMatrix();
         model_param->SetAsMat4(&mat[0][0]);
@@ -324,7 +324,7 @@ void DeferredRenderer::RenderPointShadowMap(const Scene &scene,
     s_data.point_shadow_shader->GetParam("u_shadow_matrix[0]")
         ->SetAsMat4(&shadow_trans[0][0][0], 6);
 
-    auto &cache = scene.GetResourceRegistry().GetModelCache();
+    auto &cache = ResourceManager::Get().GetModelCache();
     modelView.each([&](const TransformComponent &tc, const MeshComponent &mc) {
         Matrix4f mat = tc.GetWorldTransform().GetMatrix();
         model_param->SetAsMat4(&mat[0][0]);
@@ -554,7 +554,7 @@ void DeferredRenderer::RenderGBuffer(const Scene &scene)
 
     ShaderParam *entity_id = s_data.gbuffer_shader->GetParam("u_entity_id");
     ShaderParam *model_param = s_data.gbuffer_shader->GetParam("u_model");
-    auto &cache = scene.GetResourceRegistry().GetModelCache();
+    auto &cache = ResourceManager::Get().GetModelCache();
     meshes.each([&](const entt::entity &entity,
                     const TransformComponent &transform,
                     const MeshComponent &mc) {

@@ -5,7 +5,7 @@
 
 namespace SD {
 
-Ref<Texture> Texture::CreateCube(const std::array<Ref<ByteImage>, 6> &images)
+Ref<Texture> Texture::CreateCube(const std::array<ByteImage *, 6> &images)
 {
     Ref<Texture> texture;
     for (size_t face = 0; face < images.size(); ++face) {

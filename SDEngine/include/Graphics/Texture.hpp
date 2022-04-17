@@ -16,7 +16,7 @@ struct TextureParameter {
 
 class SD_GRAPHICS_API Texture {
    public:
-    static Ref<Texture> CreateCube(const std::array<Ref<ByteImage>, 6> &images);
+    static Ref<Texture> CreateCube(const std::array<ByteImage *, 6> &images);
     static Ref<Texture> CreateIcon(const ByteImage &image);
     static Ref<Texture> Create(int width, int height, int depth,
                                MultiSampleLevel samples, TextureType type,

@@ -1,5 +1,5 @@
 #include "Renderer/Renderer2D.hpp"
-#include "Loader/ShaderLoader.hpp"
+#include "Resource/ShaderManager.hpp"
 #include "Utility/String.hpp"
 
 namespace SD {
@@ -96,9 +96,9 @@ const static std::array<Vector2f, 4> QUAD_UV = {Vector2f(0, 1), Vector2f(1, 1),
 
 static Renderer2DData s_2d_data;
 
-static Ref<Shader> s_line_shader;
-static Ref<Shader> s_cirlce_shader;
-static Ref<Shader> s_texture_shader;
+static ShaderHandle s_line_shader;
+static ShaderHandle s_cirlce_shader;
+static ShaderHandle s_texture_shader;
 
 void Renderer2D::Init()
 {
@@ -178,13 +178,13 @@ void Renderer2D::Init()
 
     s_2d_data.texture_slots[0] = s_2d_data.default_texture.get();
 
-    ShaderLoader loader;
-    s_line_shader = loader.Load("assets/shaders/line.vert.glsl",
-                                "assets/shaders/line.frag.glsl");
-    s_texture_shader = loader.Load("assets/shaders/texture.vert.glsl",
-                                   "assets/shaders/texture.frag.glsl");
-    s_cirlce_shader = loader.Load("assets/shaders/circle.vert.glsl",
-                                  "assets/shaders/circle.frag.glsl");
+    auto& shaders = ShaderManager::Get();
+    s_line_shader =
+        shaders.LoadShader("line", "line.vert.glsl", "line.frag.glsl");
+    s_texture_shader = shaders.LoadShader("texture quad", "texture.vert.glsl",
+                                          "texture.frag.glsl");
+    s_cirlce_shader =
+        shaders.LoadShader("circle", "circle.vert.glsl", "circle.frag.glsl");
 
     Renderer::BindCamera(*s_line_shader);
     Renderer::BindCamera(*s_cirlce_shader);

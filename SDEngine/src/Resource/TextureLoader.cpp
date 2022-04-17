@@ -1,18 +1,16 @@
-#include "Loader/TextureLoader.hpp"
-#include "Loader/ImageLoader.hpp"
+#include "Resource/TextureLoader.hpp"
 #include "Graphics/Texture.hpp"
-#include "Utility/String.hpp"
-#include "Resource/ResourceRegistry.hpp"
+#include "Resource/ResourceManager.hpp"
 
 #include <fstream>
 
 namespace SD {
 
 Ref<Texture> TextureLoader::Load(const std::string &path,
-                                 const TextureParameter &param,
-                                 ResourceRegistry &registry)
+                                 const TextureParameter &param)
 {
-    auto img = registry.LoadImage(ResourceId(path), path);
+    auto &resource = ResourceManager::Get();
+    auto img = resource.LoadImage(path);
     Ref<Texture> texture =
         Texture::Create(img->Width(), img->Height(), 1, MultiSampleLevel::None,
                         TextureType::Normal2D, img->GetDataFormat(), param);

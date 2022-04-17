@@ -20,4 +20,9 @@ ResourceId::ResourceId(const std::string &str)
 {
 }
 
+ResourceId::ResourceId(const std::string_view &str)
+    : m_resource_id(std::hash<std::string_view>{}(str))
+{
+}
+
 }  // namespace SD

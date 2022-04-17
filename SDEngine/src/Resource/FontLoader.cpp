@@ -1,4 +1,4 @@
-#include "Loader/FontLoader.hpp"
+#include "Resource/FontLoader.hpp"
 #include "Graphics/Image.hpp"
 #include "Utility/Math.hpp"
 

@@ -1,8 +1,7 @@
 #ifndef SD_MODEL_LOADER_HPP
 #define SD_MODEL_LOADER_HPP
 
-#include "Loader/Export.hpp"
-#include "Resource/ResourceLoader.hpp"
+#include "Resource/Export.hpp"
 #include "Graphics/Model.hpp"
 #include "Utility/Base.hpp"
 
@@ -10,11 +9,9 @@
 
 namespace SD {
 
-class ResourceRegistry;
-
-class SD_LOADER_API ModelLoader {
+class SD_RESOURCE_API ModelLoader {
    public:
-    Ref<Model> Load(const std::string &path, ResourceRegistry &registry);
+    Ref<Model> Load(const std::string &path);
 };
 
 }  // namespace SD

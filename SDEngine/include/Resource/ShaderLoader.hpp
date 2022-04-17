@@ -1,12 +1,12 @@
 #ifndef SD_SHADER_LOADER_HPP
 #define SD_SHADER_LOADER_HPP
 
-#include "Loader/Export.hpp"
+#include "Resource/Export.hpp"
 #include "Graphics/Shader.hpp"
 
 namespace SD {
 
-class SD_LOADER_API ShaderLoader {
+class SD_RESOURCE_API ShaderLoader {
    public:
     Ref<Shader> Load(const std::string &comp_path);
     Ref<Shader> Load(const std::string &vert_path,

@@ -2,6 +2,7 @@
 #define SD_COMPONENT_HPP
 
 #include "Graphics/PointShadow.hpp"
+#include "Resource/ResourceId.hpp"
 #include "Utility/Base.hpp"
 #include "ECS/Export.hpp"
 #include "Utility/Serialize.hpp"

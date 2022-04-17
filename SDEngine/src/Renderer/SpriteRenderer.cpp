@@ -1,4 +1,5 @@
 #include "Renderer/SpriteRenderer.hpp"
+#include "Resource/ResourceManager.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "ECS/Component.hpp"
 
@@ -16,9 +17,8 @@ struct SpriteDrawData {
 
 void SpriteRenderer::Render(const Scene &scene)
 {
-    auto &resource = scene.GetResourceRegistry();
     auto &entities = scene.GetEntityRegistry();
-    auto &cache = resource.GetTextureCache();
+    auto &cache = ResourceManager::Get().GetTextureCache();
     int index[] = {0, 1};
     RenderOperation op;
     op.depth_mask = false;

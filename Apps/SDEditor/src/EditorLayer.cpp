@@ -8,8 +8,7 @@
 #include "ImGuizmo.h"
 #include "GridRenderer.hpp"
 #include "Utility/String.hpp"
-
-#include "Loader/ModelLoader.hpp"
+#include "Resource/ResourceManager.hpp"
 
 namespace SD {
 
@@ -75,7 +74,7 @@ void EditorLayer::OnRender()
     info.clear_mask = BufferBitMask::None;
     Renderer::BeginRenderPass(info);
     if (m_mode == EditorMode::TwoDimensional) {
-        GridRenderer::Render(*m_current_scene, m_editor_camera,
+        GridRenderer::Render(m_editor_camera,
                              m_tile_map_editor.GetSpriteFrame(),
                              m_tile_map_editor.GetBrush());
     }
@@ -288,6 +287,29 @@ void EditorLayer::MenuBar()
     }
 }
 
+static Entity CreateModelEntity(Scene &scene, const ResourceId rid,
+                                const Model &model, const ModelNode *node)
+{
+    std::string name = node->GetName();
+    Entity entity = scene.CreateEntity(name);
+    auto &meshes = node->GetMeshes();
+    auto &materials = node->GetMaterials();
+    for (size_t i = 0; i < meshes.size(); ++i) {
+        Entity child = scene.CreateEntity(name + "_" + std::to_string(i));
+        entity.AddChild(child);
+        auto &mc = child.AddComponent<MeshComponent>();
+        mc.model_id = rid;
+        mc.mesh_index = meshes[i];
+        mc.material = model.GetMaterial(materials[i]);
+        auto &tc = child.GetComponent<TransformComponent>();
+        tc.SetLocalTransform(node->GetTransform());
+    }
+    for (auto &child : node->GetChildren()) {
+        Entity child_entity = CreateModelEntity(scene, rid, model, child);
+        entity.AddChild(child_entity);
+    }
+    return entity;
+}
 void EditorLayer::DrawViewport()
 {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
@@ -314,8 +336,7 @@ void EditorLayer::DrawViewport()
         }
 
         if (!m_is_runtime && m_mode == EditorMode::TwoDimensional) {
-            if (m_tile_map_editor.ManipulateScene(*m_current_scene,
-                                                  m_editor_camera)) {
+            if (m_tile_map_editor.ManipulateScene(m_editor_camera)) {
                 Vector3f world = m_tile_map_editor.GetBrush().GetSelectdPos();
                 Entity child = m_current_scene->CreateEntity("Tile");
                 auto &comp = child.AddComponent<SpriteComponent>();
@@ -381,10 +402,11 @@ void EditorLayer::DrawViewport()
                     }
                     else if (ext == ".obj") {
                         ResourceId rid;
-                        auto &reg = m_current_scene->GetResourceRegistry();
-                        auto handle = reg.LoadModel(rid, filename);
-                        m_current_scene->CreateModelEntity(
-                            handle, handle->GetRootNode());
+                        SD_CORE_TRACE("filename:{}", filename);
+                        auto handle =
+                            ResourceManager::Get().LoadModel(rid, filename);
+                        CreateModelEntity(*m_current_scene, rid, *handle,
+                                          handle->GetRootNode());
                     }
                 }
                 catch (const Exception &e) {

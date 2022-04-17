@@ -28,30 +28,6 @@ Entity Scene::CreateEntity(const std::string &name)
     return entity;
 }
 
-Entity Scene::CreateModelEntity(const ResourceRegistry::ModelHandle &handle,
-                                const ModelNode *node)
-{
-    std::string name = node->GetName();
-    Entity entity = CreateEntity(name);
-    auto &meshes = node->GetMeshes();
-    auto &materials = node->GetMaterials();
-    for (size_t i = 0; i < meshes.size(); ++i) {
-        Entity child = CreateEntity(name + "_" + std::to_string(i));
-        entity.AddChild(child);
-        auto &mc = child.AddComponent<MeshComponent>();
-        mc.model_id = handle.GetIdentifier();
-        mc.mesh_index = meshes[i];
-        mc.material = handle->GetMaterial(materials[i]);
-        auto &tc = child.GetComponent<TransformComponent>();
-        tc.SetLocalTransform(node->GetTransform());
-    }
-    for (auto &child : node->GetChildren()) {
-        Entity child_entity = CreateModelEntity(handle, child);
-        entity.AddChild(child_entity);
-    }
-    return entity;
-}
-
 Entity Scene::CloneEntity(EntityId from)
 {
     EntityId to = m_entity_reg.create();
