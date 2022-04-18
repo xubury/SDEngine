@@ -13,7 +13,7 @@ class SD_UTILITY_API Exception : public std::exception, public std::string {
    public:
     Exception(void) throw() {}
 
-    Exception(const std::string& msg) throw() : std::string(msg) {}
+    Exception(std::string msg) throw() : std::string(std::move(msg)) {}
 
     virtual ~Exception(void) throw() {}
 
@@ -22,7 +22,8 @@ class SD_UTILITY_API Exception : public std::exception, public std::string {
 
 class SD_UTILITY_API FileException : public Exception {
    public:
-    FileException(const std::string& file_path, const std::string& msg) throw()
+    FileException(const std::string_view& file_path,
+                  const std::string_view& msg) throw()
         : Exception(fmt::format("File exception from \"{}\", error: {}",
                                 file_path, msg))
     {

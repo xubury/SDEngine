@@ -208,7 +208,7 @@ static void ProcessNode(const aiScene *scene, const aiNode *ai_node,
     }
 }
 
-Ref<Model> ModelLoader::Load(const std::string &path)
+Ref<Model> ModelLoader::Load(const std::string_view &path)
 {
     Ref<Model> model;
     SD_CORE_TRACE("Loading model form: {}...", path);
@@ -216,7 +216,7 @@ Ref<Model> ModelLoader::Load(const std::string &path)
     Assimp::Importer importer;
     uint32_t import_flags =
         aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace;
-    const aiScene *scene = importer.ReadFile(path, import_flags);
+    const aiScene *scene = importer.ReadFile(path.data(), import_flags);
     if (scene == nullptr) {
         throw FileException(path, fmt::format("Model loading failed: {}",
                                               importer.GetErrorString()));

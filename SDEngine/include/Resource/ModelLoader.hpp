@@ -11,7 +11,7 @@ namespace SD {
 
 class SD_RESOURCE_API ModelLoader {
    public:
-    Ref<Model> Load(const std::string &path);
+    Ref<Model> Load(const std::string_view &path);
 };
 
 }  // namespace SD

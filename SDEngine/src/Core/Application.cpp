@@ -82,18 +82,13 @@ Application::Application(const std::string &title, Device::API api)
     // Should move this to a asset table file, so we can load asset dynamically
     {
         auto &cache = Locator<TextureCache>::Value();
-        cache.Load(
-            "icon/light", "assets/icons/light.png",
-            TextureParameter{TextureWrap::Repeat, TextureMinFilter::Linear,
-                             TextureMagFilter::Linear, MipmapMode::Linear});
-        cache.Load(
-            "icon/file", "assets/icons/FileIcon.png",
-            TextureParameter{TextureWrap::Repeat, TextureMinFilter::Linear,
-                             TextureMagFilter::Linear, MipmapMode::Linear});
-        cache.Load(
-            "icon/directory", "assets/icons/DirectoryIcon.png",
-            TextureParameter{TextureWrap::Repeat, TextureMinFilter::Linear,
-                             TextureMagFilter::Linear, MipmapMode::Linear});
+        TextureParameter icon_params{
+            TextureWrap::Repeat, TextureMinFilter::Linear,
+            TextureMagFilter::Linear, MipmapMode::Linear};
+        cache.Load("icon/light", "assets/icons/light.png", icon_params);
+        cache.Load("icon/file", "assets/icons/FileIcon.png", icon_params);
+        cache.Load("icon/directory", "assets/icons/DirectoryIcon.png",
+                   icon_params);
         cache.Load("skybox/default", std::array<std::string_view, 6>{
                                          "assets/skybox/right.jpg",
                                          "assets/skybox/left.jpg",
