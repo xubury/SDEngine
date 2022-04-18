@@ -2,6 +2,7 @@
 #define SD_CONTENT_BROWSER_HPP
 
 #include "Graphics/Texture.hpp"
+#include "Resource/Resource.hpp"
 
 namespace SD {
 
@@ -20,8 +21,8 @@ class ContentBrowser {
     // void DrawFontCreation();
 
     bool m_open_creation{false};
-    Ref<Texture> m_file_icon;
-    Ref<Texture> m_directory_icon;
+    TextureHandle m_file_icon;
+    TextureHandle m_directory_icon;
 
     std::filesystem::path m_current_directory;
 };

@@ -13,11 +13,11 @@ class ResourceHandle {
 
     ResourceHandle(Ref<Resource> res) : m_ptr{std::move(res)} {}
 
-    Resource &Get() const { return *m_ptr; }
+    Resource *Get() const { return m_ptr.get(); }
 
-    operator Resource &() const { return Get(); }
+    operator Resource &() const { return *Get(); }
 
-    Resource &operator*() const { return Get(); }
+    Resource &operator*() const { return *Get(); }
 
     Resource *operator->() const { return m_ptr.get(); }
 

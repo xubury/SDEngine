@@ -24,17 +24,6 @@ Ref<Texture> Texture::CreateCube(const std::array<ByteImage *, 6> &images)
     return texture;
 }
 
-Ref<Texture> Texture::CreateIcon(const ByteImage &image)
-{
-    auto texture = Texture::Create(
-        image.Width(), image.Height(), 1, MultiSampleLevel::None,
-        TextureType::Normal2D, image.GetDataFormat(),
-        {TextureWrap::Edge, TextureMinFilter::Linear, TextureMagFilter::Linear,
-         MipmapMode::None});
-    texture->SetPixels(0, 0, 0, image.Width(), image.Height(), 1, image.Data());
-    return texture;
-}
-
 Ref<Texture> Texture::Create(int width, int height, int depth,
                              MultiSampleLevel samples, TextureType type,
                              DataFormat format, const TextureParameter &params,

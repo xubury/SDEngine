@@ -34,7 +34,7 @@ void SpriteRenderer::Render(const Scene &scene)
         uint32_t id = static_cast<uint32_t>(entity_id);
         auto &frame = sprite_comp.frame;
         if (cache.Contains(frame.texture_id)) {
-            auto texture = &cache.Handle(frame.texture_id).Get();
+            auto texture = cache.Get(frame.texture_id).Get();
             datas.push_back({texture, frame.uvs,
                              transform_comp.GetWorldPosition(),
                              transform_comp.GetWorldRotation(), frame.size, id,
@@ -52,7 +52,7 @@ void SpriteRenderer::Render(const Scene &scene)
             if (anim->GetFrameSize()) {
                 auto &frame = anim->GetFrame();
                 if (cache.Contains(frame.texture_id)) {
-                    auto texture = &cache.Handle(frame.texture_id).Get();
+                    auto texture = cache.Get(frame.texture_id).Get();
                     datas.push_back({texture, frame.uvs,
                                      transform_comp.GetWorldPosition(),
                                      transform_comp.GetWorldRotation(),

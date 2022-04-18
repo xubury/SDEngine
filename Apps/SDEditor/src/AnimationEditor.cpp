@@ -22,7 +22,7 @@ void AnimationEditor::ImGui()
         auto &cache = Locator<TextureCache>::Value();
         // ImGui::DrawTextureAssetSelection(cache, &m_texture_id);
         if (cache.Contains(m_texture_id)) {
-            auto texture = cache.Handle(m_texture_id);
+            auto texture = cache.Get(m_texture_id);
             ImGui::DrawTileTexture(*texture, m_tile_size, m_uvs, &m_count);
             if (m_selected_entity &&
                 m_selected_entity.HasComponent<SpriteAnimationComponent>()) {

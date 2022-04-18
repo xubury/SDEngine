@@ -35,7 +35,7 @@ DataFormat SD_RENDERER_API GetTextureFormat(GeometryBufferType type);
 
 class SD_RENDERER_API DeferredRenderer {
    public:
-    static void Init(const DeferredRenderSettings &settings);
+    static void Init(DeferredRenderSettings settings);
 
     static void Render(Scene &scene, const Camera &camera);
 

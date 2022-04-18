@@ -10,6 +10,7 @@ namespace SD {
 class SD_RESOURCE_API TextureLoader {
    public:
     Ref<Texture> Load(const std::string &path, const TextureParameter &param);
+    Ref<Texture> Load(const std::array<std::string_view, 6> &pathes);
     // static void WriteToFile(const Texture &texture, const std::string &path);
 };
 

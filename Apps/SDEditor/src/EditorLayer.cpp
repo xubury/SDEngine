@@ -403,7 +403,6 @@ void EditorLayer::DrawViewport()
                     }
                     else if (ext == ".obj") {
                         ResourceId rid;
-                        SD_CORE_TRACE("filename:{}", filename);
                         auto handle =
                             Locator<ModelCache>::Value().Load(rid, filename);
                         CreateModelEntity(*m_current_scene, rid, *handle,

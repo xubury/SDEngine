@@ -7,6 +7,7 @@
 #include "Renderer/SkyboxRenderer.hpp"
 #include "Renderer/PostProcessRenderer.hpp"
 #include "Renderer/SpriteRenderer.hpp"
+#include "Resource/Resource.hpp"
 #include "Utility/Timing.hpp"
 
 namespace SD {
@@ -53,7 +54,7 @@ class SD_CORE_API GraphicsLayer : public Layer {
 
     Ref<Renderbuffer> m_depth_buffer;
 
-    Ref<Texture> m_light_icon;
+    TextureHandle m_light_icon;
 
     Camera* m_camera;
     Scene* m_scene;

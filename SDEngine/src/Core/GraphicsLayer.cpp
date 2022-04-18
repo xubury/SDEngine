@@ -49,9 +49,8 @@ void GraphicsLayer::OnInit()
     SkyboxRenderer::Init();
     PostProcessRenderer::Init(PostProcessSettings{m_width, m_height});
     DeferredRenderer::Init(DeferredRenderSettings{m_width, m_height, m_msaa});
-    auto &cache = Locator<ImageCache>::Value();
-    m_light_icon = Texture::CreateIcon(
-        *cache.Load("icons/light", "assets/icons/light.png"));
+    auto &cache = Locator<TextureCache>::Value();
+    m_light_icon = cache.Get("icon/light");
 }
 
 void GraphicsLayer::OnDestroy() {}

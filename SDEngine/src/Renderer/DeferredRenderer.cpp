@@ -65,9 +65,9 @@ DataFormat GetTextureFormat(GeometryBufferType type)
     }
 }
 
-void DeferredRenderer::Init(const DeferredRenderSettings &settings)
+void DeferredRenderer::Init(DeferredRenderSettings settings)
 {
-    s_settings = settings;
+    s_settings = std::move(settings);
     for (int i = 0; i < 2; ++i) {
         s_data.lighting_target[i] = Framebuffer::Create();
     }
@@ -280,7 +280,7 @@ void DeferredRenderer::RenderShadowMap(const Scene &scene,
     modelView.each([&](const TransformComponent &tc, const MeshComponent &mc) {
         Matrix4f mat = tc.GetWorldTransform().GetMatrix();
         model_param->SetAsMat4(&mat[0][0]);
-        auto model = cache.Handle(mc.model_id);
+        auto model = cache.Get(mc.model_id);
         auto &mesh = model->GetMesh(mc.mesh_index);
         Renderer3D::DrawMesh(*s_data.cascade_shader, mesh);
     });
@@ -335,7 +335,7 @@ void DeferredRenderer::RenderPointShadowMap(const Scene &scene,
     modelView.each([&](const TransformComponent &tc, const MeshComponent &mc) {
         Matrix4f mat = tc.GetWorldTransform().GetMatrix();
         model_param->SetAsMat4(&mat[0][0]);
-        auto model = cache.Handle(mc.model_id);
+        auto model = cache.Get(mc.model_id);
         auto &mesh = model->GetMesh(mc.mesh_index);
         Renderer3D::DrawMesh(*s_data.point_shadow_shader, mesh);
     });
@@ -569,7 +569,7 @@ void DeferredRenderer::RenderGBuffer(const Scene &scene)
         Matrix4f mat = transform.GetWorldTransform().GetMatrix();
         model_param->SetAsMat4(&mat[0][0]);
 
-        auto model = cache.Handle(mc.model_id);
+        auto model = cache.Get(mc.model_id);
         auto &mesh = model->GetMesh(mc.mesh_index);
         Renderer3D::SetMaterial(*s_data.gbuffer_shader, mc.material);
         Renderer3D::DrawMesh(*s_data.gbuffer_shader, mesh);

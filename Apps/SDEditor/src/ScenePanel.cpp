@@ -421,7 +421,7 @@ void ScenePanel::DrawComponents(Entity &entity)
             ImGui::TextUnformatted("Prioirty");
             ImGui::InputInt("##Priority", &frame.priority);
             if (texture_cache.Contains(frame.texture_id)) {
-                auto texture = texture_cache.Handle(frame.texture_id);
+                auto texture = texture_cache.Get(frame.texture_id);
                 ImGui::DrawTexture(*texture,
                                    ImVec2(frame.uvs[0].x, frame.uvs[0].y),
                                    ImVec2(frame.uvs[1].x, frame.uvs[1].y));
@@ -446,7 +446,7 @@ void ScenePanel::DrawComponents(Entity &entity)
             if (frame_index < static_cast<int>(anim.GetFrameSize())) {
                 const auto &frame = anim.GetFrame(frame_index);
                 if (texture_cache.Contains(frame.texture_id)) {
-                    auto texture = texture_cache.Handle(frame.texture_id);
+                    auto texture = texture_cache.Get(frame.texture_id);
                     ImGui::DrawTexture(*texture,
                                        ImVec2(frame.uvs[0].x, frame.uvs[0].y),
                                        ImVec2(frame.uvs[1].x, frame.uvs[1].y));

@@ -16,8 +16,7 @@ class ResourceCache {
     bool Empty() const { return m_resources.empty(); }
 
     template <typename... Args>
-    [[nodiscard]] ResourceHandle<Resource> Load(const ResourceId rid,
-                                                Args &&...args)
+    ResourceHandle<Resource> Load(const ResourceId rid, Args &&...args)
     {
         if (auto it = m_resources.find(rid); it == m_resources.cend()) {
             if (auto handle = Temp(std::forward<Args>(args)...); handle) {
@@ -52,7 +51,7 @@ class ResourceCache {
         return (Discard(rid), Load(rid, std::forward<Args>(args)...));
     }
 
-    [[nodiscard]] ResourceHandle<Resource> Handle(const ResourceId rid)
+    [[nodiscard]] ResourceHandle<Resource> Get(const ResourceId rid)
     {
         if (auto it = m_resources.find(rid); it != m_resources.end()) {
             return it->second;
@@ -62,7 +61,7 @@ class ResourceCache {
         }
     }
 
-    [[nodiscard]] ResourceHandle<Resource> Handle(const ResourceId rid) const
+    [[nodiscard]] ResourceHandle<Resource> Get(const ResourceId rid) const
     {
         if (auto it = m_resources.find(rid); it != m_resources.cend()) {
             return it->second;

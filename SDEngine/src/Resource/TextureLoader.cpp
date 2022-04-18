@@ -19,6 +19,26 @@ Ref<Texture> TextureLoader::Load(const std::string &path,
     return texture;
 }
 
+Ref<Texture> TextureLoader::Load(const std::array<std::string_view, 6> &pathes)
+{
+    Ref<Texture> texture;
+    auto &image_cache = Locator<ImageCache>::Value();
+    for (int face = 0; face < 6; ++face) {
+        auto image = image_cache.Temp(pathes[face]);
+        int32_t width = image->Width();
+        int32_t height = image->Height();
+        if (face == 0) {
+            texture =
+                Texture::Create(width, height, 0, MultiSampleLevel::None,
+                                TextureType::Cube, image->GetDataFormat(),
+                                {TextureWrap::Edge, TextureMinFilter::Linear,
+                                 TextureMagFilter::Linear, MipmapMode::None});
+        }
+        texture->SetPixels(0, 0, face, width, height, 1, image->Data());
+    }
+    return texture;
+}
+
 // void TextureLoader::WriteToFile(const Texture& texture, const std::string&
 // path)
 // {

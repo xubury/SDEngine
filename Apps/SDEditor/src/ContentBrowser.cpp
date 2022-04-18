@@ -16,11 +16,9 @@ const std::filesystem::path root_path = "assets";
 
 ContentBrowser::ContentBrowser()
 {
-    auto& cache = Locator<ImageCache>::Value();
-    m_file_icon = Texture::CreateIcon(
-        *cache.Load("icon/FileIcon", "assets/icons/FileIcon.png"));
-    m_directory_icon = Texture::CreateIcon(
-        *cache.Load("icon/DirectoryIcon", "assets/icons/DirectoryIcon.png"));
+    auto& cache = Locator<TextureCache>::Value();
+    m_file_icon = cache.Get("icon/file");
+    m_directory_icon = cache.Get("icon/directory");
     m_current_directory = root_path;
 }
 
@@ -72,7 +70,7 @@ void ContentBrowser::ImGui()
         const bool is_directory = entry.is_directory();
         const std::string filename = path.filename().string();
 
-        Ref<Texture> icon = is_directory ? m_directory_icon : m_file_icon;
+        auto icon = is_directory ? m_directory_icon : m_file_icon;
         ImGui::PushID(filename.c_str());
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
         ImGui::ImageButton((ImTextureID)(intptr_t)icon->Handle(),

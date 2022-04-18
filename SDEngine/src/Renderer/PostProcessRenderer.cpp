@@ -20,9 +20,9 @@ struct PostProcessData {
 static PostProcessData s_data;
 static PostProcessSettings s_settings;
 
-void PostProcessRenderer::Init(const PostProcessSettings &settings)
+void PostProcessRenderer::Init(PostProcessSettings settings)
 {
-    s_settings = settings;
+    s_settings = std::move(settings);
 
     auto &shaders = Locator<ShaderCache>::Value();
     s_data.hdr_shader =

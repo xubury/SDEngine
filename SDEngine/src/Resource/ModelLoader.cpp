@@ -177,7 +177,7 @@ static void ProcessAiMaterial(const std::filesystem::path &directory,
             TextureParameter{ConvertAssimpMapMode(ai_map_mode),
                              TextureMinFilter::Linear, TextureMagFilter::Linear,
                              MipmapMode::Linear});
-        material.SetTexture(ConvertAssimpTextureType(ai_type), &handle.Get());
+        material.SetTexture(ConvertAssimpTextureType(ai_type), handle.Get());
     }
     model.AddMaterial(std::move(material));
 }

@@ -67,7 +67,7 @@ void TileMapEditor::ImGui()
 
         auto &cache = Locator<TextureCache>::Value();
         if (cache.Contains(m_frame.texture_id)) {
-            ImGui::DrawTileTexture(*cache.Handle(m_frame.texture_id),
+            ImGui::DrawTileTexture(*cache.Get(m_frame.texture_id),
                                    m_brush.tile_size, m_frame.uvs,
                                    &m_brush.count, &m_brush.pivot);
         }

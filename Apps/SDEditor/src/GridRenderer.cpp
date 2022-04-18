@@ -49,7 +49,7 @@ void GridRenderer::Render(const Camera &camera, const SpriteFrame &frame,
     if (brush.is_painting) {
         Vector3f world = brush.GetSelectdPos();
         if (cache.Contains(frame.texture_id)) {
-            Renderer2D::DrawTexture(*cache.Handle(frame.texture_id), frame.uvs,
+            Renderer2D::DrawTexture(*cache.Get(frame.texture_id), frame.uvs,
                                     world, Quaternion(), frame.size);
         }
         // draw overlay

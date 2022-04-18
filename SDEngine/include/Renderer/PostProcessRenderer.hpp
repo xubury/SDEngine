@@ -22,7 +22,7 @@ struct PostProcessSettings {
 
 class SD_RENDERER_API PostProcessRenderer {
    public:
-    static void Init(const PostProcessSettings &settings);
+    static void Init(PostProcessSettings settings);
 
     static void SetRenderSize(int32_t width, int32_t height);
 
