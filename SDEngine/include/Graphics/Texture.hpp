@@ -16,11 +16,9 @@ struct TextureParameter {
 
 class SD_GRAPHICS_API Texture {
    public:
-    static Ref<Texture> CreateCube(const std::array<ByteImage *, 6> &images);
     static Ref<Texture> Create(int width, int height, int depth,
                                MultiSampleLevel samples, TextureType type,
-                               DataFormat format,
-                               const TextureParameter &params = {},
+                               DataFormat format, TextureParameter params = {},
                                int32_t mipmap_levels = 0);
 
     virtual ~Texture() = default;
@@ -48,39 +46,23 @@ class SD_GRAPHICS_API Texture {
     bool operator==(const Texture &other) const;
     bool operator!=(const Texture &other) const;
 
-    int GetWidth() const;
-    int GetHeight() const;
-    MultiSampleLevel GetSamples() const;
+    virtual int GetWidth() const = 0;
+    virtual int GetHeight() const = 0;
+    virtual MultiSampleLevel GetSamples() const = 0;
 
-    TextureType GetType() const;
-    DataFormat GetFormat() const;
+    virtual TextureType GetType() const = 0;
+    virtual DataFormat GetFormat() const = 0;
 
-    TextureWrap GetWrap() const { return m_wrap; }
-    TextureMinFilter GetMinFilter() const { return m_min_filter; }
-    TextureMagFilter GetMagFilter() const { return m_mag_filter; }
-    MipmapMode GetMipmapMode() const { return m_mipmap_mode; }
-    int GetMipmapLevels() const { return m_mipmap_levels; }
+    virtual TextureWrap GetWrap() const = 0;
+    virtual TextureMinFilter GetMinFilter() const = 0;
+    virtual TextureMagFilter GetMagFilter() const = 0;
+    virtual MipmapMode GetMipmapMode() const = 0;
+    virtual int GetMipmapLevels() const = 0;
 
     size_t GetDataSize() const;
 
    protected:
-    Texture(int width, int height, int depth, MultiSampleLevel samples,
-            TextureType type, DataFormat format, TextureWrap wrap,
-            TextureMinFilter min_filter, TextureMagFilter mag_filter,
-            MipmapMode mode, int32_t mipmap_levels);
-
-    int m_width;
-    int m_height;
-    int m_depth;
-    MultiSampleLevel m_samples;
-    int m_mipmap_levels;
-
-    TextureType m_type;
-    DataFormat m_format;
-    TextureWrap m_wrap;
-    MipmapMode m_mipmap_mode;
-    TextureMinFilter m_min_filter;
-    TextureMagFilter m_mag_filter;
+    Texture() = default;
 };
 
 }  // namespace SD

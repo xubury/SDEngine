@@ -23,16 +23,16 @@ Ref<Texture> TextureLoader::Load(const std::array<std::string_view, 6> &pathes)
 {
     Ref<Texture> texture;
     auto &image_cache = Locator<ImageCache>::Value();
+    TextureParameter param{TextureWrap::Edge, TextureMinFilter::Linear,
+                           TextureMagFilter::Linear, MipmapMode::None};
     for (int face = 0; face < 6; ++face) {
         auto image = image_cache.Temp(pathes[face]);
         int32_t width = image->Width();
         int32_t height = image->Height();
         if (face == 0) {
-            texture =
-                Texture::Create(width, height, 0, MultiSampleLevel::None,
-                                TextureType::Cube, image->GetDataFormat(),
-                                {TextureWrap::Edge, TextureMinFilter::Linear,
-                                 TextureMagFilter::Linear, MipmapMode::None});
+            texture = Texture::Create(width, height, 0, MultiSampleLevel::None,
+                                      TextureType::Cube, image->GetDataFormat(),
+                                      param);
         }
         texture->SetPixels(0, 0, face, width, height, 1, image->Data());
     }

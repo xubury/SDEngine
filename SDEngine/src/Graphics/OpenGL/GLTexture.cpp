@@ -89,23 +89,41 @@ GLenum GetDataType(DataFormat format)
 }
 
 GLTexture::GLTexture(int width, int height, int depth, MultiSampleLevel samples,
-                     TextureType type, DataFormat format, TextureWrap wrap,
-                     TextureMinFilter min_filter, TextureMagFilter mag_filter,
-                     MipmapMode mode, int32_t mipmap_levels)
-    : Texture(width, height, depth, samples, type, format, wrap, min_filter,
-              mag_filter, mode, mipmap_levels),
+                     TextureType type, DataFormat format,
+                     TextureParameter params, int32_t mipmap_levels)
+    : m_width(width),
+      m_height(height),
+      m_depth(depth),
+      m_samples(samples),
+      m_type(type),
+      m_format(format),
+      m_params(std::move(params)),
       gl_format(0),
       gl_format_type(0)
 {
+    if (m_params.mipmap != MipmapMode::None) {
+        int max_level = static_cast<int>(
+            std::floor(std::log2(std::max(m_width, m_height))));
+        if (mipmap_levels == 0) {
+            m_mipmap_levels = std::max(max_level, 1);
+        }
+        else {
+            m_mipmap_levels = std::min(mipmap_levels, max_level);
+        }
+    }
+    else {
+        m_mipmap_levels = 1;
+    }
+
     gl_format = GetFormatType(m_format);
     gl_format_type = GetDataType(m_format);
 
     Allocate();
 
     if (m_samples == MultiSampleLevel::None) {
-        SetWrap(m_wrap);
-        SetMinFilter(m_min_filter);
-        SetMagFilter(m_mag_filter);
+        SetWrap(m_params.wrap);
+        SetMinFilter(m_params.min_filter);
+        SetMagFilter(m_params.mag_filter);
     }
 }
 
@@ -187,9 +205,9 @@ void GLTexture::SetBorderColor(const void *color)
 
 void GLTexture::SetWrap(TextureWrap wrap)
 {
-    m_wrap = wrap;
+    m_params.wrap = wrap;
 
-    GLint gl_wrap = Translate(m_wrap);
+    GLint gl_wrap = Translate(m_params.wrap);
     glTextureParameteri(m_id, GL_TEXTURE_WRAP_R, gl_wrap);
     glTextureParameteri(m_id, GL_TEXTURE_WRAP_S, gl_wrap);
     glTextureParameteri(m_id, GL_TEXTURE_WRAP_T, gl_wrap);
@@ -197,16 +215,16 @@ void GLTexture::SetWrap(TextureWrap wrap)
 
 void GLTexture::SetMagFilter(TextureMagFilter filter)
 {
-    m_mag_filter = filter;
+    m_params.mag_filter = filter;
 
-    GLint gl_filter = Translate(m_mag_filter);
+    GLint gl_filter = Translate(m_params.mag_filter);
     glTextureParameteri(m_id, GL_TEXTURE_MAG_FILTER, gl_filter);
 }
 
 void GLTexture::SetMinFilter(TextureMinFilter min_filter)
 {
-    m_min_filter = min_filter;
-    GLint gl_min_filter = Translate(m_min_filter, m_mipmap_mode);
+    m_params.min_filter = min_filter;
+    GLint gl_min_filter = Translate(m_params.min_filter, m_params.mipmap);
     glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, gl_min_filter);
 }
 
