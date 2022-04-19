@@ -8,6 +8,8 @@ std::unordered_map<Keycode, bool> Input::s_last_key;
 std::unordered_map<MouseButton, bool> Input::s_mouse_button;
 std::unordered_map<MouseButton, bool> Input::s_last_mouse_button;
 
+Vector2f Input::s_mouse_wheel;
+
 Vector2f Input::s_mouse_coord;
 
 bool Input::IsKeyDown(Keycode keycode)
@@ -66,6 +68,8 @@ bool Input::IsMousePressed(MouseButton button)
 
 Vector2f Input::GetMouseCoord() { return s_mouse_coord; }
 
+Vector2f Input::GetMouseWheel() { return s_mouse_wheel; }
+
 void Input::Tick()
 {
     for (auto& [key, press] : s_key) {
@@ -87,6 +91,12 @@ void Input::SetMouseCoord(float x, float y)
 {
     s_mouse_coord.x = x;
     s_mouse_coord.y = y;
+}
+
+void Input::SetMouseWheel(float x, float y)
+{
+    s_mouse_wheel.x = x;
+    s_mouse_wheel.y = y;
 }
 
 }  // namespace SD

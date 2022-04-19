@@ -22,6 +22,7 @@ class SD_CORE_API Input {
     static bool IsMousePressed(MouseButton mouse);
 
     static Vector2f GetMouseCoord();
+    static Vector2f GetMouseWheel();
 
    private:
     friend class InputLayer;
@@ -30,11 +31,14 @@ class SD_CORE_API Input {
     static void SetKeyState(Keycode keycode, bool state);
     static void SetMouseButtonState(MouseButton mouse, bool state);
     static void SetMouseCoord(float x, float y);
+    static void SetMouseWheel(float x, float y);
     static std::unordered_map<Keycode, bool> s_key;
     static std::unordered_map<Keycode, bool> s_last_key;
 
     static std::unordered_map<MouseButton, bool> s_mouse_button;
     static std::unordered_map<MouseButton, bool> s_last_mouse_button;
+
+    static Vector2f s_mouse_wheel;
 
     static Vector2f s_mouse_coord;
 };

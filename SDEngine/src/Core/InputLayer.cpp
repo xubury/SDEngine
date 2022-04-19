@@ -23,6 +23,9 @@ void InputLayer::On(const MouseButtonEvent &event)
     Input::SetMouseButtonState(event.button, event.state);
 }
 
-void InputLayer::On(const MouseWheelEvent &) {}
+void InputLayer::On(const MouseWheelEvent &event)
+{
+    Input::SetMouseWheel(event.x, event.y);
+}
 
 }  // namespace SD
