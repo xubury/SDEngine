@@ -9,7 +9,7 @@ class SD_CORE_API InputLayer : public Layer {
    public:
     InputLayer();
 
-    void OnTick(float dt) override;
+    void OnTick(Scene *scene, float dt) override;
 
     void On(const KeyEvent &) override;
     void On(const MouseMotionEvent &) override;

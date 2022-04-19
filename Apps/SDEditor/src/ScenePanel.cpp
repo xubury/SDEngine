@@ -1,10 +1,9 @@
 #include "ScenePanel.hpp"
 #include "EditorEvent.hpp"
+#include "Locator/Locator.hpp"
 #include "Utility/Log.hpp"
 #include "Utility/String.hpp"
 #include "ImGui/ImGuiWidget.hpp"
-#include "Resource/Resource.hpp"
-#include "Locator/Locator.hpp"
 
 #define ECS_MOVEENTITY "ECS MOVEENTITY"
 
@@ -35,8 +34,7 @@ void ScenePanel::ImGui(Scene *scene)
 {
     ImGui::Begin("Scene Hierarchy");
 
-    auto &entities = scene->GetEntityRegistry();
-    entities.each([&](auto entityID) {
+    scene->each([&](auto entityID) {
         Entity entity{entityID, scene};
 
         TransformComponent &data = entity.GetComponent<TransformComponent>();
@@ -91,6 +89,47 @@ void ScenePanel::ImGui(Scene *scene)
         DrawComponents(m_selected_entity);
     }
 
+    ImGui::End();
+    ImGui::Begin("Scene Manager");
+    {
+        auto &manager = Locator<SceneManager>::Value();
+        static int edit_index = -1;
+        for (size_t index = 0; index < manager.Size(); ++index) {
+            ImGui::PushID(index);
+            auto &tag = manager.GetScene(index)->name;
+
+            if (edit_index == static_cast<int>(index)) {
+                char buffer[256];
+                memset(buffer, 0, sizeof(buffer));
+                std::strncpy(buffer, tag.c_str(), tag.size());
+                if (ImGui::InputText("##EditSceneName", buffer, sizeof(buffer),
+                                     ImGuiInputTextFlags_EnterReturnsTrue |
+                                         ImGuiInputTextFlags_AutoSelectAll)) {
+                    tag = std::string(buffer);
+                    edit_index = -1;
+                }
+            }
+            else {
+                if (ImGui::Selectable("##Scene", manager.IsCurrentScene(index),
+                                      ImGuiSelectableFlags_AllowDoubleClick)) {
+                    manager.SetCurrentScene(index);
+                    m_dispatcher->PublishEvent(EntitySelectEvent{});
+                    if (ImGui::IsMouseDoubleClicked(0)) {
+                        edit_index = index;
+                    }
+                }
+                ImGui::SameLine();
+                ImGui::TextUnformatted(tag.c_str());
+            }
+            ImGui::PopID();
+        }
+        if (ImGui::BeginPopupContextWindow(0, 1, false)) {
+            if (ImGui::MenuItem("Create Empty Scene")) {
+                manager.EmplaceScene("Empty Scene");
+            }
+            ImGui::EndPopup();
+        }
+    }
     ImGui::End();
 }
 
@@ -273,7 +312,6 @@ void ScenePanel::DrawComponents(Entity &entity)
     }
     ImGui::PopItemWidth();
 
-    auto &texture_cache = Locator<TextureCache>::Value();
     DrawComponent<TransformComponent>(
         "Transform", entity,
         [&](TransformComponent &component) {
@@ -420,12 +458,9 @@ void ScenePanel::DrawComponents(Entity &entity)
             ImGui::InputFloat2("##Size", &frame.size[0]);
             ImGui::TextUnformatted("Prioirty");
             ImGui::InputInt("##Priority", &frame.priority);
-            if (texture_cache.Contains(frame.texture_id)) {
-                auto texture = texture_cache.Get(frame.texture_id);
-                ImGui::DrawTexture(*texture,
-                                   ImVec2(frame.uvs[0].x, frame.uvs[0].y),
-                                   ImVec2(frame.uvs[1].x, frame.uvs[1].y));
-            }
+            ImGui::DrawTexture(*frame.texture,
+                               ImVec2(frame.uvs[0].x, frame.uvs[0].y),
+                               ImVec2(frame.uvs[1].x, frame.uvs[1].y));
         });
     DrawComponent<SpriteAnimationComponent>(
         "Sprite Animation", entity, [&](SpriteAnimationComponent &anim_comp) {
@@ -445,12 +480,9 @@ void ScenePanel::DrawComponents(Entity &entity)
             }
             if (frame_index < static_cast<int>(anim.GetFrameSize())) {
                 const auto &frame = anim.GetFrame(frame_index);
-                if (texture_cache.Contains(frame.texture_id)) {
-                    auto texture = texture_cache.Get(frame.texture_id);
-                    ImGui::DrawTexture(*texture,
-                                       ImVec2(frame.uvs[0].x, frame.uvs[0].y),
-                                       ImVec2(frame.uvs[1].x, frame.uvs[1].y));
-                }
+                ImGui::DrawTexture(*frame.texture,
+                                   ImVec2(frame.uvs[0].x, frame.uvs[0].y),
+                                   ImVec2(frame.uvs[1].x, frame.uvs[1].y));
             }
             bool loop = anim.IsLoop();
             if (ImGui::Checkbox("Loop", &loop)) {

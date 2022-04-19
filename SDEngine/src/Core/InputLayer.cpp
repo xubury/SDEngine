@@ -5,7 +5,7 @@ namespace SD {
 
 InputLayer::InputLayer() : Layer("InputLayer") {}
 
-void InputLayer::OnTick(float) { Input::Tick(); }
+void InputLayer::OnTick(Scene *, float) { Input::Tick(); }
 
 void InputLayer::On(const KeyEvent &event)
 {

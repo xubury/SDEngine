@@ -19,9 +19,9 @@ class SD_CORE_API GraphicsLayer : public Layer {
     void OnInit() override;
     void OnDestroy() override;
 
-    void OnImGui() override;
-    void OnRender() override;
-    void OnTick(float dt) override;
+    void OnImGui(Scene* scene) override;
+    void OnRender(Scene* scene) override;
+    void OnTick(Scene* scene, float dt) override;
 
     void SetRenderSize(int32_t width, int32_t height);
     void SetCamera(Camera* camera);
@@ -57,8 +57,6 @@ class SD_CORE_API GraphicsLayer : public Layer {
     TextureHandle m_light_icon;
 
     Camera* m_camera;
-    Scene* m_scene;
-
     FPSCounter m_fps;
     float m_deferred_time;
     float m_post_rendering_time;

@@ -45,13 +45,10 @@ void GridRenderer::Render(const Camera &camera, const SpriteFrame &frame,
     Renderer::BeginRenderSubpass(RenderSubpassInfo{&index, 1, op});
     Renderer2D::Begin();
 
-    auto &cache = Locator<TextureCache>::Value();
     if (brush.is_painting) {
         Vector3f world = brush.GetSelectdPos();
-        if (cache.Contains(frame.texture_id)) {
-            Renderer2D::DrawTexture(*cache.Get(frame.texture_id), frame.uvs,
-                                    world, Quaternion(), frame.size);
-        }
+        Renderer2D::DrawTexture(*frame.texture, frame.uvs, world, Quaternion(),
+                                frame.size);
         // draw overlay
         Renderer2D::DrawQuad(world, Quaternion(), frame.size, brush.color);
     }

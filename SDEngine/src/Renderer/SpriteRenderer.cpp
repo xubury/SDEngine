@@ -1,5 +1,4 @@
 #include "Renderer/SpriteRenderer.hpp"
-#include "Resource/Resource.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "ECS/Component.hpp"
 #include "Locator/Locator.hpp"
@@ -18,8 +17,6 @@ struct SpriteDrawData {
 
 void SpriteRenderer::Render(const Scene &scene)
 {
-    auto &entities = scene.GetEntityRegistry();
-    auto &cache = Locator<TextureCache>::Value();
     int index[] = {0, 1};
     RenderOperation op;
     op.depth_mask = false;
@@ -27,22 +24,18 @@ void SpriteRenderer::Render(const Scene &scene)
     Renderer2D::Begin();
 
     std::vector<SpriteDrawData> datas;
-    auto sprite_view = entities.view<SpriteComponent, TransformComponent>();
+    auto sprite_view = scene.view<SpriteComponent, TransformComponent>();
     sprite_view.each([&](entt::entity entity_id,
                          const SpriteComponent &sprite_comp,
                          const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
         auto &frame = sprite_comp.frame;
-        if (cache.Contains(frame.texture_id)) {
-            auto texture = cache.Get(frame.texture_id).Get();
-            datas.push_back({texture, frame.uvs,
-                             transform_comp.GetWorldPosition(),
-                             transform_comp.GetWorldRotation(), frame.size, id,
-                             frame.priority});
-        }
+        datas.push_back({frame.texture, frame.uvs,
+                         transform_comp.GetWorldPosition(),
+                         transform_comp.GetWorldRotation(), frame.size, id,
+                         frame.priority});
     });
-    auto anim_view =
-        entities.view<SpriteAnimationComponent, TransformComponent>();
+    auto anim_view = scene.view<SpriteAnimationComponent, TransformComponent>();
     anim_view.each([&](entt::entity entity_id,
                        const SpriteAnimationComponent &anim_comp,
                        const TransformComponent &transform_comp) {
@@ -51,13 +44,10 @@ void SpriteRenderer::Render(const Scene &scene)
         if (anim) {
             if (anim->GetFrameSize()) {
                 auto &frame = anim->GetFrame();
-                if (cache.Contains(frame.texture_id)) {
-                    auto texture = cache.Get(frame.texture_id).Get();
-                    datas.push_back({texture, frame.uvs,
-                                     transform_comp.GetWorldPosition(),
-                                     transform_comp.GetWorldRotation(),
-                                     frame.size, id, frame.priority});
-                }
+                datas.push_back({frame.texture, frame.uvs,
+                                 transform_comp.GetWorldPosition(),
+                                 transform_comp.GetWorldRotation(), frame.size,
+                                 id, frame.priority});
             }
         }
     });

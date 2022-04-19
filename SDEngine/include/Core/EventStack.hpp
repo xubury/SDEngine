@@ -8,8 +8,7 @@ namespace SD {
 
 template <typename T>
 class EventStack {
-    using iterator = typename std::vector<T>::iterator;
-    using reverse_iterator = typename std::vector<T>::reverse_iterator;
+    using Container = std::vector<T>;
 
    public:
     EventStack() : m_insertId(0) {}
@@ -49,21 +48,27 @@ class EventStack {
         return std::find(m_items.begin(), m_items.end(), item) != m_items.end();
     }
 
-    iterator begin() { return m_items.begin(); }
+    typename Container::iterator begin() { return m_items.begin(); }
 
-    iterator end() { return m_items.end(); }
+    typename Container::iterator end() { return m_items.end(); }
 
-    reverse_iterator rbegin() { return m_items.rbegin(); }
+    typename Container::reverse_iterator rbegin() { return m_items.rbegin(); }
 
-    reverse_iterator rend() { return m_items.rend(); }
+    typename Container::reverse_iterator rend() { return m_items.rend(); }
 
-    const iterator begin() const { return m_items.begin(); }
+    typename Container::const_iterator begin() const { return m_items.begin(); }
 
-    const iterator end() const { return m_items.end(); }
+    typename Container::const_iterator end() const { return m_items.end(); }
 
-    const reverse_iterator rbegin() const { return m_items.rbegin(); }
+    typename Container::const_reverse_iterator rbegin() const
+    {
+        return m_items.rbegin();
+    }
 
-    const reverse_iterator rend() const { return m_items.rend(); }
+    typename Container::const_reverse_iterator rend() const
+    {
+        return m_items.rend();
+    }
 
     size_t Size() const { return m_items.size(); }
 
@@ -71,7 +76,7 @@ class EventStack {
     const T &Front() const { return m_items.front(); }
 
    private:
-    std::vector<T> m_items;
+    Container m_items;
     size_t m_insertId;
 };
 

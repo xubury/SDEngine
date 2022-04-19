@@ -44,6 +44,7 @@ static void InitializeService()
     Locator<TextureCache>::Emplace();
     Locator<ModelCache>::Emplace();
     Locator<ShaderCache>::Emplace();
+    Locator<SceneManager>::Emplace();
 }
 
 static void ReleaseService()
@@ -52,6 +53,7 @@ static void ReleaseService()
     Locator<TextureCache>::Reset();
     Locator<ModelCache>::Reset();
     Locator<ShaderCache>::Reset();
+    Locator<SceneManager>::Reset();
 }
 
 Application::Application(const std::string &title, Device::API api)
@@ -190,39 +192,41 @@ void Application::Run()
     const float min_fps = 30;
     const float ms_per_frame = 1000.f / min_fps;
     uint32_t ms_elapsed = 0;
+    auto &scene_manager = Locator<SceneManager>::Value();
     while (!m_window->ShouldClose()) {
         m_window->PollEvents(m_layers);
 
         ms_elapsed = clock.Restart();
+        Scene *scene = scene_manager.GetCurrentScene();
         while (ms_elapsed > ms_per_frame) {
             ms_elapsed -= ms_per_frame;
-            Tick(ms_per_frame * 1e-3);
+            Tick(scene, ms_per_frame * 1e-3);
         }
-        Tick(ms_elapsed * 1e-3);
+        Tick(scene, ms_elapsed * 1e-3);
 
-        Render();
+        Render(scene);
     }
 }
 
 void Application::Shutdown() { m_window->SetShouldClose(true); }
 
-void Application::Tick(float dt)
+void Application::Tick(Scene *scene, float dt)
 {
     for (auto iter = m_layers.rbegin(); iter != m_layers.rend(); ++iter) {
-        (*iter)->OnTick(dt);
+        (*iter)->OnTick(scene, dt);
     }
 }
 
-void Application::Render()
+void Application::Render(Scene *scene)
 {
     for (auto &layer : m_layers) {
-        layer->OnRender();
+        layer->OnRender(scene);
     }
 
     if (m_imgui_layer) {
         m_imgui_layer->Begin();
         for (auto &layer : m_layers) {
-            layer->OnImGui();
+            layer->OnImGui(scene);
         }
         m_imgui_layer->End();
     }

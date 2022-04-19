@@ -4,6 +4,7 @@
 #include "Utility/Base.hpp"
 #include "Utility/EventDispatcher.hpp"
 #include "ECS/Scene.hpp"
+#include "ECS/SceneManager.hpp"
 #include "ECS/Entity.hpp"
 #include "ImGui/FileDialog.hpp"
 #include "ECS/Component.hpp"

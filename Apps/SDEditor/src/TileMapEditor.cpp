@@ -31,9 +31,8 @@ bool TileMapEditor::ManipulateScene(const Camera &camera)
     }
     m_brush.SetRay(camera.ComputeCameraRay(clip));
     m_frame.size = m_brush.GetTileSize();
-    auto &cache = Locator<TextureCache>::Value();
     if (m_brush.CastRay()) {
-        if (ImGui::IsMouseClicked(0) && cache.Contains(m_frame.texture_id)) {
+        if (ImGui::IsMouseClicked(0) && m_frame.texture) {
             return m_operation == Operation::AddEntity;
         }
         else if (ImGui::IsMouseClicked(1)) {
@@ -65,11 +64,9 @@ void TileMapEditor::ImGui()
         // ImGui::DrawTextureAssetSelection(*m_cache, &m_frame.texture_id);
         ImGui::InputInt("Priority", &m_frame.priority);
 
-        auto &cache = Locator<TextureCache>::Value();
-        if (cache.Contains(m_frame.texture_id)) {
-            ImGui::DrawTileTexture(*cache.Get(m_frame.texture_id),
-                                   m_brush.tile_size, m_frame.uvs,
-                                   &m_brush.count, &m_brush.pivot);
+        if (m_frame.texture) {
+            ImGui::DrawTileTexture(*m_frame.texture, m_brush.tile_size,
+                                   m_frame.uvs, &m_brush.count, &m_brush.pivot);
         }
     }
     ImGui::End();

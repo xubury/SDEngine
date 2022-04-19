@@ -24,10 +24,12 @@ void OnComponentAdded(entt::registry &, entt::entity)
 {
 }
 
-class SD_ECS_API Scene {
+class SD_ECS_API Scene : public entt::registry {
    public:
-    Scene();
+    Scene(std::string name);
     ~Scene() = default;
+
+    std::string name;
 
     Entity CreateEntity(const std::string &name);
 
@@ -47,10 +49,8 @@ class SD_ECS_API Scene {
             .first.template connect<&Scene::SerializeComponent<T>>();
         m_serialize_functions[id]
             .second.template connect<&Scene::DeserializeComponent<T>>();
-        m_entity_reg.on_construct<T>().template connect<&OnComponentAdded<T>>();
+        on_construct<T>().template connect<&OnComponentAdded<T>>();
     }
-    entt::registry &GetEntityRegistry() { return m_entity_reg; }
-    const entt::registry &GetEntityRegistry() const { return m_entity_reg; }
 
    private:
     template <typename T>
@@ -71,17 +71,13 @@ class SD_ECS_API Scene {
     template <typename T>
     void CloneComponent(EntityId from, EntityId to)
     {
-        T component = m_entity_reg.get<T>(from);
-        m_entity_reg.emplace<T>(to, component);
+        T component = get<T>(from);
+        emplace<T>(to, component);
     }
 
     std::unordered_map<EntityIdType, std::pair<ComponentSerializeFunction,
                                                ComponentDeserializeFunction>>
         m_serialize_functions;
-
-    entt::registry m_entity_reg;
-
-    friend class Entity;
 };
 
 }  // namespace SD

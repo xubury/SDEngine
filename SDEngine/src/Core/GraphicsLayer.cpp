@@ -67,12 +67,10 @@ void GraphicsLayer::OutputEntityBuffer(Framebuffer *framebuffer, int attachment)
     m_entity_output_attachment = attachment;
 }
 
-void GraphicsLayer::OnTick(float dt)
+void GraphicsLayer::OnTick(Scene *scene, float dt)
 {
     // sprite animation
-    //
-    auto &entities = m_scene->GetEntityRegistry();
-    auto anim_view = entities.view<SpriteAnimationComponent>();
+    auto anim_view = scene->view<SpriteAnimationComponent>();
     anim_view.each([&](SpriteAnimationComponent &anim_comp) {
         if (!anim_comp.animations.empty()) {
             anim_comp.animator.Tick(dt);
@@ -92,13 +90,10 @@ void GraphicsLayer::SetRenderSize(int32_t width, int32_t height)
 
 void GraphicsLayer::SetCamera(Camera *camera) { m_camera = camera; }
 
-void GraphicsLayer::SetRenderScene(Scene *scene) { m_scene = scene; }
-
-void GraphicsLayer::OnRender()
+void GraphicsLayer::OnRender(Scene *scene)
 {
     // update camera transform
-    auto &entities = m_scene->GetEntityRegistry();
-    auto view = entities.view<CameraComponent, TransformComponent>();
+    auto view = scene->view<CameraComponent, TransformComponent>();
     view.each([](CameraComponent &camComp, TransformComponent &trans) {
         camComp.camera.SetWorldTransform(trans.GetWorldTransform().GetMatrix());
     });
@@ -116,10 +111,10 @@ void GraphicsLayer::OnRender()
     SkyboxRenderer::Render(*m_camera);
     clock.Restart();
 
-    DeferredRenderer::Render(*m_scene, *m_camera);
+    DeferredRenderer::Render(*scene, *m_camera);
     m_deferred_time += clock.Restart();
 
-    SpriteRenderer::Render(*m_scene);
+    SpriteRenderer::Render(*scene);
     clock.Restart();
 
     PostProcessRenderer::Render();
@@ -133,7 +128,7 @@ void GraphicsLayer::OnRender()
 
         Renderer2D::Begin();
         auto lightView =
-            entities.view<DirectionalLightComponent, TransformComponent>();
+            scene->view<DirectionalLightComponent, TransformComponent>();
         lightView.each([this](EntityId id, const DirectionalLightComponent &,
                               const TransformComponent &transComp) {
             Vector3f pos = transComp.GetWorldPosition();
@@ -171,7 +166,7 @@ void GraphicsLayer::OnRender()
     }
 }
 
-void GraphicsLayer::OnImGui()
+void GraphicsLayer::OnImGui(Scene *)
 {
     if (m_debug) {
         const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed |

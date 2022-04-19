@@ -4,6 +4,7 @@
 #include "Core/Window.hpp"
 #include "Core/ImGuiLayer.hpp"
 #include "Core/GraphicsLayer.hpp"
+#include "ECS/SceneManager.hpp"
 #include "Graphics/Device.hpp"
 #include "Utility/Ini.hpp"
 
@@ -88,9 +89,9 @@ class SD_CORE_API Application {
 
     void Run();
 
-    void Tick(float dt);
+    void Tick(Scene *scene, float dt);
 
-    void Render();
+    void Render(Scene *scene);
 
     EventStack<Layer *> m_layers;
 

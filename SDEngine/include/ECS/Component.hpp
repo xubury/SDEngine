@@ -81,11 +81,11 @@ struct SD_ECS_API TransformComponent {
 };
 
 struct SD_ECS_API MeshComponent {
-    ResourceId model_id;
+    Model* model;
     uint32_t mesh_index;
     Material material;
 
-    SERIALIZE(model_id, mesh_index, material)
+    SERIALIZE(mesh_index, material)
 };
 
 struct SD_ECS_API DirectionalLightComponent {
@@ -126,12 +126,12 @@ struct SD_ECS_API CameraComponent {
 };
 
 struct SD_ECS_API SpriteFrame {
-    ResourceId texture_id;
+    Texture* texture;
     std::array<Vector2f, 2> uvs{Vector2f(0), Vector2f(1)};
     Vector2f size{10.0f};
     int priority{0};
 
-    SERIALIZE(texture_id, uvs, size, priority)
+    SERIALIZE(uvs, size, priority)
 };
 
 struct SD_ECS_API SpriteComponent {
@@ -173,10 +173,10 @@ inline void OnComponentAdded<DirectionalLightComponent>(entt::registry& reg,
     }
 }
 
-template<>
-inline void OnComponentAdded<PointLightComponent>(entt::registry &reg, entt::entity ent)
+template <>
+inline void OnComponentAdded<PointLightComponent>(entt::registry& reg,
+                                                  entt::entity ent)
 {
-
     auto& light = reg.get<PointLightComponent>(ent);
     if (light.is_cast_shadow) {
         light.shadow.CreateShadowMap();

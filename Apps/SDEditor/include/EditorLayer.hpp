@@ -4,6 +4,7 @@
 #include "Core/GraphicsLayer.hpp"
 #include "Core/Layer.hpp"
 #include "Graphics/Camera.hpp"
+#include "ECS/SceneManager.hpp"
 
 #include "ScenePanel.hpp"
 #include "EditorCamera.hpp"
@@ -21,19 +22,16 @@ class EditorLayer : public Layer {
 
     void OnInit() override;
 
-    void OnTick(float dt) override;
+    void OnTick(Scene* scene, float dt) override;
 
-    void OnRender() override;
+    void OnRender(Scene* scene) override;
 
-    void OnImGui() override;
+    void OnImGui(Scene* scene) override;
 
-    void SetCurrentScene(const Ref<Scene>& scene);
     void OpenLoadSceneDialog();
     void OpenSaveSceneDialog();
 
    private:
-    void NewScene();
-
     void On(const KeyEvent& e) override;
     void On(const AppQuitEvent& e) override;
     void On(const MouseMotionEvent& e) override;
@@ -44,7 +42,7 @@ class EditorLayer : public Layer {
 
     void MenuBar();
 
-    void DrawViewport();
+    void DrawViewport(Scene* scene);
 
     void DrawDebugBuffers();
 
@@ -76,7 +74,6 @@ class EditorLayer : public Layer {
     bool m_save_scene_open;
     ImFileDialogInfo m_file_dialog_info;
 
-    Ref<Scene> m_current_scene;
     Entity m_selected_entity;
 
     HandlerRegistration m_entity_select_handler;
