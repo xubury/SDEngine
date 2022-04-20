@@ -75,8 +75,7 @@ void main()
         return;
     }
     vec2 uv = vec2(pos) / size;
-    vec2 tex_size = textureSize(u_position, 0);
-    vec3 random_vec = texture(u_noise, uv * tex_size / 4.f).xyz;
+    vec3 random_vec = normalize(texture(u_noise, uv * vec2(size) / vec2(4.f)).xyz);
     float occlusion = ComputeOcclusion(random_vec, uv);
     imageStore(u_out_image, pos, vec4(pow(occlusion, u_power)));
 }
