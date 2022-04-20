@@ -5,6 +5,7 @@
 #include "Core/ImGuiLayer.hpp"
 #include "Core/GraphicsLayer.hpp"
 #include "ECS/SceneManager.hpp"
+#include "Resource/ResourceManager.hpp"
 #include "Graphics/Device.hpp"
 #include "Utility/Ini.hpp"
 
@@ -80,6 +81,9 @@ class SD_CORE_API Application {
 
     GraphicsLayer *m_graphics_layer;
 
+    ResourceManager m_resources;
+    SceneManager m_scenes;
+
    private:
     ImGuiLayer *m_imgui_layer;
 
@@ -89,9 +93,9 @@ class SD_CORE_API Application {
 
     void Run();
 
-    void Tick(Scene *scene, float dt);
+    void Tick(float dt);
 
-    void Render(Scene *scene);
+    void Render();
 
     EventStack<Layer *> m_layers;
 

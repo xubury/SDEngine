@@ -29,7 +29,7 @@ class SD_CORE_API Layer {
 
     virtual void OnPop() {}
 
-    virtual void OnTick(Scene *, float) {}
+    virtual void OnTick(float) {}
 
     virtual void On(const WindowSizeEvent &) {}
     virtual void On(const KeyEvent &) {}
@@ -39,9 +39,9 @@ class SD_CORE_API Layer {
     virtual void On(const TextInputEvent &) {}
     virtual void On(const AppQuitEvent &) {}
 
-    virtual void OnRender(Scene *) {}
+    virtual void OnRender() {}
 
-    virtual void OnImGui(Scene *) {}
+    virtual void OnImGui() {}
 
     const std::string &GetName() const { return m_name; }
 

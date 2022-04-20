@@ -5,6 +5,7 @@
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/Framebuffer.hpp"
+#include "Resource/Resource.hpp"
 
 namespace SD {
 
@@ -22,7 +23,7 @@ struct PostProcessSettings {
 
 class SD_RENDERER_API PostProcessRenderer {
    public:
-    static void Init(PostProcessSettings settings);
+    static void Init(PostProcessSettings settings, ShaderCache &shaders);
 
     static void SetRenderSize(int32_t width, int32_t height);
 

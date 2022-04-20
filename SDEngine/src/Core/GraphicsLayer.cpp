@@ -5,15 +5,17 @@
 #include "Renderer/Renderer3D.hpp"
 #include "ECS/Component.hpp"
 #include "Resource/Resource.hpp"
-#include "Locator/Locator.hpp"
 
 namespace SD {
 
 inline const Vector2f icon_size(5.f);
 
-GraphicsLayer::GraphicsLayer(Device *device, int32_t width, int32_t height,
+GraphicsLayer::GraphicsLayer(ResourceManager *resources, SceneManager *scenes,
+                             Device *device, int32_t width, int32_t height,
                              MultiSampleLevel msaa)
     : Layer("GraphicsLayer"),
+      m_resources(resources),
+      m_scenes(scenes),
       m_device(device),
       m_width(width),
       m_height(height),
@@ -44,13 +46,16 @@ void GraphicsLayer::InitBuffers()
 void GraphicsLayer::OnInit()
 {
     Renderer::Init(m_device);
-    Renderer2D::Init();
+    Renderer2D::Init(m_resources->shaders);
     Renderer3D::Init();
-    SkyboxRenderer::Init();
-    PostProcessRenderer::Init(PostProcessSettings{m_width, m_height});
-    DeferredRenderer::Init(DeferredRenderSettings{m_width, m_height, m_msaa});
-    auto &cache = Locator<TextureCache>::Value();
-    m_light_icon = cache.Get("icon/light");
+    SkyboxRenderer::Init(m_resources->shaders,
+                         m_resources->textures.Get("skybox/default").Get());
+    PostProcessRenderer::Init(PostProcessSettings{m_width, m_height},
+                              m_resources->shaders);
+    DeferredRenderer::Init(DeferredRenderSettings{m_width, m_height, m_msaa},
+                           m_resources->shaders, m_resources->models);
+    SpriteRenderer::Init(m_resources->textures);
+    m_light_icon = m_resources->textures.Get("icon/light");
 }
 
 void GraphicsLayer::OnDestroy() {}
@@ -67,10 +72,12 @@ void GraphicsLayer::OutputEntityBuffer(Framebuffer *framebuffer, int attachment)
     m_entity_output_attachment = attachment;
 }
 
-void GraphicsLayer::OnTick(Scene *scene, float dt)
+void GraphicsLayer::OnTick(float dt)
 {
     // sprite animation
-    auto anim_view = scene->view<SpriteAnimationComponent>();
+
+    auto anim_view =
+        m_scenes->GetCurrentScene()->view<SpriteAnimationComponent>();
     anim_view.each([&](SpriteAnimationComponent &anim_comp) {
         if (!anim_comp.animations.empty()) {
             anim_comp.animator.Tick(dt);
@@ -90,8 +97,9 @@ void GraphicsLayer::SetRenderSize(int32_t width, int32_t height)
 
 void GraphicsLayer::SetCamera(Camera *camera) { m_camera = camera; }
 
-void GraphicsLayer::OnRender(Scene *scene)
+void GraphicsLayer::OnRender()
 {
+    Scene *scene = m_scenes->GetCurrentScene();
     // update camera transform
     auto view = scene->view<CameraComponent, TransformComponent>();
     view.each([](CameraComponent &camComp, TransformComponent &trans) {
@@ -108,10 +116,10 @@ void GraphicsLayer::OnRender(Scene *scene)
     m_post_rendering_time = 0;
     Clock clock;
 
-    SkyboxRenderer::Render(*m_camera);
+    SkyboxRenderer::Render();
     clock.Restart();
 
-    DeferredRenderer::Render(*scene, *m_camera);
+    DeferredRenderer::Render(*scene);
     m_deferred_time += clock.Restart();
 
     SpriteRenderer::Render(*scene);
@@ -166,7 +174,7 @@ void GraphicsLayer::OnRender(Scene *scene)
     }
 }
 
-void GraphicsLayer::OnImGui(Scene *)
+void GraphicsLayer::OnImGui()
 {
     if (m_debug) {
         const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed |

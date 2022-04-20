@@ -3,8 +3,6 @@
 #include "Core/ScriptLayer.hpp"
 #include "Utility/Timing.hpp"
 #include "Utility/Random.hpp"
-#include "Resource/Resource.hpp"
-#include "Locator/Locator.hpp"
 
 #if defined(SD_PLATFORM_LINUX)
 #include <unistd.h>
@@ -38,24 +36,6 @@ const std::string debug_filename = "Debug.txt";
 
 Application *Application::s_instance;
 
-static void InitializeService()
-{
-    Locator<ImageCache>::Emplace();
-    Locator<TextureCache>::Emplace();
-    Locator<ModelCache>::Emplace();
-    Locator<ShaderCache>::Emplace();
-    Locator<SceneManager>::Emplace();
-}
-
-static void ReleaseService()
-{
-    Locator<ImageCache>::Reset();
-    Locator<TextureCache>::Reset();
-    Locator<ModelCache>::Reset();
-    Locator<ShaderCache>::Reset();
-    Locator<SceneManager>::Reset();
-}
-
 Application::Application(const std::string &title, Device::API api)
     : m_imgui_layer(nullptr)
 {
@@ -78,37 +58,39 @@ Application::Application(const std::string &title, Device::API api)
     m_window = Window::Create(property);
     m_device = Device::Create();
 
-    InitializeService();
+    // InitializeService();
 
     // TODO: Loading default assets.
     // Should move this to a asset table file, so we can load asset dynamically
     {
-        auto &cache = Locator<TextureCache>::Value();
         TextureParameter icon_params{
             TextureWrap::Repeat, TextureMinFilter::Linear,
             TextureMagFilter::Linear, MipmapMode::Linear};
-        cache.Load("icon/light", "assets/icons/light.png", icon_params);
-        cache.Load("icon/file", "assets/icons/FileIcon.png", icon_params);
-        cache.Load("icon/directory", "assets/icons/DirectoryIcon.png",
-                   icon_params);
-        cache.Load("skybox/default", std::array<std::string_view, 6>{
-                                         "assets/skybox/right.jpg",
-                                         "assets/skybox/left.jpg",
-                                         "assets/skybox/top.jpg",
-                                         "assets/skybox/bottom.jpg",
-                                         "assets/skybox/front.jpg",
-                                         "assets/skybox/back.jpg",
-                                     });
+        m_resources.textures.Load("icon/light", "assets/icons/light.png",
+                                  icon_params);
+        m_resources.textures.Load("icon/file", "assets/icons/FileIcon.png",
+                                  icon_params);
+        m_resources.textures.Load(
+            "icon/directory", "assets/icons/DirectoryIcon.png", icon_params);
+        m_resources.textures.Load("skybox/default",
+                                  std::array<std::string_view, 6>{
+                                      "assets/skybox/right.jpg",
+                                      "assets/skybox/left.jpg",
+                                      "assets/skybox/top.jpg",
+                                      "assets/skybox/bottom.jpg",
+                                      "assets/skybox/front.jpg",
+                                      "assets/skybox/back.jpg",
+                                  });
     }
 }
 
-Application::~Application() { ReleaseService(); }
+Application::~Application() {}
 
 void Application::OnInit()
 {
-    m_graphics_layer =
-        CreateLayer<GraphicsLayer>(m_device.get(), m_window->GetWidth(),
-                                   m_window->GetHeight(), m_window->GetMSAA());
+    m_graphics_layer = CreateLayer<GraphicsLayer>(
+        &m_resources, &m_scenes, m_device.get(), m_window->GetWidth(),
+        m_window->GetHeight(), m_window->GetMSAA());
     PushLayer(m_graphics_layer);
     PushLayer(CreateLayer<ScriptLayer>());
     PushLayer(CreateLayer<InputLayer>());
@@ -192,41 +174,39 @@ void Application::Run()
     const float min_fps = 30;
     const float ms_per_frame = 1000.f / min_fps;
     uint32_t ms_elapsed = 0;
-    auto &scene_manager = Locator<SceneManager>::Value();
     while (!m_window->ShouldClose()) {
         m_window->PollEvents(m_layers);
 
         ms_elapsed = clock.Restart();
-        Scene *scene = scene_manager.GetCurrentScene();
         while (ms_elapsed > ms_per_frame) {
             ms_elapsed -= ms_per_frame;
-            Tick(scene, ms_per_frame * 1e-3);
+            Tick(ms_per_frame * 1e-3);
         }
-        Tick(scene, ms_elapsed * 1e-3);
+        Tick(ms_elapsed * 1e-3);
 
-        Render(scene);
+        Render();
     }
 }
 
 void Application::Shutdown() { m_window->SetShouldClose(true); }
 
-void Application::Tick(Scene *scene, float dt)
+void Application::Tick(float dt)
 {
     for (auto iter = m_layers.rbegin(); iter != m_layers.rend(); ++iter) {
-        (*iter)->OnTick(scene, dt);
+        (*iter)->OnTick(dt);
     }
 }
 
-void Application::Render(Scene *scene)
+void Application::Render()
 {
     for (auto &layer : m_layers) {
-        layer->OnRender(scene);
+        layer->OnRender();
     }
 
     if (m_imgui_layer) {
         m_imgui_layer->Begin();
         for (auto &layer : m_layers) {
-            layer->OnImGui(scene);
+            layer->OnImGui();
         }
         m_imgui_layer->End();
     }

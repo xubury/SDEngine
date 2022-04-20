@@ -8,6 +8,7 @@
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/CascadeShadow.hpp"
 #include "Graphics/PointShadow.hpp"
+#include "Resource/Resource.hpp"
 
 namespace SD {
 
@@ -35,16 +36,17 @@ DataFormat SD_RENDERER_API GetTextureFormat(GeometryBufferType type);
 
 class SD_RENDERER_API DeferredRenderer {
    public:
-    static void Init(DeferredRenderSettings settings);
+    static void Init(DeferredRenderSettings settings, ShaderCache &shaders,
+                     ModelCache &models);
 
-    static void Render(Scene &scene, const Camera &camera);
+    static void Render(Scene &scene);
 
     static void ImGui();
 
     static void SetRenderSize(int32_t width, int32_t height);
 
    private:
-    static void InitShaders();
+    static void InitShaders(ShaderCache &cache);
     static void InitSSAOBuffers();
     static void InitSSAOKernel();
     static void InitLightingBuffers();
@@ -59,7 +61,7 @@ class SD_RENDERER_API DeferredRenderer {
                                 const Transform &transform);
     static void RenderPointShadowMap(const Scene &scene, PointShadow &shadow,
                                      const Transform &transform);
-    static void RenderDeferred(Scene &scene, const Camera &camera);
+    static void RenderDeferred(Scene &scene);
     static void RenderEmissive();
 };
 

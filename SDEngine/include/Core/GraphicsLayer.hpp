@@ -7,25 +7,26 @@
 #include "Renderer/SkyboxRenderer.hpp"
 #include "Renderer/PostProcessRenderer.hpp"
 #include "Renderer/SpriteRenderer.hpp"
-#include "Resource/Resource.hpp"
+#include "Resource/ResourceManager.hpp"
+#include "ECS/SceneManager.hpp"
 #include "Utility/Timing.hpp"
 
 namespace SD {
 
 class SD_CORE_API GraphicsLayer : public Layer {
    public:
-    GraphicsLayer(Device* device, int32_t width, int32_t height,
+    GraphicsLayer(ResourceManager* resources, SceneManager* scenes,
+                  Device* device, int32_t width, int32_t height,
                   MultiSampleLevel msaa);
     void OnInit() override;
     void OnDestroy() override;
 
-    void OnImGui(Scene* scene) override;
-    void OnRender(Scene* scene) override;
-    void OnTick(Scene* scene, float dt) override;
+    void OnImGui() override;
+    void OnRender() override;
+    void OnTick(float dt) override;
 
     void SetRenderSize(int32_t width, int32_t height);
     void SetCamera(Camera* camera);
-    void SetRenderScene(Scene* scene);
     void SetDebug(bool debug) { m_debug = debug; }
 
     Framebuffer* GetFramebuffer() { return m_main_target.get(); }
@@ -36,6 +37,8 @@ class SD_CORE_API GraphicsLayer : public Layer {
    private:
     void InitBuffers();
 
+    ResourceManager* m_resources;
+    SceneManager* m_scenes;
     Device* m_device;
     int32_t m_width;
     int32_t m_height;

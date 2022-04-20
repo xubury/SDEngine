@@ -3,8 +3,6 @@
 #include "ECS/Component.hpp"
 #include "Utility/Random.hpp"
 #include "ImGui/ImGuiWidget.hpp"
-#include "Resource/Resource.hpp"
-#include "Locator/Locator.hpp"
 
 namespace SD {
 
@@ -46,6 +44,8 @@ struct DeferredRenderData {
 static DeferredRenderData s_data;
 static DeferredRenderSettings s_settings;
 
+static ModelCache *s_models;
+
 DataFormat GetTextureFormat(GeometryBufferType type)
 {
     switch (type) {
@@ -65,24 +65,26 @@ DataFormat GetTextureFormat(GeometryBufferType type)
     }
 }
 
-void DeferredRenderer::Init(DeferredRenderSettings settings)
+void DeferredRenderer::Init(DeferredRenderSettings settings,
+                            ShaderCache &shaders, ModelCache &models)
 {
     s_settings = std::move(settings);
+    s_models = &models;
+
     for (int i = 0; i < 2; ++i) {
         s_data.lighting_target[i] = Framebuffer::Create();
     }
     s_data.geometry_target_msaa = Framebuffer::Create();
     s_data.geometry_target = Framebuffer::Create();
     s_data.cascade_debug_target = Framebuffer::Create();
-    InitShaders();
+    InitShaders(shaders);
     InitSSAOKernel();
     InitSSAOBuffers();
     InitLightingBuffers();
 }
 
-void DeferredRenderer::InitShaders()
+void DeferredRenderer::InitShaders(ShaderCache &shaders)
 {
-    auto &shaders = Locator<ShaderCache>::Value();
     s_data.emssive_shader =
         shaders.Load("shader/emissive", "assets/shaders/quad.vert.glsl",
                      "assets/shaders/emissive.frag.glsl");
@@ -233,7 +235,7 @@ void DeferredRenderer::ImGui()
     }
 }
 
-void DeferredRenderer::Render(Scene &scene, const Camera &camera)
+void DeferredRenderer::Render(Scene &scene)
 {
     RenderGBuffer(scene);
     BlitGeometryBuffers();
@@ -242,7 +244,7 @@ void DeferredRenderer::Render(Scene &scene, const Camera &camera)
         RenderSSAO();
     }
 
-    RenderDeferred(scene, camera);
+    RenderDeferred(scene);
     auto dir_lights =
         scene.view<TransformComponent, DirectionalLightComponent>();
     auto point_lights = scene.view<TransformComponent, PointLightComponent>();
@@ -276,8 +278,10 @@ void DeferredRenderer::RenderShadowMap(const Scene &scene,
     modelView.each([&](const TransformComponent &tc, const MeshComponent &mc) {
         Matrix4f mat = tc.GetWorldTransform().GetMatrix();
         model_param->SetAsMat4(&mat[0][0]);
-        auto &mesh = mc.model->GetMesh(mc.mesh_index);
-        Renderer3D::DrawMesh(*s_data.cascade_shader, mesh);
+        if (s_models->Contains(mc.model_id)) {
+            auto &mesh = s_models->Get(mc.model_id)->GetMesh(mc.mesh_index);
+            Renderer3D::DrawMesh(*s_data.cascade_shader, mesh);
+        }
     });
     Renderer::EndRenderPass();
 
@@ -328,8 +332,10 @@ void DeferredRenderer::RenderPointShadowMap(const Scene &scene,
     modelView.each([&](const TransformComponent &tc, const MeshComponent &mc) {
         Matrix4f mat = tc.GetWorldTransform().GetMatrix();
         model_param->SetAsMat4(&mat[0][0]);
-        auto &mesh = mc.model->GetMesh(mc.mesh_index);
-        Renderer3D::DrawMesh(*s_data.point_shadow_shader, mesh);
+        if (s_models->Contains(mc.model_id)) {
+            auto &mesh = s_models->Get(mc.model_id)->GetMesh(mc.mesh_index);
+            Renderer3D::DrawMesh(*s_data.point_shadow_shader, mesh);
+        }
     });
     Renderer::EndRenderPass();
 }
@@ -380,7 +386,7 @@ void DeferredRenderer::RenderEmissive()
     Renderer::EndRenderSubpass();
 }
 
-void DeferredRenderer::RenderDeferred(Scene &scene, const Camera &camera)
+void DeferredRenderer::RenderDeferred(Scene &scene)
 {
     s_data.deferred_shader->GetParam("u_position")
         ->SetAsTexture(
@@ -427,6 +433,7 @@ void DeferredRenderer::RenderDeferred(Scene &scene, const Camera &camera)
     ShaderParam *cascade_planes =
         s_data.deferred_shader->GetParam("u_cascade_planes[0]");
 
+    Camera *camera = Renderer::GetCamera();
     Renderer::BindCamera(*s_data.deferred_shader);
     Renderer3D::BindCascadeShadow(*s_data.deferred_shader);
 
@@ -464,7 +471,7 @@ void DeferredRenderer::RenderDeferred(Scene &scene, const Camera &camera)
         is_directional->SetAsBool(true);
         is_cast_shadow->SetAsBool(lightComp.is_cast_shadow);
         if (lightComp.is_cast_shadow) {
-            RenderShadowMap(scene, lightComp.shadow, camera, transform);
+            RenderShadowMap(scene, lightComp.shadow, *camera, transform);
 
             cascade_map->SetAsTexture(lightComp.shadow.GetShadowMap());
             auto &planes = lightComp.shadow.GetCascadePlanes();
@@ -557,9 +564,11 @@ void DeferredRenderer::RenderGBuffer(const Scene &scene)
         Matrix4f mat = transform.GetWorldTransform().GetMatrix();
         model_param->SetAsMat4(&mat[0][0]);
 
-        auto &mesh = mc.model->GetMesh(mc.mesh_index);
-        Renderer3D::SetMaterial(*s_data.gbuffer_shader, mc.material);
-        Renderer3D::DrawMesh(*s_data.gbuffer_shader, mesh);
+        if (s_models->Contains(mc.model_id)) {
+            auto &mesh = s_models->Get(mc.model_id)->GetMesh(mc.mesh_index);
+            Renderer3D::SetMaterial(*s_data.gbuffer_shader, mc.material);
+            Renderer3D::DrawMesh(*s_data.gbuffer_shader, mesh);
+        }
     });
     Renderer::EndRenderPass();
 }

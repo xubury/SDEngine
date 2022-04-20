@@ -2,7 +2,7 @@
 #define SD_RESOURCE_HANDLE_HPP
 
 #include "Utility/Base.hpp"
-#include "Resource/ResourceId.hpp"
+#include "Utility/ResourceId.hpp"
 
 namespace SD {
 

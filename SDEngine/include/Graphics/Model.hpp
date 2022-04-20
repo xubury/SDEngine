@@ -9,6 +9,7 @@ namespace SD {
 
 class SD_GRAPHICS_API Model {
    public:
+    using ImportedTexture = std::unordered_map<std::string, Ref<Texture>>;
     Model() = default;
     virtual ~Model() { delete m_root_node; };
 
@@ -24,10 +25,14 @@ class SD_GRAPHICS_API Model {
     void AddMesh(Mesh &&mesh) { m_meshes.push_back(std::move(mesh)); }
     const Mesh &GetMesh(int32_t id) const { return m_meshes.at(id); }
 
+    ImportedTexture &GetImportedTextures() {
+        return m_textures;
+    }
    private:
     ModelNode *m_root_node;
     std::vector<Mesh> m_meshes;
     std::vector<Material> m_materials;
+    ImportedTexture m_textures;
 };
 
 }  // namespace SD

@@ -1,7 +1,6 @@
-#ifndef SD_RESOURCE_MANAGER_HPP
-#define SD_RESOURCE_MANAGER_HPP
+#ifndef SD_RESOURCE_HPP
+#define SD_RESOURCE_HPP
 
-#include <filesystem>
 #include "Resource/Export.hpp"
 #include "Resource/TextureLoader.hpp"
 #include "Resource/ModelLoader.hpp"

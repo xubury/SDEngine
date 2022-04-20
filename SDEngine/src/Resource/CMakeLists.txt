@@ -7,7 +7,6 @@ set(Src_Root ${SD_ENGINE_SOURCE_DIR}/src/Resource)
 set(Resource_Include
     ${Include_Root}/Export.hpp
     ${Include_Root}/Resource.hpp
-    ${Include_Root}/ResourceId.hpp
     ${Include_Root}/TextureLoader.hpp
     ${Include_Root}/FontLoader.hpp
     ${Include_Root}/ModelLoader.hpp
@@ -16,7 +15,6 @@ set(Resource_Include
     ${Include_Root}/ImageLoader.hpp)
 
 set(Resource_Src
-    ${Src_Root}/ResourceId.cpp
     ${Src_Root}/TextureLoader.cpp
     ${Src_Root}/FontLoader.cpp
     ${Src_Root}/ModelLoader.cpp

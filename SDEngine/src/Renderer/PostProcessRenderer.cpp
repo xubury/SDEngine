@@ -1,7 +1,5 @@
 #include "Renderer/PostProcessRenderer.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Resource/Resource.hpp"
-#include "Locator/Locator.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 
 namespace SD {
@@ -20,11 +18,11 @@ struct PostProcessData {
 static PostProcessData s_data;
 static PostProcessSettings s_settings;
 
-void PostProcessRenderer::Init(PostProcessSettings settings)
+void PostProcessRenderer::Init(PostProcessSettings settings,
+                               ShaderCache &shaders)
 {
     s_settings = std::move(settings);
 
-    auto &shaders = Locator<ShaderCache>::Value();
     s_data.hdr_shader =
         shaders.Load("shader/hdr", "assets/shaders/quad.vert.glsl",
                      "assets/shaders/hdr.frag.glsl");

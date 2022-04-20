@@ -3,9 +3,10 @@
 
 #include "ImGui/FileDialog.hpp"
 #include "ImGui/ImGuiWidget.hpp"
+#include "Resource/Resource.hpp"
 
 #include "ECS/Entity.hpp"
-#include "Resource/ResourceId.hpp"
+#include "Utility/ResourceId.hpp"
 #include "Utility/EventDispatcher.hpp"
 
 namespace SD {
@@ -13,7 +14,7 @@ namespace SD {
 class AnimationEditor {
    public:
     AnimationEditor(EventDispatcher *disaptcher);
-    void ImGui();
+    void ImGui(TextureCache &cache);
 
    private:
     EventDispatcher *m_dispatcher;

@@ -3,10 +3,7 @@
 
 namespace SD {
 
-SceneManager::SceneManager() : m_current_index(0)
-{
-    SD_CORE_TRACE("scene manager:{}", m_current_index);
-}
+SceneManager::SceneManager() : m_current_index(0) {}
 
 SceneManager::~SceneManager()
 {

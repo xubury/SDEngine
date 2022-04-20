@@ -1,7 +1,7 @@
 #ifndef SD_RESOURCE_ID_HPP
 #define SD_RESOURCE_ID_HPP
 
-#include "Resource/Export.hpp"
+#include "Utility/Export.hpp"
 #include "Utility/Serialize.hpp"
 
 #include <cstdint>
@@ -9,7 +9,7 @@
 
 namespace SD {
 
-class SD_RESOURCE_API ResourceId {
+class SD_UTILITY_API ResourceId {
    public:
     ResourceId();
     ResourceId(uint64_t resource_id);

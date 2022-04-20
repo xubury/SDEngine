@@ -10,7 +10,7 @@ constexpr const char* DROP_ASSET_ITEM = "DROP_ASSET_ITEM";
 
 class ContentBrowser {
    public:
-    ContentBrowser();
+    ContentBrowser(TextureCache& textures);
 
     void ImGui();
 

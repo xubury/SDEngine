@@ -165,10 +165,13 @@ void Renderer::Submit(const Shader& shader, const VertexArray& vao,
 
 void Renderer::SetCamera(Camera& camera)
 {
+    s_data.camera = &camera;
     s_data.camera_data.view = camera.GetView();
     s_data.camera_data.projection = camera.GetProjection();
     s_data.camera_ubo->UpdateData(&s_data.camera_data, sizeof(CameraData));
 }
+
+Camera* Renderer::GetCamera() { return s_data.camera; }
 
 void Renderer::BindCamera(Shader& shader)
 {

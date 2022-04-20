@@ -2,12 +2,13 @@
 #define SD_RENDERER_2D_HPP
 
 #include "Renderer/Renderer.hpp"
+#include "Resource/Resource.hpp"
 
 namespace SD {
 
 class SD_RENDERER_API Renderer2D : protected Renderer {
    public:
-    static void Init();
+    static void Init(ShaderCache &shaders);
     static void Begin();
     static void End();
 

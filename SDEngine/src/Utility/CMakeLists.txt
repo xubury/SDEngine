@@ -14,7 +14,7 @@ set(Utility_Include
     ${Include_Root}/Export.hpp
     ${Include_Root}/Exception.hpp
     ${Include_Root}/EventDispatcher.hpp
-    ${Include_Root}/EventStack.hpp
+    ${Include_Root}/ResourceId.hpp
     ${Include_Root}/File.hpp
     ${Include_Root}/Ini.hpp
     ${Include_Root}/Log.hpp
@@ -33,6 +33,7 @@ set(Utility_Src
     ${Src_Root}/File.cpp
     ${Src_Root}/Ini.cpp
     ${Src_Root}/Log.cpp
+    ${Src_Root}/ResourceId.cpp
     ${Src_Root}/Math.cpp
     ${Src_Root}/QuadTree.cpp
     ${Src_Root}/Random.cpp

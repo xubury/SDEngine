@@ -2,7 +2,6 @@
 #include "EditorEvent.hpp"
 #include "ECS/Component.hpp"
 #include "Resource/Resource.hpp"
-#include "Locator/Locator.hpp"
 
 namespace SD {
 
@@ -15,11 +14,10 @@ AnimationEditor::AnimationEditor(EventDispatcher *dispatcher)
         });
 }
 
-void AnimationEditor::ImGui()
+void AnimationEditor::ImGui(TextureCache &cache)
 {
     ImGui::Begin("Anmiation Editor");
     {
-        auto &cache = Locator<TextureCache>::Value();
         // ImGui::DrawTextureAssetSelection(cache, &m_texture_id);
         if (cache.Contains(m_texture_id)) {
             auto texture = cache.Get(m_texture_id);
@@ -52,7 +50,7 @@ void AnimationEditor::ImGui()
                 }
                 if (ImGui::Button("Add Frame")) {
                     anim_comp.animations[m_anim_index].PushBack(SpriteFrame{
-                        texture.Get(), m_uvs, m_count * m_tile_size, 0});
+                        m_texture_id, m_uvs, m_count * m_tile_size, 0});
                 }
             }
         }

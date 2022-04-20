@@ -1,7 +1,7 @@
 #ifndef SD_RESOURCE_CACHE_HPP
 #define SD_RESOURCE_CACHE_HPP
 
-#include "Resource/ResourceId.hpp"
+#include "Utility/ResourceId.hpp"
 #include "Resource/ResourceHandle.hpp"
 #include <unordered_map>
 #include <cstdint>

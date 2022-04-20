@@ -1,6 +1,5 @@
 #include "Renderer/Renderer2D.hpp"
 #include "Resource/Resource.hpp"
-#include "Locator/Locator.hpp"
 #include "Utility/String.hpp"
 
 namespace SD {
@@ -101,7 +100,7 @@ static ShaderHandle s_line_shader;
 static ShaderHandle s_cirlce_shader;
 static ShaderHandle s_texture_shader;
 
-void Renderer2D::Init()
+void Renderer2D::Init(ShaderCache &shaders)
 {
     // Initializing line vbo
     s_2d_data.line_vbo = VertexBuffer::Create(
@@ -179,7 +178,6 @@ void Renderer2D::Init()
 
     s_2d_data.texture_slots[0] = s_2d_data.default_texture.get();
 
-    auto& shaders = Locator<ShaderCache>::Value();
     s_line_shader = shaders.Load("shader/line", "assets/shaders/line.vert.glsl",
                                  "assets/shaders/line.frag.glsl");
     s_texture_shader =

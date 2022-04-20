@@ -1,7 +1,6 @@
 #include "Resource/TextureLoader.hpp"
-#include "Resource/Resource.hpp"
 #include "Graphics/Texture.hpp"
-#include "Locator/Locator.hpp"
+#include "Resource/ImageLoader.hpp"
 
 #include <fstream>
 
@@ -10,8 +9,8 @@ namespace SD {
 Ref<Texture> TextureLoader::Load(const std::string &path,
                                  const TextureParameter &param)
 {
-    auto &image_cache = Locator<ImageCache>::Value();
-    auto img = image_cache.Load(path, path);
+    ImageLoader loader;
+    auto img = loader.Load(path);
     Ref<Texture> texture =
         Texture::Create(img->Width(), img->Height(), 1, MultiSampleLevel::None,
                         TextureType::Normal2D, img->GetDataFormat(), param);
@@ -22,11 +21,11 @@ Ref<Texture> TextureLoader::Load(const std::string &path,
 Ref<Texture> TextureLoader::Load(const std::array<std::string_view, 6> &pathes)
 {
     Ref<Texture> texture;
-    auto &image_cache = Locator<ImageCache>::Value();
     TextureParameter param{TextureWrap::Edge, TextureMinFilter::Linear,
                            TextureMagFilter::Linear, MipmapMode::None};
+    ImageLoader loader;
     for (int face = 0; face < 6; ++face) {
-        auto image = image_cache.Temp(pathes[face]);
+        auto image = loader.Load(pathes[face]);
         int32_t width = image->Width();
         int32_t height = image->Height();
         if (face == 0) {

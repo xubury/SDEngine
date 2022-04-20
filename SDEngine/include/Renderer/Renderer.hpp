@@ -12,8 +12,6 @@
 
 namespace SD {
 
-class Scene;
-
 struct SD_RENDERER_API CameraData {
     Matrix4f projection;
     Matrix4f view;
@@ -34,8 +32,7 @@ struct RenderOperation {
 struct RendererData {
     Ref<UniformBuffer> camera_ubo;
     CameraData camera_data;
-
-    Scene *scene;
+    Camera *camera;
 
     Ref<VertexArray> quad_vao;
     Ref<VertexBuffer> quad_vbo;
@@ -79,12 +76,12 @@ class SD_RENDERER_API Renderer {
 
     static void Init(Device *device);
 
-    static Framebuffer *GetBufferStackTop();
     static const RenderPassInfo &GetCurrentRenderPass();
 
     static bool IsEmptyStack();
 
     static void SetCamera(Camera &camera);
+    static Camera *GetCamera();
 
     static void BindCamera(Shader &shader);
 

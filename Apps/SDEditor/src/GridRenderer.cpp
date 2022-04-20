@@ -4,7 +4,6 @@
 #include "Renderer/Renderer2D.hpp"
 #include "TileBrush.hpp"
 #include "Resource/Resource.hpp"
-#include "Locator/Locator.hpp"
 
 namespace SD {
 
@@ -36,8 +35,8 @@ void GridRenderer::Init()
     free(data);
 }
 
-void GridRenderer::Render(const Camera &camera, const SpriteFrame &frame,
-                          const TileBrush &brush)
+void GridRenderer::Render(const Camera &camera, const TextureCache &textures,
+                          const SpriteFrame &frame, const TileBrush &brush)
 {
     const int index = 0;
     RenderOperation op;
@@ -47,8 +46,10 @@ void GridRenderer::Render(const Camera &camera, const SpriteFrame &frame,
 
     if (brush.is_painting) {
         Vector3f world = brush.GetSelectdPos();
-        Renderer2D::DrawTexture(*frame.texture, frame.uvs, world, Quaternion(),
-                                frame.size);
+        if (textures.Contains(frame.texture_id)) {
+            Renderer2D::DrawTexture(*textures.Get(frame.texture_id), frame.uvs,
+                                    world, Quaternion(), frame.size);
+        }
         // draw overlay
         Renderer2D::DrawQuad(world, Quaternion(), frame.size, brush.color);
     }
@@ -77,4 +78,5 @@ void GridRenderer::Render(const Camera &camera, const SpriteFrame &frame,
     Renderer2D::End();
     Renderer::EndRenderSubpass();
 }
+
 }  // namespace SD

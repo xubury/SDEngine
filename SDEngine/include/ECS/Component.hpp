@@ -2,7 +2,7 @@
 #define SD_COMPONENT_HPP
 
 #include "Graphics/PointShadow.hpp"
-#include "Resource/ResourceId.hpp"
+#include "Utility/ResourceId.hpp"
 #include "Utility/Base.hpp"
 #include "ECS/Export.hpp"
 #include "Utility/Serialize.hpp"
@@ -81,11 +81,11 @@ struct SD_ECS_API TransformComponent {
 };
 
 struct SD_ECS_API MeshComponent {
-    Model* model;
+    ResourceId model_id;
     uint32_t mesh_index;
     Material material;
 
-    SERIALIZE(mesh_index, material)
+    SERIALIZE(model_id, mesh_index, material)
 };
 
 struct SD_ECS_API DirectionalLightComponent {
@@ -126,12 +126,12 @@ struct SD_ECS_API CameraComponent {
 };
 
 struct SD_ECS_API SpriteFrame {
-    Texture* texture;
+    ResourceId texture_id;
     std::array<Vector2f, 2> uvs{Vector2f(0), Vector2f(1)};
     Vector2f size{10.0f};
     int priority{0};
 
-    SERIALIZE(uvs, size, priority)
+    SERIALIZE(texture_id, uvs, size, priority)
 };
 
 struct SD_ECS_API SpriteComponent {

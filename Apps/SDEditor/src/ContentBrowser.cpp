@@ -1,6 +1,5 @@
 #include "ContentBrowser.hpp"
 #include "Resource/Resource.hpp"
-#include "Locator/Locator.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGui/FileDialog.hpp"
 #include "Utility/String.hpp"
@@ -14,11 +13,10 @@ namespace SD {
 
 const std::filesystem::path root_path = "assets";
 
-ContentBrowser::ContentBrowser()
+ContentBrowser::ContentBrowser(TextureCache& textures)
 {
-    auto& cache = Locator<TextureCache>::Value();
-    m_file_icon = cache.Get("icon/file");
-    m_directory_icon = cache.Get("icon/directory");
+    m_file_icon = textures.Get("icon/file");
+    m_directory_icon = textures.Get("icon/directory");
     m_current_directory = root_path;
 }
 

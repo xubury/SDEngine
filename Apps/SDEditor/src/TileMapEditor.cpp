@@ -3,7 +3,6 @@
 #include "Renderer/Renderer2D.hpp"
 #include "ECS/Component.hpp"
 #include "Resource/Resource.hpp"
-#include "Locator/Locator.hpp"
 
 namespace SD {
 
@@ -12,7 +11,8 @@ const Vector4f color_green(0, 1, 0, 0.5);
 
 TileMapEditor::TileMapEditor() : m_operation(Operation::None) {}
 
-bool TileMapEditor::ManipulateScene(const Camera &camera)
+bool TileMapEditor::ManipulateScene(const TextureCache &textures,
+                                    const Camera &camera)
 {
     if (!ImGui::IsWindowHovered()) {
         return false;
@@ -32,7 +32,7 @@ bool TileMapEditor::ManipulateScene(const Camera &camera)
     m_brush.SetRay(camera.ComputeCameraRay(clip));
     m_frame.size = m_brush.GetTileSize();
     if (m_brush.CastRay()) {
-        if (ImGui::IsMouseClicked(0) && m_frame.texture) {
+        if (ImGui::IsMouseClicked(0) && textures.Contains(m_frame.texture_id)) {
             return m_operation == Operation::AddEntity;
         }
         else if (ImGui::IsMouseClicked(1)) {
@@ -42,7 +42,7 @@ bool TileMapEditor::ManipulateScene(const Camera &camera)
     return false;
 }
 
-void TileMapEditor::ImGui()
+void TileMapEditor::ImGui(const TextureCache &textures)
 {
     ImGui::Begin("TileMap Editor");
     {
@@ -64,9 +64,10 @@ void TileMapEditor::ImGui()
         // ImGui::DrawTextureAssetSelection(*m_cache, &m_frame.texture_id);
         ImGui::InputInt("Priority", &m_frame.priority);
 
-        if (m_frame.texture) {
-            ImGui::DrawTileTexture(*m_frame.texture, m_brush.tile_size,
-                                   m_frame.uvs, &m_brush.count, &m_brush.pivot);
+        if (textures.Contains(m_frame.texture_id)) {
+            ImGui::DrawTileTexture(*textures.Get(m_frame.texture_id),
+                                   m_brush.tile_size, m_frame.uvs,
+                                   &m_brush.count, &m_brush.pivot);
         }
     }
     ImGui::End();

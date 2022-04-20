@@ -6,6 +6,7 @@
 #include "ECS/Scene.hpp"
 #include "ECS/SceneManager.hpp"
 #include "ECS/Entity.hpp"
+#include "Resource/Resource.hpp"
 #include "ImGui/FileDialog.hpp"
 #include "ECS/Component.hpp"
 #include "ImGuizmo.h"
@@ -16,7 +17,7 @@ class ScenePanel {
    public:
     ScenePanel(EventDispatcher *dispatcher);
 
-    void ImGui(Scene *scene);
+    void ImGui(SceneManager &scenes, const TextureCache &textures);
 
     void SetGizmoMode(ImGuizmo::MODE mode) { m_gizmo_mode = mode; }
     ImGuizmo::MODE GetGizmoMode() const;
@@ -29,7 +30,7 @@ class ScenePanel {
    private:
     void DrawEntityNode(Entity &entity);
 
-    void DrawComponents(Entity &entity);
+    void DrawComponents(Entity &entity, const TextureCache &textures);
 
     void DrawMaterial(Material &material);
     void DrawAnimList(const std::vector<FrameAnimation<SpriteFrame>> &anims,

@@ -1,7 +1,6 @@
 #include "Renderer/SpriteRenderer.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "ECS/Component.hpp"
-#include "Locator/Locator.hpp"
 
 namespace SD {
 
@@ -14,6 +13,10 @@ struct SpriteDrawData {
     uint32_t entity_id;
     int priority;
 };
+
+static TextureCache *s_textures;
+
+void SpriteRenderer::Init(TextureCache &textures) { s_textures = &textures; }
 
 void SpriteRenderer::Render(const Scene &scene)
 {
@@ -30,10 +33,12 @@ void SpriteRenderer::Render(const Scene &scene)
                          const TransformComponent &transform_comp) {
         uint32_t id = static_cast<uint32_t>(entity_id);
         auto &frame = sprite_comp.frame;
-        datas.push_back({frame.texture, frame.uvs,
-                         transform_comp.GetWorldPosition(),
-                         transform_comp.GetWorldRotation(), frame.size, id,
-                         frame.priority});
+        if (s_textures->Contains(frame.texture_id)) {
+            datas.push_back({s_textures->Get(frame.texture_id).Get(), frame.uvs,
+                             transform_comp.GetWorldPosition(),
+                             transform_comp.GetWorldRotation(), frame.size, id,
+                             frame.priority});
+        }
     });
     auto anim_view = scene.view<SpriteAnimationComponent, TransformComponent>();
     anim_view.each([&](entt::entity entity_id,
@@ -44,10 +49,13 @@ void SpriteRenderer::Render(const Scene &scene)
         if (anim) {
             if (anim->GetFrameSize()) {
                 auto &frame = anim->GetFrame();
-                datas.push_back({frame.texture, frame.uvs,
-                                 transform_comp.GetWorldPosition(),
-                                 transform_comp.GetWorldRotation(), frame.size,
-                                 id, frame.priority});
+                if (s_textures->Contains(frame.texture_id)) {
+                    datas.push_back({s_textures->Get(frame.texture_id).Get(),
+                                     frame.uvs,
+                                     transform_comp.GetWorldPosition(),
+                                     transform_comp.GetWorldRotation(),
+                                     frame.size, id, frame.priority});
+                }
             }
         }
     });

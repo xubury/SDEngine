@@ -7,6 +7,7 @@
 #include "Graphics/Camera.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGui/FileDialog.hpp"
+#include "Resource/Resource.hpp"
 
 #include "TileBrush.hpp"
 
@@ -18,9 +19,9 @@ class TileMapEditor {
 
    public:
     TileMapEditor();
-    void ImGui();
+    void ImGui(const TextureCache &cache);
 
-    bool ManipulateScene(const Camera &camera);
+    bool ManipulateScene(const TextureCache &cache, const Camera &camera);
     const SpriteFrame &GetSpriteFrame() const { return m_frame; }
 
     const TileBrush &GetBrush() const { return m_brush; }

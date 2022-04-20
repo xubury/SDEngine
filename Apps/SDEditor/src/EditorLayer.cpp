@@ -9,17 +9,20 @@
 #include "GridRenderer.hpp"
 #include "Utility/String.hpp"
 #include "Resource/Resource.hpp"
-#include "Locator/Locator.hpp"
 
 namespace SD {
 
-EditorLayer::EditorLayer(GraphicsLayer *graphics_layer, int width, int height)
+EditorLayer::EditorLayer(SceneManager *scenes, ResourceManager *resources,
+                         GraphicsLayer *graphics_layer, int width, int height)
     : Layer("EditorLayer"),
       m_mode(EditorMode::None),
+      m_scenes(scenes),
+      m_resources(resources),
       m_graphics_layer(graphics_layer),
       m_scene_panel(&m_dispatcher),
       m_editor_camera(width, height),
       m_animation_editor(&m_dispatcher),
+      m_content_browser(resources->textures),
       m_viewport_pos(0, 0),
       m_viewport_size(width, height),
       m_is_runtime(false),
@@ -49,7 +52,7 @@ void EditorLayer::OnInit()
     m_graphics_layer->OutputEntityBuffer(m_viewport_target.get(), 1);
 
     InitBuffers();
-    Locator<SceneManager>::Value().EmplaceScene("Empty Scene");
+    m_scenes->EmplaceScene("Empty Scene");
 }
 
 void EditorLayer::InitBuffers()
@@ -64,7 +67,7 @@ void EditorLayer::InitBuffers()
     m_viewport_target->Attach(*m_entity_buffer, 1, 0);
 }
 
-void EditorLayer::OnRender(Scene *)
+void EditorLayer::OnRender()
 {
     RenderPassInfo info;
     info.framebuffer = m_viewport_target.get();
@@ -73,14 +76,14 @@ void EditorLayer::OnRender(Scene *)
     info.clear_mask = BufferBitMask::None;
     Renderer::BeginRenderPass(info);
     if (m_mode == EditorMode::TwoDimensional) {
-        GridRenderer::Render(m_editor_camera,
+        GridRenderer::Render(m_editor_camera, m_resources->textures,
                              m_tile_map_editor.GetSpriteFrame(),
                              m_tile_map_editor.GetBrush());
     }
     Renderer::EndRenderPass();
 }
 
-void EditorLayer::OnTick(Scene *, float dt)
+void EditorLayer::OnTick(float dt)
 {
     // disable key event when pop up window show up (prevent bugs)
     if (ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId |
@@ -90,7 +93,7 @@ void EditorLayer::OnTick(Scene *, float dt)
     m_editor_camera.Tick(dt);
 }
 
-void EditorLayer::OnImGui(Scene *scene)
+void EditorLayer::OnImGui()
 {
     if (m_quitting) {
         ImGui::OpenPopup("Quit?");
@@ -140,14 +143,14 @@ void EditorLayer::OnImGui(Scene *scene)
         ImGui::EndPopup();
     }
     MenuBar();
-    DrawViewport(scene);
+    DrawViewport();
     ProcessDialog();
 
     if (m_mode == EditorMode::TwoDimensional) {
-        m_tile_map_editor.ImGui();
-        m_animation_editor.ImGui();
+        m_tile_map_editor.ImGui(m_resources->textures);
+        m_animation_editor.ImGui(m_resources->textures);
     }
-    m_scene_panel.ImGui(scene);
+    m_scene_panel.ImGui(*m_scenes, m_resources->textures);
     m_editor_camera.ImGui();
     m_content_browser.ImGui();
 }
@@ -278,8 +281,8 @@ void EditorLayer::MenuBar()
     }
 }
 
-static Entity CreateModelEntity(Scene &scene, Model &model,
-                                const ModelNode *node)
+static Entity CreateModelEntity(Scene &scene, const ResourceId rid,
+                                const Model &model, const ModelNode *node)
 {
     std::string name = node->GetName();
     Entity entity = scene.CreateEntity(name);
@@ -289,21 +292,22 @@ static Entity CreateModelEntity(Scene &scene, Model &model,
         Entity child = scene.CreateEntity(name + "_" + std::to_string(i));
         entity.AddChild(child);
         auto &mc = child.AddComponent<MeshComponent>();
-        mc.model = &model;
+        mc.model_id = rid;
         mc.mesh_index = meshes[i];
         mc.material = model.GetMaterial(materials[i]);
         auto &tc = child.GetComponent<TransformComponent>();
         tc.SetLocalTransform(node->GetTransform());
     }
     for (auto &child : node->GetChildren()) {
-        Entity child_entity = CreateModelEntity(scene, model, child);
+        Entity child_entity = CreateModelEntity(scene, rid, model, child);
         entity.AddChild(child_entity);
     }
     return entity;
 }
 
-void EditorLayer::DrawViewport(Scene *scene)
+void EditorLayer::DrawViewport()
 {
+    Scene *scene = m_scenes->GetCurrentScene();
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
     ImGui::Begin("Scene");
     {
@@ -328,7 +332,8 @@ void EditorLayer::DrawViewport(Scene *scene)
         }
 
         if (!m_is_runtime && m_mode == EditorMode::TwoDimensional) {
-            if (m_tile_map_editor.ManipulateScene(m_editor_camera)) {
+            if (m_tile_map_editor.ManipulateScene(m_resources->textures,
+                                                  m_editor_camera)) {
                 Vector3f world = m_tile_map_editor.GetBrush().GetSelectdPos();
                 Entity child = scene->CreateEntity("Tile");
                 auto &comp = child.AddComponent<SpriteComponent>();
@@ -393,9 +398,8 @@ void EditorLayer::DrawViewport(Scene *scene)
                     }
                     else if (ext == ".obj") {
                         ResourceId rid;
-                        auto handle =
-                            Locator<ModelCache>::Value().Load(rid, filename);
-                        CreateModelEntity(*scene, *handle,
+                        auto handle = m_resources->models.Load(rid, filename);
+                        CreateModelEntity(*scene, rid, *handle,
                                           handle->GetRootNode());
                     }
                 }

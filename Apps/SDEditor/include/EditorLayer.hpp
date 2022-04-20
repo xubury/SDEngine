@@ -15,18 +15,20 @@
 namespace SD {
 
 enum class EditorMode { None, TwoDimensional, ThreeDimensional };
+
 class EditorLayer : public Layer {
    public:
-    EditorLayer(GraphicsLayer* graphics_layer, int width, int height);
+    EditorLayer(SceneManager* scenes, ResourceManager* resources,
+                GraphicsLayer* graphics_layer, int width, int height);
     ~EditorLayer();
 
     void OnInit() override;
 
-    void OnTick(Scene* scene, float dt) override;
+    void OnTick(float dt) override;
 
-    void OnRender(Scene* scene) override;
+    void OnRender() override;
 
-    void OnImGui(Scene* scene) override;
+    void OnImGui() override;
 
     void OpenLoadSceneDialog();
     void OpenSaveSceneDialog();
@@ -42,13 +44,16 @@ class EditorLayer : public Layer {
 
     void MenuBar();
 
-    void DrawViewport(Scene* scene);
+    void DrawViewport();
 
     void DrawDebugBuffers();
 
     void Quit();
 
     EditorMode m_mode;
+
+    SceneManager* m_scenes;
+    ResourceManager* m_resources;
 
     GraphicsLayer* m_graphics_layer;
 
