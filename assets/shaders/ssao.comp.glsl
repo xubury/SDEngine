@@ -34,11 +34,11 @@ float ComputeOcclusion(vec3 random_vec, vec2 uv)
     // iterate over the sample kernel and calculate occlusion factor
     float occlusion = 0.0;
     for (int i = 0; i < u_kernel_size; ++i) {
-        if (dot(u_samples[i], normal) < 0.15)  {
-            continue;
-        }
         // get sample position
         vec3 sample_pos = TBN * u_samples[i];  // from tangent to view-space
+        if(dot(sample_pos, normal) < 0.15) {
+            continue;
+        }
         sample_pos = frag_pos + sample_pos * u_radius;
 
         // project sample position (to sample texture)
@@ -46,7 +46,7 @@ float ComputeOcclusion(vec3 random_vec, vec2 uv)
         vec4 offset = vec4(sample_pos, 1.0);
         offset = u_projection * offset;       // from view to clip-space
         offset /= offset.w;                   // perspective divide
-        offset.xyz = offset.xyz * 0.5 + vec3(0.5);  // transform to range 0.0 - 1.0
+        offset.xyz = offset.xyz * 0.5 + 0.5;  // transform to range 0.0 - 1.0
 
         if (offset.x < 0 || offset.y < 0 || offset.x > 1 || offset.y > 1) {
             continue;
@@ -75,7 +75,8 @@ void main()
         return;
     }
     vec2 uv = vec2(pos) / size;
-    vec3 random_vec = normalize(texture(u_noise, uv * vec2(size) / vec2(4.f)).xyz);
+    vec2 random_scale = vec2(size) / 4.f;
+    vec3 random_vec = normalize(texture(u_noise, uv * random_scale).xyz);
     float occlusion = ComputeOcclusion(random_vec, uv);
     imageStore(u_out_image, pos, vec4(pow(occlusion, u_power)));
 }

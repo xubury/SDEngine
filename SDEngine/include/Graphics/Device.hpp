@@ -75,6 +75,9 @@ class SD_GRAPHICS_API Device {
                                  Framebuffer *dst, int dst_x, int dst_y,
                                  int dst_width, int dst_height,
                                  BufferBitMask mask, BlitFilter filter) = 0;
+
+    virtual void ReadPixels(int x, int y, int width, int height,
+                            DataFormat format, void *data) = 0;
 };
 
 }  // namespace SD

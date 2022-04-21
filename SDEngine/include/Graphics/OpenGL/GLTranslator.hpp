@@ -39,6 +39,9 @@ GLenum SD_GRAPHICS_API Translate(Access access);
 
 GLenum SD_GRAPHICS_API Translate(BarrierBit bit);
 
+GLenum SD_GRAPHICS_API GetFormatType(DataFormat format);
+GLenum SD_GRAPHICS_API GetDataType(DataFormat format);
+
 }  // namespace SD
 
 #endif /* SD_GL_TRANSLATOR_HPP */
