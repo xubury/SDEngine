@@ -6,18 +6,18 @@ set(Renderer_Include
     ${Include_Root}/Export.hpp
     ${Include_Root}/Event.hpp
     ${Include_Root}/RenderSystem.hpp
-    ${Include_Root}/DeferredRenderer.hpp
-    ${Include_Root}/PostProcessRenderer.hpp
-    ${Include_Root}/SkyboxRenderer.hpp
-    ${Include_Root}/SpriteRenderer.hpp
+    ${Include_Root}/DeferredRenderPass.hpp
+    ${Include_Root}/PostProcessRenderPass.hpp
+    ${Include_Root}/SkyboxRenderPass.hpp
+    ${Include_Root}/SpriteRenderPass.hpp
     ${Include_Root}/Renderer2D.hpp
     ${Include_Root}/Renderer3D.hpp)
 
 set(Renderer_Src
-    ${Src_Root}/DeferredRenderer.cpp
-    ${Src_Root}/PostProcessRenderer.cpp
-    ${Src_Root}/SkyboxRenderer.cpp
-    ${Src_Root}/SpriteRenderer.cpp
+    ${Src_Root}/DeferredRenderPass.cpp
+    ${Src_Root}/PostProcessRenderPass.cpp
+    ${Src_Root}/SkyboxRenderPass.cpp
+    ${Src_Root}/SpriteRenderPass.cpp
     ${Src_Root}/Renderer.cpp
     ${Src_Root}/Renderer2D.cpp
     ${Src_Root}/Renderer3D.cpp)

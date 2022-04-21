@@ -1,4 +1,4 @@
-#include "Renderer/SkyboxRenderer.hpp"
+#include "Renderer/SkyboxRenderPass.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Resource/Resource.hpp"
 
@@ -7,7 +7,7 @@ namespace SD {
 static ShaderHandle s_skybox_shader;
 static const Texture* s_skybox;
 
-void SkyboxRenderer::Init(ShaderCache& shaders, const Texture* skybox)
+void SkyboxRenderPass::Init(ShaderCache& shaders, const Texture* skybox)
 {
     s_skybox_shader =
         shaders.Load("shader/skybox", "assets/shaders/skybox.vert.glsl",
@@ -15,7 +15,7 @@ void SkyboxRenderer::Init(ShaderCache& shaders, const Texture* skybox)
     s_skybox = skybox;
 }
 
-void SkyboxRenderer::Render()
+void SkyboxRenderPass::Render()
 {
     int index = 0;
     RenderOperation op;

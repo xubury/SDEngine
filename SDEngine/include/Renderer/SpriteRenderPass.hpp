@@ -8,7 +8,7 @@
 
 namespace SD {
 
-class SD_RENDERER_API SpriteRenderer {
+class SD_RENDERER_API SpriteRenderPass {
    public:
     static void Init(TextureCache &textures);
     static void Render(const Scene &scene);

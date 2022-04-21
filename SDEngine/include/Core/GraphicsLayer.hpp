@@ -3,10 +3,10 @@
 
 #include "Core/Layer.hpp"
 #include "Graphics/Device.hpp"
-#include "Renderer/DeferredRenderer.hpp"
-#include "Renderer/SkyboxRenderer.hpp"
-#include "Renderer/PostProcessRenderer.hpp"
-#include "Renderer/SpriteRenderer.hpp"
+#include "Renderer/DeferredRenderPass.hpp"
+#include "Renderer/SkyboxRenderPass.hpp"
+#include "Renderer/PostProcessRenderPass.hpp"
+#include "Renderer/SpriteRenderPass.hpp"
 #include "Resource/ResourceManager.hpp"
 #include "ECS/SceneManager.hpp"
 #include "Utility/Timing.hpp"
@@ -31,8 +31,9 @@ class SD_CORE_API GraphicsLayer : public Layer {
 
     Framebuffer* GetFramebuffer() { return m_main_target.get(); }
 
-    void OutputEntityBuffer(Framebuffer* framebuffer, int attachment);
     void OutputColorBuffer(Framebuffer* framebuffer, int attachment);
+
+    uint32_t ReadEntityId(int x, int y) const;
 
    private:
     void InitBuffers();
@@ -50,10 +51,6 @@ class SD_CORE_API GraphicsLayer : public Layer {
     Ref<Texture> m_color_buffer;
     Framebuffer* m_color_output;
     int32_t m_color_output_attachment;
-
-    Ref<Texture> m_entity_buffer;
-    Framebuffer* m_entity_ouptut;
-    int32_t m_entity_output_attachment;
 
     Ref<Renderbuffer> m_depth_buffer;
 

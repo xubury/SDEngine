@@ -9,7 +9,7 @@
 
 namespace SD {
 
-class SD_RENDERER_API SkyboxRenderer {
+class SD_RENDERER_API SkyboxRenderPass {
    public:
     static void Init(ShaderCache& shaders, const Texture* skybox);
     static void Render();

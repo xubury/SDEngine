@@ -1,4 +1,4 @@
-#include "Renderer/PostProcessRenderer.hpp"
+#include "Renderer/PostProcessRenderPass.hpp"
 #include "Renderer/Renderer.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 
@@ -18,7 +18,7 @@ struct PostProcessData {
 static PostProcessData s_data;
 static PostProcessSettings s_settings;
 
-void PostProcessRenderer::Init(PostProcessSettings settings,
+void PostProcessRenderPass::Init(PostProcessSettings settings,
                                ShaderCache &shaders)
 {
     s_settings = std::move(settings);
@@ -33,14 +33,14 @@ void PostProcessRenderer::Init(PostProcessSettings settings,
     InitBuffers();
 }
 
-void PostProcessRenderer::SetRenderSize(int32_t width, int32_t height)
+void PostProcessRenderPass::SetRenderSize(int32_t width, int32_t height)
 {
     s_settings.width = width;
     s_settings.height = height;
     InitBuffers();
 }
 
-void PostProcessRenderer::InitBuffers()
+void PostProcessRenderPass::InitBuffers()
 {
     s_data.post_buffer = Texture::Create(
         s_settings.width, s_settings.height, 1, MultiSampleLevel::None,
@@ -63,7 +63,7 @@ void PostProcessRenderer::InitBuffers()
         s_data.downsample_buffer->GetMipmapLevels() - 1);
 }
 
-void PostProcessRenderer::ImGui()
+void PostProcessRenderPass::ImGui()
 {
     ImGui::SliderFloat("Exposure", &s_settings.exposure, 0, 10);
     ImGui::SliderFloat("Gamma Correction", &s_settings.gamma_correction, 0.1,
@@ -83,7 +83,7 @@ void PostProcessRenderer::ImGui()
     ImGui::DrawTexture(*buffer, ImVec2(0, 1), ImVec2(1, 0));
 }
 
-void PostProcessRenderer::Render()
+void PostProcessRenderPass::Render()
 {
     Renderer::BlitToBuffer(0, s_data.post_target.get(), 0,
                            BufferBitMask::ColorBufferBit);
@@ -94,7 +94,7 @@ void PostProcessRenderer::Render()
     RenderPost();
 }
 
-void PostProcessRenderer::RenderPost()
+void PostProcessRenderPass::RenderPost()
 {
     int index = 0;
     RenderSubpassInfo info{&index, 1};
@@ -115,7 +115,7 @@ void PostProcessRenderer::RenderPost()
     Renderer::EndRenderSubpass();
 }
 
-void PostProcessRenderer::Downsample(Texture &src, Texture &dst)
+void PostProcessRenderPass::Downsample(Texture &src, Texture &dst)
 {
     s_data.bloom_shader->GetParam("u_downsample")->SetAsBool(true);
     s_data.bloom_shader->GetParam("u_threshold")
@@ -148,7 +148,7 @@ void PostProcessRenderer::Downsample(Texture &src, Texture &dst)
     }
 }
 
-void PostProcessRenderer::Upsample(Texture &src, Texture &dst)
+void PostProcessRenderPass::Upsample(Texture &src, Texture &dst)
 {
     const int max_level = dst.GetMipmapLevels() - 1;
     s_data.bloom_shader->GetParam("u_downsample")->SetAsBool(false);
@@ -174,7 +174,7 @@ void PostProcessRenderer::Upsample(Texture &src, Texture &dst)
     }
 }
 
-void PostProcessRenderer::RenderBloom()
+void PostProcessRenderPass::RenderBloom()
 {
     // make sure base level is readable
     s_data.downsample_buffer->SetBaseLevel(0);

@@ -34,7 +34,7 @@ struct DeferredRenderSettings {
 
 DataFormat SD_RENDERER_API GetTextureFormat(GeometryBufferType type);
 
-class SD_RENDERER_API DeferredRenderer {
+class SD_RENDERER_API DeferredRenderPass {
    public:
     static void Init(DeferredRenderSettings settings, ShaderCache &shaders,
                      ModelCache &models);
@@ -45,6 +45,7 @@ class SD_RENDERER_API DeferredRenderer {
 
     static void SetRenderSize(int32_t width, int32_t height);
 
+    static Texture *GetEntityBuffer();
    private:
     static void InitShaders(ShaderCache &cache);
     static void InitSSAOBuffers();

@@ -21,7 +21,7 @@ struct PostProcessSettings {
     float gamma_correction{1.5};
 };
 
-class SD_RENDERER_API PostProcessRenderer {
+class SD_RENDERER_API PostProcessRenderPass {
    public:
     static void Init(PostProcessSettings settings, ShaderCache &shaders);
 

@@ -49,7 +49,6 @@ void EditorLayer::OnInit()
 
     m_viewport_target = Framebuffer::Create();
     m_graphics_layer->OutputColorBuffer(m_viewport_target.get(), 0);
-    m_graphics_layer->OutputEntityBuffer(m_viewport_target.get(), 1);
 
     InitBuffers();
     m_scenes->EmplaceScene("Empty Scene");
@@ -60,11 +59,7 @@ void EditorLayer::InitBuffers()
     m_scene_buffer = Texture::Create(m_viewport_size.x, m_viewport_size.y, 1,
                                      MultiSampleLevel::None,
                                      TextureType::Normal2D, DataFormat::RGB8);
-    m_entity_buffer = Texture::Create(m_viewport_size.x, m_viewport_size.y, 1,
-                                      MultiSampleLevel::None,
-                                      TextureType::Normal2D, DataFormat::R32UI);
     m_viewport_target->Attach(*m_scene_buffer, 0, 0);
-    m_viewport_target->Attach(*m_entity_buffer, 1, 0);
 }
 
 void EditorLayer::OnRender()
@@ -373,14 +368,9 @@ void EditorLayer::DrawViewport()
             const auto [mouse_x, mouse_y] = ImGui::GetMousePos();
             const int tex_x = mouse_x - m_viewport_pos.x;
             const int tex_y = m_viewport_size.y - (mouse_y - m_viewport_pos.y);
-            entt::entity entity_id = entt::null;
+            entt::entity entity_id = static_cast<entt::entity>(
+                m_graphics_layer->ReadEntityId(tex_x, tex_y));
             // out of bound check
-            if (tex_x >= 0 && tex_y >= 0 &&
-                tex_x < m_entity_buffer->GetWidth() &&
-                tex_y < m_entity_buffer->GetHeight()) {
-                m_entity_buffer->ReadPixels(0, tex_x, tex_y, 0, 1, 1, 1,
-                                            sizeof(entity_id), &entity_id);
-            }
             if (entity_id != entt::null) {
                 m_dispatcher.PublishEvent(EntitySelectEvent{entity_id, scene});
             }

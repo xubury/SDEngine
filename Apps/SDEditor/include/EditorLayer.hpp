@@ -70,7 +70,6 @@ class EditorLayer : public Layer {
 
     Ref<Framebuffer> m_viewport_target;
     Ref<Texture> m_scene_buffer;
-    Ref<Texture> m_entity_buffer;
 
     bool m_is_runtime;
     bool m_quitting;

@@ -22,39 +22,34 @@ GraphicsLayer::GraphicsLayer(ResourceManager *resources, SceneManager *scenes,
       m_msaa(msaa),
       m_color_output(nullptr),
       m_color_output_attachment(0),
-      m_entity_ouptut(nullptr),
-      m_entity_output_attachment(1),
       m_fps(20)
 {
-    m_main_target = Framebuffer::Create();
-    InitBuffers();
 }
 
 void GraphicsLayer::InitBuffers()
 {
     m_color_buffer = Texture::Create(m_width, m_height, 1, m_msaa,
                                      TextureType::Normal2D, DataFormat::RGBA8);
-    m_entity_buffer = Texture::Create(m_width, m_height, 1, m_msaa,
-                                      TextureType::Normal2D, DataFormat::R32UI);
     m_depth_buffer =
         Renderbuffer::Create(m_width, m_height, m_msaa, DataFormat::Depth24);
     m_main_target->Attach(*m_color_buffer, 0, 0);
-    m_main_target->Attach(*m_entity_buffer, 1, 0);
     m_main_target->Attach(*m_depth_buffer, 0);
 }
 
 void GraphicsLayer::OnInit()
 {
+    m_main_target = Framebuffer::Create();
+    InitBuffers();
     Renderer::Init(m_device);
     Renderer2D::Init(m_resources->shaders);
     Renderer3D::Init();
-    SkyboxRenderer::Init(m_resources->shaders,
-                         m_resources->textures.Get("skybox/default").Get());
-    PostProcessRenderer::Init(PostProcessSettings{m_width, m_height},
-                              m_resources->shaders);
-    DeferredRenderer::Init(DeferredRenderSettings{m_width, m_height, m_msaa},
-                           m_resources->shaders, m_resources->models);
-    SpriteRenderer::Init(m_resources->textures);
+    SkyboxRenderPass::Init(m_resources->shaders,
+                           m_resources->textures.Get("skybox/default").Get());
+    PostProcessRenderPass::Init(PostProcessSettings{m_width, m_height},
+                                m_resources->shaders);
+    DeferredRenderPass::Init(DeferredRenderSettings{m_width, m_height, m_msaa},
+                             m_resources->shaders, m_resources->models);
+    SpriteRenderPass::Init(m_resources->textures);
     m_light_icon = m_resources->textures.Get("icon/light");
 }
 
@@ -64,12 +59,6 @@ void GraphicsLayer::OutputColorBuffer(Framebuffer *framebuffer, int attachment)
 {
     m_color_output = framebuffer;
     m_color_output_attachment = attachment;
-}
-
-void GraphicsLayer::OutputEntityBuffer(Framebuffer *framebuffer, int attachment)
-{
-    m_entity_ouptut = framebuffer;
-    m_entity_output_attachment = attachment;
 }
 
 void GraphicsLayer::OnTick(float dt)
@@ -91,8 +80,8 @@ void GraphicsLayer::SetRenderSize(int32_t width, int32_t height)
     m_height = height;
     InitBuffers();
 
-    DeferredRenderer::SetRenderSize(width, height);
-    PostProcessRenderer::SetRenderSize(width, height);
+    DeferredRenderPass::SetRenderSize(width, height);
+    PostProcessRenderPass::SetRenderSize(width, height);
 }
 
 void GraphicsLayer::SetCamera(Camera *camera) { m_camera = camera; }
@@ -116,16 +105,16 @@ void GraphicsLayer::OnRender()
     m_post_rendering_time = 0;
     Clock clock;
 
-    SkyboxRenderer::Render();
+    SkyboxRenderPass::Render();
     clock.Restart();
 
-    DeferredRenderer::Render(*scene);
+    DeferredRenderPass::Render(*scene);
     m_deferred_time += clock.Restart();
 
-    SpriteRenderer::Render(*scene);
+    SpriteRenderPass::Render(*scene);
     clock.Restart();
 
-    PostProcessRenderer::Render();
+    PostProcessRenderPass::Render();
     m_post_rendering_time += clock.Restart();
 
     if (m_debug) {
@@ -163,15 +152,17 @@ void GraphicsLayer::OnRender()
                                   BufferBitMask::ColorBufferBit,
                                   BlitFilter::Nearest);
     }
-    if (m_entity_ouptut ||
-        (m_entity_ouptut == nullptr && m_entity_output_attachment == 0)) {
-        m_device->ReadBuffer(m_main_target.get(), 1);
-        m_device->DrawBuffer(m_entity_ouptut, m_entity_output_attachment);
-        m_device->BlitFramebuffer(m_main_target.get(), 0, 0, m_width, m_height,
-                                  m_entity_ouptut, 0, 0, m_width, m_height,
-                                  BufferBitMask::ColorBufferBit,
-                                  BlitFilter::Nearest);
+}
+
+uint32_t GraphicsLayer::ReadEntityId(int x, int y) const
+{
+    uint32_t id = -1;
+    const Texture *entity_buffer = DeferredRenderPass::GetEntityBuffer();
+    if (x >= 0 && y >= 0 && x < entity_buffer->GetWidth() &&
+        y < entity_buffer->GetHeight()) {
+        entity_buffer->ReadPixels(0, x, y, 0, 1, 1, 1, sizeof(id), &id);
     }
+    return id;
 }
 
 void GraphicsLayer::OnImGui()
@@ -193,16 +184,16 @@ void GraphicsLayer::OnImGui()
                             m_fps.GetFrameTime());
                 ImGui::TreePop();
             }
-            if (ImGui::TreeNodeEx("Deferred Renderer", flags)) {
+            if (ImGui::TreeNodeEx("Deferred Render Pass", flags)) {
                 ImGui::TextUnformatted("Deferred Rendering Time:");
                 ImGui::TextWrapped("%.2f ms", m_deferred_time);
-                DeferredRenderer::ImGui();
+                DeferredRenderPass::ImGui();
                 ImGui::TreePop();
             }
-            if (ImGui::TreeNodeEx("Post Process Renderer", flags)) {
+            if (ImGui::TreeNodeEx("Post Process Render Pass", flags)) {
                 ImGui::TextUnformatted("Post Process Rendering Time:");
                 ImGui::TextWrapped("%.2f ms", m_post_rendering_time);
-                PostProcessRenderer::ImGui();
+                PostProcessRenderPass::ImGui();
                 ImGui::TreePop();
             }
         }

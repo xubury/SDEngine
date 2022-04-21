@@ -1,4 +1,4 @@
-#include "Renderer/DeferredRenderer.hpp"
+#include "Renderer/DeferredRenderPass.hpp"
 #include "Renderer/Renderer3D.hpp"
 #include "ECS/Component.hpp"
 #include "Utility/Random.hpp"
@@ -65,8 +65,8 @@ DataFormat GetTextureFormat(GeometryBufferType type)
     }
 }
 
-void DeferredRenderer::Init(DeferredRenderSettings settings,
-                            ShaderCache &shaders, ModelCache &models)
+void DeferredRenderPass::Init(DeferredRenderSettings settings,
+                              ShaderCache &shaders, ModelCache &models)
 {
     s_settings = std::move(settings);
     s_models = &models;
@@ -83,7 +83,7 @@ void DeferredRenderer::Init(DeferredRenderSettings settings,
     InitLightingBuffers();
 }
 
-void DeferredRenderer::InitShaders(ShaderCache &shaders)
+void DeferredRenderPass::InitShaders(ShaderCache &shaders)
 {
     s_data.emssive_shader =
         shaders.Load("shader/emissive", "assets/shaders/quad.vert.glsl",
@@ -112,7 +112,7 @@ void DeferredRenderer::InitShaders(ShaderCache &shaders)
                      "assets/shaders/point_shadow.geo.glsl");
 }
 
-void DeferredRenderer::InitSSAOBuffers()
+void DeferredRenderPass::InitSSAOBuffers()
 {
     s_data.ssao_buffer = Texture::Create(
         s_settings.width, s_settings.height, 1, MultiSampleLevel::None,
@@ -122,7 +122,7 @@ void DeferredRenderer::InitSSAOBuffers()
         TextureType::Normal2D, DataFormat::R16F);
 }
 
-void DeferredRenderer::InitSSAOKernel()
+void DeferredRenderPass::InitSSAOKernel()
 {
     uint32_t kernel_size = s_data.ssao_shader->GetUint("u_kernel_size");
     s_data.ssao_kernel.resize(kernel_size);
@@ -154,7 +154,7 @@ void DeferredRenderer::InitSSAOKernel()
         ->SetAsVec3(&s_data.ssao_kernel[0][0], kernel_size);
 }
 
-void DeferredRenderer::InitLightingBuffers()
+void DeferredRenderPass::InitLightingBuffers()
 {
     for (int i = 0; i < 2; ++i) {
         s_data.lighting_buffers[i] = Texture::Create(
@@ -164,14 +164,15 @@ void DeferredRenderer::InitLightingBuffers()
     }
 
     for (size_t i = 0; i < s_data.gbuffer_msaa.size(); ++i) {
+        GeometryBufferType type = static_cast<GeometryBufferType>(i);
         s_data.gbuffer_msaa[i] = Texture::Create(
             s_settings.width, s_settings.height, 1, s_settings.msaa,
-            TextureType::Normal2D, GetTextureFormat(GeometryBufferType(i)));
+            TextureType::Normal2D, GetTextureFormat(type));
         s_data.geometry_target_msaa->Attach(*s_data.gbuffer_msaa[i], i, 0);
 
         s_data.gbuffer[i] = Texture::Create(
             s_settings.width, s_settings.height, 1, MultiSampleLevel::None,
-            TextureType::Normal2D, GetTextureFormat(GeometryBufferType(i)));
+            TextureType::Normal2D, GetTextureFormat(type));
         s_data.geometry_target->Attach(*s_data.gbuffer[i], i, 0);
     }
     s_data.depth_buffer =
@@ -185,7 +186,7 @@ void DeferredRenderer::InitLightingBuffers()
     s_data.cascade_debug_target->Attach(*s_data.cascade_debug_buffer, 0, 0);
 }
 
-void DeferredRenderer::SetRenderSize(int32_t width, int32_t height)
+void DeferredRenderPass::SetRenderSize(int32_t width, int32_t height)
 {
     s_settings.width = width;
     s_settings.height = height;
@@ -193,7 +194,7 @@ void DeferredRenderer::SetRenderSize(int32_t width, int32_t height)
     InitLightingBuffers();
 }
 
-void DeferredRenderer::BlitGeometryBuffers()
+void DeferredRenderPass::BlitGeometryBuffers()
 {
     Renderer::BeginRenderPass(
         {s_data.geometry_target.get(), s_settings.width, s_settings.height});
@@ -204,7 +205,7 @@ void DeferredRenderer::BlitGeometryBuffers()
     Renderer::EndRenderPass();
 }
 
-void DeferredRenderer::ImGui()
+void DeferredRenderPass::ImGui()
 {
     if (ImGui::TreeNodeEx("Geometry Buffers")) {
         for (size_t i = 0; i < s_data.gbuffer.size(); ++i) {
@@ -235,7 +236,7 @@ void DeferredRenderer::ImGui()
     }
 }
 
-void DeferredRenderer::Render(Scene &scene)
+void DeferredRenderPass::Render(Scene &scene)
 {
     RenderGBuffer(scene);
     BlitGeometryBuffers();
@@ -252,16 +253,14 @@ void DeferredRenderer::Render(Scene &scene)
         point_lights.begin() != point_lights.end()) {
         RenderEmissive();
     }
-    Renderer::BlitFromBuffer(
-        1, s_data.geometry_target_msaa.get(),
-        static_cast<int>(GeometryBufferType::EntityId),
-        BufferBitMask::ColorBufferBit | BufferBitMask::DepthBufferBit);
+    Renderer::BlitFromBuffer(0, s_data.geometry_target_msaa.get(), 0,
+                             BufferBitMask::DepthBufferBit);
 }
 
-void DeferredRenderer::RenderShadowMap(const Scene &scene,
-                                       CascadeShadow &shadow,
-                                       const Camera &camera,
-                                       const Transform &transform)
+void DeferredRenderPass::RenderShadowMap(const Scene &scene,
+                                         CascadeShadow &shadow,
+                                         const Camera &camera,
+                                         const Transform &transform)
 {
     auto modelView = scene.view<TransformComponent, MeshComponent>();
     RenderOperation op;
@@ -305,9 +304,9 @@ void DeferredRenderer::RenderShadowMap(const Scene &scene,
     }
 }
 
-void DeferredRenderer::RenderPointShadowMap(const Scene &scene,
-                                            PointShadow &shadow,
-                                            const Transform &transform)
+void DeferredRenderPass::RenderPointShadowMap(const Scene &scene,
+                                              PointShadow &shadow,
+                                              const Transform &transform)
 {
     Vector3f light_pos = transform.GetPosition();
     std::array<Matrix4f, 6> shadow_trans =
@@ -340,7 +339,7 @@ void DeferredRenderer::RenderPointShadowMap(const Scene &scene,
     Renderer::EndRenderPass();
 }
 
-void DeferredRenderer::RenderSSAO()
+void DeferredRenderPass::RenderSSAO()
 {
     Texture *position =
         s_data.gbuffer[static_cast<int>(GeometryBufferType::Position)].get();
@@ -370,7 +369,7 @@ void DeferredRenderer::RenderSSAO()
                            s_settings.height, 1);
 }
 
-void DeferredRenderer::RenderEmissive()
+void DeferredRenderPass::RenderEmissive()
 {
     RenderOperation op;
     op.blend = false;
@@ -386,7 +385,7 @@ void DeferredRenderer::RenderEmissive()
     Renderer::EndRenderSubpass();
 }
 
-void DeferredRenderer::RenderDeferred(Scene &scene)
+void DeferredRenderPass::RenderDeferred(Scene &scene)
 {
     s_data.deferred_shader->GetParam("u_position")
         ->SetAsTexture(
@@ -537,7 +536,7 @@ void DeferredRenderer::RenderDeferred(Scene &scene)
     });
 }
 
-void DeferredRenderer::RenderGBuffer(const Scene &scene)
+void DeferredRenderPass::RenderGBuffer(const Scene &scene)
 {
     auto meshes = scene.view<TransformComponent, MeshComponent>();
 
@@ -571,6 +570,11 @@ void DeferredRenderer::RenderGBuffer(const Scene &scene)
         }
     });
     Renderer::EndRenderPass();
+}
+
+Texture *DeferredRenderPass::GetEntityBuffer()
+{
+    return s_data.gbuffer[static_cast<int>(GeometryBufferType::EntityId)].get();
 }
 
 }  // namespace SD

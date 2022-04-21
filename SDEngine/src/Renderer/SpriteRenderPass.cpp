@@ -1,4 +1,4 @@
-#include "Renderer/SpriteRenderer.hpp"
+#include "Renderer/SpriteRenderPass.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "ECS/Component.hpp"
 
@@ -16,9 +16,9 @@ struct SpriteDrawData {
 
 static TextureCache *s_textures;
 
-void SpriteRenderer::Init(TextureCache &textures) { s_textures = &textures; }
+void SpriteRenderPass::Init(TextureCache &textures) { s_textures = &textures; }
 
-void SpriteRenderer::Render(const Scene &scene)
+void SpriteRenderPass::Render(const Scene &scene)
 {
     int index[] = {0, 1};
     RenderOperation op;
