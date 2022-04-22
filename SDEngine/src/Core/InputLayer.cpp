@@ -1,31 +1,33 @@
 #include "Core/InputLayer.hpp"
-#include "Core/Input.hpp"
+#include "Core/InputDevice.hpp"
 
 namespace SD {
 
-InputLayer::InputLayer() : Layer("InputLayer") {}
+InputLayer::InputLayer(InputDevice *input) : Layer("InputLayer"), m_input(input)
+{
+}
 
-void InputLayer::OnTick(float) { Input::Tick(); }
+void InputLayer::OnTick(float) { m_input->Tick(); }
 
 void InputLayer::On(const KeyEvent &event)
 {
-    Input::SetKeyState(event.keycode, event.state);
+    m_input->SetKeyState(event.keycode, event.state);
 }
 
 void InputLayer::On(const MouseMotionEvent &event)
 {
-    Input::SetMouseCoord(event.x, event.y);
+    m_input->SetMouseCoord(event.x, event.y);
 }
 
 void InputLayer::On(const MouseButtonEvent &event)
 {
-    Input::SetMouseCoord(event.x, event.y);
-    Input::SetMouseButtonState(event.button, event.state);
+    m_input->SetMouseCoord(event.x, event.y);
+    m_input->SetMouseButtonState(event.button, event.state);
 }
 
 void InputLayer::On(const MouseWheelEvent &event)
 {
-    Input::SetMouseWheel(event.x, event.y);
+    m_input->SetMouseWheel(event.x, event.y);
 }
 
 }  // namespace SD

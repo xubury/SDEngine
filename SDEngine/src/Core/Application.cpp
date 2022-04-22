@@ -58,8 +58,6 @@ Application::Application(const std::string &title, Device::API api)
     m_window = Window::Create(property);
     m_device = Device::Create();
 
-    // InitializeService();
-
     // TODO: Loading default assets.
     // Should move this to a asset table file, so we can load asset dynamically
     {
@@ -93,7 +91,7 @@ void Application::OnInit()
         m_window->GetHeight(), m_window->GetMSAA());
     PushLayer(m_graphics_layer);
     PushLayer(CreateLayer<ScriptLayer>());
-    PushLayer(CreateLayer<InputLayer>());
+    PushLayer(CreateLayer<InputLayer>(&m_input));
 }
 
 void Application::OnDestroy()

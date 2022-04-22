@@ -24,7 +24,7 @@ set(Core_Include
     ${Include_Root}/ScriptLayer.hpp
     ${Include_Root}/GraphicsLayer.hpp
     ${Include_Root}/Event.hpp
-    ${Include_Root}/Input.hpp
+    ${Include_Root}/InputDevice.hpp
     ${Include_Root}/InputLayer.hpp)
 
 set(Core_Src
@@ -35,7 +35,7 @@ set(Core_Src
     ${Src_Root}/ImGuiLayer.cpp
     ${Src_Root}/ScriptLayer.cpp
     ${Src_Root}/GraphicsLayer.cpp
-    ${Src_Root}/Input.cpp
+    ${Src_Root}/InputDevice.cpp
     ${Src_Root}/InputLayer.cpp)
 
 add_library(sd-core ${Core_Src})

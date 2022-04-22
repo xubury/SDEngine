@@ -18,8 +18,9 @@ enum class EditorMode { None, TwoDimensional, ThreeDimensional };
 
 class EditorLayer : public Layer {
    public:
-    EditorLayer(SceneManager* scenes, ResourceManager* resources,
-                GraphicsLayer* graphics_layer, int width, int height);
+    EditorLayer(InputDevice* input, SceneManager* scenes,
+                ResourceManager* resources, GraphicsLayer* graphics_layer,
+                int width, int height);
     ~EditorLayer();
 
     void OnInit() override;

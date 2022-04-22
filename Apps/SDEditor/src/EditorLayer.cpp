@@ -2,7 +2,6 @@
 #include "EditorEvent.hpp"
 #include "Renderer/Renderer.hpp"
 #include "ContentBrowser.hpp"
-#include "Core/Input.hpp"
 #include "Core/Application.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 #include "ImGuizmo.h"
@@ -12,7 +11,8 @@
 
 namespace SD {
 
-EditorLayer::EditorLayer(SceneManager *scenes, ResourceManager *resources,
+EditorLayer::EditorLayer(InputDevice *input, SceneManager *scenes,
+                         ResourceManager *resources,
                          GraphicsLayer *graphics_layer, int width, int height)
     : Layer("EditorLayer"),
       m_mode(EditorMode::None),
@@ -20,7 +20,7 @@ EditorLayer::EditorLayer(SceneManager *scenes, ResourceManager *resources,
       m_resources(resources),
       m_graphics_layer(graphics_layer),
       m_scene_panel(&m_dispatcher),
-      m_editor_camera(width, height),
+      m_editor_camera(input, width, height),
       m_animation_editor(&m_dispatcher),
       m_content_browser(resources->textures),
       m_viewport_pos(0, 0),

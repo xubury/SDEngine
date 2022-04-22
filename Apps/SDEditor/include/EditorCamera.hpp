@@ -2,12 +2,13 @@
 #define SD_EDITOR_CAMERA_HPP
 
 #include "Graphics/Camera.hpp"
+#include "Core/InputDevice.hpp"
 
 namespace SD {
 
 class EditorCamera : public Camera {
    public:
-    EditorCamera(int32_t width, int32_t height);
+    EditorCamera(InputDevice *input, int32_t width, int32_t height);
 
     void ImGui();
 
@@ -20,6 +21,7 @@ class EditorCamera : public Camera {
     void AllowRotate(bool enable) { m_allow_rotate = enable; }
 
    private:
+    InputDevice *m_input;
     uint32_t m_width;
     uint32_t m_height;
 

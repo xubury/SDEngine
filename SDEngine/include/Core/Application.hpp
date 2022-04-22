@@ -4,6 +4,7 @@
 #include "Core/Window.hpp"
 #include "Core/ImGuiLayer.hpp"
 #include "Core/GraphicsLayer.hpp"
+#include "Core/InputDevice.hpp"
 #include "ECS/SceneManager.hpp"
 #include "Resource/ResourceManager.hpp"
 #include "Graphics/Device.hpp"
@@ -83,6 +84,7 @@ class SD_CORE_API Application {
 
     ResourceManager m_resources;
     SceneManager m_scenes;
+    InputDevice m_input;
 
    private:
     ImGuiLayer *m_imgui_layer;

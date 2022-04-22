@@ -1,5 +1,4 @@
 #include "EditorCamera.hpp"
-#include "Core/Input.hpp"
 #include "ImGui/ImGuiWidget.hpp"
 
 namespace SD {
@@ -9,9 +8,10 @@ const float TRANSLATION_SPEED = 100.f;
 const float SMOOTHNESS = 10;
 const float MAX_FAR_Z = 1000;
 
-EditorCamera::EditorCamera(int32_t width, int32_t height)
+EditorCamera::EditorCamera(InputDevice *input, int32_t width, int32_t height)
     : Camera(CameraType::Perspective, glm::radians(45.f), width, height, 0.1f,
              MAX_FAR_Z),
+      m_input(input),
       m_width(width),
       m_height(height),
       m_pitch(0),
@@ -22,7 +22,7 @@ EditorCamera::EditorCamera(int32_t width, int32_t height)
 
 void EditorCamera::Move(int32_t x, int32_t y)
 {
-    if (Input::IsMouseDown(MouseButton::Right)) {
+    if (m_input->IsMouseDown(MouseButton::Right)) {
         m_mouse_movement.x += x;
         m_mouse_movement.y += y;
     }
@@ -67,24 +67,24 @@ void EditorCamera::ImGui()
 void EditorCamera::Tick(float dt)
 {
     float step = TRANSLATION_SPEED * dt;
-    if (Input::IsKeyDown(Keycode::W) &&
+    if (m_input->IsKeyDown(Keycode::W) &&
         GetCameraType() == CameraType::Perspective) {
         TranslateWorld(-GetWorldFront() * step);
     }
-    if (Input::IsKeyDown(Keycode::S) &&
+    if (m_input->IsKeyDown(Keycode::S) &&
         GetCameraType() == CameraType::Perspective) {
         TranslateWorld(GetWorldFront() * step);
     }
-    if (Input::IsKeyDown(Keycode::A)) {
+    if (m_input->IsKeyDown(Keycode::A)) {
         TranslateWorld(-GetWorldRight() * step);
     }
-    if (Input::IsKeyDown(Keycode::D)) {
+    if (m_input->IsKeyDown(Keycode::D)) {
         TranslateWorld(GetWorldRight() * step);
     }
-    if (Input::IsKeyDown(Keycode::LShift)) {
+    if (m_input->IsKeyDown(Keycode::LShift)) {
         TranslateWorld(GetWorldUp() * step);
     }
-    if (Input::IsKeyDown(Keycode::LCtrl)) {
+    if (m_input->IsKeyDown(Keycode::LCtrl)) {
         TranslateWorld(-GetWorldUp() * step);
     }
     m_mouse_smooth_movement =

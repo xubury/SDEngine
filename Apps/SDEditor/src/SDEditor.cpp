@@ -15,7 +15,7 @@ void SDEditor::OnInit()
 
     CreateImGuiLayer();
     m_graphics_layer->SetDebug(true);
-    PushLayer(CreateLayer<EditorLayer>(&m_scenes, &m_resources,
+    PushLayer(CreateLayer<EditorLayer>(&m_input, &m_scenes, &m_resources,
                                        m_graphics_layer, viewport_width,
                                        viewport_height));
 }
