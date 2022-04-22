@@ -2,6 +2,7 @@
 #define SD_POST_PROCESS_RENDERER_HPP
 
 #include "Renderer/Export.hpp"
+#include "Graphics/Device.hpp"
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/Framebuffer.hpp"
@@ -23,7 +24,8 @@ struct PostProcessSettings {
 
 class SD_RENDERER_API PostProcessRenderPass {
    public:
-    static void Init(PostProcessSettings settings, ShaderCache &shaders);
+    static void Init(PostProcessSettings settings, Device *device,
+                     ShaderCache &shaders);
 
     static void SetRenderSize(int32_t width, int32_t height);
 

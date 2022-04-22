@@ -5,6 +5,7 @@
 namespace SD {
 
 struct PostProcessData {
+    Device *device;
     ShaderHandle hdr_shader;
     ShaderHandle bloom_shader;
 
@@ -18,10 +19,11 @@ struct PostProcessData {
 static PostProcessData s_data;
 static PostProcessSettings s_settings;
 
-void PostProcessRenderPass::Init(PostProcessSettings settings,
-                               ShaderCache &shaders)
+void PostProcessRenderPass::Init(PostProcessSettings settings, Device *device,
+                                 ShaderCache &shaders)
 {
     s_settings = std::move(settings);
+    s_data.device = device;
 
     s_data.hdr_shader =
         shaders.Load("shader/hdr", "assets/shaders/quad.vert.glsl",
@@ -85,8 +87,13 @@ void PostProcessRenderPass::ImGui()
 
 void PostProcessRenderPass::Render()
 {
-    Renderer::BlitToBuffer(0, s_data.post_target.get(), 0,
-                           BufferBitMask::ColorBufferBit);
+    Framebuffer *fb = Renderer::GetCurrentRenderPass().framebuffer;
+    s_data.device->ReadBuffer(fb, 0);
+    s_data.device->DrawBuffer(s_data.post_target.get(), 0);
+    s_data.device->BlitFramebuffer(
+        fb, 0, 0, s_settings.width, s_settings.height, s_data.post_target.get(),
+        0, 0, s_settings.width, s_settings.height,
+        BufferBitMask::ColorBufferBit, BlitFilter::Nearest);
 
     if (s_settings.is_bloom) {
         RenderBloom();

@@ -3,6 +3,7 @@
 
 #include "Renderer/Export.hpp"
 #include "ECS/Scene.hpp"
+#include "Graphics/Device.hpp"
 #include "Graphics/Framebuffer.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"
@@ -36,8 +37,8 @@ DataFormat SD_RENDERER_API GetTextureFormat(GeometryBufferType type);
 
 class SD_RENDERER_API DeferredRenderPass {
    public:
-    static void Init(DeferredRenderSettings settings, ShaderCache &shaders,
-                     ModelCache &models);
+    static void Init(DeferredRenderSettings settings, Device *device,
+                     ShaderCache &shaders, ModelCache &models);
 
     static void Render(Scene &scene);
 
@@ -46,6 +47,7 @@ class SD_RENDERER_API DeferredRenderPass {
     static void SetRenderSize(int32_t width, int32_t height);
 
     static Texture *GetEntityBuffer();
+
    private:
     static void InitShaders(ShaderCache &cache);
     static void InitSSAOBuffers();

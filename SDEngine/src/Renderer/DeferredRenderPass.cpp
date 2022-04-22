@@ -7,6 +7,7 @@
 namespace SD {
 
 struct DeferredRenderData {
+    Device *device;
     ShaderHandle cascade_shader;
     ShaderHandle cascade_debug_shader;
 
@@ -65,10 +66,12 @@ DataFormat GetTextureFormat(GeometryBufferType type)
     }
 }
 
-void DeferredRenderPass::Init(DeferredRenderSettings settings,
+void DeferredRenderPass::Init(DeferredRenderSettings settings, Device *device,
                               ShaderCache &shaders, ModelCache &models)
 {
     s_settings = std::move(settings);
+
+    s_data.device = device;
     s_models = &models;
 
     for (int i = 0; i < 2; ++i) {
@@ -196,13 +199,15 @@ void DeferredRenderPass::SetRenderSize(int32_t width, int32_t height)
 
 void DeferredRenderPass::BlitGeometryBuffers()
 {
-    Renderer::BeginRenderPass(
-        {s_data.geometry_target.get(), s_settings.width, s_settings.height});
     for (size_t i = 0; i < s_data.gbuffer.size(); ++i) {
-        Renderer::BlitFromBuffer(i, s_data.geometry_target_msaa.get(), i,
-                                 BufferBitMask::ColorBufferBit);
+        s_data.device->DrawBuffer(s_data.geometry_target.get(), i);
+        s_data.device->ReadBuffer(s_data.geometry_target_msaa.get(), i);
+        s_data.device->BlitFramebuffer(
+            s_data.geometry_target_msaa.get(), 0, 0, s_settings.width,
+            s_settings.height, s_data.geometry_target.get(), 0, 0,
+            s_settings.width, s_settings.height, BufferBitMask::ColorBufferBit,
+            BlitFilter::Nearest);
     }
-    Renderer::EndRenderPass();
 }
 
 void DeferredRenderPass::ImGui()
@@ -253,8 +258,13 @@ void DeferredRenderPass::Render(Scene &scene)
         point_lights.begin() != point_lights.end()) {
         RenderEmissive();
     }
-    Renderer::BlitFromBuffer(0, s_data.geometry_target_msaa.get(), 0,
-                             BufferBitMask::DepthBufferBit);
+    Framebuffer *fb = Renderer::GetCurrentRenderPass().framebuffer;
+    s_data.device->ReadBuffer(s_data.geometry_target_msaa.get(), 0);
+    s_data.device->DrawBuffer(fb, 0);
+    s_data.device->BlitFramebuffer(
+        s_data.geometry_target_msaa.get(), 0, 0, s_settings.width,
+        s_settings.height, fb, 0, 0, s_settings.width, s_settings.height,
+        BufferBitMask::DepthBufferBit, BlitFilter::Nearest);
 }
 
 void DeferredRenderPass::RenderShadowMap(const Scene &scene,

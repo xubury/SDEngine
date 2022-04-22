@@ -46,9 +46,10 @@ void GraphicsLayer::OnInit()
     SkyboxRenderPass::Init(m_resources->shaders,
                            m_resources->textures.Get("skybox/default").Get());
     PostProcessRenderPass::Init(PostProcessSettings{m_width, m_height},
-                                m_resources->shaders);
+                                m_device, m_resources->shaders);
     DeferredRenderPass::Init(DeferredRenderSettings{m_width, m_height, m_msaa},
-                             m_resources->shaders, m_resources->models);
+                             m_device, m_resources->shaders,
+                             m_resources->models);
     SpriteRenderPass::Init(m_resources->textures);
     m_light_icon = m_resources->textures.Get("icon/light");
 }

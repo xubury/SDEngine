@@ -88,12 +88,12 @@ class SD_RENDERER_API Renderer {
     static void DrawNDCQuad(const Shader &shader);
     static void DrawNDCBox(const Shader &shader);
 
-    // blit current renderpass framebuffer content to draw_fb
-    static void BlitToBuffer(int read_attachment, Framebuffer *draw_fb,
-                             int draw_attachment, BufferBitMask mask);
-    // blit read_fb content to current renderpass's framebuffer
-    static void BlitFromBuffer(int draw_attachment, Framebuffer *read_fb,
-                               int read_attachment, BufferBitMask mask);
+    // // blit current renderpass framebuffer content to draw_fb
+    // static void BlitToBuffer(int read_attachment, Framebuffer *draw_fb,
+    //                          int draw_attachment, BufferBitMask mask);
+    // // blit read_fb content to current renderpass's framebuffer
+    // static void BlitFromBuffer(int draw_attachment, Framebuffer *read_fb,
+    //                            int read_attachment, BufferBitMask mask);
 
    protected:
     static void SetRenderState(Framebuffer *framebuffer, int32_t viewport_width,
