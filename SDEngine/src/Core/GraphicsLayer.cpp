@@ -24,20 +24,6 @@ GraphicsLayer::GraphicsLayer(ResourceManager *resources, SceneManager *scenes,
       m_color_output_attachment(0),
       m_fps(20)
 {
-}
-
-void GraphicsLayer::InitBuffers()
-{
-    m_color_buffer = Texture::Create(m_width, m_height, 1, m_msaa,
-                                     TextureType::Normal2D, DataFormat::RGBA8);
-    m_depth_buffer =
-        Renderbuffer::Create(m_width, m_height, m_msaa, DataFormat::Depth24);
-    m_main_target->Attach(*m_color_buffer, 0, 0);
-    m_main_target->Attach(*m_depth_buffer, 0);
-}
-
-void GraphicsLayer::OnInit()
-{
     m_main_target = Framebuffer::Create();
     InitBuffers();
     Renderer::Init(m_device);
@@ -54,7 +40,15 @@ void GraphicsLayer::OnInit()
     m_light_icon = m_resources->textures.Get("icon/light");
 }
 
-void GraphicsLayer::OnDestroy() {}
+void GraphicsLayer::InitBuffers()
+{
+    m_color_buffer = Texture::Create(m_width, m_height, 1, m_msaa,
+                                     TextureType::Normal2D, DataFormat::RGBA8);
+    m_depth_buffer =
+        Renderbuffer::Create(m_width, m_height, m_msaa, DataFormat::Depth24);
+    m_main_target->Attach(*m_color_buffer, 0, 0);
+    m_main_target->Attach(*m_depth_buffer, 0);
+}
 
 void GraphicsLayer::OutputColorBuffer(Framebuffer *framebuffer, int attachment)
 {

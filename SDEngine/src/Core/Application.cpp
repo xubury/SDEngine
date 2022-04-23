@@ -139,7 +139,6 @@ void Application::PopLayer(Layer *layer)
 
 void Application::DestroyLayer(Layer *layer)
 {
-    layer->OnDestroy();
     delete layer;
 }
 

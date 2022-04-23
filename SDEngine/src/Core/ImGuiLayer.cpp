@@ -7,6 +7,29 @@ namespace SD {
 
 ImGuiLayer::ImGuiLayer(Window* window) : Layer("ImGuiLayer"), m_window(window)
 {
+    IMGUI_CHECKVERSION();
+    m_context = ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigWindowsMoveFromTitleBarOnly = true;
+
+    // Fonts
+    int pixel_size = 18.f;
+    // io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Regular.ttf",
+    //                              pixel_size, nullptr,
+    //                              io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
+    io.Fonts->AddFontFromFileTTF(
+        "assets/fonts/msyh.ttc", pixel_size, nullptr,
+        io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    SetDarkThemeColor();
+
+    // Setup Platform/Renderer backends
+    m_window->ImGuiInitBackend();
 }
 
 ImGuiLayer::~ImGuiLayer() { m_window->ImGuiShutdown(); }
@@ -65,35 +88,6 @@ void ImGuiLayer::End()
     ImGui::End();
     ImGui::Render();
     m_window->ImGuiRenderDrawData();
-}
-
-void ImGuiLayer::OnInit()
-{
-    Layer::OnInit();
-
-    IMGUI_CHECKVERSION();
-    m_context = ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    io.ConfigWindowsMoveFromTitleBarOnly = true;
-
-    // Fonts
-    int pixel_size = 18.f;
-    // io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Regular.ttf",
-    //                              pixel_size, nullptr,
-    //                              io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
-    io.Fonts->AddFontFromFileTTF(
-        "assets/fonts/msyh.ttc", pixel_size, nullptr,
-        io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
-
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-    SetDarkThemeColor();
-
-    // Setup Platform/Renderer backends
-    m_window->ImGuiInitBackend();
 }
 
 void ImGuiLayer::SetDarkThemeColor()

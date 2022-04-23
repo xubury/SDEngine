@@ -21,10 +21,6 @@ class SD_CORE_API Layer {
 
     Layer &operator=(const Layer &) = delete;
 
-    virtual void OnInit() {}
-
-    virtual void OnDestroy() {}
-
     virtual void OnPush() {}
 
     virtual void OnPop() {}

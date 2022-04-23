@@ -57,7 +57,6 @@ class SD_CORE_API Application {
     T *CreateLayer(ARGS &&...args)
     {
         T *layer = new T(std::forward<ARGS>(args)...);
-        layer->OnInit();
         return layer;
     }
 

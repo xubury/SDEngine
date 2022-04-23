@@ -18,8 +18,6 @@ class SD_CORE_API ImGuiLayer : public Layer {
 
     void End();
 
-    void OnInit() override;
-
     ImGuiContext *GetContext() const { return m_context; }
 
    private:

@@ -23,8 +23,6 @@ class EditorLayer : public Layer {
                 int width, int height);
     ~EditorLayer();
 
-    void OnInit() override;
-
     void OnTick(float dt) override;
 
     void OnRender() override;

@@ -35,13 +35,7 @@ EditorLayer::EditorLayer(InputDevice *input, SceneManager *scenes,
         [this](const EntitySelectEvent &e) {
             m_selected_entity = {e.entity_id, e.scene};
         });
-}
 
-EditorLayer::~EditorLayer() {}
-
-void EditorLayer::OnInit()
-{
-    Layer::OnInit();
     GridRenderer::Init();
 
     m_graphics_layer->SetRenderSize(m_viewport_size.x, m_viewport_size.y);
@@ -53,6 +47,8 @@ void EditorLayer::OnInit()
     InitBuffers();
     m_scenes->EmplaceScene("Empty Scene");
 }
+
+EditorLayer::~EditorLayer() {}
 
 void EditorLayer::InitBuffers()
 {

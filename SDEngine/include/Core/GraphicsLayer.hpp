@@ -18,9 +18,6 @@ class SD_CORE_API GraphicsLayer : public Layer {
     GraphicsLayer(ResourceManager* resources, SceneManager* scenes,
                   Device* device, int32_t width, int32_t height,
                   MultiSampleLevel msaa);
-    void OnInit() override;
-    void OnDestroy() override;
-
     void OnImGui() override;
     void OnRender() override;
     void OnTick(float dt) override;
